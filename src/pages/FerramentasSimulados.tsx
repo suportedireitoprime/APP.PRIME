@@ -5,7 +5,7 @@ import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, ChevronRight, ArrowLeft, History } from 'lucide-react';
+import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, ChevronRight, ArrowLeft, History, BarChart3 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 
 interface SimuladoItem {
@@ -244,9 +244,9 @@ export default function FerramentasSimulados() {
       </div>
 
       <Sheet open={!!selectedSimulado} onOpenChange={(open) => !open && setSelectedSimulado(null)}>
-        <SheetContent side="bottom" className="rounded-t-3xl bg-card border-border p-0 overflow-hidden flex flex-col sm:max-w-md sm:mx-auto">
-          <div className="p-6">
-            <SheetHeader className="text-left mb-6">
+        <SheetContent side="bottom" className="rounded-none sm:rounded-t-3xl bg-card border-border p-0 overflow-hidden flex flex-col sm:max-w-md sm:mx-auto h-[100dvh] sm:h-[90vh]">
+          <div className="p-6 flex-1 overflow-y-auto flex flex-col pb-10">
+            <SheetHeader className="text-left mb-6 shrink-0">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-xs font-bold px-2.5 py-1 bg-primary/15 text-primary rounded-md">
                   {selectedSimulado?.year || 'Ano ND'}
@@ -255,12 +255,12 @@ export default function FerramentasSimulados() {
                   Simulado
                 </span>
               </div>
-              <SheetTitle className="text-xl sm:text-2xl font-display font-bold text-foreground leading-tight">
+              <SheetTitle className="text-xl sm:text-2xl font-display font-bold text-foreground leading-tight pr-8">
                 {selectedSimulado?.exam?.name || 'Sem título'}
               </SheetTitle>
             </SheetHeader>
             
-            <div className="space-y-4">
+            <div className="space-y-4 shrink-0">
               <button 
                 onClick={() => {
                   if (selectedSimulado) navigate(`/ferramentas/simulados/resolver/${selectedSimulado.id}`);
@@ -272,20 +272,27 @@ export default function FerramentasSimulados() {
                 <span className="drop-shadow-sm tracking-wide">INICIAR SIMULADO</span>
               </button>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                  <button 
                    onClick={(e) => selectedSimulado && handleDownload(e, selectedSimulado.prova_url)} 
                    disabled={!selectedSimulado?.prova_url}
-                   className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all font-medium text-[13px] border border-white/5 hover:border-white/10 shadow-sm"
+                   className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all font-medium text-[11px] sm:text-xs border border-white/5 hover:border-white/10 shadow-sm"
                  >
                    <FileText className="w-4 h-4 text-zinc-400" /> Ver Prova
                  </button>
                  <button 
                    onClick={(e) => selectedSimulado && handleDownload(e, selectedSimulado.gabarito_url)} 
                    disabled={!selectedSimulado?.gabarito_url}
-                   className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all font-medium text-[13px] border border-white/5 hover:border-white/10 shadow-sm"
+                   className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all font-medium text-[11px] sm:text-xs border border-white/5 hover:border-white/10 shadow-sm"
                  >
-                   <FileText className="w-4 h-4 text-emerald-500/80" /> Ver Gabarito
+                   <FileText className="w-4 h-4 text-emerald-500/80" /> Gabarito
+                 </button>
+                 <button 
+                   onClick={(e) => selectedSimulado && handleDownload(e, selectedSimulado.edital_url)} 
+                   disabled={!selectedSimulado?.edital_url}
+                   className="bg-zinc-900/50 hover:bg-zinc-900 disabled:opacity-50 text-foreground py-3.5 rounded-xl flex flex-col items-center justify-center gap-1.5 transition-all font-medium text-[11px] sm:text-xs border border-white/5 hover:border-white/10 shadow-sm"
+                 >
+                   <FileSignature className="w-4 h-4 text-blue-400" /> Edital
                  </button>
               </div>
               
@@ -293,8 +300,34 @@ export default function FerramentasSimulados() {
                 onClick={() => { /* Placeholder logic for history */ }}
                 className="w-full bg-zinc-950 border border-white/5 text-zinc-300 hover:text-white hover:bg-zinc-900 py-3.5 rounded-xl flex items-center justify-center gap-2 transition-all font-medium text-[13px] shadow-sm"
               >
-                 <History className="w-4 h-4 opacity-70" /> Ver Histórico e Acertos
+                 <History className="w-4 h-4 opacity-70" /> Histórico de Acertos
               </button>
+            </div>
+            
+            <div className="mt-8 flex-1">
+              <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-primary" /> Raio-X do Simulado
+              </h4>
+              <div className="space-y-3">
+                {[
+                  { name: 'Direito Constitucional', percent: 20 },
+                  { name: 'Direito Administrativo', percent: 18 },
+                  { name: 'Direito Civil', percent: 15 },
+                  { name: 'Direito Penal', percent: 15 },
+                  { name: 'Processo Civil', percent: 12 },
+                  { name: 'Outros', percent: 20 },
+                ].map((item, i) => (
+                  <div key={i} className="bg-card border border-border/50 rounded-xl p-3.5 flex flex-col gap-2.5">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[13px] font-semibold text-zinc-200 leading-tight">{item.name}</span>
+                      <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">{item.percent}%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-black/40 rounded-full overflow-hidden">
+                      <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${item.percent}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </SheetContent>
@@ -302,3 +335,4 @@ export default function FerramentasSimulados() {
     </DesktopPageLayout>
   );
 }
+
