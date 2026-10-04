@@ -1,1 +1,4 @@
-const fs = require('fs'); let content = fs.readFileSync('supabase/functions/assistente-juridica/index.ts', 'utf-8'); content = content.replace('const modelsToTry = [\'gemini-3.1-flash-lite\', \'gemini-3.1-flash-lite\', \'gemini-1.5-flash\'];', 'const modelsToTry = [\'gemini-3.1-flash-lite\', \'gemini-1.5-flash\'];'); fs.writeFileSync('supabase/functions/assistente-juridica/index.ts', content, 'utf-8'); console.log('Modified');
+const fs = require('fs');
+let content = fs.readFileSync('src/components/vademecum/overlays/SearchOverlay.tsx', 'utf8');
+content = content.replace(/const debouncedQuery = useDebounce\(query, 100\);/g, 'const debouncedQuery = useDebounce(query, 300);');
+fs.writeFileSync('src/components/vademecum/overlays/SearchOverlay.tsx', content);
