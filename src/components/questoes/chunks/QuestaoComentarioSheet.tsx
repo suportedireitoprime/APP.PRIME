@@ -80,7 +80,7 @@ export function ComentarioInner({ source }: { source: Fonte }) {
   const [fs, setFsState] = useState(17);
   const isDbQuestion = typeof source === 'object' && source !== null && 'id' in source;
   const isSimulado = !isDbQuestion;
-  const hasPrePopulatedComments = typeof source === 'object' && source !== null && !!(source as any).gabarito_comentado && isSimulado;
+  const hasPrePopulatedComments = typeof source === 'object' && source !== null && !!(source as any).gabarito_comentado;
   const isEnabled = !hasPrePopulatedComments;
 
   const { data, isLoading, error, refetch } = useQuestaoAcao(source, 'comentario', isEnabled && view === 'correta');
