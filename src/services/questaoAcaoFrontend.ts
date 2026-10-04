@@ -48,8 +48,9 @@ JSON: { "perguntas": ["..."], "notas": "markdown com as anotações", "sintese":
 JSON: { "termos": [ { "termo": "...", "definicao": "1 a 3 frases", "exemplo": "exemplo curto ou string vazia" } ] } — de 3 a 6 termos.`,
   grifo: `Destaque e desmembre as partes mais importantes do enunciado da questão.
 Analise o texto focando nas palavras-chave, o que elas significam no contexto e onde o aluno deve prestar atenção (as "cascas de banana" ou pontos centrais).
-Use markdown com **negrito** e formatação didática.
-JSON: { "markdown": "texto markdown estruturado com a análise do enunciado" }`,
+NÃO USE EMOJIS na sua resposta. Retorne um JSON com uma lista de destaques.
+Para cada destaque, defina um 'tipo' (pode ser "fato", "analise", "atencao", "regra").
+JSON: { "destaques": [ { "tipo": "fato", "titulo": "...", "texto": "markdown de 2 a 4 frases" } ] } — de 3 a 6 destaques.`,
   "me-explique": `Aja como um tutor particular de cursinho jurídico conversando com o aluno.
 Seu objetivo é dar UMA EXPLICAÇÃO COMPLETA E DIDÁTICA da questão.
 Passos obrigatórios na sua resposta em formato texto:
