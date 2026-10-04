@@ -15,6 +15,7 @@ export const TITULOS: Record<AcaoTipo, string> = {
   cornell: 'Resumo Cornell',
   comentario: 'Comentário',
   termos: 'Termos da questão',
+  grifo: 'Grifos da Questão',
 };
 
 export type SeletorTipo = 'resumos' | 'flash' | null;
@@ -90,6 +91,8 @@ export function PainelAcao({ source, tipo }: { source: Fonte; tipo: AcaoTipo }) 
   }
 
   if (tipo === 'mapa') return <Md texto={data.markdown} />;
+  
+  if (tipo === 'grifo') return <Md texto={data.markdown} />;
 
   if (tipo === 'cornell') {
     return (

@@ -5,7 +5,7 @@ import { gerarQuestaoAcaoFrontend } from '@/services/questaoAcaoFrontend';
 
 export type AcaoTipo =
   | 'comentario' | 'lei-erradas' | 'aula' | 'flashcards'
-  | 'lei' | 'pegadinhas' | 'mapa' | 'cornell' | 'termos';
+  | 'lei' | 'pegadinhas' | 'mapa' | 'cornell' | 'termos' | 'grifo';
 
 export interface QuestaoInline {
   enunciado: string;

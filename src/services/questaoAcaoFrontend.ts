@@ -8,7 +8,7 @@ type Tipo = AcaoTipo | 'me-explique';
 
 const TIPOS: Tipo[] = [
   "comentario", "lei-erradas", "aula", "flashcards",
-  "lei", "pegadinhas", "mapa", "cornell", "termos", "me-explique",
+  "lei", "pegadinhas", "mapa", "cornell", "termos", "me-explique", "grifo"
 ];
 
 const BASE = `Você é professor de cursinho jurídico especialista em concursos e OAB.
@@ -46,6 +46,10 @@ JSON: { "markdown": "lista markdown aninhada com no máximo 3 níveis" }`,
 JSON: { "perguntas": ["..."], "notas": "markdown com as anotações", "sintese": "3 a 5 frases de síntese" }`,
   termos: `Explique o vocabulário jurídico da questão.
 JSON: { "termos": [ { "termo": "...", "definicao": "1 a 3 frases", "exemplo": "exemplo curto ou string vazia" } ] } — de 3 a 6 termos.`,
+  grifo: `Destaque e desmembre as partes mais importantes do enunciado da questão.
+Analise o texto focando nas palavras-chave, o que elas significam no contexto e onde o aluno deve prestar atenção (as "cascas de banana" ou pontos centrais).
+Use markdown com **negrito** e formatação didática.
+JSON: { "markdown": "texto markdown estruturado com a análise do enunciado" }`,
   "me-explique": `Aja como um tutor particular de cursinho jurídico conversando com o aluno.
 Seu objetivo é dar UMA EXPLICAÇÃO COMPLETA E DIDÁTICA da questão.
 Passos obrigatórios na sua resposta em formato texto:
