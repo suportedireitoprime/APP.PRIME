@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
 import { 
@@ -80,18 +80,24 @@ const sortByRelevance = <T extends { id: string }>(list: T[]) => {
   });
 };
 
+const precompiledSiglas = new Map<string, RegExp>();
+const getSiglaRegex = (sigla: string) => {
+  if (!precompiledSiglas.has(sigla)) {
+    const escaped = sigla.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    precompiledSiglas.set(sigla, new RegExp(`\\b${escaped}\\b`, 'i'));
+  }
+  return precompiledSiglas.get(sigla)!;
+};
+
 const identificarLeiPorTexto = (text: string) => {
   const artMatch = text.match(/art(?:igo)?\.?\s*(\d+[-a-zA-Z]*)/i);
   const artigoNumero = artMatch ? artMatch[1] : undefined;
-  const upper = text.toUpperCase();
 
   const catalog = [...LEIS_CATALOG].sort((a, b) => b.sigla.length - a.sigla.length);
   for (const lei of catalog) {
-    const sigla = lei.sigla.toUpperCase();
-    if (!sigla) continue;
-    const escaped = sigla.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`\\b${escaped}\\b`);
-    if (regex.test(upper)) {
+    if (!lei.sigla) continue;
+    const regex = getSiglaRegex(lei.sigla);
+    if (regex.test(text)) {
       return { lei, artigoNumero };
     }
   }
@@ -99,7 +105,7 @@ const identificarLeiPorTexto = (text: string) => {
 };
 
 const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
-  const [query, setQuery] = useState('');  const debouncedQuery = useDebounce(query, 100);
+  const [query, setQuery] = useState('');  const debouncedQuery = useDebounce(query, 300);
   const [activeTab, setActiveTab] = useState<UnifiedTab>('tudo');
   
   const inputRef = useRef<HTMLInputElement>(null);
@@ -207,7 +213,7 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
     ? 'Ouvindo…'
     : 'Pesquise artigos, leis, conteúdo, jurisprudência...';
 
-  const emitSelect = (lei: typeof LEIS_CATALOG[number], artigoNumero?: string) => {
+  const emitSelect = useCallback((lei: typeof LEIS_CATALOG[number], artigoNumero?: string) => {
     bumpLeiSearch(lei.id);
     track('search_lei_selecionada', {
       lei_id: lei.id,
@@ -225,9 +231,11 @@ const SearchOverlay = ({ open, onClose, onSelectLei }: SearchOverlayProps) => {
       artigoNumero,
     });
     onClose();
-  };
+  }, [activeTab, debouncedQuery, onSelectLei, onClose]);
 
-  const openArtigoInLei = (lei: typeof LEIS_CATALOG[number]) => emitSelect(lei, artigoQueryDigits);
+  const openArtigoInLei = useCallback((lei: typeof LEIS_CATALOG[number]) => {
+    emitSelect(lei, artigoQueryDigits);
+  }, [emitSelect, artigoQueryDigits]);
 
   const getConteudoBuscaProps = () => {
     if (activeTab === 'tudo') return { grupo: 'conteudo' as const, categoria: 'tudo' as CategoriaKey };
