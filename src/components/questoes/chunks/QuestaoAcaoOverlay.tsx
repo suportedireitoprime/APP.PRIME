@@ -62,7 +62,7 @@ export function Md({ texto, className }: { texto?: string; className?: string })
     <div
       className={cn(
         'prose prose-sm max-w-none text-[15px] leading-[1.7] text-foreground/90',
-        'prose-headings:text-foreground prose-headings:font-bold prose-headings:text-[15px]',
+        'prose-headings:text-foreground prose-headings:font-bold prose-headings:text-[15px] prose-headings:font-sans prose-headings:tracking-normal',
         'prose-strong:font-bold prose-strong:text-foreground',
         'prose-p:my-2 prose-li:my-0.5 prose-ul:my-2 prose-ol:my-2',
         'prose-a:text-primary',
