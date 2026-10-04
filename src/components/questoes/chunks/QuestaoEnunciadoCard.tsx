@@ -95,7 +95,7 @@ export function QuestaoEnunciadoCard({
               className="overflow-hidden border-b border-border/50"
             >
               <div className="py-4">
-                <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="horizontal" />
+                <QuestaoAcoesBar source={atual} chaveRevisao={atual.id} layout="horizontal" />
               </div>
             </motion.div>
           )}

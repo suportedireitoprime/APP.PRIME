@@ -500,7 +500,7 @@ const ResolverPadrao = ({
             <h3 className="text-[13px] font-bold text-foreground/70 mb-4 uppercase tracking-wider flex items-center gap-2">
               <Plus className="w-4 h-4" /> Recursos
             </h3>
-            <QuestaoAcoesBar source={atual.id} chaveRevisao={atual.id} layout="vertical" />
+            <QuestaoAcoesBar source={atual} chaveRevisao={atual.id} layout="vertical" />
           </div>
         </div>
       </div>
@@ -513,7 +513,7 @@ const ResolverPadrao = ({
         percentualAcerto={percentualAcerto}
         idx={idx}
         totalQuestoes={questoes.length}
-        atualId={atual.id}
+        atual={atual}
         onResponder={responder}
         onOpenGrade={() => setGradeAberta(true)}
         onHideFeedback={() => setFeedbackOculto(true)}

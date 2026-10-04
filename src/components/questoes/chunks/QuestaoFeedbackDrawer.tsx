@@ -13,7 +13,7 @@ interface QuestaoFeedbackDrawerProps {
   percentualAcerto: number;
   idx: number;
   totalQuestoes: number;
-  atualId: string;
+  atual: any;
   onResponder: () => void;
   onOpenGrade: () => void;
   onHideFeedback: () => void;
@@ -31,7 +31,7 @@ export function QuestaoFeedbackDrawer({
   percentualAcerto,
   idx,
   totalQuestoes,
-  atualId,
+  atual,
   onResponder,
   onOpenGrade,
   onHideFeedback,
@@ -191,7 +191,7 @@ export function QuestaoFeedbackDrawer({
                       </button>
 
                       <div className="w-full">
-                        <QuestaoAcoesBar source={atualId} chaveRevisao={atualId} layout="grid" />
+                        <QuestaoAcoesBar source={atual} chaveRevisao={atual.id} layout="grid" />
                       </div>
                     </div>
 
