@@ -66,12 +66,28 @@ export default function AdminSimulados() {
     if (!confirm("Tem certeza que deseja excluir esta categoria e TODOS os seus simulados?")) return;
     
     try {
+      // 1. Encontrar todos os simulados desta categoria
+      const { data: simulados } = await supabase.from("simulados").select("id").eq("exam_id", id);
+      
+      if (simulados && simulados.length > 0) {
+        const simuladoIds = simulados.map(s => s.id);
+        
+        // 2. Excluir todas as questões de todos os simulados desta categoria
+        await supabase.from("simulado_questions").delete().in("simulado_id", simuladoIds);
+        
+        // 3. Excluir todos os simulados desta categoria
+        await supabase.from("simulados").delete().in("id", simuladoIds);
+      }
+      
+      // 4. Excluir a categoria
       const { error } = await supabase.from("simulado_exams").delete().eq("id", id);
+      
       if (error) throw error;
-      toast.success("Categoria excluída com sucesso.");
+      toast.success("Categoria e todos os seus dados foram excluídos.");
       fetchCategorias();
     } catch (error: any) {
-      toast.error(error.message || "Erro ao excluir categoria.");
+      console.error(error);
+      toast.error(error.message || "Erro ao excluir categoria. Pode haver conflito de relacionamento.");
     }
   };
 
@@ -79,12 +95,19 @@ export default function AdminSimulados() {
     if (!confirm("Tem certeza que deseja excluir este simulado e TODAS as suas questões?")) return;
     
     try {
+      // 1. Excluir todas as questões deste simulado primeiro (evita erro de foreign key caso não tenha cascade)
+      const { error: errorQ } = await supabase.from("simulado_questions").delete().eq("simulado_id", id);
+      if (errorQ) throw errorQ;
+      
+      // 2. Excluir o simulado
       const { error } = await supabase.from("simulados").delete().eq("id", id);
+      
       if (error) throw error;
-      toast.success("Simulado excluído com sucesso.");
+      toast.success("Simulado e suas questões foram excluídos.");
       fetchCategorias();
     } catch (error: any) {
-      toast.error(error.message || "Erro ao excluir simulado.");
+      console.error(error);
+      toast.error(error.message || "Erro ao excluir simulado. Verifique o console.");
     }
   };
 
