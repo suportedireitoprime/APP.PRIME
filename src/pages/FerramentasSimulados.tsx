@@ -197,8 +197,8 @@ export default function FerramentasSimulados() {
                       
                       {/* Imagem 3D vazada (só aparece se for juiz/magistratura) */}
                       {sim.exam?.name?.toLowerCase().includes('juiz') && (
-                        <div className="absolute right-2 -top-8 w-24 sm:w-28 z-20 pointer-events-none drop-shadow-xl">
-                          <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-full h-auto object-contain" />
+                        <div className="absolute right-2 sm:right-4 bottom-0 w-[110px] sm:w-[140px] z-20 pointer-events-none drop-shadow-2xl flex items-end">
+                          <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-full h-auto object-contain object-bottom" style={{ maxHeight: '140%' }} />
                         </div>
                       )}
                       
