@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, ChevronRight, ArrowLeft, History, BarChart3 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { haptic } from '@/utils/haptic';
 
 interface SimuladoItem {
   id: string;
@@ -25,6 +26,7 @@ export default function FerramentasSimulados() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSimulado, setSelectedSimulado] = useState<SimuladoItem | null>(null);
+  const [isStarting, setIsStarting] = useState(false);
 
   const { data: simuladosList, isLoading } = useQuery({
     queryKey: ['simulados_list'],
@@ -69,8 +71,20 @@ export default function FerramentasSimulados() {
 
   const handleDownload = (e: React.MouseEvent, url: string) => {
     e.stopPropagation();
+    try { haptic.selection(); } catch {}
     if (!url) return;
     window.open(url, '_blank');
+  };
+
+  const handleStartSimulado = () => {
+    if (!selectedSimulado) return;
+    try { haptic.selection(); } catch {}
+    
+    setIsStarting(true);
+    setTimeout(() => {
+      navigate(`/ferramentas/simulados/resolver/${selectedSimulado.id}`);
+      setTimeout(() => setIsStarting(false), 500);
+    }, 800);
   };
 
   const mobileHeader = selectedCategory ? (
@@ -134,8 +148,16 @@ export default function FerramentasSimulados() {
         {/* Content */}
         {isLoading ? (
           <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 rounded-2xl bg-card animate-pulse border border-border" />
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex flex-col bg-card rounded-2xl border border-border p-5 relative overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+                <div className="flex justify-between items-center mb-3">
+                  <div className="h-4 w-32 bg-white/5 rounded" />
+                  <div className="h-3 w-16 bg-white/5 rounded" />
+                </div>
+                <div className="h-6 w-48 bg-white/10 rounded mb-4" />
+                <div className="h-3 w-40 bg-white/5 rounded" />
+              </div>
             ))}
           </div>
         ) : !selectedCategory ? (
@@ -186,7 +208,10 @@ export default function FerramentasSimulados() {
                   {/* Container do Card */}
                   <div className={`w-full sm:w-1/2 pl-14 sm:pl-0 ${isEven ? 'sm:pr-10' : 'sm:pl-10'}`}>
                     <button 
-                      onClick={() => setSelectedSimulado(sim)}
+                      onClick={() => {
+                        try { haptic.selection(); } catch {}
+                        setSelectedSimulado(sim);
+                      }}
                       className="flex flex-col rounded-2xl hover:shadow-lg hover:-translate-y-1 active:scale-[0.98] group text-left relative w-full h-[140px] transition-all"
                     >
                       {/* Background isolado para manter o border-radius e clipping interno (sem cortar a imagem externa) */}
@@ -262,9 +287,7 @@ export default function FerramentasSimulados() {
             
             <div className="space-y-4 shrink-0">
               <button 
-                onClick={() => {
-                  if (selectedSimulado) navigate(`/ferramentas/simulados/resolver/${selectedSimulado.id}`);
-                }}
+                onClick={handleStartSimulado}
                 className="w-full relative overflow-hidden bg-gradient-to-r from-primary/90 to-primary text-primary-foreground font-bold text-[16px] py-4 rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-[0_4px_20px_-4px_rgba(239,68,68,0.3)]"
               >
                 <div className="absolute inset-0 bg-white/10 opacity-0 hover:opacity-100 transition-opacity" />
@@ -332,7 +355,34 @@ export default function FerramentasSimulados() {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* Transição Hero (Item 5) */}
+      {isStarting && selectedSimulado && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="relative flex flex-col items-center">
+            {selectedSimulado.exam?.name?.toLowerCase().includes('juiz') && (
+              <img 
+                src="/assets/praticar-juiz.png" 
+                alt="Juiz" 
+                className="w-48 sm:w-56 h-auto drop-shadow-2xl animate-in zoom-in slide-in-from-bottom-10 duration-700" 
+              />
+            )}
+            <div className="mt-8 text-center animate-in slide-in-from-bottom-4 fade-in duration-500 delay-150">
+              <h2 className="font-display text-2xl font-bold text-white mb-2">
+                Preparando Caderno...
+              </h2>
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-75" />
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse delay-150" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </DesktopPageLayout>
   );
 }
+
 
