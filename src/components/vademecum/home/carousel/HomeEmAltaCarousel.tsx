@@ -1,13 +1,13 @@
 import { memo, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Landmark, Gavel, Scale, FileText, ShieldAlert, Briefcase, CircleDollarSign, ShoppingCart, Baby, BookMarked, Settings2, LucideIcon } from 'lucide-react';
+import { Landmark, Gavel, Scale, FileText, ShieldAlert, Briefcase, CircleDollarSign, ShoppingCart, Baby, BookMarked, History, LucideIcon } from 'lucide-react';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 import { leiPath } from '@/lib/legislacaoSlugs';
 import { getLeiColor, shade } from '@/lib/leiTheme';
 import { haptic } from '@/lib/nativeHaptics';
 import CarouselDots from './CarouselDots';
 import { useEmAltaConfig } from '@/hooks/useEmAltaConfig';
-import { HomeEmAltaCustomizer } from './HomeEmAltaCustomizer';
+import { HomeRecentesSheet } from './HomeRecentesSheet';
 
 export interface EmAltaItem {
   id: string;
@@ -125,7 +125,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { config } = useEmAltaConfig();
-  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+  const [isRecentesOpen, setIsRecentesOpen] = useState(false);
 
   const displayItems = useMemo(() => {
     if (!config || config.length === 0) return EM_ALTA_ITEMS;
@@ -271,12 +271,12 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
         <button
           onClick={() => {
             haptic.selection();
-            setIsCustomizerOpen(true);
+            setIsRecentesOpen(true);
           }}
           className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-300 hover:text-red-100 transition-all text-xs font-semibold shadow-sm shadow-red-950/20 active:opacity-70 touch-manipulation cursor-pointer"
         >
-          <Settings2 className="w-3.5 h-3.5 text-red-400" />
-          <span>Personalizar</span>
+          <History className="w-3.5 h-3.5 text-red-400" />
+          <span>Recentes</span>
         </button>
       </div>
 
@@ -373,10 +373,17 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
       {/* Indicador de Paginação */}
       <CarouselDots total={displayItems.length} activeIndex={displayItems.length > 0 ? activeIndex % displayItems.length : 0} />
 
-      <HomeEmAltaCustomizer 
-        isOpen={isCustomizerOpen}
-        onClose={() => setIsCustomizerOpen(false)}
-        defaultOrder={EM_ALTA_ITEMS.map(i => i.id)}
+      <HomeRecentesSheet 
+        isOpen={isRecentesOpen}
+        onClose={() => setIsRecentesOpen(false)}
+        onOpenLei={(leiId) => {
+          const targetLei = LEIS_CATALOG.find((l) => l.id === leiId);
+          if (targetLei) {
+            navigate(leiPath(targetLei));
+          } else {
+            navigate(`/legislacao/${leiId}`);
+          }
+        }}
       />
     </section>
   );
