@@ -41,23 +41,24 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
     }
   }, [isOpen]);
 
-  const formatDate = (ts: number) => {
-    const d = new Date(ts);
-    const now = new Date();
-    const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  const getRelativeTime = (ts: number) => {
+    const diffInSeconds = Math.floor((Date.now() - ts) / 1000);
+    if (diffInSeconds < 60) return 'Agora mesmo';
     
-    const hours = d.getHours().toString().padStart(2, '0');
-    const minutes = d.getMinutes().toString().padStart(2, '0');
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return `Há ${diffInMinutes} ${diffInMinutes === 1 ? 'minuto' : 'minutos'}`;
     
-    if (isToday) {
-      return `Hoje, ${hours}:${minutes}`;
-    }
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `Há ${diffInHours} ${diffInHours === 1 ? 'hora' : 'horas'}`;
     
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
-    const year = d.getFullYear();
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 30) return `Há ${diffInDays} ${diffInDays === 1 ? 'dia' : 'dias'}`;
     
-    return `${day}/${month}/${year} às ${hours}:${minutes}`;
+    const diffInMonths = Math.floor(diffInDays / 30);
+    if (diffInMonths < 12) return `Há ${diffInMonths} ${diffInMonths === 1 ? 'mês' : 'meses'}`;
+    
+    const diffInYears = Math.floor(diffInDays / 365);
+    return `Há ${diffInYears} ${diffInYears === 1 ? 'ano' : 'anos'}`;
   };
 
   return (
@@ -76,7 +77,7 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
           </button>
         </SheetHeader>
 
-        <ScrollArea className="flex-1 p-4">
+        <ScrollArea className="flex-1 px-4 py-2">
           {recentes.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 text-center px-6">
               <History className="w-10 h-10 text-muted-foreground/30 mb-3" />
@@ -97,23 +98,23 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
                       onClose();
                       setTimeout(() => onOpenLei(item.leiId), 150);
                     }}
-                    className="w-full text-left flex items-center gap-4 bg-secondary/30 hover:bg-secondary/50 border border-white/5 rounded-2xl p-4 transition-all active:scale-[0.98] relative"
+                    className="w-full text-left flex items-center gap-4 bg-secondary/30 hover:bg-secondary/50 border border-white/5 rounded-2xl p-4 transition-all active:scale-[0.98] relative overflow-hidden"
                   >
-                    <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}25` }}>
-                      <Icon className="w-5.5 h-5.5" style={{ color }} />
-                    </div>
-                    <div className="flex-1 min-w-0 flex flex-col justify-center pr-20">
+                    <Icon className="w-8 h-8 shrink-0" strokeWidth={1} style={{ color }} />
+                    <div className="flex-1 min-w-0 flex flex-col justify-center pr-16">
                       <div className="flex items-center justify-between gap-2 mb-1">
                         <span className="text-[15px] font-bold text-foreground truncate uppercase tracking-tight">{item.nome}</span>
                       </div>
                       <span className="text-[13px] font-medium text-muted-foreground truncate">{item.descricao}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest mt-1.5 opacity-90" style={{ color }}>
+                        {item.tipo === 'codigo' ? 'Código' : item.tipo === 'estatuto' ? 'Estatuto' : item.tipo === 'constituicao' ? 'Constituição' : 'Lei'}
+                      </span>
                     </div>
                     
                     {/* Data num cantinho em cima */}
-                    <div className="absolute top-4 right-4 flex items-center gap-1 opacity-70">
-                      <History className="w-3 h-3 text-primary" />
-                      <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
-                        {formatDate(item.openedAt)}
+                    <div className="absolute top-3 right-4 flex items-center opacity-60">
+                      <span className="text-[10px] font-medium text-muted-foreground tracking-wide">
+                        {getRelativeTime(item.openedAt)}
                       </span>
                     </div>
                   </button>
