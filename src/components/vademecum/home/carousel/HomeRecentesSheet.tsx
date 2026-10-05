@@ -41,6 +41,7 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
   useEffect(() => {
     if (isOpen) {
       updateRecentes();
+      setSelectedDate(new Date().setHours(0, 0, 0, 0));
     }
     
     window.addEventListener('recentes-updated', updateRecentes);
@@ -111,16 +112,6 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
           </div>
           
           <div className="flex items-center gap-2 px-4 pb-4 overflow-x-auto no-scrollbar" style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}>
-            <button
-              onClick={() => setSelectedDate(null)}
-              className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                selectedDate === null
-                  ? 'bg-primary text-white'
-                  : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-white'
-              }`}
-            >
-              Todos
-            </button>
             {dateList.map((ts) => {
               const d = new Date(ts);
               const isToday = d.toDateString() === new Date().toDateString();
