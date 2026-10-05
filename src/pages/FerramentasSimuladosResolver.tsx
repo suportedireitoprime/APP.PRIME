@@ -142,7 +142,7 @@ export default function FerramentasSimuladosResolver() {
               encerrarNode={
                 <button
                   onClick={() => setShowConfirmModal(true)}
-                  className="h-8 px-3 rounded-full bg-white/10 border border-white/20 text-[12px] font-bold text-white hover:bg-white/20 transition-all flex items-center justify-center shadow-sm whitespace-nowrap"
+                  className="h-8 px-3 rounded-full bg-black/20 border border-white/10 text-[12px] font-bold text-white hover:bg-black/30 transition-all flex items-center justify-center shadow-sm whitespace-nowrap"
                 >
                   Encerrar
                 </button>
