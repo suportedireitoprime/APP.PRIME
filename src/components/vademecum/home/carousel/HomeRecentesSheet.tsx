@@ -3,9 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getRecentes, type LeiRecente } from '@/lib/leisRecentes';
 import { History, ChevronRight } from 'lucide-react';
-import { getLawIcon, getLeiColor } from './homeCarouselHelpers'; // or similar if exists
-import { formatDistanceToNow, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 
 interface HomeRecentesSheetProps {
   isOpen: boolean;
@@ -27,10 +25,18 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
     const now = new Date();
     const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    
     if (isToday) {
-      return `Hoje, ${format(d, 'HH:mm')}`;
+      return `Hoje, ${hours}:${minutes}`;
     }
-    return format(d, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
+    
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const year = d.getFullYear();
+    
+    return `${day}/${month}/${year} às ${hours}:${minutes}`;
   };
 
   return (
