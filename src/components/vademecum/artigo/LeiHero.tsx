@@ -7,6 +7,8 @@ import { isFavorito as isLeiFavorita } from '@/lib/leisFavoritos';
 import { haptic } from '@/lib/nativeHaptics';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import fallbackTrilhas from '@/data/lei-seca-trilhas.json';
+import { LEIS_CATALOG } from '@/data/leisCatalog';
 
 const brasaoImg = brasaoImgAsset;
 
@@ -221,7 +223,12 @@ const LeiHero: React.FC<LeiHeroProps> = ({
               type="button"
               onClick={() => {
                 haptic.selection();
-                navigate(`/lei-seca/${selectedLeiId}`);
+                const catalogItem = LEIS_CATALOG.find((l) => l.id === selectedLeiId);
+                const trilha = fallbackTrilhas.find(
+                  (t) => t.sigla.toLowerCase() === catalogItem?.sigla.toLowerCase()
+                );
+                const targetSlug = trilha ? trilha.slug : selectedLeiId;
+                navigate(`/lei-seca/${targetSlug}`);
               }}
               className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
