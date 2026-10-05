@@ -720,7 +720,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                     scrollToSearch();
                   }}
                   placeholder={animatedPlaceholder}
-                  className={`rounded-2xl bg-zinc-800/85 hover:bg-zinc-800 border border-white/10 hover:border-white/20 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/30 pl-11 pr-20 text-[14px] sm:text-[15px] font-medium text-white placeholder:text-zinc-400/90 shadow-md transition-all ${isDesktop ? 'h-[52px]' : 'h-[52px] sm:h-[54px]'}`}
+                  className={`rounded-2xl bg-zinc-800/85 hover:bg-zinc-800 border border-white/10 hover:border-white/20 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/30 pl-11 pr-20 text-[15px] sm:text-[16px] font-medium text-white placeholder:text-zinc-400/90 shadow-md transition-all ${isDesktop ? 'h-[60px]' : 'h-[60px] sm:h-[64px]'}`}
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                   {searchQuery && !voiceSearch.listening && (
@@ -737,7 +737,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                 type="button"
                 onClick={() => voiceSearch.toggle()}
                 aria-label={voiceSearch.listening ? 'Parar gravação' : 'Buscar por voz'}
-                className={`relative overflow-hidden shrink-0 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition-all ${isDesktop ? 'w-[52px] h-[52px]' : 'w-[52px] h-[52px] sm:w-[54px] sm:h-[54px]'} ${voiceSearch.listening ? 'bg-hero-panel text-white animate-pulse shadow-red-950/50' : 'bg-hero-panel text-white shadow-red-950/40'}`}
+                className={`relative overflow-hidden shrink-0 rounded-full flex items-center justify-center shadow-lg active:scale-[0.95] transition-all ${isDesktop ? 'w-[60px] h-[60px]' : 'w-[60px] h-[60px] sm:w-[64px] sm:h-[64px]'} ${voiceSearch.listening ? 'bg-hero-panel text-white animate-pulse shadow-red-950/50' : 'bg-hero-panel text-white shadow-red-950/40'}`}
               >
                 {voiceSearch.listening && <span className="absolute inset-0 rounded-full bg-red-500/30 animate-ping" />}
                 {voiceSearch.listening ? <MicOff className="relative z-[2] w-6 h-6" strokeWidth={2.4} /> : <Mic className="relative z-[2] w-6 h-6" strokeWidth={2.4} />}
