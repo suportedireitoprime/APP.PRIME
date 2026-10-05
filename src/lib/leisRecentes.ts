@@ -30,6 +30,7 @@ export function pushRecente(lei: Omit<LeiRecente, 'openedAt'>) {
     const list = getRecentes().filter((l) => l.leiId !== lei.leiId);
     list.unshift({ ...lei, openedAt: Date.now() });
     localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX)));
+    window.dispatchEvent(new Event('recentes-updated'));
     if (lei.tabela_nome) {
       import('@/services/warmFavoritosService')
         .then((m) => {

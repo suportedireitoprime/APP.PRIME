@@ -35,10 +35,20 @@ interface HomeRecentesSheetProps {
 export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSheetProps) {
   const [recentes, setRecentes] = useState<LeiRecente[]>([]);
 
+  const updateRecentes = () => setRecentes(getRecentes());
+
   useEffect(() => {
     if (isOpen) {
-      setRecentes(getRecentes());
+      updateRecentes();
     }
+    
+    window.addEventListener('recentes-updated', updateRecentes);
+    window.addEventListener('storage', updateRecentes);
+    
+    return () => {
+      window.removeEventListener('recentes-updated', updateRecentes);
+      window.removeEventListener('storage', updateRecentes);
+    };
   }, [isOpen]);
 
   const getRelativeTime = (ts: number) => {
@@ -77,16 +87,16 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
           </button>
         </SheetHeader>
 
-        <ScrollArea className="flex-1 px-4 py-2">
+        <ScrollArea className="flex-1 w-full">
           {recentes.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-40 text-center px-6">
+            <div className="flex flex-col items-center justify-center h-40 text-center px-6 mt-4">
               <History className="w-10 h-10 text-muted-foreground/30 mb-3" />
               <p className="text-sm text-muted-foreground font-body">
                 Nenhum histórico de leis acessadas recentemente.
               </p>
             </div>
           ) : (
-            <div className="space-y-3 pb-8">
+            <div className="space-y-3 pb-8 px-4 pt-4 w-full box-border">
               {recentes.map((item, idx) => {
                 const Icon = getLawIcon(item.leiId);
                 const color = getLeiColor(item.leiId, item.tipo || 'lei');
@@ -98,7 +108,7 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
                       onClose();
                       setTimeout(() => onOpenLei(item.leiId), 150);
                     }}
-                    className="w-full text-left flex items-center gap-4 bg-secondary/30 hover:bg-secondary/50 border border-white/5 rounded-2xl p-4 transition-all active:scale-[0.98] relative overflow-hidden"
+                    className="w-full text-left flex items-center gap-4 bg-secondary/30 hover:bg-secondary/50 border border-white/5 rounded-2xl p-4 transition-all active:scale-[0.98] relative overflow-hidden box-border"
                   >
                     <Icon className="w-8 h-8 shrink-0" strokeWidth={1} style={{ color }} />
                     <div className="flex-1 min-w-0 flex flex-col justify-center pr-16">
