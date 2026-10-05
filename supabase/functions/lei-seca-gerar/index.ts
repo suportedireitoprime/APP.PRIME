@@ -9,8 +9,9 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const GOOGLE_API_KEY = Deno.env.get("GEMINI_API_KEY")!;
+const OMNIROUTE_API_KEY = Deno.env.get("OMNIROUTE_API_KEY")!;
 const MODEL = 'gemini-3.1-flash-lite';
+const GATEWAY = "https://omniroute-production-fb57.up.railway.app/v1/chat/completions";
 
 function repairAndParseJson(raw: string): any | null {
   let s = (raw ?? "").trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
@@ -29,11 +30,11 @@ function repairAndParseJson(raw: string): any | null {
 }
 
 async function callAI(prompt: string): Promise<any> {
-  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+  const res = await fetch(GATEWAY, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${GOOGLE_API_KEY}`,
+      "Authorization": `Bearer ${OMNIROUTE_API_KEY}`,
     },
     body: JSON.stringify({
       model: MODEL,
