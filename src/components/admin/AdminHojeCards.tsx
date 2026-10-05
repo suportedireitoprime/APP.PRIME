@@ -1031,6 +1031,7 @@ export function AdminHojeCards() {
       }
 
       setRows(list);
+      setLoading(false); // Show list immediately; enrichment happens in background
       if (sameDay(date, new Date())) {
         const seen = readSeen(id, date);
         const anteriores = new Set(seen.keys);
@@ -1043,21 +1044,20 @@ export function AdminHojeCards() {
       }
       const ids = Array.from(new Set(list.map((r) => r.userId).filter(Boolean))) as string[];
       if (ids.length) {
-        const { data: provs } = await supabase.rpc('admin_user_auth_providers' as any, { _ids: ids });
-        const map = new Map<string, string>(((provs as any[]) || []).map((p) => [p.user_id || p.id, p.provider]));
-
-        // --- FETCH ACESSOS E TEMPO DE TELA ---
         const minD = new Date(datas[datas.length - 1]);
         minD.setHours(0, 0, 0, 0);
         const maxD = new Date(datas[0]);
         maxD.setDate(maxD.getDate() + 1);
         maxD.setHours(0, 0, 0, 0);
 
-        const [{ data: acts }, { data: pvs }, { data: sessions }] = await Promise.all([
+        // Run ALL enrichment queries in parallel (was sequential waterfall before)
+        const [{ data: provs }, { data: acts }, { data: pvs }, { data: sessions }] = await Promise.all([
+          supabase.rpc('admin_user_auth_providers' as any, { _ids: ids }),
           supabase.from('activity_logs').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
           supabase.from('app_events').select('user_id, created_at').eq('event_name', 'page_view').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()),
           supabase.from('user_sessions').select('user_id, initial_route').in('user_id', ids)
         ]);
+        const map = new Map<string, string>(((provs as any[]) || []).map((p) => [p.user_id || p.id, p.provider]));
         
         const tempoMap = new Map<string, number>();
         const acessosMap = new Map<string, number>();
