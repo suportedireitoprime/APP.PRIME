@@ -30,7 +30,7 @@ export function QuestaoHeader({
             <img 
               src="/images/disciplinas/filosofia.png" 
               alt="" 
-              className="h-[140%] w-auto object-contain object-left-bottom origin-bottom-left"
+              className="h-full w-auto object-contain object-left-bottom origin-bottom-left"
               style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.3))' }}
             />
           </div>
