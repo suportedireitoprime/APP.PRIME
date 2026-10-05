@@ -2,7 +2,28 @@ import { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getRecentes, type LeiRecente } from '@/lib/leisRecentes';
-import { History, ChevronRight } from 'lucide-react';
+import { History, ChevronRight, X, Landmark, Gavel, Scale, FileText, ShieldAlert, Briefcase, CircleDollarSign, ShoppingCart, Baby, Car, Trees, Vote, Accessibility, HeartPulse, Building2 } from 'lucide-react';
+import { getLeiColor } from '@/lib/leiTheme';
+
+const getLawIcon = (leiId: string) => {
+  switch(leiId) {
+    case 'cf88': return Landmark;
+    case 'cp': return Gavel;
+    case 'cc': return Scale;
+    case 'cpp': return ShieldAlert;
+    case 'clt': return Briefcase;
+    case 'ctn': return CircleDollarSign;
+    case 'cdc': return ShoppingCart;
+    case 'eca': return Baby;
+    case 'ctb': return Car;
+    case 'eleitoral': return Vote;
+    case 'ambiental': return Trees;
+    case 'ei': return Accessibility;
+    case 'sus': return HeartPulse;
+    case 'licitacoes': return Building2;
+    default: return FileText;
+  }
+};
 
 
 interface HomeRecentesSheetProps {
@@ -41,12 +62,18 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="bottom" className="h-[90vh] p-0 flex flex-col rounded-t-[32px] bg-background border-t border-white/10">
-        <SheetHeader className="p-6 pb-4 border-b border-white/5">
+      <SheetContent side="bottom" className="h-[100dvh] p-0 flex flex-col rounded-none bg-background border-none">
+        <SheetHeader className="p-6 pb-4 border-b border-white/5 relative">
           <SheetTitle className="text-xl font-display font-bold flex items-center gap-2">
             <History className="w-5 h-5 text-primary" />
             Acessos Recentes
           </SheetTitle>
+          <button 
+            onClick={onClose}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-white transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </SheetHeader>
 
         <ScrollArea className="flex-1 p-4">
@@ -59,30 +86,39 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
             </div>
           ) : (
             <div className="space-y-3 pb-8">
-              {recentes.map((item, idx) => (
-                <button
-                  key={`${item.leiId}-${idx}`}
-                  onClick={() => {
-                    onClose();
-                    setTimeout(() => onOpenLei(item.leiId), 150);
-                  }}
-                  className="w-full text-left flex items-center gap-4 bg-secondary/30 hover:bg-secondary/50 border border-white/5 rounded-2xl p-4 transition-all active:scale-[0.98]"
-                >
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-primary/10">
-                    <History className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0 flex flex-col justify-center">
-                    <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <span className="text-[14px] font-bold text-foreground truncate uppercase">{item.nome}</span>
+              {recentes.map((item, idx) => {
+                const Icon = getLawIcon(item.leiId);
+                const color = getLeiColor(item.leiId, item.tipo || 'lei');
+
+                return (
+                  <button
+                    key={`${item.leiId}-${idx}`}
+                    onClick={() => {
+                      onClose();
+                      setTimeout(() => onOpenLei(item.leiId), 150);
+                    }}
+                    className="w-full text-left flex items-center gap-4 bg-secondary/30 hover:bg-secondary/50 border border-white/5 rounded-2xl p-4 transition-all active:scale-[0.98] relative"
+                  >
+                    <div className="w-11 h-11 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}25` }}>
+                      <Icon className="w-5.5 h-5.5" style={{ color }} />
                     </div>
-                    <span className="text-[12px] font-medium text-muted-foreground truncate">{item.descricao}</span>
-                    <span className="text-[10px] font-medium text-primary/80 mt-1 uppercase tracking-wider">
-                      {formatDate(item.openedAt)}
-                    </span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                </button>
-              ))}
+                    <div className="flex-1 min-w-0 flex flex-col justify-center pr-20">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-[15px] font-bold text-foreground truncate uppercase tracking-tight">{item.nome}</span>
+                      </div>
+                      <span className="text-[13px] font-medium text-muted-foreground truncate">{item.descricao}</span>
+                    </div>
+                    
+                    {/* Data num cantinho em cima */}
+                    <div className="absolute top-4 right-4 flex items-center gap-1 opacity-70">
+                      <History className="w-3 h-3 text-primary" />
+                      <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
+                        {formatDate(item.openedAt)}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </ScrollArea>
