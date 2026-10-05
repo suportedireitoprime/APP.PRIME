@@ -145,7 +145,7 @@ export default function FerramentasSimulados() {
     
     setIsStarting(true);
     setTimeout(() => {
-      navigate(`/ferramentas/simulados/resolver/${selectedSimulado.id}`);
+      navigate(`/simulados/resolver/${selectedSimulado.id}`);
       setTimeout(() => setIsStarting(false), 500);
     }, 800);
   };
@@ -160,7 +160,7 @@ export default function FerramentasSimulados() {
     <PageHeader
       title="Simulados & Provas"
       subtitle="Pratique com provas anteriores e simulados"
-      onBack={() => navigate('/ferramentas')}
+      onBack={() => navigate('/simulados')}
     />
   );
 

@@ -1182,8 +1182,8 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/stf/sessoes" element={<ProtectedRoute><PageTransition><SessoesSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/stf/:id" element={<ProtectedRoute><PageTransition><SessaoSTFDetalhes /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial" element={<ProtectedRoute><PageTransition><PeticaoInicial /></PageTransition></ProtectedRoute>} />
-          <Route path="/ferramentas/simulados" element={<ProtectedRoute><PageTransition><FerramentasSimulados /></PageTransition></ProtectedRoute>} />
-          <Route path="/ferramentas/simulados/resolver/:id" element={<ProtectedRoute><PageTransition><FerramentasSimuladosResolver /></PageTransition></ProtectedRoute>} />
+          <Route path="/simulados/provas" element={<ProtectedRoute><PageTransition><FerramentasSimulados /></PageTransition></ProtectedRoute>} />
+          <Route path="/simulados/resolver/:id" element={<ProtectedRoute><PageTransition><FerramentasSimuladosResolver /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial/:id" element={<ProtectedRoute><PageTransition><PeticaoInicialEditor /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/locais" element={<ProtectedRoute><PageTransition><AdminLocais /></PageTransition></ProtectedRoute>} />

@@ -115,7 +115,7 @@ export default function FerramentasSimuladosResolver() {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
         <h2 className="text-xl font-bold mb-2 text-foreground">Simulado não encontrado</h2>
-        <button onClick={() => navigate('/ferramentas/simulados')} className="text-primary hover:underline">
+        <button onClick={() => navigate('/simulados/provas')} className="text-primary hover:underline">
           Voltar
         </button>
       </div>
@@ -165,7 +165,7 @@ export default function FerramentasSimuladosResolver() {
               Você finalizou o simulado "{simulado.exam?.name || 'Simulado'}" em {mmss}.
             </p>
             <button
-              onClick={() => navigate('/ferramentas/simulados')}
+              onClick={() => navigate('/simulados/provas')}
               className="h-12 px-6 rounded-xl bg-primary text-primary-foreground font-semibold"
             >
               Voltar para Simulados
@@ -186,7 +186,7 @@ export default function FerramentasSimuladosResolver() {
             <button
               onClick={() => {
                 setShowConfirmModal(false);
-                navigate('/ferramentas/simulados');
+                navigate('/simulados/provas');
               }}
               className="h-14 w-full rounded-2xl bg-white/[0.08] text-white font-semibold hover:bg-white/[0.12] transition-colors"
             >

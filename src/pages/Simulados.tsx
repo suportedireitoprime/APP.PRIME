@@ -14,7 +14,7 @@ export default function Simulados() {
     <PageHeader
       title="Simulados"
       subtitle="Provas e Cadernos"
-      onBack={() => navigate('/ferramentas')}
+      onBack={() => navigate('/')}
     />
   );
 
@@ -62,7 +62,7 @@ export default function Simulados() {
       <div className="relative z-10 p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1200px] mx-auto pb-[calc(7rem+var(--sai-bottom))] lg:pb-8">
         
         <button 
-          onClick={() => navigate('/ferramentas')}
+          onClick={() => navigate('/')}
           className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium mb-4"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -96,12 +96,12 @@ export default function Simulados() {
             {categorias?.map((exam) => (
               <button 
                 key={exam.id}
-                onClick={() => navigate('/ferramentas/simulados', { state: { category: exam.name } })}
+                onClick={() => navigate('/simulados/provas', { state: { category: exam.name } })}
                 className="w-full mt-2 relative bg-card rounded-2xl border border-border hover:border-primary/50 transition-all duration-300 flex items-center justify-between p-4 sm:p-5 hover:bg-muted/30 text-left group shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 shrink-0 relative">
-                    {exam.name.toLowerCase().includes('juiz') || exam.name.toLowerCase().includes('direito') ? (
+                    {(exam.name || '').toLowerCase().includes('juiz') || (exam.name || '').toLowerCase().includes('direito') ? (
                       <img src="/assets/praticar-juiz.png" alt="Juiz" className="absolute bottom-[-10px] left-[-16px] h-[95px] w-auto max-w-none object-contain object-bottom drop-shadow-xl pointer-events-none z-20" />
                     ) : (
                       <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="absolute bottom-[-10px] left-[-16px] h-[95px] w-auto max-w-none object-contain object-bottom drop-shadow-xl pointer-events-none z-20" />
