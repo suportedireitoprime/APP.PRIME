@@ -21,6 +21,7 @@ import ArtigoBottomSheet from '@/components/vademecum/artigo/ArtigoBottomSheet';
 import { buildArtigoBreadcrumbsMap } from '@/components/vademecum/artigo/artigoBreadcrumbs';
 import OcrScanner from '@/components/vademecum/grifos_ocr/OcrScanner';
 import { haptic } from '@/lib/nativeHaptics';
+import { pushRecente } from '@/lib/leisRecentes';
 
 import NovidadesPanel from '@/components/vademecum/panels/NovidadesPanel';
 import { FavPanel, PlaylistPanel, AnotacoesPanel } from '@/components/vademecum/panels/OverlayPanels';
@@ -102,6 +103,18 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [ocrOpen, setOcrOpen] = useState(false);
   const [showGrafo, setShowGrafo] = useState(false);
+
+  useEffect(() => {
+    if (selectedLeiId && selectedLeiNome) {
+      pushRecente({
+        tipo: tipo || 'lei',
+        leiId: selectedLeiId,
+        nome: selectedLeiNome,
+        descricao: selectedLeiDescricao || '',
+        tabela_nome: selectedTabelaNome || ''
+      });
+    }
+  }, [selectedLeiId, selectedLeiNome, selectedLeiDescricao, selectedTabelaNome, tipo]);
 
   // Efeito Máquina de Escrever (Typewriter) adaptativo à Legislação Selecionada
   const searchPlaceholders = useMemo(() => {

@@ -34,6 +34,7 @@ interface HomeRecentesSheetProps {
 
 export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSheetProps) {
   const [recentes, setRecentes] = useState<LeiRecente[]>([]);
+  const [selectedDate, setSelectedDate] = useState<number | null>(null);
 
   const updateRecentes = () => setRecentes(getRecentes());
 
@@ -50,6 +51,27 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
       window.removeEventListener('storage', updateRecentes);
     };
   }, [isOpen]);
+
+  const dateList = useMemo(() => {
+    // Generate an array of the last 15 days
+    const days = [];
+    for (let i = 0; i < 15; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      d.setHours(0, 0, 0, 0);
+      days.push(d.getTime());
+    }
+    return days;
+  }, []);
+
+  const filteredRecentes = useMemo(() => {
+    if (!selectedDate) return recentes;
+    return recentes.filter(r => {
+      const d = new Date(r.openedAt);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime() === selectedDate;
+    });
+  }, [recentes, selectedDate]);
 
   const getRelativeTime = (ts: number) => {
     const diffInSeconds = Math.floor((Date.now() - ts) / 1000);
@@ -74,30 +96,67 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="bottom" className="h-[100dvh] p-0 flex flex-col rounded-none bg-background border-none">
-        <SheetHeader className="p-6 pb-4 border-b border-white/5 relative">
-          <SheetTitle className="text-xl font-display font-bold flex items-center gap-2">
-            <History className="w-5 h-5 text-primary" />
-            Acessos Recentes
-          </SheetTitle>
-          <button 
-            onClick={onClose}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-white transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+        <SheetHeader className="p-0 border-b border-white/5 relative flex flex-col">
+          <div className="p-6 pb-4 relative">
+            <SheetTitle className="text-xl font-display font-bold flex items-center gap-2">
+              <History className="w-5 h-5 text-primary" />
+              Acessos Recentes
+            </SheetTitle>
+            <button 
+              onClick={onClose}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="flex items-center gap-2 px-4 pb-4 overflow-x-auto no-scrollbar" style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}>
+            <button
+              onClick={() => setSelectedDate(null)}
+              className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                selectedDate === null
+                  ? 'bg-primary text-white'
+                  : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-white'
+              }`}
+            >
+              Todos
+            </button>
+            {dateList.map((ts) => {
+              const d = new Date(ts);
+              const isToday = d.toDateString() === new Date().toDateString();
+              const isSelected = selectedDate === ts;
+              
+              const dayStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '');
+              const label = isToday ? 'Hoje, ' + dayStr : dayStr;
+
+              return (
+                <button
+                  key={ts}
+                  onClick={() => setSelectedDate(ts)}
+                  className={`shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
+                    isSelected
+                      ? 'bg-primary text-white'
+                      : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-white'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
         </SheetHeader>
 
         <ScrollArea className="flex-1 w-full">
-          {recentes.length === 0 ? (
+          {filteredRecentes.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 text-center px-6 mt-4">
               <History className="w-10 h-10 text-muted-foreground/30 mb-3" />
               <p className="text-sm text-muted-foreground font-body">
-                Nenhum histórico de leis acessadas recentemente.
+                Nenhum histórico para o período selecionado.
               </p>
             </div>
           ) : (
             <div className="space-y-3 pb-8 px-4 pt-4 w-full box-border">
-              {recentes.map((item, idx) => {
+              {filteredRecentes.map((item, idx) => {
                 const Icon = getLawIcon(item.leiId);
                 const color = getLeiColor(item.leiId, item.tipo || 'lei');
 
