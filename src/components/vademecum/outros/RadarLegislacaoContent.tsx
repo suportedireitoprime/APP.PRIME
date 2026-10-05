@@ -16,7 +16,7 @@ import {
   RefreshCw,
   Loader2
 } from 'lucide-react';
-import { getProposicoesRadarCP, type ProposicaoRadarCP, SEED_PROPOSICOES_CP } from '@/services/radarCpService';
+import { getProposicoesRadarGenerico, type ProposicaoRadarCP, SEED_PROPOSICOES_CP } from '@/services/radarCpService';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface RadarLegislacaoContentProps {
@@ -42,9 +42,9 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
     if (forceRefresh) setRefreshing(true);
     try {
       if (forceRefresh) {
-        localStorage.removeItem('prime_radar_cp_proposicoes');
+        localStorage.removeItem(`prime_radar_proposicoes_${leiNome}`);
       }
-      const data = await getProposicoesRadarCP();
+      const data = await getProposicoesRadarGenerico(leiNome);
       if (data && data.length > 0) {
         setProposicoes(data);
       }
@@ -58,10 +58,11 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [leiNome]);
 
-  // Lista de tags para filtros rápidos
-  const filterTags = ['Todos', 'Art. 157 (Roubo)', 'Art. 171 (Estelionato)', 'Art. 155 (Furto)', 'Art. 129 (Lesão Corporal)', 'Art. 216-B / IA', 'Art. 359 (Estado Democrático)'];
+  // Lista de tags para filtros rápidos (apenas se for Código Penal para manter a curadoria inicial)
+  const isCp = leiNome.toLowerCase().includes('código penal');
+  const filterTags = isCp ? ['Todos', 'Art. 157 (Roubo)', 'Art. 171 (Estelionato)', 'Art. 155 (Furto)', 'Art. 129 (Lesão Corporal)', 'Art. 216-B / IA', 'Art. 359 (Estado Democrático)'] : ['Todos'];
 
   // Filtra as proposições de acordo com o termo de busca e chip selecionado
   const filteredProposicoes = useMemo(() => {
@@ -78,16 +79,18 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
       if (!matchSearch) return false;
 
       if (selectedTag === 'Todos') return true;
-      if (selectedTag.includes('157')) return p.artigosAfetados.some(a => a.includes('157'));
-      if (selectedTag.includes('171')) return p.artigosAfetados.some(a => a.includes('171'));
-      if (selectedTag.includes('155')) return p.artigosAfetados.some(a => a.includes('155'));
-      if (selectedTag.includes('129')) return p.artigosAfetados.some(a => a.includes('129'));
-      if (selectedTag.includes('216')) return p.artigosAfetados.some(a => a.includes('216') || a.includes('218') || a.toLowerCase().includes('ia'));
-      if (selectedTag.includes('359')) return p.artigosAfetados.some(a => a.includes('359'));
+      if (isCp) {
+        if (selectedTag.includes('157')) return p.artigosAfetados.some(a => a.includes('157'));
+        if (selectedTag.includes('171')) return p.artigosAfetados.some(a => a.includes('171'));
+        if (selectedTag.includes('155')) return p.artigosAfetados.some(a => a.includes('155'));
+        if (selectedTag.includes('129')) return p.artigosAfetados.some(a => a.includes('129'));
+        if (selectedTag.includes('216')) return p.artigosAfetados.some(a => a.includes('216') || a.includes('218') || a.toLowerCase().includes('ia'));
+        if (selectedTag.includes('359')) return p.artigosAfetados.some(a => a.includes('359'));
+      }
 
       return true;
     });
-  }, [proposicoes, searchTerm, selectedTag]);
+  }, [proposicoes, searchTerm, selectedTag, isCp]);
 
   return (
     <div className="space-y-3.5 pb-12 select-none">
@@ -146,9 +149,10 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
         )}
       </div>
 
-      {/* ── CHIPS DE FILTRO RÁPIDO POR DISPOSITIVO DO CÓDIGO PENAL ── */}
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-        {filterTags.map((tag) => {
+      {/* ── CHIPS DE FILTRO RÁPIDO ── */}
+      {isCp && filterTags.length > 1 && (
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          {filterTags.map((tag) => {
           const isSelected = selectedTag === tag;
           return (
             <button
@@ -168,7 +172,8 @@ export const RadarLegislacaoContent: React.FC<RadarLegislacaoContentProps> = ({
             </button>
           );
         })}
-      </div>
+        </div>
+      )}
 
       {/* ── LISTAGEM MINIMALISTA E COMPACTA DAS PROPOSIÇÕES ── */}
       {loading ? (

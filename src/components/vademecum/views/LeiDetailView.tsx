@@ -587,9 +587,9 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     anotacoes: { label: 'Anotações', icon: StickyNote, desc: 'Veja todas as suas anotações e grifos desta lei em um só lugar. Para criar, abra um artigo e grife um trecho.' },
     novidades: { label: 'Novidades', icon: History, desc: 'Histórico de alterações legislativas — veja quais artigos foram incluídos, revogados ou modificados, organizados por ano.' },
     radar: { 
-      label: 'Radar do Código Penal', 
+      label: 'Radar Legislativo', 
       icon: Radar, 
-      desc: 'Aqui você acompanha os Projetos de Lei (PL) e Proposições em tramitação na Câmara dos Deputados com potencial para alterar, incluir ou revogar dispositivos do Código Penal.' 
+      desc: `Aqui você acompanha os Projetos de Lei (PL) e Proposições em tramitação na Câmara dos Deputados com potencial para alterar ou afetar o(a) ${selectedLeiNome}.` 
     },
   };
   

@@ -102,7 +102,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
         >
           <div
             className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
+            style={{ clipPath: 'polygon(0 0, 65% 0, 45% 100%, 0% 100%)' }}
           >
             <div className="absolute inset-0" style={{ backgroundImage: bgGradient }} />
             <div className="absolute inset-0 opacity-15 mix-blend-overlay">
@@ -167,7 +167,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
         </header>
 
         {/* Conteúdo do Painel: Título e Identificação da Lei à Esquerda (sobre a área vermelha, alinhado à Home) */}
-        <div className="relative z-10 px-3 sm:px-4 ml-1 sm:ml-2 pt-1 sm:pt-2 pb-3.5 sm:pb-4 flex flex-col justify-start w-[50%] sm:w-[46%] max-w-[230px]">
+        <div className="relative z-10 px-3 sm:px-4 ml-1 sm:ml-2 pt-1 sm:pt-2 pb-3.5 sm:pb-4 flex flex-col justify-start w-[65%] sm:w-[55%] max-w-[320px]">
           {/* Brasão watermark sutil atrás do texto */}
           <img
             src={brasaoImg}
@@ -236,7 +236,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#FACC15]"
                 strokeWidth={2}
               />
-              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider truncate w-[110%] overflow-visible block">
+              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider text-center block">
                 Praticar
               </span>
             </button>

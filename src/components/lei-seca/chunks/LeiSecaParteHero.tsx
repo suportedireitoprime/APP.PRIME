@@ -77,7 +77,7 @@ export function LeiSecaParteHero({
       
       {capaUrl ? (
         <div aria-hidden className="pointer-events-none absolute -right-6 inset-y-0 w-2/3 z-0 opacity-[0.25] mix-blend-overlay">
-          <img src={capaUrl} className="w-full h-full object-cover object-left" />
+          <img src={capaUrl} className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/20" />
         </div>
       ) : MateriaIcone && (

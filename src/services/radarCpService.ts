@@ -336,3 +336,38 @@ export async function getProposicoesRadarCP(): Promise<ProposicaoRadarCP[]> {
   return await enrichProposicoesWithFotos(SEED_PROPOSICOES_CP);
 }
 
+export async function getProposicoesRadarGenerico(leiNome: string): Promise<ProposicaoRadarCP[]> {
+  try {
+    const isCp = leiNome.toLowerCase().includes('código penal');
+    if (isCp) {
+      return getProposicoesRadarCP();
+    }
+
+    const keywords = encodeURIComponent(leiNome);
+    const url = `https://dadosabertos.camara.leg.br/api/v2/proposicoes?siglaTipo=PL,PEC,PLP&ordem=DESC&ordenarPor=id&itens=15&keywords=${keywords}`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) return [];
+    const json = await res.json();
+    
+    return (json.dados || []).map((d: any) => {
+       return {
+          id: d.id,
+          siglaTipo: d.siglaTipo,
+          numero: d.numero,
+          ano: d.ano,
+          proposicaoDisplay: `${d.siglaTipo} ${d.numero}/${d.ano}`,
+          autorNome: "Câmara dos Deputados",
+          artigosAfetados: [leiNome],
+          oQueQuerFazer: "Proposição legislativa em andamento detectada no radar.",
+          ementaOficial: d.ementa || "",
+          situacaoTramitacao: "Em tramitação",
+          dataApresentacao: d.dataApresentacao || "",
+          dataDisplay: d.ano ? String(d.ano) : "",
+          linkCamara: d.uri || `https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${d.id}`,
+          tipoMudanca: "Em análise",
+       };
+    });
+  } catch (error) {
+    return [];
+  }
+}
