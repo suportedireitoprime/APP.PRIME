@@ -39,24 +39,33 @@ export function useLeiData(
     if (!selectedTabelaNome) return;
     
     setLoadingDbAlteracoes(true);
-    fetch(
-      `${LEIS_SUPABASE_URL}/functions/v1/vademecum-scraper?tabela_nome=${encodeURIComponent(selectedTabelaNome)}`,
-      { headers: leisAuthHeaders() }
-    )
-      .then(async (res) => {
-        if (!res.ok) return [];
-        return res.json();
-      })
-      .then((data) => {
-        setDbAlteracoes(Array.isArray(data) ? data : []);
-        setLoadingDbAlteracoes(false);
-      })
-      .catch((e) => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const { data, error } = await (supabase as any)
+          .from('legislacao_alteracoes')
+          .select('*')
+          .eq('tabela_nome', selectedTabelaNome)
+          .order('ano', { ascending: false });
+          
+        if (error) throw error;
+        
+        if (!cancelled) {
+          setDbAlteracoes(data || []);
+          setLoadingDbAlteracoes(false);
+        }
+      } catch (e) {
         console.error('Erro ao carregar alterações legislativas:', e);
-        setDbAlteracoes([]);
-        setLoadingDbAlteracoes(false);
-      });
-  }, [overlayPanel, selectedTabelaNome]);
+        if (!cancelled) {
+          setDbAlteracoes([]);
+          setLoadingDbAlteracoes(false);
+        }
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [selectedTabelaNome]);
 
   // Fetch narrations when playlist tab is active
   useEffect(() => {

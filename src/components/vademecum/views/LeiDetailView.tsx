@@ -682,7 +682,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         }}
         favCount={favArtigoNumeros.size}
         anotacoesCount={anotadoNumeros.size}
-        radarCount={dbAlteracoes?.length || 0}
+        novidadesCount={dbAlteracoes?.length || 0}
+        radarCount={0}
         playlistCount={Object.keys(playlistNarracoes || {}).length}
       />
 

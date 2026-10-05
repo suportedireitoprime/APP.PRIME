@@ -320,81 +320,17 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
             )}
           </div>
 
-          {/* ── 1. BLOCO PRINCIPAL DO TEXTO (MOSTRA PRIMEIRO O TEXTO NOVO / VIGENTE) ── */}
-          <div className="rounded-2xl border border-white/10 bg-[#121318]/95 p-4 sm:p-5 space-y-3.5 shadow-2xl backdrop-blur-md">
-            <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2.5">
-              <span
-                className={`text-[11px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-2 ${
-                  textoView === 'vigente' ? 'text-emerald-400' : 'text-rose-400'
-                }`}
-              >
-                {textoView === 'vigente' ? (
-                  <>
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    Texto Novo (Vigente no Planalto)
-                  </>
-                ) : (
-                  <>
-                    <AlertCircle className="w-4 h-4 text-rose-400" />
-                    Texto Anterior (Revogado / Anterior)
-                  </>
-                )}
-              </span>
-              <span
-                className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider border ${
-                  textoView === 'vigente'
-                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
-                    : 'bg-rose-500/20 text-rose-300 border-rose-500/30'
-                }`}
-              >
-                {textoView === 'vigente' ? 'Vigente' : 'Anterior'}
-              </span>
-            </div>
-
-            {/* Texto do Artigo com tipografia jurídica refinada */}
-            <div
-              className={`text-sm sm:text-base leading-relaxed p-4 rounded-xl bg-black/45 border font-medium ${
-                textoView === 'vigente'
-                  ? 'border-emerald-500/25 text-zinc-100 font-serif'
-                  : 'border-rose-500/20 text-zinc-300 font-serif line-through decoration-rose-500/60'
-              }`}
-            >
-              {textoView === 'vigente'
-                ? data.textoNovo || data.artigo.caput
-                : data.textoAntigo ||
-                  'Dispositivo inédito no Código Penal (incluído pela primeira vez por esta norma).'}
-            </div>
-
-            {/* Identificação da Norma Modificadora Oficial */}
-            <div className="flex items-center justify-between gap-3 pt-1 text-xs">
-              <div className="min-w-0">
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 block mb-0.5">
-                  Norma Modificadora Oficial
-                </span>
-                <p className="font-semibold text-white truncate text-xs sm:text-sm">
-                  {data.leiNome}
-                </p>
-                <p className="text-[11px] text-zinc-400 font-mono mt-0.5 truncate">
-                  {data.referencia}
-                </p>
-              </div>
-              <span className="text-[10px] font-bold text-zinc-200 bg-white/[0.08] border border-white/10 px-3 py-1.5 rounded-full shrink-0 shadow-sm">
-                {data.mesAno}
-              </span>
-            </div>
-          </div>
-
-          {/* ── 2. MENU DE ALTERNÂNCIA MAIS ELEGANTE (POSICIONADO LOGO ABAIXO DO TEXTO) ── */}
-          <div className="p-1.5 rounded-2xl bg-[#14151a] border border-white/10 shadow-lg grid grid-cols-2 gap-2">
+          {/* ── 1. MENU DE ALTERNÂNCIA MAIS ELEGANTE (POSICIONADO ACIMA DO TEXTO) ── */}
+          <div className="p-1 rounded-xl bg-[#14151a] border border-white/5 shadow-inner grid grid-cols-2 gap-1 mb-3">
             <button
               type="button"
               onClick={() => {
                 haptic.selection();
                 setTextoView('vigente');
               }}
-              className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-[13px] sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
                 textoView === 'vigente'
-                  ? 'bg-hero-panel text-white shadow-lg shadow-red-950/60 border border-red-500/40 ring-1 ring-white/10'
+                  ? 'bg-zinc-800 text-white shadow-md shadow-black/40 border border-white/10'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
               }`}
             >
@@ -403,7 +339,7 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                   textoView === 'vigente' ? 'text-emerald-400' : 'text-zinc-500'
                 }`}
               />
-              <span className="truncate">Vigente (Novo Texto)</span>
+              <span className="truncate">Novo (Vigente)</span>
             </button>
 
             <button
@@ -412,9 +348,9 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                 haptic.selection();
                 setTextoView('anterior');
               }}
-              className={`flex items-center justify-center gap-2 py-3 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-[13px] sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
                 textoView === 'anterior'
-                  ? 'bg-hero-panel text-white shadow-lg shadow-red-950/60 border border-red-500/40 ring-1 ring-white/10'
+                  ? 'bg-zinc-800 text-white shadow-md shadow-black/40 border border-white/10'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
               }`}
             >
@@ -423,8 +359,43 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                   textoView === 'anterior' ? 'text-rose-400' : 'text-zinc-500'
                 }`}
               />
-              <span className="truncate">Anterior (Revogado)</span>
+              <span className="truncate">Antigo (Revogado)</span>
             </button>
+          </div>
+
+          {/* ── 2. BLOCO PRINCIPAL DO TEXTO ── */}
+          <div className="rounded-2xl border border-white/10 bg-[#121318]/95 p-4 sm:p-5 space-y-4 shadow-xl backdrop-blur-md">
+            {/* Texto do Artigo com tipografia jurídica refinada */}
+            <div
+              className={`text-sm sm:text-base leading-relaxed p-4 rounded-xl border font-medium ${
+                textoView === 'vigente'
+                  ? 'bg-emerald-500/5 border-emerald-500/20 text-zinc-100 font-serif'
+                  : 'bg-rose-500/5 border-rose-500/20 text-zinc-300 font-serif line-through decoration-rose-500/60'
+              }`}
+            >
+              {textoView === 'vigente'
+                ? (data.textoNovo || data.artigo.caput)?.replace(/(?:n[º°]\s*[\d.]+(?:,\s*de\s*\d{4})?\)?)\s*$/i, '').trim()
+                : data.textoAntigo ||
+                  'Dispositivo inédito no código (incluído pela primeira vez por esta norma).'}
+            </div>
+
+            {/* Identificação da Norma Modificadora Oficial */}
+            <div className="flex items-center justify-between gap-3 pt-4 border-t border-white/5 text-xs">
+              <div className="min-w-0">
+                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-0.5">
+                  Norma Modificadora Oficial
+                </span>
+                <p className="font-semibold text-zinc-100 truncate text-xs sm:text-sm">
+                  {data.leiNome}
+                </p>
+                <p className="text-[11px] text-zinc-400 font-mono mt-0.5 truncate">
+                  {data.referencia}
+                </p>
+              </div>
+              <span className="text-[10px] font-bold text-zinc-300 bg-white/[0.06] border border-white/10 px-3 py-1.5 rounded-full shrink-0 shadow-sm">
+                {data.mesAno}
+              </span>
+            </div>
           </div>
 
           {/* ── BOTÕES DE AÇÃO: ESCOLHA ENTRE EXPLICAÇÃO DIDÁTICA E IR PARA ARTIGO ── */}

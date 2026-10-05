@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ExternalLink, Heart, ScrollText, StickyNote, Radar, ListMusic } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Heart, ScrollText, StickyNote, Radar, ListMusic, History } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { getLeiCover } from '@/lib/leiTheme';
+import { getLeiCover, getLeiColor, shade } from '@/lib/leiTheme';
 import { isFavorito as isLeiFavorita } from '@/lib/leisFavoritos';
 import { haptic } from '@/lib/nativeHaptics';
 import brasaoImgAsset from '@/assets/brasao-republica.webp';
@@ -21,10 +21,11 @@ interface LeiHeroProps {
   leiFavToggle: number;
   setLeiFavToggle: React.Dispatch<React.SetStateAction<number>>;
   selectedLeiEmenta: string | null;
-  onOpenOverlay?: (panel: 'fav' | 'playlist' | 'anotacoes' | 'radar') => void;
+  onOpenOverlay?: (panel: 'fav' | 'playlist' | 'anotacoes' | 'radar' | 'novidades') => void;
   favCount?: number;
   anotacoesCount?: number;
   radarCount?: number;
+  novidadesCount?: number;
   playlistCount?: number;
   hideBackButton?: boolean;
 }
@@ -45,12 +46,16 @@ const LeiHero: React.FC<LeiHeroProps> = ({
   favCount = 0,
   anotacoesCount = 0,
   radarCount = 0,
+  novidadesCount = 0,
   playlistCount = 0,
   hideBackButton = false,
 }) => {
   const [showEmentaDialog, setShowEmentaDialog] = useState(false);
 
   const cover = getLeiCover(selectedLeiId, tipo);
+  const leiColor = getLeiColor(selectedLeiId, tipo);
+  const bgGradient = `linear-gradient(135deg, ${shade(leiColor, -0.85)} 0%, ${shade(leiColor, -0.6)} 40%, ${leiColor} 100%)`;
+  
   const selectedLei = leis.find((l) => l.id === selectedLeiId);
   const planaltoUrl = selectedLei?.url_planalto;
 
@@ -93,7 +98,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
             className="absolute inset-0 overflow-hidden"
             style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
           >
-            <div className="absolute inset-0 bg-brand-gradient" />
+            <div className="absolute inset-0" style={{ backgroundImage: bgGradient }} />
             <div className="absolute inset-0 opacity-15 mix-blend-overlay">
               <ShapeGrid />
             </div>
@@ -168,7 +173,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
 
         {/* Atalhos Rápidos na Base do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST com altura ampliada e badges sem corte */}
         <div className="relative z-10 px-3 sm:px-6 pt-2.5 pb-6 sm:pb-7 w-full max-w-lg mx-auto">
-          <div className="grid grid-cols-4 gap-2 sm:gap-2.5">
+          <div className="grid grid-cols-5 gap-1 sm:gap-2">
             {/* FAVORITOS DE ARTIGOS */}
             <button
               type="button"
@@ -184,11 +189,11 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 </span>
               )}
               <Heart
-                className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-[#F43F5E]"
+                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#F43F5E]"
                 fill="none"
                 strokeWidth={2}
               />
-              <span className="text-[9px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
                 Favorito
               </span>
             </button>
@@ -208,11 +213,34 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 </span>
               )}
               <StickyNote
-                className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-[#FACC15]"
+                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#FACC15]"
                 strokeWidth={2}
               />
-              <span className="text-[9px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider truncate w-[110%] overflow-visible block">
                 Anotações
+              </span>
+            </button>
+
+            {/* NOVIDADES */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onOpenOverlay?.('novidades');
+              }}
+              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
+            >
+              {novidadesCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-zinc-950 text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#10B981] pointer-events-none">
+                  {novidadesCount > 99 ? '99+' : novidadesCount}
+                </span>
+              )}
+              <History
+                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#10B981]"
+                strokeWidth={2}
+              />
+              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider truncate w-[110%] overflow-visible block">
+                Novidades
               </span>
             </button>
 
@@ -231,10 +259,10 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 </span>
               )}
               <Radar
-                className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-[#38BDF8]"
+                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#38BDF8]"
                 strokeWidth={2}
               />
-              <span className="text-[9px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
                 Radar
               </span>
             </button>
@@ -254,10 +282,10 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 </span>
               )}
               <ListMusic
-                className="w-5 h-5 shrink-0 transition-all group-hover:scale-110 text-[#A855F7]"
+                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#A855F7]"
                 strokeWidth={2}
               />
-              <span className="text-[9px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
                 Playlist
               </span>
             </button>

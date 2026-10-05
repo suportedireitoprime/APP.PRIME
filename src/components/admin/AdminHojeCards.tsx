@@ -446,7 +446,6 @@ export function AdminHojeCards() {
 
         (asaasRes.data || []).forEach((s: any) => {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
-          if (s.user_id === 'c50d4d1d-c7c5-44e7-bab1-5116779d9a17' || s.id === 'c50d4d1d-c7c5-44e7-bab1-5116779d9a17') return;
           const uid = s.user_id || s.id;
           const plano = (s.plano || 'mensal').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
@@ -458,7 +457,6 @@ export function AdminHojeCards() {
 
         (playRes.data || []).forEach((s: any) => {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
-          if (s.user_id === 'c50d4d1d-c7c5-44e7-bab1-5116779d9a17' || s.id === 'c50d4d1d-c7c5-44e7-bab1-5116779d9a17') return;
           const uid = s.user_id || s.id;
           const plano = s.product_id?.includes('anual') ? 'anual' : s.product_id?.includes('vitalicio') ? 'vitalicio' : 'mensal';
           const valor = plano === 'anual' ? 119.90 : plano === 'vitalicio' ? 249.90 : 29.90;
@@ -469,7 +467,6 @@ export function AdminHojeCards() {
 
         (appleRes.data || []).forEach((s: any) => {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
-          if (s.user_id === 'c50d4d1d-c7c5-44e7-bab1-5116779d9a17' || s.id === 'c50d4d1d-c7c5-44e7-bab1-5116779d9a17') return;
           const uid = s.user_id || s.id;
           const plano = s.product_id?.includes('anual') ? 'anual' : 'mensal';
           const valor = plano === 'anual' ? 119.90 : 29.90;
@@ -480,7 +477,6 @@ export function AdminHojeCards() {
 
         (legRes.data || []).forEach((s: any) => {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
-          if (s.claimed_user_id === 'c50d4d1d-c7c5-44e7-bab1-5116779d9a17' || s.id === 'c50d4d1d-c7c5-44e7-bab1-5116779d9a17') return;
           const uid = s.claimed_user_id || s.id;
           const plano = s.tipo || 'mensal';
           const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 119.90 : 29.90;

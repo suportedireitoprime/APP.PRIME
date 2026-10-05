@@ -395,8 +395,45 @@ export default function AdminMapeamentoLeis() {
       localStorage.setItem(`vade_scrape_data_${lei.tabela_nome}`, JSON.stringify(articlesList));
       setLastScrapes(prev => ({ ...prev, [lei.id]: agora }));
 
+      // SALVAR AUTOMATICAMENTE NO SUPABASE PARA TODOS OS USUÁRIOS
+      if (articlesList && articlesList.length > 0 && lei.tabela_nome) {
+        try {
+          const dbRows = articlesList.map(art => {
+            const anoSafe = art.ano || new Date().getFullYear();
+            const detectado_em = new Date(anoSafe, 0, 1).toISOString();
+            const isNovo = (art.motivo || '').toLowerCase().includes('incluíd');
+            const isRevogado = (art.motivo || '').toLowerCase().includes('revogad');
+            
+            return {
+              tabela_nome: lei.tabela_nome,
+              artigo_numero: art.artigo,
+              tipo_alteracao: isNovo ? 'artigo_novo' : (isRevogado ? 'artigo_revogado' : 'texto_alterado'),
+              texto_anterior: art.texto_antigo || '',
+              texto_atual: art.texto_novo || '',
+              motivo: art.motivo || 'Alteração legislativa',
+              ano: anoSafe,
+              revisado: true,
+              detectado_em: detectado_em,
+              link_lei: art.link_lei || null
+            };
+          });
+
+          // Usamos upsert para não duplicar, caso o admin faça varreduras múltiplas
+          const res = await (supabase as any).from('legislacao_alteracoes').upsert(dbRows, {
+            onConflict: 'tabela_nome, artigo_numero, ano, motivo'
+          });
+          
+          if (res.error) {
+            console.error('Erro ao sincronizar novidades no Supabase:', res.error);
+            toast.error('Erro ao salvar no banco. Apenas local foi atualizado.');
+          }
+        } catch (dbErr) {
+          console.error('Erro de rede ao salvar novidades no Supabase:', dbErr);
+        }
+      }
+
       toast.success(
-        `${articlesList.length} artigos alterados/incluídos identificados no Planalto.`,
+        `${articlesList.length} artigos alterados/incluídos identificados no Planalto e sincronizados.`,
         { id: toastId }
       );
     } catch (err: unknown) {

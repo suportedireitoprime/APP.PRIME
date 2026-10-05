@@ -30,4 +30,28 @@ if (typeof window !== 'undefined' && typeof Node === 'function' && Node.prototyp
   };
 }
 
+// Ignora erros inofensivos do ResizeObserver que podem derrubar a tela (ErrorBoundary)
+if (typeof window !== 'undefined') {
+  const isResizeObserverLoopErr = (msg: string | Event) => {
+    if (typeof msg === 'string') return msg.includes('ResizeObserver loop limit exceeded') || msg.includes('ResizeObserver loop completed with undelivered notifications');
+    if (msg instanceof ErrorEvent) return msg.message.includes('ResizeObserver loop');
+    return false;
+  };
+  
+  window.addEventListener('error', (e) => {
+    if (isResizeObserverLoopErr(e)) {
+      e.stopImmediatePropagation();
+    }
+  });
+
+  // Intercepta os erros de ResizeObserver que chegam pelo console.error / window.onerror e impede que subam para o ErrorBoundary do React
+  const originalError = console.error;
+  console.error = (...args) => {
+    if (args[0] && typeof args[0] === 'string' && isResizeObserverLoopErr(args[0])) {
+      return;
+    }
+    originalError.call(console, ...args);
+  };
+}
+
 export {};

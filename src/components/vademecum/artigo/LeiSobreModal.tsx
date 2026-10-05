@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { executeAiTask } from '@/services/aiGatewayService';
+import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -13,6 +15,7 @@ import {
   X,
   FileText,
   CheckCircle2,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
@@ -24,6 +27,7 @@ interface LeiSobreModalProps {
   onClose: () => void;
   leiNome: string;
   leiDescricao: string;
+  leiId?: string;
 }
 
 export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
@@ -31,12 +35,106 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
   onClose,
   leiNome,
   leiDescricao,
+  leiId,
 }) => {
   const [relatarOpen, setRelatarOpen] = useState(false);
   const [artigoNum, setArtigoNum] = useState('');
   const [tipoErro, setTipoErro] = useState('Texto divergente do Planalto');
   const [descricao, setDescricao] = useState('');
   const [enviado, setEnviado] = useState(false);
+  const [sobreHtml, setSobreHtml] = useState<string | null>(null);
+  const [loadingSobre, setLoadingSobre] = useState(false);
+
+  useEffect(() => {
+    if (!open || !leiNome) return;
+
+    // Check if it's explicitly Código Penal for the hardcoded text
+    if (leiNome.toLowerCase().includes('código penal') && !leiNome.toLowerCase().includes('processo')) {
+      setSobreHtml(`
+        <p>
+          O <strong>Código Penal Brasileiro</strong> foi promulgado pelo <strong>Decreto-Lei nº 2.848, de 7 de dezembro de 1940</strong>, durante o governo de Getúlio Vargas, sob o projeto coordenado pelo ministro e jurista Francisco Campos, entrando em vigor em 1º de janeiro de 1942.
+        </p>
+        <p>
+          A codificação é a espinha dorsal do Direito Penal nacional e divide-se em dois grandes blocos:
+        </p>
+        <ul class="list-disc pl-5 space-y-1.5 text-zinc-400 mt-2">
+          <li>
+            <strong class="text-zinc-200">Parte Geral (Artigos 1º ao 120):</strong> estabelece as regras fundamentais de aplicação da lei penal no tempo e espaço, a teoria do crime, imputabilidade penal, concurso de pessoas, fixação e cumprimento de penas e extinção da punibilidade.
+          </li>
+          <li>
+            <strong class="text-zinc-200">Parte Especial (Artigos 121 ao 361):</strong> tipifica os crimes em espécie (contra a pessoa, patrimônio, dignidade sexual, paz pública, fé pública e administração pública), cominando as respectivas penas.
+          </li>
+        </ul>
+      `);
+      return;
+    }
+
+    const cacheKey = `vade_sobre_${leiNome.replace(/\s+/g, '_')}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      setSobreHtml(cached);
+      return;
+    }
+
+    const fetchSobre = async () => {
+      setLoadingSobre(true);
+      try {
+        if (leiId) {
+          const { data, error } = await supabase
+            .from('vade_mecum_leis')
+            .select('sobre_html')
+            .eq('id', leiId)
+            .single();
+          
+          if (!error && data?.sobre_html) {
+            setSobreHtml(data.sobre_html);
+            setLoadingSobre(false);
+            return;
+          }
+        }
+
+        const prompt = `Resuma o que é a norma "${leiNome}" (${leiDescricao}) de forma estruturada. 
+Inclua: Origem histórica/promulgação e a estrutura principal da norma (como ela é dividida/organizada).
+Use apenas parágrafos e tags HTML (como <p>, <strong> e <ul><li>). Não use blocos de código (\`\`\`html). Faça um texto direto, didático e focado no ponto.`;
+        
+        const timeoutPromise = new Promise<{ text: string }>((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout')), 10000)
+        );
+
+        const aiPromise = executeAiTask({
+          featureKey: 'chat_juridico',
+          prompt,
+          systemPrompt: 'Você é um assistente jurídico. Responda diretamente com o HTML estruturado solicitado, sem explicações adicionais.',
+          temperature: 0.3,
+        });
+
+        const res = await Promise.race([aiPromise, timeoutPromise]);
+        let html = res.text || '';
+        html = html.replace(/```html/g, '').replace(/```/g, '').trim();
+
+        if (html && !html.includes('Falha')) {
+          setSobreHtml(html);
+          if (leiId) {
+            await supabase
+              .from('vade_mecum_leis')
+              .update({ sobre_html: html })
+              .eq('id', leiId);
+          } else {
+            localStorage.setItem(cacheKey, html);
+          }
+        } else {
+          setSobreHtml(`<p>Informações detalhadas não disponíveis no momento.</p>`);
+        }
+      } catch (err) {
+        console.warn('Erro ao buscar o sobre da lei:', err);
+        setSobreHtml(`<p>Apresentação geral da norma.</p>`);
+      } finally {
+        setLoadingSobre(false);
+      }
+    };
+
+    fetchSobre();
+  }, [open, leiNome, leiDescricao]);
 
   if (!open) return null;
 
@@ -132,7 +230,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
 
         {/* ── CORPO ROLÁVEL COM SEÇÕES ESTRUTURADAS ── */}
         <div className="flex-1 overflow-y-auto px-4 py-5 max-w-3xl w-full mx-auto space-y-4 custom-scrollbar z-10 pb-16">
-          {/* Card 1: O que é o Código Penal */}
+          {/* Card 1: O que é a Lei */}
           <div className="rounded-2xl bg-zinc-900/90 border border-zinc-800/90 p-4 sm:p-5 space-y-3 shadow-xl backdrop-blur-md">
             <div className="flex items-center gap-2.5 border-b border-zinc-800 pb-3">
               <div className="w-8 h-8 rounded-xl bg-primary/20 border border-primary/30 flex items-center justify-center text-primary shrink-0">
@@ -140,7 +238,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
               </div>
               <div>
                 <h2 className="font-bold text-sm sm:text-base text-white">
-                  O que é o Código Penal Brasileiro?
+                  O que é o(a) {leiNome}?
                 </h2>
                 <p className="text-[11px] text-zinc-400">
                   Origem histórica, promulgação e organização
@@ -148,30 +246,18 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
               </div>
             </div>
 
-            <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed space-y-2.5">
-              <p>
-                O <strong>Código Penal Brasileiro</strong> foi promulgado pelo{' '}
-                <strong>Decreto-Lei nº 2.848, de 7 de dezembro de 1940</strong>, durante o
-                governo de Getúlio Vargas, sob o projeto coordenado pelo ministro e jurista
-                Francisco Campos, entrando em vigor em 1º de janeiro de 1942.
-              </p>
-              <p>
-                A codificação é a espinha dorsal do Direito Penal nacional e divide-se em dois
-                grandes blocos:
-              </p>
-              <ul className="list-disc pl-5 space-y-1.5 text-zinc-400">
-                <li>
-                  <strong className="text-zinc-200">Parte Geral (Artigos 1º ao 120):</strong>{' '}
-                  estabelece as regras fundamentais de aplicação da lei penal no tempo e espaço,
-                  a teoria do crime (tipicidade, ilicitude e culpabilidade), imputabilidade penal,
-                  concurso de pessoas, fixação e cumprimento de penas e extinção da punibilidade.
-                </li>
-                <li>
-                  <strong className="text-zinc-200">Parte Especial (Artigos 121 ao 361):</strong>{' '}
-                  tipifica os crimes em espécie (contra a pessoa, patrimônio, dignidade sexual, paz
-                  pública, fé pública e administração pública), cominando as respectivas penas.
-                </li>
-              </ul>
+            <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed min-h-[80px]">
+              {loadingSobre ? (
+                <div className="flex flex-col items-center justify-center py-6 gap-3">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                  <p className="text-xs text-zinc-400">Resumindo informações da norma...</p>
+                </div>
+              ) : sobreHtml ? (
+                <div 
+                  className="space-y-2.5"
+                  dangerouslySetInnerHTML={{ __html: sobreHtml }}
+                />
+              ) : null}
             </div>
           </div>
 

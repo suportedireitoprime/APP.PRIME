@@ -243,16 +243,17 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
 
     const interval = setInterval(() => {
       if (isInteractingRef.current || document.hidden) return;
-      const nextIndex = activeIndex + 1;
-      scrollToIndex(nextIndex);
-      setActiveIndex(nextIndex);
+      setActiveIndex(prev => {
+        const nextIndex = prev + 1;
+        scrollToIndex(nextIndex);
+        return nextIndex;
+      });
     }, AUTOPLAY_MS);
 
     return () => {
       clearInterval(interval);
-      if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [activeIndex, displayItems.length, scrollToIndex, isReady]);
+  }, [displayItems.length, scrollToIndex, isReady]);
 
   return (
     <section className="space-y-3">

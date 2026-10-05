@@ -4,6 +4,7 @@
 import { COVERS } from './coverLoader';
 
 const COLOR_MAP: Record<string, string> = {
+  ei:   '#8b5cf6', // Violet 500
   cf88: '#059669', // Emerald 600
   cp:   '#DC2626', // Red 600
   cpm:  '#DC2626',
