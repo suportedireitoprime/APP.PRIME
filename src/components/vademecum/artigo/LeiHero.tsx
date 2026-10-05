@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ArrowLeft, ExternalLink, Heart, ScrollText, StickyNote, Radar, ListMusic, History } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, ExternalLink, Heart, ScrollText, StickyNote, Radar, ListMusic, History, Gamepad2, Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getLeiCover, getLeiColor, shade } from '@/lib/leiTheme';
 import { isFavorito as isLeiFavorita } from '@/lib/leisFavoritos';
@@ -28,6 +29,7 @@ interface LeiHeroProps {
   novidadesCount?: number;
   playlistCount?: number;
   hideBackButton?: boolean;
+  onOpenSobre?: () => void;
 }
 
 const LeiHero: React.FC<LeiHeroProps> = ({
@@ -49,7 +51,9 @@ const LeiHero: React.FC<LeiHeroProps> = ({
   novidadesCount = 0,
   playlistCount = 0,
   hideBackButton = false,
+  onOpenSobre,
 }) => {
+  const navigate = useNavigate();
   const [showEmentaDialog, setShowEmentaDialog] = useState(false);
 
   const cover = getLeiCover(selectedLeiId, tipo);
@@ -128,7 +132,21 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:opacity-70 shadow-lg"
               >
                 <ScrollText className="w-3.5 h-3.5" />
-                <span>Ementa</span>
+                <span className="hidden sm:inline">Ementa</span>
+              </button>
+            )}
+
+            {onOpenSobre && (
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  onOpenSobre();
+                }}
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:opacity-70 shadow-lg"
+              >
+                <Info className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sobre</span>
               </button>
             )}
 
@@ -137,10 +155,10 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 href={planaltoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs sm:text-sm text-white hover:text-white transition-all font-bold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/25 active:opacity-70 shadow-xl hover:border-white/40"
+                className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-white hover:text-white transition-all font-bold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/25 active:opacity-70 shadow-xl hover:border-white/40"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-zinc-300" />
-                <span>Planalto</span>
+                <span className="hidden sm:inline">Planalto</span>
               </a>
             )}
           </div>
@@ -198,26 +216,21 @@ const LeiHero: React.FC<LeiHeroProps> = ({
               </span>
             </button>
 
-            {/* ANOTAÇÕES */}
+            {/* PRATICAR (LEI SECA) NO LUGAR DE ANOTAÇÕES */}
             <button
               type="button"
               onClick={() => {
                 haptic.selection();
-                onOpenOverlay?.('anotacoes');
+                navigate(`/lei-seca/${selectedLeiId}`);
               }}
               className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
             >
-              {anotacoesCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-zinc-950 text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#FACC15] pointer-events-none">
-                  {anotacoesCount > 99 ? '99+' : anotacoesCount}
-                </span>
-              )}
-              <StickyNote
+              <Gamepad2
                 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#FACC15]"
                 strokeWidth={2}
               />
               <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider truncate w-[110%] overflow-visible block">
-                Anotações
+                Praticar
               </span>
             </button>
 

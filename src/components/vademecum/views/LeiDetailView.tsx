@@ -684,6 +684,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         leiFavToggle={leiFavToggle}
         setLeiFavToggle={setLeiFavToggle}
         selectedLeiEmenta={selectedLeiEmenta}
+        onOpenSobre={() => setShowSobreModal(true)}
         onOpenOverlay={(panel) => {
           if (!isPremium && panel === 'radar') {
             setPremiumGateFeature('radar');
@@ -960,30 +961,24 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           {/* Abas no Desktop (no mobile a navegação fica no rodapé) */}
           {isDesktop && (
             <div className="flex flex-col gap-3 w-full">
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {[
                   { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
                   { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
                   { key: 'lot' as const, icon: Layers, label: 'Lotes' },
                   { key: 'rec' as const, icon: History, label: 'Recentes' },
-                  { key: 'sobre' as const, icon: Info, label: 'Sobre' },
                 ].map(tab => (
                   <button
                     key={tab.key}
                     onClick={() => {
-                      if (tab.key === 'sobre') {
-                        haptic.selection();
-                        setShowSobreModal(true);
-                      } else {
-                        setActiveTab(tab.key);
-                      }
+                      setActiveTab(tab.key);
                     }}
-                    disabled={loadingArtigos && tab.key !== 'sobre'}
+                    disabled={loadingArtigos}
                     className={`flex items-center justify-center gap-1.5 px-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all py-2 cursor-pointer ${
-                      (tab.key === 'sobre' ? showSobreModal : activeTab === tab.key)
+                      activeTab === tab.key
                         ? 'bg-hero-panel text-white shadow-md shadow-red-950/40'
                         : 'bg-secondary text-foreground hover:text-foreground'
-                    } ${loadingArtigos && tab.key !== 'sobre' ? 'opacity-70' : ''}`}
+                    } ${loadingArtigos ? 'opacity-70' : ''}`}
                   >
                     <tab.icon className="w-4 h-4" />
                     <span>{tab.label}</span>
@@ -1155,25 +1150,20 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           className={`fixed bottom-0 left-0 right-0 z-[65] md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto lg:hidden transition-all duration-200 ${showFooter ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-24 opacity-0 pointer-events-none'}`}
         >
           <div className="bg-[#0e0f12]/98 backdrop-blur-xl border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.7)] pb-[calc(0.5rem+var(--sai-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/40 md:pb-0">
-            <div className="grid grid-cols-4 items-center justify-items-stretch w-full max-w-lg mx-auto px-2 sm:px-4 py-2 md:gap-1 md:px-3 md:py-2">
+            <div className="grid grid-cols-3 items-center justify-items-stretch w-full max-w-lg mx-auto px-2 sm:px-4 py-2 md:gap-1 md:px-3 md:py-2">
               {[
                 { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
                 { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
                 { key: 'lot' as const, icon: Layers, label: 'Lotes' },
-                { key: 'sobre' as const, icon: Info, label: 'Sobre' },
               ].map((tab) => {
-                const active = tab.key === 'sobre' ? showSobreModal : activeTab === tab.key;
+                const active = activeTab === tab.key;
                 const Icon = tab.icon;
                 return (
                   <button
                     key={tab.key}
                     onClick={() => {
                       haptic.selection();
-                      if (tab.key === 'sobre') {
-                        setShowSobreModal(true);
-                      } else {
-                        setActiveTab(tab.key);
-                      }
+                      setActiveTab(tab.key);
                     }}
                     className={`relative w-full min-w-0 flex flex-col items-center justify-center gap-1 py-1.5 px-0.5 rounded-xl transition-colors ${
                       active ? 'text-white' : 'text-muted-foreground hover:text-white/80'
