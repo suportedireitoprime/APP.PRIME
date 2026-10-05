@@ -1,7 +1,5 @@
-// Lei Seca: gera os exercícios de UMA lição a partir do texto INTEGRAL dos artigos.
-// Body: { licao_id: string, force?: boolean }
-
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { geminiFetch } from "../_shared/geminiFetch.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -9,9 +7,8 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const OMNIROUTE_API_KEY = Deno.env.get("OMNIROUTE_API_KEY")!;
-const MODEL = 'gemini-3.1-flash-lite';
-const GATEWAY = "https://omniroute-production-fb57.up.railway.app/v1/chat/completions";
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
+const MODEL = "gemini-2.0-flash";
 
 function repairAndParseJson(raw: string): any | null {
   let s = (raw ?? "").trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
@@ -30,22 +27,22 @@ function repairAndParseJson(raw: string): any | null {
 }
 
 async function callAI(prompt: string): Promise<any> {
-  const res = await fetch(GATEWAY, {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+  const res = await geminiFetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${OMNIROUTE_API_KEY}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: MODEL,
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        temperature: 0.7,
+      },
     }),
   });
   const txt = await res.text();
-  if (!res.ok) throw new Error(`AI ${res.status}: ${txt.slice(0, 400)}`);
+  if (!res.ok) throw new Error(`Gemini ${res.status}: ${txt.slice(0, 400)}`);
   const data = JSON.parse(txt);
-  const out = data?.choices?.[0]?.message?.content ?? "";
+  const out = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   const parsed = repairAndParseJson(out);
   if (!parsed) throw new Error("JSON inválido retornado pela IA");
   return parsed;

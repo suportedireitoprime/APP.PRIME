@@ -113,21 +113,22 @@ Deno.serve(async (req) => {
     }
 
     const sb = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: trilha, error: errT } = await sb
+    const { data: trilha } = await sb
       .from("lei_seca_trilhas")
       .select("*")
       .eq("slug", trilha_slug)
-      .single();
-    if (errT || !trilha) throw new Error(`Trilha não encontrada: ${trilha_slug}`);
+      .maybeSingle();
+
+    const leiSlug = trilha?.lei_slug || trilha_slug;
 
     const { data: lei } = await sb
       .from("vade_mecum_leis")
       .select("id")
-      .eq("slug", trilha.lei_slug)
+      .eq("slug", leiSlug)
       .maybeSingle();
-    if (!lei?.id) throw new Error(`Lei não encontrada no Vade Mecum: ${trilha.lei_slug}`);
+    if (!lei?.id) throw new Error(`Lei não encontrada no Vade Mecum: ${leiSlug}`);
 
-    const partes = (trilha.partes as any[]) || [];
+    const partes = trilha ? ((trilha.partes as any[]) || []) : [{ slug: "geral", nome: "Geral", filtro: null }];
     const partesAlvo = parte_slug ? partes.filter((p) => p.slug === parte_slug) : partes;
     const rows = await carregarLinhasLei(sb, lei.id);
 

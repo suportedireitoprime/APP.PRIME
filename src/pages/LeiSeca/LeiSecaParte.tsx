@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { estruturarTrilha, getTrilha, listarLicoes, listarProgresso, type LeiSecaLicao } from "@/lib/leiSeca";
 import { getLeiCover } from "@/lib/leiTheme";
 import { hydrateLeiSecaFromSession, licoesKey, prefetchParte, trilhaKey } from "@/lib/leiSecaPrefetch";
@@ -55,6 +55,7 @@ export default function LeiSecaParte() {
   const { isPremium } = useSubscription();
   const [estruturando, setEstruturando] = useState(false);
   const [premiumGateOpen, setPremiumGateOpen] = useState(false);
+  const tentouEstruturar = useRef(false);
 
   // Hidrata cache do sessionStorage ANTES da primeira pintura — pinta header em ~0ms.
   if (slug && parte) hydrateLeiSecaFromSession(qc, slug, parte);
@@ -94,7 +95,8 @@ export default function LeiSecaParte() {
 
 
   useEffect(() => {
-    if (licoesQ.isSuccess && licoesQ.data && licoesQ.data.length === 0 && !estruturando) {
+    if (licoesQ.isSuccess && licoesQ.data && licoesQ.data.length === 0 && !estruturando && !tentouEstruturar.current) {
+      tentouEstruturar.current = true;
       setEstruturando(true);
       estruturarTrilha(slug, parte)
         .then(() => qc.invalidateQueries({ queryKey: ["lei-seca-licoes", slug, parte] }))
@@ -249,9 +251,11 @@ export default function LeiSecaParte() {
             <p className="text-muted-foreground mb-3">Nenhuma lição encontrada</p>
             <Button
               onClick={() => {
+                tentouEstruturar.current = true;
                 setEstruturando(true);
                 estruturarTrilha(slug, parte)
                   .then(() => qc.invalidateQueries({ queryKey: ["lei-seca-licoes", slug, parte] }))
+                  .catch((e) => toast({ title: "Erro ao montar trilha", description: e.message, variant: "destructive" }))
                   .finally(() => setEstruturando(false));
               }}
             >
