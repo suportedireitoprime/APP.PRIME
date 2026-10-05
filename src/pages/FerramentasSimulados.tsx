@@ -234,9 +234,9 @@ export default function FerramentasSimulados() {
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center shrink-0">
                     {category.toLowerCase().includes('juiz') || category.toLowerCase().includes('direito') ? (
-                      <img src="/assets/images/praticar-juiz.png" alt="Juiz" className="w-full h-full object-contain object-left drop-shadow-md" />
+                      <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-full h-full object-contain object-left drop-shadow-md" />
                     ) : (
-                      <img src="/assets/images/eoab-woman-fixed.webp" alt="OAB" className="w-full h-full object-contain object-left drop-shadow-md" />
+                      <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="w-full h-full object-contain object-left drop-shadow-md" />
                     )}
                   </div>
                   <div>
