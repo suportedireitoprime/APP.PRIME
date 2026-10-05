@@ -25,7 +25,16 @@ export default function FerramentasSimulados() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(location.state?.category || null);
+  const normalizeCategory = (cat: string | null | undefined) => {
+    if (!cat) return null;
+    const trimmed = cat.trim();
+    if (trimmed.toLowerCase().includes('juiz substituto')) {
+      return 'Juiz de Direito';
+    }
+    return trimmed;
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(normalizeCategory(location.state?.category) || null);
   const [selectedSimulado, setSelectedSimulado] = useState<SimuladoItem | null>(null);
   const [isStarting, setIsStarting] = useState(false);
   const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
@@ -102,10 +111,7 @@ export default function FerramentasSimulados() {
   const groupedSimulados = useMemo(() => {
     const groups: Record<string, SimuladoItem[]> = {};
     filteredSimulados.forEach(sim => {
-      let cat = sim.exam?.name?.trim() || 'Outros';
-      if (cat.toLowerCase().includes('juiz substituto')) {
-        cat = 'Juiz de Direito';
-      }
+      const cat = normalizeCategory(sim.exam?.name) || 'Outros';
       
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push(sim);
