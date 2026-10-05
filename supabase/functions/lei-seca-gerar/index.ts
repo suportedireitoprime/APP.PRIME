@@ -33,7 +33,7 @@ async function callAI(prompt: string): Promise<any> {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": GEMINI_API_KEY,
+      "Authorization": `Bearer ${GOOGLE_API_KEY}`,
     },
     body: JSON.stringify({
       model: MODEL,
