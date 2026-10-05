@@ -16,6 +16,7 @@ interface LeiSecaParteHeroProps {
   partes?: ParteItem[];
   tema: { from: string; solid: string; to: string };
   MateriaIcone?: React.ElementType;
+  capaUrl?: string;
   stats: {
     total: number;
     concluidas: number;
@@ -53,6 +54,7 @@ export function LeiSecaParteHero({
   partes = [],
   tema,
   MateriaIcone,
+  capaUrl,
   stats,
   onBack,
   onSelectParte,
@@ -72,16 +74,23 @@ export function LeiSecaParteHero({
     >
       <div className="absolute -top-16 -right-10 h-44 w-44 rounded-full bg-white/10 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-16 -left-8 h-36 w-36 rounded-full bg-black/30 blur-3xl pointer-events-none" />
-      {MateriaIcone && (
-        <div aria-hidden className="pointer-events-none absolute -right-6 -bottom-8 z-0 opacity-[0.13]">
-          <MateriaIcone className="h-52 w-52 text-white" strokeWidth={0.9} />
+      
+      {capaUrl ? (
+        <div aria-hidden className="pointer-events-none absolute -right-6 inset-y-0 w-2/3 z-0 opacity-[0.25] mix-blend-overlay">
+          <img src={capaUrl} className="w-full h-full object-cover object-left" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/20" />
         </div>
+      ) : MateriaIcone && (
+        <>
+          <div aria-hidden className="pointer-events-none absolute -right-6 -bottom-8 z-0 opacity-[0.13]">
+            <MateriaIcone className="h-52 w-52 text-white" strokeWidth={0.9} />
+          </div>
+          <div aria-hidden className="pointer-events-none absolute right-24 top-2 z-0 opacity-[0.07] rotate-12">
+            <MateriaIcone className="h-24 w-24 text-white" strokeWidth={0.8} />
+          </div>
+        </>
       )}
-      {MateriaIcone && (
-        <div aria-hidden className="pointer-events-none absolute right-24 top-2 z-0 opacity-[0.07] rotate-12">
-          <MateriaIcone className="h-24 w-24 text-white" strokeWidth={0.8} />
-        </div>
-      )}
+
       <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-[55%] overflow-hidden z-0">
         <div className="absolute inset-y-0 -left-1/3 w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-[18deg] animate-pulse" />
       </div>

@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { estruturarTrilha, getTrilha, listarLicoes, listarProgresso, type LeiSecaLicao } from "@/lib/leiSeca";
+import { getLeiCover } from "@/lib/leiTheme";
 import { hydrateLeiSecaFromSession, licoesKey, prefetchParte, trilhaKey } from "@/lib/leiSecaPrefetch";
 import { persistedInitial, savePersisted } from "@/lib/queryPersist";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ const TRILHA_HEX: Record<string, { from: string; solid: string; to: string }> = 
   cc: { from: "#1a3b6e", solid: "#2563eb", to: "#0a1f3d" },
   cpc: { from: "#3b1d6e", solid: "#6d28d9", to: "#1a0a3a" },
   clt: { from: "#6a3a06", solid: "#c2510c", to: "#2c1604" },
+  idoso: { from: "#4c1d95", solid: "#7c3aed", to: "#2e1065" },
 };
 function paletaTrilha(slug: string) {
   return TRILHA_HEX[slug] ?? { from: "#7a1424", solid: "#b91c3a", to: "#3a0712" };
@@ -48,6 +50,7 @@ export default function LeiSecaParte() {
   const { slug = "", parte = "" } = useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const location = useLocation();
   const { user } = useAuth();
   const { isPremium } = useSubscription();
   const [estruturando, setEstruturando] = useState(false);
@@ -145,6 +148,10 @@ export default function LeiSecaParte() {
   const tema = paletaTrilha(slug);
   const MateriaIcone = getMateriaByTrilha(slug)?.icone;
 
+  // Encontra id original se disponível para puxar a capa
+  const idMapeado = slug === 'idoso' ? 'ei' : slug === 'pcd' ? 'epd' : slug === 'igualdade-racial' ? 'eir' : slug === 'desarmamento' ? 'ed' : slug === 'cidade' ? 'ec' : slug === 'oab' ? 'eoab' : slug;
+  const capaUrl = getLeiCover(idMapeado);
+
   const r = 30;
   const circ = 2 * Math.PI * r;
   const offset = circ - (stats.pct / 100) * circ;
@@ -161,8 +168,15 @@ export default function LeiSecaParte() {
         partes={trilhaQ.data?.partes}
         tema={tema}
         MateriaIcone={MateriaIcone}
+        capaUrl={capaUrl}
         stats={stats}
-        onBack={() => navigate("/lei-seca", { replace: true })}
+        onBack={() => {
+          if (location.state?.returnToLei) {
+            navigate(`/vade-mecum/${location.state.returnToLei}`, { replace: true });
+          } else {
+            navigate("/lei-seca", { replace: true });
+          }
+        }}
         onSelectParte={(pSlug) => navigate(`/lei-seca/${slug}/${pSlug}`, { replace: true })}
         onPrefetchParte={(pSlug) => prefetchParte(qc, slug, pSlug)}
       />
