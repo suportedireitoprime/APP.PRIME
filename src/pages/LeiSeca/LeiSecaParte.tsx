@@ -6,7 +6,7 @@ import { getLeiCover } from "@/lib/leiTheme";
 import { hydrateLeiSecaFromSession, licoesKey, prefetchParte, trilhaKey } from "@/lib/leiSecaPrefetch";
 import { persistedInitial, savePersisted } from "@/lib/queryPersist";
 import { Button } from "@/components/ui/button";
-import { Star, Lock, Check, Loader2, Play, Trophy, ArrowLeft } from "lucide-react";
+import { Star, Lock, Check, Loader2, Play, Trophy, ArrowLeft, Heart, CheckCircle2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import PremiumGate from "@/components/PremiumGate";
@@ -67,6 +67,7 @@ export default function LeiSecaParte() {
   const [premiumGateOpen, setPremiumGateOpen] = useState(false);
   const [warningModalOpen, setWarningModalOpen] = useState(false);
   const [pendingLesson, setPendingLesson] = useState<{licao: LeiSecaLicao, missedIndex: number} | null>(null);
+  const [completedLessonModal, setCompletedLessonModal] = useState<{licao: LeiSecaLicao, progresso: any} | null>(null);
   const tentouEstruturar = useRef(false);
 
   // Hidrata cache do sessionStorage ANTES da primeira pintura — pinta header em ~0ms.
@@ -161,7 +162,7 @@ export default function LeiSecaParte() {
   const MateriaIcone = getMateriaByTrilha(slug)?.icone;
 
   // Encontra id original se disponível para puxar a capa
-  const idMapeado = slug === 'idoso' ? 'ei' : slug === 'pcd' ? 'epd' : slug === 'igualdade-racial' ? 'eir' : slug === 'desarmamento' ? 'ed' : slug === 'cidade' ? 'ec' : slug === 'oab' ? 'eoab' : slug;
+  const idMapeado = (slug === 'idoso' || slug === 'estatuto-idoso') ? 'ei' : slug === 'pcd' ? 'epd' : slug === 'igualdade-racial' ? 'eir' : slug === 'desarmamento' ? 'ed' : slug === 'cidade' ? 'ec' : slug === 'oab' ? 'eoab' : slug;
   const capaUrl = getLeiCover(idMapeado);
 
   const r = 30;
@@ -246,6 +247,11 @@ export default function LeiSecaParte() {
                             return;
                           }
 
+                          if (prog?.concluida) {
+                            setCompletedLessonModal({ licao: l, progresso: prog });
+                            return;
+                          }
+
                           let firstMissed = -1;
                           for (let i = 0; i < idx; i++) {
                             if (!progressoQ.data?.get(licoes[i].id)?.concluida) {
@@ -312,6 +318,56 @@ export default function LeiSecaParte() {
             }}>
               Continuar mesmo assim
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!completedLessonModal} onOpenChange={(open) => !open && setCompletedLessonModal(null)}>
+        <AlertDialogContent className="bg-[#121212] border border-white/10 sm:max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl font-semibold tracking-tight text-white flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+              Lição Concluída
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
+              Você já concluiu a <strong>{completedLessonModal?.licao.titulo}</strong>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <div className="py-6 flex flex-col items-center justify-center gap-4 bg-black/40 rounded-xl border border-white/5 my-2">
+            <span className="text-sm font-medium text-white/60 uppercase tracking-widest">Desempenho Anterior</span>
+            <div className="flex gap-2">
+              {[1, 2, 3].map((star) => (
+                <Heart
+                  key={star}
+                  className={cn(
+                    "w-8 h-8",
+                    (completedLessonModal?.progresso?.estrelas ?? 0) >= star
+                      ? "fill-emerald-500 text-emerald-500"
+                      : "fill-black/50 text-white/20"
+                  )}
+                />
+              ))}
+            </div>
+            <span className="text-xs text-white/50">
+              {(completedLessonModal?.progresso?.estrelas ?? 0)} de 3 corações mantidos
+            </span>
+          </div>
+
+          <AlertDialogFooter className="flex-col sm:flex-col gap-2 sm:space-x-0 mt-4">
+            <Button 
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium h-12 rounded-xl"
+              onClick={() => {
+                const lId = completedLessonModal?.licao.id;
+                setCompletedLessonModal(null);
+                if (lId) navigate(`/lei-seca/${slug}/${parte}/licao/${lId}`);
+              }}
+            >
+              Praticar Novamente
+            </Button>
+            <AlertDialogCancel className="w-full border-none bg-transparent hover:bg-white/5 text-white/70 h-12 rounded-xl">
+              Voltar
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

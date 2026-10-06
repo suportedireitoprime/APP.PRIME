@@ -193,7 +193,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
 
         {/* Atalhos Rápidos na Base do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST com altura ampliada e badges sem corte */}
         <div className="relative z-10 px-3 sm:px-6 pt-2.5 pb-6 sm:pb-7 w-full max-w-lg mx-auto">
-          <div className="grid grid-cols-5 gap-1 sm:gap-2">
+          <div className="grid grid-cols-4 gap-1 sm:gap-2">
             {/* FAVORITOS DE ARTIGOS */}
             <button
               type="button"
@@ -238,29 +238,6 @@ const LeiHero: React.FC<LeiHeroProps> = ({
               />
               <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider text-center block">
                 Praticar
-              </span>
-            </button>
-
-            {/* NOVIDADES */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                onOpenOverlay?.('novidades');
-              }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
-            >
-              {novidadesCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-zinc-950 text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#10B981] pointer-events-none">
-                  {novidadesCount > 99 ? '99+' : novidadesCount}
-                </span>
-              )}
-              <History
-                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#10B981]"
-                strokeWidth={2}
-              />
-              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider truncate w-[110%] overflow-visible block">
-                Novidades
               </span>
             </button>
 
