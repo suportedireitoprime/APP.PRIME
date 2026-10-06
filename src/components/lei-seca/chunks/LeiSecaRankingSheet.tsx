@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy, Star, Medal, User as UserIcon } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -103,11 +104,12 @@ export function LeiSecaRankingSheet({ open, onOpenChange, trilhaSlug }: LeiSecaR
 
           {/* Avatar */}
           <div className={`relative shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/40 overflow-hidden border-2 ${isTop1 ? 'border-amber-400' : isTop2 ? 'border-slate-300' : isTop3 ? 'border-amber-700' : 'border-white/10'}`}>
-            {item.avatar_url ? (
-              <img src={item.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
-            ) : (
-              <UserIcon className="w-5 h-5 text-white/40" />
-            )}
+            <Avatar className="w-full h-full">
+              <AvatarImage src={item.avatar_url || ''} className="object-cover" />
+              <AvatarFallback className="bg-transparent">
+                <UserIcon className="w-5 h-5 text-white/40" />
+              </AvatarFallback>
+            </Avatar>
           </div>
 
           {/* Nome e Licoes */}
