@@ -106,6 +106,7 @@ const Noticias = () => {
   };
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (getNoticiasCache()) return; // já hidratado no state inicial
     prefetchNoticias().then(() => {
       const data = getNoticiasCache();
@@ -285,7 +286,7 @@ const Noticias = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="bg-gradient-to-b from-primary/30 via-primary/15 to-background pb-4">
+      <div className="sticky top-0 z-40 bg-background bg-gradient-to-b from-primary/30 via-primary/15 to-background pb-4">
         <PageHeader
           title="Notícias Legislativas"
           subtitle="Últimas do mundo jurídico"
