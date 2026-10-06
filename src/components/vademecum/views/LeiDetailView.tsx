@@ -31,7 +31,7 @@ import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
 import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
 import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
 import ArtigoComparativoModal, { type AlteracaoDetailData } from '@/components/vademecum/artigo/ArtigoComparativoModal';
-import LeiSobreModal from '@/components/vademecum/artigo/LeiSobreModal';
+import { getScrapedAlteracoes } from '@/data/leiAlteracoesScraped';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { extractLeiCapitulos, isStructuralArtigo, formatArtigoNumeroOnly } from '@/lib/leiStructure';
 
@@ -93,6 +93,11 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   }, []);
 
   const searchBarRef = useRef<HTMLDivElement | null>(null);
+
+  const localScrapedCount = useMemo(() => {
+    return getScrapedAlteracoes(selectedTabelaNome, selectedLeiId).length;
+  }, [selectedTabelaNome, selectedLeiId]);
+
   const voiceSearch = useVoiceInput((text) => {
     if (!text) return;
     setSearchQuery(text);
@@ -696,7 +701,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         }}
         favCount={favArtigoNumeros.size}
         anotacoesCount={anotadoNumeros.size}
-        novidadesCount={dbAlteracoes?.length || 0}
+        novidadesCount={(dbAlteracoes?.length || 0) + localScrapedCount}
         radarCount={0}
         playlistCount={Object.keys(playlistNarracoes || {}).length}
       />

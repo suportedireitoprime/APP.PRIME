@@ -524,9 +524,13 @@ export function getScrapedAlteracoes(
   const keysToTry: string[] = [];
   if (tabelaNome) {
     keysToTry.push(`vade_scrape_data_${tabelaNome}`);
+    keysToTry.push(`vade_scrape_data_${tabelaNome.toUpperCase()}`);
+    keysToTry.push(`vade_scrape_data_${tabelaNome.toLowerCase()}`);
   }
   if (leiId) {
     keysToTry.push(`vade_scrape_data_${leiId}`);
+    keysToTry.push(`vade_scrape_data_${leiId.toUpperCase()}`);
+    keysToTry.push(`vade_scrape_data_${leiId.toLowerCase()}`);
   }
 
   const isCP = (tabelaNome && /CP_CODIGO_PENAL/i.test(tabelaNome)) || (leiId && /^cp$/i.test(leiId));
