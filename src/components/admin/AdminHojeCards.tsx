@@ -345,17 +345,27 @@ export function AdminHojeCards() {
       const metricasPromises = datas.map(d => supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(d) }));
       const list5mPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(datas[0]) });
       const listOnlinePromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online', _dia: isoDate(datas[0]) });
+      const listCadastrosPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'cadastros', _dia: isoDate(datas[0]) });
+      const listPaywallPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'paywall', _dia: isoDate(datas[0]) });
+      const listViuPlanosPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'viu_planos', _dia: isoDate(datas[0]) });
       const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
 
-      const [metricasResults, list5mResult, listOnlineResult] = await Promise.allSettled([
+      const [metricasResults, list5mResult, listOnlineResult, listCadastrosResult, listPaywallResult, listViuPlanosResult, trialResult] = await Promise.allSettled([
         Promise.allSettled(metricasPromises),
         list5mPromise,
         listOnlinePromise,
+        listCadastrosPromise,
+        listPaywallPromise,
+        listViuPlanosPromise,
         Promise.allSettled(trialPromises)
       ]);
 
       const list5m = list5mResult.status === 'fulfilled' ? list5mResult.value.data : [];
       const listOnline = listOnlineResult.status === 'fulfilled' ? listOnlineResult.value.data : [];
+      const listCadastros = listCadastrosResult.status === 'fulfilled' ? listCadastrosResult.value.data : [];
+      const listPaywall = listPaywallResult.status === 'fulfilled' ? listPaywallResult.value.data : [];
+      const listViuPlanos = listViuPlanosResult.status === 'fulfilled' ? listViuPlanosResult.value.data : [];
+      const listTrial = trialResult.status === 'fulfilled' ? (trialResult.value[0]?.status === 'fulfilled' ? trialResult.value[0].value.data : []) : [];
       
       let totalOnline5m = 0;
       let totalOnline = 0;
@@ -391,8 +401,9 @@ export function AdminHojeCards() {
       console.log('[ADMIN DEBUG] rawRpcResponse:', rawRpcResponse, '| totalCadastros:', totalCadastros, '| totalOnline:', totalOnline, '| list5m:', (list5m as any[])?.length, '| listOnline:', (listOnline as any[])?.length);
 
       if (periodo === 'hoje') {
-        if (Array.isArray(list5m) && list5m.length > 0) {
-          rowsCache.current['online5m'] = list5m
+        const processList = (listData: any, defaultSubtitle?: string) => {
+          if (!Array.isArray(listData) || listData.length === 0) return [];
+          return listData
             .filter((r: any) => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()))
             .map((r: any) => ({
               key: r.key || r.user_id || r.id || Math.random().toString(),
@@ -400,7 +411,7 @@ export function AdminHojeCards() {
               title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
               email: r.email || null,
               provider: r.avatar_url?.includes('googleusercontent.com') ? 'google' : (r.provider || (r.email ? 'email' : null)),
-              subtitle: rotaParaFuncao(r.subtitle).label,
+              subtitle: r.subtitle ? rotaParaFuncao(r.subtitle).label : defaultSubtitle,
               meta: hora(r.at || r.last_seen || r.created_at),
               acessos: typeof r.acessos === 'number' ? r.acessos : null,
               avatarUrl: r.avatar_url || null,
@@ -410,26 +421,25 @@ export function AdminHojeCards() {
               created_at: r.created_at || null,
               faixaEtaria: r.faixa_etaria || null,
             }));
+        };
+
+        if (Array.isArray(list5m) && list5m.length > 0) {
+          rowsCache.current['online5m'] = processList(list5m);
         }
         if (Array.isArray(listOnline) && listOnline.length > 0) {
-          rowsCache.current['online'] = listOnline
-            .filter((r: any) => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()))
-            .map((r: any) => ({
-              key: r.key || r.user_id || r.id || Math.random().toString(),
-              userId: r.user_id || r.id,
-              title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
-              email: r.email || null,
-              provider: r.avatar_url?.includes('googleusercontent.com') ? 'google' : (r.provider || (r.email ? 'email' : null)),
-              subtitle: rotaParaFuncao(r.subtitle).label,
-              meta: hora(r.at || r.last_seen || r.created_at),
-              acessos: typeof r.acessos === 'number' ? r.acessos : null,
-              avatarUrl: r.avatar_url || null,
-              isPremium: r.is_premium ?? r.premium ?? false,
-              planValue: r.planValue,
-              planTag: r.planTag,
-              created_at: r.created_at || null,
-              faixaEtaria: r.faixa_etaria || null,
-            }));
+          rowsCache.current['online'] = processList(listOnline);
+        }
+        if (Array.isArray(listCadastros) && listCadastros.length > 0) {
+          rowsCache.current['cadastros'] = processList(listCadastros, 'Novo cadastro');
+        }
+        if (Array.isArray(listPaywall) && listPaywall.length > 0) {
+          rowsCache.current['paywall'] = processList(listPaywall, 'Abriu planos');
+        }
+        if (Array.isArray(listViuPlanos) && listViuPlanos.length > 0) {
+          rowsCache.current['viu_planos'] = processList(listViuPlanos, 'Abriu checkout (Clicou)');
+        }
+        if (Array.isArray(listTrial) && listTrial.length > 0) {
+          rowsCache.current['trial'] = processList(listTrial, 'Assinatura Ativa');
         }
       }
 
@@ -1023,8 +1033,8 @@ export function AdminHojeCards() {
                 avatar_url: r.avatar_url || null,
                 provider: isGoogleAvatar ? 'google' : (r.provider || 'email'),
                 acessos: null,
-                created_at: profilesDict[uid]?.created_at || r.created_at || r.at,
-                faixa_etaria: profilesDict[uid]?.faixa_etaria || r.faixa_etaria || null
+                created_at: r.created_at || r.at,
+                faixa_etaria: r.faixa_etaria || null
               };
             });
             allLists = allLists.concat(trials);
