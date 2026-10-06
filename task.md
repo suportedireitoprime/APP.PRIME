@@ -6,4 +6,4 @@
 - [x] Evitar que `fetchRows` resete as linhas quando já houver cache (background refresh suave) <!-- id: 3 -->
 - [x] Otimizar mapeamento e evitar waterfalls desnecessários <!-- id: 4 -->
 - [x] Validar compilação TypeScript com `tsc --noEmit` <!-- id: 5 -->
-- [ ] Realizar auto-commit e push para o GitHub <!-- id: 6 -->
+- [x] Realizar auto-commit e push para o GitHub <!-- id: 6 -->
