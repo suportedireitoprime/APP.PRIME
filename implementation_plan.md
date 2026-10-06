@@ -1,48 +1,62 @@
-# Plano de Implementação: Correção da Lista de Artigos no Mobile Nativo (CDC, Código Civil e CPC)
+# Plano de Implementação: Atualização de Planos e Preços Asaas
 
-## 1. Diagnóstico e Causa Raiz
-Ao abrir o **Código de Defesa do Consumidor (CDC)**, o **Código Civil (CC)** ou o **Código de Processo Civil (CPC)** no aplicativo instalado no Android (Capacitor nativo), as listas de artigos aparecem vazias ou não carregam, enquanto no ambiente web/desktop Antigravity funcionam.
-
-### Causas Identificadas:
-1. **Falha do `{ cache: 'force-cache' }` no WebView do Android**:
-   No arquivo `src/services/lawsBundle.ts`, as funções `loadManifest()` e `loadBundledLei()` utilizavam `fetch(..., { cache: 'force-cache' })`. No Android WebView com `WebViewAssetLoader` (onde arquivos locais são servidos do APK), requisições com `force-cache` disparam `TypeError: Failed to fetch` porque o loader de assets nativo não implementa cabeçalhos HTTP padrão de cache. Com isso, `loadManifest()` falhava silenciosamente e retornava `null`.
-2. **Dependência síncrona de `_slugToId` em `getBundleSlugForTabela`**:
-   `getBundleSlugForTabela(tabelaNome)` retornava `null` imediatamente se `_slugToId` ainda não tivesse sido populado por `loadManifest()`. Sem mapeamento estático síncrono, a busca pelo bundle local do CDC, CC e CPC era abortada.
-3. **Condição de Corrida (Race Condition) no `useLeiArtigos.ts`**:
-   No hook `useLeiArtigos.ts`, um timer de 280ms (`skeletonTimer`) disparava `fetchArtigosInstant(tabelaAtual, 10)`. Se a resposta retornasse vazia (por exemplo, offline ou em rede lenta), o hook executava prematuramente:
-   ```ts
-   setArtigos([]);
-   setLoadedKey(tabelaAtual);
-   setLoadingArtigos(false);
-   ```
-   Isso sobrescrevia o estado do componente como "vazio" e finalizava o loading, impedindo a renderização dos 2.888 artigos do Código Civil ou 1.354 do CPC.
-4. **Descompasso de Scroll no Virtualizador (`LeiArtigosVirtualList.tsx`)**:
-   O `initialOffset` utilizava `virtualOffsetCache.get(listKey)` sem sincronizar o `scrollTop` real do elemento DOM `#root`. Se houvesse um offset salvo, o virtualizador renderizava itens a milhares de pixels abaixo, deixando os primeiros artigos fora da viewport do usuário. Além disso, não havia skeleton de loading quando `loadingArtigos && visibleArtigos.length === 0`.
+## Contexto & Requisitos
+O usuário solicitou a atualização dos planos e limites de parcelamento:
+- **Mensal:** R$ 29,90 / mês.
+- **Anual:** Preço cheio em destaque de **R$ 149,90**; parcelável em **até 6 vezes** (remover menção a 12x).
+- **Vitalício:** Preço cheio em destaque de **R$ 249,90**; parcelável em **até 10 vezes** (remover menção a 12x).
+- **Asaas Edge Function:** Atualizar valores base (mensal 29.90, anual 149.90, vitalício 249.90) e impor limites de parcelamento (anual max 6x, vitalício max 10x).
 
 ---
 
-## 2. Mudanças Propostas
+## Modificações Propostas
 
-### A. `src/services/lawsBundle.ts`
-- Implementar `STATIC_TABELA_TO_SLUG`: mapeamento estático e síncrono entre as tabelas catalogadas e seus slugs (`CDC_CODIGO_DEFESA_CONSUMIDOR` -> `'cdc'`, `CC_CODIGO_CIVIL` -> `'cc'`, `CPC_CODIGO_PROCESSO_CIVIL` -> `'cpc'`).
-- Remover `{ cache: 'force-cache' }` de `loadManifest()` e `loadBundledLei()`.
-- Criar resolução resiliente de URLs para carregar os JSONs tanto de caminhos absolutos (`/laws-bundle/...`), relativos (`laws-bundle/...`) quanto via `window.location.origin`.
-- Garantir que `loadBundledLei(slug)` funcione independentemente de `loadManifest()`.
+### 1. `src/components/assinatura/PricingCards.tsx`
+- **Anual:**
+  - Preço em destaque: `R$ 149,90`
+  - Subtexto: `Parcele em até 6 vezes no cartão`
+  - Remover `R$ 16,65 em 12x` e `ou R$ 199,90 à vista`.
+- **Vitalício:**
+  - Preço em destaque: `R$ 249,90`
+  - Subtexto: `Parcele em até 10 vezes no cartão (Acesso para sempre)`
+  - Remover `R$ 25,90 em 12x` e `ou R$ 280,00 à vista`.
+- **Mensal:**
+  - Manter `R$ 29,90 /mês`.
 
-### B. `src/hooks/domain/useLeiArtigos.ts`
-- Importar `getBundleSlugForTabela` e `loadBundledLei` diretamente para carregamento a 0ms sem esperar promises encadeadas de manifest.
-- Proteger contra premature empty state: se `fetchArtigosInstant` retornar vazio, NUNCA zerar os artigos e nunca declarar o carregamento concluído enquanto o carregamento do bundle ou do Dexie estiver em processamento.
-- Ajustar timing e estados para transição suave de tela.
+### 2. `src/components/assinatura/CheckoutModal.tsx`
+- `getPlanInfo()`:
+  - Anual: R$ 149,90 (em até 6x)
+  - Vitalício: R$ 249,90 (em até 10x)
+- Subtexto do Card de Resumo:
+  - Anual: `ou até 6x no cartão`
+  - Vitalício: `ou até 10x no cartão`
+- Dropdown de parcelas:
+  - Limite para Vitalício: `[1, 2, ..., 10]`
+  - Limite para Anual: `[1, 2, 3, 4, 5, 6]`
+  - Valor base do cálculo: Anual = 149.90, Vitalício = 249.90
 
-### C. `src/components/vademecum/artigo/LeiArtigosVirtualList.tsx`
-- Corrigir `initialOffset` do virtualizador para iniciar em 0 (alinhado com o DOM `#root`) evitando telas pretas com itens deslocados.
-- Proteger `translateY` com `Math.max(0, ...)` prevenindo que itens sejam deslocados para cima do topo.
-- Adicionar esqueleto elegante de loading (`loadingArtigos && visibleArtigos.length === 0`).
+### 3. `src/pages/Assinatura.tsx`
+- Gaveta de escolha de método de pagamento:
+  - Cartão:
+    - Vitalício: `Até 10x de R$ 24,99`
+    - Anual: `Até 6x de R$ 24,98`
+  - PIX:
+    - Vitalício: `R$ 249,90 à vista`
+    - Anual: `R$ 149,90 à vista`
+
+### 4. `supabase/functions/asaas-checkout/index.ts`
+- `baseValue`:
+  - `vitalicio` / `vitalicio_pix`: 249.90
+  - `anual` / `anual_pix` / `anual_regular_pix` / `promocao`: 149.90
+  - `mensal`: 29.90
+- Limite de parcelas:
+  - `maxInstallments`: 10 para vitalício, 6 para anual.
+  - Sanitização: `const num = Math.min(Math.max(1, installmentCount || 1), maxInstallments);`
+- Deploy da Edge Function:
+  - Executar comando de deploy via CLI do Supabase.
 
 ---
 
-## 3. Plano de Validação
-- Executar `.\node_modules\.bin\tsc.CMD --noEmit` para validação rigorosa de tipagem TypeScript.
-- Testar parsing e normalização de `cdc.json`, `cc.json` e `cpc.json` no Node.
-- Enviar automaticamente para o repositório GitHub via PowerShell:
-  `git add . ; git commit -m "fix(vademecum): fix mobile native article list loading for CDC, CC, and CPC" ; git push`
+## Validação e Finalização
+1. Executar verificação estrita de TypeScript: `.\node_modules\.bin\tsc.CMD --noEmit`.
+2. Commit e push automático para o repositório remoto.

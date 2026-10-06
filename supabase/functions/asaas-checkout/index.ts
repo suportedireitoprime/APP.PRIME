@@ -110,25 +110,31 @@ Deno.serve(async (req) => {
 
     if (isVitalicio || isInstallment) {
       // Cobrança avulsa / parcelada via /payments (sem recorrência anual para Vitalício)
-      let baseValue = 119.90;
-      if (plan === 'vitalicio') {
+      // Preços oficiais: Vitalício = R$ 249,90 (até 10x), Anual = R$ 149,90 (até 6x), Mensal = R$ 29,90
+      let baseValue = 149.90;
+      let maxInstallments = 6;
+      if (plan === 'vitalicio' || plan === 'vitalicio_pix') {
         baseValue = 249.90;
-      } else if (plan === 'vitalicio_pix') {
-        baseValue = 249.90;
-      } else if (plan === 'anual_pix' || plan === 'promocao') {
+        maxInstallments = 10;
+      } else if (plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao') {
         baseValue = 149.90;
+        maxInstallments = 6;
+      } else if (plan === 'mensal') {
+        baseValue = 29.90;
+        maxInstallments = 1;
       }
 
+      const rawNum = installmentCount || 1;
+      const num = Math.min(Math.max(1, rawNum), maxInstallments);
       let totalWithTax = baseValue;
-      const num = installmentCount || 1;
 
       if (isCreditCard && num > 1) {
-          let taxRate = 0;
-          if (num <= 6) taxRate = 0.0389;
-          else taxRate = 0.0439;
-          totalWithTax = Number(((baseValue + 0.29) / (1 - taxRate)).toFixed(2));
-        }
-      
+        let taxRate = 0;
+        if (num <= 6) taxRate = 0.0389;
+        else taxRate = 0.0439;
+        totalWithTax = Number(((baseValue + 0.29) / (1 - taxRate)).toFixed(2));
+      }
+
       const isPromo = plan === 'promocao';
       const paymentPayload: any = {
         customer: customerId,
@@ -169,7 +175,7 @@ Deno.serve(async (req) => {
         subPayload.cycle = 'MONTHLY';
         subPayload.description = 'Mensal Estudos Jurídicos';
       } else if (plan === 'anual' || plan === 'anual_regular_pix') {
-        subPayload.value = 119.90;
+        subPayload.value = 149.90;
         subPayload.cycle = 'YEARLY';
         subPayload.description = 'Anual Estudos Jurídicos';
       } else if (plan === 'anual_pix' || plan === 'promocao') {
@@ -268,7 +274,7 @@ Deno.serve(async (req) => {
           event_name: 'purchase',
           metadata: {
             plano: planoFinal,
-            value: sub.value || (isAnualPlan ? 119.90 : 29.90),
+            value: sub.value || (isAnualPlan ? (isVitalicio ? 249.90 : 149.90) : 29.90),
             currency: 'BRL',
             source: 'asaas_checkout_direct',
             payment_id: sub.id,

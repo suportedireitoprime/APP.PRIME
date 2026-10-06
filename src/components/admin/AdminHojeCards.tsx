@@ -504,7 +504,7 @@ export function AdminHojeCards() {
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
           const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício'));
-          const valor = isVit ? 249.90 : isAnual ? 119.90 : 29.90;
+          const valor = isVit ? 249.90 : isAnual ? 149.90 : 29.90;
           subUsers.set(uid, { plano: (isAnual && isPromo) ? 'anual_promocional' : plano, valor });
         });
 
@@ -512,7 +512,7 @@ export function AdminHojeCards() {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
           const uid = s.user_id || s.id;
           const plano = s.product_id?.includes('anual') ? 'anual' : s.product_id?.includes('vitalicio') ? 'vitalicio' : 'mensal';
-          const valor = plano === 'anual' ? 119.90 : plano === 'vitalicio' ? 249.90 : 29.90;
+          const valor = plano === 'anual' ? 149.90 : plano === 'vitalicio' ? 249.90 : 29.90;
           if (!subUsers.has(uid)) {
             subUsers.set(uid, { plano, valor });
           }
@@ -522,7 +522,7 @@ export function AdminHojeCards() {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
           const uid = s.user_id || s.id;
           const plano = s.product_id?.includes('anual') ? 'anual' : 'mensal';
-          const valor = plano === 'anual' ? 119.90 : 29.90;
+          const valor = plano === 'anual' ? 149.90 : 29.90;
           if (!subUsers.has(uid)) {
             subUsers.set(uid, { plano, valor });
           }
@@ -532,7 +532,7 @@ export function AdminHojeCards() {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
           const uid = s.claimed_user_id || s.id;
           const plano = s.tipo || 'mensal';
-          const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 119.90 : 29.90;
+          const valor = plano === 'vitalicio' ? 149.90 : plano === 'anual' ? 149.90 : 29.90;
           if (!subUsers.has(uid)) {
             subUsers.set(uid, { plano, valor });
           }
@@ -784,7 +784,7 @@ export function AdminHojeCards() {
             const isPromo = subText.includes('promocional') || subText.includes('promo') || titleText.includes('promocional');
             const isAnual = subText.includes('anual') || titleText.includes('anual');
             const isVit = !isPromo && (subText.includes('vitalicio') || subText.includes('vitalício') || titleText.includes('vitalicio'));
-            const planValor = isVit ? 249.90 : isAnual ? 119.90 : 29.90;
+            const planValor = isVit ? 249.90 : isAnual ? 149.90 : 29.90;
             const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
             const uid = r.user_id || r.id;
             if (uid) existingUserIds.add(uid);
@@ -853,7 +853,7 @@ export function AdminHojeCards() {
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
           const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
-          const planValor = isVit ? 249.90 : isAnual ? 119.90 : 29.90;
+          const planValor = isVit ? 249.90 : isAnual ? 149.90 : 29.90;
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
           const profInfo = profMap.get(s.user_id);
 
@@ -877,7 +877,7 @@ export function AdminHojeCards() {
         (playRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const isAnualOrVit = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio');
-          const planValor = isAnualOrVit ? 119.90 : 29.90;
+          const planValor = isAnualOrVit ? 149.90 : 29.90;
           const planName = isAnualOrVit ? 'Anual/Vitalício' : 'Mensal';
           const profInfo = profMap.get(s.user_id);
 
@@ -901,7 +901,7 @@ export function AdminHojeCards() {
         (appleRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const isAnual = s.product_id?.includes('anual');
-          const planValor = isAnual ? 119.90 : 29.90;
+          const planValor = isAnual ? 149.90 : 29.90;
           const planName = isAnual ? 'Anual' : 'Mensal';
           const profInfo = profMap.get(s.user_id);
 

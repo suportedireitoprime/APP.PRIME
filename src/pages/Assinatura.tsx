@@ -242,9 +242,9 @@ export default function Assinatura() {
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-black text-xl text-white">Cartão de Crédito</span>
                     {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 12x de R$ 29,90</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 10x de R$ 24,99</span>
                     ) : (
-                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 12x de R$ 16,65</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 6x de R$ 24,98</span>
                     )}
                   </div>
                   <ArrowRight className="w-6 h-6 text-zinc-500 group-hover:text-primary transition-colors group-hover:translate-x-1" />
@@ -267,9 +267,9 @@ export default function Assinatura() {
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-black text-xl text-white">PIX</span>
                     {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-zinc-400 mt-0.5">R$ 252,00 à vista</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">R$ 249,90 à vista</span>
                     ) : (
-                      <span className="text-xs font-bold text-emerald-500 mt-0.5">R$ 179,90 à vista</span>
+                      <span className="text-xs font-bold text-emerald-500 mt-0.5">R$ 149,90 à vista</span>
                     )}
                   </div>
                   <ArrowRight className="w-6 h-6 text-zinc-500 group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
@@ -416,7 +416,7 @@ export default function Assinatura() {
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  {tab === 'promocao' ? 'ADQUIRIR VITAL�CIO PROMO' : tab === 'vitalicio' ? 'ADQUIRIR VITALÍCIO' : tab === 'anual' ? 'ASSINAR ANUAL' : 'ASSINAR MENSAL'}
+                  {tab === 'promocao' ? 'ADQUIRIR VITALÍCIO PROMO' : tab === 'vitalicio' ? 'ADQUIRIR VITALÍCIO' : tab === 'anual' ? 'ASSINAR ANUAL' : 'ASSINAR MENSAL'}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                 </span>
               </Button>

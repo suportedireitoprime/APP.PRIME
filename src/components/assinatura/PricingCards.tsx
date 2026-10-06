@@ -122,7 +122,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
                 <div>
                   <div className="flex items-center gap-1.5 mb-0.5">
                     <Zap className="w-4 h-4 text-emerald-400 fill-emerald-400" />
-                    <h3 className="font-display font-black text-emerald-400 text-base uppercase tracking-wider">Promo��o Vital�cia</h3>
+                    <h3 className="font-display font-black text-emerald-400 text-base uppercase tracking-wider">Promoção Vitalícia</h3>
                   </div>
                   <p className="font-body text-[11px] font-semibold text-muted-foreground line-through">De R$ 199,90</p>
                 </div>
@@ -172,12 +172,12 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               </div>
 
               <div className="flex items-baseline gap-1.5 mb-1 text-foreground relative z-10">
-                <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 16,65</span>
-                <span className="font-display text-lg font-bold shadow-black/50 drop-shadow-md text-muted-foreground">em 12x</span>
+                <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 149,90</span>
+                <span className="font-display text-lg font-bold shadow-black/50 drop-shadow-md text-muted-foreground">/ano</span>
               </div>
 
-              <p className="text-[10px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
-                ou R$ 199,90 à vista
+              <p className="text-[11px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
+                Parcele em até 6 vezes no cartão
               </p>
               
               <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">
@@ -282,12 +282,12 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               </div>
 
               <div className="flex items-baseline gap-1.5 mb-1 text-foreground relative z-10">
-                <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 25,90</span>
-                <span className="font-display text-lg font-bold shadow-black/50 drop-shadow-md text-muted-foreground">em 12x</span>
+                <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 249,90</span>
+                <span className="font-display text-lg font-bold shadow-black/50 drop-shadow-md text-muted-foreground">único</span>
               </div>
 
-              <p className="text-[10px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
-                ou R$ 280,00 à vista (Acesso para sempre)
+              <p className="text-[11px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
+                Parcele em até 10 vezes no cartão (Acesso para sempre)
               </p>
               
               <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">

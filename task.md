@@ -1,20 +1,23 @@
-# Tarefa: Corrigir exibição da lista de artigos no Mobile Nativo (CDC, CC e CPC)
+# Atualização de Planos e Preços Asaas & Frontend
 
-- [ ] Fase 1: Criar plano de implementação (`implementation_plan.md`) <!-- id: 1 -->
-- [ ] Fase 2: Robustecer `src/services/lawsBundle.ts` <!-- id: 2 -->
-  - [ ] Adicionar dicionário estático síncrono `STATIC_TABELA_TO_SLUG` para todas as leis catalogadas (garantindo resolução 0ms para CDC, CC, CPC, CP, CF, etc.)
-  - [ ] Remover `{ cache: 'force-cache' }` de `loadManifest` e `loadBundledLei` (incompatível com Android WebView AssetLoader)
-  - [ ] Implementar URLs resilientes (`/laws-bundle/${slug}.json`, `laws-bundle/${slug}.json` e origin)
-  - [ ] Permitir que `loadBundledLei` opere de forma independente de `loadManifest`
-- [ ] Fase 3: Eliminar Race Condition e Premature Empty State em `src/hooks/domain/useLeiArtigos.ts` <!-- id: 3 -->
-  - [ ] Importar `getBundleSlugForTabela` e `loadBundledLei` de forma direta e carregar bundle em 0ms
-  - [ ] Não sobrescrever `artigos` com `[]` e não finalizar `loadingArtigos = false` se `fetchArtigosInstant` retornar vazio enquanto o carregamento do bundle ainda está em andamento
-  - [ ] Aumentar tempo de skeleton e garantir fallback gracioso
-- [ ] Fase 4: Otimizar Virtualização e Prevenir Telas Vazias em `LeiArtigosVirtualList.tsx` <!-- id: 4 -->
-  - [ ] Remover `initialOffset` desincronizado de `virtualOffsetCache` que renderizava itens fora da viewport
-  - [ ] Proteger `translateY` com `Math.max(0, ...)` contra valores negativos
-  - [ ] Adicionar skeleton visual elegante quando `loadingArtigos && visibleArtigos.length === 0`
-- [ ] Fase 5: Validação de Tipos e Build <!-- id: 5 -->
-  - [ ] Executar `.\node_modules\.bin\tsc.CMD --noEmit`
-- [ ] Fase 6: Versionamento Automático e Commit <!-- id: 6 -->
-  - [ ] Executar `git add . ; git commit -m "..." ; git push`
+- [x] Fase 1: Atualizar UI dos Planos em `src/components/assinatura/PricingCards.tsx` <!-- id: 1 -->
+  - [x] Atualizar Plano Anual: Preço cheio R$ 149,90 e texto "Parcele em até 6 vezes no cartão" (remover 12x de R$ 16,65 / R$ 199,90)
+  - [x] Atualizar Plano Vitalício: Preço cheio R$ 249,90 e texto "Parcele em até 10 vezes no cartão (Acesso para sempre)" (remover 12x de R$ 25,90 / R$ 280,00)
+  - [x] Garantir que o Plano Mensal permaneça R$ 29,90 / mês
+- [x] Fase 2: Atualizar Modal de Checkout em `src/components/assinatura/CheckoutModal.tsx` <!-- id: 2 -->
+  - [x] Atualizar `getPlanInfo()`: Anual R$ 149,90 (em até 6x), Vitalício R$ 249,90 (em até 10x)
+  - [x] Atualizar seletor de parcelas: Anual limitado a até 6x e Vitalício limitado a até 10x
+  - [x] Corrigir cálculo de parcelamento: Anual base R$ 149,90 e Vitalício base R$ 249,90
+- [x] Fase 3: Atualizar Gaveta de Pagamento em `src/pages/Assinatura.tsx` <!-- id: 3 -->
+  - [x] Cartão: Vitalício "Até 10x de R$ 24,99" | Anual "Até 6x de R$ 24,98"
+  - [x] PIX: Vitalício "R$ 249,90 à vista" | Anual "R$ 149,90 à vista"
+- [x] Fase 4: Atualizar Edge Function Asaas em `supabase/functions/asaas-checkout/index.ts` <!-- id: 4 -->
+  - [x] Definir `baseValue`: Vitalício = 249.90, Anual = 149.90, Mensal = 29.90
+  - [x] Limitar parcelamento: Vitalício max 10 parcelas, Anual max 6 parcelas
+  - [x] Ajustar valores da assinatura recorrente (Anual = 149.90, Mensal = 29.90)
+  - [x] Fazer deploy da função: `supabase.cmd functions deploy asaas-checkout --project-ref dnjrgpldcwcpoywamorr`
+- [x] Fase 5: Validação TypeScript e Build <!-- id: 5 -->
+  - [x] Executar `.\node_modules\.bin\tsc.CMD --noEmit` (0 erros)
+  - [x] Executar `.\node_modules\.bin\vite.CMD build` (sucesso)
+- [x] Fase 6: Versionamento Automático e Commit <!-- id: 6 -->
+  - [x] Executar `git add . ; git commit -m "..." ; git push`

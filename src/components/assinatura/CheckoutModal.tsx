@@ -117,6 +117,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const [loading, setLoading] = useState(false);
   const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [installmentCount, setInstallmentCount] = useState<number>(1);
+
+  // Garantir limite de parcelas ao alternar entre Anual (máx 6x) e Vitalício (máx 10x)
+  useEffect(() => {
+    if (activePlan === 'anual' && installmentCount > 6) {
+      setInstallmentCount(6);
+    } else if (activePlan === 'vitalicio' && installmentCount > 10) {
+      setInstallmentCount(10);
+    }
+  }, [activePlan, installmentCount]);
   const [addressInfo, setAddressInfo] = useState<string>('');
   const [isFlipped, setIsFlipped] = useState(false);
   
@@ -531,11 +540,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const getPlanInfo = () => {
     if (activePlan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mês' };
-    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 199,90', sub: ' (em até 12x)' };
+    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: ' (em até 6x)' };
     if (activePlan === 'anual_pix') return { title: 'Anual Promoção', price: 'R$ 149,90', sub: ' (no PIX)' };
-    if (activePlan === 'anual_regular_pix') return { title: 'Anual PIX', price: 'R$ 199,90', sub: ' (à vista)' };
-    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 299,00', sub: ' (em até 12x)' };
-    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício PIX', price: 'R$ 250,00', sub: ' (à vista)' };
+    if (activePlan === 'anual_regular_pix') return { title: 'Anual PIX', price: 'R$ 149,90', sub: ' (à vista)' };
+    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 249,90', sub: ' (em até 10x)' };
+    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício PIX', price: 'R$ 249,90', sub: ' (à vista)' };
     return { title: '', price: '', sub: '' };
   };
 
@@ -589,10 +598,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
                 </div>
                 {(activePlan === 'anual') && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou 12x de R$ 16,65 no cartão</p>
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou até 6x no cartão</p>
                 )}
                 {(activePlan === 'vitalicio') && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou 12x de R$ 29,90 no cartão</p>
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou até 10x no cartão</p>
                 )}
                 {(activePlan === 'vitalicio_pix' || activePlan === 'anual_pix') && (
                   <span className="absolute top-0 right-0 bg-emerald-500/80 backdrop-blur-md text-white font-black text-[9px] px-2 py-0.5 rounded-bl-lg tracking-wider">
@@ -922,9 +931,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
                             className="w-full h-11 rounded-xl bg-black/40 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white"
                           >
-                          {[1,2,3,4,5,6,7,8,9,10,11,12].map(num => {
+                          {Array.from({ length: activePlan === 'vitalicio' ? 10 : 6 }, (_, idx) => idx + 1).map(num => {
                             // Cálculo sem juros no display (absorvidos pela operação)
-                            const totalWithTax = activePlan === 'vitalicio' ? 249.90 : 119.90;
+                            const totalWithTax = activePlan === 'vitalicio' ? 249.90 : 149.90;
                             const installmentValue = totalWithTax / num;
 
                             return (
