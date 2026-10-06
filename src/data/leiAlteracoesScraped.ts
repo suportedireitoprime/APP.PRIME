@@ -3,6 +3,7 @@
  * Substitui definitivamente a leitura antiga por regex no caput dos artigos,
  * priorizando os dados reais de varredura oficial (ScrapedArticleUpdate) com mês abreviado / ano.
  */
+import { getSeedsRegistry } from './leiAlteracoesSeedAll';
 
 export interface ScrapedArticleUpdate {
   artigo: string;          // Ex: "Art. 92" ou "Art. 121"
@@ -620,31 +621,21 @@ export function getScrapedAlteracoes(
   // Detecta a lei via SEEDS_REGISTRY (mapa dinâmico — sem if/else manual)
   let seedsToMerge: ScrapedArticleUpdate[] = [];
 
-  // Lazy-load para evitar dependência circular no boot
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { SEEDS_REGISTRY } = require('./leiAlteracoesSeedAll');
-    if (Array.isArray(SEEDS_REGISTRY)) {
-      for (const entry of SEEDS_REGISTRY) {
-        const matchTabela = tabelaNome && entry.tabelaPattern.test(tabelaNome);
-        const matchId = leiId && entry.idPattern.test(leiId);
-        if (matchTabela || matchId) {
-          // Adiciona chaves extras do registry
-          for (const ek of entry.extraKeys) {
-            if (!keysToTry.includes(ek)) keysToTry.push(ek);
-          }
-          seedsToMerge = entry.seeds || [];
-          break;
+  // Recupera o registro chamando a função para evitar erro de circular dependency no momento do boot
+  const SEEDS_REGISTRY = getSeedsRegistry();
+  if (Array.isArray(SEEDS_REGISTRY)) {
+    for (const entry of SEEDS_REGISTRY) {
+      const matchTabela = tabelaNome && entry.tabelaPattern.test(tabelaNome);
+      const matchId = leiId && entry.idPattern.test(leiId);
+      if (matchTabela || matchId) {
+        // Adiciona chaves extras do registry
+        for (const ek of entry.extraKeys) {
+          if (!keysToTry.includes(ek)) keysToTry.push(ek);
         }
+        seedsToMerge = entry.seeds || [];
+        break;
       }
     }
-  } catch {
-    // Fallback se o import falhar — usa os seeds locais existentes
-    const isCP = (tabelaNome && /CP_CODIGO_PENAL/i.test(tabelaNome)) || (leiId && /^cp$/i.test(leiId));
-    const isCC = (tabelaNome && /CC_CODIGO_CIVIL/i.test(tabelaNome)) || (leiId && /^cc$/i.test(leiId));
-    const isCPP = (tabelaNome && /CPP_CODIGO_PROCESSO_PENAL/i.test(tabelaNome)) || (leiId && /^cpp$/i.test(leiId));
-    const isCTB = (tabelaNome && /CTB_CODIGO_TRANSITO/i.test(tabelaNome)) || (leiId && /^ctb$/i.test(leiId));
-    seedsToMerge = isCP ? SEED_CP_ALTERACOES : (isCC ? SEED_CC_ALTERACOES : (isCPP ? SEED_CPP_ALTERACOES : (isCTB ? SEED_CTB_ALTERACOES : [])));
   }
 
   for (const key of keysToTry) {

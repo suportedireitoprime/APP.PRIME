@@ -671,7 +671,7 @@ export interface SeedRegistryEntry {
   seeds: ScrapedArticleUpdate[];
 }
 
-export const SEEDS_REGISTRY: SeedRegistryEntry[] = [
+export const getSeedsRegistry = (): SeedRegistryEntry[] => [
   // Já existentes em leiAlteracoesScraped.ts
   { tabelaPattern: /CP_CODIGO_PENAL/i, idPattern: /^cp$/i, extraKeys: ['vade_scrape_data_CP_CODIGO_PENAL', 'vade_scrape_data_cp'], seeds: SEED_CP_ALTERACOES },
   { tabelaPattern: /CC_CODIGO_CIVIL/i, idPattern: /^cc$/i, extraKeys: ['vade_scrape_data_CC_CODIGO_CIVIL', 'vade_scrape_data_cc'], seeds: SEED_CC_ALTERACOES },
