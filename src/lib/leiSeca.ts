@@ -1,4 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
+import fallbackTrilhas from "@/data/lei-seca-trilhas.json";
+import { LEIS_CATALOG } from "@/data/leisCatalog";
 
 export interface LeiSecaTrilha {
   id: string;
@@ -65,13 +67,40 @@ export async function listarTrilhas(): Promise<LeiSecaTrilha[]> {
 }
 
 export async function getTrilha(slug: string): Promise<LeiSecaTrilha | null> {
-  const { data, error } = await supabase
-    .from("lei_seca_trilhas")
-    .select("*")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (error) throw error;
-  return data as any;
+  try {
+    const { data, error } = await supabase
+      .from("lei_seca_trilhas")
+      .select("*")
+      .eq("slug", slug)
+      .maybeSingle();
+    if (!error && data) return data as any;
+  } catch (err) {
+    console.warn("[leiSeca] Erro getTrilha online:", err);
+  }
+
+  // Fallback offline / local
+  const localTrilha = (fallbackTrilhas as any[]).find((t: any) => t.slug === slug);
+  if (localTrilha) return localTrilha as any;
+
+  const catalog = LEIS_CATALOG.find((l) => l.id === slug || l.tags?.includes(slug) || l.sigla.toLowerCase() === slug.toLowerCase());
+  if (catalog) {
+    const matched = (fallbackTrilhas as any[]).find((t: any) => t.sigla?.toLowerCase() === catalog.sigla?.toLowerCase());
+    if (matched) return matched as any;
+    return {
+      id: catalog.id,
+      slug: catalog.id,
+      nome: catalog.nome,
+      sigla: catalog.sigla,
+      lei_slug: catalog.id === "ei" ? "estatuto-idoso" : catalog.id,
+      ordem: 99,
+      cor: "from-purple-600 to-fuchsia-700",
+      icone: "Scale",
+      partes: [{ slug: "completa", nome: catalog.nome, filtro: null }],
+      ativa: true,
+    } as any;
+  }
+
+  return null;
 }
 
 export async function listarLicoes(trilhaSlug: string, parte: string): Promise<LeiSecaLicao[]> {
@@ -152,18 +181,34 @@ export async function salvarProgresso(userId: string, licaoId: string, dados: { 
 /** Texto literal de uma lista de artigos do Vade Mecum (por slug da lei). */
 export async function carregarArtigos(leiSlug: string, nums: string[]): Promise<Array<{ num: string; texto: string }>> {
   if (!nums.length) return [];
-  const { data: lei } = await supabase
-    .from("vade_mecum_leis")
-    .select("id")
-    .eq("slug", leiSlug)
-    .maybeSingle();
-  if (!lei?.id) return nums.map((n) => ({ num: n, texto: "" }));
-  const { data } = await supabase
-    .from("vade_mecum_artigos")
-    .select("numero,texto")
-    .eq("lei_id", lei.id)
-    .in("numero", nums);
-  const map = new Map<string, string>();
-  (data ?? []).forEach((r: any) => map.set(String(r.numero), String(r.texto ?? "")));
-  return nums.map((n) => ({ num: n, texto: map.get(n) ?? "" }));
+  try {
+    let { data: lei } = await supabase
+      .from("vade_mecum_leis")
+      .select("id")
+      .eq("slug", leiSlug)
+      .maybeSingle();
+
+    if (!lei?.id) {
+      const { data: altLei } = await supabase
+        .from("vade_mecum_leis")
+        .select("id")
+        .or("slug.eq.estatuto-idoso,slug.eq.idoso,slug.eq.ei")
+        .maybeSingle();
+      if (altLei?.id) lei = altLei;
+    }
+
+    if (!lei?.id) return nums.map((n) => ({ num: n, texto: "" }));
+
+    const { data } = await supabase
+      .from("vade_mecum_artigos")
+      .select("numero,texto")
+      .eq("lei_id", lei.id)
+      .in("numero", nums);
+
+    const map = new Map<string, string>();
+    (data ?? []).forEach((r: any) => map.set(String(r.numero), String(r.texto ?? "")));
+    return nums.map((n) => ({ num: n, texto: map.get(n) ?? "" }));
+  } catch {
+    return nums.map((n) => ({ num: n, texto: "" }));
+  }
 }

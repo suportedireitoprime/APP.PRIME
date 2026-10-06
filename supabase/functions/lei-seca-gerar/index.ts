@@ -8,7 +8,15 @@ const corsHeaders = {
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") ?? "";
-const MODEL = "gemini-2.0-flash";
+const OMNIROUTE_URL = "https://omniroute-production-fb57.up.railway.app/v1/chat/completions";
+const OMNIROUTE_API_KEY = Deno.env.get("OMNIROUTE_API_KEY") || "sk-03fcfd719bf0cc25-19fbd7-028392e5";
+
+// Modelos OmniRoute
+const PRIMARY_MODEL = "antigravity/gemini-3.8-flash"; // Requisitado expressamente pelo usuário
+const FALLBACK_MODELS = [
+  "antigravity/gemini-3.7-flash-high",
+  "antigravity/gemini-2.5-flash",
+];
 
 function repairAndParseJson(raw: string): any | null {
   let s = (raw ?? "").trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "");
@@ -26,8 +34,43 @@ function repairAndParseJson(raw: string): any | null {
   return null;
 }
 
-async function callAI(prompt: string): Promise<any> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+async function callOmniRoute(model: string, prompt: string, timeoutMs = 18000): Promise<any> {
+  const res = await fetch(OMNIROUTE_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${OMNIROUTE_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "system",
+          content: "Você é um assistente especialista em gerar lições de lei seca no formato JSON rigoroso. Retorne APENAS um objeto JSON válido, sem cercas de markdown.",
+        },
+        { role: "user", content: prompt },
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.7,
+    }),
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+
+  const txt = await res.text();
+  if (!res.ok) {
+    throw new Error(`OmniRoute ${model} status ${res.status}: ${txt.slice(0, 300)}`);
+  }
+
+  const json = JSON.parse(txt);
+  const content = json?.choices?.[0]?.message?.content ?? "";
+  const parsed = repairAndParseJson(content);
+  if (!parsed) throw new Error(`OmniRoute ${model}: JSON inválido retornado pela IA`);
+  return parsed;
+}
+
+async function callGeminiDirect(prompt: string): Promise<any> {
+  if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY não configurada para fallback direto");
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
   const res = await geminiFetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -40,12 +83,36 @@ async function callAI(prompt: string): Promise<any> {
     }),
   });
   const txt = await res.text();
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${txt.slice(0, 400)}`);
+  if (!res.ok) throw new Error(`Gemini Direct ${res.status}: ${txt.slice(0, 300)}`);
   const data = JSON.parse(txt);
   const out = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
   const parsed = repairAndParseJson(out);
-  if (!parsed) throw new Error("JSON inválido retornado pela IA");
+  if (!parsed) throw new Error("JSON inválido retornado pelo Gemini direto");
   return parsed;
+}
+
+async function callAI(prompt: string): Promise<any> {
+  // 1. Tenta OmniRoute com modelo primário solicitado: antigravity/gemini-3.8-flash (timeout 18s)
+  try {
+    console.log(`[lei-seca-gerar] Invocando modelo primário OmniRoute: ${PRIMARY_MODEL}...`);
+    return await callOmniRoute(PRIMARY_MODEL, prompt, 18000);
+  } catch (err: any) {
+    console.warn(`[lei-seca-gerar] Modelo principal ${PRIMARY_MODEL} falhou (${err.message}). Acionando fallbacks resilientes...`);
+  }
+
+  // 2. Fallbacks em OmniRoute
+  for (const fallbackModel of FALLBACK_MODELS) {
+    try {
+      console.log(`[lei-seca-gerar] Invocando fallback OmniRoute: ${fallbackModel}...`);
+      return await callOmniRoute(fallbackModel, prompt, 15000);
+    } catch (fbErr: any) {
+      console.warn(`[lei-seca-gerar] Fallback ${fallbackModel} falhou (${fbErr.message}).`);
+    }
+  }
+
+  // 3. Fallback final direto
+  console.log("[lei-seca-gerar] Invocando fallback direto Gemini...");
+  return await callGeminiDirect(prompt);
 }
 
 function countIncisos(texto: string): number {
@@ -59,8 +126,8 @@ function buildPrompt(leiNome: string, artigosTexto: Array<{ num: string; texto: 
   const nums = artigosTexto.map((a) => a.num);
   const podeQualArtigo = nums.length >= 2;
   const totalIncisos = artigosTexto.reduce((acc, a) => acc + countIncisos(a.texto), 0);
-  const minExercicios = Math.min(30, Math.max(12, 8 + totalIncisos));
-  const maxExercicios = Math.min(36, minExercicios + 8);
+  const minExercicios = Math.min(16, Math.max(10, 6 + totalIncisos));
+  const maxExercicios = Math.min(20, minExercicios + 4);
 
   const temPena = /\b(reclus[aã]o|deten[çc][aã]o|multa|pena de|pris[aã]o)\b/i.test(blocos);
   const temPrazo = /\b(\d+\s*(dias|meses|anos|horas)|prazo de \d)/i.test(blocos);
@@ -117,9 +184,9 @@ ${temPena ? `12) "pena" — pergunta sobre a PENA prevista para a conduta. 4 alt
 ` : ""}
 
 OBRIGAÇÕES FINAIS:
-${temPena ? "- Gere pelo menos 2 exercícios do tipo 'pena'." : ""}
+${temPena ? "- Gere pelo menos 1 exercício do tipo 'pena'." : ""}
 ${temPrazo ? "- Gere pelo menos 1 exercício do tipo 'prazo_numero'." : ""}
-${podeQualArtigo ? "- Gere pelo menos 2 do tipo 'qual_artigo'." : ""}
+${podeQualArtigo ? "- Gere pelo menos 1 do tipo 'qual_artigo'." : ""}
 - Pelo menos 1 'classificar' quando houver agrupamento natural.
 - Pelo menos 1 'caca_palavra' por lição.
 
@@ -139,7 +206,7 @@ Deno.serve(async (req) => {
     }
 
     const sb = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: licao, error } = await sb.from("lei_seca_licoes").select("*").eq("id", licao_id).single();
+    const { data: licao, error } = await sb.from("lei_seca_licoes").select("*").eq("id", licao_id).maybeSingle();
     if (error || !licao) throw new Error("Lição não encontrada");
     if (licao.exercicios && !force) {
       return new Response(JSON.stringify({ ok: true, cached: true, exercicios: licao.exercicios }), {
@@ -149,22 +216,55 @@ Deno.serve(async (req) => {
 
     await sb.from("lei_seca_jobs").upsert({ licao_id, status: "processando", iniciado_em: new Date().toISOString(), erro: null });
 
-    const { data: trilha } = await sb
+    // Busca Trilha com fallback flexível
+    let { data: trilha } = await sb
       .from("lei_seca_trilhas")
-      .select("nome,lei_slug")
+      .select("nome,lei_slug,slug")
       .eq("slug", licao.trilha_slug)
-      .single();
-    if (!trilha) throw new Error("Trilha não encontrada");
+      .maybeSingle();
 
-    const { data: lei } = await sb.from("vade_mecum_leis").select("id").eq("slug", trilha.lei_slug).maybeSingle();
-    if (!lei?.id) throw new Error(`Lei não encontrada no Vade Mecum: ${trilha.lei_slug}`);
+    if (!trilha) {
+      const { data: altTrilha } = await sb
+        .from("lei_seca_trilhas")
+        .select("nome,lei_slug,slug")
+        .or(`slug.eq.${licao.trilha_slug},lei_slug.eq.${licao.trilha_slug}`)
+        .maybeSingle();
+      if (altTrilha) trilha = altTrilha;
+    }
+
+    const leiSlug = trilha?.lei_slug || (licao.trilha_slug === "idoso" ? "estatuto-idoso" : licao.trilha_slug);
+    const trilhaNome = trilha?.nome || (licao.trilha_slug.includes("idoso") ? "Estatuto do Idoso" : "Lei Seca");
+
+    let { data: lei } = await sb.from("vade_mecum_leis").select("id,nome").eq("slug", leiSlug).maybeSingle();
+    if (!lei?.id) {
+      const { data: altLei } = await sb
+        .from("vade_mecum_leis")
+        .select("id,nome")
+        .or("slug.eq.estatuto-idoso,slug.eq.idoso,slug.eq.ei")
+        .maybeSingle();
+      if (altLei?.id) lei = altLei;
+    }
+    if (!lei?.id) throw new Error(`Lei não encontrada no Vade Mecum: ${leiSlug}`);
 
     const nums: string[] = licao.artigos || [];
-    const { data: artigos } = await sb
+    let { data: artigos } = await sb
       .from("vade_mecum_artigos")
       .select("numero,texto")
       .eq("lei_id", lei.id)
       .in("numero", nums);
+
+    if ((!artigos || artigos.length === 0) && nums.length > 0) {
+      const { data: todos } = await sb
+        .from("vade_mecum_artigos")
+        .select("numero,texto")
+        .eq("lei_id", lei.id);
+      if (todos?.length) {
+        artigos = todos.filter((a: any) => {
+          const clean = String(a.numero).replace(/\D+/g, "");
+          return nums.some((n) => n === clean || n === String(a.numero));
+        });
+      }
+    }
 
     const mapa = new Map<string, string>();
     (artigos ?? []).forEach((a: any) => mapa.set(String(a.numero), String(a.texto ?? "")));
@@ -173,7 +273,7 @@ Deno.serve(async (req) => {
       .filter((a) => a.texto.length > 0);
     if (!artigosTexto.length) throw new Error("Nenhum artigo encontrado para a lição");
 
-    const result = await callAI(buildPrompt(trilha.nome, artigosTexto));
+    const result = await callAI(buildPrompt(trilhaNome, artigosTexto));
     const exercicios = Array.isArray(result?.exercicios) ? result.exercicios : null;
     if (!exercicios || exercicios.length < 5) throw new Error("Resposta da IA inválida ou muito curta");
 
@@ -207,3 +307,4 @@ Deno.serve(async (req) => {
     });
   }
 });
+
