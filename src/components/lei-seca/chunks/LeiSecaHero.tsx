@@ -141,18 +141,21 @@ export function LeiSecaHero({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.22em] text-purple-300/80 mb-1">
-          <Sparkles className="h-3 w-3" /> Lei Seca · seu painel
+        <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] text-purple-200/90 mb-2">
+          <Sparkles className="h-3 w-3" /> Estudo Estratégico
         </div>
 
         {/* Título & Subtítulo */}
-        <div className="mb-5 max-w-sm sm:max-w-md">
-          <h1 className="font-body text-lg sm:text-xl md:text-[22px] font-black uppercase tracking-wider text-white leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-            Estudo Esquematizado & Guiado
+        <div className="mb-6 max-w-sm sm:max-w-md">
+          <h1 className="font-serif italic text-2xl sm:text-3xl md:text-[32px] font-bold text-white leading-tight drop-shadow-md">
+            Lições de Lei Seca
           </h1>
-          <p className="font-body text-[11px] sm:text-xs text-red-100/80 mt-1.5 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.7)]">
-            Percorra os artigos divididos em partes pedagógicas. Marque como lido, resolva questões e acompanhe seu progresso real.
-          </p>
+          <div className="mt-2.5 flex items-center gap-3">
+            <div className="h-8 w-0.5 bg-purple-400/50 rounded-full" />
+            <p className="font-serif italic text-[12px] sm:text-[14px] text-white/85 leading-snug drop-shadow-sm">
+              Domine a legislação de ponta a ponta e garanta sua aprovação.
+            </p>
+          </div>
         </div>
 
         {/* Linha de métricas: Rosca de % + Mini-stats (sem nenhum vermelho) */}
