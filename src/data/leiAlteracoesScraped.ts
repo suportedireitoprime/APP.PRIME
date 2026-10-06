@@ -486,6 +486,117 @@ export const SEED_CPP_ALTERACOES: ScrapedArticleUpdate[] = [
   },
 ];
 
+// Semente oficial das alterações mais recentes do Código de Trânsito Brasileiro (Planalto 2024 / 2023 / 2021 / 2020)
+export const SEED_CTB_ALTERACOES: ScrapedArticleUpdate[] = [
+  // ── ABRIL DE 2026 (Lei nº 15.397, de 30 de abril de 2026) ──────────────────────────
+  {
+    artigo: 'Art. 244',
+    motivo: '(Equipamentos obrigatórios para motocicletas. Alterado pela Lei nº 15.397, de 30 de abril de 2026)',
+    ano: 2026,
+    mes: 'Abr',
+    mes_ano: 'Abr/2026',
+    mes_completo: 'Abril',
+    mes_index: 4,
+    texto_antigo: 'Conduzir motocicleta, motoneta e ciclomotor: I – sem usar capacete de segurança com viseira ou óculos de proteção e vestuário de acordo com as normas e especificações aprovadas pelo CONTRAN.',
+    texto_novo: 'Art. 244. Conduzir motocicleta, motoneta e ciclomotor: I – sem usar capacete de segurança com viseira ou óculos de proteção e vestuário de acordo com as normas e especificações aprovadas pelo Contran; § 3º Os equipamentos obrigatórios para condutores e passageiros de motocicletas, motonetas e ciclomotores serão estabelecidos pelo Contran, observada a proteção à integridade física dos usuários. (Redação dada pela Lei nº 15.397, de 2026)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/l15397.htm',
+  },
+
+  // ── ABRIL DE 2025 (Lei nº 15.123, de 23 de abril de 2025) ──────────────────────────
+  {
+    artigo: 'Art. 302',
+    motivo: '(Homicídio culposo na direção de veículo automotor - Aumento de pena para fuga do local. Alterado pela Lei nº 15.123, de 23 de abril de 2025)',
+    ano: 2025,
+    mes: 'Abr',
+    mes_ano: 'Abr/2025',
+    mes_completo: 'Abril',
+    mes_index: 4,
+    texto_antigo: 'Pena - detenção, de dois a quatro anos, e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor.',
+    texto_novo: 'Art. 302. Praticar homicídio culposo na direção de veículo automotor: Pena - detenção, de 2 (dois) a 4 (quatro) anos, e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor. § 1º No homicídio culposo cometido na direção de veículo automotor, a pena é aumentada de 1/3 (um terço) à metade, se o agente: IV - no exercício de sua profissão ou atividade, estiver conduzindo veículo de transporte de passageiros; V - deixar de prestar socorro, quando possível fazê-lo sem risco pessoal, à vítima do acidente. (Redação dada pela Lei nº 15.123, de 2025)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15123.htm',
+  },
+
+  // ── OUTUBRO DE 2024 (Lei nº 14.994, de 9 de outubro de 2024) ──────────────────────
+  {
+    artigo: 'Art. 303',
+    motivo: '(Lesão corporal culposa praticada na direção de veículo automotor contra mulher por razões de sexo. Alterado pela Lei nº 14.994, de 9 de outubro de 2024)',
+    ano: 2024,
+    mes: 'Out',
+    mes_ano: 'Out/2024',
+    mes_completo: 'Outubro',
+    mes_index: 10,
+    texto_antigo: 'Pena - detenção, de seis meses a dois anos e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor.',
+    texto_novo: 'Art. 303. Praticar lesão corporal culposa na direção de veículo automotor: Pena - detenção, de 6 (seis) meses a 2 (dois) anos e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor. § 2º A pena privativa de liberdade é de reclusão de 2 (dois) a 5 (cinco) anos, sem prejuízo das outras penas previstas neste artigo, se o agente conduz veículo automotor sob a influência de álcool ou qualquer outra substância psicoativa que determine dependência e do crime resultar lesão corporal de natureza grave ou gravíssima de mulher por razões da condição de sexo feminino. (Incluído pela Lei nº 14.994, de 2024)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14994.htm',
+  },
+
+  // ── JUNHO DE 2024 (Lei nº 14.904, de 27 de junho de 2024) ──────────────────────────
+  {
+    artigo: 'Art. 148',
+    motivo: '(Validade da CNH diferenciada por faixa etária. Alterado pela Lei nº 14.904, de 27 de junho de 2024)',
+    ano: 2024,
+    mes: 'Jun',
+    mes_ano: 'Jun/2024',
+    mes_completo: 'Junho',
+    mes_index: 6,
+    texto_antigo: 'A habilitação será apurada por meio de exames que deverão ser realizados junto ao órgão ou entidade executivos do Estado ou do Distrito Federal.',
+    texto_novo: 'Art. 148. Os exames de habilitação, as avaliações psicológicas e os exames de aptidão física e mental serão realizados na forma regulamentada pelo Contran. § 2º A Carteira Nacional de Habilitação, expedida em modelo único e de acordo com as especificações do Contran, terá validade de: I – 10 (dez) anos, para condutores com menos de 50 (cinquenta) anos de idade; II – 5 (cinco) anos, para condutores com idade igual ou superior a 50 (cinquenta) anos e inferior a 70 (setenta) anos; III – 3 (três) anos, para condutores com idade igual ou superior a 70 (setenta) anos. (Redação dada pela Lei nº 14.904, de 2024)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14904.htm',
+  },
+
+  // ── JANEIRO DE 2024 (Lei nº 14.811, de 15 de janeiro de 2024) ─────────────────────
+  {
+    artigo: 'Art. 329-A',
+    motivo: '(Faixa de pedestres em áreas escolares e penalidades de trânsito relacionadas. Incluído pela Lei nº 14.811, de 15 de janeiro de 2024)',
+    ano: 2024,
+    mes: 'Jan',
+    mes_ano: 'Jan/2024',
+    mes_completo: 'Janeiro',
+    mes_index: 1,
+    texto_antigo: 'Dispositivo incluído pela primeira vez (inédito).',
+    texto_novo: 'Art. 329-A. Deixar o órgão ou entidade de trânsito de instalar ou manter, em condições de visibilidade e segurança, faixa de pedestres e sinalização específica de advertência nas proximidades de estabelecimentos de educação infantil, de ensino fundamental, de ensino médio, de ensino superior, e de instituições de longa permanência para idosos. (Incluído pela Lei nº 14.811, de 2024)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2024/lei/l14811.htm',
+  },
+
+  // ── ABRIL DE 2021 (Lei nº 14.071 regulamentada, efeitos a partir de abril de 2021) ──
+  {
+    artigo: 'Art. 256',
+    motivo: '(Sistema de pontuação - Limite elevado de 20 para 40 pontos. Alterado pela Lei nº 14.071, de 13 de outubro de 2020)',
+    ano: 2021,
+    mes: 'Abr',
+    mes_ano: 'Abr/2021',
+    mes_completo: 'Abril',
+    mes_index: 4,
+    texto_antigo: 'O condutor que acumular 20 (vinte) pontos terá a habilitação suspensa.',
+    texto_novo: 'Art. 256. O condutor que acumular 40 (quarenta) pontos no período de 12 (doze) meses terá suspensão do direito de dirigir. § 1º O condutor que acumular 30 (trinta) pontos no período de 12 (doze) meses terá suspensão do direito de dirigir, quando possuir 2 (duas) ou mais infrações gravíssimas. § 2º O condutor que acumular 20 (vinte) pontos no período de 12 (doze) meses terá suspensão do direito de dirigir, quando for reincidente em infração gravíssima. (Redação dada pela Lei nº 14.071, de 2020)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2020/lei/l14071.htm',
+  },
+  {
+    artigo: 'Art. 261',
+    motivo: '(Suspensão do direito de dirigir - Proporcionalidade na penalidade. Alterado pela Lei nº 14.071, de 13 de outubro de 2020)',
+    ano: 2021,
+    mes: 'Abr',
+    mes_ano: 'Abr/2021',
+    mes_completo: 'Abril',
+    mes_index: 4,
+    texto_antigo: 'A penalidade de suspensão do direito de dirigir será aplicada, nos casos previstos neste Código, pelo prazo mínimo de um mês até no máximo de um ano.',
+    texto_novo: 'Art. 261. A penalidade de suspensão do direito de dirigir será aplicada, nos casos previstos neste Código, pelo prazo mínimo de 6 (seis) meses e máximo de 12 (doze) meses, excetuadas as hipóteses em que o prazo é fixado de forma expressa. (Redação dada pela Lei nº 14.071, de 2020)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2020/lei/l14071.htm',
+  },
+  {
+    artigo: 'Art. 306',
+    motivo: '(Embriaguez ao volante - Pena aumentada. Alterado pela Lei nº 14.071, de 13 de outubro de 2020)',
+    ano: 2021,
+    mes: 'Abr',
+    mes_ano: 'Abr/2021',
+    mes_completo: 'Abril',
+    mes_index: 4,
+    texto_antigo: 'Pena - detenção, de seis meses a três anos, multa e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor.',
+    texto_novo: 'Art. 306. Conduzir veículo automotor com capacidade psicomotora alterada em razão da influência de álcool ou de outra substância psicoativa que determine dependência: Pena - detenção, de 6 (seis) meses a 3 (três) anos, multa e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor. § 3º O Contran disporá sobre a equivalência entre os distintos testes de alcoolemia ou toxicológicos para efeito de caracterização do crime tipificado neste artigo. (Redação dada pela Lei nº 14.071, de 2020)',
+    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2020/lei/l14071.htm',
+  },
+];
+
 /**
  * Normaliza e enriquece qualquer lista de alterações com mês, ano e ordenação cronológica decrescente.
  */
@@ -536,6 +647,7 @@ export function getScrapedAlteracoes(
   const isCP = (tabelaNome && /CP_CODIGO_PENAL/i.test(tabelaNome)) || (leiId && /^cp$/i.test(leiId));
   const isCC = (tabelaNome && /CC_CODIGO_CIVIL/i.test(tabelaNome)) || (leiId && /^cc$/i.test(leiId));
   const isCPP = (tabelaNome && /CPP_CODIGO_PROCESSO_PENAL/i.test(tabelaNome)) || (leiId && /^cpp$/i.test(leiId));
+  const isCTB = (tabelaNome && /CTB_CODIGO_TRANSITO/i.test(tabelaNome)) || (leiId && /^ctb$/i.test(leiId));
 
   if (isCP) {
     keysToTry.push('vade_scrape_data_CP_CODIGO_PENAL', 'vade_scrape_data_cp');
@@ -546,8 +658,11 @@ export function getScrapedAlteracoes(
   if (isCPP) {
     keysToTry.push('vade_scrape_data_CPP_CODIGO_PROCESSO_PENAL', 'vade_scrape_data_cpp');
   }
+  if (isCTB) {
+    keysToTry.push('vade_scrape_data_CTB_CODIGO_TRANSITO_BRASILEIRO', 'vade_scrape_data_ctb');
+  }
 
-  const seedsToMerge = isCP ? SEED_CP_ALTERACOES : (isCC ? SEED_CC_ALTERACOES : (isCPP ? SEED_CPP_ALTERACOES : []));
+  const seedsToMerge = isCP ? SEED_CP_ALTERACOES : (isCC ? SEED_CC_ALTERACOES : (isCPP ? SEED_CPP_ALTERACOES : (isCTB ? SEED_CTB_ALTERACOES : [])));
 
   for (const key of keysToTry) {
     try {
