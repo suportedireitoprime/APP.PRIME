@@ -489,41 +489,14 @@ export default function AdminPush() {
 
                 <div className="relative border-l-2 border-border/20 ml-4 space-y-6 py-2">
                   {(() => {
-                    const baseTemplate = [
-                      { time: '06:00', name: 'Boletim Push: Matinal', desc: 'Boletim diário com notícias jurídicas e atualizações.' },
-                      { time: '08:00', name: 'Explicações CF88/Leis', desc: 'Disparo de novas leis cadastradas e estudos.' },
-                      { time: '10:00', name: 'Questão Prática', desc: 'Uma questão aleatória para a pessoa resolver.' },
-                      { time: '12:00', name: 'Sugestão de Leitura', desc: 'Sugestão de livro da biblioteca.' },
-                      { time: '14:00', name: 'Áudio-aula Explicativa', desc: 'Áudio explicativo para ouvir à tarde.' },
-                      { time: '16:00', name: 'Pílula Jurídica', desc: 'Conceito clássico ou resumo rápido.' },
-                      { time: '18:00', name: 'Boletim Push: Noturno', desc: 'Fechamento do expediente e síntese do dia.' },
-                      { time: '20:00', name: 'Questão Prática', desc: 'Mais uma questão para praticar à noite.' },
-                      { time: '22:00', name: 'Áudio-aula de Revisão', desc: 'Áudio curto antes de dormir.' },
-                      { time: '00:00', name: 'Notícias da Madrugada', desc: 'Resumo das novidades jurídicas da madrugada.' },
-                    ];
-
                     const allCampaignsToday = [...agendadosDoDia, ...historicoDoDia];
-                    const eventsToRender: any[] = [];
-
-                    // Match existing campaigns to template slots
-                    baseTemplate.forEach(slot => {
-                      const slotHour = parseInt(slot.time.split(':')[0], 10);
-                      const matched = allCampaignsToday.filter(c => new Date(c.next_run_at || c.created_at).getHours() === slotHour);
-                      
-                      if (matched.length > 0) {
-                        matched.forEach(c => eventsToRender.push({ type: 'campaign', time: slot.time, campaign: c }));
-                      } else {
-                        eventsToRender.push({ type: 'pending', time: slot.time, slot });
-                      }
-                    });
-
-                    // Add extra campaigns that didn't match any template slot
-                    allCampaignsToday.forEach(c => {
-                      const hour = new Date(c.next_run_at || c.created_at).getHours();
-                      if (!baseTemplate.some(slot => parseInt(slot.time.split(':')[0], 10) === hour)) {
-                        const mins = new Date(c.next_run_at || c.created_at).getMinutes().toString().padStart(2, '0');
-                        eventsToRender.push({ type: 'campaign', time: `${hour.toString().padStart(2, '0')}:${mins}`, campaign: c });
-                      }
+                    const eventsToRender = allCampaignsToday.map(c => {
+                      const d = new Date(c.next_run_at || c.created_at);
+                      return { 
+                        type: 'campaign', 
+                        time: `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`, 
+                        campaign: c 
+                      };
                     });
 
                     // Sort events
@@ -532,80 +505,70 @@ export default function AdminPush() {
 
                     if (eventsToRender.length === 0 && !loading) {
                       return (
-                        <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl bg-zinc-900/10 ml-4">
-                          Nenhuma notificação programada para este dia
+                        <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl bg-zinc-900/10 ml-4 flex flex-col items-center justify-center gap-4">
+                          <p>Nenhuma notificação programada para este dia.</p>
+                          <Button 
+                            variant="outline"
+                            onClick={async () => {
+                              toast.info("Gerando planejamento para 7 dias...");
+                              try {
+                                await supabase.functions.invoke('push-planner', { body: { dias: 7 } });
+                                toast.success("Planejamento gerado com sucesso!");
+                                loadCampaigns();
+                              } catch(e) {
+                                toast.error("Erro ao gerar planejamento");
+                              }
+                            }}
+                          >
+                            <RefreshCw className="w-4 h-4 mr-2" /> Gerar Planejamento (7 Dias)
+                          </Button>
                         </div>
                       );
                     }
 
                     return eventsToRender.map((event, idx) => {
-                      if (event.type === 'pending') {
-                        const slot = event.slot;
-                        const isPast = new Date() > new Date(`${selectedDate}T${slot.time}:00`);
-                        const isToday = selectedDate === getLocalDateStr(new Date());
+                      const c = event.campaign;
+                      const isPending = c.status === 'scheduled';
+                      const isFailed = c.status === 'failed';
+                      const isSent = !isPending && !isFailed;
+                      
+                      const dotColor = isFailed ? 'bg-red-500' : isSent ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-zinc-600';
+                      const borderColor = isFailed ? 'border-red-500/20' : isSent ? 'border-emerald-500/20' : 'border-zinc-500/20';
+                      const bgColor = isFailed ? 'bg-red-500/5 hover:bg-red-500/10' : isSent ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'bg-zinc-900/20 hover:bg-zinc-900/40';
+                      const badgeText = isPending ? 'Agendado' : isFailed ? 'Erro' : (c.status === 'sending' ? 'Enviando' : 'Enviado');
+                      const badgeColor = isFailed ? 'text-red-400 border-red-400/30 bg-red-400/10' : isSent ? 'text-emerald-400 border-emerald-400/30 bg-emerald-400/10' : 'text-zinc-400 border-zinc-400/30 bg-zinc-400/10';
 
-                        return (
-                          <div key={`pending-${idx}`} className="relative pl-6 opacity-60">
-                            <div className="absolute w-3 h-3 rounded-full -left-[7px] top-1.5 bg-zinc-700 border-2 border-background" />
-                            <Card className="p-4 border-dashed border-border/40 bg-transparent cursor-default">
-                              <div className="flex items-center justify-between gap-2 mb-2">
-                                <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
-                                  <Clock className="w-3.5 h-3.5 opacity-70" />
-                                  {slot.time}
-                                </span>
-                                <Badge variant="outline" className="text-[10px] h-5 text-zinc-500 border-zinc-500/30 bg-transparent">
-                                  {isPast && isToday ? 'Ocioso' : (!isToday && isPast ? 'Não Enviado' : 'Aguardando')}
-                                </Badge>
+                      return (
+                        <div key={c.id} className="relative pl-6">
+                          <div className={`absolute w-3 h-3 rounded-full -left-[7px] top-1.5 ${dotColor}`} />
+                          <Card 
+                            className={`p-4 transition-colors cursor-pointer ${borderColor} ${bgColor}`}
+                            onClick={() => setSelectedCampaign(c)}
+                          >
+                            <div className="flex items-center justify-between gap-2 mb-2">
+                              <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                                <Clock className="w-3.5 h-3.5 opacity-70" />
+                                {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at || c.created_at))}
+                              </span>
+                              <Badge variant="outline" className={`text-[10px] h-5 ${badgeColor}`}>
+                                {isSent ? <CheckCircle2 className="w-3 h-3 mr-1" /> : isPending ? <Clock className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                                {badgeText}
+                              </Badge>
+                            </div>
+                            <h3 className="font-semibold text-foreground text-base pr-2 uppercase">{c.title.replace('[TEMPLATE] ', '')}</h3>
+                            <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
+                            
+                            {/* Status bar */}
+                            {(c.sent_count > 0 || c.delivered_count > 0 || c.opened_count > 0) && (
+                              <div className="mt-4 flex items-center gap-4 text-xs font-medium border-t border-border/10 pt-3">
+                                {c.sent_count > 0 && <span className="text-emerald-400 flex items-center gap-1"><ArrowUpRight className="w-3.5 h-3.5" /> {c.sent_count} envios</span>}
+                                {c.delivered_count > 0 && <span className="text-blue-400 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> {c.delivered_count} entregues</span>}
+                                {c.opened_count > 0 && <span className="text-purple-400 flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {c.opened_count} abertos</span>}
                               </div>
-                              <h3 className="font-semibold text-muted-foreground text-base pr-2 uppercase">[{slot.name}]</h3>
-                              <p className="text-xs text-muted-foreground mt-1.5 line-clamp-1 italic">{slot.desc}</p>
-                            </Card>
-                          </div>
-                        );
-                      } else {
-                        const c = event.campaign;
-                        const isPending = c.status === 'scheduled';
-                        const isFailed = c.status === 'failed';
-                        const isSent = !isPending && !isFailed;
-                        
-                        const dotColor = isFailed ? 'bg-red-500' : isSent ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-zinc-600';
-                        const borderColor = isFailed ? 'border-red-500/20' : isSent ? 'border-emerald-500/20' : 'border-zinc-500/20';
-                        const bgColor = isFailed ? 'bg-red-500/5 hover:bg-red-500/10' : isSent ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'bg-zinc-900/20 hover:bg-zinc-900/40';
-                        const badgeText = isPending ? 'Agendado' : isFailed ? 'Erro' : (c.status === 'sending' ? 'Enviando' : 'Enviado');
-                        const badgeColor = isFailed ? 'text-red-400 border-red-400/30 bg-red-400/10' : isSent ? 'text-emerald-400 border-emerald-400/30 bg-emerald-400/10' : 'text-zinc-400 border-zinc-400/30 bg-zinc-400/10';
-
-                        return (
-                          <div key={c.id} className="relative pl-6">
-                            <div className={`absolute w-3 h-3 rounded-full -left-[7px] top-1.5 ${dotColor}`} />
-                            <Card 
-                              className={`p-4 transition-colors cursor-pointer ${borderColor} ${bgColor}`}
-                              onClick={() => setSelectedCampaign(c)}
-                            >
-                              <div className="flex items-center justify-between gap-2 mb-2">
-                                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                                  <Clock className="w-3.5 h-3.5 opacity-70" />
-                                  {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at || c.created_at))}
-                                </span>
-                                <Badge variant="outline" className={`text-[10px] h-5 ${badgeColor}`}>
-                                  {isSent ? <CheckCircle2 className="w-3 h-3 mr-1" /> : isPending ? <Clock className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
-                                  {badgeText}
-                                </Badge>
-                              </div>
-                              <h3 className="font-semibold text-foreground text-base pr-2 uppercase">{c.title.replace('[TEMPLATE] ', '')}</h3>
-                              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
-                              
-                              {/* Status bar */}
-                              {(c.sent_count > 0 || c.delivered_count > 0 || c.opened_count > 0) && (
-                                <div className="mt-4 flex items-center gap-4 text-xs font-medium border-t border-border/10 pt-3">
-                                  {c.sent_count > 0 && <span className="text-emerald-400 flex items-center gap-1"><ArrowUpRight className="w-3.5 h-3.5" /> {c.sent_count} envios</span>}
-                                  {c.delivered_count > 0 && <span className="text-blue-400 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> {c.delivered_count} entregues</span>}
-                                  {c.opened_count > 0 && <span className="text-purple-400 flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {c.opened_count} abertos</span>}
-                                </div>
-                              )}
-                            </Card>
-                          </div>
-                        );
-                      }
+                            )}
+                          </Card>
+                        </div>
+                      );
                     });
                   })()}
                 </div>
