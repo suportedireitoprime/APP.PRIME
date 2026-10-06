@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 // Escala vermelha pivotando em hsl(348 78% 38%) — painel DIREITO PRIME
-const YELLOW = {
+const RED_PRIME = {
   50:  "hsl(350 100% 97%)",
   100: "hsl(350 95% 92%)",
   200: "hsl(350 90% 85%)",
@@ -15,6 +15,20 @@ const YELLOW = {
   950: "hsl(350 68% 12%)",
 };
 
+// Escala amarela/âmbar autêntica para alterações legislativas, redação dada e alertas
+const AMBER = {
+  50:  "#fffbeb",
+  100: "#fef3c7",
+  200: "#fde68a",
+  300: "#fcd34d",
+  400: "#fbbf24",
+  500: "#f59e0b",
+  600: "#d97706",
+  700: "#b45309",
+  800: "#92400e",
+  900: "#78350f",
+  950: "#451a03",
+};
 
 // Escala cinza neutra pivotando em #212121 (HSL 0 0% 13%)
 const GRAY = {
@@ -61,13 +75,29 @@ const GREEN = {
 };
 
 const MONO_COLOR_ALIASES = {
-  // Quentes -> vermelho/bordô
-  amber: YELLOW, yellow: YELLOW, orange: YELLOW, rose: YELLOW,
-  red: YELLOW, pink: YELLOW, fuchsia: YELLOW, lime: YELLOW,
+  // Alterações legislativas / Redação dada -> Amarelo / Âmbar legítimo
+  amber: AMBER,
+  yellow: AMBER,
+  // Quentes -> vermelho/bordô Direito Prime
+  orange: RED_PRIME,
+  rose: RED_PRIME,
+  red: RED_PRIME,
+  pink: RED_PRIME,
+  fuchsia: RED_PRIME,
+  lime: RED_PRIME,
   // Frios/neutros -> cinza
-  sky: GRAY, blue: GRAY, indigo: GRAY, violet: GRAY, purple: GRAY,
-  cyan: GRAY, teal: GRAY,
-  stone: GRAY, slate: GRAY, zinc: GRAY, neutral: GRAY, gray: GRAY,
+  sky: GRAY,
+  blue: GRAY,
+  indigo: GRAY,
+  violet: GRAY,
+  purple: GRAY,
+  cyan: GRAY,
+  teal: GRAY,
+  stone: GRAY,
+  slate: GRAY,
+  zinc: GRAY,
+  neutral: GRAY,
+  gray: GRAY,
   // Sucesso, acertos e etapas finais -> Verde autêntico vibrante
   emerald: EMERALD,
   green: GREEN,

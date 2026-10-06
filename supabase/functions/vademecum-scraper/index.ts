@@ -84,9 +84,9 @@ interface ScrapedItem {
 // Regex universal para Artigos (suporta "Art. 1225", "Art. 1.225", "Art. 300-A", "Art. 15-B")
 const ART_REGEX = /^Art\.?\s*(\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?)/i;
 
-// Regex universal para termos modificadores de legislação oficial do Planalto
+// Regex universal para termos modificadores de legislação oficial do Planalto (blindada contra "revogada pelo juiz")
 const ALTERACAO_NOTE_RE =
-  /(?:[([][\s]*)?(Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Revogad[oa]|Restaurad[oa]|Alterad[oa]|Transformad[oa]|Renumerad[oa])\s+(?:pela|pelo|na)\s+([^)\]\n]+)/i;
+  /(?:[([][\s]*)?(Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Revogad[oa]|Restaurad[oa]|Alterad[oa]|Transformad[oa]|Renumerad[oa])(?:.*?)(?:pela|pelo|na)\s+(Lei|Decreto|Medida|Emenda|Lcp|Constitui[çc][ãa]o|Ato|Resolu[çc][ãa]o|Portaria|Instru[çc][ãa]o)[^)\]\n]*[)\]]?/i;
 
 /**
  * Motor nativo rápido: extrai alterações diretamente do HTML oficial do Planalto
@@ -164,8 +164,33 @@ function parseAlteracoesFromHtml(html: string, baseUrl: string, maxAgeYears = 20
       let textoNovo = textClean
         .replace(strikeText, '')
         .replace(noteMatch[0], '')
+        .replace(/\(?\bVigência\b\)?/gi, '') // Remove links residuais de vigência
+        .replace(/^[)\]\s.\-]+$/, '') // Se sobrou só lixo pontual
         .replace(/\s+/g, ' ')
         .trim();
+
+      // Limpeza de artigos vazios ou caputs fantasmas (ex: "Art. 44. )")
+      if (/^(Art\.?\s*\d+[A-Z-]*\.?|I{1,3}|IV|V|VI{1,3}|IX|X{1,2}|§\s*\d+º?\.?)[\s.\-)]*$/i.test(textoNovo)) {
+        textoNovo = '';
+      }
+
+      // Se for revogado, por definição não existe texto novo
+      if (/revogad/i.test(acao)) {
+        textoNovo = '';
+      }
+
+      // Lookahead: Se o texto novo ficou vazio (ex: a nota era um caput fantasma) e não é revogação,
+      // tenta capturar o texto real no PRÓXIMO parágrafo do HTML!
+      if (textoNovo === '' && !/revogad/i.test(acao)) {
+        const nextMatch = /<p\b[^>]*>([\s\S]*?)<\/p>/gi.exec(html.slice(pRegex.lastIndex));
+        if (nextMatch) {
+          const nextTextClean = decodeHtmlEntities(nextMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ')).trim();
+          // Garante que o próximo parágrafo não é apenas outra nota solta ou o início de um NOVO artigo
+          if (!nextTextClean.match(ALTERACAO_NOTE_RE) && !nextTextClean.match(/^Art\.?\s*\d+/i)) {
+            textoNovo = nextTextClean;
+          }
+        }
+      }
 
       found.push({
         artigo: `Art. ${artigoFinal}`,

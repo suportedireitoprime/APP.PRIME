@@ -299,7 +299,7 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate | ParseDisp
     border: 'border-blue-500/30'
   };
 
-  if (tipoAlteracaoRaw === 'artigo_revogado' || /revogad[ao]|revoga-se|suprimid[ao]|vetad[ao]/i.test(searchCorpus)) {
+  if (tipoAlteracaoRaw === 'artigo_revogado' || /revogad[ao]|revoga-se|suprimid[ao]|vetad[ao]/i.test(motivoRaw) || /revogad[ao]|revoga-se|suprimid[ao]|vetad[ao]/i.test(rawArtigo)) {
     acao = 'revogado';
     acaoTexto = 'Revogado';
     badgeCor = {
@@ -307,7 +307,7 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate | ParseDisp
       text: 'text-rose-400',
       border: 'border-rose-500/35'
     };
-  } else if (tipoAlteracaoRaw === 'artigo_novo' || /inclu[íi]d[ao]|acrescid[ao]|inserid[ao]/i.test(searchCorpus)) {
+  } else if (tipoAlteracaoRaw === 'artigo_novo' || /inclu[íi]d[ao]|acrescid[ao]|inserid[ao]/i.test(motivoRaw) || /inclu[íi]d[ao]|acrescid[ao]|inserid[ao]/i.test(rawArtigo)) {
     acao = 'incluido';
     acaoTexto = 'Incluído';
     badgeCor = {
@@ -315,7 +315,7 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate | ParseDisp
       text: 'text-emerald-400',
       border: 'border-emerald-500/35'
     };
-  } else if (tipoAlteracaoRaw === 'texto_alterado' || /reda[çc][ãa]o\s+dada|alterad[ao]/i.test(searchCorpus)) {
+  } else if (tipoAlteracaoRaw === 'texto_alterado' || /reda[çc][ãa]o\s+dada|alterad[ao]/i.test(motivoRaw) || /reda[çc][ãa]o\s+dada|alterad[ao]/i.test(rawArtigo)) {
     acao = 'redacao_dada';
     acaoTexto = 'Alterado';
     badgeCor = {

@@ -277,10 +277,10 @@ function extractBlocos(html: string): Bloco[] {
   );
   const uteis = startIdx > 0 ? linhas.slice(startIdx) : linhas;
 
-  // cortar "Este texto não substitui" — mas só se aparecer DEPOIS de algum artigo,
-  // e usar a ÚLTIMA ocorrência (versão compilada tem várias)
+  // cortar "Este texto não substitui" apenas se aparecer no FINAL do documento
+  // (versão compilada da CLT tem isso no início, o que corta a lei inteira se não validar)
   let endIdx = -1;
-  for (let k = uteis.length - 1; k >= 0; k--) {
+  for (let k = uteis.length - 1; k >= Math.max(0, uteis.length - 200); k--) {
     if (/Este texto não substitui/i.test(uteis[k])) { endIdx = k; break; }
   }
   const finais = endIdx > 0 ? uteis.slice(0, endIdx) : uteis;

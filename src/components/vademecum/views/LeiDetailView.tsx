@@ -625,7 +625,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           setOpenModInfo(modInfo);
           setOpenArtigo(a);
         }}
-        onOpenComparativo={(item) => setSelectedAlteracaoDetail(item)}
+        onOpenComparativo={(item) => setSelectedAlteracaoDetail({ ...item, leiNomePai: selectedLeiNome })}
       />
     ),
     radar: (
@@ -719,7 +719,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
             setOpenFromNovidades(Boolean(modInfo));
             openArtigoWithRecent(artigo);
           }}
-          onOpenComparativo={(item) => setSelectedAlteracaoDetail(item)}
+          onOpenComparativo={(item) => setSelectedAlteracaoDetail({ ...item, leiNomePai: selectedLeiNome })}
           onOpenVerTodos={() => setOverlayPanel('novidades')}
         />
 

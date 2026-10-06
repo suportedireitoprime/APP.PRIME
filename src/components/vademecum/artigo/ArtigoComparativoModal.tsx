@@ -135,17 +135,15 @@ export const ArtigoComparativoModal: React.FC<ArtigoComparativoModalProps> = ({
   data,
   onIrParaArtigo,
 }) => {
-  const [textoView, setTextoView] = useState<TextoViewType>('vigente');
+  const [tabAtiva, setTabAtiva] = useState<'alteracao' | 'explicacao'>('alteracao');
   const [aiExplicacao, setAiExplicacao] = useState<string>('');
   const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [aiModelUsed, setAiModelUsed] = useState<string>('');
-  const [showExplicacaoSheet, setShowExplicacaoSheet] = useState<boolean>(false);
 
-  // Reseta estado e busca explicação da IA automaticamente via OmniRoute ao abrir o card
+  // Reseta estado ao abrir o modal e carrega cache de IA se disponível
   useEffect(() => {
     if (!open || !data) return;
-    setTextoView('vigente');
-    setShowExplicacaoSheet(false);
+    setTabAtiva('alteracao');
 
     const cacheKey = `alteracao_ia_explicacao_${data.artigoDisplay.replace(/\s+/g, '_')}_${data.ano}`;
     const cached = localStorage.getItem(cacheKey);
@@ -158,11 +156,19 @@ export const ArtigoComparativoModal: React.FC<ArtigoComparativoModalProps> = ({
           return;
         }
       } catch {}
+    } else {
+      setAiExplicacao('');
+      setAiModelUsed('');
     }
-
-    // Se não tiver em cache, gera automaticamente com timeout estrito
-    void gerarExplicacaoIA(data, false);
   }, [open, data?.artigoDisplay, data?.ano]);
+
+  const handleTrocaTab = (tab: 'alteracao' | 'explicacao') => {
+    haptic.selection();
+    setTabAtiva(tab);
+    if (tab === 'explicacao' && !aiExplicacao && !aiLoading && data) {
+      void gerarExplicacaoIA(data, false);
+    }
+  };
 
   const gerarExplicacaoIA = async (item: AlteracaoDetailData, forcarRegerar = true) => {
     const cacheKey = `alteracao_ia_explicacao_${item.artigoDisplay.replace(/\s+/g, '_')}_${item.ano}`;
@@ -258,10 +264,17 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
   const isIncluido = data.tipo.toLowerCase().includes('inclu');
   const isRevogado = data.tipo.toLowerCase().includes('revog');
   const tipoBadgeColor = isIncluido
-    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/35'
     : isRevogado
-    ? 'bg-rose-500/20 text-rose-300 border-rose-500/30'
-    : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+    ? 'bg-rose-500/20 text-rose-400 border-rose-500/35'
+    : 'bg-amber-500/20 text-amber-400 border-amber-500/35';
+
+  const getTextoAntigoDisplay = () => {
+    if (data.textoAntigo && data.textoAntigo.trim().length > 0) return data.textoAntigo;
+    if (isIncluido) return 'Dispositivo inédito no código (incluído pela primeira vez por esta norma).';
+    if (isRevogado) return 'Dispositivo revogado expressamente pela norma.';
+    return 'Redação anterior substituída pelos termos da norma modificadora oficial.';
+  };
 
   return (
     <AnimatePresence>
@@ -271,10 +284,10 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
           <ShapeGrid />
         </div>
 
-        {/* ── ROLAGEM UNIFICADA DA TELA INTEIRA (ao subir a tela, sobe tudo) ── */}
+        {/* ── ROLAGEM UNIFICADA DA TELA INTEIRA ── */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 w-full px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] space-y-4 max-w-3xl mx-auto custom-scrollbar z-10">
           
-          {/* ── CABEÇALHO LIMPO E ELEGANTE (SEM CAPA SUPERIOR, COM BOTÃO VOLTAR PADRONIZADO) ── */}
+          {/* ── CABEÇALHO LIMPO E ELEGANTE ── */}
           <div className="flex items-center justify-between gap-3 pt-2 pb-1">
             <div className="flex items-center gap-3 min-w-0">
               {/* Botão Voltar Padronizado oficial */}
@@ -293,10 +306,10 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-primary drop-shadow">
-                    {data.leiNomePai || 'Direito Penal'}
+                    {data.leiNomePai || 'Legislação'}
                   </span>
                   <span
-                    className={`text-[9.5px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full border shadow-sm ${tipoBadgeColor}`}
+                    className={`text-[9.5px] sm:text-[10px] font-bold px-2.5 py-0.5 rounded-full border shadow-sm ${tipoBadgeColor}`}
                   >
                     {data.tipo}
                   </span>
@@ -320,112 +333,163 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
             )}
           </div>
 
-          {/* ── 1. MENU DE ALTERNÂNCIA MAIS ELEGANTE (POSICIONADO ACIMA DO TEXTO) ── */}
-          <div className="p-1 rounded-xl bg-[#14151a] border border-white/5 shadow-inner grid grid-cols-2 gap-1 mb-3">
+          {/* ── MENU DE ALTERNÂNCIA (TEXTO DA ALTERAÇÃO vs EXPLICAÇÃO DIDÁTICA) ── */}
+          <div className="p-1 rounded-2xl bg-[#13141a] border border-white/10 shadow-inner grid grid-cols-2 gap-1.5">
             <button
               type="button"
-              onClick={() => {
-                haptic.selection();
-                setTextoView('vigente');
-              }}
-              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-[13px] sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
-                textoView === 'vigente'
-                  ? 'bg-zinc-800 text-white shadow-md shadow-black/40 border border-white/10'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
+              onClick={() => handleTrocaTab('alteracao')}
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
+                tabAtiva === 'alteracao'
+                  ? 'bg-zinc-800 text-white shadow-md shadow-black/40 border border-white/15'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
-              <CheckCircle2
+              <Scale
                 className={`w-4 h-4 shrink-0 transition-colors ${
-                  textoView === 'vigente' ? 'text-emerald-400' : 'text-zinc-500'
+                  tabAtiva === 'alteracao' ? 'text-amber-400' : 'text-zinc-500'
                 }`}
               />
-              <span className="truncate">Novo (Vigente)</span>
+              <span className="truncate">Texto da Alteração</span>
             </button>
 
             <button
               type="button"
-              onClick={() => {
-                haptic.selection();
-                setTextoView('anterior');
-              }}
-              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-[13px] sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
-                textoView === 'anterior'
-                  ? 'bg-zinc-800 text-white shadow-md shadow-black/40 border border-white/10'
-                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.05]'
+              onClick={() => handleTrocaTab('explicacao')}
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all select-none cursor-pointer active:opacity-70 ${
+                tabAtiva === 'explicacao'
+                  ? 'bg-zinc-800 text-white shadow-md shadow-black/40 border border-white/15'
+                  : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
-              <AlertCircle
+              <BookOpen
                 className={`w-4 h-4 shrink-0 transition-colors ${
-                  textoView === 'anterior' ? 'text-rose-400' : 'text-zinc-500'
+                  tabAtiva === 'explicacao' ? 'text-primary' : 'text-zinc-500'
                 }`}
               />
-              <span className="truncate">Antigo (Revogado)</span>
+              <span className="truncate">Explicação Didática</span>
             </button>
           </div>
 
-          {/* ── 2. BLOCO PRINCIPAL DO TEXTO ── */}
-          <div className="rounded-2xl border border-white/10 bg-[#121318]/95 p-4 sm:p-5 space-y-4 shadow-xl backdrop-blur-md">
-            {/* Texto do Artigo com tipografia jurídica refinada */}
-            <div
-              className={`text-sm sm:text-base leading-relaxed p-4 rounded-xl border font-medium ${
-                textoView === 'vigente'
-                  ? 'bg-emerald-500/5 border-emerald-500/20 text-zinc-100 font-serif'
-                  : 'bg-rose-500/5 border-rose-500/20 text-zinc-300 font-serif line-through decoration-rose-500/60'
-              }`}
-            >
-              {textoView === 'vigente'
-                ? (data.textoNovo || data.artigo.caput)?.replace(/(?:n[º°]\s*[\d.]+(?:,\s*de\s*\d{4})?\)?)\s*$/i, '').trim()
-                : data.textoAntigo ||
-                  'Dispositivo inédito no código (incluído pela primeira vez por esta norma).'}
-            </div>
-
-            {/* Identificação da Norma Modificadora Oficial */}
-            <div className="flex items-center justify-between gap-3 pt-4 border-t border-white/5 text-xs">
-              <div className="min-w-0">
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-0.5">
-                  Norma Modificadora Oficial
+          {/* ── CONTEÚDO CONDICIONAL CONFORME A ABA ATIVA ── */}
+          {tabAtiva === 'alteracao' ? (
+            /* ── ABA 1: PAINÉIS DE TEXTO ANTIGO vs NOVO + NORMA MODIFICADORA ── */
+            <div className="rounded-2xl border border-white/10 bg-[#121318]/95 p-4 sm:p-5 space-y-4 shadow-xl backdrop-blur-md">
+              {/* Texto Antigo (Revogado / Anterior) */}
+              <div className="space-y-1.5">
+                <span className="text-[10px] font-black uppercase tracking-widest text-rose-400 flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-500" /> Antigo (Revogado / Anterior)
                 </span>
-                <p className="font-semibold text-zinc-100 truncate text-xs sm:text-sm">
-                  {data.leiNome}
-                </p>
-                <p className="text-[11px] text-zinc-400 font-mono mt-0.5 truncate">
-                  {data.referencia}
-                </p>
+                <div className="text-sm sm:text-base leading-relaxed p-4 rounded-xl border font-medium bg-rose-500/5 border-rose-500/20 text-zinc-300 font-serif line-through decoration-rose-500/60">
+                  {getTextoAntigoDisplay()}
+                </div>
               </div>
-              <span className="text-[10px] font-bold text-zinc-300 bg-white/[0.06] border border-white/10 px-3 py-1.5 rounded-full shrink-0 shadow-sm">
-                {data.mesAno}
-              </span>
+
+              {/* Texto Novo (Vigente) */}
+              <div className="space-y-1.5 pt-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Novo (Vigente)
+                </span>
+                <div className="text-sm sm:text-base leading-relaxed p-4 rounded-xl border font-medium bg-emerald-500/5 border-emerald-500/20 text-zinc-100 font-serif">
+                  {(data.textoNovo || data.artigo.caput)?.replace(/(?:n[º°]\s*[\d.]+(?:,\s*de\s*\d{4})?\)?)\s*$/i, '').trim()}
+                </div>
+              </div>
+
+              {/* Identificação da Norma Modificadora Oficial */}
+              <div className="flex items-center justify-between gap-3 pt-4 border-t border-white/5 text-xs">
+                <div className="min-w-0">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-0.5">
+                    Norma Modificadora Oficial
+                  </span>
+                  <p className="font-semibold text-zinc-100 truncate text-xs sm:text-sm">
+                    {data.leiNome}
+                  </p>
+                  <p className="text-[11px] text-zinc-400 font-mono mt-0.5 truncate">
+                    {data.referencia}
+                  </p>
+                </div>
+                <span className="text-[10px] font-bold text-zinc-300 bg-white/[0.06] border border-white/10 px-3 py-1.5 rounded-full shrink-0 shadow-sm">
+                  {data.mesAno}
+                </span>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* ── ABA 2: EXPLICAÇÃO DIDÁTICA DIRETAMENTE NA TELA ── */
+            <div className="space-y-4">
+              {/* Barra de Ações da Explicação: Modelo utilizado e Botão Regerar */}
+              <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-[#14151b] border border-white/10 shadow-sm">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-xs font-bold text-zinc-300 truncate">
+                    Síntese Doutrinária Didática
+                  </span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider shrink-0">
+                    {aiModelUsed || 'OmniRoute'}
+                  </span>
+                </div>
 
-          {/* ── BOTÕES DE AÇÃO: ESCOLHA ENTRE EXPLICAÇÃO DIDÁTICA E IR PARA ARTIGO ── */}
-          <div className="space-y-3 pt-3 pb-8">
-            {/* Botão Primário: Explicação Didática (Abre Bottom Sheet de baixo para cima, sem ícone de brilho) */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.impact();
-                setShowExplicacaoSheet(true);
-              }}
-              className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-hero-panel hover:bg-primary text-white border border-red-500/40 shadow-xl shadow-red-950/50 active:scale-[0.99] transition-all cursor-pointer group"
-            >
-              <div className="flex items-center gap-3.5 min-w-0">
-                <div className="w-11 h-11 rounded-xl bg-white/[0.14] border border-white/20 flex items-center justify-center shrink-0">
-                  <BookOpen className="w-5 h-5 text-white" />
-                </div>
-                <div className="text-left min-w-0">
-                  <p className="font-bold text-sm sm:text-base text-white leading-tight">
-                    Explicação Didática da Alteração
-                  </p>
-                  <p className="text-xs text-white/80 leading-snug mt-0.5 truncate">
-                    Entenda o que mudou, o contexto e o impacto penal prático
-                  </p>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    void gerarExplicacaoIA(data, true);
+                  }}
+                  disabled={aiLoading}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:opacity-70 text-xs font-semibold text-zinc-200 border border-white/10 transition-all shrink-0 disabled:opacity-50 cursor-pointer"
+                  title="Regerar análise com IA"
+                >
+                  <RotateCcw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
+                  <span className="hidden sm:inline">Regerar</span>
+                </button>
               </div>
-              <ChevronRight className="w-5 h-5 text-white/80 group-hover:translate-x-1 transition-transform shrink-0 ml-2" />
-            </button>
 
-            {/* Botão Secundário: Ir para o Artigo Completo */}
+              {aiLoading ? (
+                <div className="py-14 flex flex-col items-center justify-center gap-3 text-center rounded-2xl border border-white/10 bg-[#121318]/95 p-6 backdrop-blur-md">
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                  <p className="text-sm font-semibold text-zinc-200">
+                    Estruturando explicação didática...
+                  </p>
+                  <p className="text-xs text-zinc-400 max-w-sm">
+                    Examinando a redação legal com OmniRoute e fundamentando os impactos práticos.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Seções parseadas em cards modulares */}
+                  {parseExplicacaoSecoes(aiExplicacao).map((secao) => (
+                    <div
+                      key={secao.numero}
+                      className="rounded-2xl border border-white/10 bg-[#14151b] p-4 sm:p-5 space-y-2.5 shadow-lg"
+                    >
+                      <div className="flex items-center gap-2.5 border-b border-white/10 pb-2">
+                        <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-white/[0.08] text-primary border border-primary/30">
+                          {secao.numero}
+                        </span>
+                        <h3 className="font-display text-sm sm:text-base font-bold text-white tracking-tight">
+                          {secao.titulo}
+                        </h3>
+                      </div>
+                      <div className="space-y-2 pt-1">
+                        {renderFormattedText(secao.conteudo)}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Card Constitucional de Segurança Jurídica */}
+                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-xs text-zinc-300 leading-relaxed flex items-start gap-3 shadow-sm">
+                    <Scale className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-white mb-0.5">Segurança Jurídica & Irretroatividade</p>
+                      <p className="text-zinc-400">
+                        A alteração legal incide nos termos do Art. 5º, XXXVI da Constituição Federal, respeitados o ato jurídico perfeito, o direito adquirido e a coisa julgada.
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* ── BOTÃO PREMIUM: IR PARA O ARTIGO COMPLETO (SEMPRE ACESSÍVEL) ── */}
+          <div className="pt-2 pb-8">
             <button
               type="button"
               onClick={() => {
@@ -433,163 +497,34 @@ Estruture a sua resposta em 3 seções curtas com títulos em negrito:
                 onClose();
                 onIrParaArtigo(data.artigo);
               }}
-              className="w-full flex items-center justify-between p-4 sm:p-5 rounded-2xl bg-[#14151a] hover:bg-[#1a1c24] text-white border border-white/10 shadow-lg active:scale-[0.99] transition-all cursor-pointer group"
+              className="w-full relative group overflow-hidden rounded-2xl p-[1px] shadow-xl shadow-black/40 active:scale-[0.99] transition-all cursor-pointer"
             >
-              <div className="flex items-center gap-3.5 min-w-0">
-                <div className="w-11 h-11 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0">
-                  <Bookmark className="w-5 h-5 text-zinc-300" />
+              <div className="absolute inset-0 bg-gradient-to-r from-red-600/40 via-primary/30 to-zinc-700/40 opacity-70 group-hover:opacity-100 transition-opacity" />
+              <div className="relative flex items-center justify-between p-4 sm:p-4.5 rounded-[15px] bg-[#12141a]/95 hover:bg-[#161820]/95 backdrop-blur-md border border-white/10 transition-colors">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/30 flex items-center justify-center shrink-0 shadow-inner">
+                    <Bookmark className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="text-left min-w-0">
+                    <p className="font-bold text-sm sm:text-base text-white tracking-tight leading-tight flex items-center gap-2">
+                      <span>Ir para o Artigo Completo</span>
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/[0.08] text-zinc-300 font-mono">
+                        {data.artigoDisplay}
+                      </span>
+                    </p>
+                    <p className="text-xs text-zinc-400 leading-snug mt-1 truncate">
+                      Visualizar caput, incisos, parágrafos e jurisprudência completa
+                    </p>
+                  </div>
                 </div>
-                <div className="text-left min-w-0">
-                  <p className="font-bold text-sm sm:text-base text-zinc-100 leading-tight">
-                    Ir para o Artigo Completo
-                  </p>
-                  <p className="text-xs text-zinc-400 leading-snug mt-0.5 truncate">
-                    Visualizar caput, incisos, notas e jurisprudência completa
-                  </p>
+                <div className="w-9 h-9 rounded-full bg-white/[0.05] group-hover:bg-primary/20 border border-white/10 group-hover:border-primary/40 flex items-center justify-center shrink-0 ml-2 transition-all">
+                  <ChevronRight className="w-4.5 h-4.5 text-zinc-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
                 </div>
               </div>
-              <ChevronRight className="w-5 h-5 text-zinc-400 group-hover:translate-x-1 transition-transform shrink-0 ml-2" />
             </button>
           </div>
 
         </div>
-
-        {/* ── BOTTOM SHEET DE EXPLICAÇÃO DIDÁTICA (ABRE DE BAIXO PARA CIMA) ── */}
-        <AnimatePresence>
-          {showExplicacaoSheet && (
-            <>
-              {/* Backdrop escuro com blur */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                onClick={() => setShowExplicacaoSheet(false)}
-                className="fixed inset-0 z-[80] bg-black/80"
-              />
-
-              {/* Sheet de baixo para cima */}
-              <motion.div
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-                style={{ willChange: 'transform' }}
-                className="fixed inset-x-0 bottom-0 z-[85] h-[88dvh] max-h-[88dvh] bg-[#0E0F12] border-t border-white/15 rounded-t-[32px] flex flex-col shadow-2xl overflow-hidden max-w-3xl mx-auto"
-              >
-                {/* Puxador central */}
-                <div className="w-12 h-1.5 rounded-full bg-white/20 mx-auto mt-3 mb-1 shrink-0" />
-
-                {/* Cabeçalho do Bottom Sheet (SEM ícone de brilho) */}
-                <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-white/10 shrink-0">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <button
-                      type="button"
-                      onClick={() => setShowExplicacaoSheet(false)}
-                      className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.08] hover:bg-white/15 border border-white/10 text-white active:opacity-70 transition-all shrink-0"
-                      title="Fechar explicação"
-                    >
-                      <ArrowLeft className="w-5 h-5 text-white" />
-                    </button>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h2 className="font-display text-base sm:text-lg font-bold text-white truncate">
-                          Explicação Didática
-                        </h2>
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary/20 text-primary border border-primary/30 uppercase tracking-wider shrink-0">
-                          {aiModelUsed || 'Doutrina'}
-                        </span>
-                      </div>
-                      <p className="text-xs text-zinc-400 truncate mt-0.5">
-                        {data.artigoDisplay} • {data.leiNome}
-                      </p>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      void gerarExplicacaoIA(data, true);
-                    }}
-                    disabled={aiLoading}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:opacity-70 text-xs font-semibold text-zinc-200 border border-white/10 transition-all shrink-0 disabled:opacity-50"
-                    title="Regerar análise"
-                  >
-                    <RotateCcw className={`w-3.5 h-3.5 ${aiLoading ? 'animate-spin' : ''}`} />
-                    <span className="hidden sm:inline">Regerar</span>
-                  </button>
-                </div>
-
-                {/* Conteúdo rolável com cards didáticos idênticos aos artigos de lei */}
-                <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 space-y-4 custom-scrollbar pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-                  {aiLoading ? (
-                    <div className="py-20 flex flex-col items-center justify-center gap-3 text-center">
-                      <Loader2 className="w-8 h-8 text-primary animate-spin" />
-                      <p className="text-sm font-semibold text-zinc-200">
-                        Estruturando explicação didática...
-                      </p>
-                      <p className="text-xs text-zinc-400 max-w-sm">
-                        Examinando a redação legal e fundamentando as consequências penais.
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      {/* Seções parseadas em cards modulares */}
-                      {parseExplicacaoSecoes(aiExplicacao).map((secao) => (
-                        <div
-                          key={secao.numero}
-                          className="rounded-2xl border border-white/10 bg-[#14151b] p-4 sm:p-5 space-y-2.5 shadow-lg"
-                        >
-                          <div className="flex items-center gap-2.5 border-b border-white/10 pb-2">
-                            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-white/[0.08] text-primary border border-primary/30">
-                              {secao.numero}
-                            </span>
-                            <h3 className="font-display text-sm sm:text-base font-bold text-white tracking-tight">
-                              {secao.titulo}
-                            </h3>
-                          </div>
-                          <div className="space-y-2 pt-1">
-                            {renderFormattedText(secao.conteudo)}
-                          </div>
-                        </div>
-                      ))}
-
-                      {/* Card Constitucional de Irretroatividade */}
-                      <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] text-xs text-zinc-300 leading-relaxed flex items-start gap-3 shadow-sm">
-                        <Scale className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-bold text-white mb-0.5">Segurança Jurídica & Irretroatividade</p>
-                          <p className="text-zinc-400">
-                            A nova redação penal incide nos termos do Art. 5º, XL da Constituição Federal, sendo vedada a aplicação retroativa que agrave a situação do réu (*lex gravior*).
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Botão para ir ao artigo completo dentro do sheet */}
-                      <div className="pt-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            haptic.impact();
-                            setShowExplicacaoSheet(false);
-                            onClose();
-                            onIrParaArtigo(data.artigo);
-                          }}
-                          className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl bg-hero-panel hover:bg-primary text-white text-sm font-bold shadow-lg shadow-red-950/40 active:opacity-70 transition-all cursor-pointer border border-red-500/30"
-                        >
-                          <Bookmark className="w-4 h-4 text-white" />
-                          <span>Ir para o Artigo Completo</span>
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
       </div>
     </AnimatePresence>
   );

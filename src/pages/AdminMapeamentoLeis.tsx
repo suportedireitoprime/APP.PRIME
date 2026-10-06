@@ -4,9 +4,10 @@ import {
   Scale, BookOpen, Shield, ScrollText, HeartHandshake,
   Search, RefreshCw, ExternalLink, ChevronRight, CheckCircle2,
   Clock, Loader2, Eye, ArrowLeft, History, AlertTriangle, Check, X,
-  ListFilter, RotateCcw
+  ListFilter, RotateCcw, Settings2, FileText, Globe
 } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
 import { LEIS_CATALOG, type LeiCatalogItem } from '@/data/leisCatalog';
 import { supabase } from '@/integrations/supabase/client';
 import LeiDetailView from '@/components/vademecum/views/LeiDetailView';
@@ -20,6 +21,7 @@ interface CategoriaDef {
   color: string;
 }
 
+import { useQueryClient } from '@tanstack/react-query';
 import { extractMesAno, normalizeAlteracoes, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export interface ExtracaoHistoricoItem {
@@ -41,6 +43,7 @@ const CATEGORIAS_DEF: CategoriaDef[] = [
 
 export default function AdminMapeamentoLeis() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [selectedCat, setSelectedCat] = useState<CategoriaDef | null>(null);
   const [busca, setBusca] = useState('');
   const [extraindoSlug, setExtraindoSlug] = useState<string | null>(null);
@@ -52,6 +55,7 @@ export default function AdminMapeamentoLeis() {
   const [aprovados, setAprovados] = useState<Record<string, boolean>>({});
   const [triagem, setTriagem] = useState<Record<string, boolean>>({});
   const [previaLei, setPreviaLei] = useState<LeiCatalogItem | null>(null);
+  const [actionMenuLei, setActionMenuLei] = useState<LeiCatalogItem | null>(null);
   const [filtroStatus, setFiltroStatus] = useState<'todas' | 'triagem' | 'aprovadas' | 'pendentes'>('todas');
 
   // Estados do Modo Histórico da Lei
@@ -400,11 +404,27 @@ export default function AdminMapeamentoLeis() {
 
           // Limpa o cache antigo dessa lei na nuvem e grava o novo atualizado
           await supabase.from('scraped_article_updates').delete().eq('lei_id', lei.id.toLowerCase());
-          const res = await supabase.from('scraped_article_updates').insert(dbRows);
           
-          if (res.error) {
-            console.error('Erro ao sincronizar novidades no Supabase:', res.error);
-            toast.error('Erro ao salvar no banco. Apenas em memória foi atualizado.');
+          let hasError = false;
+          let lastErrorMessage = '';
+          // Divide em lotes de 50 para não estourar o limite de payload do PostgREST
+          const chunkSize = 50;
+          for (let i = 0; i < dbRows.length; i += chunkSize) {
+            const chunk = dbRows.slice(i, i + chunkSize);
+            const res = await supabase.from('scraped_article_updates').insert(chunk);
+            if (res.error) {
+              console.error('Erro ao sincronizar chunk no Supabase:', res.error);
+              hasError = true;
+              lastErrorMessage = res.error.message || JSON.stringify(res.error);
+              break;
+            }
+          }
+          
+          if (hasError) {
+            toast.error(`Erro do Banco de Dados: ${lastErrorMessage}`, { duration: 10000 });
+          } else {
+            // Se salvou com sucesso, invalida o cache global para outras telas refletirem (como o Carousel)
+            queryClient.invalidateQueries({ queryKey: ['scraped_updates'] });
           }
         } catch (dbErr) {
           console.error('Erro de rede ao salvar novidades no Supabase:', dbErr);
@@ -719,15 +739,35 @@ export default function AdminMapeamentoLeis() {
 
                     {/* Comparação dos Textos (Antigo vs Novo) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {/* Texto Antigo (Revogado) */}
-                      <div className="bg-rose-950/20 border border-rose-500/30 rounded-xl p-3.5 space-y-1.5">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400 block">
-                          Texto Antigo (Revogado / Anterior)
-                        </span>
-                        <p className="text-xs text-muted-foreground/90 font-serif leading-relaxed line-through decoration-rose-500/50">
-                          {item.texto_antigo || 'Dispositivo incluído pela primeira vez (inédito).'}
-                        </p>
-                      </div>
+                      {/* Texto Antigo / Anterior */}
+                      {dispInfo.acao === 'redacao_dada' ? (
+                        <div className="bg-amber-950/20 border border-amber-500/30 rounded-xl p-3.5 space-y-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 block">
+                            Texto Antigo (Redação Anterior)
+                          </span>
+                          <p className="text-xs text-muted-foreground/90 font-serif leading-relaxed line-through decoration-amber-500/50">
+                            {item.texto_antigo || `Redação anterior substituída pelos termos da ${dispInfo.leiReferencia || 'lei modificadora'}.`}
+                          </p>
+                        </div>
+                      ) : dispInfo.acao === 'revogado' ? (
+                        <div className="bg-rose-950/20 border border-rose-500/30 rounded-xl p-3.5 space-y-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400 block">
+                            Texto Antigo (Revogado)
+                          </span>
+                          <p className="text-xs text-muted-foreground/90 font-serif leading-relaxed line-through decoration-rose-500/50">
+                            {item.texto_antigo || 'Dispositivo expressamente revogado pela norma.'}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="bg-zinc-900/40 border border-white/10 rounded-xl p-3.5 space-y-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                            Texto Anterior
+                          </span>
+                          <p className="text-xs text-zinc-400/80 font-serif leading-relaxed italic">
+                            {item.texto_antigo || 'Dispositivo incluído pela primeira vez (inédito).'}
+                          </p>
+                        </div>
+                      )}
 
                       {/* Texto Novo (Planalto) */}
                       <div className="bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-3.5 space-y-1.5">
@@ -1061,111 +1101,56 @@ export default function AdminMapeamentoLeis() {
                   return (
                     <div
                       key={lei.id}
-                      className="group px-4 py-3.5 flex items-center gap-3 hover:bg-secondary/40 transition-colors"
+                      className="group p-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-secondary/40 transition-colors"
                     >
-                      {/* Ícone fixo à esquerda */}
-                      <ScrollText className="w-4 h-4 text-muted-foreground shrink-0" />
+                      {/* Lado esquerdo: Ícone + Textos + Badges */}
+                      <div className="flex items-start gap-3.5 flex-1 min-w-0">
+                        <ScrollText className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
 
-                      {/* Nome + Sigla + Status */}
-                      <div className="flex-1 min-w-0 flex items-center gap-2">
-                        <span className="text-sm font-semibold text-foreground leading-snug">{lei.nome}</span>
-                        {!lei.url_planalto && (
-                          <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" title="URL do Planalto não configurada" />
-                        )}
-                        <span className="text-[10px] font-bold px-1.5 py-px rounded bg-primary/10 text-primary border border-primary/20 shrink-0">
-                          {lei.sigla}
-                        </span>
-                        {isAprovada ? (
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" title="Aprovada" />
-                        ) : isEmTriagem ? (
-                          <ListFilter className="w-3.5 h-3.5 text-blue-400 shrink-0" title="Em Triagem" />
-                        ) : null}
+                        <div className="flex flex-col gap-2 flex-1 min-w-0">
+                          <span className="text-sm font-bold text-foreground leading-snug pr-2">
+                            {lei.nome}
+                          </span>
+                          
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {!lei.url_planalto && (
+                              <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" title="URL do Planalto não configurada" />
+                            )}
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 shrink-0 uppercase tracking-wider">
+                              {lei.sigla}
+                            </span>
+                            {histList.length > 0 && histList[0].artigos > 0 && (
+                              <span className="text-[10px] font-bold text-muted-foreground bg-secondary/80 px-2 py-0.5 rounded border border-border/40 shrink-0">
+                                {histList[0].artigos} artigos
+                              </span>
+                            )}
+                            {isAprovada ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                                <CheckCircle2 className="w-3 h-3" /> Aprovada
+                              </span>
+                            ) : isEmTriagem ? (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 shrink-0">
+                                <ListFilter className="w-3 h-3" /> Triagem
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Barra de progresso inline */}
-                      {isExtracting && (
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
-                          <span className="text-xs font-mono font-bold text-primary">{progresso}%</span>
-                        </div>
-                      )}
-
-                      {/* Ações em ícones compactos */}
-                      <div className="flex items-center gap-1 shrink-0">
-                        {/* Prévia */}
-                        <button
-                          onClick={() => setPreviaLei(lei)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-secondary/80 text-muted-foreground hover:text-foreground transition-colors"
-                          title="Ver Prévia"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-
-                        {/* Histórico alterações */}
-                        <button
-                          onClick={() => handleAbrirHistorico(lei)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-secondary/80 text-muted-foreground hover:text-amber-400 transition-colors"
-                          title="Histórico de alterações"
-                        >
-                          <History className="w-4 h-4" />
-                        </button>
-
-                        {/* Planalto */}
-                        {lei.url_planalto && (
-                          <a
-                            href={lei.url_planalto}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-secondary/80 text-muted-foreground hover:text-primary transition-colors"
-                            title="Planalto oficial"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
+                      {/* Lado direito: Ações */}
+                      <div className="flex items-center justify-end gap-2 shrink-0 w-full sm:w-auto border-t sm:border-t-0 border-border/50 pt-3 sm:pt-0">
+                        {isExtracting && (
+                          <div className="flex items-center gap-1.5 shrink-0 bg-primary/10 px-2.5 py-1 rounded-lg">
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                            <span className="text-xs font-mono font-bold text-primary">{progresso}%</span>
+                          </div>
                         )}
-
-                        {/* Triagem: Devolver / Aprovar */}
-                        {isEmTriagem && (
-                          <>
-                            <button
-                              onClick={() => handleDevolverTriagem(lei)}
-                              className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-rose-500/20 text-muted-foreground hover:text-rose-400 transition-colors"
-                              title="Devolver para Pendentes"
-                            >
-                              <RotateCcw className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleAprovarLei(lei)}
-                              className="w-8 h-8 rounded-lg flex items-center justify-center bg-emerald-600/80 hover:bg-emerald-500 text-white transition-colors"
-                              title="Aprovar Lei"
-                            >
-                              <Check className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-
-                        {/* Aprovada: badge clicável para revogar */}
-                        {isAprovada && (
-                          <button
-                            onClick={() => handleRevogarAprovacao(lei)}
-                            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-rose-500/20 text-emerald-400 hover:text-rose-400 transition-colors"
-                            title="Revogar aprovação"
-                          >
-                            <CheckCircle2 className="w-4 h-4" />
-                          </button>
-                        )}
-
-                        {/* Extrair / Re-extrair */}
                         <button
-                          onClick={() => handleExtrairLei(lei)}
-                          disabled={isExtracting}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary/90 hover:bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                          title={lastScrape ? 'Re-extrair Lei' : 'Extrair Lei'}
+                          onClick={() => setActionMenuLei(lei)}
+                          className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-secondary/80 hover:bg-secondary text-foreground font-semibold shadow-sm transition-all hover:scale-105 active:scale-95"
                         >
-                          {isExtracting ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <RefreshCw className="w-4 h-4" />
-                          )}
+                          <Settings2 className="w-4 h-4" />
+                          <span className="text-xs">Opções</span>
                         </button>
                       </div>
                     </div>
@@ -1280,6 +1265,165 @@ export default function AdminMapeamentoLeis() {
           </div>
         </div>
       )}
+
+      {/* MENU DE AÇÕES DA LEI (BOTTOM SHEET) */}
+      <PrimeBottomSheet
+        open={!!actionMenuLei}
+        onClose={() => setActionMenuLei(null)}
+        zIndex={70}
+        className="pb-safe-nav"
+      >
+        {actionMenuLei && (
+          <div className="flex flex-col h-full bg-background rounded-t-3xl overflow-hidden">
+            <div className="p-5 border-b border-border/50 flex flex-col gap-1 bg-secondary/10">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <Settings2 className="w-5 h-5 text-primary" />
+                Opções da {actionMenuLei.sigla}
+              </h2>
+              <p className="text-xs text-muted-foreground leading-snug pr-4">{actionMenuLei.nome}</p>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-3">
+              <div className="grid grid-cols-1 gap-1.5">
+                {/* Prévia */}
+                <button
+                  onClick={() => { setActionMenuLei(null); setPreviaLei(actionMenuLei); }}
+                  className="flex items-center gap-3.5 w-full p-3.5 text-left rounded-2xl hover:bg-secondary/60 transition-colors group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <Eye className="w-5 h-5 text-foreground" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-foreground">Ver Prévia do Vade Mecum</span>
+                    <span className="text-[11px] text-muted-foreground font-medium">Testar leitura e navegação do artigo</span>
+                  </div>
+                </button>
+
+                {/* Histórico Planalto */}
+                <button
+                  onClick={() => { setActionMenuLei(null); handleAbrirHistorico(actionMenuLei); }}
+                  className="flex items-center gap-3.5 w-full p-3.5 text-left rounded-2xl hover:bg-amber-500/10 transition-colors group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-amber-500/20">
+                    <History className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-amber-500">Novidades (Planalto)</span>
+                    <span className="text-[11px] text-amber-500/70 font-medium">Buscar e sincronizar alterações recentes</span>
+                  </div>
+                </button>
+
+                {/* Histórico Raspagens */}
+                <button
+                  onClick={() => { setActionMenuLei(null); setModalHistoricoExtracoesLei(actionMenuLei); }}
+                  className="flex items-center gap-3.5 w-full p-3.5 text-left rounded-2xl hover:bg-blue-500/10 transition-colors group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-blue-500/20">
+                    <Clock className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-blue-400">Histórico de Extrações</span>
+                    <span className="text-[11px] text-blue-400/70 font-medium">Ver logs e datas das raspagens completas</span>
+                  </div>
+                </button>
+                
+                {/* Planalto Oficial */}
+                {actionMenuLei.url_planalto && (
+                  <a
+                    href={actionMenuLei.url_planalto}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-3.5 w-full p-3.5 text-left rounded-2xl hover:bg-secondary/60 transition-colors group"
+                    onClick={() => setActionMenuLei(null)}
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <ExternalLink className="w-5 h-5 text-foreground" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-foreground">Abrir Planalto Oficial</span>
+                      <span className="text-[11px] text-muted-foreground font-medium">Ver o texto original no navegador</span>
+                    </div>
+                  </a>
+                )}
+
+                {/* Extrair / Re-extrair */}
+                <button
+                  onClick={() => { setActionMenuLei(null); handleExtrairLei(actionMenuLei); }}
+                  className="flex items-center gap-3.5 w-full p-3.5 text-left rounded-2xl hover:bg-primary/15 transition-colors group"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-primary/30">
+                    <RefreshCw className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-primary">Extrair Todos os Artigos</span>
+                    <span className="text-[11px] text-primary/70 font-medium">Puxar o texto completo e reestruturar</span>
+                  </div>
+                </button>
+
+                {/* Linha separadora caso tenha ações de triagem */}
+                {(triagem[actionMenuLei.id] || aprovados[actionMenuLei.id]) && (
+                  <div className="h-px bg-border/50 my-2 mx-2" />
+                )}
+
+                {/* Triagem */}
+                {triagem[actionMenuLei.id] && (
+                  <>
+                    <button
+                      onClick={() => { setActionMenuLei(null); handleDevolverTriagem(actionMenuLei); }}
+                      className="flex items-center gap-3.5 w-full p-3.5 text-left rounded-2xl hover:bg-rose-500/10 transition-colors group"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-rose-500/15 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-rose-500/20">
+                        <RotateCcw className="w-5 h-5 text-rose-500" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-rose-500">Devolver (Remover da Triagem)</span>
+                        <span className="text-[11px] text-rose-500/70 font-medium">Voltar para o status "Pendente"</span>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => { setActionMenuLei(null); handleAprovarLei(actionMenuLei); }}
+                      className="flex items-center gap-3.5 w-full p-3.5 text-left rounded-2xl hover:bg-emerald-500/10 transition-colors group"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-emerald-500/20">
+                        <Check className="w-5 h-5 text-emerald-500" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-emerald-500">Aprovar Lei</span>
+                        <span className="text-[11px] text-emerald-500/70 font-medium">Disponibilizar para todos os usuários</span>
+                      </div>
+                    </button>
+                  </>
+                )}
+
+                {/* Aprovada (Revogar) */}
+                {aprovados[actionMenuLei.id] && (
+                  <button
+                    onClick={() => { setActionMenuLei(null); handleRevogarAprovacao(actionMenuLei); }}
+                    className="flex items-center gap-3.5 w-full p-3.5 text-left rounded-2xl hover:bg-rose-500/10 transition-colors group"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-rose-500/15 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform border border-rose-500/20">
+                      <CheckCircle2 className="w-5 h-5 text-rose-500" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-rose-500">Revogar Aprovação</span>
+                      <span className="text-[11px] text-rose-500/70 font-medium">Remover do app dos estudantes</span>
+                    </div>
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            <div className="p-4 border-t border-border/50 bg-secondary/20">
+              <button 
+                onClick={() => setActionMenuLei(null)}
+                className="w-full py-3.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
+      </PrimeBottomSheet>
     </div>
   );
 }
