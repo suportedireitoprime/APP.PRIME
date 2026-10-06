@@ -285,8 +285,8 @@ const Noticias = () => {
 
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="sticky top-0 z-40 bg-background bg-gradient-to-b from-primary/30 via-primary/15 to-background pb-4">
+    <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden">
+      <div className="shrink-0 z-40 bg-background bg-gradient-to-b from-primary/30 via-primary/15 to-background pb-4 shadow-sm border-b border-border/40">
         <PageHeader
           title="Notícias Legislativas"
           subtitle="Últimas do mundo jurídico"
@@ -389,7 +389,8 @@ const Noticias = () => {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto pb-20">
+        <div className="max-w-3xl mx-auto px-4 py-4 space-y-4">
 
 
 
@@ -549,6 +550,7 @@ const Noticias = () => {
 
           </>
         )}
+        </div>
       </div>
 
       <NoticiaViewerSheet
