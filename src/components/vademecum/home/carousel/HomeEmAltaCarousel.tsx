@@ -183,11 +183,14 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
 
   useEffect(() => {
     if (displayItems.length > 0 && !isReady) {
-      const initialIndex = displayItems.length; // Start at the second block
+      // Sorteia um índice aleatório dentro do segundo bloco (para permitir scroll infinito p/ ambos os lados)
+      const randomOffset = Math.floor(Math.random() * displayItems.length);
+      const initialIndex = displayItems.length + randomOffset;
+      
       setActiveIndex(initialIndex);
-      // Timeout is needed so the DOM has rendered the padding and cards
+      // Timeout necessário para aguardar o DOM calcular as larguras
       setTimeout(() => {
-        scrollToIndex(initialIndex, 'auto');
+        scrollToIndex(initialIndex, 'instant' as ScrollBehavior); // Força 'instant' p/ evitar qualquer animação de roleta
         setIsReady(true);
       }, 50);
     }
