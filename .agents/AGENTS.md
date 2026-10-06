@@ -140,3 +140,8 @@ ALWAYS implement SEO best practices automatically for every page/component.
 
 ## 🤖 Super Poderes ECC (Agent Harness)
 - **Obrigatório Consultar Skills ECC:** Antes de sugerir qualquer alteração arquitetural, implementar novas features ou realizar tarefas complexas, você DEVE consultar as skills disponíveis do ECC (instaladas no diretório `.agents/skills/`) utilizando a tool `view_file` no arquivo `SKILL.md` correspondente à tarefa. Isso garante que você utilizará as melhores práticas e "super poderes" padronizados de engenharia no projeto.
+
+## 💾 SUPABASE SINGLE SOURCE OF TRUTH (Proibição de Local Storage)
+- **REGRA ABSOLUTA DE DADOS DO USUÁRIO:** NENHUM dado de usuário, histórico (ex: onde parou na lição/flashcard), favoritos, anotações, grifos ou preferências deve ser salvo exclusivamente no dispositivo local (localStorage, sessionStorage, IndexedDB, @capacitor/preferences).
+- **Ação Obrigatória:** Toda funcionalidade que envolva salvar estado do usuário DEVE criar uma tabela no Supabase (se não existir) e salvar remotamente via Supabase client, garantindo que o usuário não perca nada se desinstalar o aplicativo.
+- **Onde o Local Storage é Permitido:** Apenas e estritamente como *cache* offline (para ler arquivos grandes do Vade Mecum sem internet) ou baixar mídia (áudio/capas) via idb-keyval, sendo que a fonte verdadeira desses dados continua sendo o Supabase.

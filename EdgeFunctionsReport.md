@@ -1,0 +1,203 @@
+# Análise de Edge Functions
+
+## ✅ OK (Em uso)
+- **admin-download-secret**: Usada em 1 arquivo(s)
+- **admin-flashcards-gerar**: Usada em 1 arquivo(s)
+- **admin-flashcards-leis**: Usada em 2 arquivo(s)
+- **admin-list-users**: Usada em 1 arquivo(s)
+- **admin-monitor**: Usada em 7 arquivo(s)
+- **agenda-camara**: Usada em 1 arquivo(s)
+- **agenda-senado**: Usada em 1 arquivo(s)
+- **app-updates**: Usada em 4 arquivo(s)
+- **app-version-lock**: Usada em 1 arquivo(s)
+- **apple-billing-webhook**: Webhook (chamado externamente)
+- **apply-webhook**: Webhook (chamado externamente)
+- **aprender-aula-gerar**: Usada em 1 arquivo(s)
+- **aprender-modulo-gerar-aulas**: Usada em 1 arquivo(s)
+- **asaas-checkout**: Usada em 1 arquivo(s)
+- **asaas-webhook**: Webhook (chamado externamente)
+- **assistente-juridica**: Usada em 15 arquivo(s)
+- **audioaulas-gerar**: Usada em 1 arquivo(s)
+- **audioaulas-sheets-links**: Usada em 1 arquivo(s)
+- **audioaulas-sheets-sync**: Usada em 2 arquivo(s)
+- **biblioteca-buscar-web**: Usada em 1 arquivo(s)
+- **biblioteca-capa-feedback**: Usada em 1 arquivo(s)
+- **biblioteca-enriquecer**: Usada em 5 arquivo(s)
+- **biblioteca-ocr-mistral**: Usada em 5 arquivo(s)
+- **blog-edicao-gerar-temas**: Usada em 1 arquivo(s)
+- **blog-edicao-runner**: Usada em 4 arquivo(s)
+- **blog-push-slot**: Usada em 1 arquivo(s)
+- **boletim-cron-deploy**: Usada em 2 arquivo(s)
+- **boletim-juridico-gerar**: Usada em 4 arquivo(s)
+- **boletim-legislativo-gerar**: Usada em 1 arquivo(s)
+- **boletim-leis-matinal**: Usada em 1 arquivo(s)
+- **boletim-noticias-gerar**: Usada em 4 arquivo(s)
+- **buscar-videoaulas**: Usada em 3 arquivo(s)
+- **chat-aula**: Usada em 1 arquivo(s)
+- **comprimir-imagens**: Usada em 1 arquivo(s)
+- **concursos-scraper**: Usada em 1 arquivo(s)
+- **conteudo-fila-runner**: Usada em 1 arquivo(s)
+- **corpus927-descobrir**: Usada em 2 arquivo(s)
+- **corpus927-fetch**: Usada em 3 arquivo(s)
+- **desktop-link**: Usada em 8 arquivo(s)
+- **documentos-listar**: Usada em 1 arquivo(s)
+- **drive-bootstrap**: Usada em 1 arquivo(s)
+- **drive-upload**: Usada em 1 arquivo(s)
+- **enviar-newsletter**: Usada em 1 arquivo(s)
+- **enviar-suporte**: Usada em 3 arquivo(s)
+- **estadual-bulk-runner**: Usada em 1 arquivo(s)
+- **estadual-conferir-portal**: Usada em 1 arquivo(s)
+- **estadual-indexar-portal**: Usada em 1 arquivo(s)
+- **estadual-popular-lei**: Usada em 3 arquivo(s)
+- **estadual-verificar-portal**: Usada em 1 arquivo(s)
+- **excluir-conta**: Usada em 8 arquivo(s)
+- **gcp-monitor**: Usada em 1 arquivo(s)
+- **gerar-artigo-educacional**: Usada em 2 arquivo(s)
+- **gerar-aula-do-livro**: Usada em 2 arquivo(s)
+- **gerar-avaliacao-inteligente**: Usada em 1 arquivo(s)
+- **gerar-estudo**: Usada em 3 arquivo(s)
+- **gerar-global**: Usada em 2 arquivo(s)
+- **gerar-imagem-slide**: Usada em 2 arquivo(s)
+- **gerar-metodologia**: Usada em 1 arquivo(s)
+- **gerar-resumo**: Usada em 7 arquivo(s)
+- **gerar-resumo-artigo**: Usada em 1 arquivo(s)
+- **gerar-resumo-cornell-card**: Usada em 1 arquivo(s)
+- **gerar-videoaula-conteudo**: Usada em 1 arquivo(s)
+- **get-omniroute-key**: Usada em 1 arquivo(s)
+- **github-actions**: Usada em 3 arquivo(s)
+- **grafo-conexoes-gerar**: Usada em 1 arquivo(s)
+- **grifar-por-voz**: Usada em 2 arquivo(s)
+- **grifo-foto**: Usada em 1 arquivo(s)
+- **hero-home-runner**: Usada em 2 arquivo(s)
+- **home-curiosidade-runner**: Usada em 1 arquivo(s)
+- **horus**: Usada em 153 arquivo(s)
+- **horus-click**: Usada em 2 arquivo(s)
+- **horus-live-token**: Usada em 1 arquivo(s)
+- **identificar-artigos-foto**: Usada em 1 arquivo(s)
+- **import-prontas-stf**: Usada em 1 arquivo(s)
+- **jurisprudencia-explicar**: Usada em 2 arquivo(s)
+- **jurisprudencia-prontas-scrape**: Usada em 2 arquivo(s)
+- **jurisprudencia-refinar**: Usada em 1 arquivo(s)
+- **legacy-sync**: Usada em 1 arquivo(s)
+- **lei-aplicar-impacto-radar**: Usada em 2 arquivo(s)
+- **lei-seca-estruturar**: Usada em 1 arquivo(s)
+- **lei-seca-gerar**: Usada em 1 arquivo(s)
+- **locais-overpass-sync**: Usada em 2 arquivo(s)
+- **local-info**: Usada em 4 arquivo(s)
+- **location-reminder-horus**: Usada em 1 arquivo(s)
+- **me-explique-token**: Usada em 3 arquivo(s)
+- **me-explique-tutor**: Usada em 1 arquivo(s)
+- **mentor-chat**: Usada em 2 arquivo(s)
+- **meta-capi**: Usada em 2 arquivo(s)
+- **mobile-config-upload**: Usada em 2 arquivo(s)
+- **monitorar-legislacao**: Usada em 2 arquivo(s)
+- **narracao**: Usada em 66 arquivo(s)
+- **narracao-leis-automacao**: Usada em 2 arquivo(s)
+- **narrar-artigo**: Usada em 8 arquivo(s)
+- **notif-noticias-dia**: Usada em 1 arquivo(s)
+- **notificacao-personalizada**: Usada em 2 arquivo(s)
+- **omniroute-web-search**: Usada em 1 arquivo(s)
+- **onboarding-webhook**: Usada em 2 arquivo(s)
+- **otimizar-imagem**: Usada em 2 arquivo(s)
+- **pciconcursos-noticia**: Usada em 1 arquivo(s)
+- **pesquisas-prontas-index**: Usada em 1 arquivo(s)
+- **peticao**: Usada em 19 arquivo(s)
+- **plano-estudos-gerar**: Usada em 1 arquivo(s)
+- **play-billing**: Usada em 3 arquivo(s)
+- **play-billing-webhook**: Webhook (chamado externamente)
+- **poder-tools**: Usada em 1 arquivo(s)
+- **popular-explicacoes**: Usada em 2 arquivo(s)
+- **popular-radar-proposicoes**: Usada em 3 arquivo(s)
+- **popular-radar-ranking**: Usada em 2 arquivo(s)
+- **popular-radar-votacoes**: Usada em 2 arquivo(s)
+- **popular-texto-resenha**: Usada em 6 arquivo(s)
+- **processar-pdf**: Usada em 1 arquivo(s)
+- **push-planner**: Usada em 1 arquivo(s)
+- **push-testar-admin**: Usada em 1 arquivo(s)
+- **push-track**: Usada em 3 arquivo(s)
+- **questao-acao-ia**: Usada em 1 arquivo(s)
+- **questoes-comentario-ia**: Usada em 1 arquivo(s)
+- **questoes-importar-iniciante**: Usada em 1 arquivo(s)
+- **questoes-sheets-descobrir**: Usada em 1 arquivo(s)
+- **questoes-sheets-importar**: Usada em 1 arquivo(s)
+- **radar-detectar-impacto-leis**: Usada em 2 arquivo(s)
+- **radar-leis-notify**: Usada em 2 arquivo(s)
+- **reextrair-lei-planalto**: Usada em 7 arquivo(s)
+- **reminders-tick**: Usada em 6 arquivo(s)
+- **scrape-legislacao**: Usada em 3 arquivo(s)
+- **scrape-noticias-stf-folha**: Usada em 1 arquivo(s)
+- **scrape-resenha-diaria**: Usada em 9 arquivo(s)
+- **semantic-search**: Usada em 1 arquivo(s)
+- **send-push**: Usada em 25 arquivo(s)
+- **smart-link-claim**: Usada em 2 arquivo(s)
+- **stf-plenary-notifier**: Usada em 1 arquivo(s)
+- **stf-scraper**: Usada em 1 arquivo(s)
+- **sumulas-favoritos**: Usada em 1 arquivo(s)
+- **sync-github-secrets**: Usada em 1 arquivo(s)
+- **sync-noticias-migalhas**: Usada em 3 arquivo(s)
+- **sync-podcasts**: Usada em 1 arquivo(s)
+- **sync-senado-pautas**: Usada em 2 arquivo(s)
+- **sync-stf-sheets**: Usada em 1 arquivo(s)
+- **sync-stf-streams**: Usada em 1 arquivo(s)
+- **tematica-porque-assistir**: Usada em 2 arquivo(s)
+- **transcrever-audio**: Usada em 5 arquivo(s)
+- **trial-reminders-tick**: Usada em 1 arquivo(s)
+- **upload-custom-pdf**: Usada em 1 arquivo(s)
+- **vademecum-embedder**: Usada em 2 arquivo(s)
+- **vademecum-scraper**: Usada em 1 arquivo(s)
+- **validate-purchase**: Usada em 5 arquivo(s)
+- **verificar-atualizacao-lei**: Usada em 2 arquivo(s)
+- **videoaula-acao-ia**: Usada em 1 arquivo(s)
+- **videoaula-resumo**: Usada em 1 arquivo(s)
+- **visual-juridico-gerar**: Usada em 1 arquivo(s)
+- **youtube-aovivo**: Usada em 1 arquivo(s)
+- **youtube-canal**: Usada em 1 arquivo(s)
+
+## ⚠️ Em dúvida (Sem referências diretas)
+*Essas funções não são chamadas diretamente pelo frontend ou pelas migrations mapeadas. Precisamos verificar se são chamadas por serviços externos, n8n, Supabase Cron UI, ou se podem ser apagadas.*
+- **admin-asaas-overdue**
+- **admin-play-trials**
+- **admin-sql**
+- **apply-vector-migration**
+- **aprender-push-lembrete**
+- **blog-edicao-diario**
+- **blog-edicao-scheduler**
+- **boletim-render-trigger**
+- **boletim-youtube-upload**
+- **check-asaas-customer**
+- **db-admin**
+- **explicar-passo**
+- **extract-stf-date**
+- **extrair-reviews-concorrente**
+- **fix-asaas**
+- **fix-asaas-manual**
+- **flashcards-import**
+- **forca-gerar-artigo**
+- **formatar-transcricao**
+- **get-historico**
+- **inserir-hierarquia-lei**
+- **laboratorio-gerar-cena**
+- **laws-delta**
+- **play-reviews-sync**
+- **praticar-gerar-desafios**
+- **process-simulado**
+- **processar-audio**
+- **revoke-jader**
+- **scrape-concurso-full**
+- **stf-pauta**
+- **sumulas-vinculantes-scrape**
+- **tmdb-sync**
+- **vademecum-compare-ia**
+- **vademecum-sync-alteracoes**
+
+## 🗑️ Certeza de inatividade/duplicidade
+- **push-aleatorio-audio**: Temporária, teste ou substituída
+- **push-aleatorio-blog**: Temporária, teste ou substituída
+- **push-aleatorio-livro**: Temporária, teste ou substituída
+- **push-aleatorio-video**: Temporária, teste ou substituída
+- **push-estudo-madrugada**: Temporária, teste ou substituída
+- **temp-debug**: Temporária, teste ou substituída
+- **temp-secret-extractor**: Temporária, teste ou substituída
+- **temp-send**: Temporária, teste ou substituída
+- **test-audio**: Temporária, teste ou substituída
+- **test-fn**: Temporária, teste ou substituída

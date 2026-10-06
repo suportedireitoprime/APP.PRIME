@@ -59,7 +59,8 @@ export function ArtigoComentarioSlide({
         )}
         style={{
           borderTopColor: cor,
-          background: `linear-gradient(135deg, ${cor}1f, #180512 45%, ${cor}1f)`,
+          backgroundColor: "#0a0a0a",
+          backgroundImage: `linear-gradient(135deg, ${cor}1f, #180512 45%, ${cor}1f)`,
           boxShadow: "0 -20px 60px -10px rgba(0,0,0,0.6)",
         }}
       >

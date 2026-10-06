@@ -111,10 +111,9 @@ export default function LeiSecaPlayer() {
   const [respondido, setRespondido] = useState(false);
   const [confirmarSair, setConfirmarSair] = useState(false);
   const [indice, setIndice] = useState(0);
-  const [vidas, setVidas] = useState(3);
   const [acertos, setAcertos] = useState(0);
   const [respostas, setRespostas] = useState<boolean[]>([]);
-  const [acabou, setAcabou] = useState<null | "vitoria" | "derrota">(null);
+  const [acabou, setAcabou] = useState<null | "vitoria">(null);
 
   const total = exercicios?.length ?? 0;
   const atual = exercicios?.[indice];
@@ -124,17 +123,12 @@ export default function LeiSecaPlayer() {
     if (certo) playLeiSecaAcerto();
     else playFeedbackSound("error");
     const novasResp = [...respostas, certo];
-    const novasVidas = certo ? vidas : vidas - 1;
     const novosAcertos = certo ? acertos + 1 : acertos;
 
     setRespostas(novasResp);
-    setVidas(novasVidas);
     setAcertos(novosAcertos);
 
-    if (novasVidas <= 0) {
-      setAcabou("derrota");
-      finalizar(false, novosAcertos, novasResp.length);
-    } else if (indice + 1 >= total) {
+    if (indice + 1 >= total) {
       setAcabou("vitoria");
       finalizar(true, novosAcertos, novasResp.length);
     } else {
@@ -147,12 +141,10 @@ export default function LeiSecaPlayer() {
   async function finalizar(venceu: boolean, certos: number, totalResp: number) {
     if (!user?.id || !licaoQ.data) return;
     const pontuacao = totalResp ? Math.round((certos / totalResp) * 100) : 0;
-    let estrelas = 0;
-    if (venceu) {
-      estrelas = 1;
-      if (vidas >= 2) estrelas = 2;
-      if (certos === total) estrelas = 3;
-    }
+    let estrelas = 1;
+    if (pontuacao >= 70) estrelas = 2;
+    if (certos === total) estrelas = 3;
+    
     try {
       await salvarProgresso(user.id, licaoQ.data.id, { estrelas, pontuacao, concluida: venceu });
     } catch (e: any) {
@@ -162,7 +154,6 @@ export default function LeiSecaPlayer() {
 
   function tentarNovamente() {
     setIndice(0);
-    setVidas(3);
     setAcertos(0);
     setRespostas([]);
     setAcabou(null);
@@ -221,34 +212,23 @@ export default function LeiSecaPlayer() {
     return (
       <div className="min-h-screen grid place-items-center px-6 text-center bg-gradient-to-br from-[#1a0612] via-brand-burgundy-deep to-[#1a0612]">
         <div className="max-w-md w-full">
-          {acabou === "vitoria" ? (
-            <>
-              <Trophy className="h-20 w-20 mx-auto mb-4 text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]" />
-              <h2 className="text-3xl font-bold mb-2 text-white">Lição concluída!</h2>
-              <p className="text-white/70 mb-6">
-                {acertos} de {total} acertos
-              </p>
-              <div className="flex justify-center gap-2 mb-8">
-                {[0, 1, 2].map((i) => {
-                  const ganhas = acertos === total ? 3 : vidas >= 2 ? 2 : 1;
-                  return (
-                    <Star
-                      key={i}
-                      className={`h-12 w-12 ${i < ganhas ? "text-amber-400 fill-amber-400" : "text-white/15"}`}
-                    />
-                  );
-                })}
-              </div>
-            </>
-          ) : (
-            <>
-              <Heart className="h-20 w-20 mx-auto mb-4 text-rose-500" />
-              <h2 className="text-3xl font-bold mb-2 text-white">Suas vidas acabaram</h2>
-              <p className="text-white/70 mb-6">
-                {acertos} de {respostas.length} respondidas corretamente
-              </p>
-            </>
-          )}
+          <Trophy className="h-20 w-20 mx-auto mb-4 text-amber-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]" />
+          <h2 className="text-3xl font-bold mb-2 text-white">Lição concluída!</h2>
+          <p className="text-white/70 mb-6">
+            {acertos} de {total} acertos
+          </p>
+          <div className="flex justify-center gap-2 mb-8">
+            {[0, 1, 2].map((i) => {
+              const pontuacao = total ? Math.round((acertos / total) * 100) : 0;
+              const ganhas = acertos === total ? 3 : pontuacao >= 70 ? 2 : 1;
+              return (
+                <Heart
+                  key={i}
+                  className={`h-12 w-12 ${i < ganhas ? "text-rose-500 fill-rose-500 drop-shadow-[0_0_12px_rgba(244,63,94,0.6)]" : "text-white/15"}`}
+                />
+              );
+            })}
+          </div>
           <div className="flex flex-col gap-2">
             <Button
               onClick={tentarNovamente}
@@ -288,10 +268,6 @@ export default function LeiSecaPlayer() {
             value={progressoPct}
             className="flex-1 h-3 bg-white/10 [&>div]:bg-gradient-to-r [&>div]:from-pink-400 [&>div]:to-rose-500 [&>div]:shadow-[0_0_12px_rgba(244,63,94,0.5)]"
           />
-          <div className="flex items-center gap-1 font-bold text-white shrink-0">
-            <Heart className="h-5 w-5 text-rose-500 fill-rose-500 drop-shadow-[0_0_6px_rgba(244,63,94,0.6)]" />
-            <span>{vidas}</span>
-          </div>
         </div>
       </div>
 
@@ -330,21 +306,25 @@ export default function LeiSecaPlayer() {
       <AlertDialog open={confirmarSair} onOpenChange={setConfirmarSair}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Sair da lição?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Seu progresso desta lição será perdido. Deseja realmente voltar?
+            <AlertDialogTitle className="font-sans font-bold tracking-normal uppercase text-2xl text-white">
+              Sair da lição?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70 text-base">
+              Seu progresso desta lição será perdido. Deseja realmente sair?
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Continuar lição</AlertDialogCancel>
+          <AlertDialogFooter className="mt-4">
             <AlertDialogAction
               onClick={() =>
                 navigate(`/lei-seca/${licaoQ.data?.trilha_slug}/${licaoQ.data?.parte}`)
               }
-              className="bg-rose-500 hover:bg-rose-600"
+              className="bg-rose-600 hover:bg-rose-700 text-white font-bold h-12 rounded-xl w-full sm:w-auto"
             >
-              Voltar
+              Sair
             </AlertDialogAction>
+            <AlertDialogCancel className="font-bold h-12 rounded-xl border-white/10 bg-white/5 hover:bg-white/10 text-white w-full sm:w-auto mt-2 sm:mt-0">
+              Continuar lição
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

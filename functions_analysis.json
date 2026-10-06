@@ -1,0 +1,915 @@
+{
+  "admin-asaas-overdue": [],
+  "admin-download-secret": [
+    "src/pages/AdminSecretsDownload.tsx"
+  ],
+  "admin-flashcards-gerar": [
+    "src/pages/AdminFlashcardsEditar.tsx"
+  ],
+  "admin-flashcards-leis": [
+    "src/components/admin/WizardLeisSecas.tsx",
+    "src/pages/AdminFlashcardsEditar.tsx"
+  ],
+  "admin-list-users": [
+    "src/pages/AdminUsuarios.tsx"
+  ],
+  "admin-monitor": [
+    "src/AppRoutes.tsx",
+    "src/components/admin/monitorUsuarios/monitorUsuariosConstants.ts",
+    "src/components/vademecum/navigation/SideMenu.tsx",
+    "src/pages/AdminFuncoes.tsx",
+    "src/pages/AdminMonitor.tsx",
+    "src/pages/AdminMonitorApis.tsx",
+    "src/pages/AdminMonitoramento.tsx"
+  ],
+  "admin-play-trials": [],
+  "admin-sql": [],
+  "agenda-camara": [
+    "src/pages/tres-poderes/AgendaCamara.tsx"
+  ],
+  "agenda-senado": [
+    "src/data/portaisPoderes.ts"
+  ],
+  "app-updates": [
+    "src/generated/workflows/build-android.yml",
+    "src/pages/Atualizacoes.tsx",
+    "src/pages/Novidades.tsx",
+    "src/services/giroJuridicoWarmup.ts"
+  ],
+  "app-version-lock": [
+    "src/lib/appUpdate.ts"
+  ],
+  "apple-billing-webhook": [],
+  "apply-vector-migration": [],
+  "apply-webhook": [],
+  "aprender-aula-gerar": [
+    "src/hooks/domain/useAprenderAula.ts"
+  ],
+  "aprender-modulo-gerar-aulas": [
+    "src/pages/AprenderModulo.tsx"
+  ],
+  "aprender-push-lembrete": [],
+  "asaas-checkout": [
+    "src/components/assinatura/CheckoutModal.tsx"
+  ],
+  "asaas-webhook": [],
+  "assistente-juridica": [
+    "src/components/vademecum/artigo/chunks/useArtigoCommentsAndAi.ts",
+    "src/components/vademecum/artigo/useArtigoGrifoMagico.ts",
+    "src/components/vademecum/overlays/AssistenteOverlay.tsx",
+    "src/components/vademecum/sheets/AnotacoesSheet.tsx",
+    "src/components/vademecum/sheets/BaixarArtigoSheet.tsx",
+    "src/components/vademecum/sheets/PerguntarSheet.tsx",
+    "src/components/vademecum/sheets/VideoaulaSheet.tsx",
+    "src/components/videoaulas/AnotacoesAulaSheet.tsx",
+    "src/pages/AdminInstagramPosts.tsx",
+    "src/pages/AdminResumoLivroAudioEditar.tsx",
+    "src/pages/GeradorPost.tsx",
+    "src/pages/RadarPLDetalhe.tsx",
+    "src/services/explicacaoWorker.ts",
+    "src/services/plHeadlineService.ts",
+    "supabase/functions/admin-monitor/index.ts"
+  ],
+  "audioaulas-gerar": [
+    "src/pages/AdminAudioaulas.tsx"
+  ],
+  "audioaulas-sheets-links": [
+    "src/pages/AdminAudioaulas.tsx"
+  ],
+  "audioaulas-sheets-sync": [
+    "src/pages/AdminAudioaulas.tsx",
+    "supabase/functions/audioaulas-gerar/index.ts"
+  ],
+  "biblioteca-buscar-web": [
+    "src/pages/BibliotecaEditar.tsx"
+  ],
+  "biblioteca-capa-feedback": [
+    "src/pages/BibliotecaEditar.tsx"
+  ],
+  "biblioteca-enriquecer": [
+    "src/components/biblioteca/leitor/AbaChatPagina.tsx",
+    "src/components/biblioteca/leitor/AbaResumo.tsx",
+    "src/components/biblioteca/leitor/AbaTermos.tsx",
+    "src/components/biblioteca/leitor/CompartilharFrase.tsx",
+    "src/pages/BibliotecaEditar.tsx"
+  ],
+  "biblioteca-ocr-mistral": [
+    "src/components/admin/AprenderPorLivroTab.tsx",
+    "src/components/admin/FilaLeituraNativaPanel.tsx",
+    "src/hooks/domain/useLeitorData.ts",
+    "src/pages/AdminLeituraNativa.tsx",
+    "supabase/functions/_shared/questoes-aula.ts"
+  ],
+  "blog-edicao-diario": [],
+  "blog-edicao-gerar-temas": [
+    "src/pages/AdminBlogEdicao.tsx"
+  ],
+  "blog-edicao-runner": [
+    "src/pages/AdminBlogEdicao.tsx",
+    "supabase/functions/blog-edicao-diario/index.ts",
+    "supabase/functions/blog-edicao-scheduler/index.ts",
+    "supabase/migrations/20260822210000_blog_edicao_crons.sql"
+  ],
+  "blog-edicao-scheduler": [],
+  "blog-push-slot": [
+    "supabase/migrations/20260719030655_63b7b807-650a-486e-92ad-e318ebe0b019.sql"
+  ],
+  "boletim-cron-deploy": [
+    "src/pages/AdminBoletins.tsx",
+    "supabase/migrations/20260814112052_admin_deploy_boletim_crons.sql"
+  ],
+  "boletim-juridico-gerar": [
+    "src/pages/AdminBoletins.tsx",
+    "supabase/functions/boletim-cron-deploy/index.ts",
+    "supabase/functions/boletim-cron-deploy/index.ts.bak",
+    "supabase/migrations/20260802062136_144c6fa9-7084-4db2-8107-73608d47a3d3.sql"
+  ],
+  "boletim-legislativo-gerar": [
+    "src/pages/AdminBoletins.tsx"
+  ],
+  "boletim-leis-matinal": [
+    "supabase/migrations/20260719030655_63b7b807-650a-486e-92ad-e318ebe0b019.sql"
+  ],
+  "boletim-noticias-gerar": [
+    "src/pages/AdminBoletins.tsx",
+    "supabase/functions/boletim-cron-deploy/index.ts",
+    "supabase/functions/boletim-cron-deploy/index.ts.bak",
+    "supabase/migrations/20260802062136_144c6fa9-7084-4db2-8107-73608d47a3d3.sql"
+  ],
+  "boletim-render-trigger": [],
+  "boletim-youtube-upload": [],
+  "buscar-videoaulas": [
+    "src/lib/artigoFuncoesPrefetch.ts",
+    "supabase/functions/_shared/horusOferta.ts",
+    "supabase/functions/admin-monitor/index.ts"
+  ],
+  "chat-aula": [
+    "src/components/anotacoesAudio/chunks/AnotacoesAudioChatModal.tsx"
+  ],
+  "check-asaas-customer": [],
+  "comprimir-imagens": [
+    "src/pages/CompressaoImagens.tsx"
+  ],
+  "concursos-scraper": [
+    "supabase/migrations/20260926093000_concursos_cron.sql"
+  ],
+  "conteudo-fila-runner": [
+    "src/pages/AdminConteudoFila.tsx"
+  ],
+  "corpus927-descobrir": [
+    "src/pages/AdminJurisprudencia.tsx",
+    "src/pages/JurisprudenciaArtigo.tsx"
+  ],
+  "corpus927-fetch": [
+    "src/lib/jurisprudenciaCache.ts",
+    "src/pages/JurisprudenciaArtigo.tsx",
+    "supabase/functions/peticao/jurisprudencia.ts"
+  ],
+  "db-admin": [],
+  "desktop-link": [
+    "src/AppRoutes.tsx",
+    "src/components/PersistentHome.tsx",
+    "src/components/auth/DesktopQrLogin.tsx",
+    "src/components/layout/GlobalDesktopHeader.tsx",
+    "src/lib/analyticsEvents.ts",
+    "src/lib/desktopLinkApi.ts",
+    "src/pages/DesktopLinkConfirm.tsx",
+    "src/pages/DesktopPromo.tsx"
+  ],
+  "documentos-listar": [
+    "src/hooks/useDocumentosDrive.ts"
+  ],
+  "drive-bootstrap": [
+    "src/pages/AdminConteudoFila.tsx"
+  ],
+  "drive-upload": [
+    "src/services/driveMirror.ts"
+  ],
+  "enviar-newsletter": [
+    "supabase/migrations/20260403104752_0f8e8f68-8f00-46f7-9a62-9999736134d9.sql"
+  ],
+  "enviar-suporte": [
+    "src/components/suporte/InicioTab.tsx",
+    "src/components/vademecum/sheets/SuporteSheet.tsx",
+    "src/pages/AdminSuporte.tsx"
+  ],
+  "estadual-bulk-runner": [
+    "src/pages/AdminBibliotecaLeisEstaduais.tsx"
+  ],
+  "estadual-conferir-portal": [
+    "src/pages/AdminBibliotecaLeisEstaduais.tsx"
+  ],
+  "estadual-indexar-portal": [
+    "src/pages/AdminBibliotecaLeisEstaduais.tsx"
+  ],
+  "estadual-popular-lei": [
+    "src/pages/AdminBibliotecaLeisEstaduais.tsx",
+    "supabase/functions/_shared/estaduais/sp.ts",
+    "supabase/functions/estadual-bulk-runner/index.ts"
+  ],
+  "estadual-verificar-portal": [
+    "src/pages/AdminBibliotecaLeisEstaduais.tsx"
+  ],
+  "excluir-conta": [
+    "src/AppRoutes.tsx",
+    "src/components/PersistentHome.tsx",
+    "src/components/layout/GlobalDesktopHeader.tsx",
+    "src/components/perfil/ExcluirContaButton.tsx",
+    "src/lib/analyticsEvents.ts",
+    "src/pages/Configuracoes.tsx",
+    "src/pages/ExcluirConta.tsx",
+    "src/pages/ExcluirContaPublico.tsx"
+  ],
+  "explicar-passo": [],
+  "extract-stf-date": [],
+  "extrair-reviews-concorrente": [],
+  "fix-asaas": [],
+  "fix-asaas-manual": [],
+  "flashcards-import": [],
+  "forca-gerar-artigo": [],
+  "formatar-transcricao": [],
+  "gcp-monitor": [
+    "src/components/admin/GcpMonitorWidget.tsx"
+  ],
+  "gerar-artigo-educacional": [
+    "src/pages/ArtigoEducacional.tsx",
+    "supabase/functions/admin-monitor/index.ts"
+  ],
+  "gerar-aula-do-livro": [
+    "src/components/admin/AprenderPorLivroTab.tsx",
+    "src/hooks/useGerarAulaDemanda.ts"
+  ],
+  "gerar-avaliacao-inteligente": [
+    "src/pages/graficos/AvaliacaoInteligente.tsx"
+  ],
+  "gerar-estudo": [
+    "src/components/estudar/FlashcardView.tsx",
+    "src/components/estudar/QuizView.tsx",
+    "supabase/functions/admin-monitor/index.ts"
+  ],
+  "gerar-global": [
+    "src/lib/aiFunctionOrigins.ts",
+    "supabase/migrations/20260405172830_161e0a61-f553-4532-9034-61e680d47f86.sql"
+  ],
+  "gerar-imagem-slide": [
+    "src/lib/aiFunctionOrigins.ts",
+    "src/pages/GeradorPost.tsx"
+  ],
+  "gerar-metodologia": [
+    "src/components/resumos-juridicos/ResumoJuridicoReaderSheet.tsx"
+  ],
+  "gerar-resumo": [
+    "src/components/anotacoesAudio/chunks/AnotacoesAudioImportar.tsx",
+    "src/components/anotacoesAudio/chunks/AnotacoesAudioLista.tsx",
+    "src/components/resumos-juridicos/LeiArtigosSheet.tsx",
+    "src/pages/FlashcardsCornell.tsx",
+    "supabase/functions/admin-monitor/index.ts",
+    "supabase/functions/gerar-resumo-artigo/index.ts",
+    "supabase/functions/gerar-resumo-cornell-card/index.ts"
+  ],
+  "gerar-resumo-artigo": [
+    "src/components/resumos-juridicos/LeiArtigosSheet.tsx"
+  ],
+  "gerar-resumo-cornell-card": [
+    "src/pages/FlashcardsCornell.tsx"
+  ],
+  "gerar-videoaula-conteudo": [
+    "src/components/vademecum/sheets/VideoaulaSheet.tsx"
+  ],
+  "get-historico": [],
+  "get-omniroute-key": [
+    "src/services/aiGatewayService.ts"
+  ],
+  "github-actions": [
+    "src/generated/workflows/build-android.yml",
+    "src/hooks/useGithubBuild.ts",
+    "src/pages/AdminNativeAssets.tsx"
+  ],
+  "grafo-conexoes-gerar": [
+    "src/pages/AdminPilulas.tsx"
+  ],
+  "grifar-por-voz": [
+    "src/components/vademecum/grifos_ocr/GrifoVoicePanel.tsx",
+    "src/components/vademecum/sheets/GrifoVoiceSheet.tsx"
+  ],
+  "grifo-foto": [
+    "src/components/vademecum/sheets/GrifoFotoSheet.tsx"
+  ],
+  "hero-home-runner": [
+    "src/components/admin/HeroGenerateModal.tsx",
+    "src/pages/AdminHeroHome.tsx"
+  ],
+  "home-curiosidade-runner": [
+    "src/pages/AdminHomeCuriosidades.tsx"
+  ],
+  "horus": [
+    "src/App.tsx",
+    "src/AppRoutes.tsx",
+    "src/assets/horus/horus-owl.webp.asset.json",
+    "src/components/NovidadesRadarOverlay.tsx",
+    "src/components/PremiumGate.tsx",
+    "src/components/ReminderInAppBanner.tsx",
+    "src/components/TrialExpiredModal.tsx",
+    "src/components/admin/CanaisSaudeCard.tsx",
+    "src/components/admin/UserDossieSheet.tsx",
+    "src/components/admin/horus/AdminHorusHojeCards.tsx",
+    "src/components/admin/horus/HorusAdminTab.tsx",
+    "src/components/admin/horus/HorusCanalTab.tsx",
+    "src/components/admin/horus/HorusConversasTab.tsx",
+    "src/components/admin/horus/HorusEstatisticasTab.tsx",
+    "src/components/admin/horus/HorusFuncoesTab.tsx",
+    "src/components/admin/horus/HorusMarketingTab.tsx",
+    "src/components/admin/horus/HorusNotificacoesTab.tsx",
+    "src/components/admin/horus/HorusPoderesTab.tsx",
+    "src/components/admin/horus/HorusRankingTab.tsx",
+    "src/components/admin/horus/HorusUsuariosTab.tsx",
+    "src/components/admin/horus/WallaceCostPanel.tsx",
+    "src/components/admin/triagem/NarracaoController.tsx",
+    "src/components/aprender/chunks/AprenderNonAdminOverlay.tsx",
+    "src/components/assinatura/HorusPromoModal.tsx",
+    "src/components/biblioteca/LembreteLivroSheet.tsx",
+    "src/components/desktop/DesktopBibliotecaTabsBar.tsx",
+    "src/components/ferramentas/STF/StfLiveBanner.tsx",
+    "src/components/horus/HorusCapabilitiesRow.tsx",
+    "src/components/horus/HorusEuSheet.tsx",
+    "src/components/horus/HorusPremiumFeatureSheet.tsx",
+    "src/components/horus/HorusVerifyPhoneSheet.tsx",
+    "src/components/horus/PremiumFeaturesFullSheet.tsx",
+    "src/components/horus/onboarding/HorusOnboardingOverlay.tsx",
+    "src/components/horus/onboarding/useHorusOnboarding.ts",
+    "src/components/horus/tabs/HorusAjustesTab.tsx",
+    "src/components/horus/tabs/HorusFuncoesTab.tsx",
+    "src/components/horus/tabs/HorusMainTab.tsx",
+    "src/components/horus/tabs/HorusNotificacoesTab.tsx",
+    "src/components/horus/tabs/HorusTopTabs.tsx",
+    "src/components/horus/views/HorusCallView.tsx",
+    "src/components/lembretes/LembreteSheet.tsx",
+    "src/components/onboarding/AppIntroOverlay.tsx",
+    "src/components/onboarding/NotificacoesPermissaoStep.tsx",
+    "src/components/onboarding/TriagemModerna.tsx",
+    "src/components/peticao-inicial/StepElaboracao.tsx",
+    "src/components/peticao-inicial/StepTriagem.tsx",
+    "src/components/vademecum/artigo/chunks/ArtigoTabExemplo.tsx",
+    "src/components/vademecum/artigo/chunks/ArtigoTabExplicacao.tsx",
+    "src/components/vademecum/artigo/chunks/ArtigoTabTermos.tsx",
+    "src/components/vademecum/desktop/DesktopBreadcrumb.tsx",
+    "src/components/vademecum/desktop/DesktopTopHeader.tsx",
+    "src/components/vademecum/home/HomeActionShortcuts.tsx",
+    "src/components/vademecum/home/carousel/HomeHorusBannerCarousel.tsx",
+    "src/components/vademecum/jurisprudencia/chunks/jurisprudenciaConstants.ts",
+    "src/components/vademecum/navigation/BottomNav.tsx",
+    "src/components/vademecum/overlays/HorusAvaliacaoOverlay.tsx",
+    "src/components/vademecum/overlays/MentorOverlay.tsx",
+    "src/components/vademecum/sheets/LembretesArtigoSheet.tsx",
+    "src/components/videoaulas/desktop/VideoaulasDesktopTabsBar.tsx",
+    "src/data/transferenciaApp.ts",
+    "src/hooks/domain/useAssistenteHorus.ts",
+    "src/hooks/useHorusStatsSync.ts",
+    "src/hooks/useHorusTakeoverNotice.ts",
+    "src/index.css",
+    "src/lib/aiFunctionOrigins.ts",
+    "src/lib/analyticsEvents.ts",
+    "src/lib/appEvents.ts",
+    "src/lib/leisCantadasFormat.ts",
+    "src/lib/nativeGeofence.ts",
+    "src/lib/rotaFuncoes.ts",
+    "src/main.tsx",
+    "src/pages/AdminFuncoes.tsx",
+    "src/pages/AdminHorus.tsx",
+    "src/pages/AdminHorusTemplate.tsx",
+    "src/pages/AdminOmniRouteTeste.tsx",
+    "src/pages/AdminTriagem.tsx",
+    "src/pages/AssistenteHorus.tsx",
+    "src/pages/Configuracoes.tsx",
+    "src/pages/HorusWhatsApp.tsx",
+    "src/pages/JurisprudenciaArtigo.tsx",
+    "src/pages/MeusLembretes.tsx",
+    "src/pages/PreferenciasLembretes.tsx",
+    "src/pages/RadarConcursos.tsx",
+    "src/pages/RadarConstrucao.tsx",
+    "src/pages/VadeMecum.tsx",
+    "src/services/aiGatewayService.ts",
+    "src/services/horusService.ts",
+    "supabase/functions/_shared/adminAlertas.ts",
+    "supabase/functions/_shared/boletimNotify.ts",
+    "supabase/functions/_shared/evolution.ts",
+    "supabase/functions/_shared/horus-plan.ts",
+    "supabase/functions/_shared/horus-poderes-runner.ts",
+    "supabase/functions/_shared/horus-prompt-builder.ts",
+    "supabase/functions/_shared/horus-user-stats.ts",
+    "supabase/functions/_shared/horusCanal.ts",
+    "supabase/functions/_shared/horusMedia.ts",
+    "supabase/functions/_shared/horusOferta.ts",
+    "supabase/functions/apple-billing-webhook/index.ts",
+    "supabase/functions/asaas-webhook/index.ts",
+    "supabase/functions/blog-edicao-runner/index.ts",
+    "supabase/functions/blog-push-slot/index.ts",
+    "supabase/functions/boletim-leis-matinal/index.ts",
+    "supabase/functions/horus-click/index.ts",
+    "supabase/functions/horus-live-token/index.ts",
+    "supabase/functions/location-reminder-horus/index.ts",
+    "supabase/functions/notif-noticias-dia/index.ts",
+    "supabase/functions/notificacao-personalizada/app.ts",
+    "supabase/functions/notificacao-personalizada/horus.ts",
+    "supabase/functions/notificacao-personalizada/index.ts",
+    "supabase/functions/play-billing-webhook/index.ts",
+    "supabase/functions/poder-tools/mem0.ts",
+    "supabase/functions/push-testar-admin/index.ts",
+    "supabase/functions/reminders-tick/index.ts",
+    "supabase/functions/send-push/index.ts",
+    "supabase/functions/temp-send/index.ts",
+    "supabase/functions/test-audio/index.ts",
+    "supabase/functions/trial-reminders-tick/index.ts",
+    "supabase/functions/validate-purchase/index.ts",
+    "supabase/migrations/20260717183907_6571be8f-fb77-4c0b-9fdc-6b3206acbabf.sql",
+    "supabase/migrations/20260717195830_9be77eb2-bf04-445e-848d-d7b0a31129b1.sql",
+    "supabase/migrations/20260717211704_8a5d0405-10d5-493d-9c7c-e5366155d595.sql",
+    "supabase/migrations/20260717212731_dd63cafa-d272-4a71-9174-542d8b4dc4bd.sql",
+    "supabase/migrations/20260717213643_9b28ddb3-71b4-4532-862e-43245aa88c74.sql",
+    "supabase/migrations/20260717214128_7cbbff6e-41d5-4124-a494-46c7d0a8b5c8.sql",
+    "supabase/migrations/20260717214944_445fbc3d-e475-43c8-a3fe-ce79fe8a9d3f.sql",
+    "supabase/migrations/20260717215259_a5b0ac35-d91d-4c9f-abee-4e65969099fa.sql",
+    "supabase/migrations/20260718121456_60240982-fe0e-4c1e-8f3f-33d8833a18a6.sql",
+    "supabase/migrations/20260718123117_5bda6b0f-8b6a-4f0d-9904-cf866f9e7b85.sql",
+    "supabase/migrations/20260718123243_43c55f2f-a27b-4661-86d2-6270233ef943.sql",
+    "supabase/migrations/20260718132831_c8bb5264-3936-4194-8c45-e4038c22d60c.sql",
+    "supabase/migrations/20260718133857_e93ca313-bfd1-41f4-88b5-f349d9530052.sql",
+    "supabase/migrations/20260718140033_5b990de7-6e7e-4883-bd70-f4bba40286f7.sql",
+    "supabase/migrations/20260718141334_1e31732f-8742-441f-8dc7-7fd5c53354ad.sql",
+    "supabase/migrations/20260718141545_1f7496f4-00e6-4b05-a7d7-909dec0563d2.sql",
+    "supabase/migrations/20260719030655_63b7b807-650a-486e-92ad-e318ebe0b019.sql",
+    "supabase/migrations/20260719031403_41d6838e-40f4-428c-b220-c71bef224e3d.sql",
+    "supabase/migrations/20260719215625_4476f32c-1a4c-422c-a1c2-2dd10d81e652.sql",
+    "supabase/migrations/20260719215903_99fed348-b408-4301-8fb3-b44ced7f6cd7.sql",
+    "supabase/migrations/20260719233437_4a82ebdc-076b-469d-b740-c9b06ff9fb61.sql",
+    "supabase/migrations/20260720215835_32f2ca36-e27a-45bd-b141-376168182caa.sql",
+    "supabase/migrations/20260721144849_e9350301-8d16-48f6-97f8-6eed155da3d8.sql",
+    "supabase/migrations/20260721152448_b199b757-a222-4c2a-bc77-7cb2ea1e1af7.sql",
+    "supabase/migrations/20260721154737_de18f9f7-0a5f-4c39-9916-5334dde316d8.sql",
+    "supabase/migrations/20260721161754_364826ca-e4fb-40ac-9272-41f234000395.sql",
+    "supabase/migrations/20260721181934_7cdf5fbf-a441-4c56-b7c0-f358efb64518.sql",
+    "supabase/migrations/20260724183808_3f912e26-885f-4f21-a93f-20d6c2c3165a.sql",
+    "supabase/migrations/20260726043135_8177c416-80c0-477f-a21d-2dd8bcaeb7b1.sql",
+    "supabase/migrations/20260727024641_625eff1a-6e0f-4dc9-a238-76ead415db05.sql",
+    "supabase/migrations/20260728062049_679031d0-6028-4329-9f54-2fec85084232.sql",
+    "supabase/migrations/20260729033146_acff3db1-780f-4238-a1a1-7dd42292d865.sql",
+    "supabase/migrations/20260823182700_perf_missing_indexes.sql",
+    "supabase/migrations/20260901175602_add_missing_user_id_indexes.sql",
+    "supabase/migrations/20260926180500_radar_concursos_schema.sql"
+  ],
+  "horus-click": [
+    "supabase/functions/_shared/evolution.ts",
+    "supabase/functions/horus/click.ts"
+  ],
+  "horus-live-token": [
+    "src/components/horus/views/HorusCallView.tsx"
+  ],
+  "identificar-artigos-foto": [
+    "src/components/vademecum/grifos_ocr/OcrScanner.tsx"
+  ],
+  "import-prontas-stf": [
+    "src/pages/AdminJurisprudencia.tsx"
+  ],
+  "inserir-hierarquia-lei": [],
+  "jurisprudencia-explicar": [
+    "src/components/vademecum/jurisprudencia/chunks/JurisprudenciaDetalheSheet.tsx",
+    "src/components/vademecum/sheets/SumulaVinculanteSheet.tsx"
+  ],
+  "jurisprudencia-prontas-scrape": [
+    "src/pages/PesquisasProntasTema.tsx",
+    "supabase/functions/pesquisas-prontas-index/backfill.ts"
+  ],
+  "jurisprudencia-refinar": [
+    "src/pages/PesquisasProntasTema.tsx"
+  ],
+  "laboratorio-gerar-cena": [],
+  "laws-delta": [],
+  "legacy-sync": [
+    "src/components/admin/assinantes/AssinantesRecorrentesModal.tsx"
+  ],
+  "lei-aplicar-impacto-radar": [
+    "src/pages/AdminBibliotecaLeisGeral.tsx",
+    "src/pages/AdminVadeMecumHistorico.tsx"
+  ],
+  "lei-seca-estruturar": [
+    "src/lib/leiSeca.ts"
+  ],
+  "lei-seca-gerar": [
+    "src/lib/leiSeca.ts"
+  ],
+  "locais-overpass-sync": [
+    "src/hooks/useLocaisPhotos.ts",
+    "src/pages/AdminLocais.tsx"
+  ],
+  "local-info": [
+    "src/components/locais/LocaisFiltroBar.tsx",
+    "src/components/locais/LocalTransporteDialog.tsx",
+    "src/hooks/useLocalSocial.ts",
+    "src/pages/LocaisJuridicos.tsx"
+  ],
+  "location-reminder-horus": [
+    "src/lib/nativeGeofence.ts"
+  ],
+  "me-explique-token": [
+    "src/components/meExplique/views/MeExpliqueLiveChatView.tsx",
+    "src/components/questoes/ProfessoraInline.tsx",
+    "src/hooks/useMeExpliqueEngine.ts"
+  ],
+  "me-explique-tutor": [
+    "src/hooks/useMeExpliqueTutor.ts"
+  ],
+  "mentor-chat": [
+    "src/components/aprender/HorusContextualSheet.tsx",
+    "src/components/vademecum/overlays/MentorOverlay.tsx"
+  ],
+  "meta-capi": [
+    "src/lib/fbPixel.ts",
+    "src/lib/metaAppEvents.ts"
+  ],
+  "mobile-config-upload": [
+    "src/pages/AdminNativeAssets.tsx",
+    "supabase/migrations/20260712181906_9df9d63f-7507-4714-be1d-2d2701562a5e.sql"
+  ],
+  "monitorar-legislacao": [
+    "src/pages/AdminMonitor.tsx",
+    "supabase/migrations/20260403062909_aca2084c-40e1-44a6-800c-9c7976bec4c8.sql"
+  ],
+  "narracao": [
+    "src/AppRoutes.tsx",
+    "src/components/PremiumGate.tsx",
+    "src/components/admin/blog/BlogEdicaoConfigSheet.tsx",
+    "src/components/admin/blog/BlogEdicaoDrawer.tsx",
+    "src/components/admin/blog/blogEdicaoTypes.ts",
+    "src/components/admin/monitorUsuarios/monitorUsuariosConstants.ts",
+    "src/components/admin/triagem/NarracaoController.tsx",
+    "src/components/aprender/AulaSettingsSheet.tsx",
+    "src/components/aprender/blocos/CenaAnimadaBlock.tsx",
+    "src/components/biblioteca/LeitorNativo.tsx",
+    "src/components/boletim/BoletimPlayer.tsx",
+    "src/components/vademecum/artigo/ArtigoBottomSheet.tsx",
+    "src/components/vademecum/artigo/chunks/ArtigoBottomBar.tsx",
+    "src/components/vademecum/artigo/chunks/ArtigoLineRenderer.tsx",
+    "src/components/vademecum/artigo/chunks/ArtigoOverlays.tsx",
+    "src/components/vademecum/artigo/chunks/NarracaoProgressBar.tsx",
+    "src/components/vademecum/artigo/chunks/useArtigoTextProcessing.ts",
+    "src/components/vademecum/artigo/useArtigoNarracao.ts",
+    "src/components/vademecum/media/NarracaoMiniPlayer.tsx",
+    "src/components/vademecum/sheets/SumulaVinculanteSheet.tsx",
+    "src/components/vademecum/views/LeiDetailView.tsx",
+    "src/hooks/domain/useLeiData.ts",
+    "src/hooks/useDownloadsOffline.ts",
+    "src/hooks/usePremiumUsage.ts",
+    "src/lib/analyticsEvents.ts",
+    "src/lib/appEvents.ts",
+    "src/lib/apresentacaoJob.ts",
+    "src/lib/nativo/audioOffline.ts",
+    "src/lib/rotaFuncoes.ts",
+    "src/pages/AdminApresentacaoEditar.tsx",
+    "src/pages/AdminBibliotecaLeisGeral.tsx",
+    "src/pages/AdminBlogEdicao.tsx",
+    "src/pages/AdminFuncoes.tsx",
+    "src/pages/AdminNarracaoApresentacao.tsx",
+    "src/pages/AdminNarracaoBiblioteca.tsx",
+    "src/pages/AdminNarracaoBlog.tsx",
+    "src/pages/AdminNarracaoConteudo.tsx",
+    "src/pages/AdminNarracaoLeis.tsx",
+    "src/pages/AdminOmniRouteTeste.tsx",
+    "src/pages/AdminOverlayFrases.tsx",
+    "src/pages/AdminVadeMecum.tsx",
+    "src/pages/MeusDownloads.tsx",
+    "src/pages/NarracaoLei.tsx",
+    "src/services/aiGatewayService.ts",
+    "src/services/narracaoLeisService.ts",
+    "src/stores/usePlayerStore.ts",
+    "supabase/functions/_shared/adminAlertas.ts",
+    "supabase/functions/_shared/narracaoArtigo.ts",
+    "supabase/functions/_shared/narracaoConteudo.ts",
+    "supabase/functions/drive-bootstrap/index.ts",
+    "supabase/functions/gerar-aula-do-livro/index.ts",
+    "supabase/functions/lei-aplicar-impacto-radar/index.ts",
+    "supabase/functions/narracao-leis-automacao/index.ts",
+    "supabase/functions/narrar-artigo/index.ts",
+    "supabase/functions/reextrair-lei-planalto/index.ts",
+    "supabase/migrations/20260712145122_7ffd8e0b-3791-4d1b-865a-118053254d7a.sql",
+    "supabase/migrations/20260712150846_6a2a90a0-c8ac-43ad-ae90-1d33c5be49ca.sql",
+    "supabase/migrations/20260716171116_b31cca9d-c579-469b-8839-242d559fa97b.sql",
+    "supabase/migrations/20260718171945_767e7f2c-eaf6-4986-8541-006fcaf61e01.sql",
+    "supabase/migrations/20260727045406_9b2d3709-8e32-4bc7-b9b0-b43f7c516935.sql",
+    "supabase/migrations/20260727050950_c7bd3275-aa24-42c1-bd80-dc0a89ee2db1.sql",
+    "supabase/migrations/20260727051301_980550f2-17ef-4396-a41a-2dcfaddf522d.sql",
+    "supabase/migrations/20260727053349_476090ef-5fa9-43ee-b3de-cd99a7eb0fa0.sql",
+    "supabase/migrations/20260925121000_narracao_leis_automacao.sql",
+    "supabase/migrations/20260925130000_narracao_testes_cache.sql",
+    "supabase/migrations/20260926073000_narracao_multileis_e_permissoes.sql"
+  ],
+  "narracao-leis-automacao": [
+    "src/services/narracaoLeisService.ts",
+    "supabase/migrations/20260925121000_narracao_leis_automacao.sql"
+  ],
+  "narrar-artigo": [
+    "src/components/vademecum/artigo/artigoConstants.ts",
+    "src/components/vademecum/artigo/useArtigoNarracao.ts",
+    "src/components/vademecum/sheets/SumulaVinculanteSheet.tsx",
+    "src/lib/aiFunctionOrigins.ts",
+    "src/pages/AdminBibliotecaLeisGeral.tsx",
+    "supabase/functions/_shared/ai-log.ts",
+    "supabase/functions/admin-monitor/index.ts",
+    "supabase/functions/narracao/blog_artigo.ts"
+  ],
+  "notif-noticias-dia": [
+    "supabase/functions/sync-noticias-migalhas/index.ts"
+  ],
+  "notificacao-personalizada": [
+    "supabase/migrations/20260719030655_63b7b807-650a-486e-92ad-e318ebe0b019.sql",
+    "supabase/migrations/20260823182700_perf_missing_indexes.sql"
+  ],
+  "omniroute-web-search": [
+    "src/services/aiGatewayService.ts"
+  ],
+  "onboarding-webhook": [
+    "supabase/migrations/20240907_onboarding_webhook.sql",
+    "supabase/migrations/20260921060000_fix_onboarding_trigger.sql"
+  ],
+  "otimizar-imagem": [
+    "src/pages/AdminMonitor.tsx",
+    "supabase/functions/admin-monitor/index.ts"
+  ],
+  "pciconcursos-noticia": [
+    "src/pages/Concursos.tsx"
+  ],
+  "pesquisas-prontas-index": [
+    "src/pages/AdminPesquisasProntas.tsx"
+  ],
+  "peticao": [
+    "src/AppRoutes.tsx",
+    "src/components/ferramentas/useFerramentasNavigation.ts",
+    "src/components/peticao-inicial/StepElaboracao.tsx",
+    "src/components/peticao-inicial/StepFatos.tsx",
+    "src/components/peticao-inicial/StepFinal.tsx",
+    "src/components/peticao-inicial/StepJurisprudencia.tsx",
+    "src/components/peticao-inicial/StepPartes.tsx",
+    "src/components/peticao-inicial/StepResumo.tsx",
+    "src/components/peticao-inicial/StepTriagem.tsx",
+    "src/data/transferenciaApp.ts",
+    "src/hooks/domain/usePeticaoInicial.ts",
+    "src/lib/analyticsEvents.ts",
+    "src/lib/dicionarioCategorias.ts",
+    "src/lib/peticaoPdf.ts",
+    "src/lib/routePrefetch.ts",
+    "src/pages/AdminFuncoes.tsx",
+    "src/pages/PeticaoInicial.tsx",
+    "src/pages/PeticaoInicialEditor.tsx",
+    "supabase/migrations/20260723075347_37efeee4-bb35-4bec-a482-e0177b2841bd.sql"
+  ],
+  "plano-estudos-gerar": [
+    "src/pages/ferramentas/PlanoEstudos.tsx"
+  ],
+  "play-billing": [
+    "src/pages/AdminAssinantes.tsx",
+    "src/pages/AdminFunil.tsx",
+    "supabase/functions/play-billing-webhook/index.ts"
+  ],
+  "play-billing-webhook": [],
+  "play-reviews-sync": [],
+  "poder-tools": [
+    "supabase/functions/_shared/horus-poderes-runner.ts"
+  ],
+  "popular-explicacoes": [
+    "supabase/functions/admin-monitor/index.ts",
+    "supabase/migrations/20260402100840_1886bd0d-d146-488d-8dc8-f2100e7b537a.sql"
+  ],
+  "popular-radar-proposicoes": [
+    "supabase/functions/admin-monitor/index.ts",
+    "supabase/migrations/20260327025142_d7cdb8b6-7f33-4fb7-8990-4752c4f36677.sql",
+    "supabase/migrations/20260402100840_1886bd0d-d146-488d-8dc8-f2100e7b537a.sql"
+  ],
+  "popular-radar-ranking": [
+    "supabase/functions/admin-monitor/index.ts",
+    "supabase/migrations/20260327031144_8ebb3875-4728-468d-adc3-ca55d106a527.sql"
+  ],
+  "popular-radar-votacoes": [
+    "supabase/functions/admin-monitor/index.ts",
+    "supabase/migrations/20260405122942_2c5b78b7-4558-4837-b558-213ed1f1f116.sql"
+  ],
+  "popular-texto-resenha": [
+    "src/components/vademecum/artigo/LeiOrdinariaDetail.tsx",
+    "src/lib/resenhaBackend.ts",
+    "src/pages/Radar360.tsx",
+    "supabase/functions/admin-monitor/index.ts",
+    "supabase/functions/scrape-resenha-diaria/index.ts",
+    "supabase/migrations/20260406133548_033932e8-ffd7-43a7-9182-e81c20768cad.sql"
+  ],
+  "praticar-gerar-desafios": [],
+  "process-simulado": [],
+  "processar-audio": [],
+  "processar-pdf": [
+    "supabase/functions/admin-monitor/index.ts"
+  ],
+  "push-aleatorio-audio": [
+    "supabase/migrations/20260922234637_add_aleatorio_push_crons.sql"
+  ],
+  "push-aleatorio-blog": [
+    "supabase/migrations/20260922234637_add_aleatorio_push_crons.sql"
+  ],
+  "push-aleatorio-livro": [],
+  "push-aleatorio-video": [
+    "supabase/migrations/20260922234637_add_aleatorio_push_crons.sql"
+  ],
+  "push-estudo-madrugada": [],
+  "push-planner": [
+    "src/pages/AdminPush.tsx"
+  ],
+  "push-testar-admin": [
+    "src/pages/AdminPush.tsx"
+  ],
+  "push-track": [
+    "src/lib/nativePush.ts",
+    "src/lib/webPush.ts",
+    "supabase/functions/send-push/index.ts"
+  ],
+  "questao-acao-ia": [
+    "src/services/questaoAcaoFrontend.ts"
+  ],
+  "questoes-comentario-ia": [
+    "src/hooks/useQuestoes.ts"
+  ],
+  "questoes-importar-iniciante": [
+    "src/pages/AdminQuestoes.tsx"
+  ],
+  "questoes-sheets-descobrir": [
+    "src/pages/AdminQuestoes.tsx"
+  ],
+  "questoes-sheets-importar": [
+    "src/pages/AdminQuestoes.tsx"
+  ],
+  "radar-detectar-impacto-leis": [
+    "src/pages/AdminBibliotecaLeis.tsx",
+    "src/pages/AdminVadeMecumHistorico.tsx"
+  ],
+  "radar-leis-notify": [
+    "src/pages/AdminRadaresLeis.tsx",
+    "supabase/functions/scrape-resenha-diaria/index.ts"
+  ],
+  "reextrair-lei-planalto": [
+    "src/pages/AdminBibliotecaLeis.tsx",
+    "src/pages/AdminBibliotecaLeisGeral.tsx",
+    "src/pages/AdminBuscadorLeis.tsx",
+    "src/pages/AdminMapeamentoLeis.tsx",
+    "supabase/functions/estadual-popular-lei/index.ts",
+    "supabase/functions/lei-aplicar-impacto-radar/index.ts",
+    "supabase/functions/vademecum-sync-alteracoes/index.ts"
+  ],
+  "reminders-tick": [
+    "src/pages/AdminLembretesBiblioteca.tsx",
+    "supabase/functions/_shared/adminAlertas.ts",
+    "supabase/functions/trial-reminders-tick/index.ts",
+    "supabase/migrations/20260721152448_b199b757-a222-4c2a-bc77-7cb2ea1e1af7.sql",
+    "supabase/migrations/20260721202941_996b5fca-786a-41b8-95ac-9810b618d5d2.sql",
+    "supabase/migrations/20261003113700_fix_reminders_tick_cron.sql"
+  ],
+  "revoke-jader": [],
+  "scrape-concurso-full": [],
+  "scrape-legislacao": [
+    "src/pages/AdminMonitor.tsx",
+    "supabase/functions/admin-monitor/index.ts",
+    "supabase/functions/monitorar-legislacao/index.ts"
+  ],
+  "scrape-noticias-stf-folha": [
+    "supabase/migrations/20260901240000_stf_noticias_folha.sql"
+  ],
+  "scrape-resenha-diaria": [
+    "src/lib/resenhaBackend.ts",
+    "src/pages/AdminRadaresLeis.tsx",
+    "src/pages/AdminVadeMecumHistorico.tsx",
+    "src/pages/Radar360.tsx",
+    "supabase/functions/admin-monitor/index.ts",
+    "supabase/migrations/20260401091203_bc0663d0-fdd5-4347-a280-737c3c91b6ee.sql",
+    "supabase/migrations/20260406132233_49969cdc-e392-441b-9b38-cf007e5e4bdb.sql",
+    "supabase/migrations/20260717002155_49870806-5a97-4501-b8cf-5e6ee42b9e73.sql",
+    "supabase/migrations/20260802062136_144c6fa9-7084-4db2-8107-73608d47a3d3.sql"
+  ],
+  "semantic-search": [
+    "src/hooks/useBuscaConteudo.ts"
+  ],
+  "send-push": [
+    "src/components/admin/PushDiagnosticoTab.tsx",
+    "src/components/admin/PushStatusUsuario.tsx",
+    "src/components/onboarding/NotificacoesPermissaoStep.tsx",
+    "src/lib/nativePush.ts",
+    "supabase/functions/_shared/adminAlertas.ts",
+    "supabase/functions/_shared/boletimNotify.ts",
+    "supabase/functions/admin-flashcards-gerar/index.ts",
+    "supabase/functions/aprender-push-lembrete/index.ts",
+    "supabase/functions/blog-edicao-runner/index.ts",
+    "supabase/functions/blog-push-slot/index.ts",
+    "supabase/functions/boletim-leis-matinal/index.ts",
+    "supabase/functions/boletim-youtube-upload/index.ts",
+    "supabase/functions/notif-noticias-dia/index.ts",
+    "supabase/functions/notificacao-personalizada/app.ts",
+    "supabase/functions/onboarding-webhook/index.ts",
+    "supabase/functions/push-aleatorio-audio/index.ts",
+    "supabase/functions/push-aleatorio-blog/index.ts",
+    "supabase/functions/push-aleatorio-livro/index.ts",
+    "supabase/functions/push-aleatorio-video/index.ts",
+    "supabase/functions/push-estudo-madrugada/index.ts",
+    "supabase/functions/push-testar-admin/index.ts",
+    "supabase/functions/radar-leis-notify/index.ts",
+    "supabase/functions/reminders-tick/index.ts",
+    "supabase/functions/sync-noticias-migalhas/index.ts",
+    "supabase/functions/validate-purchase/index.ts"
+  ],
+  "smart-link-claim": [
+    "src/lib/nativeDeepLinks.ts",
+    "src/pages/SmartLink.tsx"
+  ],
+  "stf-pauta": [],
+  "stf-plenary-notifier": [
+    "supabase/migrations/20260901210000_stf_plenary_notifier_cron.sql"
+  ],
+  "stf-scraper": [
+    "supabase/migrations/20260901210744_20260901220000_stf_cronjob.sql"
+  ],
+  "sumulas-favoritos": [
+    "src/services/sumulasService.ts"
+  ],
+  "sumulas-vinculantes-scrape": [],
+  "sync-github-secrets": [
+    "src/pages/AdminSecretsDownload.tsx"
+  ],
+  "sync-noticias-migalhas": [
+    "src/components/admin/horus/HorusNotificacoesTab.tsx",
+    "supabase/migrations/20260801023252_0ca5e1e3-9db9-4d92-b31b-eab1b1963630.sql",
+    "supabase/migrations/20260917013000_update_migalhas_cron.sql"
+  ],
+  "sync-podcasts": [
+    "supabase/migrations/20260917004620_create_podcasts_cron.sql"
+  ],
+  "sync-senado-pautas": [
+    "src/pages/tres-poderes/AgendaSenado.tsx",
+    "supabase/migrations/20260917020500_create_senado_pautas_cron.sql"
+  ],
+  "sync-stf-sheets": [
+    "supabase/migrations/20260916231500_stf_pautas_cron.sql"
+  ],
+  "sync-stf-streams": [
+    "supabase/migrations/20260917011627_create_stf_live_sessions_cron.sql"
+  ],
+  "tematica-porque-assistir": [
+    "src/components/tematica/ObraDetailSheet.tsx",
+    "src/lib/aiFunctionOrigins.ts"
+  ],
+  "temp-debug": [],
+  "temp-secret-extractor": [],
+  "temp-send": [],
+  "test-audio": [],
+  "test-fn": [],
+  "tmdb-sync": [],
+  "transcrever-audio": [
+    "src/components/anotacoesAudio/chunks/AnotacoesAudioImportar.tsx",
+    "src/components/anotacoesAudio/chunks/AnotacoesAudioLista.tsx",
+    "src/components/videoaulas/AnotacoesAulaSheet.tsx",
+    "src/pages/AdminPilulas.tsx",
+    "src/pages/AdminResumoLivroAudioEditar.tsx"
+  ],
+  "trial-reminders-tick": [
+    "supabase/migrations/20260721202941_996b5fca-786a-41b8-95ac-9810b618d5d2.sql"
+  ],
+  "upload-custom-pdf": [
+    "src/services/bibliotecaPersonalizadosDb.ts"
+  ],
+  "vademecum-compare-ia": [],
+  "vademecum-embedder": [
+    "supabase/functions/apply-vector-migration/index.ts",
+    "supabase/functions/apply-webhook/index.ts"
+  ],
+  "vademecum-scraper": [
+    "src/pages/AdminMapeamentoLeis.tsx"
+  ],
+  "vademecum-sync-alteracoes": [],
+  "validate-purchase": [
+    "src/data/transferenciaApp.ts",
+    "src/hooks/useSubscription.ts",
+    "src/lib/billing.ts",
+    "supabase/functions/_shared/horus-plan.ts",
+    "supabase/functions/apple-billing-webhook/index.ts"
+  ],
+  "verificar-atualizacao-lei": [
+    "src/pages/AdminBibliotecaLeis.tsx",
+    "supabase/functions/vademecum-sync-alteracoes/index.ts"
+  ],
+  "videoaula-acao-ia": [
+    "src/hooks/useVideoaulaAcao.ts"
+  ],
+  "videoaula-resumo": [
+    "src/hooks/useVideoaulaAcao.ts"
+  ],
+  "visual-juridico-gerar": [
+    "src/components/mapas-mentais/MapasMentaisView.tsx"
+  ],
+  "youtube-aovivo": [
+    "src/lib/youtubeApi.ts"
+  ],
+  "youtube-canal": [
+    "src/lib/youtubeApi.ts"
+  ]
+}

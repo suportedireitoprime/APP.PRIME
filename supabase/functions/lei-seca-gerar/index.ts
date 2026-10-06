@@ -126,8 +126,8 @@ function buildPrompt(leiNome: string, artigosTexto: Array<{ num: string; texto: 
   const nums = artigosTexto.map((a) => a.num);
   const podeQualArtigo = nums.length >= 2;
   const totalIncisos = artigosTexto.reduce((acc, a) => acc + countIncisos(a.texto), 0);
-  const minExercicios = Math.min(16, Math.max(10, 6 + totalIncisos));
-  const maxExercicios = Math.min(20, minExercicios + 4);
+  const minExercicios = Math.max(15, 10 + (totalIncisos * 2));
+  const maxExercicios = minExercicios + 15;
 
   const temPena = /\b(reclus[aã]o|deten[çc][aã]o|multa|pena de|pris[aã]o)\b/i.test(blocos);
   const temPrazo = /\b(\d+\s*(dias|meses|anos|horas)|prazo de \d)/i.test(blocos);
@@ -139,8 +139,8 @@ ${blocos}
 
 REGRAS GERAIS:
 - Gere entre ${minExercicios} e ${maxExercicios} exercícios variados, todos baseados EXCLUSIVAMENTE no texto literal dos artigos acima.
-- COBERTURA TOTAL: cada parágrafo, inciso e alínea deve aparecer em pelo menos um exercício.
-- Misture os tipos abaixo em proporção equilibrada.
+- COBERTURA TOTAL E OBRIGATÓRIA: PARA CADA caput, parágrafo, inciso e alínea contido nos artigos listados, VOCÊ DEVE CRIAR PELO MENOS UM EXERCÍCIO. Não deixe absolutamente nenhum dispositivo de fora. O aluno precisa praticar cada pedaço da lei.
+- Misture todos os tipos de perguntas listados abaixo em proporção equilibrada.
 - Linguagem clara, sem emojis.
 - Toda resposta deve poder ser justificada pela letra da lei.
 

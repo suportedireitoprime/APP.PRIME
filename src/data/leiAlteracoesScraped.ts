@@ -689,6 +689,21 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate | ParseDisp
     };
   }
 
+  // 3.1 Overrides lógicos para casos que o scraper classificou como alterado ou não identificou a ação,
+  // mas na prática não existe texto antigo (sendo portanto uma inclusão inédita).
+  const isTextoAntigoInvalido = !textoAntigoRaw || textoAntigoRaw.toLowerCase() === 'redação anterior.' || textoAntigoRaw.toLowerCase() === 'dispositivo inédito (incluído pela primeira vez)';
+  if ((acao === 'redacao_dada' || acao === 'atualizado') && isTextoAntigoInvalido && textoNovoRaw) {
+    if (!/reda[çc][ãa]o\s+dada|alterad[ao]/i.test(motivoRaw)) {
+      acao = 'incluido';
+      acaoTexto = 'Incluído';
+      badgeCor = {
+        bg: 'bg-emerald-500/20',
+        text: 'text-emerald-400',
+        border: 'border-emerald-500/35'
+      };
+    }
+  }
+
   // 4. Identifica o Dispositivo Específico (Alínea, Inciso, Parágrafo, Caput, Pena, Artigo)
   let tipoDispositivo: DispositivoInfo['tipoDispositivo'] = 'artigo';
   let rotuloDispositivo = artigoBase;
