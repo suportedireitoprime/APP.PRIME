@@ -390,6 +390,49 @@ export function AdminHojeCards() {
       (window as any)._adminRpcDebug = rawRpcResponse;
       console.log('[ADMIN DEBUG] rawRpcResponse:', rawRpcResponse, '| totalCadastros:', totalCadastros, '| totalOnline:', totalOnline, '| list5m:', (list5m as any[])?.length, '| listOnline:', (listOnline as any[])?.length);
 
+      if (periodo === 'hoje') {
+        if (Array.isArray(list5m) && list5m.length > 0) {
+          rowsCache.current['online5m'] = list5m
+            .filter((r: any) => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()))
+            .map((r: any) => ({
+              key: r.key || r.user_id || r.id || Math.random().toString(),
+              userId: r.user_id || r.id,
+              title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
+              email: r.email || null,
+              provider: r.avatar_url?.includes('googleusercontent.com') ? 'google' : (r.provider || (r.email ? 'email' : null)),
+              subtitle: rotaParaFuncao(r.subtitle).label,
+              meta: hora(r.at || r.last_seen || r.created_at),
+              acessos: typeof r.acessos === 'number' ? r.acessos : null,
+              avatarUrl: r.avatar_url || null,
+              isPremium: r.is_premium ?? r.premium ?? false,
+              planValue: r.planValue,
+              planTag: r.planTag,
+              created_at: r.created_at || null,
+              faixaEtaria: r.faixa_etaria || null,
+            }));
+        }
+        if (Array.isArray(listOnline) && listOnline.length > 0) {
+          rowsCache.current['online'] = listOnline
+            .filter((r: any) => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()))
+            .map((r: any) => ({
+              key: r.key || r.user_id || r.id || Math.random().toString(),
+              userId: r.user_id || r.id,
+              title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
+              email: r.email || null,
+              provider: r.avatar_url?.includes('googleusercontent.com') ? 'google' : (r.provider || (r.email ? 'email' : null)),
+              subtitle: rotaParaFuncao(r.subtitle).label,
+              meta: hora(r.at || r.last_seen || r.created_at),
+              acessos: typeof r.acessos === 'number' ? r.acessos : null,
+              avatarUrl: r.avatar_url || null,
+              isPremium: r.is_premium ?? r.premium ?? false,
+              planValue: r.planValue,
+              planTag: r.planTag,
+              created_at: r.created_at || null,
+              faixaEtaria: r.faixa_etaria || null,
+            }));
+        }
+      }
+
       try {
         const { startIso, endIso } = getBrasiliaDayRange(datas);
 
@@ -939,17 +982,6 @@ export function AdminHojeCards() {
           Promise.all(listPromises),
           Promise.all(extraPromises)
         ]);
-
-        const allUids = Array.from(new Set(
-          results.flatMap(({ data }) => ((data as any[]) || []).map(r => r.user_id || r.id)).filter(Boolean)
-        ));
-        const profilesDict: Record<string, any> = {};
-        if (allUids.length > 0) {
-          const { data: profs } = await supabase.from('profiles').select('id, created_at, faixa_etaria').in('id', allUids);
-          if (profs) {
-            profs.forEach(p => { profilesDict[p.id] = { created_at: p.created_at, faixa_etaria: p.faixa_etaria }; });
-          }
-        }
         
         results.forEach(({ data }) => {
           const mapped = ((data as any[]) || []).map(r => {
@@ -968,8 +1000,8 @@ export function AdminHojeCards() {
               is_premium: r.is_premium ?? r.premium ?? false,
               avatar_url: r.avatar_url || null,
               acessos: typeof r.acessos === 'number' ? r.acessos : null,
-              created_at: r.created_at || profilesDict[uid]?.created_at || null,
-              faixa_etaria: r.faixa_etaria || profilesDict[uid]?.faixa_etaria || null
+              created_at: r.created_at || null,
+              faixa_etaria: r.faixa_etaria || null
             };
           });
           allLists = allLists.concat(mapped);
@@ -1032,6 +1064,8 @@ export function AdminHojeCards() {
 
       setRows(list);
       setLoading(false); // Show list immediately; enrichment happens in background
+      if (periodo === 'hoje') rowsCache.current[id] = list;
+
       if (sameDay(date, new Date())) {
         const seen = readSeen(id, date);
         const anteriores = new Set(seen.keys);
@@ -1051,13 +1085,17 @@ export function AdminHojeCards() {
         maxD.setHours(0, 0, 0, 0);
 
         // Run ALL enrichment queries in parallel (was sequential waterfall before)
-        const [{ data: provs }, { data: acts }, { data: pvs }, { data: sessions }] = await Promise.all([
+        const [{ data: provs }, { data: acts }, { data: pvs }, { data: sessions }, { data: profs }] = await Promise.all([
           supabase.rpc('admin_user_auth_providers' as any, { _ids: ids }),
           supabase.from('activity_logs').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
           supabase.from('app_events').select('user_id, created_at').eq('event_name', 'page_view').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()),
-          supabase.from('user_sessions').select('user_id, initial_route').in('user_id', ids)
+          supabase.from('user_sessions').select('user_id, initial_route').in('user_id', ids),
+          supabase.from('profiles').select('id, created_at, faixa_etaria').in('id', ids)
         ]);
         const map = new Map<string, string>(((provs as any[]) || []).map((p) => [p.user_id || p.id, p.provider]));
+        const profMap = new Map<string, { created_at?: string; faixa_etaria?: string }>(
+          ((profs as any[]) || []).map((p: any) => [p.id, { created_at: p.created_at, faixa_etaria: p.faixa_etaria }])
+        );
         
         const tempoMap = new Map<string, number>();
         const acessosMap = new Map<string, number>();
@@ -1110,12 +1148,15 @@ export function AdminHojeCards() {
             const rUid = r.userId || r.key;
             const rProv = map.get(rUid) || (r.avatarUrl?.includes('googleusercontent.com') ? 'google' : r.provider);
             const calcAcessos = acessosMap.get(rUid);
+            const profData = profMap.get(rUid);
             return { 
               ...r, 
               provider: rProv,
               funcaoPreferida: mapFav.get(rUid),
               tempo_tela: tempoMap.get(rUid) || null,
-              acessos: (calcAcessos !== undefined && calcAcessos > 0) ? calcAcessos : 1
+              acessos: (calcAcessos !== undefined && calcAcessos > 0) ? calcAcessos : 1,
+              created_at: r.created_at || profData?.created_at || null,
+              faixaEtaria: r.faixaEtaria || profData?.faixa_etaria || null
             };
           });
           if (periodo === 'hoje') rowsCache.current[id] = updated;
@@ -1140,8 +1181,13 @@ export function AdminHojeCards() {
     writeSeen(id, hoje, { count: counts[id] || 0, keys: [] });
     setSeenCounts((c) => ({ ...c, [id]: counts[id] || 0 }));
 
+    if (rowsCache.current[id] && periodo === 'hoje') {
+      setRows(rowsCache.current[id]);
+      setLoading(false);
+    }
+
     fetchRows(id, hoje);
-  }, [fetchRows, counts]);
+  }, [fetchRows, counts, periodo]);
 
   // Deep link vindo do push do admin: /admin-funcoes?card=cadastros|trial|online
   useEffect(() => {
