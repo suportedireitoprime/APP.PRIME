@@ -86,7 +86,7 @@ const ART_REGEX = /^Art\.?\s*(\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?)/i;
 
 // Regex universal para termos modificadores de legislação oficial do Planalto
 const ALTERACAO_NOTE_RE =
-  /(?:[([][\s]*)?(Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Revogad[oa]|Restaurad[oa]|Alterad[oa]|Transformad[oa]|Renumerad[oa])\s+(?:pela|pelo|na)\s+((?:Lei(?:\s+Federal)?(?:\s+Complementar)?|Decreto(?:-Lei)?|Emenda\s+Constitucional|Medida\s+Provis[óo]ria)[^)\].\n]{0,140}?(?:de\s+(\d{4}))?)(?:[)\]][\s]*)?/i;
+  /(?:[([][\s]*)?(Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Revogad[oa]|Restaurad[oa]|Alterad[oa]|Transformad[oa]|Renumerad[oa])\s+(?:pela|pelo|na)\s+([^)\]\n]+)/i;
 
 /**
  * Motor nativo rápido: extrai alterações diretamente do HTML oficial do Planalto
@@ -126,9 +126,9 @@ function parseAlteracoesFromHtml(html: string, baseUrl: string, maxAgeYears = 20
     if (noteMatch) {
       const acao = noteMatch[1];
       const leiDetalhe = noteMatch[2];
-      const anoCaptured = noteMatch[3];
-
-      let ano = anoCaptured ? parseInt(anoCaptured, 10) : 0;
+      
+      const anoCaptured = leiDetalhe.match(/\b(19\d{2}|20\d{2})\b/);
+      let ano = anoCaptured ? parseInt(anoCaptured[1], 10) : 0;
       if (!ano) {
         const fallbackAno = textClean.match(/\b(19\d{2}|20\d{2})\b/);
         if (fallbackAno) ano = parseInt(fallbackAno[1], 10);
@@ -317,13 +317,14 @@ serve(async (req) => {
         return { artNum, textoAntigo, textoNovo };
       };
 
-      const NOTE_REGEX = /(?:[([][\s]*)?(Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Revogad[oa]|Restaurad[oa]|Alterad[oa]|Transformad[oa]|Renumerad[oa])\s+(?:pela|pelo|na)\s+((?:Lei(?:\s+Federal)?(?:\s+Complementar)?|Decreto(?:-Lei)?|Emenda\s+Constitucional|Medida\s+Provis[óo]ria)[^)\].\n]{0,140}?(?:de\s+(\d{4}))?)(?:[)\]][\s]*)?/i;
+      const NOTE_REGEX = /(?:[([][\s]*)?(Reda[çc][ãa]o\s+dada|Inclu[íi]d[oa]|Acrescid[oa]|Revogad[oa]|Restaurad[oa]|Alterad[oa]|Transformad[oa]|Renumerad[oa])\s+(?:pela|pelo|na)\s+([^)\]\n]+)/i;
 
       elements.forEach(p => {
         const text = p.textContent || '';
         const match = text.match(NOTE_REGEX);
         if (match) {
-          let ano = match[3] ? parseInt(match[3], 10) : 0;
+          const anoCaptured = match[2].match(/\b(19\d{2}|20\d{2})\b/);
+          let ano = anoCaptured ? parseInt(anoCaptured[1], 10) : 0;
           if (!ano) {
             const fbAno = text.match(/\b(19\d{2}|20\d{2})\b/);
             if (fbAno) ano = parseInt(fbAno[1], 10);

@@ -361,7 +361,7 @@ export default function AdminMapeamentoLeis() {
 
     try {
       const { data, error } = await supabase.functions.invoke('vademecum-scraper', {
-        body: { targetUrl: lei.url_planalto, maxAgeYears: 20 }
+        body: { targetUrl: lei.url_planalto, maxAgeYears: 100 }
       });
 
       if (error) throw error;
