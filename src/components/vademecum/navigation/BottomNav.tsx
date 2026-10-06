@@ -4,7 +4,7 @@ import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
+
 import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
 import AssistenteOverlay from '@/components/vademecum/overlays/AssistenteOverlay';
 // PessoalSheet removido — Meu Espaço agora é rota dedicada (/meu-espaco).
@@ -238,36 +238,36 @@ const BottomNav = () => {
       >
         <div className="max-w-lg mx-auto px-1 pt-3.5 pb-3.5 md:max-w-2xl md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
         <div className="grid grid-cols-5 items-end md:grid-cols-1 md:items-stretch md:gap-6">
-          {/* Slot 1: Flashcards */}
+          {/* Slot 1: Notícias */}
           <button
-            onPointerDown={() => prefetchRoute('flashcards')}
-            onMouseEnter={() => prefetchRoute('flashcards')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/flashcards')); }}
+            onPointerDown={() => prefetchRoute('noticias')}
+            onMouseEnter={() => prefetchRoute('noticias')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/noticias')); }}
             data-track="bottom_nav_click"
-            data-track-destino="flashcards"
+            data-track-destino="noticias"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/flashcards') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              path.startsWith('/noticias') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Flashcards"
+            aria-label="Notícias"
           >
-            <FlashcardsIcon className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/flashcards') ? 'scale-110' : 'drop-shadow-sm'}`} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Flashcards</span>
+            <Newspaper className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/noticias') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Notícias</span>
           </button>
 
-          {/* Slot 2: Questões */}
+          {/* Slot 2: Lições */}
           <button
-            onPointerDown={() => prefetchRoute('questoes')}
-            onMouseEnter={() => prefetchRoute('questoes')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/questoes')); }}
+            onPointerDown={() => prefetchRoute('leiSeca')}
+            onMouseEnter={() => prefetchRoute('leiSeca')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/lei-seca')); }}
             data-track="bottom_nav_click"
-            data-track-destino="questoes"
+            data-track-destino="lei-seca"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/questoes') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              path.startsWith('/lei-seca') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Questões"
+            aria-label="Lições"
           >
-            <ListChecks className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/questoes') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Questões</span>
+            <ScrollText className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/lei-seca') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Lições</span>
           </button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
