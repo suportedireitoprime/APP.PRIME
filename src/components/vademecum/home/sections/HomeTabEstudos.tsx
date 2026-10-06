@@ -22,7 +22,7 @@ const PRATICAR_FUNCTIONS = [
     icon: Target,
     color: '#f43f5e', // rose
     image: '/assets/praticar-leiseca.png',
-    path: '/praticar',
+    path: '/lei-seca',
   },
   {
     id: 'flashcards',

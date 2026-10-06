@@ -198,10 +198,7 @@ const Compartilhado = lazy(() => import("./pages/Compartilhado.tsx"));
 const Radar360 = lazy(routePrefetch.radar360);
 const OutrasNormasLista = lazy(() => import("./pages/OutrasNormasLista.tsx"));
 const Radares = lazy(routePrefetch.radares);
-const Praticar = lazy(routePrefetch.praticar);
-const PraticarArea = lazy(() => import("./pages/PraticarArea.tsx"));
-const PraticarLei = lazy(() => import("./pages/PraticarLei.tsx"));
-const PraticarSessao = lazy(() => import("./pages/PraticarSessao.tsx"));
+
 const Estudar = lazy(routePrefetch.estudos);
 const EstudosHub = lazy(() => import("./pages/EstudosHub.tsx"));
 const Aprender = lazy(routePrefetch.aprender);
@@ -1194,10 +1191,7 @@ function AnimatedRoutes() {
           <Route path="/radar-360" element={<ProtectedRoute><PageTransition instant><Radar360 /></PageTransition></ProtectedRoute>} />
           <Route path="/normas/:slug" element={<ProtectedRoute><PageTransition><OutrasNormasLista /></PageTransition></ProtectedRoute>} />
           <Route path="/radares" element={<ProtectedRoute><PageTransition instant><Radares /></PageTransition></ProtectedRoute>} />
-          <Route path="/praticar" element={<ProtectedRoute><PageTransition><Praticar /></PageTransition></ProtectedRoute>} />
-          <Route path="/praticar/area/:areaSlug" element={<ProtectedRoute><PageTransition><PraticarArea /></PageTransition></ProtectedRoute>} />
-          <Route path="/praticar/:leiSlug" element={<ProtectedRoute><PageTransition><PraticarLei /></PageTransition></ProtectedRoute>} />
-          <Route path="/praticar/:leiSlug/sessao" element={<ProtectedRoute><PageTransition><PraticarSessao /></PageTransition></ProtectedRoute>} />
+
 
           <Route path="/compartilhado" element={<ProtectedRoute><PageTransition><Compartilhado /></PageTransition></ProtectedRoute>} />
           <Route path="/estudos" element={<ProtectedRoute><PageTransition><EstudosRouter /></PageTransition></ProtectedRoute>} />

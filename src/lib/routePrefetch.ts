@@ -36,7 +36,7 @@ export const routePrefetch = {
   gravarAula: () => import("@/pages/AnotacoesAudio.tsx"),
   categoriaAprender: () => import("@/pages/CategoriaAprender.tsx"),
   aprenderAula: () => import("@/pages/AprenderAula.tsx"),
-  praticar: () => import("@/pages/Praticar.tsx"),
+
   jurisprudencia: () => import("@/pages/Jurisprudencia.tsx"),
   sumulasTribunal: () => import("@/pages/SumulasTribunal.tsx"),
   pesquisasProntasLista: () => import("@/pages/PesquisasProntasLista.tsx"),
