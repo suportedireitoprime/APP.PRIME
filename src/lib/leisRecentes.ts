@@ -1,4 +1,4 @@
-// Simple localStorage-backed "leis recentes" (recent laws opened by the user)
+import { createSyncedList, registerForSync } from './userSync';
 
 export type LeiRecente = {
   tipo: string;
@@ -12,25 +12,28 @@ export type LeiRecente = {
 const KEY = 'leis_recentes_v1';
 const MAX = 20;
 
-export function getRecentes(): LeiRecente[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
+const recentesSync = registerForSync(createSyncedList<LeiRecente>({
+  escopo: 'vademecum:recentes',
+  storageKey: KEY,
+  keyOf: (item) => item.leiId,
+  atOf: (item) => item.openedAt,
+  max: MAX,
+  notify: () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('recentes-updated'));
+    }
   }
+}));
+
+export function getRecentes(): LeiRecente[] {
+  return recentesSync.read();
 }
 
 export function pushRecente(lei: Omit<LeiRecente, 'openedAt'>) {
   if (typeof window === 'undefined') return;
   try {
-    const list = getRecentes().filter((l) => l.leiId !== lei.leiId);
-    list.unshift({ ...lei, openedAt: Date.now() });
-    localStorage.setItem(KEY, JSON.stringify(list.slice(0, MAX)));
-    window.dispatchEvent(new Event('recentes-updated'));
+    const item: LeiRecente = { ...lei, openedAt: Date.now() };
+    recentesSync.put(item);
     if (lei.tabela_nome) {
       import('@/services/warmFavoritosService')
         .then((m) => {
@@ -42,7 +45,7 @@ export function pushRecente(lei: Omit<LeiRecente, 'openedAt'>) {
 }
 
 export function clearRecentes() {
-  try { localStorage.removeItem(KEY); } catch {}
+  recentesSync.clear();
 }
 
 // ---- Popularidade de busca (leis mais procuradas) ----

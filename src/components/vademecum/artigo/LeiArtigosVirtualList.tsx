@@ -179,17 +179,9 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     },
     overscan: dynamicOverscan,
     scrollMargin: artigosListOffset,
-    // Item 25: Validate restored offset against total list height to prevent blank screen
     initialOffset: () => {
-      const saved = virtualOffsetCache.get(listKey);
-      if (saved === undefined) {
-        const scrollEl = getScrollElement();
-        return scrollEl ? scrollEl.scrollTop : 0;
-      }
-      const approxTotal = visibleArtigos.length * 120;
-      const winHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-      const maxAllowed = Math.max(0, approxTotal - winHeight);
-      return Math.min(saved, maxAllowed);
+      const scrollEl = getScrollElement();
+      return scrollEl ? scrollEl.scrollTop : 0;
     },
   });
 
@@ -269,6 +261,21 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
         </div>
       )}
 
+      {loadingArtigos && visibleArtigos.length === 0 && (
+        <div className="space-y-3 py-2">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div
+              key={i}
+              className="p-4 rounded-2xl bg-[#14151a] border border-white/5 animate-pulse flex flex-col gap-2.5"
+            >
+              <div className="h-5 w-24 bg-white/10 rounded-lg" />
+              <div className="h-4 w-full bg-white/5 rounded" />
+              <div className="h-4 w-4/5 bg-white/5 rounded" />
+            </div>
+          ))}
+        </div>
+      )}
+
       {shouldVirtualizeArtigos ? (
         <div
           style={{
@@ -290,7 +297,7 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
                   top: 0,
                   left: 0,
                   width: '100%',
-                  transform: `translateY(${virtualItem.start - artigosVirtualizer.options.scrollMargin}px)`,
+                  transform: `translateY(${Math.max(0, virtualItem.start - (artigosVirtualizer.options.scrollMargin || 0))}px)`,
                   paddingBottom: '0.5rem',
                   // Item 26: CSS containment for layout isolation in virtualized items
                   contain: 'layout style paint',

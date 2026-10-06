@@ -7,6 +7,7 @@ import {
   loadPersistedArtigos,
   fetchArtigosInstant
 } from '@/services/legislacaoService';
+import { getBundleSlugForTabela, loadBundledLei } from '@/services/lawsBundle';
 
 export function useLeiArtigos(selectedLeiId: string | null, selectedTabelaNome: string | null) {
   const [artigos, setArtigos] = useState<ArtigoLei[]>([]);
@@ -18,7 +19,7 @@ export function useLeiArtigos(selectedLeiId: string | null, selectedTabelaNome: 
     let cancelled = false;
     const tabelaAtual = selectedTabelaNome;
 
-    // 1) Cache em memória — instant, sem spinner (bundle prime já rodou no boot).
+    // 1) Cache em memória — instant, sem spinner (bundle prime já rodou no boot ou lei já foi aberta).
     const cached = getCachedArtigos(tabelaAtual);
     if (cached && cached.length > 0) {
       setArtigos(cached);
@@ -34,7 +35,7 @@ export function useLeiArtigos(selectedLeiId: string | null, selectedTabelaNome: 
     }
 
     // 2) Corrida: bundle JSON local vs Dexie persistido — quem vier primeiro renderiza.
-    //    Ambos são "instantâneos" no Android (bundle vem do APK, Dexie da IDB local).
+    //    Ambos são instantâneos no Android nativo (bundle embutido no APK, Dexie em IDB local).
     let settled = false;
     const settle = (arts: ArtigoLei[]) => {
       if (cancelled || settled || !arts || arts.length === 0) return;
@@ -42,54 +43,56 @@ export function useLeiArtigos(selectedLeiId: string | null, selectedTabelaNome: 
       setArtigos(arts);
       setLoadedKey(tabelaAtual);
       setLoadingArtigos(false);
-      // Revalida silenciosamente
+      // Revalida silenciosamente no background se online
       fetchArtigosPaginado(tabelaAtual, 0, 10000).then((fresh) => {
         if (!cancelled && fresh.length > 0) startTransition(() => setArtigos(fresh));
       }).catch(() => {});
     };
 
-    // Bundle nativo (rápido em Android — arquivo do APK).
-    import('@/services/lawsBundle').then(async ({ loadManifest, loadBundledLei, getBundleSlugForTabela }) => {
-      const manifest = await loadManifest();
-      if (!manifest || cancelled || settled) return;
-      const slug = getBundleSlugForTabela(tabelaAtual);
-      if (!slug) return;
-      const bundled = await loadBundledLei(slug);
-      if (bundled && bundled.length > 0) {
-        setCachedArtigos(tabelaAtual, bundled);
-        settle(bundled);
+    // ⚡ Resolução estática do bundle nativo em 0ms (CDC, CC, CPC, etc.)
+    const slug = getBundleSlugForTabela(tabelaAtual);
+    if (slug) {
+      loadBundledLei(slug).then((bundled) => {
+        if (!cancelled && !settled && bundled && bundled.length > 0) {
+          setCachedArtigos(tabelaAtual, bundled);
+          settle(bundled);
+        }
+      }).catch(() => {});
+    }
+
+    // Dexie persistido (visitas subsequentes / cache local)
+    loadPersistedArtigos(tabelaAtual).then((persisted) => {
+      if (!cancelled && !settled && persisted && persisted.length > 0) {
+        settle(persisted);
       }
     }).catch(() => {});
 
-    // Dexie (subsequent visits).
-    loadPersistedArtigos(tabelaAtual).then((persisted) => {
-      if (persisted && persisted.length > 0) settle(persisted);
-    }).catch(() => {});
-
-    // 3) Fallback com skeleton apenas se nada aparecer em 180ms.
+    // 3) Ativa skeleton suave caso nada apareça em 200ms
     const skeletonTimer = setTimeout(() => {
       if (cancelled || settled) return;
       setLoadingArtigos(true);
       fetchArtigosInstant(tabelaAtual, 10)
         .then((first) => {
-          if (cancelled) return;
-          if (first.length > 0) {
+          if (cancelled || settled) return;
+          if (first && first.length > 0) {
             settle(first);
-          } else {
-            setArtigos([]);
-            setLoadedKey(tabelaAtual);
-            setLoadingArtigos(false);
           }
         })
-        .catch(() => {
-          if (cancelled) return;
-          setArtigos([]);
-          setLoadedKey(tabelaAtual);
-          setLoadingArtigos(false);
-        });
-    }, 280);
+        .catch(() => {});
+    }, 200);
 
-    return () => { cancelled = true; clearTimeout(skeletonTimer); };
+    // 4) Timeout final de segurança (2.5s) apenas se nenhuma fonte local/remota responder
+    const safetyTimer = setTimeout(() => {
+      if (cancelled || settled) return;
+      setLoadingArtigos(false);
+      setLoadedKey(tabelaAtual);
+    }, 2500);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(skeletonTimer);
+      clearTimeout(safetyTimer);
+    };
   }, [selectedLeiId, selectedTabelaNome]);
 
   return {

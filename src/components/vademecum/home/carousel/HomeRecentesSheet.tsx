@@ -97,7 +97,7 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="bottom" className="h-[100dvh] p-0 flex flex-col rounded-none bg-background border-none">
-        <SheetHeader className="p-0 border-b border-white/5 relative flex flex-col">
+        <SheetHeader className="p-0 border-b border-white/5 relative flex flex-col pt-[var(--sai-top,env(safe-area-inset-top,0px))]">
           <div className="p-6 pb-4 relative">
             <SheetTitle className="text-xl font-display font-bold flex items-center gap-2">
               <History className="w-5 h-5 text-primary" />
@@ -146,7 +146,7 @@ export function HomeRecentesSheet({ isOpen, onClose, onOpenLei }: HomeRecentesSh
               </p>
             </div>
           ) : (
-            <div className="space-y-3 pb-8 px-4 pt-4 w-full box-border">
+            <div className="space-y-3 px-4 pt-4 w-full box-border pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
               {filteredRecentes.map((item, idx) => {
                 const Icon = getLawIcon(item.leiId);
                 const color = getLeiColor(item.leiId, item.tipo || 'lei');

@@ -8,3 +8,4 @@ export { LeiSecaLicaoNode } from "./LeiSecaLicaoNode";
 export { ExercicioMultiplaEscolha } from "./ExercicioMultiplaEscolha";
 export { ExercicioSimNao } from "./ExercicioSimNao";
 export { ExercicioSlideFeedback } from "./ExercicioSlideFeedback";
+export { ExercicioForca } from "./ExercicioForca";

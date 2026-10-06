@@ -291,18 +291,15 @@ export async function fetchArtigosInstant(tabelaNome: string, count = 10): Promi
 
   // Bundle nativo — se existir JSON embutido no APK, usa direto (offline, instantâneo).
   try {
-    const { loadManifest, loadBundledLei, getBundleSlugForTabela } = await import('@/services/lawsBundle');
-    const manifest = await loadManifest();
-    if (manifest) {
-      const slug = getBundleSlugForTabela(tabelaNome);
-      if (slug) {
-        const bundled = await loadBundledLei(slug);
-        if (bundled && bundled.length > 0) {
-          const sanitized = bundled.map(a => ({ ...a, caput: cleanArticleText(a.caput) }));
-          artigosCache.set(tabelaNome, sanitized);
-          setPersistedArtigosCache(tabelaNome, sanitized);
-          return sanitized.slice(0, count);
-        }
+    const { loadBundledLei, getBundleSlugForTabela } = await import('@/services/lawsBundle');
+    const slug = getBundleSlugForTabela(tabelaNome);
+    if (slug) {
+      const bundled = await loadBundledLei(slug);
+      if (bundled && bundled.length > 0) {
+        const sanitized = bundled.map(a => ({ ...a, caput: cleanArticleText(a.caput) }));
+        artigosCache.set(tabelaNome, sanitized);
+        setPersistedArtigosCache(tabelaNome, sanitized);
+        return sanitized.slice(0, count);
       }
     }
   } catch { /* segue pro fallback remoto */ }
@@ -373,23 +370,20 @@ export async function fetchArtigosInstant(tabelaNome: string, count = 10): Promi
 
 
 export async function fetchArtigosPaginado(tabelaNome: string, offset: number, limit: number): Promise<ArtigoLei[]> {
-  // 0) Bundle nativo — se existir manifest e essa lei tiver JSON embutido, usa direto.
+  // 0) Bundle nativo — se essa lei tiver JSON embutido, usa direto.
   //    Isso vale para todos os offsets em builds Android (o arquivo é servido do APK).
   try {
-    const { loadManifest, loadBundledLei, getBundleSlugForTabela } = await import('@/services/lawsBundle');
-    const manifest = await loadManifest();
-    if (manifest) {
-      const slug = getBundleSlugForTabela(tabelaNome);
-      if (slug) {
-        const bundled = await loadBundledLei(slug);
-        if (bundled && bundled.length > 0) {
-          const sanitized = bundled.map((a) => ({ ...a, caput: cleanArticleText(a.caput) }));
-          if (offset === 0) {
-            artigosCache.set(tabelaNome, sanitized);
-            setPersistedArtigosCache(tabelaNome, sanitized);
-          }
-          return sanitized.slice(offset, offset + limit);
+    const { loadBundledLei, getBundleSlugForTabela } = await import('@/services/lawsBundle');
+    const slug = getBundleSlugForTabela(tabelaNome);
+    if (slug) {
+      const bundled = await loadBundledLei(slug);
+      if (bundled && bundled.length > 0) {
+        const sanitized = bundled.map((a) => ({ ...a, caput: cleanArticleText(a.caput) }));
+        if (offset === 0) {
+          artigosCache.set(tabelaNome, sanitized);
+          setPersistedArtigosCache(tabelaNome, sanitized);
         }
+        return sanitized.slice(offset, offset + limit);
       }
     }
   } catch (e) { /* segue pro fetch remoto */ }
