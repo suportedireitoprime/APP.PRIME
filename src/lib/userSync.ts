@@ -221,6 +221,10 @@ function clearLocalLists() {
 }
 
 // Ao entrar/trocar de conta, mescla (ou limpa, se for outro usuário) e sincroniza.
+import { syncLocalToRemote as syncFavoritosToRemote } from '@/lib/artigosFavoritos';
+import { syncQuestoesSessoesToRemote } from '@/lib/questoesSessoes';
+import { syncFlashcardsSessoesToRemote } from '@/lib/flashcardsSessoes';
+
 if (typeof window !== 'undefined') {
   supabase.auth.onAuthStateChange((_event, session) => {
     resetUserSync();
@@ -234,6 +238,11 @@ if (typeof window !== 'undefined') {
       /* ignore */
     }
     if (previous && previous !== uid) clearLocalLists();
-    setTimeout(() => void pullAllUserSync(true), 0);
+    setTimeout(() => {
+      void pullAllUserSync(true);
+      void syncFavoritosToRemote();
+      void syncQuestoesSessoesToRemote();
+      void syncFlashcardsSessoesToRemote();
+    }, 0);
   });
 }

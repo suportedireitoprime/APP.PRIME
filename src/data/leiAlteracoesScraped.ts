@@ -488,34 +488,6 @@ export const SEED_CPP_ALTERACOES: ScrapedArticleUpdate[] = [
 
 // Semente oficial das alterações mais recentes do Código de Trânsito Brasileiro (Planalto 2024 / 2023 / 2021 / 2020)
 export const SEED_CTB_ALTERACOES: ScrapedArticleUpdate[] = [
-  // ── ABRIL DE 2026 (Lei nº 15.397, de 30 de abril de 2026) ──────────────────────────
-  {
-    artigo: 'Art. 244',
-    motivo: '(Equipamentos obrigatórios para motocicletas. Alterado pela Lei nº 15.397, de 30 de abril de 2026)',
-    ano: 2026,
-    mes: 'Abr',
-    mes_ano: 'Abr/2026',
-    mes_completo: 'Abril',
-    mes_index: 4,
-    texto_antigo: 'Conduzir motocicleta, motoneta e ciclomotor: I – sem usar capacete de segurança com viseira ou óculos de proteção e vestuário de acordo com as normas e especificações aprovadas pelo CONTRAN.',
-    texto_novo: 'Art. 244. Conduzir motocicleta, motoneta e ciclomotor: I – sem usar capacete de segurança com viseira ou óculos de proteção e vestuário de acordo com as normas e especificações aprovadas pelo Contran; § 3º Os equipamentos obrigatórios para condutores e passageiros de motocicletas, motonetas e ciclomotores serão estabelecidos pelo Contran, observada a proteção à integridade física dos usuários. (Redação dada pela Lei nº 15.397, de 2026)',
-    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/l15397.htm',
-  },
-
-  // ── ABRIL DE 2025 (Lei nº 15.123, de 23 de abril de 2025) ──────────────────────────
-  {
-    artigo: 'Art. 302',
-    motivo: '(Homicídio culposo na direção de veículo automotor - Aumento de pena para fuga do local. Alterado pela Lei nº 15.123, de 23 de abril de 2025)',
-    ano: 2025,
-    mes: 'Abr',
-    mes_ano: 'Abr/2025',
-    mes_completo: 'Abril',
-    mes_index: 4,
-    texto_antigo: 'Pena - detenção, de dois a quatro anos, e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor.',
-    texto_novo: 'Art. 302. Praticar homicídio culposo na direção de veículo automotor: Pena - detenção, de 2 (dois) a 4 (quatro) anos, e suspensão ou proibição de se obter a permissão ou a habilitação para dirigir veículo automotor. § 1º No homicídio culposo cometido na direção de veículo automotor, a pena é aumentada de 1/3 (um terço) à metade, se o agente: IV - no exercício de sua profissão ou atividade, estiver conduzindo veículo de transporte de passageiros; V - deixar de prestar socorro, quando possível fazê-lo sem risco pessoal, à vítima do acidente. (Redação dada pela Lei nº 15.123, de 2025)',
-    link_lei: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2025/lei/l15123.htm',
-  },
-
   // ── OUTUBRO DE 2024 (Lei nº 14.994, de 9 de outubro de 2024) ──────────────────────
   {
     artigo: 'Art. 303',
@@ -867,9 +839,9 @@ export function parseDispositivoAlteracao(item: ScrapedArticleUpdate | ParseDisp
     }
     // 4.3. Parágrafo (ex: "§ 4º", "§ 2º", "§ 4º-B", "Parágrafo único")
     else {
-      const matchParagrafo = motivoRaw.match(/(§\s*\d+[º°]?\s*[-–\w]*|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?\s*[-–\w]*)/i) ||
-                             textoNovoRaw.match(/(§\s*\d+[º°]?\s*[-–\w]*|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?\s*[-–\w]*)/i) ||
-                             textoAntigoRaw.match(/(§\s*\d+[º°]?\s*[-–\w]*|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?\s*[-–\w]*)/i);
+      const matchParagrafo = motivoRaw.match(/(§\s*\d+[º°]?(?:[-–]\w+)?|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?(?:[-–]\w+)?)/i) ||
+                             textoNovoRaw.match(/(§\s*\d+[º°]?(?:[-–]\w+)?|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?(?:[-–]\w+)?)/i) ||
+                             textoAntigoRaw.match(/(§\s*\d+[º°]?(?:[-–]\w+)?|par[áa]grafo\s+[úu]nico|par[áa]grafo\s+\d+[º°]?(?:[-–]\w+)?)/i);
       if (matchParagrafo) {
         let pTxt = matchParagrafo[1].replace(/\s+/g, ' ').trim();
         if (/par[áa]grafo\s+[úu]nico/i.test(pTxt)) {
