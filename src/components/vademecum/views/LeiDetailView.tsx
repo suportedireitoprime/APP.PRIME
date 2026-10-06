@@ -31,6 +31,7 @@ import LeiCapitulosGrid from '@/components/vademecum/artigo/LeiCapitulosGrid';
 import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtualList';
 import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
 import ArtigoComparativoModal, { type AlteracaoDetailData } from '@/components/vademecum/artigo/ArtigoComparativoModal';
+import LeiSobreModal from '@/components/vademecum/artigo/LeiSobreModal';
 import { getScrapedAlteracoes } from '@/data/leiAlteracoesScraped';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { extractLeiCapitulos, isStructuralArtigo, formatArtigoNumeroOnly } from '@/lib/leiStructure';
