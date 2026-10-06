@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
 
     // Fetch random items for each slot to guarantee variety
     // Dicionário
-    const { data: dicIds } = await admin.from("dicionario_juridico").select("id, termo");
+    const { data: dicIds } = await admin.from("dicionario_juridico").select("id, palavra");
     // Audioaulas
     const { data: audioIds } = await admin.from("audioaulas_itens").select("id, titulo");
     // Videoaulas
@@ -64,12 +64,12 @@ Deno.serve(async (req) => {
       });
 
       // 10:00 Dicionário Jurídico
-      let dicItem = { termo: "Jurisprudência" };
+      let dicItem = { palavra: "Jurisprudência" };
       if (dicIds && dicIds.length > 0) {
         dicItem = dicIds[Math.floor(Math.random() * dicIds.length)];
       }
       campanhasToInsert.push({
-        title: `📖 Você sabe o que é ${dicItem.termo}?`,
+        title: `📖 Você sabe o que é ${dicItem.palavra}?`,
         body: `{nome}, venha conferir o significado dessa palavra no nosso Dicionário Jurídico e aumente seu vocabulário.`,
         status: "scheduled",
         next_run_at: getDateWithHour(10),

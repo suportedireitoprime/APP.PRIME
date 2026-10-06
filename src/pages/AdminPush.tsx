@@ -213,7 +213,7 @@ export default function AdminPush() {
 
         const { data: events, error } = await supabase
           .from('push_events')
-          .select('id, user_id, created_at, token, campaign_id, profiles(nome, email)')
+          .select('id, user_id, created_at, token, campaign_id')
           .in('campaign_id', campaignIds)
           .eq('event_type', selectedEventType)
           .order('created_at', { ascending: false })
@@ -225,7 +225,7 @@ export default function AdminPush() {
         setEventUsers(uniqueUsers);
       } catch (err: any) {
         console.error("Erro ao buscar usuários do evento:", err);
-        toast.error("Erro ao carregar lista de usuários.");
+        toast.error(`Erro ao carregar usuários: ${err?.message || err}`);
       } finally {
         setLoadingEventUsers(false);
       }
