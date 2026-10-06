@@ -7,7 +7,6 @@ import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import HomeTresPoderes from './HomeTresPoderes';
-import HomeLeiSecaBar from './HomeLeiSecaBar';
 import HomeApresentacoesTimeline from './HomeApresentacoesTimeline';
 import { toast } from '@/hooks/use-toast';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
@@ -16,6 +15,15 @@ import { shade } from '@/lib/leiTheme';
 import { haptic } from '@/lib/nativeHaptics';
 
 const PRATICAR_FUNCTIONS = [
+  {
+    id: 'leiseca',
+    title: 'Lições',
+    subtitle: 'Tiro ao alvo',
+    icon: Target,
+    color: '#f43f5e', // rose
+    image: '/assets/praticar-leiseca.png',
+    path: '/praticar',
+  },
   {
     id: 'flashcards',
     title: 'Flashcards',
@@ -42,15 +50,6 @@ const PRATICAR_FUNCTIONS = [
     color: '#8b5cf6', // violet
     image: '/assets/praticar-simulados.png',
     path: '/simulados',
-  },
-  {
-    id: 'leiseca',
-    title: 'Lei Seca',
-    subtitle: 'Tiro ao alvo',
-    icon: Target,
-    color: '#f43f5e', // rose
-    image: '/assets/praticar-leiseca.png',
-    path: '/praticar',
   }
 ];
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
@@ -244,22 +243,6 @@ const HomeTabEstudos = ({
               />
             ))}
           </div>
-          </div>
-
-          <div className="pt-2 flex flex-col gap-2.5">
-            <div className="mb-0.5 relative z-10 flex items-start justify-between gap-3">
-              <div>
-                <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
-                  <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
-                  Lei Seca
-                </h3>
-                <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
-                  Pratique artigos comentados, simulados e questões
-                </p>
-              </div>
-            </div>
-
-            <HomeLeiSecaBar />
           </div>
         </div>
       )}
