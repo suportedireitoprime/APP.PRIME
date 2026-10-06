@@ -139,14 +139,6 @@ export const SEED_CDC_ALTERACOES: ScrapedArticleUpdate[] = [
 // ═══════════════════════════════════════════════════════════════════════════
 export const SEED_CTN_ALTERACOES: ScrapedArticleUpdate[] = [
   {
-    artigo: 'Art. 146',
-    motivo: '(Normas gerais de IBS e CBS pela Reforma Tributária. Regulamentado pela LC nº 214, de 16 de janeiro de 2025)',
-    ano: 2025, mes: 'Jan', mes_ano: 'Jan/2025', mes_completo: 'Janeiro', mes_index: 1,
-    texto_antigo: 'Regime tributário anterior com ICMS, ISS, PIS, COFINS, IPI.',
-    texto_novo: 'Art. 146. A Lei Complementar nº 214/2025 regulamentou a Reforma Tributária (EC 132/2023), instituindo o IBS (Imposto sobre Bens e Serviços) e a CBS (Contribuição sobre Bens e Serviços) em substituição gradual ao ICMS, ISS, PIS, COFINS e IPI. (Regulamentado pela LC nº 214, de 2025)',
-    link_lei: 'https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp214.htm',
-  },
-  {
     artigo: 'Art. 155-A',
     motivo: '(Parcelamento - Revogação de ofício e consequências. Alterado pela LC nº 104, de 10 de janeiro de 2001)',
     ano: 2001, mes: 'Jan', mes_ano: 'Jan/2001', mes_completo: 'Janeiro', mes_index: 1,
