@@ -109,15 +109,16 @@ export default function AdminPush() {
   const handleActivateTemplate = async () => {
     setSubmitting(true);
     const template2Horas = [
-      { time: '08:00', name: 'Novas Leis do Dia', desc: 'Disparo de novas leis cadastradas. Caso não tenha, não será enviado para a pessoa.' },
-      { time: '10:00', name: 'Boletins Informativos', desc: 'Disparo de boletins jurídicos. Caso não tenha, não será enviado.' },
-      { time: '12:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório com explicação jurídica, citando o nome da pessoa na notificação para ser persuasivo.' },
-      { time: '14:00', name: 'Questão Prática', desc: 'Uma questão aleatória para a pessoa poder resolver e praticar.' },
-      { time: '16:00', name: 'Sugestão de Leitura', desc: 'Um livro sugerido para a pessoa poder ler durante a tarde.' },
-      { time: '18:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório com explicação jurídica, citando o nome da pessoa.' },
-      { time: '20:00', name: 'Questão Prática', desc: 'Mais uma questão para fixar o conhecimento à noite.' },
-      { time: '22:00', name: 'Áudio-aula Explicativa', desc: 'Áudio aleatório curto antes de dormir, focado em revisão.' },
-      { time: '00:00', name: 'Notícias da Madrugada', desc: 'Resumo das novidades jurídicas da madrugada.' },
+      { time: '06:00', name: '[TEMPLATE] Boletim Matinal', desc: 'Disparo de boletins jurídicos. Caso não tenha, não será enviado.' },
+      { time: '08:00', name: '[TEMPLATE] Novas Leis do Dia', desc: 'Disparo de novas leis cadastradas. Caso não tenha, não será enviado.' },
+      { time: '10:00', name: '[TEMPLATE] Questão Prática', desc: 'Uma questão aleatória para a pessoa poder resolver e praticar.' },
+      { time: '12:00', name: '[TEMPLATE] Sugestão de Leitura', desc: 'Um livro sugerido para a pessoa poder ler durante o almoço/tarde.' },
+      { time: '14:00', name: '[TEMPLATE] Áudio-aula Explicativa', desc: 'Áudio aleatório com explicação jurídica, citando o nome da pessoa na notificação.' },
+      { time: '16:00', name: '[TEMPLATE] Pílula Jurídica', desc: 'Uma pílula rápida de conhecimento clássico ou resumo.' },
+      { time: '18:00', name: '[TEMPLATE] Boletim de Notícias', desc: 'Resumo das novidades do final do dia.' },
+      { time: '20:00', name: '[TEMPLATE] Questão Prática', desc: 'Mais uma questão para fixar o conhecimento à noite.' },
+      { time: '22:00', name: '[TEMPLATE] Áudio-aula de Revisão', desc: 'Áudio aleatório curto antes de dormir, focado em revisão.' },
+      { time: '00:00', name: '[TEMPLATE] Notícias da Madrugada', desc: 'Resumo das novidades jurídicas da madrugada.' },
     ];
     
     const pushesToInsert = template2Horas.map(item => {
@@ -563,19 +564,16 @@ export default function AdminPush() {
 
         {view === 'robos' && (() => {
           const robosSchedule = [
-            { time: '00:00', name: 'Explicações CF88', desc: 'Geração e disparo automático de estudos da Constituição.', emoji: '📜', active: true },
-            { time: '01:00', name: 'Explicações CP/CC/CPC', desc: 'Disparo noturno focado em códigos principais.', emoji: '⚖️', active: true },
-            { time: '02:00', name: 'Explicações CLT/CDC/CTN', desc: 'Disparo noturno focado em legislação complementar.', emoji: '💼', active: true },
-            { time: '04:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis, despachos e diários oficiais (1º ciclo).', emoji: '🔍', active: true },
-            { time: '07:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis, despachos e diários oficiais (2º ciclo).', emoji: '🔍', active: true },
-            { time: '08:00', name: 'Blog Push: Manhã', desc: 'Boletim diário com notícias jurídicas e atualizações.', emoji: '📰', active: true },
-            { time: '10:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (3º ciclo).', emoji: '🔍', active: true },
-            { time: '13:00', name: 'Blog Push: Tarde', desc: 'Segundo boletim de notícias do dia.', emoji: '☕', active: false },
-            { time: '13:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (4º ciclo).', emoji: '🔍', active: true },
-            { time: '16:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (5º ciclo).', emoji: '🔍', active: true },
-            { time: '19:00', name: 'Blog Push: Noite', desc: 'Fechamento do expediente e síntese do dia.', emoji: '🌙', active: false },
-            { time: '19:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (6º ciclo).', emoji: '🔍', active: true },
-            { time: '22:00', name: 'Rastreador: Resenha Diária', desc: 'Busca por novas leis e diários oficiais (7º ciclo).', emoji: '🔍', active: true },
+            { time: '06:00', name: 'Boletim Push: Matinal', desc: 'Boletim diário com notícias jurídicas e atualizações.', emoji: '📰', active: true },
+            { time: '08:00', name: 'Explicações CF88/Leis', desc: 'Disparo de novas leis cadastradas e estudos.', emoji: '📜', active: true },
+            { time: '10:00', name: 'Questão Prática', desc: 'Uma questão aleatória para a pessoa resolver.', emoji: '✅', active: true },
+            { time: '12:00', name: 'Sugestão de Leitura', desc: 'Sugestão de livro da biblioteca.', emoji: '📚', active: true },
+            { time: '14:00', name: 'Áudio-aula Explicativa', desc: 'Áudio explicativo para ouvir à tarde.', emoji: '🎧', active: true },
+            { time: '16:00', name: 'Pílula Jurídica', desc: 'Conceito clássico ou resumo rápido.', emoji: '💊', active: true },
+            { time: '18:00', name: 'Boletim Push: Noturno', desc: 'Fechamento do expediente e síntese do dia.', emoji: '🌙', active: true },
+            { time: '20:00', name: 'Questão Prática', desc: 'Mais uma questão para praticar à noite.', emoji: '✅', active: true },
+            { time: '22:00', name: 'Áudio-aula de Revisão', desc: 'Áudio curto antes de dormir.', emoji: '🎧', active: true },
+            { time: '00:00', name: 'Notícias da Madrugada', desc: 'Resumo das novidades jurídicas da madrugada.', emoji: '🕵️', active: true },
           ];
 
           return (
