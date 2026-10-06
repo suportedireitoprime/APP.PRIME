@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Sparkles, Trophy, Star, BookOpen, ChevronRight, ArrowLeft } from "lucide-react";
 import type { useLeiSecaResumoGlobal } from "@/hooks/useLeiSecaResumoGlobal";
 import { haptic } from "@/lib/nativeHaptics";
-import heroJusticaImg from "@/assets/covers/hero-leiseca-justica.webp";
+import heroEstudanteImg from "@/assets/covers/hero-leiseca-estudante.jpg";
 
 interface LeiSecaHeroProps {
   pctGlobal: number;
@@ -27,7 +27,7 @@ function MiniStat({
 }) {
   return (
     <div className="rounded-xl bg-black/50 border border-white/10 px-2.5 py-2 backdrop-blur-md shadow-lg shadow-black/40">
-      <div className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-red-200/70">
+      <div className="flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-wider text-purple-200/70">
         {icon} {label}
       </div>
       <div className="mt-0.5 flex items-baseline gap-0.5">
@@ -73,15 +73,15 @@ export function LeiSecaHero({
         aria-hidden="true"
       />
 
-      {/* Imagem de Capa do Painel: Escultura da Justiça no lado direito */}
+      {/* Imagem de Capa do Painel */}
       <img
-        src={heroJusticaImg}
-        alt="Deusa da Justiça"
+        src={heroEstudanteImg}
+        alt="Estudante estudando Lei Seca"
         aria-hidden="true"
         loading="eager"
         fetchPriority="high"
         decoding="async"
-        className="absolute inset-0 w-full h-full object-cover object-[72%_center] md:object-[82%_center] z-0 pointer-events-none"
+        className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
       />
 
       {/* Overlay com corte diagonal idêntico ao painel do início (HomeHeaderHero), em tonalidade roxa profunda */}
@@ -96,9 +96,9 @@ export function LeiSecaHero({
           className="absolute inset-0 overflow-hidden"
           style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
         >
-          {/* Degradês rubi originais do HomeHeaderHero */}
-          <div className="absolute inset-0 bg-hero-panel" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
+          {/* Degradês roxos do novo painel */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#2c133a] to-[#0f0417]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(200,150,255,0.25),transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
@@ -141,7 +141,7 @@ export function LeiSecaHero({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.22em] text-red-300/80 mb-1">
+        <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-[0.22em] text-purple-300/80 mb-1">
           <Sparkles className="h-3 w-3" /> Lei Seca · seu painel
         </div>
 
