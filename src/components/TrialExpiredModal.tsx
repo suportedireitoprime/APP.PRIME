@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { isAdminEmail } from "@/lib/adminEmails";
 import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
+import { BeneficiosTimelineModal } from "@/components/assinatura/BeneficiosTimelineModal";
 import { useBodyScrollLock, resetBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
@@ -83,8 +84,16 @@ interface TrialExpiredModalProps {
 
 const COPIES = [
   {
-    title: "TESTE DE 3 DIAS TERMINOU",
-    message: "{name}, seu teste gratuito chegou ao fim. Veja os planos abaixo para desbloquear seu acesso completo a todo o conteúdo do aplicativo.",
+    title: "NÃO DEIXE SUA EVOLUÇÃO PARAR",
+    message: "{name}, você experimentou o poder de estudar com o ecossistema jurídico mais completo do país. Não volte para métodos lentos e desatualizados: garanta acesso ilimitado à IA Horus, Vade Mecum inteligente e mais de 200 ferramentas agora.",
+  },
+  {
+    title: "SEU ACESSO DE TESTE EXPIROU",
+    message: "{name}, cada dia de estudo conta para a sua aprovação. Mantenha seu ritmo acelerado e garanta acesso irrestrito a todas as leis comentadas, resumos esquematizados e simulados exclusivos.",
+  },
+  {
+    title: "CONTINUE RUMO À SUA APROVAÇÃO",
+    message: "{name}, o seu foco não pode ser interrompido. Desbloqueie todo o acervo do Direito Prime hoje mesmo e conquiste o diferencial competitivo que você precisa.",
   }
 ];
 
@@ -95,6 +104,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   const { refresh: refreshSubscription } = useSubscription();
   const [ativo, setAtivo] = useState(0);
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
+  const [showBeneficios, setShowBeneficios] = useState(false);
   const [copyIndex] = useState(() => Math.floor(Math.random() * COPIES.length));
 
   const isAdmin = isAdminEmail(user?.email);
@@ -138,6 +148,18 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/85 p-4 py-8">
       {/* Checkout direto mantendo o fundo fosco */}
+      {/* Tela Fullscreen de Benefícios em Linha do Tempo */}
+      <BeneficiosTimelineModal
+        open={showBeneficios}
+        onClose={() => setShowBeneficios(false)}
+        onGoToPlans={() => {
+          setShowBeneficios(false);
+          haptic.medium();
+          resetBodyScrollLock(true);
+          navigate('/assinatura?preview=plans', { replace: true });
+        }}
+      />
+
       <CheckoutModal
         open={!!checkoutPlan}
         onOpenChange={(v) => { if (!v) setCheckoutPlan(null); }}
@@ -270,17 +292,29 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
           <p className="text-[14px] sm:text-[15px] text-muted-foreground leading-relaxed text-center max-w-sm mx-auto" dangerouslySetInnerHTML={{__html: currentCopy.message.replace('{name}', `<strong class="text-foreground font-bold">${firstName}</strong>`)}} />
 
           {/* Botões de Ação */}
-          <div className="w-full pt-2">
+          <div className="w-full pt-2 space-y-2.5">
             <button
               onClick={() => {
                 haptic.medium();
                 resetBodyScrollLock(true);
                 navigate('/assinatura?preview=plans', { replace: true });
               }}
-              className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer"
+              className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer uppercase"
             >
               <span>VER PLANOS</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                haptic.light();
+                setShowBeneficios(true);
+              }}
+              className="w-full h-12 rounded-2xl font-display font-black text-xs sm:text-sm tracking-wider bg-white/5 hover:bg-white/10 text-white/90 border border-white/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer uppercase shadow-md group"
+            >
+              <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
+              <span>VER BENEFÍCIOS</span>
             </button>
           </div>
         </div>

@@ -352,7 +352,7 @@ export default function Assinatura() {
 
         {isTrial && <TrialCountdownBanner expiresAt={expiresAt} />}
 
-        <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-[calc(8.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative">
+        <div className="max-w-2xl mx-auto pt-4 space-y-7 pb-[calc(9.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative">
             {/* Folhas de louro caindo */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
               {falling.map((i) => (

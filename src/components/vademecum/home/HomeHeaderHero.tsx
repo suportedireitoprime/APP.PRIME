@@ -144,7 +144,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
     <>
       {/* Shell sÃ³lido, opaco e com blindagem contra culling e overscroll */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
         style={{
           transform: 'translateZ(0)',
           backgroundColor: '#050505',
@@ -195,8 +195,8 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
         {/* Botões de Notificação e Menu — alinhados com Vade Mecum */}
         <header className={`absolute top-0 right-0 left-0 z-20 pointer-events-none transition-all duration-300 ${
           hasTopBanner 
-            ? 'pt-2 sm:pt-3' 
-            : 'pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))]'
+            ? 'pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] sm:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))]'
+            : 'pt-[calc(1.35rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]'
         }`}>
           <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-end gap-2 sm:gap-3">
             <button
@@ -224,7 +224,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha com recuo idêntico ao Vade Mecum */}
         <div className={`relative z-10 transition-all duration-300 flex-1 flex flex-col justify-start min-h-[120px] ${
-          hasTopBanner ? 'pt-3 sm:pt-4' : 'pt-10 sm:pt-12'
+          hasTopBanner ? 'pt-4 sm:pt-5' : 'pt-12 sm:pt-14'
         }`}>
           <HomeBrandBanner />
         </div>

@@ -139,7 +139,7 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
     <>
       <div 
         className={`w-full max-w-[1600px] mx-auto px-4 sm:px-6 ${
-          isDesktop ? 'pt-0 pb-3' : 'pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-1.5'
+          isDesktop ? 'pt-0 pb-3' : 'pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-1.5'
         } ${className}`}
       >
         {is24hActive ? (

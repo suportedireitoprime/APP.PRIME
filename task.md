@@ -1,23 +1,22 @@
-# Atualização de Planos e Preços Asaas & Frontend
+# Tarefa: Modal Persuasivo de Teste, Tela de Benefícios em Linha do Tempo e Margens da Barra de Navegação
 
-- [x] Fase 1: Atualizar UI dos Planos em `src/components/assinatura/PricingCards.tsx` <!-- id: 1 -->
-  - [x] Atualizar Plano Anual: Preço cheio R$ 149,90 e texto "Parcele em até 6 vezes no cartão" (remover 12x de R$ 16,65 / R$ 199,90)
-  - [x] Atualizar Plano Vitalício: Preço cheio R$ 249,90 e texto "Parcele em até 10 vezes no cartão (Acesso para sempre)" (remover 12x de R$ 25,90 / R$ 280,00)
-  - [x] Garantir que o Plano Mensal permaneça R$ 29,90 / mês
-- [x] Fase 2: Atualizar Modal de Checkout em `src/components/assinatura/CheckoutModal.tsx` <!-- id: 2 -->
-  - [x] Atualizar `getPlanInfo()`: Anual R$ 149,90 (em até 6x), Vitalício R$ 249,90 (em até 10x)
-  - [x] Atualizar seletor de parcelas: Anual limitado a até 6x e Vitalício limitado a até 10x
-  - [x] Corrigir cálculo de parcelamento: Anual base R$ 149,90 e Vitalício base R$ 249,90
-- [x] Fase 3: Atualizar Gaveta de Pagamento em `src/pages/Assinatura.tsx` <!-- id: 3 -->
-  - [x] Cartão: Vitalício "Até 10x de R$ 24,99" | Anual "Até 6x de R$ 24,98"
-  - [x] PIX: Vitalício "R$ 249,90 à vista" | Anual "R$ 149,90 à vista"
-- [x] Fase 4: Atualizar Edge Function Asaas em `supabase/functions/asaas-checkout/index.ts` <!-- id: 4 -->
-  - [x] Definir `baseValue`: Vitalício = 249.90, Anual = 149.90, Mensal = 29.90
-  - [x] Limitar parcelamento: Vitalício max 10 parcelas, Anual max 6 parcelas
-  - [x] Ajustar valores da assinatura recorrente (Anual = 149.90, Mensal = 29.90)
-  - [x] Fazer deploy da função: `supabase.cmd functions deploy asaas-checkout --project-ref dnjrgpldcwcpoywamorr`
+- [x] Fase 1: Criar Componente Fullscreen `BeneficiosTimelineModal.tsx` <!-- id: 1 -->
+  - [x] Estruturar tela cheia com animações `framer-motion`
+  - [x] Implementar linha do tempo (timeline) com quadradinhos de funções e descrições ao lado (esquerda e direita)
+  - [x] Integrar benefícios detalhados de estudos, IA, Vade Mecum e +200 ferramentas
+  - [x] Botão de conversão direto para os planos
+- [x] Fase 2: Tornar `TrialExpiredModal.tsx` Persuasivo e Integrar Botão de Benefícios <!-- id: 2 -->
+  - [x] Substituir títulos e textos frios por copy de alta persuasão focada em aprovação e perda de ritmo
+  - [x] Adicionar botão "VER BENEFÍCIOS" abaixo do botão "VER PLANOS"
+  - [x] Conectar abertura do `BeneficiosTimelineModal` ao clicar no novo botão
+- [x] Fase 3: Ajustar Margens Superiores para Não-Assinantes (`HomeHeaderHero.tsx` / `PromoHeaderBanner.tsx`) <!-- id: 3 -->
+  - [x] Aumentar safe margin no header para evitar sobreposição do botão lateral com a status/navigation bar do sistema
+  - [x] Harmonizar espaçamento entre avatar/logo e botões laterais
+- [x] Fase 4: Blindar Margens em `PageHeader.tsx` e `Assinatura.tsx` <!-- id: 4 -->
+  - [x] Garantir fallbacks seguros `env(safe-area-inset-*)` e margens de topo generosas no `PageHeader`
+  - [x] Garantir margem inferior segura contra a navigation bar no Ver Planos (`Assinatura.tsx`)
 - [x] Fase 5: Validação TypeScript e Build <!-- id: 5 -->
   - [x] Executar `.\node_modules\.bin\tsc.CMD --noEmit` (0 erros)
-  - [x] Executar `.\node_modules\.bin\vite.CMD build` (sucesso)
-- [x] Fase 6: Versionamento Automático e Commit <!-- id: 6 -->
+  - [x] Executar `.\node_modules\.bin\vite.CMD build` (sucesso absoluto em 2m 5s)
+- [x] Fase 6: Versionamento Automático e Push <!-- id: 6 -->
   - [x] Executar `git add . ; git commit -m "..." ; git push`

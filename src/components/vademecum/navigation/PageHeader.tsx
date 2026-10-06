@@ -32,11 +32,11 @@ export function PageHeader({
     <header
       className={`sticky top-0 z-50 flex items-center gap-3 py-3.5 shrink-0 ${baseBg}/90 backdrop-blur-md border-b ${borderColor} ${className}`}
       style={{
-        paddingTop: 'calc(var(--sai-top) + 1.25rem)',
+        paddingTop: 'calc(1.35rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
         // Notch/curvatura em landscape: respeita insets laterais além dos 16px base.
-        paddingLeft: 'calc(1rem + var(--sai-left))',
-        paddingRight: 'calc(1rem + var(--sai-right))',
-        minHeight: 'calc(5rem + var(--sai-top))',
+        paddingLeft: 'calc(1rem + var(--sai-left, env(safe-area-inset-left, 0px)))',
+        paddingRight: 'calc(1rem + var(--sai-right, env(safe-area-inset-right, 0px)))',
+        minHeight: 'calc(5.25rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
         contain: 'layout',
       }}
     >
