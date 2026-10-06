@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw, LayoutDashboard, Database, FlaskConical, ChevronRight, Bot, ArrowUpRight } from "lucide-react";
+import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw, LayoutDashboard, Database, FlaskConical, ChevronRight, Bot, ArrowUpRight, Eye } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
