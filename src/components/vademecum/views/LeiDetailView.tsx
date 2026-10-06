@@ -32,7 +32,7 @@ import LeiArtigosVirtualList from '@/components/vademecum/artigo/LeiArtigosVirtu
 import LeiHistoricoCarousel from '@/components/vademecum/artigo/LeiHistoricoCarousel';
 import ArtigoComparativoModal, { type AlteracaoDetailData } from '@/components/vademecum/artigo/ArtigoComparativoModal';
 import LeiSobreModal from '@/components/vademecum/artigo/LeiSobreModal';
-import { getScrapedAlteracoes } from '@/data/leiAlteracoesScraped';
+import { useScrapedUpdates } from '@/hooks/useScrapedUpdates';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { extractLeiCapitulos, isStructuralArtigo, formatArtigoNumeroOnly } from '@/lib/leiStructure';
 
@@ -95,9 +95,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
 
   const searchBarRef = useRef<HTMLDivElement | null>(null);
 
-  const localScrapedCount = useMemo(() => {
-    return getScrapedAlteracoes(selectedTabelaNome, selectedLeiId).length;
-  }, [selectedTabelaNome, selectedLeiId]);
+  const { data: scrapedList = [] } = useScrapedUpdates(selectedLeiId);
+  const localScrapedCount = scrapedList.length;
 
   const voiceSearch = useVoiceInput((text) => {
     if (!text) return;

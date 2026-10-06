@@ -3,7 +3,8 @@ import { ChevronRight } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
 import type { ModificationInfo } from '@/components/vademecum/artigo/ArtigoBottomSheet';
 import { haptic } from '@/lib/nativeHaptics';
-import { getScrapedAlteracoes, extractMesAno, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { extractMesAno, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { useScrapedUpdates } from '@/hooks/useScrapedUpdates';
 
 export type DbAlteracao = {
   artigo_numero: string;
@@ -103,9 +104,11 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // Carrega as alterações reais extraídas da varredura do Planalto com mês abreviado / ano
+  // Hook que se conecta com a nuvem (Supabase)
+  const { data: scrapedList = [], isLoading } = useScrapedUpdates(leiId);
+
+  // Processa as alterações em memória sempre que os artigos ou o db atualizam
   const { items, totalAlteracoes } = useMemo(() => {
-    const scrapedList = getScrapedAlteracoes(tabelaNome || null, leiId || null);
 
     const artigoByNumber = new Map<string, ArtigoLei>();
     for (const a of artigos) {
@@ -137,7 +140,7 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
       result.push({
         artigo: artigoObj,
         artigoDisplay: dispInfo.artigoDisplayCompleto,
-        tipo: dispInfo.acaoTexto || tipo,
+        tipo: dispInfo.acaoTexto || extractTipoFromMotivo(scraped.motivo || '', !!scraped.texto_antigo),
         referencia: scraped.motivo,
         ano: scraped.ano || 2026,
         mes: scraped.mes || mes,
@@ -146,7 +149,7 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
         acaoDescritiva: dispInfo.acaoDescritiva,
         corpoTexto: dispInfo.corpoTexto,
         rotuloDispositivo: dispInfo.rotuloDispositivo,
-        leiNome: dispInfo.leiReferencia || leiModificadora,
+        leiNome: dispInfo.leiReferencia || extractLeiNomeFromMotivo(scraped.motivo || ''),
         textoAntigo: scraped.texto_antigo,
         textoNovo: scraped.texto_novo,
         linkLei: scraped.link_lei,
@@ -210,7 +213,19 @@ export const LeiHistoricoCarousel: React.FC<LeiHistoricoCarouselProps> = ({
       items: result.slice(0, 15),
       totalAlteracoes: result.length,
     };
-  }, [artigos, dbAlteracoes, tabelaNome, leiId]);
+  }, [artigos, dbAlteracoes, tabelaNome, leiId, scrapedList]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full mt-2 sm:mt-3 mb-3 flex flex-col gap-2 px-1">
+        <div className="h-6 w-48 bg-[#1A1A1A] animate-pulse rounded-md ml-1"></div>
+        <div className="flex gap-4 overflow-x-hidden mt-2">
+          <div className="h-[200px] min-w-[280px] sm:min-w-[320px] bg-[#1A1A1A] animate-pulse rounded-xl"></div>
+          <div className="h-[200px] min-w-[280px] sm:min-w-[320px] bg-[#1A1A1A] animate-pulse rounded-xl opacity-50"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) return null;
 

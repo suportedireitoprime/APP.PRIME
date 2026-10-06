@@ -20,7 +20,7 @@ interface CategoriaDef {
   color: string;
 }
 
-import { extractMesAno, normalizeAlteracoes, getScrapedAlteracoes, SEED_CP_ALTERACOES, SEED_CC_ALTERACOES, SEED_CPP_ALTERACOES, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { extractMesAno, normalizeAlteracoes, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
 
 export interface ExtracaoHistoricoItem {
   id: string;
@@ -329,16 +329,18 @@ export default function AdminMapeamentoLeis() {
     setAnoFiltro('Todos');
     setBuscaArtigoHistorico('');
 
-    // Carrega alterações enriquecidas com mês, ano e novidades recentes
-    const list = getScrapedAlteracoes(lei.tabela_nome, lei.id);
-    if (list.length > 0) {
-      setAlteracoes(list);
-      // Persiste o cache atualizado com os meses devidamente normalizados
-      localStorage.setItem(`vade_scrape_data_${lei.tabela_nome}`, JSON.stringify(list));
+    // Carrega alterações enriquecidas com mês, ano e novidades recentes a partir do Supabase
+    const { data, error } = await supabase
+      .from('scraped_article_updates')
+      .select('*')
+      .eq('lei_id', lei.id.toLowerCase());
+
+    if (data && data.length > 0) {
+      setAlteracoes(data as ScrapedArticleUpdate[]);
       return;
     }
 
-    // Se não tiver cache, executa a busca de alterações no Planalto
+    // Se não tiver no banco, executa a busca de alterações no Planalto
     await handleBuscarAlteracoesPlanalto(lei);
   };
 
@@ -365,23 +367,7 @@ export default function AdminMapeamentoLeis() {
       if (error) throw error;
 
       const rawArticles: ScrapedArticleUpdate[] = data?.articles || [];
-      let articlesList = normalizeAlteracoes(rawArticles);
-
-      // Assegura que novidades das sementes oficiais permaneçam no topo para CP, CC e CPP
-      const isCP = (lei.tabela_nome && /CP_CODIGO_PENAL/i.test(lei.tabela_nome)) || (lei.id && /^cp$/i.test(lei.id));
-      const isCC = (lei.tabela_nome && /CC_CODIGO_CIVIL/i.test(lei.tabela_nome)) || (lei.id && /^cc$/i.test(lei.id));
-      const isCPP = (lei.tabela_nome && /CPP_CODIGO_PROCESSO_PENAL/i.test(lei.tabela_nome)) || (lei.id && /^cpp$/i.test(lei.id));
-
-      const seedsToMerge = isCP ? SEED_CP_ALTERACOES : (isCC ? SEED_CC_ALTERACOES : (isCPP ? SEED_CPP_ALTERACOES : []));
-      if (seedsToMerge.length > 0) {
-        const existingArts = new Set(articlesList.map(i => `${i.artigo}-${i.ano}`));
-        const missingFromSeed = seedsToMerge.filter(
-          seedItem => !existingArts.has(`${seedItem.artigo}-${seedItem.ano}`)
-        );
-        if (missingFromSeed.length > 0) {
-          articlesList = normalizeAlteracoes([...missingFromSeed, ...articlesList]);
-        }
-      }
+      const articlesList = normalizeAlteracoes(rawArticles);
 
       setAlteracoes(articlesList);
 
@@ -390,42 +376,35 @@ export default function AdminMapeamentoLeis() {
         hour: '2-digit', minute: '2-digit'
       });
 
-      localStorage.setItem(`vade_scrape_${lei.id}`, agora);
-      localStorage.setItem(`vade_scrape_${lei.tabela_nome}`, agora);
-      localStorage.setItem(`vade_scrape_data_${lei.tabela_nome}`, JSON.stringify(articlesList));
       setLastScrapes(prev => ({ ...prev, [lei.id]: agora }));
 
       // SALVAR AUTOMATICAMENTE NO SUPABASE PARA TODOS OS USUÁRIOS
-      if (articlesList && articlesList.length > 0 && lei.tabela_nome) {
+      if (articlesList && articlesList.length > 0) {
         try {
           const dbRows = articlesList.map(art => {
-            const anoSafe = art.ano || new Date().getFullYear();
-            const detectado_em = new Date(anoSafe, 0, 1).toISOString();
-            const isNovo = (art.motivo || '').toLowerCase().includes('incluíd');
-            const isRevogado = (art.motivo || '').toLowerCase().includes('revogad');
-            
             return {
-              tabela_nome: lei.tabela_nome,
-              artigo_numero: art.artigo,
-              tipo_alteracao: isNovo ? 'artigo_novo' : (isRevogado ? 'artigo_revogado' : 'texto_alterado'),
-              texto_anterior: art.texto_antigo || '',
-              texto_atual: art.texto_novo || '',
+              lei_id: lei.id.toLowerCase(),
+              artigo: art.artigo,
               motivo: art.motivo || 'Alteração legislativa',
-              ano: anoSafe,
-              revisado: true,
-              detectado_em: detectado_em,
-              link_lei: art.link_lei || null
+              ano: art.ano || new Date().getFullYear(),
+              mes: art.mes || null,
+              mes_ano: art.mes_ano || null,
+              mes_completo: art.mes_completo || null,
+              mes_index: art.mes_index || null,
+              texto_antigo: art.texto_antigo || '',
+              texto_novo: art.texto_novo || '',
+              link_lei: art.link_lei || null,
+              data_completa: art.data_completa || null
             };
           });
 
-          // Usamos upsert para não duplicar, caso o admin faça varreduras múltiplas
-          const res = await (supabase as any).from('legislacao_alteracoes').upsert(dbRows, {
-            onConflict: 'tabela_nome, artigo_numero, ano, motivo'
-          });
+          // Limpa o cache antigo dessa lei na nuvem e grava o novo atualizado
+          await supabase.from('scraped_article_updates').delete().eq('lei_id', lei.id.toLowerCase());
+          const res = await supabase.from('scraped_article_updates').insert(dbRows);
           
           if (res.error) {
             console.error('Erro ao sincronizar novidades no Supabase:', res.error);
-            toast.error('Erro ao salvar no banco. Apenas local foi atualizado.');
+            toast.error('Erro ao salvar no banco. Apenas em memória foi atualizado.');
           }
         } catch (dbErr) {
           console.error('Erro de rede ao salvar novidades no Supabase:', dbErr);

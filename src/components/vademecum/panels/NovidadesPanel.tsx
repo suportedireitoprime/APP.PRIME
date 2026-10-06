@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { Calendar, ChevronRight, Loader2, Sparkles, ExternalLink } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';
 import type { ModificationInfo } from '@/components/vademecum/artigo/ArtigoBottomSheet';
-import { getScrapedAlteracoes, extractMesAno, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { extractMesAno, parseDispositivoAlteracao, type ScrapedArticleUpdate } from '@/data/leiAlteracoesScraped';
+import { useScrapedUpdates } from '@/hooks/useScrapedUpdates';
 
 export type DbAlteracao = {
   artigo_numero: string;
@@ -101,8 +102,9 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
   onOpenArtigo,
   onOpenComparativo,
 }) => {
+  const { data: scrapedList = [], isLoading: loadingScraped } = useScrapedUpdates(leiId);
+
   const { items, grouped } = useMemo(() => {
-    const scrapedList = getScrapedAlteracoes(tabelaNome || null, leiId || null);
 
     const artigoByNumber = new Map<string, ArtigoLei>();
     for (const a of artigos) {
@@ -214,10 +216,10 @@ const NovidadesPanel: React.FC<NovidadesPanelProps> = ({
     }
 
     return { items: result, grouped: grp };
-  }, [artigos, dbAlteracoes, tabelaNome, leiId]);
+  }, [artigos, dbAlteracoes, tabelaNome, leiId, scrapedList]);
 
   if (items.length === 0) {
-    return loadingDbAlteracoes ? (
+    return (loadingDbAlteracoes || loadingScraped) ? (
       <div className="flex flex-col items-center py-12 gap-2">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
         <p className="text-muted-foreground text-sm">Carregando alterações do Planalto...</p>
