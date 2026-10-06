@@ -969,9 +969,8 @@ function GlobalTrialGate() {
       return;
     }
 
-    if (location.search.includes('expired=true')) {
-      setShowModal(true);
-    }
+    // Se chegou aqui, o Trial expirou e não estamos na landing page. Força a exibição imediatamente.
+    setShowModal(true);
   }, [user, authLoading, subLoading, isAdmin, isUserPremium, isTrialActive, isPublicOrLanding, location.search]);
 
   useEffect(() => {

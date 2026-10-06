@@ -192,7 +192,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 10 }}
             transition={{ duration: 0.3 }}
-            className="absolute -top-[82px] sm:-top-[92px] left-4 sm:left-7 z-30 flex items-end pointer-events-none"
+            className="absolute -top-[52px] sm:-top-[62px] left-4 sm:left-7 z-30 flex items-end pointer-events-none"
           >
             <div
               className="w-28 h-28 sm:w-34 sm:h-34 drop-shadow-[0_18px_24px_rgba(0,0,0,0.65)] shrink-0"
@@ -234,7 +234,6 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
               {MATERIAS.map((m, i) => {
                 const pos = (i - ativo + MATERIAS.length) % MATERIAS.length;
                 const slot = SLOTS[pos];
-                const frente = pos === 0;
 
                 return (
                   <motion.div
@@ -296,25 +295,12 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
             <button
               onClick={() => {
                 haptic.medium();
-                resetBodyScrollLock(true);
-                navigate('/assinatura?preview=plans', { replace: true });
+                setShowBeneficios(true);
               }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer uppercase"
             >
-              <span>VER PLANOS</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                haptic.light();
-                setShowBeneficios(true);
-              }}
-              className="w-full h-12 rounded-2xl font-display font-black text-xs sm:text-sm tracking-wider bg-white/5 hover:bg-white/10 text-white/90 border border-white/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer uppercase shadow-md group"
-            >
-              <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
               <span>VER BENEFÍCIOS</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>

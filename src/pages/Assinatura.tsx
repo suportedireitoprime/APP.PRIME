@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, startTransition } from "react";
+﻿import { useState, useEffect, useMemo, startTransition } from "react";
 import { useNavigate, useSearchParams, Navigate, useLocation, Link } from "react-router-dom";
 import { Capacitor } from '@capacitor/core';
 import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight, Headphones, ShieldCheck, Sparkles } from "lucide-react";
@@ -51,7 +51,7 @@ export default function Assinatura() {
 
   const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
 
-  const [tab, setTab] = useState<'mensal' | 'anual' | 'promocao' | 'vitalicio'>(isNewUser ? 'promocao' : 'anual');
+  const [tab, setTab] = useState<'mensal' | 'anual' | 'vitalicio'>(isNewUser ? 'anual' : 'anual');
   const [showHorusPromo, setShowHorusPromo] = useState(false);
   const [hasClosedPromo, setHasClosedPromo] = useState(false);
   
@@ -112,7 +112,7 @@ export default function Assinatura() {
   
   const [devSheetOpen, setDevSheetOpen] = useState(false);
   const [paymentMethodSheetOpen, setPaymentMethodSheetOpen] = useState(false);
-  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'promocao' | 'anual_regular_pix' | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_regular_pix' | null>(null);
 
   const handleBack = () => {
     if (showWelcome) return closeWelcome();
@@ -142,7 +142,7 @@ export default function Assinatura() {
     setDevSheetOpen(false);
   };
 
-  const startPurchase = async (plano: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'promocao' | 'anual_regular_pix') => {
+  const startPurchase = async (plano: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_regular_pix') => {
     track('subscription_started', { plano, metodo: 'asaas', source: 'planos_page' });
     import('@/lib/appEvents')
       .then(({ appEvents }) => {
@@ -152,7 +152,7 @@ export default function Assinatura() {
       .catch(() => {});
       
     if (!session) { 
-      toast.info('Faça login ou cadastre-se para assinar'); 
+      toast.info('FaÃ§a login ou cadastre-se para assinar'); 
       navigate('/login', { state: { returnTo: '/assinatura' } });
       return; 
     }
@@ -214,7 +214,7 @@ export default function Assinatura() {
                   Finalize sua assinatura
                 </SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-3 text-muted-foreground max-w-[280px]">
-                  Escolha como prefere ativar seu plano {tab === 'vitalicio' ? 'Vitalício' : 'Anual'}. O acesso é liberado na hora.
+                  Escolha como prefere ativar seu plano {tab === 'vitalicio' ? 'VitalÃ­cio' : 'Anual'}. O acesso Ã© liberado na hora.
                 </SheetDescription>
               </SheetHeader>
 
@@ -240,11 +240,11 @@ export default function Assinatura() {
                     <line x1="2" x2="22" y1="10" y2="10" />
                   </svg>
                   <div className="flex flex-col items-start text-left flex-1">
-                    <span className="font-black text-xl text-white">Cartão de Crédito</span>
+                    <span className="font-black text-xl text-white">CartÃ£o de CrÃ©dito</span>
                     {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 10x de R$ 24,99</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">AtÃ© 10x de R$ 24,99</span>
                     ) : (
-                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 6x de R$ 24,98</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">AtÃ© 6x de R$ 24,98</span>
                     )}
                   </div>
                   <ArrowRight className="w-6 h-6 text-zinc-500 group-hover:text-primary transition-colors group-hover:translate-x-1" />
@@ -267,9 +267,9 @@ export default function Assinatura() {
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-black text-xl text-white">PIX</span>
                     {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-zinc-400 mt-0.5">R$ 249,90 à vista</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">R$ 249,90 Ã  vista</span>
                     ) : (
-                      <span className="text-xs font-bold text-emerald-500 mt-0.5">R$ 149,90 à vista</span>
+                      <span className="text-xs font-bold text-emerald-500 mt-0.5">R$ 149,90 Ã  vista</span>
                     )}
                   </div>
                   <ArrowRight className="w-6 h-6 text-zinc-500 group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
@@ -284,7 +284,7 @@ export default function Assinatura() {
                     <ShieldCheck className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="text-sm font-black text-foreground">7 dias de garantia incondicional</span>
-                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Se não gostar, devolvemos 100% do valor.</span>
+                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Se nÃ£o gostar, devolvemos 100% do valor.</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -298,7 +298,7 @@ export default function Assinatura() {
                     <RotateCw className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="text-sm font-black text-foreground">Acesso Imediato</span>
-                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Comece a usar agora mesmo, liberação na hora.</span>
+                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Comece a usar agora mesmo, liberaÃ§Ã£o na hora.</span>
                     </div>
                   </div>
                 </div>
@@ -311,17 +311,17 @@ export default function Assinatura() {
           open={showHorusPromo}
           timeLeft={timeLeft}
           onClose={() => { setShowHorusPromo(false); setHasClosedPromo(true); }}
-          onRedeem={() => { setShowHorusPromo(false); setHasClosedPromo(true); setTab('promocao'); startPurchase('promocao'); }}
+          onRedeem={() => { setShowHorusPromo(false); setHasClosedPromo(true); setTab('anual'); startPurchase('anual'); }}
         />
 
-        {!showHorusPromo && hasClosedPromo && isNewUser && tab !== 'promocao' && (
+        {!showHorusPromo && hasClosedPromo && isNewUser && tab !== 'anual' && (
           <button
             onClick={() => {
-              setTab('promocao');
+              setTab('anual');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="fixed bottom-[calc(5.5rem+var(--sai-bottom,0px))] right-6 z-40 w-14 h-14 bg-emerald-500 rounded-full shadow-[0_10px_30px_rgba(16,185,129,0.5)] flex items-center justify-center border-2 border-white/20 hover:bg-emerald-400 active:opacity-70 transition-transform hover:scale-105"
-            aria-label="Abrir promoção"
+            aria-label="Abrir promoÃ§Ã£o"
           >
             <Gift className="w-6 h-6 text-white" />
             <span className="absolute -top-2 -right-2 flex h-5 w-5">
@@ -383,10 +383,10 @@ export default function Assinatura() {
                 Acesso Total Liberado
               </div>
               <h1 className="font-display text-[32px] sm:text-4xl font-black text-foreground leading-[1.15] uppercase tracking-tight">
-                Acesso a todo conteúdo <span className="text-primary">do aplicativo</span>
+                Acesso a todo conteÃºdo <span className="text-primary">do aplicativo</span>
               </h1>
               <p className="text-[14px] text-muted-foreground font-medium max-w-[280px] sm:max-w-sm mx-auto leading-relaxed">
-                Acelere sua aprovação com o ecossistema de estudos mais completo do país. Tenha a Inteligência Artificial, Vade Mecum interativo e Simulados ilimitados sempre à mão.
+                Acelere sua aprovaÃ§Ã£o com o ecossistema de estudos mais completo do paÃ­s. Tenha a InteligÃªncia Artificial, Vade Mecum interativo e Simulados ilimitados sempre Ã  mÃ£o.
               </p>
             </div>
 
@@ -399,8 +399,8 @@ export default function Assinatura() {
             <div className="px-4 space-y-4 -mt-1">
               <Button
                 onClick={() => {
-                  if (tab === 'promocao') {
-                     startPurchase('promocao');
+                  if (tab === 'anual') {
+                     startPurchase('anual');
                   } else if (tab === 'anual') {
                      setPaymentMethodSheetOpen(true);
                   } else if (tab === 'vitalicio') {
@@ -410,13 +410,13 @@ export default function Assinatura() {
                   }
                 }}
                 className={`btn-shine-loop relative overflow-hidden w-full h-[60px] rounded-[20px] font-display text-[19px] font-black tracking-wider transition-all active:scale-[0.98] group ${
-                  tab === 'promocao' 
+                  tab === 'anual' 
                     ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_12px_35px_rgba(16,185,129,0.35)]'
                     : 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_12px_35px_rgba(224,31,71,0.4)]'
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  {tab === 'promocao' ? 'ADQUIRIR VITALÍCIO PROMO' : tab === 'vitalicio' ? 'ADQUIRIR VITALÍCIO' : tab === 'anual' ? 'ASSINAR ANUAL' : 'ASSINAR MENSAL'}
+                  {tab === 'anual' ? 'ADQUIRIR VITALÃCIO PROMO' : tab === 'vitalicio' ? 'ADQUIRIR VITALÃCIO' : tab === 'anual' ? 'ASSINAR ANUAL' : 'ASSINAR MENSAL'}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                 </span>
               </Button>
@@ -442,7 +442,7 @@ export default function Assinatura() {
             <div className="px-4 mt-10 pt-6 border-t border-border/40 flex flex-col items-center gap-3">
               <div className="flex items-center justify-center gap-2">
                 <span className="font-body text-[10px] uppercase tracking-wide text-muted-foreground">
-                  Prévia
+                  PrÃ©via
                 </span>
                 <div className="inline-flex rounded-full border border-border bg-muted/40 p-0.5">
                   {(['android', 'ios'] as const).map((p) => {
@@ -470,7 +470,7 @@ export default function Assinatura() {
                 className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground font-body text-[11px] font-bold border border-primary/50 flex items-center gap-1.5 hover:brightness-95"
               >
                 <RotateCw className="w-3 h-3" />
-                só pra mim
+                sÃ³ pra mim
                 {platformOverride && (
                   <span className="ml-1 px-1.5 py-0.5 rounded-full bg-primary-foreground/20 text-[9px] uppercase">
                     {platformOverride}
@@ -482,9 +482,9 @@ export default function Assinatura() {
             <Sheet open={devSheetOpen} onOpenChange={setDevSheetOpen}>
               <SheetContent side="bottom" className="rounded-t-2xl">
                 <SheetHeader>
-                  <SheetTitle>Prévia da assinatura</SheetTitle>
+                  <SheetTitle>PrÃ©via da assinatura</SheetTitle>
                   <SheetDescription>
-                    Escolha como quer visualizar a tela de planos. Só você vê este controle.
+                    Escolha como quer visualizar a tela de planos. SÃ³ vocÃª vÃª este controle.
                   </SheetDescription>
                 </SheetHeader>
                 <div className="grid grid-cols-2 gap-3 mt-6">
@@ -533,4 +533,5 @@ export default function Assinatura() {
     </div>
   );
 }
+
 

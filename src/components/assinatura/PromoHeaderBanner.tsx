@@ -25,36 +25,10 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
   const [is24hActive, setIs24hActive] = useState<boolean>(true);
   const [isTrialEnded, setIsTrialEnded] = useState<boolean>(false);
 
-  // Chave local para controlar a contagem regressiva da oferta de 24h
-  const getPromoKey = useCallback(() => {
-    return user?.id ? `promo_24h_expires_${user.id}` : 'promo_24h_expires_guest';
-  }, [user]);
-
-  // Recupera ou inicializa a expiração da promoção de 24 horas
+  // A promoção de 24h foi desativada, mantemos a função retornando 0 para compatibilidade
   const getPromoExpiresAt = useCallback(() => {
-    const key = getPromoKey();
-    let exp = 0;
-    try {
-      const stored = localStorage.getItem(key);
-      if (stored) {
-        exp = parseInt(stored, 10);
-      } else {
-        const createdAt = user?.created_at ? new Date(user.created_at).getTime() : Date.now();
-        const age = Date.now() - createdAt;
-        // A promoção de 24h é exclusiva para as primeiras 24h após o cadastro
-        if (age < 24 * 60 * 60 * 1000) {
-          exp = createdAt + 24 * 60 * 60 * 1000;
-          localStorage.setItem(key, String(exp));
-        } else {
-          exp = 0; // Para contas antigas, a promoção já expirou
-          localStorage.setItem(key, '0');
-        }
-      }
-    } catch {
-      exp = 0;
-    }
-    return exp;
-  }, [getPromoKey, user]);
+    return 0;
+  }, []);
 
   // Sincronização contínua a cada segundo
   useEffect(() => {
@@ -104,11 +78,6 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
     return null;
   }
 
-  // Se o período de teste expirou, não mostra mais o banner
-  if (isTrialEnded) {
-    return null;
-  }
-
   // Formata o cronômetro para exibição limpa
   const formatTime = (seconds: number) => {
     if (seconds <= 0) return '00:00:00';
@@ -142,55 +111,47 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
           isDesktop ? 'pt-0 pb-3' : 'pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-1.5'
         } ${className}`}
       >
-        {is24hActive ? (
+        {isTrialEnded ? (
           /* ──────────────────────────────────────────────────────────
-             ESTADO 1: PROMOÇÃO 24H (DOURADO / GOLD LUXO)
-             Altura exata da barra de pesquisa: h-16 (64px) com rounded-2xl
+             ESTADO 3: TESTE EXPIRADO (VERMELHO SÓLIDO)
              ────────────────────────────────────────────────────────── */
           <div
             onClick={handleBannerClick}
             role="button"
             tabIndex={0}
-            aria-label="Sua promoção termina em breve. Aproveite o plano anual por R$ 149,90"
-            className="group relative w-full flex items-center h-16 pl-3 sm:pl-4 pr-[114px] sm:pr-[134px] rounded-2xl border border-amber-400/50 bg-gradient-to-r from-[#221704]/95 via-[#382606]/95 to-[#221704]/95 backdrop-blur-md shadow-lg shadow-amber-950/30 active:scale-[0.99] transition-all duration-200 cursor-pointer overflow-hidden select-none"
+            aria-label="Seu teste gratuito expirou. Assine agora."
+            className="group relative w-full flex items-center h-16 pl-3 sm:pl-4 pr-[114px] sm:pr-[134px] rounded-2xl border border-rose-500/50 bg-gradient-to-r from-[#280509]/95 via-[#440911]/95 to-[#280509]/95 backdrop-blur-md shadow-lg shadow-red-950/30 active:scale-[0.99] transition-all duration-200 cursor-pointer overflow-hidden select-none"
           >
-            {/* Shimmer dourado suave acelerado por hardware */}
+            {/* Shimmer carmim acelerado por hardware */}
             <div 
               aria-hidden="true" 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-300/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" 
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-rose-300/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" 
             />
 
-            {/* Ícone / Badge Dourado à esquerda */}
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-amber-500/25 to-yellow-500/10 border border-amber-400/40 flex items-center justify-center shrink-0 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.25)]">
-              <Crown className="w-5 h-5 sm:w-5 sm:h-5 text-amber-300 animate-pulse" strokeWidth={2.4} />
+            {/* Ícone / Badge Vermelho à esquerda */}
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-rose-500/25 to-red-500/10 border border-rose-400/40 flex items-center justify-center shrink-0 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)]">
+              <Clock className="w-5 h-5 sm:w-5 sm:h-5 text-rose-300" strokeWidth={2.4} />
             </div>
 
             {/* Texto Central Dinâmico */}
             <div className="flex flex-col justify-center min-w-0 ml-2.5 sm:ml-3">
               <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-semibold text-white/95 truncate">
-                <span>Sua promoção termina em</span>
-                <span className="font-mono font-extrabold text-amber-300 tracking-wider text-xs sm:text-sm drop-shadow-[0_0_8px_rgba(251,191,36,0.35)]">
-                  {formatTime(promoSecondsLeft)}
-                </span>
+                <span>Seu teste grátis terminou</span>
               </div>
-              <div className="text-[11px] sm:text-xs text-amber-200/90 truncate flex items-center gap-1.5 mt-0.5">
-                <span>Plano Anual por apenas</span>
-                <span className="font-extrabold text-white">R$ 149,90</span>
-                <span className="hidden xs:inline-flex text-[9px] uppercase font-bold px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                  PIX
-                </span>
+              <div className="text-[11px] sm:text-xs text-rose-200/90 truncate flex items-center gap-1 mt-0.5">
+                <span>Toque para reativar seu acesso</span>
               </div>
             </div>
 
-            {/* Botão de Ação à Direita (Idêntico ao botão PESQUISAR da barra de busca) */}
+            {/* Botão de Ação à Direita */}
             <div 
               aria-hidden="true"
-              className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-12 px-3.5 sm:px-5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 text-black font-display text-[12px] sm:text-[13px] font-extrabold tracking-wider flex items-center justify-center uppercase shadow-md shadow-amber-950/40 group-hover:brightness-110 active:scale-95 transition-all"
+              className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-12 px-4 sm:px-6 rounded-xl bg-gradient-to-r from-rose-600 via-red-500 to-rose-700 text-white font-display text-[12px] sm:text-[13px] font-extrabold tracking-wider flex items-center justify-center uppercase shadow-md shadow-red-950/40 group-hover:brightness-110 active:scale-95 transition-all"
             >
-              APROVEITAR
+              ASSINAR
             </div>
           </div>
-        ) : (
+        ) : !is24hActive && !isTrialEnded ? (
           /* ──────────────────────────────────────────────────────────
              ESTADO 2: TESTE GRATUITO 3 DIAS (VERMELHO URGÊNCIA)
              Altura exata da barra de pesquisa: h-16 (64px) com rounded-2xl
@@ -234,7 +195,7 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
               ASSINAR
             </div>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Modal de Checkout Integrado com latência zero */}

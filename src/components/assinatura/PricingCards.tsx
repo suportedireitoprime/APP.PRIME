@@ -4,14 +4,13 @@ import { TypewriterText } from "@/components/ui/TypewriterText";
 import { haptic } from '@/lib/nativeHaptics';
 
 interface PricingCardsProps {
-  selectedPlan: 'mensal' | 'anual' | 'promocao' | 'vitalicio';
+  selectedPlan: 'mensal' | 'anual' | 'vitalicio';
   isNewUser: boolean;
-  onSelectPlan: (plan: 'mensal' | 'anual' | 'promocao' | 'vitalicio') => void;
+  onSelectPlan: (plan: 'mensal' | 'anual' | 'vitalicio') => void;
 }
 
 export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingCardsProps) {
-  // Se for promo e não é novo usuário, joga pra anual. Senão usa o selecionado (agora inclui vitalicio)
-  const activePlan = selectedPlan === 'promocao' && !isNewUser ? 'anual' : selectedPlan;
+  const activePlan = selectedPlan === 'promocao' as any ? 'anual' : selectedPlan;
 
   const anualMessages = [
     "Acesso total por 1 ano inteiro",
@@ -56,15 +55,15 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
           type="button"
           onClick={() => {
             haptic.light();
-            onSelectPlan(isNewUser ? 'promocao' : 'anual');
+            onSelectPlan('anual');
           }}
           className={`relative z-10 flex-1 py-2.5 sm:py-3 text-[10px] sm:text-xs font-black uppercase tracking-wider rounded-full transition-colors duration-200 cursor-pointer select-none ${
-            (activePlan === 'anual' || activePlan === 'promocao')
+            activePlan === 'anual'
               ? 'text-white' 
               : 'text-neutral-400 hover:text-white'
           }`}
         >
-          {(activePlan === 'anual' || activePlan === 'promocao') && (
+          {activePlan === 'anual' && (
             <motion.div
               layoutId="pricing-tab"
               className="absolute inset-0 bg-gradient-to-r from-red-600 via-primary to-rose-600 rounded-full shadow-[0_0_20px_rgba(224,31,71,0.55)] border border-red-400/40 -z-10"
@@ -106,43 +105,6 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
           transition={{ duration: 0.3 }}
           className="w-full"
         >
-          {activePlan === 'promocao' && isNewUser && (
-            <button
-              type="button"
-              onClick={() => onSelectPlan('promocao')}
-              className="relative w-full rounded-3xl border-2 transition-all duration-300 text-left p-4 overflow-hidden border-emerald-500 bg-emerald-500/10 shadow-[0_0_40px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/50"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
-              
-              <div className="absolute top-0 right-0 bg-emerald-500 text-white font-black text-[9px] px-2.5 py-0.5 rounded-bl-xl tracking-wider">
-                OFERTA DE BOAS-VINDAS
-              </div>
-
-              <div className="flex justify-between items-start mb-1.5">
-                <div>
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <Zap className="w-4 h-4 text-emerald-400 fill-emerald-400" />
-                    <h3 className="font-display font-black text-emerald-400 text-base uppercase tracking-wider">Promoção Vitalícia</h3>
-                  </div>
-                  <p className="font-body text-[11px] font-semibold text-muted-foreground line-through">De R$ 199,90</p>
-                </div>
-              </div>
-
-              <div className="flex items-baseline gap-1 mb-1">
-                <span className="font-display text-3xl font-black text-foreground">R$ 149,90</span>
-                <span className="text-[10px] font-bold text-muted-foreground">à vista</span>
-              </div>
-
-              <p className="text-[10px] font-bold text-emerald-500 mb-2 flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                Promoção anual válida por 24 horas
-              </p>
-              
-              <div className="w-full pt-1 flex items-center justify-center">
-                <TypewriterText messages={["Acesso para sempre com desconto", "Desconto exclusivo de boas-vindas", "Economize R$ 50 no PIX"]} className="text-[11px] font-bold text-emerald-400" />
-              </div>
-            </button>
-          )}
 
           {activePlan === 'anual' && (
             <button

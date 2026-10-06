@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ interface CheckoutModalProps {
   onSuccess: () => void;
 }
 
-// Funções de máscara simples
+// FunÃ§Ãµes de mÃ¡scara simples
 const maskCPF = (v: string) => v.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2').slice(0, 14);
 const maskCEP = (v: string) => v.replace(/\D/g, '').replace(/(\d{5})(\d)/, '$1-$2').slice(0, 9);
 const maskPhone = (v: string) => v.replace(/\D/g, '').replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2').slice(0, 15);
@@ -73,7 +73,7 @@ const CreditCardPreview = ({ name, number, expiry, cvc, isFlipped }: { name: str
            
            <div>
              <div className="text-white/80 font-mono text-xl tracking-widest mb-2 shadow-sm">
-               {number || '•••• •••• •••• ••••'}
+               {number || 'â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢'}
              </div>
              <div className="flex justify-between items-end">
                <div className="flex flex-col">
@@ -85,7 +85,7 @@ const CreditCardPreview = ({ name, number, expiry, cvc, isFlipped }: { name: str
                <div className="flex flex-col items-end">
                  <span className="text-[9px] text-white/50 uppercase tracking-wider">Validade</span>
                  <span className="text-white font-mono text-sm tracking-widest">
-                   {expiry || '••/••'}
+                   {expiry || 'â€¢â€¢/â€¢â€¢'}
                  </span>
                </div>
              </div>
@@ -100,11 +100,11 @@ const CreditCardPreview = ({ name, number, expiry, cvc, isFlipped }: { name: str
            <div className="w-full h-12 bg-black/80 absolute top-6"></div>
            <div className="px-4 w-full flex justify-end absolute top-24">
               <div className="bg-white text-black px-3 py-1 rounded text-sm font-mono font-bold w-16 text-center">
-                {cvc || '•••'}
+                {cvc || 'â€¢â€¢â€¢'}
               </div>
            </div>
            <div className="absolute bottom-4 left-4 right-4 text-[8px] text-white/20 text-center uppercase">
-             Este cartão é seguro e processado com criptografia.
+             Este cartÃ£o Ã© seguro e processado com criptografia.
            </div>
         </div>
       </motion.div>
@@ -117,8 +117,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const [loading, setLoading] = useState(false);
   const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [installmentCount, setInstallmentCount] = useState<number>(1);
+  const [activePlan, setActivePlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix'>('anual');
 
-  // Garantir limite de parcelas ao alternar entre Anual (máx 6x) e Vitalício (máx 10x)
+  useEffect(() => {
+    if (plan) {
+      setActivePlan(plan);
+    }
+  }, [plan]);
+
+  const isPix = activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix';
+
+  // Garantir limite de parcelas ao alternar entre Anual (mÃ¡x 6x) e VitalÃ­cio (mÃ¡x 10x)
   useEffect(() => {
     if (activePlan === 'anual' && installmentCount > 6) {
       setInstallmentCount(6);
@@ -152,7 +161,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const isProcessingRef = useRef(false);
   const hasWarnedExpiryRef = useRef(false);
 
-  const [activePlan, setActivePlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix'>('anual');
+
 
   useEffect(() => {
     if (plan) {
@@ -160,7 +169,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     }
   }, [plan]);
 
-  const isPix = activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix';
+
 
   useEffect(() => {
     if (open) {
@@ -197,7 +206,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
               uf: data.uf || ''
             }));
           } else {
-            setAddressInfo('CEP não encontrado');
+            setAddressInfo('CEP nÃ£o encontrado');
           }
         } catch (e) {
           setAddressInfo('');
@@ -245,7 +254,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         .subscribe();
     });
 
-    // 2. Polling de contingência com backoff progressivo
+    // 2. Polling de contingÃªncia com backoff progressivo
     const pollCheck = async () => {
       if (!isMounted) return;
       try {
@@ -278,7 +287,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     };
   }, [step, pixData, onSuccess, onOpenChange]);
 
-  // PIX Expiration Timer — stable interval, uses absolute time to survive background states
+  // PIX Expiration Timer â€” stable interval, uses absolute time to survive background states
   useEffect(() => {
     if (step !== 3 || !pixData || !pixExpiryTime) return;
     const timer = setInterval(() => {
@@ -291,15 +300,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     return () => clearInterval(timer);
   }, [step, pixData, pixExpiryTime]);
 
-  // Item 47: PIX expirado — mantém no step 3 com badge expirado e botão de regenerar
+  // Item 47: PIX expirado â€” mantÃ©m no step 3 com badge expirado e botÃ£o de regenerar
   useEffect(() => {
     if (step === 3 && pixTimeLeft === 0 && !hasWarnedExpiryRef.current) {
       hasWarnedExpiryRef.current = true;
-      toast.error('O código PIX expirou. Gere um novo abaixo.');
+      toast.error('O cÃ³digo PIX expirou. Gere um novo abaixo.');
     }
   }, [pixTimeLeft, step]);
 
-  // Item 48: Cooldown countdown de 5s para anti-spam no botão de verificação
+  // Item 48: Cooldown countdown de 5s para anti-spam no botÃ£o de verificaÃ§Ã£o
   useEffect(() => {
     if (verifyCooldown <= 0) return;
     const t = setInterval(() => {
@@ -327,21 +336,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const handleNextStep = () => {
     if (!formData.cpf || !isValidCPF(formData.cpf)) {
-      toast.error('Preencha um CPF válido.');
+      toast.error('Preencha um CPF vÃ¡lido.');
       return;
     }
     if (!formData.phone || formData.phone.length < 14) {
-      toast.error('Preencha um telefone válido.');
+      toast.error('Preencha um telefone vÃ¡lido.');
       return;
     }
     
     if (!isPix) {
       if (!formData.cep || formData.cep.length < 9) {
-        toast.error('Preencha um CEP válido.');
+        toast.error('Preencha um CEP vÃ¡lido.');
         return;
       }
       if (!formData.addressNumber) {
-        toast.error('Preencha o número do endereço.');
+        toast.error('Preencha o nÃºmero do endereÃ§o.');
         return;
       }
       setStep(2);
@@ -353,19 +362,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const processCheckout = async () => {
     if (!isPix) {
       if (formData.cardNumber.length < 18) {
-        toast.error('Número de cartão inválido.');
+        toast.error('NÃºmero de cartÃ£o invÃ¡lido.');
         return;
       }
       if (formData.cardExpiry.length < 5) {
-        toast.error('Validade inválida.');
+        toast.error('Validade invÃ¡lida.');
         return;
       }
       if (formData.cardCvc.length < 3) {
-        toast.error('CVV inválido.');
+        toast.error('CVV invÃ¡lido.');
         return;
       }
       if (!formData.cardName) {
-        toast.error('Nome impresso no cartão é obrigatório.');
+        toast.error('Nome impresso no cartÃ£o Ã© obrigatÃ³rio.');
         return;
       }
     }
@@ -436,7 +445,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         } else if (status === 'REJECTED') {
           throw new Error('Pagamento recusado. Verifique os dados e tente novamente.');
         } else if (status === 'PENDING' || status === 'ACTIVE') {
-          toast.info('Pagamento em processamento. O acesso será liberado em instantes!');
+          toast.info('Pagamento em processamento. O acesso serÃ¡ liberado em instantes!');
           onSuccess();
           onOpenChange(false);
         } else {
@@ -445,7 +454,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
              onSuccess();
              onOpenChange(false);
           } else {
-             throw new Error('Pagamento não foi autorizado. Tente outro cartão.');
+             throw new Error('Pagamento nÃ£o foi autorizado. Tente outro cartÃ£o.');
           }
         }
       } else if (data?.invoiceUrl) {
@@ -453,7 +462,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         onSuccess();
         onOpenChange(false);
       } else {
-        throw new Error('Erro ao gerar cobrança. Tente novamente.');
+        throw new Error('Erro ao gerar cobranÃ§a. Tente novamente.');
       }
 
     } catch (err: any) {
@@ -475,7 +484,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       } else {
         await navigator.clipboard.writeText(pixData.payload);
       }
-      toast.success('Código PIX copiado!');
+      toast.success('CÃ³digo PIX copiado!');
     } catch {
       // Fallback: textarea trick
       try {
@@ -487,9 +496,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         ta.select();
         document.execCommand('copy');
         document.body.removeChild(ta);
-        toast.success('Código PIX copiado!');
+        toast.success('CÃ³digo PIX copiado!');
       } catch {
-        toast.error('Não foi possível copiar. Toque e segure o código.');
+        toast.error('NÃ£o foi possÃ­vel copiar. Toque e segure o cÃ³digo.');
       }
     }
   };
@@ -511,7 +520,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           return;
         }
       }
-      toast('Pagamento ainda não confirmado. Aguarde alguns segundos e tente novamente.', { icon: '⏳' });
+      toast('Pagamento ainda nÃ£o confirmado. Aguarde alguns segundos e tente novamente.', { icon: 'â³' });
       setVerifyCooldown(5);
     } catch {
       toast.error('Erro ao verificar pagamento.');
@@ -539,12 +548,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   };
 
   const getPlanInfo = () => {
-    if (activePlan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mês' };
-    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: ' (em até 6x)' };
-    if (activePlan === 'anual_pix') return { title: 'Anual Promoção', price: 'R$ 149,90', sub: ' (no PIX)' };
-    if (activePlan === 'anual_regular_pix') return { title: 'Anual PIX', price: 'R$ 149,90', sub: ' (à vista)' };
-    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 249,90', sub: ' (em até 10x)' };
-    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício PIX', price: 'R$ 249,90', sub: ' (à vista)' };
+    if (activePlan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mÃªs' };
+    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: ' (em atÃ© 6x)' };
+    if (activePlan === 'anual_pix') return { title: 'Anual PromoÃ§Ã£o', price: 'R$ 149,90', sub: ' (no PIX)' };
+    if (activePlan === 'anual_regular_pix') return { title: 'Anual PIX', price: 'R$ 149,90', sub: ' (Ã  vista)' };
+    if (activePlan === 'vitalicio') return { title: 'VitalÃ­cio', price: 'R$ 249,90', sub: ' (em atÃ© 10x)' };
+    if (activePlan === 'vitalicio_pix') return { title: 'VitalÃ­cio PIX', price: 'R$ 249,90', sub: ' (Ã  vista)' };
     return { title: '', price: '', sub: '' };
   };
 
@@ -588,30 +597,25 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             {step !== 2 && (
               <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-4 flex flex-col items-center justify-center relative overflow-hidden shadow-xl">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                  VOCÊ ESTÁ ASSINANDO:
+                  VOCÃŠ ESTÃ ASSINANDO:
                 </p>
                 <h3 className="font-display text-lg font-black text-foreground/90 mb-1">
-                  Estudos Jurídicos {planInfo.title}
+                  Estudos JurÃ­dicos {planInfo.title}
                 </h3>
                 <div className="flex items-baseline gap-1">
                   <span className="font-display text-4xl font-black text-foreground">{planInfo.price}</span>
                   <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
                 </div>
                 {(activePlan === 'anual') && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou até 6x no cartão</p>
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou atÃ© 6x no cartÃ£o</p>
                 )}
                 {(activePlan === 'vitalicio') && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou até 10x no cartão</p>
-                )}
-                {(activePlan === 'vitalicio_pix' || activePlan === 'anual_pix') && (
-                  <span className="absolute top-0 right-0 bg-emerald-500/80 backdrop-blur-md text-white font-black text-[9px] px-2 py-0.5 rounded-bl-lg tracking-wider">
-                    DESCONTO PIX ATIVADO
-                  </span>
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou atÃ© 10x no cartÃ£o</p>
                 )}
               </div>
             )}
 
-            {/* Alternador de Método de Pagamento (Cartão vs PIX) para Planos Vitalício / Anual */}
+            {/* Alternador de MÃ©todo de Pagamento (CartÃ£o vs PIX) para Planos VitalÃ­cio / Anual */}
             {step === 1 && (plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix') && (
               <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
                 <button
@@ -624,7 +628,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   }`}
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span>Cartão (12x)</span>
+                  <span>CartÃ£o (12x)</span>
                 </button>
                 <button
                   type="button"
@@ -636,7 +640,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   }`}
                 >
                   <QrCode className="w-4 h-4" />
-                  <span>PIX à vista</span>
+                  <span>PIX Ã  vista</span>
                 </button>
               </div>
             )}
@@ -711,7 +715,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
                     <div className="space-y-1">
                       <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
-                        <User className="w-3.5 h-3.5"/> CPF (Obrigatório)
+                        <User className="w-3.5 h-3.5"/> CPF (ObrigatÃ³rio)
                       </Label>
                       <Input 
                         value={formData.cpf} 
@@ -755,7 +759,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                           </div>
                           <div className="col-span-1 space-y-1">
                             <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
-                              Nº
+                              NÂº
                             </Label>
                             <Input 
                               value={formData.addressNumber} 
@@ -776,7 +780,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                               className="space-y-3 pt-2"
                             >
                               <div className="space-y-1">
-                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Endereço</Label>
+                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">EndereÃ§o</Label>
                                 <Input 
                                   value={formData.address} 
                                   onChange={handleChange('address')}
@@ -859,7 +863,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
                     <div className="space-y-1">
                       <Label className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
-                        <CreditCard className="w-3 h-3"/> Número do Cartão
+                        <CreditCard className="w-3 h-3"/> NÃºmero do CartÃ£o
                       </Label>
                       <Input 
                         value={formData.cardNumber} 
@@ -875,7 +879,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Nome Impresso no Cartão</Label>
+                      <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Nome Impresso no CartÃ£o</Label>
                       <Input 
                         value={formData.cardName} 
                         onChange={handleChange('cardName')}
@@ -932,13 +936,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             className="w-full h-11 rounded-xl bg-black/40 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white"
                           >
                           {Array.from({ length: activePlan === 'vitalicio' ? 10 : 6 }, (_, idx) => idx + 1).map(num => {
-                            // Cálculo sem juros no display (absorvidos pela operação)
+                            // CÃ¡lculo sem juros no display (absorvidos pela operaÃ§Ã£o)
                             const totalWithTax = activePlan === 'vitalicio' ? 249.90 : 149.90;
                             const installmentValue = totalWithTax / num;
 
                             return (
                               <option key={num} value={num} className="bg-background text-foreground">
-                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ''}
+                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' Ã  vista' : ''}
                               </option>
                             );
                           })}
@@ -985,17 +989,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       </h4>
                       <p className="text-sm font-medium text-muted-foreground px-4">
                         {pixExpired
-                          ? 'O código expirou. Gere um novo QR Code com um clique abaixo.'
+                          ? 'O cÃ³digo expirou. Gere um novo QR Code com um clique abaixo.'
                           : 'Escaneie o QR code ou copie a chave abaixo para finalizar sua assinatura em poucos segundos.'}
                       </p>
                       {!pixExpired && (
                         <p className="text-[12px] font-medium text-emerald-400 mt-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg mx-6 leading-tight">
-                          Pode fechar esta tela ou o app. O acesso será liberado automaticamente após a compensação.
+                          Pode fechar esta tela ou o app. O acesso serÃ¡ liberado automaticamente apÃ³s a compensaÃ§Ã£o.
                         </p>
                       )}
                       {!pixExpired && (
                         <div className="inline-flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-bold text-lg px-4 py-1.5 rounded-full mt-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                          ⏱ Expira em {formatTime(pixTimeLeft)}
+                          â± Expira em {formatTime(pixTimeLeft)}
                         </div>
                       )}
                     </div>
@@ -1012,7 +1016,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     ) : (
                       <Button onClick={copyPix} variant="outline" className="w-full h-14 rounded-2xl font-bold border-2 border-white/10 bg-black/30 backdrop-blur-md hover:bg-black/50 flex items-center gap-2 text-base shadow-xl">
                         <Copy className="w-5 h-5" />
-                        Copiar Código PIX
+                        Copiar CÃ³digo PIX
                       </Button>
                     )}
                     
@@ -1024,7 +1028,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black h-14 rounded-2xl text-base transition-transform active:opacity-70 shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
                          >
                            {verifyingPayment ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Clock className="w-5 h-5 mr-2" />}
-                           {verifyingPayment ? 'Verificando...' : verifyCooldown > 0 ? `Aguarde ${verifyCooldown}s para verificar` : 'Já realizei o pagamento'}
+                           {verifyingPayment ? 'Verificando...' : verifyCooldown > 0 ? `Aguarde ${verifyCooldown}s para verificar` : 'JÃ¡ realizei o pagamento'}
                          </Button>
                       </div>
                     )}
@@ -1038,4 +1042,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     </Dialog>
   );
 };
+
+
 

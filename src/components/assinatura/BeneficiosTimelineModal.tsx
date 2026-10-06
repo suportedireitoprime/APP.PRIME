@@ -248,16 +248,6 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
         {/* Top Header Seguro com Safe Area Inset */}
         <header className="relative z-20 flex items-center justify-between px-4 sm:px-6 pb-3 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] bg-[#08090C]/80 backdrop-blur-xl border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                haptic.light();
-                onClose();
-              }}
-              aria-label="Voltar"
-              className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center shrink-0 active:scale-95 transition-all cursor-pointer"
-            >
-              <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
-            </button>
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-display font-black text-base sm:text-lg tracking-wider uppercase text-white">
@@ -451,7 +441,7 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
               }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-sm sm:text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/40 group cursor-pointer uppercase"
             >
-              <span>QUERO ACESSO COMPLETO AGORA</span>
+              <span>VER PLANOS</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
             <span className="text-[11px] font-bold text-zinc-400 text-center">
