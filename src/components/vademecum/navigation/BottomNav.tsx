@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense, startTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, Gamepad2, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
@@ -266,7 +266,7 @@ const BottomNav = () => {
             }`}
             aria-label="Lições"
           >
-            <ScrollText className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/lei-seca') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <Gamepad2 className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/lei-seca') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Lições</span>
           </button>
 
