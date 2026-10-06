@@ -14,6 +14,16 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { getMateriaByTrilha } from "@/lib/leiSecaMaterias";
 import { LeiSecaParteHero, LeiSecaLicaoNode } from "@/components/lei-seca/chunks";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // Paleta hex por trilha (fallback rosa). Casa com a estética da home.
 const TRILHA_HEX: Record<string, { from: string; solid: string; to: string }> = {
@@ -55,6 +65,8 @@ export default function LeiSecaParte() {
   const { isPremium } = useSubscription();
   const [estruturando, setEstruturando] = useState(false);
   const [premiumGateOpen, setPremiumGateOpen] = useState(false);
+  const [warningModalOpen, setWarningModalOpen] = useState(false);
+  const [pendingLesson, setPendingLesson] = useState<{licao: LeiSecaLicao, missedIndex: number} | null>(null);
   const tentouEstruturar = useRef(false);
 
   // Hidrata cache do sessionStorage ANTES da primeira pintura — pinta header em ~0ms.
@@ -109,9 +121,7 @@ export default function LeiSecaParte() {
   const licoes = licoesQ.data ?? [];
 
   const isDesbloqueada = (idx: number) => {
-    if (idx === 0) return true;
-    const ant = licoes[idx - 1];
-    return progressoQ.data?.get(ant.id)?.concluida === true;
+    return true; // Todas as lições ficam liberadas para clique
   };
 
   const grupos = useMemo(() => {
@@ -235,7 +245,21 @@ export default function LeiSecaParte() {
                             setPremiumGateOpen(true);
                             return;
                           }
-                          navigate(`/lei-seca/${slug}/${parte}/licao/${l.id}`);
+
+                          let firstMissed = -1;
+                          for (let i = 0; i < idx; i++) {
+                            if (!progressoQ.data?.get(licoes[i].id)?.concluida) {
+                              firstMissed = i;
+                              break;
+                            }
+                          }
+
+                          if (firstMissed !== -1) {
+                            setPendingLesson({ licao: l, missedIndex: firstMissed });
+                            setWarningModalOpen(true);
+                          } else {
+                            navigate(`/lei-seca/${slug}/${parte}/licao/${l.id}`);
+                          }
                         }}
                       />
                     </li>
@@ -270,6 +294,27 @@ export default function LeiSecaParte() {
         onClose={() => setPremiumGateOpen(false)}
         feature="lei_seca"
       />
+
+      <AlertDialog open={warningModalOpen} onOpenChange={setWarningModalOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Pular lições?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Recomendamos que você conclua a <strong>Lição {pendingLesson?.missedIndex !== undefined ? pendingLesson.missedIndex + 1 : 1}</strong> antes de prosseguir. Tem certeza que deseja pular direto para esta lição?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              if (pendingLesson) {
+                navigate(`/lei-seca/${slug}/${parte}/licao/${pendingLesson.licao.id}`);
+              }
+            }}>
+              Continuar mesmo assim
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
