@@ -8,9 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw, LayoutDashboard, Database, FlaskConical, ChevronRight, Bot, ArrowUpRight, Eye } from "lucide-react";
+import { Send, Clock, Trash2, CheckCircle2, XCircle, RefreshCw, LayoutDashboard, Database, FlaskConical, ChevronRight, Bot, ArrowUpRight, Eye, AlertCircle, Loader2, User, Users } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
@@ -37,7 +38,9 @@ export default function AdminPush() {
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
   });
   const [selectedCampaign, setSelectedCampaign] = useState<PushCampaign | null>(null);
-  const [selectedEventType, setSelectedEventType] = useState<'delivered' | 'opened' | null>(null);
+  const [selectedEventType, setSelectedEventType] = useState<'delivered' | 'opened' | 'failed' | null>(null);
+  const [eventUsers, setEventUsers] = useState<any[]>([]);
+  const [loadingEventUsers, setLoadingEventUsers] = useState(false);
   
   const [campaigns, setCampaigns] = useState<PushCampaign[]>([]);
   const [loading, setLoading] = useState(false);
@@ -188,6 +191,48 @@ export default function AdminPush() {
     const dateToCompare = c.next_run_at || c.created_at;
     return getLocalDateStr(dateToCompare) === selectedDate && !isAgendado;
   });
+
+  useEffect(() => {
+    if (!selectedEventType || !selectedDate) return;
+
+    const fetchUsersForEvent = async () => {
+      setLoadingEventUsers(true);
+      setEventUsers([]);
+      
+      try {
+        const campaignIds = [...historicoDoDia, ...agendadosDoDia].map(c => c.id);
+        if (campaignIds.length === 0) {
+          setLoadingEventUsers(false);
+          return;
+        }
+
+        if (selectedEventType === 'failed') {
+          setLoadingEventUsers(false);
+          return;
+        }
+
+        const { data: events, error } = await supabase
+          .from('push_events')
+          .select('id, user_id, created_at, token, campaign_id, profiles(nome, email)')
+          .in('campaign_id', campaignIds)
+          .eq('event_type', selectedEventType)
+          .order('created_at', { ascending: false })
+          .limit(200);
+
+        if (error) throw error;
+        
+        const uniqueUsers = Array.from(new Map(events?.map(item => [item.user_id || item.token, item])).values());
+        setEventUsers(uniqueUsers);
+      } catch (err: any) {
+        console.error("Erro ao buscar usuários do evento:", err);
+        toast.error("Erro ao carregar lista de usuários.");
+      } finally {
+        setLoadingEventUsers(false);
+      }
+    };
+
+    fetchUsersForEvent();
+  }, [selectedEventType, selectedDate, campaigns]);
 
   return (
     <div className="min-h-dvh bg-background pb-12 relative overflow-hidden">
@@ -398,7 +443,7 @@ export default function AdminPush() {
                   { label: 'Enviados', value: historicoDoDia.reduce((acc, c) => acc + (c.sent_count || 0), 0), color: 'text-emerald-400', bg: 'bg-emerald-500/10', type: null },
                   { label: 'Recebidos', value: historicoDoDia.reduce((acc, c) => acc + (c.delivered_count || 0), 0), color: 'text-zinc-400', bg: 'bg-zinc-500/10', type: 'delivered' as const },
                   { label: 'Abertos', value: historicoDoDia.reduce((acc, c) => acc + (c.opened_count || 0), 0), color: 'text-zinc-400', bg: 'bg-zinc-500/10', type: 'opened' as const },
-                  { label: 'Erros', value: historicoDoDia.reduce((acc, c) => acc + (c.failed_count || 0), 0), color: 'text-red-400', bg: 'bg-red-500/10', type: null },
+                  { label: 'Erros', value: historicoDoDia.reduce((acc, c) => acc + (c.failed_count || 0), 0), color: 'text-red-400', bg: 'bg-red-500/10', type: 'failed' as const },
                 ].map(stat => (
                   <Card 
                     key={stat.label} 
@@ -443,121 +488,194 @@ export default function AdminPush() {
                 </div>
 
                 <div className="relative border-l-2 border-border/20 ml-4 space-y-6 py-2">
-                  {[...agendadosDoDia, ...historicoDoDia].length === 0 && !loading && (
-                    <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl bg-zinc-900/10 ml-4">
-                      Nenhuma notificação encontrada para este dia
-                    </div>
-                  )}
+                  {(() => {
+                    const baseTemplate = [
+                      { time: '06:00', name: 'Boletim Push: Matinal', desc: 'Boletim diário com notícias jurídicas e atualizações.' },
+                      { time: '08:00', name: 'Explicações CF88/Leis', desc: 'Disparo de novas leis cadastradas e estudos.' },
+                      { time: '10:00', name: 'Questão Prática', desc: 'Uma questão aleatória para a pessoa resolver.' },
+                      { time: '12:00', name: 'Sugestão de Leitura', desc: 'Sugestão de livro da biblioteca.' },
+                      { time: '14:00', name: 'Áudio-aula Explicativa', desc: 'Áudio explicativo para ouvir à tarde.' },
+                      { time: '16:00', name: 'Pílula Jurídica', desc: 'Conceito clássico ou resumo rápido.' },
+                      { time: '18:00', name: 'Boletim Push: Noturno', desc: 'Fechamento do expediente e síntese do dia.' },
+                      { time: '20:00', name: 'Questão Prática', desc: 'Mais uma questão para praticar à noite.' },
+                      { time: '22:00', name: 'Áudio-aula de Revisão', desc: 'Áudio curto antes de dormir.' },
+                      { time: '00:00', name: 'Notícias da Madrugada', desc: 'Resumo das novidades jurídicas da madrugada.' },
+                    ];
 
-                  {[...agendadosDoDia, ...historicoDoDia].sort((a,b) => (a.next_run_at || a.created_at).localeCompare(b.next_run_at || b.created_at)).map(c => {
-                    const isPending = c.status === 'scheduled';
-                    const isFailed = c.status === 'failed';
-                    const isSent = !isPending && !isFailed;
-                    
-                    const dotColor = isFailed ? 'bg-red-500' : isSent ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-zinc-600';
-                    const borderColor = isFailed ? 'border-red-500/20' : isSent ? 'border-emerald-500/20' : 'border-zinc-500/20';
-                    const bgColor = isFailed ? 'bg-red-500/5 hover:bg-red-500/10' : isSent ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'bg-zinc-900/20 hover:bg-zinc-900/40';
-                    const badgeText = isPending ? 'Agendado' : isFailed ? 'Erro' : (c.status === 'sending' ? 'Enviando' : 'Enviado');
-                    const badgeColor = isFailed ? 'text-red-400 border-red-400/30 bg-red-400/10' : isSent ? 'text-emerald-400 border-emerald-400/30 bg-emerald-400/10' : 'text-zinc-400 border-zinc-400/30 bg-zinc-400/10';
+                    const allCampaignsToday = [...agendadosDoDia, ...historicoDoDia];
+                    const eventsToRender: any[] = [];
 
-                    return (
-                      <div key={c.id} className="relative pl-6">
-                        <div className={`absolute w-3 h-3 rounded-full -left-[7px] top-1.5 ${dotColor}`} />
-                        <Card 
-                          className={`p-4 transition-colors cursor-pointer ${borderColor} ${bgColor}`}
-                          onClick={() => setSelectedCampaign(c)}
-                        >
-                          <div className="flex items-center justify-between gap-2 mb-2">
-                            <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                              <Clock className="w-3.5 h-3.5 opacity-70" />
-                              {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at || c.created_at))}
-                            </span>
-                            <Badge variant="outline" className={`text-[10px] h-5 ${badgeColor}`}>
-                              {isSent ? <CheckCircle2 className="w-3 h-3 mr-1" /> : isPending ? <Clock className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
-                              {badgeText}
-                            </Badge>
+                    // Match existing campaigns to template slots
+                    baseTemplate.forEach(slot => {
+                      const slotHour = parseInt(slot.time.split(':')[0], 10);
+                      const matched = allCampaignsToday.filter(c => new Date(c.next_run_at || c.created_at).getHours() === slotHour);
+                      
+                      if (matched.length > 0) {
+                        matched.forEach(c => eventsToRender.push({ type: 'campaign', time: slot.time, campaign: c }));
+                      } else {
+                        eventsToRender.push({ type: 'pending', time: slot.time, slot });
+                      }
+                    });
+
+                    // Add extra campaigns that didn't match any template slot
+                    allCampaignsToday.forEach(c => {
+                      const hour = new Date(c.next_run_at || c.created_at).getHours();
+                      if (!baseTemplate.some(slot => parseInt(slot.time.split(':')[0], 10) === hour)) {
+                        const mins = new Date(c.next_run_at || c.created_at).getMinutes().toString().padStart(2, '0');
+                        eventsToRender.push({ type: 'campaign', time: `${hour.toString().padStart(2, '0')}:${mins}`, campaign: c });
+                      }
+                    });
+
+                    // Sort events
+                    const getSortTime = (time: string) => time.startsWith('00:') ? '24' + time.slice(2) : time;
+                    eventsToRender.sort((a, b) => getSortTime(a.time).localeCompare(getSortTime(b.time)));
+
+                    if (eventsToRender.length === 0 && !loading) {
+                      return (
+                        <div className="text-center py-10 text-muted-foreground text-sm border border-dashed border-border/50 rounded-xl bg-zinc-900/10 ml-4">
+                          Nenhuma notificação programada para este dia
+                        </div>
+                      );
+                    }
+
+                    return eventsToRender.map((event, idx) => {
+                      if (event.type === 'pending') {
+                        const slot = event.slot;
+                        const isPast = new Date() > new Date(`${selectedDate}T${slot.time}:00`);
+                        const isToday = selectedDate === getLocalDateStr(new Date());
+
+                        return (
+                          <div key={`pending-${idx}`} className="relative pl-6 opacity-60">
+                            <div className="absolute w-3 h-3 rounded-full -left-[7px] top-1.5 bg-zinc-700 border-2 border-background" />
+                            <Card className="p-4 border-dashed border-border/40 bg-transparent cursor-default">
+                              <div className="flex items-center justify-between gap-2 mb-2">
+                                <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5">
+                                  <Clock className="w-3.5 h-3.5 opacity-70" />
+                                  {slot.time}
+                                </span>
+                                <Badge variant="outline" className="text-[10px] h-5 text-zinc-500 border-zinc-500/30 bg-transparent">
+                                  {isPast && isToday ? 'Ocioso' : (!isToday && isPast ? 'Não Enviado' : 'Aguardando')}
+                                </Badge>
+                              </div>
+                              <h3 className="font-semibold text-muted-foreground text-base pr-2 uppercase">[{slot.name}]</h3>
+                              <p className="text-xs text-muted-foreground mt-1.5 line-clamp-1 italic">{slot.desc}</p>
+                            </Card>
                           </div>
-                          <h3 className="font-semibold text-foreground text-base pr-2 uppercase">{c.title.replace('[TEMPLATE] ', '')}</h3>
-                          <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
-                          
-                          {/* Status bar */}
-                          {(c.sent_count > 0 || c.delivered_count > 0 || c.opened_count > 0) && (
-                            <div className="mt-4 flex items-center gap-4 text-xs font-medium border-t border-border/10 pt-3">
-                              {c.sent_count > 0 && <span className="text-emerald-400 flex items-center gap-1"><ArrowUpRight className="w-3.5 h-3.5" /> {c.sent_count} envios</span>}
-                              {c.delivered_count > 0 && <span className="text-blue-400 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> {c.delivered_count} entregues</span>}
-                              {c.opened_count > 0 && <span className="text-purple-400 flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {c.opened_count} abertos</span>}
-                            </div>
-                          )}
-                        </Card>
-                      </div>
-                    );
-                  })}
+                        );
+                      } else {
+                        const c = event.campaign;
+                        const isPending = c.status === 'scheduled';
+                        const isFailed = c.status === 'failed';
+                        const isSent = !isPending && !isFailed;
+                        
+                        const dotColor = isFailed ? 'bg-red-500' : isSent ? 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'bg-zinc-600';
+                        const borderColor = isFailed ? 'border-red-500/20' : isSent ? 'border-emerald-500/20' : 'border-zinc-500/20';
+                        const bgColor = isFailed ? 'bg-red-500/5 hover:bg-red-500/10' : isSent ? 'bg-emerald-500/5 hover:bg-emerald-500/10' : 'bg-zinc-900/20 hover:bg-zinc-900/40';
+                        const badgeText = isPending ? 'Agendado' : isFailed ? 'Erro' : (c.status === 'sending' ? 'Enviando' : 'Enviado');
+                        const badgeColor = isFailed ? 'text-red-400 border-red-400/30 bg-red-400/10' : isSent ? 'text-emerald-400 border-emerald-400/30 bg-emerald-400/10' : 'text-zinc-400 border-zinc-400/30 bg-zinc-400/10';
+
+                        return (
+                          <div key={c.id} className="relative pl-6">
+                            <div className={`absolute w-3 h-3 rounded-full -left-[7px] top-1.5 ${dotColor}`} />
+                            <Card 
+                              className={`p-4 transition-colors cursor-pointer ${borderColor} ${bgColor}`}
+                              onClick={() => setSelectedCampaign(c)}
+                            >
+                              <div className="flex items-center justify-between gap-2 mb-2">
+                                <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                                  <Clock className="w-3.5 h-3.5 opacity-70" />
+                                  {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(c.next_run_at || c.created_at))}
+                                </span>
+                                <Badge variant="outline" className={`text-[10px] h-5 ${badgeColor}`}>
+                                  {isSent ? <CheckCircle2 className="w-3 h-3 mr-1" /> : isPending ? <Clock className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
+                                  {badgeText}
+                                </Badge>
+                              </div>
+                              <h3 className="font-semibold text-foreground text-base pr-2 uppercase">{c.title.replace('[TEMPLATE] ', '')}</h3>
+                              <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">{c.body}</p>
+                              
+                              {/* Status bar */}
+                              {(c.sent_count > 0 || c.delivered_count > 0 || c.opened_count > 0) && (
+                                <div className="mt-4 flex items-center gap-4 text-xs font-medium border-t border-border/10 pt-3">
+                                  {c.sent_count > 0 && <span className="text-emerald-400 flex items-center gap-1"><ArrowUpRight className="w-3.5 h-3.5" /> {c.sent_count} envios</span>}
+                                  {c.delivered_count > 0 && <span className="text-blue-400 flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> {c.delivered_count} entregues</span>}
+                                  {c.opened_count > 0 && <span className="text-purple-400 flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> {c.opened_count} abertos</span>}
+                                </div>
+                              )}
+                            </Card>
+                          </div>
+                        );
+                      }
+                    });
+                  })()}
                 </div>
               </div>
 
-              {/* SHEET DETAILS */}
-              <Sheet open={!!selectedCampaign} onOpenChange={(open) => !open && setSelectedCampaign(null)}>
-                <SheetContent side="bottom" className="h-[80vh] sm:h-[85vh] rounded-t-[2rem] border-t border-border/50 bg-background/95 backdrop-blur-xl p-0 flex flex-col">
-                  {selectedCampaign && (
-                    <>
-                      <SheetHeader className="p-6 pb-4 border-b border-border/20 text-left shrink-0 pt-8">
-                        <div className="flex items-center justify-between mb-3">
-                          {getStatusBadge(selectedCampaign.status)}
-                          <span className="text-sm text-muted-foreground flex items-center gap-1.5">
-                            <Clock className="w-4 h-4" />
-                            {selectedCampaign.next_run_at ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(selectedCampaign.next_run_at)).replace(',', ' às') : 'Imediato'}
-                          </span>
-                        </div>
-                        <SheetTitle className="text-2xl font-bold font-display leading-tight">{selectedCampaign.title}</SheetTitle>
-                      </SheetHeader>
-                      
-                      <ScrollArea className="flex-1 p-6">
-                        <div className="space-y-6 pb-10">
-                          <div>
-                            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
-                              <Send className="w-3.5 h-3.5" /> Mensagem
-                            </h4>
-                            <p className="text-base text-foreground leading-relaxed bg-zinc-900/40 p-5 rounded-2xl border border-border/30 whitespace-pre-wrap">
-                              {selectedCampaign.body}
-                            </p>
+              {/* MODAL DE USUÁRIOS QUE RECEBERAM/ABRIRAM */}
+              <Dialog open={!!selectedEventType} onOpenChange={(open) => !open && setSelectedEventType(null)}>
+                <DialogContent className="max-w-md bg-zinc-950/95 border-border/20 backdrop-blur-xl">
+                  <DialogHeader className="mb-4">
+                    <DialogTitle className="text-xl font-display flex items-center gap-2">
+                      {selectedEventType === 'opened' && <><Eye className="text-purple-400 w-5 h-5" /> Usuários que Abriram</>}
+                      {selectedEventType === 'delivered' && <><CheckCircle2 className="text-blue-400 w-5 h-5" /> Usuários que Receberam</>}
+                      {selectedEventType === 'failed' && <><AlertCircle className="text-red-400 w-5 h-5" /> Erros de Disparo</>}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {selectedEventType === 'failed' 
+                        ? 'Os detalhes exatos de erro dependem do Expo e FCM. Mostrando campanhas gerais com falha no log.' 
+                        : 'Lista dos últimos usuários a registrarem esta ação no dia atual.'}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ScrollArea className="max-h-[60vh] pr-4">
+                    {loadingEventUsers ? (
+                      <div className="flex flex-col items-center justify-center py-10 gap-2">
+                        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                        <span className="text-sm text-muted-foreground">Buscando dados no sistema...</span>
+                      </div>
+                    ) : selectedEventType === 'failed' ? (
+                      <div className="space-y-4">
+                        {[...historicoDoDia, ...agendadosDoDia].filter(c => c.status === 'failed' || c.failed_count > 0).length > 0 ? (
+                          [...historicoDoDia, ...agendadosDoDia].filter(c => c.status === 'failed' || c.failed_count > 0).map(c => (
+                            <div key={c.id} className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex flex-col gap-1">
+                              <span className="font-semibold text-sm text-red-100">{c.title}</span>
+                              <span className="text-xs text-red-400">Falha geral na geração/envio da campanha no servidor.</span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-8 text-muted-foreground text-sm">
+                            Nenhum registro de falha encontrado hoje.
                           </div>
-                          
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-zinc-900/40 p-5 rounded-2xl border border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                              <div className="absolute inset-0 bg-blue-500/5" />
-                              <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 relative z-10">Quem Recebeu</h4>
-                              <p className="text-3xl font-bold text-foreground font-display relative z-10">{selectedCampaign.delivered_count || 0}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5 relative z-10">Usuários</p>
+                        )}
+                      </div>
+                    ) : eventUsers.length > 0 ? (
+                      <div className="space-y-3">
+                        {eventUsers.map(event => (
+                          <div key={event.id} className="flex items-center gap-3 p-3 bg-zinc-900/40 border border-border/20 rounded-xl hover:bg-zinc-900/60 transition-colors">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                              <User className="w-5 h-5 text-primary" />
                             </div>
-                            <div className="bg-zinc-900/40 p-5 rounded-2xl border border-border/30 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                              <div className="absolute inset-0 bg-purple-500/5" />
-                              <h4 className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 relative z-10">Quem Abriu</h4>
-                              <p className="text-3xl font-bold text-foreground font-display relative z-10">{selectedCampaign.opened_count || 0}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5 relative z-10">Leituras</p>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold truncate text-foreground">
+                                {event.profiles?.nome || "Anônimo / Visitante"}
+                              </p>
+                              <p className="text-xs text-muted-foreground truncate flex items-center gap-1.5 mt-0.5">
+                                <Clock className="w-3 h-3" />
+                                {new Intl.DateTimeFormat('pt-BR', { timeStyle: 'short' }).format(new Date(event.created_at))}
+                                {event.profiles?.email ? ` • ${event.profiles.email}` : ''}
+                              </p>
                             </div>
                           </div>
-
-                          {selectedCampaign.status === 'scheduled' && (
-                            <div className="pt-6 mt-6 border-t border-border/10">
-                              <Button 
-                                variant="destructive" 
-                                className="w-full h-12 text-base rounded-xl"
-                                onClick={() => {
-                                  handleCancel(selectedCampaign.id);
-                                  setSelectedCampaign(null);
-                                }}
-                              >
-                                <Trash2 className="w-5 h-5 mr-2" />
-                                Cancelar Agendamento
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </ScrollArea>
-                    </>
-                  )}
-                </SheetContent>
-              </Sheet>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-10 text-muted-foreground text-sm flex flex-col items-center gap-2">
+                        <Users className="w-8 h-8 opacity-20" />
+                        Nenhum usuário registrou esta ação ainda hoje.
+                      </div>
+                    )}
+                  </ScrollArea>
+                </DialogContent>
+              </Dialog>
             </div>
           );
         })()}
