@@ -204,8 +204,7 @@ const Noticias = () => {
     });
   }, [noticias, dataFiltro]);
 
-  const heroNoticia = finalFiltered.length > 0 ? finalFiltered[0] : null;
-  const listNoticias = finalFiltered.slice(1);
+  const listNoticias = finalFiltered;
 
 
   const compartilhar = async (n: Noticia) => {
@@ -279,7 +278,7 @@ const Noticias = () => {
 
   // Faixa de dias: hoje à esquerda, passado à direita.
   const centerDate = useMemo(() => new Date(), []);
-  const dayList = useMemo(() => getDayList(centerDate, 5), [centerDate]);
+  const dayList = useMemo(() => getDayList(centerDate, 9), [centerDate]);
   const availableDatesSet = useMemo(() => new Set(datasDisponiveis), [datasDisponiveis]);
 
 
@@ -343,7 +342,7 @@ const Noticias = () => {
 
 
         {/* Day calendar strip — same style as Radar de Leis */}
-        <div className="flex justify-between gap-1.5 px-3 py-3 max-w-3xl mx-auto">
+        <div className="flex justify-between gap-1 px-2 py-3 max-w-3xl mx-auto overflow-x-auto no-scrollbar">
           {dayList.map((day, idx) => {
             const key = toYMD(day);
             const isSelected = dataFiltro === key;
@@ -355,7 +354,7 @@ const Noticias = () => {
               <button
                 key={key}
                 onClick={() => setDataFiltro(key)}
-                className={`relative flex-1 flex flex-col items-center justify-center gap-1 py-3 min-h-[64px] rounded-2xl transition-all shadow-lg shadow-black/20 ${
+                className={`relative flex-1 flex flex-col items-center justify-center gap-0.5 py-2 min-h-[56px] rounded-xl transition-all shadow-md shadow-black/10 min-w-[36px] ${
                   isSelected
                     ? 'bg-primary shadow-primary/30'
                     : 'bg-card/40 text-foreground hover:bg-card/60'
@@ -363,15 +362,15 @@ const Noticias = () => {
               >
                 {monthChanged && (
                   <span
-                    className={`absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-[1px] rounded-full text-[9px] font-body font-semibold uppercase tracking-wider ${
+                    className={`absolute -top-2 left-1/2 -translate-x-1/2 px-1 py-[1px] rounded-full text-[8px] font-body font-semibold uppercase tracking-wider ${
                       isSelected ? 'bg-primary text-primary-foreground' : 'bg-primary/20 text-primary'
                     }`}
                   >
                     {MONTHS[day.getMonth()]}
                   </span>
                 )}
-                <span className={`text-xs font-body font-semibold uppercase tracking-wide ${isSelected ? 'text-primary-foreground' : 'text-foreground/85'}`}>{label}</span>
-                <span className={`text-2xl font-display font-bold leading-none ${isSelected ? 'text-primary-foreground' : 'text-foreground'}`}>{day.getDate()}</span>
+                <span className={`text-[9px] sm:text-[10px] font-body font-semibold uppercase tracking-wide line-clamp-1 ${isSelected ? 'text-primary-foreground' : 'text-foreground/85'}`}>{label}</span>
+                <span className={`text-base sm:text-lg font-display font-bold leading-none ${isSelected ? 'text-primary-foreground' : 'text-foreground'}`}>{day.getDate()}</span>
                 {hasData && !isSelected && (
                   <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                 )}
@@ -398,83 +397,6 @@ const Noticias = () => {
 
         {(
           <>
-
-            {/* Hero card — edge-to-edge no mobile */}
-            {heroNoticia && (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                onClick={() => { openNoticia(heroNoticia); }}
-                className="overflow-hidden bg-card border-y md:border md:rounded-2xl border-border cursor-pointer hover:border-primary/30 transition-colors -mx-4 md:mx-0"
-              >
-                {heroNoticia.imagem_url ? (
-                  <div className="relative h-44 md:h-40 overflow-hidden news-cover-shine">
-                    <img
-                      src={newsImg(heroNoticia.imagem_url!, 960)}
-                      srcSet={`${newsImg(heroNoticia.imagem_url!, 640)} 640w, ${newsImg(heroNoticia.imagem_url!, 960)} 960w`}
-                      sizes="(max-width: 768px) 100vw, 960px"
-                      alt={heroNoticia.titulo}
-                      className="w-full h-full object-cover"
-                      fetchPriority="high"
-                      decoding="async"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/placeholder.svg'; }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-                    {!isRead(heroNoticia.id) && (
-                      <span className="absolute bottom-3 left-3 z-10 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary/40 text-primary-foreground border border-primary/60 backdrop-blur-sm uppercase tracking-wide shadow-lg">
-                        Novo
-                      </span>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 space-y-2">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary text-primary-foreground uppercase tracking-wide">
-                          {fonteLabel(heroNoticia.fonte)}
-                        </span>
-                        {heroNoticia.categoria && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary text-primary-foreground">
-                            {heroNoticia.categoria}
-                          </span>
-                        )}
-                      </div>
-                      <h2 className="font-display text-lg text-white leading-tight">
-                        {heroNoticia.titulo}
-                      </h2>
-                      <div className="flex items-center gap-1.5 text-white/70 text-[11px] font-body">
-                        <Clock className="w-3 h-3" />
-                        {formatDateFull(heroNoticia.data_publicacao)}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="relative p-5 bg-gradient-to-br from-primary/15 via-card to-card">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary text-primary-foreground uppercase tracking-wide">
-                          {fonteLabel(heroNoticia.fonte)}
-                        </span>
-                        {heroNoticia.categoria && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-primary text-primary-foreground">
-                            {heroNoticia.categoria}
-                          </span>
-                        )}
-                      </div>
-                      <h2 className="font-display text-lg text-foreground leading-tight">
-                        {heroNoticia.titulo}
-                      </h2>
-                      {heroNoticia.resumo && (
-                        <p className="text-muted-foreground text-xs font-body line-clamp-2">
-                          {heroNoticia.resumo}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-1.5 text-muted-foreground text-[11px] font-body">
-                        <Clock className="w-3 h-3" />
-                        {formatDateFull(heroNoticia.data_publicacao)}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            )}
 
             {/* List cards */}
             <div className="space-y-3 -mx-4 md:mx-0">
