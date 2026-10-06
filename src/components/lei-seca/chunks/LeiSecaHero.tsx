@@ -11,6 +11,7 @@ interface LeiSecaHeroProps {
   totalTrilhas: number;
   resumo?: ReturnType<typeof useLeiSecaResumoGlobal>["data"];
   onBack?: () => void;
+  onOpenRanking?: () => void;
 }
 
 function MiniStat({
@@ -43,6 +44,7 @@ export function LeiSecaHero({
   totalTrilhas,
   resumo,
   onBack,
+  onOpenRanking,
 }: LeiSecaHeroProps) {
   const navigate = useNavigate();
   const ringGradId = React.useId();
@@ -129,7 +131,13 @@ export function LeiSecaHero({
           </button>
 
           <div className="flex items-center gap-2">
-            {/* O menu de alternância duplo foi removido a pedido do usuário */}
+            <button
+              onClick={() => onOpenRanking?.()}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/45 border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 hover:border-amber-500/50 backdrop-blur-md transition-all font-bold text-xs uppercase tracking-widest shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+            >
+              <Trophy className="w-4 h-4 fill-amber-400/20" />
+              Ranking
+            </button>
           </div>
         </div>
 
@@ -194,8 +202,7 @@ export function LeiSecaHero({
               </div>
             </div>
 
-            <div className="flex-1 grid grid-cols-3 gap-2">
-              <MiniStat label="Matérias" valor={totalMaterias} />
+            <div className="flex-1 grid grid-cols-2 gap-2 max-w-[240px]">
               <MiniStat label="Leis" valor={totalTrilhas} />
               <MiniStat
                 label="Estrelas"
