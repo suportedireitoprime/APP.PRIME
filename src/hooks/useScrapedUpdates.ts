@@ -22,5 +22,6 @@ export function useScrapedUpdates(leiId?: string | null) {
     },
     enabled: !!leiId,
     staleTime: 1000 * 60 * 60 * 24, // Cache de 24 horas na memoria
+    networkMode: 'always', // Evita travamento no mobile se o status de rede falhar
   });
 }

@@ -78,7 +78,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [premiumGateFeature, setPremiumGateFeature] = useState<'radar' | 'favorito'>('radar');
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<'art' | 'cap' | 'rec' | 'lot'>('art');
+  const [activeTab, setActiveTab] = useState<'art' | 'cap' | 'rec' | 'sob'>('art');
   const [overlayPanel, setOverlayPanel] = useState<'fav' | 'playlist' | 'novidades' | 'anotacoes' | 'radar' | null>(null);
   const [selectedAlteracaoDetail, setSelectedAlteracaoDetail] = useState<AlteracaoDetailData | null>(null);
   const [showSobreModal, setShowSobreModal] = useState(false);
@@ -970,13 +970,17 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                 {[
                   { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
                   { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
-                  { key: 'lot' as const, icon: Layers, label: 'Lotes' },
+                  { key: 'sob' as const, icon: Info, label: 'Sobre' },
                   { key: 'rec' as const, icon: History, label: 'Recentes' },
                 ].map(tab => (
                   <button
                     key={tab.key}
                     onClick={() => {
-                      setActiveTab(tab.key);
+                      if (tab.key === 'sob') {
+                        setShowSobreModal(true);
+                      } else {
+                        setActiveTab(tab.key as any);
+                      }
                     }}
                     disabled={loadingArtigos}
                     className={`flex items-center justify-center gap-1.5 px-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all py-2 cursor-pointer ${
@@ -1024,43 +1028,6 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                 anotadoNumeros={anotadoNumeros}
                 searchQuery={searchQuery}
               />
-            ) : activeTab === 'lot' ? (
-              <div className="space-y-4 pb-12 select-none">
-                <div className="flex items-center justify-between px-1 text-xs text-zinc-400">
-                  <span className="font-semibold text-zinc-300">
-                    {onlyRealArtigos.length} artigos para acesso rápido
-                  </span>
-                  <span className="text-[11px] text-zinc-500">
-                    Toque no número para abrir
-                  </span>
-                </div>
-
-                {onlyRealArtigos.length === 0 ? (
-                  <p className="text-center text-zinc-500 text-sm py-12">Nenhum artigo encontrado.</p>
-                ) : (
-                  <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2 sm:gap-2.5">
-                    {onlyRealArtigos.map((a) => {
-                      const numDisplay = formatArtigoNumeroOnly(a.numero);
-                      return (
-                        <button
-                          key={a.id}
-                          type="button"
-                          onClick={() => {
-                            haptic.impact();
-                            openArtigoWithRecent(a);
-                          }}
-                          className="aspect-square rounded-2xl bg-[#14151a] hover:bg-primary hover:text-white border border-white/[0.06] hover:border-primary/40 flex flex-col items-center justify-center text-zinc-100 font-black text-sm sm:text-base active:opacity-70 transition-all shadow-md shadow-black/40 cursor-pointer select-none group"
-                          title={`Artigo ${a.numero}`}
-                        >
-                          <span className="group-hover:scale-110 transition-transform">
-                            {numDisplay}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
             ) : activeTab === 'rec' ? (
               <div className="space-y-2 pb-8">
                 {(() => {
@@ -1154,12 +1121,12 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           aria-label="Navegação do Código"
           className={`fixed bottom-0 left-0 right-0 z-[65] md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto lg:hidden transition-all duration-200 ${showFooter ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-24 opacity-0 pointer-events-none'}`}
         >
-          <div className="bg-[#0e0f12]/98 backdrop-blur-xl border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.7)] pb-[calc(0.5rem+var(--sai-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/40 md:pb-0">
+          <div className="bg-zinc-900/95 backdrop-blur-xl border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.7)] pb-[calc(0.5rem+var(--sai-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/40 md:pb-0">
             <div className="grid grid-cols-3 items-center justify-items-stretch w-full max-w-lg mx-auto px-2 sm:px-4 py-2 md:gap-1 md:px-3 md:py-2">
               {[
                 { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
                 { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
-                { key: 'lot' as const, icon: Layers, label: 'Lotes' },
+                { key: 'sob' as const, icon: Info, label: 'Sobre' },
               ].map((tab) => {
                 const active = activeTab === tab.key;
                 const Icon = tab.icon;
@@ -1168,7 +1135,11 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                     key={tab.key}
                     onClick={() => {
                       haptic.selection();
-                      setActiveTab(tab.key);
+                      if (tab.key === 'sob') {
+                        setShowSobreModal(true);
+                      } else {
+                        setActiveTab(tab.key as any);
+                      }
                     }}
                     className={`relative w-full min-w-0 flex flex-col items-center justify-center gap-1 py-1.5 px-0.5 rounded-xl transition-colors ${
                       active ? 'text-white' : 'text-muted-foreground hover:text-white/80'
