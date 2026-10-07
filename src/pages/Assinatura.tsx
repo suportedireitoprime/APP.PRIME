@@ -205,23 +205,23 @@ export default function Assinatura() {
                 <ShapeGrid />
               </div>
 
-              <SheetHeader className="mb-10 shrink-0 relative z-10 text-center flex flex-col items-center">
-                <div className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
+              <SheetHeader className="mb-6 shrink-0 relative z-10 text-center flex flex-col items-center">
+                <div className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-3">
                   <ShieldCheck className="w-4 h-4 text-primary" />
                   <span className="text-[11px] font-bold text-primary uppercase tracking-wider">Checkout Seguro</span>
                 </div>
-                <SheetTitle className="text-4xl font-display font-black text-foreground leading-tight tracking-tight">
+                <SheetTitle className="text-3xl font-display font-black text-foreground leading-tight tracking-tight">
                   Finalize sua assinatura
                 </SheetTitle>
-                <SheetDescription className="text-sm font-medium mt-3 text-muted-foreground max-w-[280px]">
-                  Escolha como prefere ativar seu plano {tab === 'vitalicio' ? 'VitalÃƒÂ­cio' : 'Anual'}. O acesso ÃƒÂ© liberado na hora.
+                <SheetDescription className="text-sm font-medium mt-2 text-muted-foreground max-w-[280px]">
+                  Escolha como prefere ativar seu plano {tab === 'vitalicio' ? 'Vitalício' : 'Anual'}. O acesso é liberado na hora.
                 </SheetDescription>
               </SheetHeader>
 
-              <div className="flex flex-col gap-4 relative z-10 mb-10 w-full">
+              <div className="flex flex-col gap-3 relative z-10 mb-6 w-full">
                 <Button
                   variant="outline"
-                  className="h-auto py-5 flex items-center justify-start gap-5 px-6 border-2 border-[#27272a] bg-[#121212] hover:border-primary hover:bg-primary/5 transition-all rounded-[1.5rem] group relative overflow-hidden shadow-lg"
+                  className="h-auto py-4 flex items-center justify-start gap-4 px-5 border-2 border-[#27272a] bg-[#121212] hover:border-primary hover:bg-primary/5 transition-all rounded-[1.25rem] group relative overflow-hidden shadow-lg"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
                     startPurchase(tab === 'vitalicio' ? 'vitalicio' : 'anual');
@@ -234,45 +234,45 @@ export default function Assinatura() {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="w-10 h-10 text-primary shrink-0"
+                    className="w-9 h-9 text-primary shrink-0 animate-card-flip"
                   >
                     <rect width="20" height="14" x="2" y="5" rx="2" />
                     <line x1="2" x2="22" y1="10" y2="10" />
                   </svg>
                   <div className="flex flex-col items-start text-left flex-1">
-                    <span className="font-black text-xl text-white">CartÃƒÂ£o de CrÃƒÂ©dito</span>
+                    <span className="font-black text-lg text-white">Cartão de Crédito</span>
                     {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-zinc-400 mt-0.5">AtÃƒÂ© 10x de R$ 24,99</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 10x de R$ 24,99</span>
                     ) : (
-                      <span className="text-xs font-bold text-zinc-400 mt-0.5">AtÃƒÂ© 6x de R$ 24,98</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">Até 6x de R$ 24,98</span>
                     )}
                   </div>
-                  <ArrowRight className="w-6 h-6 text-zinc-500 group-hover:text-primary transition-colors group-hover:translate-x-1" />
+                  <ArrowRight className="w-5 h-5 text-zinc-500 group-hover:text-primary transition-colors group-hover:translate-x-1" />
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto py-5 flex items-center justify-start gap-5 px-6 border-2 border-[#27272a] bg-[#121212] hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-[1.5rem] group relative overflow-hidden shadow-md"
+                  className="h-auto py-4 flex items-center justify-start gap-4 px-5 border-2 border-[#27272a] bg-[#121212] hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-[1.25rem] group relative overflow-hidden shadow-md"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
                     startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : 'anual_regular_pix');
                   }}
                 >
-                  <div className="absolute top-0 right-0 p-2 bg-emerald-500/10 rounded-bl-2xl">
+                  <div className="absolute top-0 right-0 p-1.5 bg-emerald-500/10 rounded-bl-xl">
                     <span className="text-[10px] font-black uppercase text-emerald-500 tracking-wider px-2">10% OFF</span>
                   </div>
                   <svg className="w-9 h-9 text-emerald-500 shrink-0" viewBox="0 0 512 512" fill="currentColor">
                     <path d="M119.2 384l136.8-136.8L119.2 110.4 72 157.6v196.8l47.2 47.2-47.2 47.2V512h62.4l52-52v-24.8l-52-52H72v-114.4l112 112L184 384h-64.8zm273.6 0l-136.8-136.8 136.8-136.8L440 157.6V52.8L392.8 5.6V5.6l-52 52v24.8l52 52H440v114.4l-112-112L328 128h64.8zm-136.8-136.8L392.8 384l47.2-47.2v-196.8l-47.2-47.2-136.8 136.8zm0 0L119.2 128 72 175.2v196.8l47.2 47.2 136.8-136.8z"/>
                   </svg>
                   <div className="flex flex-col items-start text-left flex-1">
-                    <span className="font-black text-xl text-white">PIX</span>
+                    <span className="font-black text-lg text-white">PIX</span>
                     {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-zinc-400 mt-0.5">R$ 249,90 ÃƒÂ  vista</span>
+                      <span className="text-xs font-bold text-zinc-400 mt-0.5">R$ 249,90 à vista</span>
                     ) : (
-                      <span className="text-xs font-bold text-emerald-500 mt-0.5">R$ 149,90 ÃƒÂ  vista</span>
+                      <span className="text-xs font-bold text-emerald-500 mt-0.5">R$ 149,90 à vista</span>
                     )}
                   </div>
-                  <ArrowRight className="w-6 h-6 text-zinc-500 group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
+                  <ArrowRight className="w-5 h-5 text-zinc-500 group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
                 </Button>
               </div>
 
@@ -284,7 +284,7 @@ export default function Assinatura() {
                     <ShieldCheck className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="text-sm font-black text-foreground">7 dias de garantia incondicional</span>
-                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Se nÃƒÂ£o gostar, devolvemos 100% do valor.</span>
+                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Se não gostar, devolvemos 100% do valor.</span>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
