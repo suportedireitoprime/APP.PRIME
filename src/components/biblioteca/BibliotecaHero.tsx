@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, HardDrive, BookMarked, Heart, Route as RouteIcon, FileUp } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
+import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Briefcase, Mic, Crown, GraduationCap } from 'lucide-react';
@@ -29,7 +30,7 @@ const BibliotecaHero = ({ children }: Props) => {
 
   return (
     <div
-      className="bg-hero-panel relative overflow-hidden shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
       style={{
         transform: 'translateZ(0)',
         backgroundColor: '#050505',
@@ -52,15 +53,19 @@ const BibliotecaHero = ({ children }: Props) => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2 }}
-          className="absolute top-0 bottom-0 right-0 h-full w-auto object-contain object-right-bottom z-0 pointer-events-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]"
+          className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
         />
       </AnimatePresence>
 
       {/* Overlay vermelho com gradiente estilo menu e sombra */}
       <div 
         className="absolute inset-0 z-[1] pointer-events-none"
+        style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
       >
-        <div className="absolute inset-0 overflow-hidden">
+        <div 
+          className="absolute inset-0 overflow-hidden"
+          style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
+        >
           <div className="absolute inset-0 bg-hero-panel" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,180,180,0.15),transparent_80%)]" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -124,6 +129,10 @@ const BibliotecaHero = ({ children }: Props) => {
             </AnimatePresence>
           </div>
         </div>
+      </div>
+
+      <div className="relative z-10 px-3 sm:px-5 pt-3 pb-5">
+        <BibliotecaActionShortcuts />
       </div>
 
       {children && (
