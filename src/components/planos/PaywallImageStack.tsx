@@ -52,7 +52,7 @@ export default function PaywallImageStack() {
               style={{ zIndex: slot.z }}
               className={`absolute w-[150px] h-[180px] rounded-2xl overflow-hidden shadow-2xl shrink-0 ${
                 frente
-                  ? 'border-4 border-primary shadow-[0_15px_40px_rgba(224,31,71,0.45)]'
+                  ? 'border-2 border-primary shadow-[0_15px_40px_rgba(224,31,71,0.45)]'
                   : 'border-2 border-white/20'
               }`}
             >

@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { Check, Clock, ShieldCheck, Zap, Sparkles, CheckCircle2, ChevronRight, Info, Shield, Trophy, Crown } from "lucide-react";
 import { TypewriterText } from "@/components/ui/TypewriterText";
 import { haptic } from '@/lib/nativeHaptics';
@@ -28,7 +28,8 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
 
   return (
     <div className="w-full flex flex-col gap-4 px-4 pt-2 pb-4">
-      <div className="flex p-1.5 bg-neutral-950/80 rounded-full border border-white/10 relative z-20 shadow-inner max-w-sm mx-auto w-full backdrop-blur-md">
+      <LayoutGroup id="pricing-toggle">
+      <div className="flex px-1 bg-neutral-950/80 rounded-full border border-white/10 relative z-20 shadow-inner max-w-sm mx-auto w-full backdrop-blur-md overflow-hidden">
         <button
           type="button"
           onClick={() => {
@@ -95,6 +96,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
           Vitalício
         </button>
       </div>
+      </LayoutGroup>
 
       <AnimatePresence mode="wait">
         <motion.div
