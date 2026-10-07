@@ -43,6 +43,15 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
   const [enviado, setEnviado] = useState(false);
   const [sobreHtml, setSobreHtml] = useState<string | null>(null);
   const [loadingSobre, setLoadingSobre] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  const textClasses = [
+    'text-xs sm:text-sm',
+    'text-sm sm:text-base',
+    'text-base sm:text-lg',
+    'text-lg sm:text-xl',
+  ];
+  const currentTextClass = textClasses[zoomLevel];
 
   useEffect(() => {
     if (!open || !leiNome) return;
@@ -278,7 +287,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
               </div>
             </div>
 
-            <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed min-h-[80px]">
+            <div className={`${currentTextClass} text-zinc-300 leading-relaxed min-h-[80px]`}>
               {loadingSobre ? (
                 <div className="flex flex-col items-center justify-center py-6 gap-3">
                   <Loader2 className="w-6 h-6 text-primary animate-spin" />
@@ -309,7 +318,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
               </div>
             </div>
 
-            <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed space-y-2.5">
+            <div className={`${currentTextClass} text-zinc-300 leading-relaxed space-y-2.5`}>
               <p>
                 Todos os artigos, parágrafos, incisos e alíneas disponibilizados no aplicativo são
                 extraídos e espelhados diretamente do{' '}
@@ -351,7 +360,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
               </div>
             </div>
 
-            <div className="text-xs sm:text-sm text-zinc-300 leading-relaxed space-y-2.5">
+            <div className={`${currentTextClass} text-zinc-300 leading-relaxed space-y-2.5`}>
               <p>
                 O sistema é monitorado continuamente para incorporar leis ordinárias, leis
                 complementares e alterações normativas publicadas oficialmente no Diário Oficial.
@@ -404,6 +413,37 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
               <span>Relatar Erro ou Sugestão</span>
             </button>
           </div>
+        </div>
+
+        {/* ── BOTÃO FLUTUANTE DE ZOOM ── */}
+        <div className="absolute bottom-6 right-6 z-[60] flex items-center bg-zinc-900/95 backdrop-blur-md border border-zinc-700/80 rounded-full shadow-2xl p-1">
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              setZoomLevel((prev) => Math.max(prev - 1, 0));
+            }}
+            disabled={zoomLevel === 0}
+            className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors font-bold ${
+              zoomLevel === 0 ? 'text-zinc-600' : 'text-zinc-300 hover:text-white hover:bg-white/10 active:scale-95'
+            }`}
+          >
+            A-
+          </button>
+          <div className="w-[1px] h-6 bg-zinc-700/80 mx-1" />
+          <button
+            type="button"
+            onClick={() => {
+              haptic.selection();
+              setZoomLevel((prev) => Math.min(prev + 1, textClasses.length - 1));
+            }}
+            disabled={zoomLevel === textClasses.length - 1}
+            className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors font-bold ${
+              zoomLevel === textClasses.length - 1 ? 'text-zinc-600' : 'text-zinc-300 hover:text-white hover:bg-white/10 active:scale-95'
+            }`}
+          >
+            A+
+          </button>
         </div>
 
         {/* ── MODAL FLUTUANTE DE RELATAR ERRO ── */}
