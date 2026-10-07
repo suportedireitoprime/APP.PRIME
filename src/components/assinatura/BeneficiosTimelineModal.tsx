@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Crown, Sparkles, Scale, Bot, CheckCircle2, FileText, Headphones, Zap, Landmark, Layers, WifiOff, Award, ArrowRight, ShieldCheck, Check, Target, BookOpen, Brain, Library, GraduationCap, Tv, Gavel, Podcast, Mic, Bell, Briefcase, PenTool, Search, Trophy, Gamepad2, Map, Newspaper, FolderOpen, Globe } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
