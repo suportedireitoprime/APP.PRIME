@@ -426,9 +426,6 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
               <span>VER PLANOS</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
-            <span className="text-[11px] font-bold text-zinc-400 text-center">
-              Planos a partir de R$ 12,49/mês • Liberação imediata
-            </span>
           </div>
         </footer>
 

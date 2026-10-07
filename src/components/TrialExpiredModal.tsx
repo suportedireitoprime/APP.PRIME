@@ -156,6 +156,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
           setShowBeneficios(false);
           haptic.medium();
           resetBodyScrollLock(true);
+          window.scrollTo(0, 0);
           navigate('/assinatura?preview=plans', { replace: true });
         }}
       />

@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useMemo, startTransition } from "react";
+import { useState, useEffect, useMemo, startTransition } from "react";
 import { useNavigate, useSearchParams, Navigate, useLocation, Link } from "react-router-dom";
 import { Capacitor } from '@capacitor/core';
 import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight, Headphones, ShieldCheck, Sparkles } from "lucide-react";
@@ -333,7 +333,6 @@ export default function Assinatura() {
 
         <PageHeader
           title={<span className="tracking-widest font-display uppercase font-black text-[15px]">Assinatura Premium</span>}
-          onBack={handleBack}
           rightAction={
             <Link
               to="/suporte-publico"
