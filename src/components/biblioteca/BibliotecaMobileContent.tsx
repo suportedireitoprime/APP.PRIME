@@ -3,6 +3,7 @@ import BibliotecaHero from '@/components/biblioteca/BibliotecaHero';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
+import FerramentasLivrosCarrossel from '@/components/ferramentas/FerramentasLivrosCarrossel';
 import { BibliotecaAcervosRoleta } from './BibliotecaAcervosRoleta';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
@@ -28,6 +29,10 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
           onAbrirLivro={onAbrirLivro}
           onAbrirCustomPdf={onAbrirCustomPdf}
         />
+
+        <div className="mt-8">
+          <FerramentasLivrosCarrossel />
+        </div>
 
         <div className="mt-8">
           <RecomendacoesCarousel onAbrirLivro={onAbrirLivro} />

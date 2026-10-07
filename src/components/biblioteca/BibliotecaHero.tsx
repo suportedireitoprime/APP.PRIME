@@ -25,23 +25,11 @@ interface Props {
 const BibliotecaHero = ({ children }: Props) => {
   const navigate = useNavigate();
 
-  const ACTIONS = [
-    { id: 'oab' as const, label: 'OAB', icon: GraduationCap, color: '#818cf8' },
-    { id: 'toga' as const, label: 'Fora da Toga', icon: Briefcase, color: '#34d399' },
-    { id: 'oratoria' as const, label: 'Oratória', icon: Mic, color: '#fb7185' },
-    { id: 'lideranca' as const, label: 'Liderança', icon: Crown, color: '#fbbf24' },
-  ];
-
-  const handleAction = (id: typeof ACTIONS[number]['id']) => {
-    haptic.selection();
-    toast.info('Em breve!');
-  };
-
   const currentPhil = socratesData;
 
   return (
     <div
-      className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+      className="bg-hero-panel relative overflow-hidden shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
       style={{
         transform: 'translateZ(0)',
         backgroundColor: '#050505',
@@ -71,16 +59,11 @@ const BibliotecaHero = ({ children }: Props) => {
       {/* Overlay vermelho com gradiente estilo menu e sombra */}
       <div 
         className="absolute inset-0 z-[1] pointer-events-none"
-        style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
       >
-        <div 
-          className="absolute inset-0 overflow-hidden"
-          style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
-        >
+        <div className="absolute inset-0 overflow-hidden">
           <div className="absolute inset-0 bg-hero-panel" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.5),transparent_65%)]" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,180,180,0.15),transparent_80%)]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
           <HeroMotifs />
 
@@ -140,24 +123,6 @@ const BibliotecaHero = ({ children }: Props) => {
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
-      </div>
-
-      <div className="relative z-10 px-3 sm:px-5 pt-4 pb-2">
-        <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
-          {ACTIONS.map((a) => {
-            const Icon = a.icon;
-            return (
-              <button
-                key={a.id}
-                onClick={() => handleAction(a.id)}
-                className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] select-none cursor-pointer overflow-hidden"
-              >
-                <Icon className="w-5 h-5 shrink-0 transition-all group-hover:scale-110" style={{ color: a.color }} strokeWidth={2} />
-                <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">{a.label}</span>
-              </button>
-            );
-          })}
         </div>
       </div>
 

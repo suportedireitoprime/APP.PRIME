@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { BookMarked, Heart, HardDrive, Library, Route as RouteIcon } from 'lucide-react';
+import { BookMarked, Heart, HardDrive, Library, Route as RouteIcon, Search, GraduationCap, Briefcase, Mic, Crown } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 export type BibliotecaAtalhoTab = 'leitura' | 'favoritos' | 'recentes' | 'personalizado' | 'trilhas';
@@ -12,17 +12,17 @@ export function abrirAtalhoBiblioteca(tab: BibliotecaAtalhoTab) {
 }
 
 type Slot = {
-  id: 'leitura' | 'favoritos' | 'biblioteca' | 'recentes' | 'personalizado' | 'trilhas';
+  id: 'oab' | 'toga' | 'pesquisar' | 'oratoria' | 'lideranca';
   label: string;
-  icon: typeof Heart;
+  icon: typeof Search;
 };
 
 const SLOTS: Slot[] = [
-  { id: 'biblioteca', label: 'Biblioteca', icon: Library },
-  { id: 'leitura', label: 'Leitura', icon: BookMarked },
-  { id: 'trilhas', label: 'Trilhas', icon: RouteIcon },
-  { id: 'favoritos', label: 'Favoritos', icon: Heart },
-  { id: 'personalizado', label: 'Meus PDFs', icon: HardDrive },
+  { id: 'oab', label: 'OAB', icon: GraduationCap },
+  { id: 'toga', label: 'Fora da Toga', icon: Briefcase },
+  { id: 'pesquisar', label: 'Pesquisar', icon: Search },
+  { id: 'oratoria', label: 'Oratória', icon: Mic },
+  { id: 'lideranca', label: 'Liderança', icon: Crown },
 ];
 
 /**
@@ -32,39 +32,19 @@ const SLOTS: Slot[] = [
 const BibliotecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [active, setActive] = useState<Slot['id']>(() => {
-    if (pathname.includes('/trilhas')) return 'trilhas';
-    return 'biblioteca';
-  });
+  const [active, setActive] = useState<Slot['id']>('oab');
 
   useEffect(() => {
-    if (pathname.includes('/trilhas')) setActive('trilhas');
-    else if (pathname.endsWith('/bibliotecas')) setActive('biblioteca');
-    
-    // Opcional: Escutar quando um modal fecha para voltar o visual para a aba atual da URL
-    const handleClose = () => {
-      if (window.location.hash.includes('/trilhas') || window.location.pathname.includes('/trilhas')) {
-        setActive('trilhas');
-      } else {
-        setActive('biblioteca');
-      }
-    };
-    window.addEventListener('biblioteca-atalho-close', handleClose);
-    return () => window.removeEventListener('biblioteca-atalho-close', handleClose);
+    // Atualiza aba se necessário (pode expandir no futuro)
   }, [pathname]);
 
   const handle = (slot: Slot) => {
     haptic.selection();
+    if (slot.id === 'pesquisar') {
+      window.dispatchEvent(new CustomEvent('biblioteca-abrir-pesquisa'));
+      return;
+    }
     setActive(slot.id);
-    if (slot.id === 'biblioteca') {
-      if (pathname !== '/bibliotecas') navigate('/bibliotecas');
-      return;
-    }
-    if (slot.id === 'trilhas') {
-      if (!pathname.includes('/trilhas')) navigate('/bibliotecas/trilhas');
-      return;
-    }
-    abrirAtalhoBiblioteca(slot.id);
   };
 
   return (
@@ -79,8 +59,28 @@ const BibliotecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
       <div className="bg-card/95 backdrop-blur-md border-t border-border rounded-t-3xl shadow-lg shadow-black/10 pb-safe md:border md:rounded-full md:shadow-2xl md:shadow-black/30 md:pb-0">
         <div className="grid grid-cols-5 items-end px-1 pt-3.5 pb-3.5 max-w-lg mx-auto md:gap-1 md:px-3 md:py-2">
           {SLOTS.map((slot) => {
-            const isActive = active === slot.id;
+            const isActive = active === slot.id && slot.id !== 'pesquisar';
             const Icon = slot.icon;
+            
+            if (slot.id === 'pesquisar') {
+              return (
+                <button
+                  key={slot.id}
+                  onClick={() => handle(slot)}
+                  className="relative flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 transition-transform active:scale-95 touch-manipulation cursor-pointer"
+                  aria-label="Pesquisar"
+                >
+                  <span className="absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] rounded-full flex items-center justify-center bg-primary shadow-[0_10px_26px_rgba(0,0,0,0.6)]">
+                    <Search className="w-10 h-10 xs:w-11 xs:h-11 text-white drop-shadow-lg -scale-x-100" strokeWidth={1.5} />
+                  </span>
+                  <span aria-hidden className="w-7 h-7 sm:w-8 sm:h-8" />
+                  <span className="relative text-[10px] sm:text-[11px] leading-none font-medium text-white/80 mt-1">
+                    Pesquisar
+                  </span>
+                </button>
+              );
+            }
+
             return (
               <button
                 key={slot.id}
@@ -90,7 +90,6 @@ const BibliotecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                   isActive ? 'text-white' : 'text-muted-foreground hover:text-white/80'
                 }`}
                 aria-label={slot.label}
-                aria-current={isActive ? 'page' : undefined}
               >
                 {isActive && (
                   <motion.span
@@ -101,7 +100,7 @@ const BibliotecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                   />
                 )}
                 <Icon className="relative w-7 h-7 sm:w-8 sm:h-8" strokeWidth={isActive ? 1.9 : 1.5} />
-                <span className={`relative text-[10px] sm:text-[11px] leading-none ${isActive ? 'font-bold' : 'font-medium'}`}>
+                <span className={`relative text-[10px] sm:text-[11px] leading-none mt-1 ${isActive ? 'font-bold' : 'font-medium'}`}>
                   {slot.label}
                 </span>
               </button>
