@@ -329,19 +329,18 @@ export default function Assinatura() {
         )}
 
         <PageHeader
-          title={<span className="tracking-widest font-display uppercase font-black text-[15px]">Assinatura Premium</span>}
-          rightAction={
+          title={
             <Link
               to="/suporte-publico"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all active:scale-[0.96] shrink-0"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all active:scale-[0.96] shrink-0"
               style={{
                 background: 'hsl(0 0% 100% / 0.1)',
                 border: '1px solid hsl(0 0% 100% / 0.2)',
                 color: 'hsl(40 25% 97%)',
               }}
             >
-              <Headphones className="w-3.5 h-3.5" style={{ color: 'hsl(350 78% 62%)' }} />
-              <span>Suporte</span>
+              <Headphones className="w-3.5 h-3.5" />
+              Suporte
             </Link>
           }
         />
@@ -382,7 +381,7 @@ export default function Assinatura() {
                 Acesso a todo conteúdo <span className="text-primary">do aplicativo</span>
               </h1>
               <p className="text-[14px] text-muted-foreground font-medium max-w-[280px] sm:max-w-sm mx-auto leading-relaxed">
-                Acelere sua aprovação com o ecossistema de estudos mais completo do país. Tenha a Inteligência Artificial, Vade Mecum interativo e Simulados ilimitados sempre à mão.
+                O passaporte definitivo para a sua aprovação. Desbloqueie todo o poder da Inteligência Artificial e ferramentas exclusivas para estudar com o máximo rendimento.
               </p>
             </div>
 
