@@ -13,14 +13,12 @@ import {
   CategoriaFormal,
   Tab,
   TABS_HOME,
-  TABS_VADEMECUM,
   RADAR_CATS,
   ALL_CATS,
   FAST_PILLS_ITEMS,
   normalizeSearch,
 } from './sections/homeSectionsData';
 
-import HomeSegmentedTabs from './sections/HomeSegmentedTabs';
 import HomeTabCategorias from './sections/HomeTabCategorias';
 import HomeTabEmAlta from './sections/HomeTabEmAlta';
 import HomeTabAreas from './sections/HomeTabAreas';
@@ -33,7 +31,6 @@ const VoiceCaptureOverlay = lazyWithRetry(() => import('@/components/vademecum/o
 const AgendaMobileTab = lazyWithRetry(() => import('@/components/vademecum/tabs/AgendaMobileTab'));
 const GraficosMobileTab = lazyWithRetry(() => import('@/components/vademecum/tabs/GraficosMobileTab'));
 const JurisprudenciaSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/JurisprudenciaSheet'));
-const DocumentosSheet = lazyWithRetry(() => import('@/components/documentos/DocumentosSheet'));
 
 interface Props {
   onTabChange?: (tab: Tab) => void;
@@ -67,10 +64,8 @@ const MobileHomeSections = ({
   const navigate = useNavigate();
   const [juriOpen, setJuriOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState<Cat | AreaCat | CategoriaFormal | null>(null);
-  const [docPasta, setDocPasta] = useState<{ id: string; nome: string } | null>(null);
   const [areasOpen, setAreasOpen] = useState(false);
   const [categorySearch, setCategorySearch] = useState('');
-  const activeTabs = useMemo(() => (emAltaLeis ? TABS_VADEMECUM : TABS_HOME), [emAltaLeis]);
   const [tab, setTab] = useState<Tab>(() => (emAltaLeis ? 'emalta' : 'estudos'));
   const currentTab = activeTab || tab;
 
@@ -90,7 +85,10 @@ const MobileHomeSections = ({
     const aquecer = () => {
       // Outros pré-aquecimentos que não sejam de visuais
     };
-    const w = window as any;
+    const w = window as typeof window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
     if (typeof w.requestIdleCallback === 'function') {
       const id = w.requestIdleCallback(aquecer, { timeout: 2500 });
       return () => w.cancelIdleCallback?.(id);
@@ -105,7 +103,10 @@ const MobileHomeSections = ({
         prefetchImages(FAST_PILLS_ITEMS.slice(0, 6).map((item) => item.image));
       });
     };
-    const w = window as any;
+    const w = window as typeof window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
     if (typeof w.requestIdleCallback === 'function') {
       const id = w.requestIdleCallback(prefetch, { timeout: 3500 });
       return () => w.cancelIdleCallback?.(id);
@@ -250,12 +251,6 @@ const MobileHomeSections = ({
       </AnimatePresence>
 
 
-      {/* Documentos */}
-      {docPasta && (
-        <Suspense fallback={null}>
-          <DocumentosSheet categoria={docPasta} open={!!docPasta} onClose={() => setDocPasta(null)} />
-        </Suspense>
-      )}
 
       {/* Áreas do Direito — grade completa */}
       <HomeAreasModal

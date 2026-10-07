@@ -11,7 +11,6 @@ import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
 import { LEIS_CATALOG, getLeiByTabela, type LeiCatalogItem } from '@/data/leisCatalog';
 import { LEI_ICON_MAP, LEI_ICON_DEFAULT_COLOR } from '@/lib/leiIcons';
-import VadeMecumSubpage from '@/components/vademecum/outros/VadeMecumSubpage';
 
 type Modo = 'leis' | 'artigos';
 

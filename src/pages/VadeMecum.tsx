@@ -2,13 +2,11 @@ import { useState, useEffect, Suspense } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import VadeMecumHero from '@/components/vademecum/home/VadeMecumHero';
 import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
-import VadeMecumSearchBar from '@/components/vademecum/home/chunks/VadeMecumSearchBar';
 import VadeMecumFavoritos from './VadeMecumFavoritos';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { pushRecente } from '@/lib/leisRecentes';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
-import VadeMecumDesktopTabs from '@/components/vademecum/desktop/VadeMecumDesktopTabs';
 import VadeMecumDesktopHeroBanner from '@/components/vademecum/desktop/VadeMecumDesktopHeroBanner';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -70,7 +68,7 @@ const VadeMecum = () => {
               hideBlog 
               emAltaLeis 
               hideTabs={!isDesktop}
-              activeTab={activeTab as any}
+              activeTab={activeTab as never}
               onBuscar={() => setBuscaOpen(true)}
             />
           </div>
@@ -87,7 +85,7 @@ const VadeMecum = () => {
         </div>
         <div className="flex flex-1 min-h-0 relative z-10">
           <DesktopSidebar 
-            activeTab={'vademecum' as any} 
+            activeTab={'vademecum' as never} 
             onTabChange={(tab) => {
               const routes: Record<string, string> = {
                 legislacao: '/',
