@@ -27,7 +27,7 @@ const HomeTabAreas = ({ onOpenArea }: HomeTabAreasProps) => {
             key={c.id}
             icon={c.icon}
             label={c.label}
-            sublabel={c.sublabel}
+            sublabel={`${c.leiIds.length} leis · ${c.sublabel}`}
             color={c.color}
             delay={0}
             onClick={() => onOpenArea(c)}

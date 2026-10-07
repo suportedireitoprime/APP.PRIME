@@ -78,11 +78,6 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
           <VadeMecumQuickActions onSelectQuickAction={onSelectQuickAction} />
         </div>
 
-        {/* ── Barra de Pesquisa Integrada ────────────────── */}
-        <div className="relative z-10 px-4 sm:px-6 pb-6">
-          <VadeMecumSearchBar onBuscar={() => onOpenSearch && onOpenSearch()} />
-        </div>
-
 
 
       </div>
