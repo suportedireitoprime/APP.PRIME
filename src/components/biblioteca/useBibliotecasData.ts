@@ -155,13 +155,13 @@ export function useBibliotecasData() {
     queryFn: async () => {
       if (!colecaoAreas) return [] as LivroNormalizado[];
       try {
-        let q = supabase.from(colecaoAreas.table as any).select(colecaoAreas.select);
+        let q = supabase.from(colecaoAreas.table as string).select(colecaoAreas.select);
         if (colecaoAreas.orderBy) {
-          q = q.order(colecaoAreas.orderBy, { ascending: true, nullsFirst: false }) as any;
+          q = q.order(colecaoAreas.orderBy, { ascending: true, nullsFirst: false });
         }
 
         const data = await withBundleFallback(
-          q.limit(2000).then((res: any) => {
+          q.limit(2000).then((res: { data: unknown[] | null, error: unknown }) => {
             if (res.error) throw res.error;
             return res.data;
           }),
@@ -172,7 +172,7 @@ export function useBibliotecasData() {
         );
 
         const normalized = Array.isArray(data)
-          ? data.map((r: any) => normalizeLivro(r, colecaoAreas))
+          ? data.map((r: Record<string, unknown>) => normalizeLivro(r, colecaoAreas))
           : [];
         setPersistedColecao('areas', normalized).catch(() => {});
         return normalized;
