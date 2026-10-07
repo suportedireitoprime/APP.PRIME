@@ -2026,3 +2026,30 @@ html[data-route-transitioning="true"] * {
   background-size: 200% auto;
   animation: animate-image-glow-pulse 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+/* === Reflexo contínuo em texto === */
+.text-shine-loop {
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) 40%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 1) 60%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: textShineLoop 3s linear infinite;
+}
+
+@keyframes textShineLoop {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-shine-loop { animation: none; background: none; color: inherit; -webkit-background-clip: initial; background-clip: initial; }
+}

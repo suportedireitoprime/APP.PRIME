@@ -176,7 +176,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
         }}
       />
 
-      <div className="relative mx-auto w-full max-w-md pt-24 sm:pt-28">
+      <div className="relative mx-auto w-full max-w-md mt-8">
         {onClose && (
           <button
             onClick={onClose}
@@ -186,44 +186,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
             <X className="w-5 h-5" />
           </button>
         )}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`owl-${ativo}`}
-            initial={{ opacity: 0, scale: 0.9, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 10 }}
-            transition={{ duration: 0.3 }}
-            className="absolute -top-[52px] sm:-top-[62px] left-4 sm:left-7 z-30 flex items-end pointer-events-none"
-          >
-            <div
-              className="w-28 h-28 sm:w-34 sm:h-34 drop-shadow-[0_18px_24px_rgba(0,0,0,0.65)] shrink-0"
-            >
-              <img
-                src={OWLS[ativo]}
-                alt="Horus"
-                draggable={false}
-                className="w-full h-full object-contain"
-              />
-            </div>
 
-            {/* Balão de fala ao lado do Horus */}
-            <div
-              className="relative -top-5 -left-1 max-w-[205px] sm:max-w-[235px] bg-white text-neutral-950 rounded-2xl px-3.5 py-2 shadow-2xl border-2 border-neutral-900 pointer-events-auto"
-            >
-              <p className="text-[12px] sm:text-[13px] font-black leading-snug text-neutral-900">
-                {firstName}, {OWL_TEXTS[ativo]}
-              </p>
-              <span
-                className="absolute -bottom-2 left-4 w-0 h-0 pointer-events-none"
-                style={{ borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderTop: '9px solid #171717' }}
-              />
-              <span
-                className="absolute -bottom-[5px] left-[17px] w-0 h-0 pointer-events-none"
-                style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '7px solid #ffffff' }}
-              />
-            </div>
-          </motion.div>
-        </AnimatePresence>
 
         {/* Card Principal */}
         <div
@@ -284,7 +247,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
           </div>
 
           {/* Título com espaço maior entre as letras */}
-          <h2 className="text-lg sm:text-xl font-display font-black tracking-[0.15em] sm:tracking-[0.2em] text-foreground uppercase text-center mt-2">
+          <h2 className="text-shine-loop text-lg sm:text-xl font-display font-black tracking-[0.15em] sm:tracking-[0.2em] uppercase text-center mt-2">
             {currentCopy.title}
           </h2>
 
