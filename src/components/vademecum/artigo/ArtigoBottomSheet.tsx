@@ -82,6 +82,11 @@ import {
 import { highlightTermos, stripRedacao } from './artigoTextUtils';
 import { fixMojibake, sanitizeArtigo } from '@/lib/mojibake';
 
+import { useArtigoTypography } from './useArtigoTypography';
+import { useArtigoFavorito } from './useArtigoFavorito';
+import { useArtigoSheetsState } from './useArtigoSheetsState';
+import { useArtigoIncisosCollapse } from './useArtigoIncisosCollapse';
+
 const ArtigoBottomSheet = ({
   artigo: rawArtigo,
   onClose,
@@ -111,60 +116,12 @@ const ArtigoBottomSheet = ({
   const artigo = useMemo(() => sanitizeArtigo(rawArtigo), [rawArtigo]);
 
   // Estado e sincronização autônoma de favorito com Supabase
-  const [internalIsFav, setInternalIsFav] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (propIsFavorito !== undefined) {
-      setInternalIsFav(propIsFavorito);
-      return;
-    }
-    if (!tabelaNome || !artigo?.numero) return;
-    let cancelled = false;
-    const cleanNum = String(artigo.numero).replace(/^art\.?\s*/i, '').trim();
-    const loadFav = () => {
-      listNumerosFavoritosByTabela(tabelaNome)
-        .then((nums) => {
-          if (!cancelled) {
-            setInternalIsFav(nums.includes(cleanNum) || nums.includes(String(artigo.numero)));
-          }
-        })
-        .catch(() => {});
-    };
-    loadFav();
-    const handleFavChange = () => loadFav();
-    window.addEventListener(ARTIGOS_FAV_EVENT, handleFavChange);
-    return () => {
-      cancelled = true;
-      window.removeEventListener(ARTIGOS_FAV_EVENT, handleFavChange);
-    };
-  }, [propIsFavorito, tabelaNome, artigo?.numero]);
-
-  const effectiveIsFavorito = propIsFavorito !== undefined ? propIsFavorito : internalIsFav;
-
-  const handleToggleFavoritoInternal = useCallback(async () => {
-    if (propOnToggleFavorito) {
-      propOnToggleFavorito();
-      return;
-    }
-    if (!tabelaNome || !artigo?.numero) return;
-    const cleanNum = String(artigo.numero).replace(/^art\.?\s*/i, '').trim();
-    haptic.impact();
-    try {
-      const nowFav = await toggleArtigoFavorito({
-        tabela_codigo: tabelaNome,
-        numero_artigo: cleanNum,
-        conteudo_preview: artigo.caput?.slice(0, 140) || null,
-      });
-      setInternalIsFav(nowFav);
-      if (nowFav) {
-        toast.success(`Artigo ${cleanNum} salvo nos favoritos (Supabase)!`);
-      } else {
-        toast.info(`Artigo ${cleanNum} removido dos favoritos.`);
-      }
-    } catch (err: any) {
-      toast.error(err?.message || 'Erro ao sincronizar favorito com o Supabase');
-    }
-  }, [propOnToggleFavorito, tabelaNome, artigo]);
+  const { effectiveIsFavorito, handleToggleFavoritoInternal } = useArtigoFavorito({
+    artigo,
+    tabelaNome,
+    propIsFavorito,
+    propOnToggleFavorito,
+  });
   const breadcrumb = useMemo(() => {
     if (!rawBreadcrumb) return undefined;
     return {
@@ -242,86 +199,36 @@ const ArtigoBottomSheet = ({
   }, [artigo?.id, artigo?.numero, tabelaNome]);
 
   // Itens 01 e 02: Preferências de Tipografia e Leitura persistidas no localStorage
-  const [fontSize, setFontSize] = useState<number>(() => {
-    try {
-      const saved = localStorage.getItem(VADEMECUM_FONT_SIZE_KEY);
-      if (saved && saved !== '18') return Number(saved);
-      return DEFAULT_VADEMECUM_FONT_SIZE;
-    } catch {
-      return DEFAULT_VADEMECUM_FONT_SIZE;
-    }
+  const {
+    fontSize, setFontSize,
+    fontFamily, setFontFamily,
+    lineHeight, setLineHeight,
+    bionicReading, setBionicReading,
+    readingGuide, setReadingGuide,
+  } = useArtigoTypography();
+
+  const {
+    showLembretesLocal, setShowLembretesLocal,
+    showGrafo, setShowGrafo,
+    showQuestoesPanel, setShowQuestoesPanel,
+    showJurisPanel, setShowJurisPanel,
+    showBaixarSheet, setShowBaixarSheet,
+    showAnotacoesSheet, setShowAnotacoesSheet,
+    showPerguntarSheet, setShowPerguntarSheet,
+    showPraticarSheet, setShowPraticarSheet,
+    showVideoaulasListSheet, setShowVideoaulasListSheet,
+    showVideoaulaSheet, setShowVideoaulaSheet,
+    showTermosSheet, setShowTermosSheet,
+    showHistoricoSheet, setShowHistoricoSheet,
+    showSharePanel, setShowSharePanel,
+    activeActionMenu, setActiveActionMenu,
+  } = useArtigoSheetsState({
+    artigoNumero: artigo?.numero,
+    tabelaNome,
   });
-
-  const [fontFamily, setFontFamily] = useState<VadeMecumFontFamily>(() => {
-    try {
-      const saved = localStorage.getItem(VADEMECUM_FONT_FAMILY_KEY);
-      if (saved === 'serif' || saved === 'mono' || saved === 'sans') return saved;
-      return 'sans';
-    } catch {
-      return 'sans';
-    }
-  });
-
-  const [lineHeight, setLineHeight] = useState<VadeMecumLineHeight>(() => {
-    try {
-      const saved = localStorage.getItem(VADEMECUM_LINE_HEIGHT_KEY);
-      if (saved === '1.6' || saved === '1.8' || saved === '2.1') return saved;
-      return '1.8';
-    } catch {
-      return '1.8';
-    }
-  });
-
-  const [bionicReading, setBionicReading] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(VADEMECUM_BIONIC_READING_KEY) === 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  const [readingGuide, setReadingGuide] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(VADEMECUM_READING_GUIDE_KEY) === 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(VADEMECUM_FONT_SIZE_KEY, String(fontSize));
-    } catch {}
-  }, [fontSize]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(VADEMECUM_FONT_FAMILY_KEY, fontFamily);
-    } catch {}
-  }, [fontFamily]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(VADEMECUM_LINE_HEIGHT_KEY, lineHeight);
-    } catch {}
-  }, [lineHeight]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(VADEMECUM_BIONIC_READING_KEY, String(bionicReading));
-    } catch {}
-  }, [bionicReading]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(VADEMECUM_READING_GUIDE_KEY, String(readingGuide));
-    } catch {}
-  }, [readingGuide]);
 
   const [showFontControls, setShowFontControls] = useState(false);
   const [, setShowCommentPanel] = useState(false);
-  const [showPraticarSheet, setShowPraticarSheet] = useState(false);
-
   const [videoaula, setVideoaula] = useState<{
     titulo: string;
     url: string;
@@ -329,13 +236,8 @@ const ArtigoBottomSheet = ({
     videoId: string;
     transcricao?: string;
   } | null>(null);
-  const [showVideoaulaSheet, setShowVideoaulaSheet] = useState(false);
-  const [showVideoaulasListSheet, setShowVideoaulasListSheet] = useState(false);
 
-  const [showAnotacoesSheet, setShowAnotacoesSheet] = useState(false);
-  const [showPerguntarSheet, setShowPerguntarSheet] = useState(false);
   const [activeTab, setActiveTab] = useState('artigo');
-
   const [iaFull, setIaFull] = useState<{ mode: 'explicacao' | 'exemplo'; sectionId: string | null } | null>(null);
   const [focusedSegment, setFocusedSegment] = useState<string | null>(null);
 
@@ -353,37 +255,11 @@ const ArtigoBottomSheet = ({
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
-  const [showSharePanel, setShowSharePanel] = useState(false);
-  const [showGrafo, setShowGrafo] = useState(false);
-  const [activeActionMenu, setActiveActionMenu] = useState<null | 'funcoes' | 'grifar'>(null);
   const [selectionPill, setSelectionPill] = useState<{ x: number; y: number } | null>(null);
   const narracaoActiveIdxRef = useRef(-1);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
   const [premiumGateDesc, setPremiumGateDesc] = useState<string | undefined>(undefined);
   const [premiumGateFeature, setPremiumGateFeature] = useState<PremiumFeatureKey>('default');
-  const [showTermosSheet, setShowTermosSheet] = useState(false);
-  const [showHistoricoSheet, setShowHistoricoSheet] = useState(false);
-  const [showLembretesLocal, setShowLembretesLocal] = useState(false);
-  const [showQuestoesPanel, setShowQuestoesPanel] = useState(false);
-  const [showJurisPanel, setShowJurisPanel] = useState(false);
-  const [showBaixarSheet, setShowBaixarSheet] = useState(false);
-
-  useEffect(() => {
-    setShowLembretesLocal(false);
-    setShowGrafo(false);
-    setShowQuestoesPanel(false);
-    setShowJurisPanel(false);
-    setShowBaixarSheet(false);
-    setShowAnotacoesSheet(false);
-    setShowPerguntarSheet(false);
-    setShowPraticarSheet(false);
-    setShowVideoaulasListSheet(false);
-    setShowVideoaulaSheet(false);
-    setShowTermosSheet(false);
-    setShowHistoricoSheet(false);
-    setShowSharePanel(false);
-    setActiveActionMenu(null);
-  }, [artigo?.numero, tabelaNome]);
 
   // Desktop text selection
   useEffect(() => {
