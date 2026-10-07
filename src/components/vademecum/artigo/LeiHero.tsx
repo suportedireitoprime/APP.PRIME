@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Heart, ScrollText, StickyNote, Radar, ListMusic, History, Gamepad2, Info } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Heart, ScrollText, StickyNote, Radar, ListMusic, History, Feather, Info } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { getLeiCover, getLeiColor, shade } from '@/lib/leiTheme';
 import { isFavorito as isLeiFavorita } from '@/lib/leisFavoritos';
@@ -219,7 +219,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 </span>
               </button>
 
-              {/* PRATICAR (LEI SECA) */}
+              {/* LIÇÕES (LEI SECA) */}
               <button
                 type="button"
                 onClick={() => {
@@ -233,12 +233,12 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 }}
                 className="group flex flex-col items-center justify-center py-3 px-1 hover:bg-white/10 transition-colors active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer relative"
               >
-                <Gamepad2
+                <Feather
                   className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#FACC15]"
                   strokeWidth={2}
                 />
                 <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider text-center block">
-                  Praticar
+                  Lições
                 </span>
               </button>
 
