@@ -138,20 +138,6 @@ const LeiHero: React.FC<LeiHeroProps> = ({
               </button>
             )}
 
-            {onOpenSobre && (
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  onOpenSobre();
-                }}
-                className="inline-flex items-center justify-center gap-1.5 px-3 min-h-[48px] text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:opacity-70 shadow-lg"
-              >
-                <Info className="w-3.5 h-3.5" />
-                <span className="font-bold">Sobre</span>
-              </button>
-            )}
-
             {planaltoUrl && (
               <a
                 href={planaltoUrl}
@@ -176,9 +162,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
             className="absolute left-2 top-0 pointer-events-none select-none w-[100px] sm:w-[130px] opacity-[0.14] mix-blend-luminosity z-[-1]"
           />
 
-          <p className="text-[11px] sm:text-[12px] font-extrabold tracking-[0.25em] uppercase text-white/90 drop-shadow">
-            {config?.label || 'Códigos'}
-          </p>
+
 
           <h1 className="font-display text-white text-xl sm:text-2xl md:text-3xl font-black uppercase tracking-tight leading-tight mt-1 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
             {selectedLeiNome}
