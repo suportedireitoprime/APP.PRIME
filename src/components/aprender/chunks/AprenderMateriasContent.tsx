@@ -13,7 +13,6 @@ import type { ModuloItem } from '@/hooks/useAprenderAreaModulesMap';
 import type { AprenderHomeAula } from '@/lib/aprenderHomeSnapshot';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { getAreaThemePalette } from '@/lib/areasDireitoIcons';
-import { shortenAreaName } from '@/lib/areaNameShortener';
 import { Layers, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -334,7 +333,7 @@ export const AprenderMateriasContent: React.FC<AprenderMateriasContentProps> = m
                       </span>
                     </div>
                     <h3 className="font-sans font-medium text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-3 sm:line-clamp-4 mt-1">
-                      {shortenAreaName(area.nome)}
+                      {area.nome}
                     </h3>
                   </div>
                 </div>
