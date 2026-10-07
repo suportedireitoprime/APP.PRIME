@@ -406,11 +406,7 @@ export default function Assinatura() {
                      startPurchase('mensal');
                   }
                 }}
-                className={`btn-shine-loop relative overflow-hidden w-full h-[60px] rounded-[20px] font-display text-[19px] font-black tracking-wider transition-all active:scale-[0.98] group ${
-                  tab === 'anual' 
-                    ? 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_12px_35px_rgba(16,185,129,0.35)]'
-                    : 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_12px_35px_rgba(224,31,71,0.4)]'
-                }`}
+                className="btn-shine-loop relative overflow-hidden w-full h-[60px] rounded-[20px] font-display text-[19px] font-black tracking-wider transition-all active:scale-[0.98] group bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_12px_35px_rgba(224,31,71,0.4)]"
               >
                 <span className="flex items-center justify-center gap-2">
                   {tab === 'anual' ? 'ASSINAR ANUAL' : tab === 'vitalicio' ? 'ASSINAR VITALÍCIO' : 'ASSINAR MENSAL'}
