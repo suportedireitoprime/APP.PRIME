@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { isFuture, addMonths } from 'date-fns';
 import { openExternal } from '@/lib/nativeBrowser';
 import { motion, AnimatePresence } from "framer-motion";
+import { haptic } from '@/lib/nativeHaptics';
+import confetti from 'canvas-confetti';
 
 interface CheckoutModalProps {
   open: boolean;
@@ -160,10 +162,38 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const [verifyCooldown, setVerifyCooldown] = useState<number>(0);
   const triggerSuccessAnimation = () => {
     setStep(4);
+    haptic.success();
+    
+    // Animação de confete rica
+    const duration = 2500;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ['#10b981', '#ffffff', '#047857']
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ['#10b981', '#ffffff', '#047857']
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
+
     setTimeout(() => {
       onSuccess();
       onOpenChange(false);
-    }, 2500);
+    }, 2800);
   };
 
   const isProcessingRef = useRef(false);
@@ -240,13 +270,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     triggerSuccessAnimation();
   };
 
-    // 1. Escuta Realtime na tabela asaas_subscriptions
-    let channel: any = null;
+    // 1. Escuta Realtime na tabela asaas_subscriptions e profiles
+    let channelAsaas: any = null;
+    let channelProfile: any = null;
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!isMounted || !session?.user?.id) return;
       const uid = session.user.id;
 
-      channel = supabase
+      channelAsaas = supabase
         .channel(`pix-pay-${uid}-${Date.now()}`)
         .on('postgres_changes' as any, {
           event: '*',
@@ -255,6 +286,20 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           filter: `user_id=eq.${uid}`,
         }, (payload: any) => {
           if (payload?.new?.status === 'ACTIVE' || payload?.new?.status === 'ACTIVE_GRACE') {
+            handleSuccess();
+          }
+        })
+        .subscribe();
+
+      channelProfile = supabase
+        .channel(`pix-profile-${uid}-${Date.now()}`)
+        .on('postgres_changes' as any, {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${uid}`,
+        }, (payload: any) => {
+          if (payload?.new?.is_premium === true) {
             handleSuccess();
           }
         })
