@@ -87,7 +87,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
     if (!post) return;
     let cancelled = false;
     import('@/lib/appEvents').then(({ appEvents }) =>
-      appEvents.abrirBlog({ post_id: post.id, titulo: (post as any).titulo || (post as any).title })
+      appEvents.abrirBlog({ post_id: post.id, titulo: post.titulo })
     ).catch(() => {});
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();

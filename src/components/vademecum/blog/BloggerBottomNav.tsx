@@ -2,9 +2,11 @@ import { motion } from 'framer-motion';
 import { BookOpenText, LayoutGrid, Briefcase, Heart, Feather } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
+import type React from 'react';
+
 export type BloggerTab = 'blogger' | 'categorias' | 'carreiras' | 'biografia' | 'favoritos';
 
-const TABS: { id: BloggerTab; label: string; icon: any }[] = [
+const TABS: { id: BloggerTab; label: string; icon: React.ElementType }[] = [
   { id: 'blogger', label: 'Blogger', icon: BookOpenText },
   { id: 'categorias', label: 'Categorias', icon: LayoutGrid },
   { id: 'carreiras', label: 'Carreiras', icon: Briefcase },
