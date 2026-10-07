@@ -70,7 +70,7 @@ async function callOmniRoute(model: string, prompt: string, timeoutMs = 18000): 
 
 async function callGeminiDirect(prompt: string): Promise<any> {
   if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY não configurada para fallback direto");
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
   const res = await geminiFetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -260,16 +260,25 @@ Deno.serve(async (req) => {
         .eq("lei_id", lei.id);
       if (todos?.length) {
         artigos = todos.filter((a: any) => {
-          const clean = String(a.numero).replace(/\D+/g, "");
-          return nums.some((n) => n === clean || n === String(a.numero));
+          const numA = String(a.numero).replace(/[ºª]/g, "").trim().toLowerCase();
+          return nums.some((n) => {
+            const numN = String(n).replace(/[ºª]/g, "").trim().toLowerCase();
+            return numN === numA || n === String(a.numero);
+          });
         });
       }
     }
 
     const mapa = new Map<string, string>();
-    (artigos ?? []).forEach((a: any) => mapa.set(String(a.numero), String(a.texto ?? "")));
+    (artigos ?? []).forEach((a: any) => {
+      const k = String(a.numero).replace(/[ºª]/g, "").trim().toLowerCase();
+      mapa.set(k, String(a.texto ?? ""));
+    });
     const artigosTexto = nums
-      .map((n) => ({ num: n, texto: (mapa.get(n) ?? "").replace(/\s+/g, " ").trim() }))
+      .map((n) => {
+        const k = String(n).replace(/[ºª]/g, "").trim().toLowerCase();
+        return { num: n, texto: (mapa.get(k) ?? "").replace(/\s+/g, " ").trim() };
+      })
       .filter((a) => a.texto.length > 0);
     if (!artigosTexto.length) throw new Error("Nenhum artigo encontrado para a lição");
 
