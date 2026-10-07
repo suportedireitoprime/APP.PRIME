@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, startTransition } from "react";
 import { useNavigate, useSearchParams, Navigate, useLocation, Link } from "react-router-dom";
 import { Capacitor } from '@capacitor/core';
-import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight, Headphones, ShieldCheck, Sparkles } from "lucide-react";
+import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight, Headphones, ShieldCheck, Sparkles, Lock } from "lucide-react";
 
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from "@/components/ui/button";
