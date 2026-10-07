@@ -265,7 +265,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             .eq('user_id', session.user.id)
             .maybeSingle();
 
-          if (data?.status === 'ACTIVE' || data?.status === 'ACTIVE_GRACE') {
+          const { data: profile } = await supabase.from('profiles')
+            .select('is_premium')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          if (data?.status === 'ACTIVE' || data?.status === 'ACTIVE_GRACE' || profile?.is_premium) {
             handleSuccess();
             return;
           }
@@ -513,7 +518,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           .select('status')
           .eq('user_id', session.user.id)
           .maybeSingle();
-        if (data?.status === 'ACTIVE') {
+          
+        const { data: profile } = await supabase.from('profiles')
+          .select('is_premium')
+          .eq('id', session.user.id)
+          .maybeSingle();
+
+        if (data?.status === 'ACTIVE' || data?.status === 'ACTIVE_GRACE' || profile?.is_premium) {
           toast.success('Pagamento confirmado!');
           onSuccess();
           onOpenChange(false);

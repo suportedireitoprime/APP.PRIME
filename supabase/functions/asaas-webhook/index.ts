@@ -102,6 +102,62 @@ Deno.serve(async (req) => {
         };
       }
     }
+    // Fallback 4: Busca na tabela asaas_subscriptions (o checkout já insere um registro lá)
+    if (!legacy && (subscriptionId || customerId)) {
+      let subRow: any = null;
+      if (subscriptionId) {
+        const { data } = await admin.from('asaas_subscriptions')
+          .select('user_id, plano')
+          .eq('asaas_subscription_id', subscriptionId)
+          .limit(1).maybeSingle();
+        subRow = data;
+      }
+      if (!subRow && customerId) {
+        const { data } = await admin.from('asaas_subscriptions')
+          .select('user_id, plano')
+          .eq('asaas_customer_id', customerId)
+          .limit(1).maybeSingle();
+        subRow = data;
+      }
+      if (subRow?.user_id) {
+        legacy = {
+          id: 'new_user',
+          tipo: subRow.plano || inferredPlan,
+          claimed_user_id: subRow.user_id,
+          asaas_customer_id: customerId,
+          asaas_subscription_id: subscriptionId,
+        };
+      }
+    }
+
+    // Fallback 5: Busca externalReference na subscription via Asaas API
+    if (!legacy && subscriptionId) {
+      try {
+        const apiKey = Deno.env.get('ASAAS_API_KEY') || Deno.env.get('ASAAS_WEBHOOK_TOKEN');
+        const baseUrl = Deno.env.get('ASAAS_API_URL') || 'https://api.asaas.com/v3';
+        if (apiKey) {
+          const subRes = await fetch(`${baseUrl}/subscriptions/${subscriptionId}`, {
+            headers: { 'access_token': apiKey },
+          });
+          if (subRes.ok) {
+            const subJson = await subRes.json();
+            const subExtRef = subJson.externalReference || '';
+            const subExtUserId = subExtRef.includes('|') ? subExtRef.split('|')[0] : subExtRef;
+            if (subExtUserId) {
+              legacy = {
+                id: 'new_user',
+                tipo: inferredPlan,
+                claimed_user_id: subExtUserId,
+                asaas_customer_id: customerId,
+                asaas_subscription_id: subscriptionId,
+              };
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('Fallback Asaas API subscription lookup failed:', e);
+      }
+    }
 
     // Se ainda não achou legacy mas temos customerEmail, busca por profile existente
     const customerEmail: string | null = payment?.customerEmail || body?.customerEmail || null;
