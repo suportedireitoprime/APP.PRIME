@@ -205,7 +205,7 @@ export default function Assinatura() {
                 <ShapeGrid />
               </div>
 
-              <SheetHeader className="mb-6 shrink-0 relative z-10 text-center flex flex-col items-center">
+                            <SheetHeader className="mb-6 shrink-0 relative z-10 text-center flex flex-col items-center">
                 <div className="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-3">
                   <ShieldCheck className="w-4 h-4 text-primary" />
                   <span className="text-[11px] font-bold text-primary uppercase tracking-wider">Checkout Seguro</span>
@@ -214,14 +214,36 @@ export default function Assinatura() {
                   Finalize sua assinatura
                 </SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-2 text-muted-foreground max-w-[280px]">
-                  Escolha como prefere ativar seu plano {tab === 'vitalicio' ? 'Vitalício' : 'Anual'}. O acesso é libera��o na hora.
+                  Escolha como prefere ativar seu plano {tab === 'vitalicio' ? 'Vitalício' : 'Anual'}. O acesso é liberado na hora.
                 </SheetDescription>
               </SheetHeader>
 
               <div className="flex flex-col gap-2 relative z-10 mb-5 w-full">
                 <Button
                   variant="outline"
-                  className="h-auto py-3 flex items-center justify-start gap-4 px-4 border-2 border-[#27272a] bg-[#121212] hover:border-primary hover:bg-primary/5 transition-all rounded-2xl group relative overflow-hidden shadow-lg"
+                  className="h-auto py-3 flex items-center justify-start gap-4 px-4 border-2 border-[#27272a] bg-[#121212] hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-2xl group relative overflow-hidden shadow-md"
+                  onClick={() => {
+                    setPaymentMethodSheetOpen(false);
+                    startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : 'anual_regular_pix');
+                  }}
+                >
+                  <svg className="w-8 h-8 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M5.283 18.36a3.505 3.505 0 0 0 2.493-1.032l3.6-3.6a.684.684 0 0 1 .946 0l3.613 3.613a3.504 3.504 0 0 0 2.493 1.032h.71l-4.56 4.56a3.647 3.647 0 0 1-5.156 0L4.85 18.36ZM18.428 5.627a3.505 3.505 0 0 0-2.493 1.032l-3.613 3.614a.67.67 0 0 1-.946 0l-3.6-3.6A3.505 3.505 0 0 0 5.283 5.64h-.434l4.573-4.572a3.646 3.646 0 0 1 5.156 0l4.559 4.559ZM1.068 9.422 3.79 6.699h1.492a2.483 2.483 0 0 1 1.744.722l3.6 3.6a1.73 1.73 0 0 0 2.443 0l3.614-3.613a2.482 2.482 0 0 1 1.744-.723h1.767l2.737 2.737a3.646 3.646 0 0 1 0 5.156l-2.736 2.736h-1.768a2.482 2.482 0 0 1-1.744-.722l-3.613-3.613a1.77 1.77 0 0 0-2.444 0l-3.6 3.6a2.483 2.483 0 0 1-1.744.722H3.791l-2.723-2.723a3.646 3.646 0 0 1 0-5.156"/>
+                  </svg>
+                  <div className="flex flex-col items-start text-left flex-1">
+                    <span className="font-black text-base text-white">PIX</span>
+                    {tab === 'vitalicio' ? (
+                      <span className="text-xs font-bold text-emerald-500">R$ 249,90 à vista</span>
+                    ) : (
+                      <span className="text-xs font-bold text-emerald-500">R$ 149,90 à vista</span>
+                    )}
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-zinc-500 group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-auto py-3 flex items-center justify-start gap-4 px-4 border-2 border-[#27272a] bg-[#121212] hover:border-primary hover:bg-primary/5 transition-all rounded-2xl group relative overflow-hidden shadow-md"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
                     startPurchase(tab === 'vitalicio' ? 'vitalicio' : 'anual');
@@ -244,32 +266,10 @@ export default function Assinatura() {
                     {tab === 'vitalicio' ? (
                       <span className="text-xs font-bold text-zinc-400">Até 10x de R$ 24,99</span>
                     ) : (
-                      <span className="text-xs font-bold text-zinc-400">Até 6x de R$ 24,98</span>
+                      <span className="text-xs font-bold text-zinc-400">R$ 149,90 à vista</span>
                     )}
                   </div>
                   <ArrowRight className="w-5 h-5 text-zinc-500 group-hover:text-primary transition-colors group-hover:translate-x-1" />
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="h-auto py-3 flex items-center justify-start gap-4 px-4 border-2 border-[#27272a] bg-[#121212] hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-2xl group relative overflow-hidden shadow-md"
-                  onClick={() => {
-                    setPaymentMethodSheetOpen(false);
-                    startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : 'anual_regular_pix');
-                  }}
-                >
-                  <svg className="w-8 h-8 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M5.283 18.36a3.505 3.505 0 0 0 2.493-1.032l3.6-3.6a.684.684 0 0 1 .946 0l3.613 3.613a3.504 3.504 0 0 0 2.493 1.032h.71l-4.56 4.56a3.647 3.647 0 0 1-5.156 0L4.85 18.36ZM18.428 5.627a3.505 3.505 0 0 0-2.493 1.032l-3.613 3.614a.67.67 0 0 1-.946 0l-3.6-3.6A3.505 3.505 0 0 0 5.283 5.64h-.434l4.573-4.572a3.646 3.646 0 0 1 5.156 0l4.559 4.559ZM1.068 9.422 3.79 6.699h1.492a2.483 2.483 0 0 1 1.744.722l3.6 3.6a1.73 1.73 0 0 0 2.443 0l3.614-3.613a2.482 2.482 0 0 1 1.744-.723h1.767l2.737 2.737a3.646 3.646 0 0 1 0 5.156l-2.736 2.736h-1.768a2.482 2.482 0 0 1-1.744-.722l-3.613-3.613a1.77 1.77 0 0 0-2.444 0l-3.6 3.6a2.483 2.483 0 0 1-1.744.722H3.791l-2.723-2.723a3.646 3.646 0 0 1 0-5.156"/>
-                  </svg>
-                  <div className="flex flex-col items-start text-left flex-1">
-                    <span className="font-black text-base text-white">PIX</span>
-                    {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-emerald-500">R$ 249,90 à vista</span>
-                    ) : (
-                      <span className="text-xs font-bold text-emerald-500">R$ 149,90 à vista</span>
-                    )}
-                  </div>
-                  <ArrowRight className="w-5 h-5 text-zinc-500 group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
                 </Button>
               </div>
 
@@ -285,7 +285,7 @@ export default function Assinatura() {
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <Sparkles className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                    <Lock className="w-6 h-6 text-primary shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="text-sm font-black text-foreground">Pagamento 100% Seguro</span>
                       <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Ambiente criptografado. Seus dados protegidos.</span>
@@ -295,7 +295,7 @@ export default function Assinatura() {
                     <RotateCw className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="text-sm font-black text-foreground">Acesso Imediato</span>
-                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Comece a usar agora mesmo, liberaÃƒÂ§ÃƒÂ£o na hora.</span>
+                      <span className="text-[11px] text-muted-foreground font-medium mt-0.5">Comece a usar agora mesmo, liberação na hora.</span>
                     </div>
                   </div>
                 </div>
