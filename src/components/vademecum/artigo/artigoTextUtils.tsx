@@ -448,7 +448,7 @@ export function highlightTermosOnly(text: string): React.ReactNode[] {
     const separator = fullMatch.slice(leadingToken.length);
     const rest = text.slice(fullMatch.length);
     const parts: React.ReactNode[] = [];
-    parts.push(<span key="token" className="text-primary font-bold">{leadingToken}</span>);
+    parts.push(<span key="token" className="text-red-400 font-bold">{leadingToken}</span>);
     if (separator) parts.push(<span key="sep">{separator}</span>);
     if (rest) parts.push(rest);
     return parts;

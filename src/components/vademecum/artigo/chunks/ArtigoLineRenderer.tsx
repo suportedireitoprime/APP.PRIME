@@ -393,7 +393,7 @@ const ArtigoLineRendererComponent = ({
         onClick={() => {
           if (!highlightMode) setFocusedSegment(currentSegmentId);
         }}
-        className={`font-bold text-primary tracking-wide pt-3.5 pb-1 select-text ${fontClass}`}
+        className={`font-bold text-red-400 tracking-wide pt-3.5 pb-1 select-text ${fontClass}`}
         style={{ fontSize: `${Math.max(fontSize - 1, 14)}px` }}
       >
         {finalNodes}
@@ -439,7 +439,7 @@ const ArtigoLineRendererComponent = ({
     >
       {isFirst && !isRevogado && artLabel && (
         <>
-          <span className="font-bold text-primary">{artLabel}</span>
+          <span className="font-bold text-red-400">{artLabel}</span>
           <span className="text-foreground/60"> — </span>
         </>
       )}

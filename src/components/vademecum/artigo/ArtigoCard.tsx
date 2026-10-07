@@ -160,19 +160,19 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
         {withShine && !isFastScrolling && (
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-primary/15 to-transparent animate-card-shine"
+            className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-red-400/15 to-transparent animate-card-shine"
           />
         )}
         <div className="shrink-0 flex flex-col items-center gap-1">
-          <span className="relative h-12 w-12 rounded-xl bg-gradient-to-br from-primary/25 to-primary/10 border border-primary/30 flex flex-col items-center justify-center leading-none overflow-hidden">
+          <span className="relative h-12 w-12 rounded-xl bg-gradient-to-br from-red-400/25 to-red-400/10 border border-red-400/30 flex flex-col items-center justify-center leading-none overflow-hidden">
             {withShine && !isFastScrolling && (
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-primary/30 to-transparent animate-card-shine"
+                className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-gradient-to-r from-transparent via-red-400/30 to-transparent animate-card-shine"
               />
             )}
-            <span className="relative text-[16px] font-bold text-primary leading-none">{badgeLabel}</span>
-            <span className="relative mt-0.5 text-[8px] uppercase tracking-[0.18em] font-bold text-primary/80 leading-none">Art</span>
+            <span className="relative text-[16px] font-bold text-red-400 leading-none">{badgeLabel}</span>
+            <span className="relative mt-0.5 text-[8px] uppercase tracking-[0.18em] font-bold text-red-400/80 leading-none">Art</span>
           </span>
           {(tags?.favorito || tags?.grifado || tags?.anotado) && (
             <div className="flex items-center gap-1">
