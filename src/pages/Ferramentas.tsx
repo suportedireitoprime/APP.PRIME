@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { useTrackArea } from "@/hooks/useTrackArea";
@@ -18,13 +19,13 @@ const Ferramentas = () => {
     handleToolClick,
   } = useFerramentasNavigation();
 
-  const mobileHeader = (
+  const mobileHeader = useMemo(() => (
     <PageHeader
       title="Ferramentas"
       subtitle="Recursos para potencializar seus estudos"
       onBack={() => navigate('/')}
     />
-  );
+  ), [navigate]);
 
   return (
     <DesktopPageLayout

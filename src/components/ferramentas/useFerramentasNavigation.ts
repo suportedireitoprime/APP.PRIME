@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { DESKTOP_TOOLS_FLAT } from '@/config/desktopTools';
 
 export function useFerramentasNavigation() {
   const navigate = useNavigate();
@@ -26,27 +27,11 @@ export function useFerramentasNavigation() {
       return;
     }
 
-    switch (id) {
-      case 'desktop': navigate('/desktop'); break;
-      case 'me-explique': navigate('/me-explique'); break;
-      case 'vade-mecum': navigate('/vade-mecum'); break;
-      case 'peticao-inicial': navigate('/ferramentas/peticao-inicial'); break;
-      case 'flashcards': navigate('/flashcards'); break;
-      case 'dicionario': navigate('/ferramentas/dicionario'); break;
-      case 'radar-concursos': navigate('/ferramentas/radar-concursos'); break;
-      case 'radar360': navigate('/radares'); break;
-      case 'radares': navigate('/radares'); break;
-      case 'leis-cantadas': navigate('/leis-cantadas'); break;
-      case 'gravar-aula': navigate('/anotacoes/audio'); break;
-      case 'resumos-juridicos': navigate('/resumos-juridicos'); break;
-      case 'noticias': navigate('/noticias'); break;
-      case 'newsletter': navigate('/newsletter'); break;
-      case 'biblioteca': navigate('/biblioteca'); break;
-      case 'aprender': navigate('/aprender'); break;
-      case 'modo-offline': navigate('/modo-offline'); break;
-      case 'tematica': navigate('/tematica-juridica'); break;
-      case 'forca': navigate('/gamificacao/forca'); break;
-      case 'documentos': navigate('/documentos'); break;
+    // Fallback if route is missing but id matches a known tool
+    const tool = DESKTOP_TOOLS_FLAT.find((t) => t.id === id);
+    if (tool?.route && tool.route !== '#') {
+      navigate(tool.route);
+      return;
     }
   }, [navigate]);
 
