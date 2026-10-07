@@ -316,7 +316,6 @@ export function useSubscription(options: Options = {}): SubscriptionState {
             const { isBillingAvailable, syncEntitlements } = await import('@/lib/billing');
             if (isBillingAvailable()) {
               const synced = await syncEntitlements();
-              if (cancelled) return true;
               if (synced > 0) return fetchOnce(true);
             }
           } catch { /* ignore */ }
@@ -330,9 +329,8 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         return false;
 
       } catch (err) {
-        if (cancelled) return true;
-        // Rede caiu no meio do fetch: mantém o snapshot em cache visível.
-        setState(prev => ({ ...prev, loading: false }));
+        // Se a rede falhar, persista o estado atual com loading: false para destravar os componentes
+        persist(state);
         return true;
       }
     };
@@ -345,6 +343,9 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           if (cancelled) return;
           if (subMemoryCache.has(user.id)) {
             setState(subMemoryCache.get(user.id)!.data);
+          } else {
+            // Fallback safety just in case cache wasn't populated
+            setState(prev => ({ ...prev, loading: false }));
           }
         } else {
           const fetchPromise = fetchOnce();

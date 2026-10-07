@@ -104,6 +104,13 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
   const userEmail = user?.email || '';
   const initialName = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || '';
 
+  const isESTADO_3 = isTrialEnded;
+  const isESTADO_2 = !is24hActive && !isTrialEnded;
+
+  if (!isESTADO_3 && !isESTADO_2) {
+    return null;
+  }
+
   return (
     <>
       <div 
