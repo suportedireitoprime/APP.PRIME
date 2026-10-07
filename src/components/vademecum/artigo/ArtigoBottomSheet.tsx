@@ -527,6 +527,10 @@ const ArtigoBottomSheet = ({
     getLineHighlights,
   } = useHighlights(artigo?.id || null);
 
+  const handleAnotacoesRefresh = useCallback(() => {
+    setAnotacoesRefreshTick((t) => t + 1);
+  }, []);
+
   // Hook de grifo mágico
   const {
     magicMode,
@@ -548,7 +552,7 @@ const ArtigoBottomSheet = ({
     removeHighlightsByColor,
     clearAll,
     onAnotacoesCountChange: setAnotacoesCount,
-    onAnotacoesRefresh: () => setAnotacoesRefreshTick((t) => t + 1),
+    onAnotacoesRefresh: handleAnotacoesRefresh,
     activeTab,
   });
 
