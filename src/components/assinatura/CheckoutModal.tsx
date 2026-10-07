@@ -562,15 +562,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   return (
     <Dialog open={open} onOpenChange={(v) => !loading && onOpenChange(v)}>
       <DialogContent 
-        className="max-w-none sm:max-w-lg w-full min-h-[100vh] sm:min-h-0 sm:max-h-[92vh] h-[100dvh] sm:h-auto m-0 p-0 rounded-none sm:rounded-3xl border-none sm:border sm:border-white/10 flex flex-col bg-[#0D0D0D]/90 backdrop-blur-2xl overflow-hidden shadow-2xl [&>button]:hidden"
+        className="max-w-none sm:max-w-lg w-full min-h-[100vh] sm:min-h-0 sm:max-h-[92vh] h-[100dvh] sm:h-auto m-0 p-0 rounded-none sm:rounded-3xl border-none sm:border sm:border-white/10 flex flex-col bg-[#0D0D0D] overflow-hidden shadow-2xl [&>button]:hidden"
       >
         <DialogDescription className="sr-only">Checkout e pagamento do Direito Prime.</DialogDescription>
 
-        {/* Background Overlay */}
-        <div 
-          className="absolute inset-0 z-0 pointer-events-none opacity-20 bg-cover bg-center" 
-          style={{ backgroundImage: "url('/images/checkout_bg.webp')" }}
-        />
+        
         
         {/* Top Header with Custom Close/Back Button */}
         <div className="relative z-10 flex items-center justify-between px-4 pb-4 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] bg-background/60 backdrop-blur-xl border-b border-white/5">
