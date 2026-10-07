@@ -1059,77 +1059,80 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
 
         <nav
           aria-label="Navegação do Código"
-          className={`fixed bottom-0 left-0 right-0 z-[65] md:bottom-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-auto lg:hidden transition-all duration-200 ${showFooter ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-24 opacity-0 pointer-events-none'}`}
+          className={`fixed z-50 transition-all duration-300 ease-out bottom-0 left-0 right-0 bg-[#1C1C1E] backdrop-blur-md border-t border-white/10 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.6),0_-2px_10px_rgba(0,0,0,0.4)] lg:hidden ${showFooter ? 'translate-y-0 opacity-100 pointer-events-auto' : 'translate-y-[140%] opacity-0 pointer-events-none'}`}
         >
-          <div className="bg-zinc-900/95 backdrop-blur-xl border-t border-white/10 rounded-t-2xl shadow-[0_-8px_30px_rgba(0,0,0,0.7)] pb-[calc(0.5rem+var(--sai-bottom))] md:border md:rounded-full md:shadow-2xl md:shadow-black/40 md:pb-0">
-            <div className="flex items-center justify-between w-full max-w-lg mx-auto px-2 sm:px-4 py-2 md:gap-1 md:px-3 md:py-2">
-              {[
-                { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
-                { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
-                { key: 'pesq' as const, icon: Search, label: 'Pesquisar', isCenter: true },
-                { key: 'fav' as const, icon: Heart, label: 'Favoritos' },
-                { key: 'sob' as const, icon: Info, label: 'Sobre' },
-              ].map((tab) => {
-                if (tab.isCenter) {
+          <div
+            aria-hidden="true"
+            className="absolute bottom-full left-0 right-0 h-20 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none md:hidden"
+          />
+          <div className="relative z-10 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] md:pb-0 md:h-full">
+            <div className="max-w-lg mx-auto px-1 pt-3.5 pb-3.5 md:max-w-2xl md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
+              <div className="grid grid-cols-5 items-end md:grid-cols-1 md:items-stretch md:gap-6">
+                {[
+                  { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
+                  { key: 'cap' as const, icon: Layers, label: 'Capítulos' },
+                  { key: 'pesq' as const, icon: Search, label: 'Pesquisar', isCenter: true },
+                  { key: 'fav' as const, icon: Heart, label: 'Favoritos' },
+                  { key: 'sob' as const, icon: Info, label: 'Sobre' },
+                ].map((tab) => {
+                  if (tab.isCenter) {
+                    return (
+                      <div key={tab.key} className="relative flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10 transition-transform duration-100">
+                        <button
+                          onClick={() => {
+                            haptic.selection();
+                            setOverlayPanel('pesquisa');
+                          }}
+                          aria-label="Pesquisar"
+                          className="absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-primary shadow-[0_10px_26px_rgba(0,0,0,0.6)] active:scale-95 transition-transform cursor-pointer pointer-events-auto"
+                          style={{ backgroundColor: leiAccent || '#E11D48', boxShadow: `0 10px 26px ${leiAccent || '#E11D48'}99` }}
+                        >
+                          <Search className="relative w-10 h-10 xs:w-11 xs:h-11 md:w-9 md:h-9 text-white md:text-white/90 drop-shadow-lg" aria-hidden="true" strokeWidth={1.2} />
+                          <span
+                            aria-hidden
+                            className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/45 to-transparent motion-safe:animate-[vade-mecum-shine_3.4s_ease-in-out_infinite] md:hidden"
+                          />
+                        </button>
+                        <span aria-hidden className="w-7 h-7 sm:w-8 sm:h-8 md:hidden" />
+                        <button 
+                          onClick={() => {
+                            haptic.selection();
+                            setOverlayPanel('pesquisa');
+                          }}
+                          className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5 text-white/80 hover:text-white cursor-pointer active:opacity-70 pointer-events-auto"
+                        >
+                          Pesquisar
+                        </button>
+                      </div>
+                    );
+                  }
+
+                  const active = activeTab === tab.key && tab.key !== 'fav';
+                  const Icon = tab.icon;
                   return (
                     <button
                       key={tab.key}
                       onClick={() => {
                         haptic.selection();
-                        setOverlayPanel('pesquisa');
+                        if (tab.key === 'sob') {
+                          setShowSobreModal(true);
+                        } else if (tab.key === 'fav') {
+                          setOverlayPanel('fav');
+                        } else {
+                          setActiveTab(tab.key as 'art' | 'cap' | 'rec' | 'sob');
+                        }
                       }}
-                      className="relative -top-5 flex flex-col items-center justify-center shrink-0 focus-visible:outline-none"
-                      aria-label="Pesquisar"
+                      className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
+                        active ? 'text-white' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+                      }`}
+                      aria-label={tab.label}
                     >
-                      <div 
-                        className="w-[52px] h-[52px] rounded-full shadow-lg flex items-center justify-center text-white active:scale-95 transition-transform"
-                        style={{ backgroundColor: leiAccent || '#E11D48', boxShadow: `0 8px 24px -6px ${leiAccent || '#E11D48'}80` }}
-                      >
-                        <Search className="w-6 h-6" strokeWidth={2.5} />
-                      </div>
-                      <span className="text-[11px] font-bold text-white mt-1 drop-shadow-md">Pesquisar</span>
+                      <Icon className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${active ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+                      <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">{tab.label}</span>
                     </button>
                   );
-                }
-
-                const active = activeTab === tab.key && tab.key !== 'fav';
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.key}
-                    onClick={() => {
-                      haptic.selection();
-                      if (tab.key === 'sob') {
-                        setShowSobreModal(true);
-                      } else if (tab.key === 'fav') {
-                        setOverlayPanel('fav');
-                      } else {
-                        setActiveTab(tab.key as 'art' | 'cap' | 'rec' | 'sob');
-                      }
-                    }}
-                    className={`relative flex-1 min-w-0 flex flex-col items-center justify-center gap-1 py-1.5 px-0.5 rounded-xl transition-colors ${
-                      active ? 'text-white' : 'text-muted-foreground hover:text-white/80'
-                    }`}
-                    aria-label={tab.label}
-                  >
-                    {active && (
-                      <span
-                        className="absolute inset-x-0.5 inset-y-0.5 rounded-xl bg-white/10 ring-1 ring-white/20"
-                        aria-hidden="true"
-                      />
-                    )}
-
-                    <Icon className="relative w-[26px] h-[26px] shrink-0" strokeWidth={active ? 2.2 : 1.8} />
-                    <span
-                      className={`relative w-full text-center truncate px-0.5 text-[10px] leading-tight ${
-                        active ? 'font-bold' : 'font-medium'
-                      }`}
-                    >
-                      {tab.label}
-                    </span>
-                  </button>
-                );
-              })}
+                })}
+              </div>
             </div>
           </div>
         </nav>
