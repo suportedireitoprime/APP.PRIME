@@ -138,7 +138,8 @@ export const ArtigoSheetHeader = memo(function ArtigoSheetHeader({
       items.push({ label: toTitleCase(tabelaNome.replace(/_/g, ' ')) });
     }
 
-    return items;
+    // A pedido do usuário, retornar apenas o título final (último item da hierarquia) para poupar espaço visual
+    return items.length > 0 ? [items[items.length - 1]] : [];
   }, [breadcrumb, artigo.titulo, artigo.capitulo, tabelaNome]);
 
   return (
