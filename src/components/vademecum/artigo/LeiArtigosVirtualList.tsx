@@ -87,11 +87,28 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
   }, [selectedTabelaNome, openArtigoWithRecent]);
 
   // Stable memoized highlightText ref (avoids new function ref each render)
-  const stableHighlightText = useMemo(
-    () => (searchQuery ? highlightText : undefined),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [searchQuery]
-  );
+  const stableHighlightText = useMemo(() => {
+    if (!searchQuery || !searchQuery.trim()) return undefined;
+    
+    return (text: string) => {
+      try {
+        const escaped = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escaped})`, 'gi');
+        const parts = text.split(regex);
+        if (parts.length <= 1) return text;
+        return parts.map((part, i) =>
+          regex.test(part)
+            ? React.createElement('mark', {
+                key: i,
+                className: 'bg-amber-400/30 text-amber-200 rounded-sm px-0.5',
+              }, part)
+            : part
+        );
+      } catch {
+        return text;
+      }
+    };
+  }, [searchQuery]);
 
   // Pre-compute stable tags map to avoid creating new objects per ArtigoCard on every scroll
   const artigoTagsMap = useMemo(() => {
@@ -105,27 +122,6 @@ const LeiArtigosVirtualList: React.FC<LeiArtigosVirtualListProps> = ({
     }
     return map;
   }, [visibleArtigos, isArtigoFav, grifadoNumeros, anotadoNumeros]);
-
-  // Item 22: Real highlight implementation for search terms in article cards
-  const highlightText = (text: string) => {
-    if (!searchQuery || !searchQuery.trim()) return text;
-    try {
-      const escaped = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`(${escaped})`, 'gi');
-      const parts = text.split(regex);
-      if (parts.length <= 1) return text;
-      return parts.map((part, i) =>
-        regex.test(part)
-          ? React.createElement('mark', {
-              key: i,
-              className: 'bg-amber-400/30 text-amber-200 rounded-sm px-0.5',
-            }, part)
-          : part
-      );
-    } catch {
-      return text;
-    }
-  };
 
   // Item 24: Previne layout thrashing limitando getBoundingClientRect a RAF no mount/resize
   useLayoutEffect(() => {
