@@ -68,11 +68,11 @@ const ArtigoCard = ({ artigo, index, onClick, highlightText, isHighlighted, with
       <div
         className="article-cascade-item px-4 sm:px-6 pt-5 pb-3 sm:pt-6 sm:pb-4 flex flex-col items-center justify-center text-center overflow-hidden"
       >
-        <p className="text-[15px] sm:text-[16px] uppercase tracking-[0.24em] font-extrabold text-amber-300 leading-tight break-words">
+        <p className="text-[15px] sm:text-[16px] uppercase tracking-[0.24em] font-extrabold text-red-400 leading-tight break-words">
           {head}
         </p>
         {sub && (
-          <p className="text-[16px] sm:text-[18px] mt-2 font-serif italic font-medium leading-snug text-amber-100/95 break-words normal-case max-w-[36ch] mx-auto">
+          <p className="text-[16px] sm:text-[18px] mt-2 font-serif italic font-medium leading-snug text-red-200/95 break-words normal-case max-w-[36ch] mx-auto">
             {(() => {
               const lower = sub.toLowerCase();
               let wordIdx = 0;
