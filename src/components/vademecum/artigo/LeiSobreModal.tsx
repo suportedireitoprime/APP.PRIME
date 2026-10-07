@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { executeAiTask } from '@/services/aiGatewayService';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -114,59 +113,26 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
     const fetchSobre = async () => {
       setLoadingSobre(true);
       try {
+        let query = supabase.from('vade_mecum_leis').select('sobre_html');
+        
         if (leiId) {
-          const { data, error } = await supabase
-            .from('vade_mecum_leis')
-            .select('sobre_html')
-            .eq('id', leiId)
-            .single();
-          
-          if (!error && data?.sobre_html) {
-            setSobreHtml(data.sobre_html);
-            setLoadingSobre(false);
-            return;
-          }
-        }
-
-        const prompt = `Atue como um exímio jurista e professor de Direito. Resuma o que é a norma "${leiNome}" (${leiDescricao}) de forma estruturada e extremamente detalhada.
-        
-Inclua os seguintes pontos:
-1. Contexto histórico completo da sua criação, ano de sanção, presidente/governo da época, e o principal motivo de sua promulgação.
-2. Os objetivos primordiais da norma e o seu impacto no Direito Brasileiro.
-3. Como a norma é dividida e estruturada de forma orgânica (escreva detalhadamente os principais Livros ou Títulos, explicando brevemente o que cada um aborda).
-
-Regras de formatação obrigatórias:
-- Retorne APENAS o HTML final, sem blocos de código markdown (como \`\`\`html).
-- Use APENAS as tags <p>, <strong> e <ul class="list-disc pl-5 space-y-1.5 text-zinc-400 mt-2 mb-4"> com <li> contendo <strong class="text-zinc-200">Título/Livro:</strong> explicação.
-- Seja didático, aprofundado, e gere pelo menos 3 parágrafos de introdução antes da lista estrutural.`;
-        
-        const timeoutPromise = new Promise<{ text: string }>((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout')), 15000)
-        );
-
-        const aiPromise = executeAiTask({
-          featureKey: 'chat_juridico',
-          prompt,
-          systemPrompt: 'Você é um assistente jurídico sênior. Responda APENAS com o HTML puro solicitado.',
-          temperature: 0.3,
-        });
-
-        const res = await Promise.race([aiPromise, timeoutPromise]);
-        let html = res.text || '';
-        html = html.replace(/```html/g, '').replace(/```/g, '').trim();
-
-        if (html && !html.includes('Falha')) {
-          setSobreHtml(html);
-          if (leiId) {
-            await supabase
-              .from('vade_mecum_leis')
-              .update({ sobre_html: html })
-              .eq('id', leiId);
-          } else {
-            localStorage.setItem(cacheKey, html);
-          }
+          query = query.eq('id', leiId);
+        } else if (leiNome) {
+          // Fallback to name if ID is missing or undefined
+          query = query.ilike('nome', `%${leiNome}%`);
         } else {
           setSobreHtml(`<p>Informações detalhadas não disponíveis no momento.</p>`);
+          setLoadingSobre(false);
+          return;
+        }
+
+        const { data, error } = await query.limit(1).maybeSingle();
+        
+        if (!error && data?.sobre_html && data.sobre_html.length > 50) {
+          setSobreHtml(data.sobre_html);
+          localStorage.setItem(cacheKey, data.sobre_html);
+        } else {
+          setSobreHtml(`<p>Informações detalhadas não disponíveis no momento. A equipe editorial está providenciando o conteúdo.</p>`);
         }
       } catch (err) {
         console.warn('Erro ao buscar o sobre da lei:', err);
