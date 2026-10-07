@@ -57,7 +57,7 @@ export const AI_FEATURES_REGISTRY: AiFeatureDefinition[] = [
     subtitle: 'Assistente e tutor jurídico em tempo real para dúvidas processuais e materiais',
     category: 'Texto & Chat',
     defaultProvider: 'omniroute',
-    defaultModel: 'antigravity/gemini-3.8-flash',
+    defaultModel: 'antigravity/gemini-3.7-flash-high',
     suggestedModels: [
       {
         id: 'antigravity/gemini-3.8-flash',
@@ -97,7 +97,7 @@ export const AI_FEATURES_REGISTRY: AiFeatureDefinition[] = [
     subtitle: 'Síntese de doutrina, artigos de leis, Cornell Notes e criação de flashcards',
     category: 'Síntese & Estudo',
     defaultProvider: 'omniroute',
-    defaultModel: 'antigravity/gemini-3.6-flash',
+    defaultModel: 'antigravity/gemini-3.7-flash-high',
     suggestedModels: [
       {
         id: 'antigravity/gemini-3.6-flash',

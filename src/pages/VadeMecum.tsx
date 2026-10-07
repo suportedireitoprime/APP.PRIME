@@ -10,8 +10,10 @@ import DesktopSidebar from '@/components/vademecum/desktop/DesktopSidebar';
 import VadeMecumDesktopHeroBanner from '@/components/vademecum/desktop/VadeMecumDesktopHeroBanner';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import VadeMecumQuickActionSheet, { type QuickActionType } from '@/components/vademecum/sheets/VadeMecumQuickActionSheet';
+import type { QuickActionType } from '@/components/vademecum/sheets/VadeMecumQuickActionSheet';
 import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
+
+const VadeMecumQuickActionSheet = lazyWithRetry(() => import('@/components/vademecum/sheets/VadeMecumQuickActionSheet'));
 
 // Busca própria e exclusiva do Vade Mecum (Artigos, Leis e Jurisprudência)
 const BuscaLeisOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/BuscaLeisOverlay'));
@@ -126,10 +128,12 @@ const VadeMecum = () => {
           </Suspense>
         )}
 
-        <VadeMecumQuickActionSheet
-          activeSheet={activeQuickSheet}
-          onClose={() => setActiveQuickSheet(null)}
-        />
+        <Suspense fallback={null}>
+          <VadeMecumQuickActionSheet
+            activeSheet={activeQuickSheet}
+            onClose={() => setActiveQuickSheet(null)}
+          />
+        </Suspense>
       </div>
     );
 
@@ -158,10 +162,12 @@ const VadeMecum = () => {
         
         <VadeMecumBottomNav />
 
-        <VadeMecumQuickActionSheet
-          activeSheet={activeQuickSheet}
-          onClose={() => setActiveQuickSheet(null)}
-        />
+        <Suspense fallback={null}>
+          <VadeMecumQuickActionSheet
+            activeSheet={activeQuickSheet}
+            onClose={() => setActiveQuickSheet(null)}
+          />
+        </Suspense>
       </div>
 
     </div>

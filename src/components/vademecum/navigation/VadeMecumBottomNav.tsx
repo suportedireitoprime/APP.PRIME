@@ -1,9 +1,13 @@
-import { useState, useEffect, startTransition } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ChevronRight, Gavel, Landmark, Map, ScrollText, Search, PocketKnife } from 'lucide-react';
+import { Menu, Search, Gavel, Landmark, Map, ScrollText, PocketKnife } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useKeyboardHeight } from '@/hooks/useKeyboardListeners';
+import { lazyWithRetry } from '@/utils/lazyWithRetry';
+import type { SheetType } from './VadeMecumCategoriesSheet';
+
+const VadeMecumCategoriesSheet = lazyWithRetry(() => import('./VadeMecumCategoriesSheet'));
 
 const MAIS_MENU = [
   { id: 'especiais', label: 'Legislação Especial', to: '/vade-mecum/especiais', icon: PocketKnife, desc: 'Leis penais extravagantes e especiais', color: '#F97316' },
@@ -13,7 +17,7 @@ const MAIS_MENU = [
 const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const [maisOpen, setMaisOpen] = useState(false);
+  const [activeSheet, setActiveSheet] = useState<SheetType>(null);
   const [mounted, setMounted] = useState(false);
   const keyboardHeight = useKeyboardHeight();
   const actuallyHidden = hidden || keyboardHeight > 0;
@@ -24,8 +28,13 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
 
   const handlePesquisar = () => {
     haptic.selection();
-    // Dispara evento para o VadeMecum.tsx abrir a busca
+    setActiveSheet(null);
     window.dispatchEvent(new CustomEvent('vademecum:abrir-busca'));
+  };
+
+  const handleOpenSheet = (sheet: SheetType) => {
+    haptic.selection();
+    setActiveSheet(activeSheet === sheet ? null : sheet);
   };
 
   const navContent = (
@@ -47,63 +56,67 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
               
               {/* Slot 1: Códigos */}
               <button
-                onClick={() => { haptic.selection(); setMaisOpen(false); startTransition(() => navigate('/vade-mecum/codigos')); }}
+                onClick={() => handleOpenSheet('codigos')}
                 className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
-                  pathname.startsWith('/vade-mecum/codigos') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+                  activeSheet === 'codigos' || pathname.startsWith('/vade-mecum/codigos') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
                 }`}
               >
-                <Gavel className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${pathname.startsWith('/vade-mecum/codigos') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+                <Gavel className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'codigos' || pathname.startsWith('/vade-mecum/codigos') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
                 <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Códigos</span>
               </button>
 
               {/* Slot 2: Estatutos */}
               <button
-                onClick={() => { haptic.selection(); setMaisOpen(false); startTransition(() => navigate('/vade-mecum/estatutos')); }}
+                onClick={() => handleOpenSheet('estatutos')}
                 className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
-                  pathname.startsWith('/vade-mecum/estatutos') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+                  activeSheet === 'estatutos' || pathname.startsWith('/vade-mecum/estatutos') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
                 }`}
               >
-                <Landmark className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${pathname.startsWith('/vade-mecum/estatutos') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+                <Landmark className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'estatutos' || pathname.startsWith('/vade-mecum/estatutos') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
                 <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Estatutos</span>
               </button>
 
-              {/* Slot 3: Pesquisar (destaque flutuante central no mobile) */}
-              <button
-                onClick={handlePesquisar}
-                className="relative flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10 active:opacity-70 transition-transform duration-100 cursor-pointer text-white/80 hover:text-white"
-              >
-                <span
-                  className={`absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-primary shadow-[0_10px_26px_rgba(0,0,0,0.6)] transition-transform`}
+              {/* Slot 3: Pesquisar */}
+              <div className="relative flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl md:hover:bg-white/10 transition-transform duration-100">
+                <button
+                  onClick={handlePesquisar}
+                  aria-label="Abrir busca"
+                  className={`absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-primary shadow-[0_10px_26px_rgba(0,0,0,0.6)] active:scale-95 transition-transform cursor-pointer pointer-events-auto`}
                 >
                   <Search className="relative w-10 h-10 xs:w-11 xs:h-11 md:w-9 md:h-9 text-white md:text-white/90 drop-shadow-lg -scale-x-100" aria-hidden="true" strokeWidth={1.2} />
                   <span
                     aria-hidden
                     className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/45 to-transparent motion-safe:animate-[vade-mecum-shine_3.4s_ease-in-out_infinite] md:hidden"
                   />
-                </span>
+                </button>
                 <span aria-hidden className="w-7 h-7 sm:w-8 sm:h-8 md:hidden" />
-                <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Pesquisar</span>
-              </button>
+                <button 
+                  onClick={handlePesquisar} 
+                  className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5 text-white/80 hover:text-white cursor-pointer active:opacity-70 pointer-events-auto"
+                >
+                  Pesquisar
+                </button>
+              </div>
 
-              {/* Slot 4: Jurisprudência */}
+              {/* Slot 4: Jurisprudência (Súmulas) */}
               <button
-                onClick={() => { haptic.selection(); setMaisOpen(false); startTransition(() => navigate('/jurisprudencia')); }}
+                onClick={() => handleOpenSheet('sumulas')}
                 className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
-                  pathname.startsWith('/jurisprudencia') || pathname.startsWith('/vade-mecum/sumulas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+                  activeSheet === 'sumulas' || pathname.startsWith('/jurisprudencia') || pathname.startsWith('/vade-mecum/sumulas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
                 }`}
               >
-                <ScrollText className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${pathname.startsWith('/jurisprudencia') || pathname.startsWith('/vade-mecum/sumulas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+                <ScrollText className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'sumulas' || pathname.startsWith('/jurisprudencia') || pathname.startsWith('/vade-mecum/sumulas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
                 <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Súmulas</span>
               </button>
 
               {/* Slot 5: Mais Leis */}
               <button
-                onClick={() => { haptic.selection(); setMaisOpen(!maisOpen); }}
+                onClick={() => handleOpenSheet('mais')}
                 className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
-                  maisOpen ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+                  activeSheet === 'mais' ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
                 }`}
               >
-                <Menu className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${maisOpen ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+                <Menu className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${activeSheet === 'mais' ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
                 <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Mais Leis</span>
               </button>
 
@@ -112,54 +125,15 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
         </div>
       </nav>
 
-      {/* Sheet do menu "Mais" */}
-      {maisOpen && (
-        <>
-          <div
-            onClick={() => setMaisOpen(false)}
-            className="fixed inset-0 bg-black/80 z-[60] transition-opacity duration-200"
+      {/* Lazy Loaded Sheets */}
+      {activeSheet && (
+        <Suspense fallback={null}>
+          <VadeMecumCategoriesSheet
+            activeSheet={activeSheet}
+            onClose={() => setActiveSheet(null)}
+            maisMenu={MAIS_MENU}
           />
-          <div
-            className="fixed bottom-0 left-0 right-0 z-[70] bg-background border-t border-border rounded-t-3xl pb-[calc(2.5rem+var(--sai-bottom))] pt-6 px-4 shadow-2xl max-h-[85vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-transform duration-200"
-          >
-            <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-muted rounded-full" />
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-display font-bold text-foreground">Mais Categorias</h2>
-              <button
-                onClick={() => setMaisOpen(false)}
-                className="p-2 rounded-full bg-secondary text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-2">
-              {MAIS_MENU.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      haptic.selection();
-                      setMaisOpen(false);
-                      navigate(item.to);
-                    }}
-                    className="w-full flex items-center justify-between p-4 rounded-2xl bg-card border border-border/60 hover:bg-secondary/80 active:scale-[0.98] transition-all shadow-sm cursor-pointer"
-                  >
-                    <div className="flex items-center gap-4">
-                      <Icon className="w-7 h-7" style={{ color: item.color }} strokeWidth={1.5} />
-                      <div className="text-left">
-                        <h3 className="font-display font-bold text-[16px] text-foreground">{item.label}</h3>
-                        <p className="font-body text-sm text-muted-foreground">{item.desc}</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </>
+        </Suspense>
       )}
     </>
   );
@@ -172,3 +146,4 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
 };
 
 export default VadeMecumBottomNav;
+

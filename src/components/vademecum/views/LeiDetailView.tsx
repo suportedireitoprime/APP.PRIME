@@ -40,7 +40,7 @@ const MOBILE_ARTIGOS_VIRTUAL_THRESHOLD = 120;
 
 interface LeiDetailViewProps {
   tipo: string | undefined;
-  leis: any[];
+  leis: { id: string; nome: string; [key: string]: unknown }[];
   selectedLeiId: string;
   selectedLeiNome: string;
   selectedLeiDescricao: string;
@@ -108,6 +108,39 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [ocrOpen, setOcrOpen] = useState(false);
   const [showGrafo, setShowGrafo] = useState(false);
+
+  // Smart Auto-Hide Header Logic
+  const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Se estiver no topo ou descendo menos de 120px, manter visível
+      if (currentScrollY <= 120) {
+        setIsHeaderHidden(false);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+      
+      // Rolando para baixo: esconder
+      if (currentScrollY > lastScrollY.current && currentScrollY > 200) {
+        if (!isSearchFocused && !overlayPanel && !showSobreModal && !openArtigo) {
+          setIsHeaderHidden(true);
+        }
+      } 
+      // Rolando para cima: mostrar
+      else if (currentScrollY < lastScrollY.current - 10) {
+        setIsHeaderHidden(false);
+      }
+      
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isSearchFocused, overlayPanel, showSobreModal, openArtigo]);
 
   useEffect(() => {
     if (selectedLeiId && selectedLeiNome) {
@@ -240,7 +273,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [recentIds, setRecentIds] = useState<string[]>([]);
   const [openArtigo, setOpenArtigo] = useState<ArtigoLei | null>(null);
   const [openFromNovidades, setOpenFromNovidades] = useState(false);
-  const [openModInfo, setOpenModInfo] = useState<any | null>(null);
+  const [openModInfo, setOpenModInfo] = useState<AlteracaoDetailData | null>(null);
   const [highlightedArtigoId, setHighlightedArtigoId] = useState<string | null>(null);
 
   // Hooks do domínio
@@ -348,7 +381,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       } else {
         toast.info(`Artigo ${cleanNum} removido dos favoritos.`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Reverte estado otimista caso ocorra erro (ex: não logado)
       setFavArtigoNumeros((prev) => {
         const next = new Set(prev);
@@ -361,7 +394,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         }
         return next;
       });
-      toast.error(err?.message || 'Erro ao sincronizar favorito com o Supabase');
+      toast.error((err as Error)?.message || 'Erro ao sincronizar favorito com o Supabase');
     }
   }, [selectedTabelaNome, isArtigoFav, setFavArtigoNumeros]);
 
@@ -528,7 +561,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
       setTimeout(() => setHighlightedArtigoId(null), 2500);
     }
     setPendingArtigoNumero(null);
-  }, [artigos, pendingArtigoNumero]);
+  }, [artigos, pendingArtigoNumero, setPendingArtigoNumero]);
 
   // Item 65: Atalhos de teclado no Desktop / iPad
   useEffect(() => {
@@ -724,7 +757,11 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         />
 
         <div
-          className="sticky top-0 z-40 -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6 pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-2.5 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/40 space-y-2.5"
+          className={`sticky z-40 -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6 pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-2.5 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/40 space-y-2.5 transition-all duration-300 ${
+            isHeaderHidden 
+              ? '-top-[100px] opacity-0 pointer-events-none' 
+              : 'top-0 opacity-100'
+          }`}
         >
           {/* Barra de Pesquisa posicionada fora e abaixo do painel */}
           <div ref={searchBarRef} className={`mx-auto w-full relative ${isDesktop ? 'max-w-none' : ''}`}>
@@ -979,7 +1016,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       if (tab.key === 'sob') {
                         setShowSobreModal(true);
                       } else {
-                        setActiveTab(tab.key as any);
+                        setActiveTab(tab.key as 'art' | 'cap' | 'rec' | 'sob');
                       }
                     }}
                     disabled={loadingArtigos}
@@ -1073,7 +1110,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                             setShowPremiumGate(true);
                             return;
                           }
-                          setOverlayPanel(key as any);
+                          setOverlayPanel(key as 'fav' | 'playlist' | 'novidades' | 'anotacoes' | 'radar');
                         }}
                         className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all ${active ? 'bg-hero-panel text-white shadow-md shadow-red-950/20' : 'bg-card hover:bg-secondary/80 text-foreground border border-border/40 hover:border-border/80'}`}
                       >
@@ -1138,7 +1175,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       if (tab.key === 'sob') {
                         setShowSobreModal(true);
                       } else {
-                        setActiveTab(tab.key as any);
+                        setActiveTab(tab.key as 'art' | 'cap' | 'rec' | 'sob');
                       }
                     }}
                     className={`relative w-full min-w-0 flex flex-col items-center justify-center gap-1 py-1.5 px-0.5 rounded-xl transition-colors ${
