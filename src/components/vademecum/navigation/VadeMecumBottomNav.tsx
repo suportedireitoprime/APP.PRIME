@@ -24,6 +24,17 @@ const VadeMecumBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
 
   useEffect(() => {
     setMounted(true);
+
+    const handleOpenSheetEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<SheetType>;
+      if (customEvent.detail) {
+        haptic.selection();
+        setActiveSheet(customEvent.detail);
+      }
+    };
+
+    window.addEventListener('vademecum:abrir-sheet', handleOpenSheetEvent);
+    return () => window.removeEventListener('vademecum:abrir-sheet', handleOpenSheetEvent);
   }, []);
 
   const handlePesquisar = () => {

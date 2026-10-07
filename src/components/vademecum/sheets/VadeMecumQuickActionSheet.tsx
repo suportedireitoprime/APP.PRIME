@@ -28,7 +28,7 @@ import VadeMecumFavoritos from '@/pages/VadeMecumFavoritos';
 import RadarLegislacaoContent from '@/components/vademecum/outros/RadarLegislacaoContent';
 import { parseDispositivoAlteracao } from '@/data/leiAlteracoesScraped';
 
-export type QuickActionType = 'favoritos' | 'anotacoes' | 'historico' | 'radares';
+export type QuickActionType = 'favoritos' | 'anotacoes' | 'radares';
 
 interface VadeMecumQuickActionSheetProps {
   activeSheet: QuickActionType | null;
@@ -40,7 +40,7 @@ interface VadeMecumQuickActionSheetProps {
 // ─────────────────────────────────────────────────────────────
 const VadeMecumAnotacoesContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const navigate = useNavigate();
-  const [anotacoes, setAnotacoes] = useState<any[]>([]);
+  const [anotacoes, setAnotacoes] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
 
   const carregarAnotacoes = useCallback(async () => {
@@ -83,7 +83,7 @@ const VadeMecumAnotacoesContent: React.FC<{ onClose: () => void }> = ({ onClose 
     }
   };
 
-  const handleOpenArtigo = (item: any) => {
+  const handleOpenArtigo = (item: Record<string, any>) => {
     haptic.selection();
     const lei = getLeiByTabela(item.tabela_codigo);
     const numArt = item.numero_artigo || (item.artigo_id ? String(item.artigo_id).split('::')[1] : '');
@@ -182,173 +182,6 @@ const VadeMecumAnotacoesContent: React.FC<{ onClose: () => void }> = ({ onClose 
   );
 };
 
-// ─────────────────────────────────────────────────────────────
-// Conteúdo 2: Novidades (Atualizações Legislativas)
-// ─────────────────────────────────────────────────────────────
-
-function getBadgeStyle(tipo: string) {
-  const t = (tipo || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  if (t.startsWith('revogad') || t.startsWith('vetad') || t.startsWith('suprimid')) {
-    return 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
-  }
-  if (t.startsWith('incluid') || t.startsWith('acrescid')) {
-    return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
-  }
-  if (t.startsWith('redacao') || t.startsWith('alterad')) {
-    return 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
-  }
-  if (t.startsWith('renumerad')) {
-    return 'bg-sky-500/20 text-sky-300 border border-sky-500/30';
-  }
-  if (t.startsWith('vigencia') || t.startsWith('producao')) {
-    return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
-  }
-  return 'bg-primary/20 text-primary border border-primary/30';
-}
-
-const VadeMecumHistoricoContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-  const navigate = useNavigate();
-  const [filterLei, setFilterLei] = useState<string>('todos');
-  const [alteracoes, setAlteracoes] = useState<any[]>([]);
-  const [loadingAlteracoes, setLoadingAlteracoes] = useState(false);
-
-  useEffect(() => {
-    setLoadingAlteracoes(true);
-    supabase
-      .from('vademecum_historico_alteracoes')
-      .select(`
-        id,
-        lei_id,
-        resumo_ia,
-        data_alteracao,
-        criado_em,
-        artigo_numero,
-        tipo_alteracao,
-        texto_anterior,
-        texto_atual,
-        detectado_em,
-        lei:vade_mecum_leis(nome, tipo, tabela_nome)
-      `)
-      .order('criado_em', { ascending: false })
-      .limit(50)
-      .then(({ data, error }) => {
-        if (!error && data) {
-           setAlteracoes(data);
-        }
-        setLoadingAlteracoes(false);
-      })
-      .catch(() => setLoadingAlteracoes(false));
-  }, []);
-
-  const leisDisponiveis = useMemo(() => {
-    const nomes = alteracoes.map(a => a.lei?.nome).filter(Boolean);
-    return Array.from(new Set(nomes));
-  }, [alteracoes]);
-
-  const filtered = useMemo(() => {
-    if (filterLei === 'todos') return alteracoes;
-    return alteracoes.filter(a => a.lei?.nome === filterLei);
-  }, [alteracoes, filterLei]);
-
-  return (
-    <div className="space-y-4 pb-8">
-      {/* Menu de alternância com as leis */}
-      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 px-1">
-        <button
-          onClick={() => { haptic.selection(); setFilterLei('todos'); }}
-          className={`px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all border ${
-            filterLei === 'todos' ? 'bg-primary/20 text-primary border-primary/50' : 'bg-[#14151a] text-zinc-400 border-white/10 hover:text-zinc-200'
-          }`}
-        >
-          Todos
-        </button>
-        {leisDisponiveis.map((nome, i) => (
-          <button
-            key={i}
-            onClick={() => { haptic.selection(); setFilterLei(nome); }}
-            className={`px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-all border ${
-              filterLei === nome ? 'bg-primary/20 text-primary border-primary/50' : 'bg-[#14151a] text-zinc-400 border-white/10 hover:text-zinc-200'
-            }`}
-          >
-            {nome}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-3">
-        {loadingAlteracoes ? (
-          <div className="flex justify-center py-16">
-            <Loader2 className="w-7 h-7 text-primary animate-spin" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-16 space-y-2">
-            <History className="w-10 h-10 text-zinc-600 mx-auto" />
-            <p className="text-white text-sm font-bold">Nenhuma novidade recente mapeada</p>
-          </div>
-        ) : (
-          filtered.map((item, i) => {
-            const ano = item.detectado_em ? new Date(item.detectado_em).getFullYear() : 2026;
-            const dispInfo = parseDispositivoAlteracao({
-              artigo_numero: item.artigo_numero || '',
-              texto_atual: item.texto_atual || '',
-              texto_anterior: item.texto_anterior || '',
-              tipo_alteracao: item.tipo_alteracao || '',
-              ano
-            });
-            const badgeClass = getBadgeStyle(dispInfo.acaoTexto || item.tipo_alteracao || 'Alteração');
-            const dataFormated = item.data_alteracao ? new Date(item.data_alteracao).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('. de ', '/') : '';
-
-            return (
-              <div
-                key={item.id || i}
-                onClick={() => {
-                  haptic.selection();
-                  onClose();
-                  const slug = leiToSlug({ id: item.lei_id, nome: item.lei?.nome || '' });
-                  const base = `/legislacao/${tipoToSlug(item.lei?.tipo || 'lei')}/${slug}`;
-                  const numClean = (item.artigo_numero || '').replace(/[^0-9]/g, '');
-                  navigate(numClean ? `${base}/${numClean}` : base);
-                }}
-                className="w-full rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/25 hover:border-primary/40 p-4 flex flex-col justify-between shadow-xl shadow-black/60 backdrop-blur-md active:scale-[0.98] transition-all cursor-pointer relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                <div className="flex items-center justify-between gap-1.5 mb-2 relative z-10">
-                  <span className="font-bold text-[13.5px] sm:text-[14.5px] text-white group-hover:text-primary transition-colors flex items-center gap-1 drop-shadow-sm truncate pr-1">
-                    {dispInfo.artigoDisplayCompleto || item.artigo_numero || 'Artigo'}
-                  </span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full leading-none shrink-0 shadow-sm ${badgeClass}`}>
-                    {dispInfo.acaoTexto || 'Alteração'}
-                  </span>
-                </div>
-                <div className="flex-1 relative z-10 mb-2.5">
-                  <p className="text-[11px] text-zinc-300 line-clamp-3 leading-relaxed font-normal">
-                    {dispInfo.acaoDescritiva ? (
-                      <>
-                        <span className="font-semibold text-white/95">{dispInfo.acaoDescritiva}: </span>
-                        <span>{dispInfo.corpoTexto || dispInfo.descricaoCompleta}</span>
-                      </>
-                    ) : (
-                      dispInfo.descricaoCompleta || item.resumo_ia
-                    )}
-                  </p>
-                </div>
-                <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-2 border-t border-primary/20 relative z-10">
-                  <span className="truncate max-w-[200px] font-medium text-zinc-300">
-                    {item.lei?.nome || 'Legislação'}
-                  </span>
-                  <span className="font-bold text-zinc-200 shrink-0 ml-1 tracking-wider uppercase">
-                    {dataFormated}
-                  </span>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-    </div>
-  );
-};
-
 
 // ─────────────────────────────────────────────────────────────
 // Conteúdo 3: Radares Legislativos
@@ -381,7 +214,6 @@ export const VadeMecumQuickActionSheet: React.FC<VadeMecumQuickActionSheetProps>
   const titles: Record<QuickActionType, { title: string; subtitle: string }> = {
     favoritos: { title: 'Meus Favoritos', subtitle: 'Artigos e leis salvas para consulta' },
     anotacoes: { title: 'Minhas Anotações', subtitle: 'Fichamentos e grifos anotados' },
-    historico: { title: 'Novidades', subtitle: 'Últimas atualizações legislativas' },
     radares: { title: 'Radares Legislativos', subtitle: 'Projetos de Lei e monitoramento do Congresso' },
   };
 
@@ -438,7 +270,6 @@ export const VadeMecumQuickActionSheet: React.FC<VadeMecumQuickActionSheetProps>
             <div className="flex-1 overflow-y-auto px-4 py-4 pb-[calc(2rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] overscroll-contain">
               {activeSheet === 'favoritos' && <VadeMecumFavoritos />}
               {activeSheet === 'anotacoes' && <VadeMecumAnotacoesContent onClose={onClose} />}
-              {activeSheet === 'historico' && <VadeMecumHistoricoContent onClose={onClose} />}
               {activeSheet === 'radares' && <VadeMecumRadaresContent onClose={onClose} />}
             </div>
           </motion.div>

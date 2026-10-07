@@ -1,6 +1,6 @@
 import { memo } from 'react';
 
-import { ChevronRight, type LucideIcon } from 'lucide-react';
+import { ChevronRight, ArrowUpRight, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface HomeCardProps {
@@ -64,13 +64,13 @@ const HomeCardImpl = ({
     style={style}
   >
     {!hideChevron && (
-      <div className="absolute top-1/2 -translate-y-1/2 right-2.5">
+      <div className="absolute top-3 right-3 z-20">
         {badge ? (
           <span className={`rounded-full border px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide ${solidColor ? 'border-border/60 bg-black/40 text-muted-foreground' : 'border-border bg-muted text-muted-foreground'}`}>
             {badge}
           </span>
         ) : (
-          <ChevronRight className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 ${solidColor ? 'text-muted-foreground' : 'text-muted-foreground'}`} />
+          <ArrowUpRight className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${solidColor ? 'text-muted-foreground' : 'text-muted-foreground'}`} />
         )}
       </div>
     )}

@@ -3,13 +3,14 @@ import { X, ChevronRight, Book, ChevronDown, Search, Mic } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { haptic } from '@/lib/nativeHaptics';
 import { getLeisPorTipo, LEIS_CATALOG } from '@/data/leisCatalog';
+import { KNOWN_LEIS_DATAS } from '@/data/leiAlteracoesScraped';
 import { LEI_ICON_MAP, LEI_ICON_DEFAULT_COLOR } from '@/lib/leiIcons';
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 import { isFavorito } from '@/lib/leisFavoritos';
 import { PrimeBottomSheet } from '../overlays/PrimeBottomSheet';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 
-export type SheetType = 'codigos' | 'estatutos' | 'sumulas' | 'mais' | null;
+export type SheetType = 'codigos' | 'estatutos' | 'sumulas' | 'mais' | 'novidades' | null;
 
 interface MaisMenuItem {
   id: string;
@@ -44,6 +45,7 @@ export default function VadeMecumCategoriesSheet({ activeSheet, onClose, maisMen
       case 'codigos': return { title: 'CÓDIGOS', color: 'bg-red-700' };
       case 'estatutos': return { title: 'ESTATUTOS', color: 'bg-blue-700' };
       case 'sumulas': return { title: 'SÚMULAS E JURISPRUDÊNCIA', color: 'bg-emerald-700' };
+      case 'novidades': return { title: 'NOVIDADES LEGISLATIVAS', color: 'bg-yellow-600' };
       case 'mais': return { title: 'MAIS CATEGORIAS', color: 'bg-orange-700' };
       default: return { title: '', color: 'bg-zinc-800' };
     }
@@ -62,13 +64,16 @@ export default function VadeMecumCategoriesSheet({ activeSheet, onClose, maisMen
       { id: 'tst', nome: 'Súmulas do TST', sigla: 'TST', descricao: 'Tribunal Superior do Trabalho', tipo: 'sumula', tabela_nome: '' },
       { id: 'tse', nome: 'Súmulas do TSE', sigla: 'TSE', descricao: 'Tribunal Superior Eleitoral', tipo: 'sumula', tabela_nome: '' },
     ];
+    if (activeSheet === 'novidades') {
+      return LEIS_CATALOG.filter(lei => !!KNOWN_LEIS_DATAS[lei.id]);
+    }
     return [];
   };
 
   const fullList = getList();
   
   const filteredList = useMemo(() => {
-    let list = fullList;
+    let list = fullList as any[];
     if (query.trim().length > 0) {
       const q = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       list = list.filter(item => {

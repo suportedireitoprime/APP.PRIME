@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, NotebookPen, Radar, History, Sparkles } from 'lucide-react';
+import { Heart, NotebookPen, Radar, History, AlertTriangle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { haptic } from '@/lib/nativeHaptics';
 
@@ -43,11 +43,14 @@ const VadeMecumQuickActions: React.FC<VadeMecumQuickActionsProps> = ({ onSelectQ
       </button>
 
       <button 
-        onClick={() => handleAction('historico', '/vade-mecum/recentes')} 
+        onClick={() => {
+          haptic.selection();
+          window.dispatchEvent(new CustomEvent('vademecum:abrir-sheet', { detail: 'novidades' }));
+        }} 
         className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
         aria-label="Abrir Novidades"
       >
-        <Sparkles className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#FBBF24', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
+        <AlertTriangle className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#FBBF24', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
         <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">Novidades</span>
       </button>
 
