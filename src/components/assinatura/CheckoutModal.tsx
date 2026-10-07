@@ -113,7 +113,7 @@ const CreditCardPreview = ({ name, number, expiry, cvc, isFlipped }: { name: str
 }
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange, plan, userEmail, userName, onSuccess }) => {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [loading, setLoading] = useState(false);
   const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [installmentCount, setInstallmentCount] = useState<number>(1);
@@ -158,6 +158,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const [pixTimeLeft, setPixTimeLeft] = useState<number>(600);
   const [pixExpiryTime, setPixExpiryTime] = useState<number | null>(null);
   const [verifyCooldown, setVerifyCooldown] = useState<number>(0);
+  const triggerSuccessAnimation = () => {
+    setStep(4);
+    setTimeout(() => {
+      onSuccess();
+      onOpenChange(false);
+    }, 2500);
+  };
+
   const isProcessingRef = useRef(false);
   const hasWarnedExpiryRef = useRef(false);
 
@@ -227,11 +235,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     let delay = 5000;
 
     const handleSuccess = () => {
-      if (!isMounted) return;
-      toast.success("Pagamento confirmado via PIX!");
-      onSuccess();
-      onOpenChange(false);
-    };
+    if (!isMounted) return;
+    toast.success("Pagamento confirmado via PIX!");
+    triggerSuccessAnimation();
+  };
 
     // 1. Escuta Realtime na tabela asaas_subscriptions
     let channel: any = null;
@@ -445,14 +452,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         const status = data?.status;
         if (['CONFIRMED', 'RECEIVED', 'PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'].includes(status)) {
           toast.success('Assinatura ativada com sucesso!');
-          onSuccess();
-          onOpenChange(false);
+          triggerSuccessAnimation();
         } else if (status === 'REJECTED') {
           throw new Error('Pagamento recusado. Verifique os dados e tente novamente.');
         } else if (status === 'PENDING' || status === 'ACTIVE') {
           toast.info('Pagamento em processamento. O acesso será liberado em instantes!');
-          onSuccess();
-          onOpenChange(false);
+          triggerSuccessAnimation();
         } else {
           if (data?.invoiceUrl) {
              openExternal(data.invoiceUrl);
@@ -526,8 +531,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
         if (data?.status === 'ACTIVE' || data?.status === 'ACTIVE_GRACE' || profile?.is_premium) {
           toast.success('Pagamento confirmado!');
-          onSuccess();
-          onOpenChange(false);
+          triggerSuccessAnimation();
           return;
         }
       }
@@ -1023,6 +1027,46 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     )}
                   </motion.div>
                 )}
+
+                {step === 4 && (
+                  <motion.div 
+                    key="step4"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex flex-col items-center justify-center space-y-8 pt-10 pb-8 min-h-[400px]"
+                  >
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full animate-pulse" />
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                      >
+                        <CheckCircle2 className="w-32 h-32 text-emerald-500 relative z-10" />
+                      </motion.div>
+                    </div>
+                    
+                    <div className="text-center space-y-3">
+                      <motion.h2 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-2xl font-black text-white tracking-widest uppercase"
+                      >
+                        Pagamento Confirmado!
+                      </motion.h2>
+                      <motion.p 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="text-muted-foreground font-medium max-w-xs mx-auto"
+                      >
+                        Seu acesso premium foi liberado com sucesso. Bem-vindo ao ecossistema!
+                      </motion.p>
+                    </div>
+                  </motion.div>
+                )}
+
               </AnimatePresence>
             </div>
           </div>
