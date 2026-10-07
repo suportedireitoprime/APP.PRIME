@@ -549,11 +549,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const getPlanInfo = () => {
     if (activePlan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mês' };
-    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: ' (à vista)' };
-    if (activePlan === 'anual_pix') return { title: 'Anual Promoção', price: 'R$ 149,90', sub: ' (no PIX)' };
-    if (activePlan === 'anual_regular_pix') return { title: 'Anual PIX', price: 'R$ 149,90', sub: ' (à vista)' };
-    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 249,90', sub: ' (em até 10x)' };
-    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício PIX', price: 'R$ 249,90', sub: ' (à vista)' };
+    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: '' };
+    if (activePlan === 'anual_pix') return { title: 'Anual', price: 'R$ 149,90', sub: '' };
+    if (activePlan === 'anual_regular_pix') return { title: 'Anual', price: 'R$ 149,90', sub: '' };
+    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 249,90', sub: '' };
+    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício', price: 'R$ 249,90', sub: '' };
     return { title: '', price: '', sub: '' };
   };
 
@@ -575,7 +575,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             size="icon" 
             onClick={() => step === 1 ? onOpenChange(false) : setStep(1)}
             disabled={loading}
-            className="rounded-full hover:bg-white/10"
+            className="rounded-full bg-white/10 hover:bg-white/20 transition-colors"
           >
              {step === 1 ? <X className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
           </Button>
