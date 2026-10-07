@@ -11,6 +11,7 @@ import VadeMecumDesktopHeroBanner from '@/components/vademecum/desktop/VadeMecum
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import VadeMecumQuickActionSheet, { type QuickActionType } from '@/components/vademecum/sheets/VadeMecumQuickActionSheet';
+import VadeMecumBottomNav from '@/components/vademecum/navigation/VadeMecumBottomNav';
 
 // Busca própria e exclusiva do Vade Mecum (Artigos, Leis e Jurisprudência)
 const BuscaLeisOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/BuscaLeisOverlay'));
@@ -25,6 +26,12 @@ const VadeMecum = () => {
   const isDesktop = useIsDesktop();
   const [buscaOpen, setBuscaOpen] = useState(false);
   const [activeQuickSheet, setActiveQuickSheet] = useState<QuickActionType | null>(null);
+
+  useEffect(() => {
+    const handleAbrirBusca = () => setBuscaOpen(true);
+    window.addEventListener('vademecum:abrir-busca', handleAbrirBusca);
+    return () => window.removeEventListener('vademecum:abrir-busca', handleAbrirBusca);
+  }, []);
 
   const abrirLei = (lei: { tipo: string; leiId: string; nome: string; descricao: string; tabela_nome: string; artigoNumero?: string }) => {
     setBuscaOpen(false);
@@ -148,7 +155,8 @@ const VadeMecum = () => {
             <BuscaLeisOverlay open={buscaOpen} onClose={() => setBuscaOpen(false)} onSelectLei={abrirLei} />
           </Suspense>
         )}
-        {/* Menu de rodapé removido conforme solicitado */}
+        
+        <VadeMecumBottomNav />
 
         <VadeMecumQuickActionSheet
           activeSheet={activeQuickSheet}
