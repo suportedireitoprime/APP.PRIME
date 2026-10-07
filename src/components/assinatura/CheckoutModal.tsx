@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -484,7 +484,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       } else {
         await navigator.clipboard.writeText(pixData.payload);
       }
-      toast.success('CÃ³digo PIX copiado!');
+      toast.success('Código PIX copiado!');
     } catch {
       // Fallback: textarea trick
       try {
@@ -496,9 +496,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         ta.select();
         document.execCommand('copy');
         document.body.removeChild(ta);
-        toast.success('CÃ³digo PIX copiado!');
+        toast.success('Código PIX copiado!');
       } catch {
-        toast.error('NÃ£o foi possível copiar. Toque e segure o código.');
+        toast.error('Não foi possível copiar. Toque e segure o código.');
       }
     }
   };
@@ -593,7 +593,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             {step !== 2 && (
               <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-4 flex flex-col items-center justify-center relative overflow-hidden shadow-xl">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                  VOCÃŠ ESTÃ ASSINANDO:
+                  VOCÊ ESTÁ ASSINANDO:
                 </p>
                 <h3 className="font-display text-lg font-black text-foreground/90 mb-1">
                   Estudos Jurídicos {planInfo.title}
@@ -602,12 +602,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   <span className="font-display text-4xl font-black text-foreground">{planInfo.price}</span>
                   <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
                 </div>
-                {(activePlan === 'anual') && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">à vista no Cartão</p>
-                )}
-                {(activePlan === 'vitalicio') && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou até 10x no Cartão</p>
-                )}
+                
+                
               </div>
             )}
 
@@ -619,11 +615,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     onClick={() => setActivePlan(plan?.includes('vitalicio') ? 'vitalicio_pix' : (plan === 'anual_pix' ? 'anual_pix' : 'anual_regular_pix'))}
                     className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
                       (activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix')
-                        ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
+                        ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
                         : 'text-muted-foreground hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    <QrCode className="w-4 h-4" />
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M120.4 340.5l-44.5-44.4 75.3-75.3-75.2-75.2 44.5-44.5 75.2 75.2 75.3-75.3 44.4 44.5-75.2 75.2 75.2 75.3-44.4 44.4-75.3-75.2-75.3 75.3z" /><path d="M436.1 340.5l-44.5 44.4-75.3-75.3-75.2 75.2-44.5-44.4 75.2-75.2-75.3-75.3 44.4-44.5 75.2 75.2 75.2-75.3 44.4 44.4-75.3 75.2 75.3 75.3z" /></svg>
                     <span>PIX à vista</span>
                   </button>
                   <button
@@ -1012,7 +1008,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     ) : (
                       <Button onClick={copyPix} variant="outline" className="w-full h-14 rounded-2xl font-bold border-2 border-white/10 bg-black/30 backdrop-blur-md hover:bg-black/50 flex items-center gap-2 text-base shadow-xl">
                         <Copy className="w-5 h-5" />
-                        Copiar CÃ³digo PIX
+                        Copiar Código PIX
                       </Button>
                     )}
                     
@@ -1021,7 +1017,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                          <Button 
                            onClick={handleVerifyPayment}
                            disabled={verifyingPayment || verifyCooldown > 0}
-                           className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black h-14 rounded-2xl text-base transition-transform active:opacity-70 shadow-[0_10px_30px_rgba(16,185,129,0.3)]"
+                           className="w-full bg-primary hover:bg-primary/90 text-white font-black h-14 rounded-2xl text-base transition-transform active:opacity-70 shadow-[0_10px_30px_rgba(224,31,71,0.3)]"
                          >
                            {verifyingPayment ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Clock className="w-5 h-5 mr-2" />}
                            {verifyingPayment ? 'Verificando...' : verifyCooldown > 0 ? `Aguarde ${verifyCooldown}s para verificar` : 'Já realizei o pagamento'}
