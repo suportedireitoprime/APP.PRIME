@@ -304,26 +304,28 @@ export async function fetchArtigosInstant(tabelaNome: string, count = 10): Promi
     }
   } catch { /* segue pro fallback remoto */ }
 
-  // Item 58: Modo Avião / Offline estrito instantâneo — sem rede, retorna imediatamente do cache local sem timeout
+  // Fase 3 (Offline-First): Lê o cache local do idb-keyval MESMO SE ESTIVER ONLINE.
+  // Evita re-baixar leis que já foram baixadas em sessões anteriores.
+  try {
+    const persisted = await getPersistedArtigosCache(tabelaNome);
+    if (persisted && persisted.length > 0) {
+      return persisted.slice(0, count).map(a => ({ ...a, caput: cleanArticleText(a.caput) }));
+    }
+    const offlineRows = await getOfflineArtigos(tabelaNome);
+    if (offlineRows && offlineRows.length > 0) {
+      return offlineRows.slice(0, count).map((row) => ({
+        id: row.id,
+        numero: normalizeArtigoLabel(row.rotulo || row.numero),
+        caput: cleanArticleText(row.texto || row.caput),
+        titulo: row.titulo || undefined,
+        nomen_juris: row.titulo || undefined,
+        capitulo: row.capitulo || undefined,
+        ordem: row.ordem,
+      }));
+    }
+  } catch {}
+  
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    try {
-      const persisted = await getPersistedArtigosCache(tabelaNome);
-      if (persisted && persisted.length > 0) {
-        return persisted.slice(0, count).map(a => ({ ...a, caput: cleanArticleText(a.caput) }));
-      }
-      const offlineRows = await getOfflineArtigos(tabelaNome);
-      if (offlineRows && offlineRows.length > 0) {
-        return offlineRows.slice(0, count).map((row) => ({
-          id: row.id,
-          numero: normalizeArtigoLabel(row.rotulo || row.numero),
-          caput: cleanArticleText(row.texto || row.caput),
-          titulo: row.titulo || undefined,
-          nomen_juris: row.titulo || undefined,
-          capitulo: row.capitulo || undefined,
-          ordem: row.ordem,
-        }));
-      }
-    } catch {}
     return [];
   }
 
@@ -388,31 +390,33 @@ export async function fetchArtigosPaginado(tabelaNome: string, offset: number, l
     }
   } catch (e) { /* segue pro fetch remoto */ }
 
-  // Item 58: Modo Avião / Offline estrito: se sem rede, carrega imediatamente do banco local sem tentar fetch remoto
+  // Fase 3 (Offline-First): Carrega imediatamente do banco local se existir, SEMPRE, 
+  // não apenas quando estiver sem internet. Zera Disk IO no Supabase para leis já abertas antes.
+  try {
+    const offlineRows = await getOfflineArtigos(tabelaNome);
+    if (offlineRows && offlineRows.length > 0) {
+      const mapped: ArtigoLei[] = offlineRows.map((row) => ({
+        id: row.id,
+        numero: normalizeArtigoLabel(row.rotulo || row.numero),
+        caput: cleanArticleText(row.texto || row.caput),
+        titulo: row.titulo || undefined,
+        nomen_juris: row.titulo || undefined,
+        capitulo: row.capitulo || undefined,
+        ordem: row.ordem,
+      }));
+      if (offset === 0) {
+        artigosCache.set(tabelaNome, mapped);
+        setPersistedArtigosCache(tabelaNome, mapped);
+      }
+      return mapped.slice(offset, offset + limit);
+    }
+    const persisted = await getPersistedArtigosCache(tabelaNome);
+    if (persisted && persisted.length > 0) {
+      return persisted.slice(offset, offset + limit).map((a) => ({ ...a, caput: cleanArticleText(a.caput) }));
+    }
+  } catch {}
+
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
-    try {
-      const offlineRows = await getOfflineArtigos(tabelaNome);
-      if (offlineRows && offlineRows.length > 0) {
-        const mapped: ArtigoLei[] = offlineRows.map((row) => ({
-          id: row.id,
-          numero: normalizeArtigoLabel(row.rotulo || row.numero),
-          caput: cleanArticleText(row.texto || row.caput),
-          titulo: row.titulo || undefined,
-          nomen_juris: row.titulo || undefined,
-          capitulo: row.capitulo || undefined,
-          ordem: row.ordem,
-        }));
-        if (offset === 0) {
-          artigosCache.set(tabelaNome, mapped);
-          setPersistedArtigosCache(tabelaNome, mapped);
-        }
-        return mapped.slice(offset, offset + limit);
-      }
-      const persisted = await getPersistedArtigosCache(tabelaNome);
-      if (persisted && persisted.length > 0) {
-        return persisted.slice(offset, offset + limit).map((a) => ({ ...a, caput: cleanArticleText(a.caput) }));
-      }
-    } catch {}
     return [];
   }
 

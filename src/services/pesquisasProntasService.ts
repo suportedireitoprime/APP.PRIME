@@ -21,12 +21,13 @@ const cacheKey = (t: Tribunal) => `pesquisas-prontas:${t}`;
 async function fetchPesquisasProntasRemote(tribunal: Tribunal): Promise<PesquisaPronta[]> {
   const { data, error } = await (supabaseCloud as any)
     .from('jurisprudencia_prontas')
-    .select('*')
+    .select('id, tribunal, ramo, assunto, titulo, slug, query_url, query_string, ordem')
     .eq('tribunal', tribunal)
     .order('ramo', { ascending: true })
     .order('assunto', { ascending: true, nullsFirst: true })
     .order('ordem', { ascending: true })
-    .order('titulo', { ascending: true });
+    .order('titulo', { ascending: true })
+    .limit(1000);
   if (error) throw error;
   const list = (data || []) as PesquisaPronta[];
   list.forEach((it) => bySlugCache.set(it.slug, it));
@@ -52,7 +53,7 @@ export async function fetchPesquisaProntaBySlug(slug: string): Promise<PesquisaP
   if (cached) return cached;
   const { data, error } = await (supabaseCloud as any)
     .from('jurisprudencia_prontas')
-    .select('*')
+    .select('id, tribunal, ramo, assunto, titulo, slug, query_url, query_string, ordem')
     .eq('slug', slug)
     .maybeSingle();
   if (error) {

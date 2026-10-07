@@ -319,9 +319,9 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
         <div className="px-4 mb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <span className="w-1 h-7 rounded-full bg-primary shrink-0" aria-hidden />
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight truncate">
+            <h3 className="font-display text-foreground text-[18px] font-bold leading-tight truncate uppercase tracking-widest">
               Selecionados para você
-            </h2>
+            </h3>
           </div>
         </div>
         <div className="w-full pt-3 pb-2 flex flex-col items-center">
@@ -352,18 +352,18 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
       <div className="w-full px-4 mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <span className="w-1 h-7 rounded-full bg-primary shrink-0" aria-hidden />
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight truncate">
+          <h3 className="font-display text-foreground text-[18px] font-bold leading-tight truncate uppercase tracking-widest">
             Selecionados para você
-          </h2>
+          </h3>
         </div>
         <button
           type="button"
           onClick={() => navigate('/bibliotecas/classicos')}
           aria-label="Ver todos os clássicos do direito"
-          className="shrink-0 inline-flex items-center gap-1 min-h-11 px-2 -mr-2 text-[12px] font-semibold text-primary hover:opacity-80 active:opacity-70 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 rounded-md"
+          className="group pointer-events-auto shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:opacity-70 backdrop-blur-md border border-white/15 hover:border-white/25 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm"
         >
-          Ver todos
-          <ChevronRight className="w-4 h-4" aria-hidden />
+          <span>Ver todos</span>
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" aria-hidden />
         </button>
       </div>
 

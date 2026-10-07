@@ -308,17 +308,17 @@ export const FerramentasLivrosCarrossel = () => {
         <div>
           <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 pointer-events-auto uppercase tracking-widest">
             <span className="w-1 h-5 rounded-full bg-primary" />
-            LIVROS JURÍDICOS
+            CLÁSSICOS DO DIREITO
           </h3>
           <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 pointer-events-auto whitespace-nowrap truncate">
-            clássicos e obras fundamentais do Direito
+            obras fundamentais e livros jurídicos
           </p>
         </div>
         <button
           type="button"
           onClick={() => {
             haptic.selection();
-            navigate('/biblioteca?aba=acervos');
+            navigate('/bibliotecas/classicos');
           }}
           className="group pointer-events-auto shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:opacity-70 backdrop-blur-md border border-white/15 hover:border-white/25 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm"
         >

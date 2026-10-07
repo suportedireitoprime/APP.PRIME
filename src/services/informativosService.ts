@@ -35,7 +35,8 @@ async function fetchEdicoesRemote(tribunal: InformativoTribunal): Promise<Edicao
   const { data, error } = await (supabaseCloud as any)
     .from(TABLE[tribunal])
     .select('edicao, edicao_titulo, data_publicacao')
-    .order('edicao', { ascending: false });
+    .order('edicao', { ascending: false })
+    .limit(300);
   if (error) throw error;
   return (data ?? []) as EdicaoRow[];
 }
@@ -43,9 +44,10 @@ async function fetchEdicoesRemote(tribunal: InformativoTribunal): Promise<Edicao
 async function fetchVerbetesRemote(tribunal: InformativoTribunal, edicao: number): Promise<VerbeteRow[]> {
   const { data, error } = await (supabaseCloud as any)
     .from(TABLE[tribunal])
-    .select('*')
+    .select('id, edicao, ordem, processo, tema, secao, ramo_direito, destaque, inteiro_teor, informacoes_adicionais')
     .eq('edicao', edicao)
-    .order('ordem', { ascending: true });
+    .order('ordem', { ascending: true })
+    .limit(500);
   if (error) throw error;
   return (data ?? []) as VerbeteRow[];
 }

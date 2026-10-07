@@ -26,9 +26,10 @@ export function warmQuestoesStartup(): void {
       if (!cachedCargos) {
         const { data: cargos } = await (supabase as any)
           .from('questoes_cargos')
-          .select('*')
+          .select('id, nome, ativo, ordem')
           .eq('ativo', true)
-          .order('ordem');
+          .order('ordem')
+          .limit(200);
 
         if (cargos && cargos.length > 0) {
           try {

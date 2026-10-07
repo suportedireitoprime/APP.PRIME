@@ -62,6 +62,12 @@ export default function BibliotecaSearchBar({ onAbrirLivro }: Props) {
   const [open, setOpen] = useState(false);
   const typing = useTypingPlaceholder(!open);
 
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener('biblioteca-abrir-pesquisa', onOpen);
+    return () => window.removeEventListener('biblioteca-abrir-pesquisa', onOpen);
+  }, []);
+
   return (
     <div className="px-4 mb-3">
       <button
