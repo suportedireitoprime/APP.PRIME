@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, DragControls, useReducedMotion } from 'framer-motion';
 import { App } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
@@ -67,7 +68,7 @@ export function PrimeBottomSheet({
     }
   }, [open]);
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <>
@@ -110,6 +111,7 @@ export function PrimeBottomSheet({
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
