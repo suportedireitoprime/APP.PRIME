@@ -16,15 +16,6 @@ import { haptic } from '@/lib/nativeHaptics';
 
 const PRATICAR_FUNCTIONS = [
   {
-    id: 'leiseca',
-    title: 'Lições',
-    subtitle: 'Tiro ao alvo',
-    icon: Target,
-    color: '#f43f5e', // rose
-    image: '/assets/praticar-leiseca.webp',
-    path: '/lei-seca',
-  },
-  {
     id: 'flashcards',
     title: 'Flashcards',
     subtitle: 'Revisão ativa',
