@@ -134,7 +134,11 @@ const HomeTabEstudos = ({
                 </p>
               </div>
             </div>
-            <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            <div className="relative">
+              {/* Sombra de desfoque (fade) para indicar scroll horizontal no mobile */}
+              <div className="absolute -right-4 sm:-right-6 top-0 bottom-0 w-12 sm:w-16 bg-gradient-to-l from-[#0D0F12] via-[#0D0F12]/80 to-transparent z-30 pointer-events-none" />
+              
+              <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               {PRATICAR_FUNCTIONS.map((item) => (
                 <button
                   key={item.id}
@@ -187,6 +191,7 @@ const HomeTabEstudos = ({
                   </div>
                 </button>
               ))}
+            </div>
             </div>
           </div>
 
