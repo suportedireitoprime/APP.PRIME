@@ -395,13 +395,7 @@ export default function Assinatura() {
             <div className="px-4 space-y-4 -mt-1">
               <Button
                 onClick={() => {
-                  if (tab === 'anual') {
-                     setPaymentMethodSheetOpen(true);
-                  } else if (tab === 'vitalicio') {
-                     setPaymentMethodSheetOpen(true);
-                  } else {
-                     startPurchase('mensal');
-                  }
+                  startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : tab === 'anual' ? 'anual_regular_pix' : 'mensal');
                 }}
                 className="btn-shine-loop relative overflow-hidden w-full h-[60px] rounded-[20px] font-display text-[19px] font-black tracking-wider transition-all active:scale-[0.98] group bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_12px_35px_rgba(224,31,71,0.4)]"
               >

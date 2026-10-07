@@ -562,7 +562,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   return (
     <Dialog open={open} onOpenChange={(v) => !loading && onOpenChange(v)}>
       <DialogContent 
-        className="max-w-none sm:max-w-lg w-full min-h-[100vh] sm:min-h-0 sm:max-h-[92vh] h-[100dvh] sm:h-auto m-0 p-0 rounded-none sm:rounded-3xl border-none sm:border sm:border-white/10 flex flex-col bg-[#0D0D0D] overflow-hidden shadow-2xl [&>button]:hidden"
+        className="max-w-none sm:max-w-lg w-full min-h-[100vh] sm:min-h-0 sm:max-h-[92vh] h-[100dvh] sm:h-auto m-0 p-0 rounded-none sm:rounded-3xl border-none sm:border sm:border-white/10 flex flex-col bg-gradient-to-b from-zinc-800 to-[#0D0D0D] overflow-hidden shadow-2xl [&>button]:hidden"
       >
         <DialogDescription className="sr-only">Checkout e pagamento do Direito Prime.</DialogDescription>
 
@@ -614,30 +614,30 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             {/* Alternador de Método de Pagamento (Cartão vs PIX) para Planos Vitalício / Anual */}
             {step === 1 && (plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix') && (
               <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
-                <button
-                  type="button"
-                  onClick={() => setActivePlan(plan?.includes('vitalicio') ? 'vitalicio' : 'anual')}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    (activePlan === 'vitalicio' || activePlan === 'anual')
-                      ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
-                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <CreditCard className="w-4 h-4" />
-                  <span>{activePlan === 'vitalicio' || activePlan === 'vitalicio_pix' ? 'Cartão (10x)' : 'Cartão'}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActivePlan(plan?.includes('vitalicio') ? 'vitalicio_pix' : (plan === 'anual_pix' ? 'anual_pix' : 'anual_regular_pix'))}
-                  className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    (activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix')
-                      ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
-                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
-                  }`}
-                >
-                  <QrCode className="w-4 h-4" />
-                  <span>PIX à vista</span>
-                </button>
+                                  <button
+                    type="button"
+                    onClick={() => setActivePlan(plan?.includes('vitalicio') ? 'vitalicio_pix' : (plan === 'anual_pix' ? 'anual_pix' : 'anual_regular_pix'))}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      (activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix')
+                        ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
+                        : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <QrCode className="w-4 h-4" />
+                    <span>PIX à vista</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActivePlan(plan?.includes('vitalicio') ? 'vitalicio' : 'anual')}
+                    className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      (activePlan === 'vitalicio' || activePlan === 'anual')
+                        ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
+                        : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    <span>{activePlan === 'vitalicio' || activePlan === 'vitalicio_pix' ? 'Cartão (10x)' : 'Cartão'}</span>
+                  </button>
               </div>
             )}
 
