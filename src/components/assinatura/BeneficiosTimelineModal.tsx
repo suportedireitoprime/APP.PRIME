@@ -245,45 +245,20 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/15 blur-[120px] rounded-full pointer-events-none -z-10" />
         <div className="absolute bottom-0 right-0 w-[500px] h-[300px] bg-amber-500/10 blur-[140px] rounded-full pointer-events-none -z-10" />
 
-        {/* Top Header Seguro com Safe Area Inset */}
-        <header className="relative z-20 flex items-center justify-between px-4 sm:px-6 pb-3 pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] bg-[#08090C]/80 backdrop-blur-xl border-b border-white/10 shrink-0">
-          <div className="flex items-center gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-display font-black text-base sm:text-lg tracking-wider uppercase text-white">
-                  Benefícios Premium
-                </span>
-                <span className="bg-primary/20 text-primary border border-primary/30 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full">
-                  +200 Funções
-                </span>
-              </div>
-              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium">
-                Seu arsenal completo para ser aprovado
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={() => {
-              haptic.medium();
-              onGoToPlans();
-            }}
-            className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-display font-bold text-xs uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-md shadow-primary/25 cursor-pointer shrink-0"
-          >
-            Ver Planos
-          </button>
-        </header>
+        {/* Botão de Fechar Simplificado */}
+        <button 
+          onClick={() => { haptic.selection(); onClose(); }}
+          className="absolute top-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-4 z-50 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
 
         {/* Corpo com Scroll e Linha do Tempo */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 pt-[calc(4rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
           <div className="max-w-4xl mx-auto">
             
             {/* Banner de Introdução Persuasivo */}
             <div className="text-center max-w-xl mx-auto mb-10 sm:mb-14">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-primary/10 via-amber-500/10 to-primary/10 border border-primary/30 text-primary text-[11px] font-extrabold uppercase tracking-widest mb-3 shadow-inner">
-                <Crown className="w-3.5 h-3.5 text-primary" />
-                Aceleração Máxima de Estudos
-              </div>
               <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase tracking-tight leading-tight">
                 Tudo o que você desbloqueia <br className="hidden sm:inline" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-rose-400 to-amber-400">
@@ -315,7 +290,7 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-40px" }}
                       transition={{ duration: 0.5, delay: index * 0.05 }}
-                      className="relative flex flex-col md:flex-row items-start md:items-center gap-4 sm:gap-6"
+                      className={`relative flex items-center w-full ${isEven ? 'md:justify-start' : 'md:justify-end'}`}
                     >
                       {/* Marcador Central da Timeline com Número e Ícone */}
                       <div 
@@ -326,77 +301,55 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
                         </span>
                       </div>
 
-                      {/* Layout Alternado Desktop (md) / Fluido no Mobile */}
-                      <div className="w-full pl-14 md:pl-0 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 items-stretch">
-                        
-                        {/* CARD 1: QUADRADINHO COM AS FUNÇÕES (Lado Esquerdo se par, Direito se ímpar no Desktop) */}
-                        <div 
-                          className={`flex flex-col justify-between p-5 sm:p-6 rounded-3xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:border-primary/40 transition-all duration-300 ${
-                            isEven ? 'md:order-1' : 'md:order-2'
-                          }`}
-                        >
-                          <div>
-                            {/* Topo do Card de Funções */}
-                            <div className="flex items-center justify-between gap-2 mb-3">
-                              <div className="flex items-center gap-2.5">
-                                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.cor} flex items-center justify-center text-white shadow-md`}>
-                                  <Icon className="w-5 h-5" />
-                                </div>
-                                <div>
-                                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary block">
-                                    {item.categoria}
-                                  </span>
-                                  <h3 className="font-display font-black text-base sm:text-lg text-white leading-tight">
-                                    {item.titulo}
-                                  </h3>
-                                </div>
-                              </div>
-                              <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-white/90 border border-white/10 shrink-0">
-                                {item.badge}
+                      {/* Card Único Integrado */}
+                      <div 
+                        className={`w-full pl-16 pr-0 md:px-0 md:w-[45%] flex flex-col p-5 sm:p-6 rounded-3xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:border-primary/40 transition-all duration-300`}
+                      >
+                        {/* Topo do Card */}
+                        <div className="flex items-center justify-between gap-2 mb-4">
+                          <div className="flex items-center gap-2.5">
+                            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.cor} flex items-center justify-center text-white shadow-md shrink-0`}>
+                              <Icon className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary block">
+                                {item.categoria}
                               </span>
+                              <h3 className="font-display font-black text-base sm:text-lg text-white leading-tight mt-0.5">
+                                {item.titulo}
+                              </h3>
                             </div>
-
-                            {/* Lista de Recursos Específicos da Função */}
-                            <div className="space-y-2 mt-4 pt-3 border-t border-white/5">
-                              {item.funcoes.map((funcao, fIdx) => (
-                                <div key={fIdx} className="flex items-start gap-2">
-                                  <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                  </div>
-                                  <span className="text-[12px] sm:text-[13px] text-zinc-300 font-medium leading-snug">
-                                    {funcao}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Impacto Direto */}
-                          <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-2 text-primary font-bold text-[11px] sm:text-xs">
-                            <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                            <span>{item.impacto}</span>
                           </div>
                         </div>
 
-                        {/* CARD 2: DESCRIÇÃO PERSUASIVA AO LADO (Lado Direito se par, Esquerdo se ímpar no Desktop) */}
-                        <div 
-                          className={`flex flex-col justify-center p-5 sm:p-6 rounded-3xl border border-white/5 bg-black/40 backdrop-blur-md shadow-lg ${
-                            isEven ? 'md:order-2' : 'md:order-1'
-                          }`}
-                        >
-                          <div className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-400 mb-2">
-                            <Crown className="w-3.5 h-3.5" />
-                            Por que você precisa disso?
+                        {/* Descrição Persuasiva */}
+                        <p className="text-[13px] sm:text-[14px] text-zinc-300 leading-relaxed font-normal mb-5">
+                          {item.descricaoPersuasiva}
+                        </p>
+
+                        {/* Lista de Recursos */}
+                        <div className="space-y-2.5 pt-4 border-t border-white/5">
+                          {item.funcoes.map((funcao, fIdx) => (
+                            <div key={fIdx} className="flex items-start gap-2.5">
+                              <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                              </div>
+                              <span className="text-[12px] sm:text-[13px] text-zinc-300 font-medium leading-snug">
+                                {funcao}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Impacto Direto e Badge */}
+                        <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 text-primary font-bold text-[11px] sm:text-xs">
+                            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                            <span className="line-clamp-1">{item.impacto}</span>
                           </div>
-                          <p className="text-[13px] sm:text-[14.5px] text-zinc-300 leading-relaxed font-normal">
-                            {item.descricaoPersuasiva}
-                          </p>
-                          <div className="mt-4 flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
-                              Incluso em todos os planos premium
-                            </span>
-                          </div>
+                          <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg bg-white/5 text-zinc-400 border border-white/5 shrink-0">
+                            {item.badge}
+                          </span>
                         </div>
 
                       </div>
