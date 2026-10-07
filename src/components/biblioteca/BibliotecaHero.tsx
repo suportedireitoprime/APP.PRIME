@@ -5,51 +5,17 @@ import { haptic } from '@/lib/nativeHaptics';
 import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Briefcase, Mic, Crown, GraduationCap } from 'lucide-react';
+import { toast } from 'sonner';
 
-// Carrega dinamicamente qualquer imagem .webp que estiver na pasta docs/filosofos
-const modules = import.meta.glob('../../../docs/filosofos/*.webp', { eager: true, import: 'default' });
+// Carrega dinamicamente a imagem do Sócrates
+import socratesImg from '../../../docs/filosofos/Sócrates.webp';
 
-const QUOTES_DB: Record<string, {name: string, quote: string}> = {
-  'aristoteles': { name: 'Aristóteles', quote: 'A lei é a razão livre da paixão.' },
-  'friedrich nietzsche': { name: 'Friedrich Nietzsche', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.' },
-  'nietzsche': { name: 'Friedrich Nietzsche', quote: 'Aquele que tem um porquê para viver pode suportar quase qualquer como.' },
-  'immanuel kant': { name: 'Immanuel Kant', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.' },
-  'kant': { name: 'Immanuel Kant', quote: 'Age como se a máxima de tua ação devesse tornar-se uma lei universal.' },
-  'platao': { name: 'Platão', quote: 'O que faz a justiça é que cada um faça a sua parte.' },
-  'rene descartes': { name: 'René Descartes', quote: 'Penso, logo existo.' },
-  'descartes': { name: 'René Descartes', quote: 'Penso, logo existo.' },
-  'santo agostinho': { name: 'Santo Agostinho', quote: 'Uma lei injusta não é lei alguma.' },
-  'agostinho': { name: 'Santo Agostinho', quote: 'Uma lei injusta não é lei alguma.' },
-  'simone de beauvoir': { name: 'Simone de Beauvoir', quote: 'Que a liberdade seja a nossa própria substância.' },
-  'beauvoir': { name: 'Simone de Beauvoir', quote: 'Que a liberdade seja a nossa própria substância.' },
-  'seneca': { name: 'Sêneca', quote: 'Nenhuma lei agrada a todos.' },
-  'socrates': { name: 'Sócrates', quote: 'É melhor sofrer uma injustiça do que cometê-la.' },
-  'tomas de aquino': { name: 'Tomás de Aquino', quote: 'A lei é uma ordenação da razão para o bem comum.' },
-  'aquino': { name: 'Tomás de Aquino', quote: 'A lei é uma ordenação da razão para o bem comum.' },
+const socratesData = {
+  name: 'Sócrates',
+  quote: 'É melhor sofrer uma injustiça do que cometê-la.',
+  img: socratesImg
 };
-
-const normalizeName = (name: string) => {
-  return name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-};
-
-const PHILOSOPHERS = Object.entries(modules).map(([path, img]) => {
-  const filename = path.split('/').pop()?.replace('.webp', '') || '';
-  const normalizedKey = normalizeName(filename);
-  const info = QUOTES_DB[normalizedKey] || { 
-    name: filename.replace(/_/g, ' '), 
-    quote: 'A sabedoria começa na reflexão.' 
-  };
-  return { ...info, img: img as string };
-});
-
-// Fallback se a pasta estiver vazia
-if (PHILOSOPHERS.length === 0) {
-  PHILOSOPHERS.push({
-    name: 'Biblioteca Jurídica',
-    quote: 'O acervo completo de leis e trilhas de estudo.',
-    img: ''
-  });
-}
 
 interface Props {
   onBuscar?: () => void;
@@ -58,37 +24,20 @@ interface Props {
 
 const BibliotecaHero = ({ children }: Props) => {
   const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    // Pré-carrega a próxima imagem para evitar flickering
-    const nextIndex = (currentIndex + 1) % PHILOSOPHERS.length;
-    const img = new Image();
-    img.src = PHILOSOPHERS[nextIndex].img;
-
-    const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % PHILOSOPHERS.length);
-    }, 4500);
-    return () => clearInterval(timer);
-  }, [currentIndex]);
 
   const ACTIONS = [
-    { id: 'leitura' as const, label: 'Leitura', icon: BookMarked, color: '#818cf8' },
-    { id: 'trilhas' as const, label: 'Trilhas', icon: RouteIcon, color: '#34d399' },
-    { id: 'favoritos' as const, label: 'Favoritos', icon: Heart, color: '#fb7185' },
-    { id: 'personalizado' as const, label: 'Meus PDFs', icon: FileUp, color: '#fbbf24' },
+    { id: 'oab' as const, label: 'OAB', icon: GraduationCap, color: '#818cf8' },
+    { id: 'toga' as const, label: 'Fora da Toga', icon: Briefcase, color: '#34d399' },
+    { id: 'oratoria' as const, label: 'Oratória', icon: Mic, color: '#fb7185' },
+    { id: 'lideranca' as const, label: 'Liderança', icon: Crown, color: '#fbbf24' },
   ];
 
   const handleAction = (id: typeof ACTIONS[number]['id']) => {
     haptic.selection();
-    if (id === 'trilhas') {
-      navigate('/bibliotecas/trilhas');
-      return;
-    }
-    abrirAtalhoBiblioteca(id);
+    toast.info('Em breve!');
   };
 
-  const currentPhil = PHILOSOPHERS[currentIndex];
+  const currentPhil = socratesData;
 
   return (
     <div

@@ -1,6 +1,5 @@
 import React from 'react';
 import BibliotecaHero from '@/components/biblioteca/BibliotecaHero';
-import BibliotecaSearchBar from '@/components/biblioteca/BibliotecaSearchBar';
 import BibliotecaAtalhosBar from '@/components/biblioteca/BibliotecaAtalhosBar';
 import RecomendacoesCarousel from '@/components/biblioteca/RecomendacoesCarousel';
 import ContinuarLeituraCarousel from '@/components/biblioteca/ContinuarLeituraCarousel';
@@ -20,12 +19,8 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
 }) => {
   return (
     <>
-      {/* Hero marrom com Sócrates + busca */}
-      <BibliotecaHero>
-        <div className="[&>div]:!px-0 [&>div]:!mb-0">
-          <BibliotecaSearchBar onAbrirLivro={onAbrirLivro} />
-        </div>
-      </BibliotecaHero>
+      {/* Hero marrom com Sócrates */}
+      <BibliotecaHero />
 
       <div className="max-w-3xl mx-auto w-full">
         {/* Painéis hospedados pelos botões do hero (Leitura, Favoritos, Personalizado) */}

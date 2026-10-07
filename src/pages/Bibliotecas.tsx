@@ -5,6 +5,7 @@ import { useTrackArea } from "@/hooks/useTrackArea";
 import { useBibliotecasData } from '@/components/biblioteca/useBibliotecasData';
 import { BibliotecaMobileContent } from '@/components/biblioteca/BibliotecaMobileContent';
 import { BibliotecaModals } from '@/components/biblioteca/BibliotecaModals';
+import BottomNav from '@/components/vademecum/navigation/BottomNav';
 
 const BibliotecasDesktop = lazyWithRetry(() => import('./BibliotecasDesktop'));
 const ShapeGrid = lazyWithRetry(() => import('@/components/ui/ShapeGrid'));
@@ -85,6 +86,7 @@ const Bibliotecas = () => {
             setCustomPdfTitle('');
           }}
         />
+        <BottomNav />
       </div>
     </main>
   );

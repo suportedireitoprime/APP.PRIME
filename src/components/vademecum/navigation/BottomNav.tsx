@@ -207,8 +207,8 @@ const BottomNav = () => {
     fn();
   };
 
-  // O menu de rodapé do início do aplicativo só deve aparecer no início do aplicativo (rota '/')
-  if (path !== '/') {
+  // O menu de rodapé do início do aplicativo só deve aparecer no início do aplicativo (rota '/') e biblioteca
+  if (path !== '/' && path !== '/biblioteca') {
     return null;
   }
 
