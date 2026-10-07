@@ -139,7 +139,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
               </div>
 
               <p className="text-[11px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
-                Parcele em até 6 vezes no cartão
+                Pagamento único no cartão ou PIX
               </p>
               
               <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">

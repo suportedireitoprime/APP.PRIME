@@ -104,7 +104,7 @@ const CreditCardPreview = ({ name, number, expiry, cvc, isFlipped }: { name: str
               </div>
            </div>
            <div className="absolute bottom-4 left-4 right-4 text-[8px] text-white/20 text-center uppercase">
-             Este cartÃ£o Ã© seguro e processado com criptografia.
+             Este Cartão Ã© seguro e processado com criptografia.
            </div>
         </div>
       </motion.div>
@@ -127,7 +127,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const isPix = activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix';
 
-  // Garantir limite de parcelas ao alternar entre Anual (mÃ¡x 6x) e VitalÃ­cio (mÃ¡x 10x)
+  // Garantir limite de parcelas ao alternar entre Anual (máx 6x) e Vitalício (máx 10x)
   useEffect(() => {
     if (activePlan === 'anual' && installmentCount > 6) {
       setInstallmentCount(6);
@@ -362,7 +362,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const processCheckout = async () => {
     if (!isPix) {
       if (formData.cardNumber.length < 18) {
-        toast.error('NÃºmero de cartÃ£o invÃ¡lido.');
+        toast.error('NÃºmero de Cartão invÃ¡lido.');
         return;
       }
       if (formData.cardExpiry.length < 5) {
@@ -374,7 +374,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         return;
       }
       if (!formData.cardName) {
-        toast.error('Nome impresso no cartÃ£o Ã© obrigatÃ³rio.');
+        toast.error('Nome impresso no Cartão Ã© obrigatÃ³rio.');
         return;
       }
     }
@@ -454,7 +454,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
              onSuccess();
              onOpenChange(false);
           } else {
-             throw new Error('Pagamento nÃ£o foi autorizado. Tente outro cartÃ£o.');
+             throw new Error('Pagamento nÃ£o foi autorizado. Tente outro Cartão.');
           }
         }
       } else if (data?.invoiceUrl) {
@@ -549,11 +549,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const getPlanInfo = () => {
     if (activePlan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mÃªs' };
-    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: ' (em atÃ© 6x)' };
+    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: ' (em até 6x)' };
     if (activePlan === 'anual_pix') return { title: 'Anual PromoÃ§Ã£o', price: 'R$ 149,90', sub: ' (no PIX)' };
-    if (activePlan === 'anual_regular_pix') return { title: 'Anual PIX', price: 'R$ 149,90', sub: ' (Ã  vista)' };
-    if (activePlan === 'vitalicio') return { title: 'VitalÃ­cio', price: 'R$ 249,90', sub: ' (em atÃ© 10x)' };
-    if (activePlan === 'vitalicio_pix') return { title: 'VitalÃ­cio PIX', price: 'R$ 249,90', sub: ' (Ã  vista)' };
+    if (activePlan === 'anual_regular_pix') return { title: 'Anual PIX', price: 'R$ 149,90', sub: ' (à vista)' };
+    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 249,90', sub: ' (em até 10x)' };
+    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício PIX', price: 'R$ 249,90', sub: ' (à vista)' };
     return { title: '', price: '', sub: '' };
   };
 
@@ -607,15 +607,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
                 </div>
                 {(activePlan === 'anual') && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou atÃ© 6x no cartÃ£o</p>
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou até 6x no Cartão</p>
                 )}
                 {(activePlan === 'vitalicio') && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou atÃ© 10x no cartÃ£o</p>
+                  <p className="text-xs text-emerald-400 font-bold mt-1">ou até 10x no Cartão</p>
                 )}
               </div>
             )}
 
-            {/* Alternador de MÃ©todo de Pagamento (CartÃ£o vs PIX) para Planos VitalÃ­cio / Anual */}
+            {/* Alternador de Método de Pagamento (Cartão vs PIX) para Planos Vitalício / Anual */}
             {step === 1 && (plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix') && (
               <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
                 <button
@@ -628,7 +628,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   }`}
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span>CartÃ£o (12x)</span>
+                  <span>Cartão (12x)</span>
                 </button>
                 <button
                   type="button"
@@ -640,7 +640,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   }`}
                 >
                   <QrCode className="w-4 h-4" />
-                  <span>PIX Ã  vista</span>
+                  <span>PIX à vista</span>
                 </button>
               </div>
             )}
@@ -863,7 +863,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
                     <div className="space-y-1">
                       <Label className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
-                        <CreditCard className="w-3 h-3"/> NÃºmero do CartÃ£o
+                        <CreditCard className="w-3 h-3"/> NÃºmero do Cartão
                       </Label>
                       <Input 
                         value={formData.cardNumber} 
@@ -879,7 +879,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     </div>
 
                     <div className="space-y-1">
-                      <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Nome Impresso no CartÃ£o</Label>
+                      <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Nome Impresso no Cartão</Label>
                       <Input 
                         value={formData.cardName} 
                         onChange={handleChange('cardName')}
@@ -942,7 +942,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
                             return (
                               <option key={num} value={num} className="bg-background text-foreground">
-                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' Ã  vista' : ''}
+                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ''}
                               </option>
                             );
                           })}
@@ -1042,6 +1042,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     </Dialog>
   );
 };
+
 
 
 
