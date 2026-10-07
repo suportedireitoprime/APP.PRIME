@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { ShapeGrid } from '@/components/ui/ShapeGrid';
 
 interface BeneficioTimelineItem {
   id: string;
@@ -241,17 +242,10 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
         transition={{ duration: 0.25 }}
         className="fixed inset-0 z-[10000] bg-[#08090C] text-white flex flex-col overflow-hidden"
       >
-        {/* Glow de ambientação no fundo */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary/15 blur-[120px] rounded-full pointer-events-none -z-10" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[300px] bg-amber-500/10 blur-[140px] rounded-full pointer-events-none -z-10" />
-
-        {/* Botão de Fechar Simplificado */}
-        <button 
-          onClick={() => { haptic.selection(); onClose(); }}
-          className="absolute top-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-4 z-50 w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
+        {/* Fundo Padrão ShapeGrid */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <ShapeGrid />
+        </div>
 
         {/* Corpo com Scroll e Linha do Tempo */}
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 pt-[calc(4rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
@@ -275,7 +269,7 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
               {/* Eixo Vertical Central Luminoso */}
               <div 
                 aria-hidden="true"
-                className="absolute left-6 md:left-1/2 top-4 bottom-4 w-1 -translate-x-1/2 bg-gradient-to-b from-primary via-emerald-500/80 to-amber-500 rounded-full shadow-[0_0_15px_rgba(224,31,71,0.5)] z-0" 
+                className="absolute left-1/2 top-4 bottom-4 w-1 -translate-x-1/2 bg-gradient-to-b from-primary via-emerald-500/80 to-amber-500 rounded-full shadow-[0_0_15px_rgba(224,31,71,0.5)] z-0" 
               />
 
               <div className="space-y-8 sm:space-y-12 relative z-10">
@@ -290,32 +284,32 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-40px" }}
                       transition={{ duration: 0.5, delay: index * 0.05 }}
-                      className={`relative flex items-center w-full ${isEven ? 'md:justify-start' : 'md:justify-end'}`}
+                      className={`relative flex items-center w-full ${isEven ? 'justify-start' : 'justify-end'}`}
                     >
                       {/* Marcador Central da Timeline com Número e Ícone */}
                       <div 
-                        className="absolute left-6 md:left-1/2 -translate-x-1/2 w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-neutral-900 border-2 border-primary/70 shadow-[0_0_20px_rgba(224,31,71,0.4)] flex items-center justify-center z-20 group shrink-0"
+                        className="absolute left-1/2 -translate-x-1/2 w-10 h-10 sm:w-13 sm:h-13 rounded-2xl bg-neutral-900 border-2 border-primary/70 shadow-[0_0_15px_rgba(224,31,71,0.4)] flex items-center justify-center z-20 group shrink-0"
                       >
-                        <span className="font-display font-black text-xs sm:text-sm text-primary">
+                        <span className="font-display font-black text-[11px] sm:text-sm text-primary">
                           {item.numero}
                         </span>
                       </div>
 
                       {/* Card Único Integrado */}
                       <div 
-                        className={`w-full pl-16 pr-0 md:px-0 md:w-[45%] flex flex-col p-5 sm:p-6 rounded-3xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:border-primary/40 transition-all duration-300`}
+                        className={`w-[calc(50%-1.25rem)] sm:w-[calc(50%-1.5rem)] md:w-[45%] flex flex-col p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:border-primary/40 transition-all duration-300`}
                       >
                         {/* Topo do Card */}
-                        <div className="flex items-center justify-between gap-2 mb-4">
-                          <div className="flex items-center gap-2.5">
-                            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.cor} flex items-center justify-center text-white shadow-md shrink-0`}>
-                              <Icon className="w-5 h-5" />
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
+                            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${item.cor} flex items-center justify-center text-white shadow-md shrink-0`}>
+                              <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                             </div>
                             <div>
-                              <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary block">
+                              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-primary block">
                                 {item.categoria}
                               </span>
-                              <h3 className="font-display font-black text-base sm:text-lg text-white leading-tight mt-0.5">
+                              <h3 className="font-display font-black text-sm sm:text-lg text-white leading-tight mt-0.5">
                                 {item.titulo}
                               </h3>
                             </div>
@@ -323,18 +317,18 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
                         </div>
 
                         {/* Descrição Persuasiva */}
-                        <p className="text-[13px] sm:text-[14px] text-zinc-300 leading-relaxed font-normal mb-5">
+                        <p className="text-[11px] sm:text-[14px] text-zinc-300 leading-relaxed font-normal mb-3 sm:mb-5">
                           {item.descricaoPersuasiva}
                         </p>
 
                         {/* Lista de Recursos */}
-                        <div className="space-y-2.5 pt-4 border-t border-white/5">
+                        <div className="space-y-2 pt-3 border-t border-white/5">
                           {item.funcoes.map((funcao, fIdx) => (
-                            <div key={fIdx} className="flex items-start gap-2.5">
-                              <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                            <div key={fIdx} className="flex items-start gap-2">
+                              <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                <Check className="w-2 h-2 sm:w-2.5 sm:h-2.5 stroke-[3]" />
                               </div>
-                              <span className="text-[12px] sm:text-[13px] text-zinc-300 font-medium leading-snug">
+                              <span className="text-[10px] sm:text-[13px] text-zinc-300 font-medium leading-snug">
                                 {funcao}
                               </span>
                             </div>
@@ -342,11 +336,8 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
                         </div>
 
                         {/* Impacto Direto e Badge */}
-                        <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 text-primary font-bold text-[11px] sm:text-xs">
-                            <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                            <span className="line-clamp-1">{item.impacto}</span>
-                          </div>
+                        <div className="mt-4 pt-3 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <span className="text-primary font-bold text-[10px] sm:text-xs line-clamp-2 sm:line-clamp-1">{item.impacto}</span>
                           <span className="hidden sm:inline-block text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg bg-white/5 text-zinc-400 border border-white/5 shrink-0">
                             {item.badge}
                           </span>
