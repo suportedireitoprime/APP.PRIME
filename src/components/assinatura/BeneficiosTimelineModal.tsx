@@ -16,7 +16,9 @@ import {
   Award, 
   ArrowRight,
   ShieldCheck,
-  Check
+  Check,
+  Target,
+  BookOpen
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
@@ -37,25 +39,8 @@ interface BeneficioTimelineItem {
 
 const BENEFICIOS: BeneficioTimelineItem[] = [
   {
-    id: 'horus_ia',
-    numero: '01',
-    titulo: 'Inteligência Artificial Horus',
-    categoria: 'TUTOR JURÍDICO 24H',
-    badge: 'No WhatsApp e no App',
-    cor: 'from-primary to-rose-600',
-    icon: Bot,
-    funcoes: [
-      'Tira dúvidas jurídicas e doutrinárias em segundos',
-      'Disponível 24h no seu WhatsApp sem burocracia',
-      'Explica artigos difíceis em português claro',
-      'Conectada à jurisprudência atual do STF e STJ'
-    ],
-    descricaoPersuasiva: 'Nunca mais perca horas travado em uma dúvida complexa. Tenha um mentor jurídico de elite no seu bolso pronto para esclarecer qualquer ponto de matéria a qualquer hora.',
-    impacto: 'Estude até 3x mais rápido sem travar em dúvidas'
-  },
-  {
     id: 'vade_mecum',
-    numero: '02',
+    numero: '01',
     titulo: 'Vade Mecum Interativo',
     categoria: 'LEGISLAÇÃO INTELIGENTE',
     badge: '100% Atualizado',
@@ -71,59 +56,42 @@ const BENEFICIOS: BeneficioTimelineItem[] = [
     impacto: 'Legislação consolidada sempre à mão onde estiver'
   },
   {
-    id: 'simulados',
-    numero: '03',
-    titulo: 'Simulados & Questões Ilimitadas',
-    categoria: 'TREINO DE ALTA PERFORMANCE',
-    badge: 'Milhares de Questões',
-    cor: 'from-amber-500 to-emerald-600',
-    icon: CheckCircle2,
-    funcoes: [
-      'Filtros por banca examinadora, cargo e ano',
-      'Gabaritos comentados alternativa por alternativa',
-      'Métricas de precisão, tempo médio e acertos',
-      'Modo simulado com cronômetro real de prova'
-    ],
-    descricaoPersuasiva: 'A aprovação se constrói resolvendo questões. Treine com o padrão exato da banca do seu concurso ou da 1ª Fase da OAB, mapeando seus pontos fracos antes do dia decisivo.',
-    impacto: 'Chegue na prova com padrão de banca dominado'
-  },
-  {
-    id: 'resumos',
-    numero: '04',
-    titulo: 'Resumos Jurídicos Prontos',
-    categoria: 'SÍNTESES DE ALTA RETENÇÃO',
-    badge: 'Economia de Tempo',
-    cor: 'from-emerald-500 to-teal-600',
+    id: 'biblioteca',
+    numero: '02',
+    titulo: 'Biblioteca Digital Completa',
+    categoria: 'ACERVO DOUTRINÁRIO',
+    badge: 'Livros e Artigos',
+    cor: 'from-amber-500 to-orange-500',
     icon: FileText,
     funcoes: [
-      'Doutrina esquematizada dos tópicos mais cobrados',
-      'Tabelas comparativas e quadros sinóticos',
-      'Linguagem direta focada no que cai nas provas',
-      'Leitura fluida otimizada para celular e tablet'
+      'Dezenas de obras doutrinárias atualizadas',
+      'Leitor imersivo com ajustes de fonte e tema',
+      'Sincronização de progresso de leitura',
+      'Marcações e anotações vinculadas ao seu perfil'
     ],
-    descricaoPersuasiva: 'Economize centenas de horas na produção de materiais. Acesse resumos cirúrgicos elaborados por especialistas com foco estrito nos temas de maior incidência em exames.',
-    impacto: 'Revise matérias inteiras na véspera da prova'
+    descricaoPersuasiva: 'Diga adeus às assinaturas caras de bibliotecas digitais. Tenha acesso a um acervo completo de doutrinas, artigos e obras jurídicas essenciais para o seu aprofundamento.',
+    impacto: 'Aprofunde-se nos temas mais complexos'
   },
   {
-    id: 'aulas',
-    numero: '05',
-    titulo: 'Videoaulas & Audioaulas',
-    categoria: 'APRENDIZADO MULTIFORMATO',
-    badge: 'Direto ao Ponto',
-    cor: 'from-teal-500 to-blue-600',
-    icon: Headphones,
+    id: 'horus_ia',
+    numero: '03',
+    titulo: 'Inteligência Artificial Horus',
+    categoria: 'TUTOR JURÍDICO 24H',
+    badge: 'No WhatsApp e no App',
+    cor: 'from-primary to-rose-600',
+    icon: Bot,
     funcoes: [
-      'Aulas objetivas sem enrolação teórica excessiva',
-      'Player avançado com aceleração de até 2x',
-      'Modo áudio para ouvir no trânsito ou academia',
-      'Mini-player contínuo em segundo plano'
+      'Tira dúvidas jurídicas e doutrinárias em segundos',
+      'Disponível 24h no seu WhatsApp sem burocracia',
+      'Explica artigos difíceis em português claro',
+      'Conectada à jurisprudência atual do STF e STJ'
     ],
-    descricaoPersuasiva: 'Transforme momentos ociosos do seu dia em tempo de estudo produtivo. Escute audioaulas no trânsito, na caminhada ou no intervalo, mantendo o cérebro sempre ativo.',
-    impacto: 'Aproveite até 2 horas extras de estudo por dia'
+    descricaoPersuasiva: 'Nunca mais perca horas travado em uma dúvida complexa. Tenha um mentor jurídico de elite no seu bolso pronto para esclarecer qualquer ponto de matéria a qualquer hora.',
+    impacto: 'Estude até 3x mais rápido sem travar em dúvidas'
   },
   {
     id: 'flashcards',
-    numero: '06',
+    numero: '04',
     titulo: 'Flashcards com Repetição Espaçada',
     categoria: 'MEMORIZAÇÃO CIENTÍFICA',
     badge: 'Método Ativo',
@@ -139,28 +107,79 @@ const BENEFICIOS: BeneficioTimelineItem[] = [
     impacto: 'Nunca mais esqueça prazos e súmulas cruciais'
   },
   {
-    id: 'radar',
-    numero: '07',
-    titulo: 'Radar Legislativo & Três Poderes',
-    categoria: 'ATUALIZAÇÃO EM TEMPO REAL',
-    badge: 'Primeira Mão',
-    cor: 'from-indigo-500 to-purple-600',
-    icon: Landmark,
+    id: 'questoes',
+    numero: '05',
+    titulo: 'Banco de Questões',
+    categoria: 'TREINO DIÁRIO',
+    badge: 'Gabaritos Comentados',
+    cor: 'from-cyan-500 to-blue-500',
+    icon: CheckCircle2,
     funcoes: [
-      'Alertas instantâneos de novas leis publicadas no DOU',
-      'Pauta de julgamentos do STF e sessões ao vivo',
-      'Radar de proposições em votação no Congresso',
-      'Classificação por área de impacto no Direito'
+      'Filtros por banca examinadora, cargo e ano',
+      'Gabaritos comentados alternativa por alternativa',
+      'Métricas de precisão, tempo médio e acertos',
+      'Criação de cadernos de erros personalizados'
     ],
-    descricaoPersuasiva: 'Esteja sempre atualizado com as mudanças que surpreendem a maioria dos candidatos. Seja informado no mesmo dia em que uma lei ou tese jurisprudencial for aprovada.',
-    impacto: 'Esteja à frente das novidades que pegam todos de surpresa'
+    descricaoPersuasiva: 'A aprovação se constrói resolvendo questões. Treine com o padrão exato da banca do seu concurso ou da 1ª Fase da OAB, mapeando seus pontos fracos.',
+    impacto: 'Domine o estilo de cobrança de cada banca'
+  },
+  {
+    id: 'simulados',
+    numero: '06',
+    titulo: 'Simulados de Alta Performance',
+    categoria: 'PREPARAÇÃO PARA PROVA',
+    badge: 'Ranking Nacional',
+    cor: 'from-emerald-500 to-teal-500',
+    icon: Target,
+    funcoes: [
+      'Simulados inéditos focados nos maiores editais',
+      'Ambiente de prova com cronômetro real',
+      'Relatórios de desempenho por disciplina',
+      'Comparativo com outros candidatos (Ranking)'
+    ],
+    descricaoPersuasiva: 'Teste seus conhecimentos em condições reais de prova. Identifique exatamente onde você perde tempo e quais matérias precisam de mais revisão.',
+    impacto: 'Chegue na prova com controle emocional e de tempo'
+  },
+  {
+    id: 'aulas',
+    numero: '07',
+    titulo: 'Videoaulas & Audioaulas',
+    categoria: 'APRENDIZADO MULTIFORMATO',
+    badge: 'Direto ao Ponto',
+    cor: 'from-teal-500 to-blue-600',
+    icon: Headphones,
+    funcoes: [
+      'Aulas objetivas sem enrolação teórica excessiva',
+      'Player avançado com aceleração de até 2x',
+      'Modo áudio para ouvir no trânsito ou academia',
+      'Mini-player contínuo em segundo plano'
+    ],
+    descricaoPersuasiva: 'Transforme momentos ociosos do seu dia em tempo de estudo produtivo. Escute audioaulas no trânsito, na caminhada ou no intervalo, mantendo o cérebro sempre ativo.',
+    impacto: 'Aproveite até 2 horas extras de estudo por dia'
+  },
+  {
+    id: 'resumos',
+    numero: '08',
+    titulo: 'Resumos Jurídicos Prontos',
+    categoria: 'SÍNTESES DE ALTA RETENÇÃO',
+    badge: 'Economia de Tempo',
+    cor: 'from-emerald-500 to-teal-600',
+    icon: FileText,
+    funcoes: [
+      'Doutrina esquematizada dos tópicos mais cobrados',
+      'Tabelas comparativas e quadros sinóticos',
+      'Linguagem direta focada no que cai nas provas',
+      'Leitura fluida otimizada para celular e tablet'
+    ],
+    descricaoPersuasiva: 'Economize centenas de horas na produção de materiais. Acesse resumos cirúrgicos elaborados por especialistas com foco estrito nos temas de maior incidência em exames.',
+    impacto: 'Revise matérias inteiras na véspera da prova'
   },
   {
     id: 'mapas_3d',
-    numero: '08',
-    titulo: 'Mapas Mentais & Laboratório Visual',
+    numero: '09',
+    titulo: 'Mapas Mentais',
     categoria: 'ESTUDO VISUAL IMERSIVO',
-    badge: 'Exclusividade Prime',
+    badge: 'Visualização Clara',
     cor: 'from-purple-500 to-pink-600',
     icon: Layers,
     funcoes: [
@@ -173,8 +192,42 @@ const BENEFICIOS: BeneficioTimelineItem[] = [
     impacto: 'Compreenda temas complexos em um único olhar'
   },
   {
+    id: 'dicionario',
+    numero: '10',
+    titulo: 'Dicionário Jurídico',
+    categoria: 'CONSULTA RÁPIDA',
+    badge: 'Termos e Brocardos',
+    cor: 'from-orange-500 to-red-500',
+    icon: BookOpen,
+    funcoes: [
+      'Milhares de verbetes jurídicos explicados de forma simples',
+      'Tradução de brocardos e expressões em latim',
+      'Exemplos práticos de aplicação de cada termo',
+      'Busca instantânea e offline'
+    ],
+    descricaoPersuasiva: 'Nunca mais fique perdido com o "juridiquês". Acesse o significado de qualquer termo ou expressão latina em segundos, sem interromper seu raciocínio.',
+    impacto: 'Domine o vocabulário das provas e bancas'
+  },
+  {
+    id: 'radar',
+    numero: '11',
+    titulo: 'Radar Legislativo & Jurisprudência',
+    categoria: 'ATUALIZAÇÃO EM TEMPO REAL',
+    badge: 'Primeira Mão',
+    cor: 'from-indigo-500 to-purple-600',
+    icon: Landmark,
+    funcoes: [
+      'Alertas instantâneos de novas leis publicadas no DOU',
+      'Pauta de julgamentos do STF e sessões ao vivo',
+      'Informativos esquematizados e comentados',
+      'Classificação por área de impacto no Direito'
+    ],
+    descricaoPersuasiva: 'Esteja sempre atualizado com as mudanças que surpreendem a maioria dos candidatos. Seja informado no mesmo dia em que uma lei ou tese jurisprudencial for aprovada.',
+    impacto: 'Esteja à frente das novidades que pegam todos de surpresa'
+  },
+  {
     id: 'offline',
-    numero: '09',
+    numero: '12',
     titulo: 'Modo Offline Premium',
     categoria: 'ACESSO EM QUALQUER LUGAR',
     badge: 'Zero Consumo 4G',
@@ -191,7 +244,7 @@ const BENEFICIOS: BeneficioTimelineItem[] = [
   },
   {
     id: 'gamificacao',
-    numero: '10',
+    numero: '13',
     titulo: 'Gamificação & Meu Espaço',
     categoria: 'DISCIPLINA INABALÁVEL',
     badge: 'Rotina Diária',
@@ -249,30 +302,17 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
 
         {/* Corpo com Scroll e Linha do Tempo */}
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 pt-[calc(4rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-4xl mx-auto pt-6">
             
-            {/* Banner de Introdução Persuasivo */}
-            <div className="text-center max-w-xl mx-auto mb-10 sm:mb-14">
-              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase tracking-tight leading-tight">
-                Tudo o que você desbloqueia <br className="hidden sm:inline" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-rose-400 to-amber-400">
-                  ao assinar o Direito Prime
-                </span>
-              </h1>
-              <p className="text-[13px] sm:text-[14px] text-zinc-400 font-medium mt-3 leading-relaxed">
-                Descubra por que milhares de estudantes e operadores do Direito abandonaram métodos tradicionais e alcançaram a aprovação com o nosso ecossistema integrado.
-              </p>
-            </div>
-
             {/* Linha do Tempo (Timeline) */}
-            <div className="relative">
+            <div className="relative mt-8">
               {/* Eixo Vertical Central Luminoso */}
               <div 
                 aria-hidden="true"
                 className="absolute left-1/2 top-4 bottom-4 w-1 -translate-x-1/2 bg-gradient-to-b from-primary via-emerald-500/80 to-amber-500 rounded-full shadow-[0_0_15px_rgba(224,31,71,0.5)] z-0" 
               />
 
-              <div className="space-y-8 sm:space-y-12 relative z-10">
+              <div className="space-y-12 sm:space-y-16 relative z-10">
                 {BENEFICIOS.map((item, index) => {
                   const Icon = item.icon;
                   const isEven = index % 2 === 0;
@@ -286,7 +326,7 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
                       transition={{ duration: 0.5, delay: index * 0.05 }}
                       className={`relative flex items-center w-full ${isEven ? 'justify-start' : 'justify-end'}`}
                     >
-                      {/* Marcador Central da Timeline com Número e Ícone */}
+                      {/* Marcador Central da Timeline com Número */}
                       <div 
                         className="absolute left-1/2 -translate-x-1/2 w-10 h-10 sm:w-13 sm:h-13 rounded-2xl bg-neutral-900 border-2 border-primary/70 shadow-[0_0_15px_rgba(224,31,71,0.4)] flex items-center justify-center z-20 group shrink-0"
                       >
@@ -297,23 +337,21 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
 
                       {/* Card Único Integrado */}
                       <div 
-                        className={`w-[calc(50%-1.25rem)] sm:w-[calc(50%-1.5rem)] md:w-[45%] flex flex-col p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:border-primary/40 transition-all duration-300`}
+                        className={`relative w-[calc(50%-1.25rem)] sm:w-[calc(50%-1.5rem)] md:w-[45%] flex flex-col p-4 pt-6 sm:p-6 sm:pt-8 rounded-2xl sm:rounded-3xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:border-primary/40 transition-all duration-300 mt-6`}
                       >
+                        {/* Ícone Vazado Metade Dentro/Metade Fora */}
+                        <div className={`absolute -top-5 sm:-top-6 left-4 sm:left-6 w-10 h-10 sm:w-12 sm:h-12 rounded-xl border-2 border-white/20 bg-[#08090C] flex items-center justify-center shadow-xl shrink-0 z-10`}>
+                          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white/80 stroke-[1.5]" />
+                        </div>
+
                         {/* Topo do Card */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
-                            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${item.cor} flex items-center justify-center text-white shadow-md shrink-0`}>
-                              <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
-                            </div>
-                            <div>
-                              <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest text-primary block">
-                                {item.categoria}
-                              </span>
-                              <h3 className="font-display font-black text-sm sm:text-lg text-white leading-tight mt-0.5">
-                                {item.titulo}
-                              </h3>
-                            </div>
-                          </div>
+                        <div className="flex flex-col gap-1 mb-3">
+                          <span className={`text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest bg-clip-text text-transparent bg-gradient-to-r ${item.cor} block mb-0.5`}>
+                            {item.categoria}
+                          </span>
+                          <h3 className="font-display font-black text-sm sm:text-lg text-white leading-tight">
+                            {item.titulo}
+                          </h3>
                         </div>
 
                         {/* Descrição Persuasiva */}
