@@ -1259,6 +1259,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         onClose={() => setShowSobreModal(false)}
         leiNome={selectedLeiNome}
         leiDescricao={selectedLeiDescricao}
+        leiId={selectedLeiId}
       />
 
 

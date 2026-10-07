@@ -20,7 +20,7 @@ import {
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import cpCoverImg from '@/assets/lei-cover-cp.webp';
+import { getLeiCover } from '@/lib/leiTheme';
 
 interface LeiSobreModalProps {
   open: boolean;
@@ -69,6 +69,29 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
       return;
     }
 
+      if (leiNome.toLowerCase().includes('leis do trabalho')) {
+        setSobreHtml(`
+          <p>
+            A <strong>Consolidação das Leis do Trabalho (CLT)</strong> foi aprovada pelo <strong>Decreto-Lei nº 5.452, de 1º de maio de 1943</strong>, unificando toda a legislação trabalhista existente no Brasil.
+          </p>
+          <p>
+            O objetivo principal da CLT é regulamentar as relações individuais e coletivas de trabalho. A legislação consolidou as conquistas dos trabalhadores e é dividida em títulos essenciais:
+          </p>
+          <ul class="list-disc pl-5 space-y-1.5 text-zinc-400 mt-2">
+            <li>
+              <strong class="text-zinc-200">Normas Gerais e Especiais (Títulos II e III):</strong> estabelecem as regras de jornada, salário mínimo, férias, medicina do trabalho e normas para categorias específicas.
+            </li>
+            <li>
+              <strong class="text-zinc-200">Contrato de Trabalho (Título IV):</strong> disciplina a relação de emprego, remuneração, alteração, suspensão e rescisão do contrato de trabalho.
+            </li>
+            <li>
+              <strong class="text-zinc-200">Organização Sindical e Justiça do Trabalho (Títulos V e VIII):</strong> tratam dos sindicatos, convenções coletivas, dissídios e a estrutura da Justiça Especializada e do processo trabalhista.
+            </li>
+          </ul>
+        `);
+        return;
+      }
+
     const cacheKey = `vade_sobre_${leiNome.replace(/\s+/g, '_')}`;
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
@@ -93,38 +116,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
           }
         }
 
-        const prompt = `Resuma o que é a norma "${leiNome}" (${leiDescricao}) de forma estruturada. 
-Inclua: Origem histórica/promulgação e a estrutura principal da norma (como ela é dividida/organizada).
-Use apenas parágrafos e tags HTML (como <p>, <strong> e <ul><li>). Não use blocos de código (\`\`\`html). Faça um texto direto, didático e focado no ponto.`;
-        
-        const timeoutPromise = new Promise<{ text: string }>((_, reject) =>
-          setTimeout(() => reject(new Error('Timeout')), 10000)
-        );
-
-        const aiPromise = executeAiTask({
-          featureKey: 'chat_juridico',
-          prompt,
-          systemPrompt: 'Você é um assistente jurídico. Responda diretamente com o HTML estruturado solicitado, sem explicações adicionais.',
-          temperature: 0.3,
-        });
-
-        const res = await Promise.race([aiPromise, timeoutPromise]);
-        let html = res.text || '';
-        html = html.replace(/```html/g, '').replace(/```/g, '').trim();
-
-        if (html && !html.includes('Falha')) {
-          setSobreHtml(html);
-          if (leiId) {
-            await supabase
-              .from('vade_mecum_leis')
-              .update({ sobre_html: html })
-              .eq('id', leiId);
-          } else {
-            localStorage.setItem(cacheKey, html);
-          }
-        } else {
-          setSobreHtml(`<p>Informações detalhadas não disponíveis no momento.</p>`);
-        }
+        setSobreHtml(`<p>Informações detalhadas não disponíveis no momento.</p>`);
       } catch (err) {
         console.warn('Erro ao buscar o sobre da lei:', err);
         setSobreHtml(`<p>Apresentação geral da norma.</p>`);
@@ -134,7 +126,7 @@ Use apenas parágrafos e tags HTML (como <p>, <strong> e <ul><li>). Não use blo
     };
 
     fetchSobre();
-  }, [open, leiNome, leiDescricao]);
+  }, [open, leiNome, leiDescricao, leiId]);
 
   if (!open) return null;
 
@@ -169,7 +161,7 @@ Use apenas parágrafos e tags HTML (como <p>, <strong> e <ul><li>). Não use blo
         >
           {/* Imagem de Capa à Direita */}
           <img
-            src={cpCoverImg}
+            src={getLeiCover(leiId || leiNome)}
             alt=""
             aria-hidden="true"
             loading="eager"
@@ -291,13 +283,13 @@ Use apenas parágrafos e tags HTML (como <p>, <strong> e <ul><li>). Não use blo
 
               <div className="pt-2">
                 <a
-                  href="https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm"
+                  href={`https://www.planalto.gov.br`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold transition-all cursor-pointer"
                 >
                   <ExternalLink className="w-4 h-4" />
-                  <span>Conferir Código Penal no Portal do Planalto</span>
+                  <span>Conferir Lei no Portal do Planalto</span>
                 </a>
               </div>
             </div>
