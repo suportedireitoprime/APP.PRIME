@@ -386,10 +386,7 @@ export function FeaturesList({ tabKey: _tabKey }: { tabKey: string }) {
   return (
     <div className="mx-4 rounded-3xl p-5 sm:p-7 bg-card/60 border border-border/80 backdrop-blur-md shadow-xl overflow-hidden relative">
       <div className="text-center mb-6 relative z-10">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[11px] font-black uppercase tracking-widest mb-3">
-          <Crown className="w-3.5 h-3.5" />
-          O Maior Ecossistema Jurídico de Estudos
-        </div>
+
         <h3 className="font-display text-lg sm:text-xl font-black text-white uppercase tracking-wider mb-2">
           Acesso Premium Desbloqueado
         </h3>

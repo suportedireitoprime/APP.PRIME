@@ -411,14 +411,7 @@ export default function Assinatura() {
                 </span>
               </Button>
               
-              <div className="flex flex-col items-center gap-1.5 pt-1">
-                <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-500/90 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-                  <ShieldCheck className="w-3.5 h-3.5" /> 7 dias de garantia
-                </div>
-                <span className="text-[12px] font-medium text-muted-foreground">
-                  Sem burocracia. Cancele quando quiser.
-                </span>
-              </div>
+
             </div>
 
             <FeaturesList tabKey={tab} />
