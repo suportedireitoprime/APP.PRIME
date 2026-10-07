@@ -1,40 +1,15 @@
-import { useState, useEffect, useRef, useMemo, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
-import { pickAsset, srcOf } from '@/lib/assetUrl';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
-import { useProfileSummary } from '@/hooks/useProfileSummary';
-import cover2Asset from '@/assets/covers/cover-2.webp.asset.json';
-import cover2Bundled from '@/assets/covers/cover-2.webp';
-import cover3Asset from '@/assets/covers/cover-3.webp.asset.json';
-import cover3Bundled from '@/assets/covers/cover-3.webp';
-import cover4Asset from '@/assets/covers/cover-4.webp.asset.json';
-import cover4Bundled from '@/assets/covers/cover-4.webp';
-import cover5Asset from '@/assets/covers/cover-5.webp.asset.json';
-import cover5Bundled from '@/assets/covers/cover-5.webp';
-import cover6Asset from '@/assets/covers/cover-6.webp.asset.json';
-import cover6Bundled from '@/assets/covers/cover-6.webp';
-import cover7Asset from '@/assets/covers/cover-7.webp.asset.json';
-import cover7Bundled from '@/assets/covers/cover-7.webp';
-import cover8Asset from '@/assets/covers/cover-8.webp.asset.json';
-import cover8Bundled from '@/assets/covers/cover-8.webp';
-import cover9Asset from '@/assets/covers/cover-9.webp.asset.json';
-import cover9Bundled from '@/assets/covers/cover-9.webp';
-import cover10Asset from '@/assets/covers/cover-10.webp.asset.json';
-import cover10Bundled from '@/assets/covers/cover-10.webp';
-import { useHeroHomeImages } from '@/hooks/useHeroHomeImages';
 import { prefetchHeroRoutesIdle } from '@/lib/routePrefetch';
 import { pushRecente } from '@/lib/leisRecentes';
 import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
 import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.webp';
 
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import HomeUserHeader from './HomeUserHeader';
 import HomeBrandBanner from './HomeBrandBanner';
-import HomeSearchButton from './HomeSearchButton';
 import HomeActionShortcuts from './HomeActionShortcuts';
 import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Bell, Menu as MenuIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
@@ -46,17 +21,7 @@ const RecentesOverlay = lazyWithRetry(() => import('@/components/vademecum/overl
 // Re-exports for backward compatibility
 export { RotatingStatCard, PHILOSOPHER_QUOTES, LEGAL_CURIOSITIES, TERMOS_JURIDICOS, type CardItem } from './RotatingStatCard';
 
-const FALLBACK_COVERS = [
-  { url: pickAsset(cover2Bundled, srcOf(cover2Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover3Bundled, srcOf(cover3Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover4Bundled, srcOf(cover4Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover5Bundled, srcOf(cover5Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover6Bundled, srcOf(cover6Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover7Bundled, srcOf(cover7Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover8Bundled, srcOf(cover8Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover9Bundled, srcOf(cover9Asset)), preset: 'ken-burns' },
-  { url: pickAsset(cover10Bundled, srcOf(cover10Asset)), preset: 'ken-burns' },
-];
+// Fallback covers and hooks removed because they are not used in rendering
 
 interface HomeHeaderHeroProps {
   onSearchOpenChange?: (open: boolean) => void;
@@ -67,25 +32,6 @@ interface HomeHeaderHeroProps {
 
 const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBanner = false }: HomeHeaderHeroProps = {}) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { data: profileSummary } = useProfileSummary();
-  const { images: dbImages } = useHeroHomeImages();
-
-  const toOptimized = (url: string): string => {
-    try {
-      if (!url) return url;
-      if (url.includes('/storage/v1/object/public/')) {
-        const opt = url.replace('/object/public/', '/render/image/public/');
-        const sep = opt.includes('?') ? '&' : '?';
-        return `${opt}${sep}width=1024&quality=78&format=origin`;
-      }
-      return url;
-    } catch { return url; }
-  };
-
-  const HERO_COVERS = dbImages.length > 0
-    ? dbImages.map((i) => ({ url: toOptimized(i.imagem_url), preset: i.animation_preset }))
-    : FALLBACK_COVERS;
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -93,20 +39,6 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
   const [notifOpen, setNotifOpen] = useState(false);
   const unreadCount = useUnreadNotifCount();
   const reduceMotion = useRef(false);
-
-  const perfilLabel = useMemo(() => {
-    if (profileSummary?.perfilContexto) return String(profileSummary.perfilContexto);
-    if (Array.isArray(profileSummary?.perfilTipos) && profileSummary.perfilTipos.length > 0) {
-      const mapa: Record<string, string> = {
-        faculdade: 'Estudante de Direito',
-        oab: 'Concurseiro OAB',
-        concurso: 'Concurseiro',
-        advogado: 'Advogado(a)',
-      };
-      return mapa[profileSummary.perfilTipos[0]] || 'Estudante de Direito';
-    }
-    return 'Estudando pra OAB';
-  }, [profileSummary?.perfilContexto, profileSummary?.perfilTipos]);
 
   useEffect(() => {
     reduceMotion.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -123,22 +55,6 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
   useEffect(() => {
     onSearchOpenChange?.(searchOpen);
   }, [searchOpen, onSearchOpenChange]);
-
-
-  const nome =
-    (user?.user_metadata?.display_name as string | undefined) ||
-    (user?.user_metadata?.full_name as string | undefined) ||
-    (user?.email ? user.email.split('@')[0] : 'Bem-vindo');
-  const avatarUrl =
-    (profileSummary?.avatarUrl || undefined) ||
-    (user?.user_metadata?.avatar_url as string | undefined) ||
-    (user?.user_metadata?.picture as string | undefined);
-  const iniciais = nome
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((n) => n[0]?.toUpperCase())
-    .join('');
 
   return (
     <>
