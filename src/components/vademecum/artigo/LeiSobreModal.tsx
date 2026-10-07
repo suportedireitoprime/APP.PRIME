@@ -113,24 +113,47 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
     const fetchSobre = async () => {
       setLoadingSobre(true);
       try {
-        let query = supabase.from('vade_mecum_leis').select('sobre_html');
+        let finalHtml = '';
         
-        if (leiId) {
-          query = query.eq('id', leiId);
-        } else if (leiNome) {
-          // Fallback to name if ID is missing or undefined
-          query = query.ilike('nome', `%${leiNome}%`);
-        } else {
-          setSobreHtml(`<p>Informações detalhadas não disponíveis no momento.</p>`);
-          setLoadingSobre(false);
-          return;
+        // Helper to check if a string is a UUID
+        const isUUID = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+        
+        // 1. Tentar por ID (se for UUID válido)
+        if (leiId && isUUID(leiId)) {
+          const { data, error } = await supabase
+            .from('vade_mecum_leis')
+            .select('sobre_html')
+            .eq('id', leiId)
+            .limit(1)
+            .maybeSingle();
+            
+          if (!error && data?.sobre_html && data.sobre_html.length > 50) {
+            finalHtml = data.sobre_html;
+          }
         }
-
-        const { data, error } = await query.limit(1).maybeSingle();
         
-        if (!error && data?.sobre_html && data.sobre_html.length > 50) {
-          setSobreHtml(data.sobre_html);
-          localStorage.setItem(cacheKey, data.sobre_html);
+        // 2. Se não encontrou por ID, tentar por Nome (fallback)
+        if (!finalHtml && leiNome) {
+          // Extrai apenas o nome principal, ignorando tudo depois de " • " ou " - "
+          const cleanNome = leiNome.split('•')[0].split('-')[0].trim();
+          
+          if (cleanNome) {
+            const { data, error } = await supabase
+              .from('vade_mecum_leis')
+              .select('sobre_html')
+              .ilike('nome', `%${cleanNome}%`)
+              .limit(1)
+              .maybeSingle();
+              
+            if (!error && data?.sobre_html && data.sobre_html.length > 50) {
+              finalHtml = data.sobre_html;
+            }
+          }
+        }
+        
+        if (finalHtml) {
+          setSobreHtml(finalHtml);
+          localStorage.setItem(cacheKey, finalHtml);
         } else {
           setSobreHtml(`<p>Informações detalhadas não disponíveis no momento. A equipe editorial está providenciando o conteúdo.</p>`);
         }
