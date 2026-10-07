@@ -217,10 +217,8 @@ const HomeTabEstudos = ({
                 label={c.label}
                 sublabel={c.sublabel}
                 color={c.color}
-                iconStrokeWidth={1.5}
                 delay={i * 0.05}
                 className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-                iconClassName={c.id === 'ea-mapas' ? 'w-6 h-6' : ''}
                 badge={c.emBreve ? 'Em breve' : undefined}
                 onClick={() => {
                   if (c.emBreve) {
