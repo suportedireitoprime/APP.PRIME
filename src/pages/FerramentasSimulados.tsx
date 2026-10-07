@@ -234,7 +234,7 @@ export default function FerramentasSimulados() {
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center shrink-0">
                     {category.toLowerCase().includes('juiz') || category.toLowerCase().includes('direito') ? (
-                      <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-full h-full object-contain object-left drop-shadow-md" />
+                      <img src="/assets/praticar-juiz.webp" alt="Juiz" className="w-full h-full object-contain object-left drop-shadow-md" />
                     ) : (
                       <img src="/assets/eoab-woman-fixed.webp" alt="OAB" className="w-full h-full object-contain object-left drop-shadow-md" />
                     )}
@@ -286,7 +286,7 @@ export default function FerramentasSimulados() {
                       {/* Imagens 3D vazadas */}
                       {sim.exam?.name?.toLowerCase().includes('juiz') ? (
                         <div className="absolute right-0 sm:right-2 bottom-0 h-[170px] sm:h-[190px] z-20 pointer-events-none drop-shadow-2xl flex items-end">
-                          <img src="/assets/praticar-juiz.png" alt="Juiz" className="w-auto h-full object-contain object-bottom" />
+                          <img src="/assets/praticar-juiz.webp" alt="Juiz" className="w-auto h-full object-contain object-bottom" />
                         </div>
                       ) : (
                         <div className="absolute right-0 sm:right-2 bottom-0 h-[170px] sm:h-[190px] z-20 pointer-events-none drop-shadow-2xl flex items-end">
@@ -473,7 +473,7 @@ export default function FerramentasSimulados() {
           <div className="relative flex flex-col items-center">
             {selectedSimulado.exam?.name?.toLowerCase().includes('juiz') && (
               <img 
-                src="/assets/praticar-juiz.png" 
+                src="/assets/praticar-juiz.webp" 
                 alt="Juiz" 
                 className="w-48 sm:w-56 h-auto drop-shadow-2xl animate-in zoom-in slide-in-from-bottom-10 duration-700" 
               />

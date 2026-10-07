@@ -28,7 +28,7 @@ export function QuestaoHeader({
         {isFilosofia && (
           <div className="absolute left-0 bottom-0 h-full w-28 sm:w-32 z-0 pointer-events-none flex items-end opacity-70 sm:opacity-80">
             <img 
-              src="/images/disciplinas/filosofia.png" 
+              src="/images/disciplinas/filosofia.webp" 
               alt="" 
               className="h-full w-auto object-contain object-left-bottom origin-bottom-left"
               style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.3))' }}

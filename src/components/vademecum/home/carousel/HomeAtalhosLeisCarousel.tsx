@@ -329,7 +329,7 @@ function HomeAtalhosLeisCarousel({ onOpenLei }: Props) {
             else if (lei.id === 'epd') coverImage = '/assets/epd-wheelchair.webp';
             else if (lei.id === 'ce') coverImage = '/assets/ce-vote.webp';
             else if (lei.id === 'eir') coverImage = '/assets/eir-woman.webp';
-            else if (lei.id === 'ei') coverImage = '/assets/ei-idoso.png';
+            else if (lei.id === 'ei') coverImage = '/assets/ei-idoso.webp';
             else if (lei.id === 'eind') coverImage = '/assets/eind-indio.png';
 
             return (

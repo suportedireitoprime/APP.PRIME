@@ -4,18 +4,18 @@
 
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 
-import administrativoBundled from '@/assets/biblioteca/areas/direito-administrativo.png';
+import administrativoBundled from '@/assets/biblioteca/areas/direito-administrativo.webp';
 import ambientalBundled from '@/assets/biblioteca/areas/direito-ambiental.webp';
-import civilBundled from '@/assets/biblioteca/areas/direito-civil.png';
-import concorrencialBundled from '@/assets/biblioteca/areas/direito-concorrencial.png';
-import constitucionalBundled from '@/assets/biblioteca/areas/direito-constitucional.png';
-import desportivoBundled from '@/assets/biblioteca/areas/direito-desportivo.png';
-import trabalhoBundled from '@/assets/biblioteca/areas/direito-do-trabalho.png';
-import empresarialBundled from '@/assets/biblioteca/areas/direito-empresarial.png';
-import financeiroBundled from '@/assets/biblioteca/areas/direito-financeiro.png';
-import intPrivadoBundled from '@/assets/biblioteca/areas/direito-internacional-privado.png';
-import intPublicoBundled from '@/assets/biblioteca/areas/direito-internacional-publico.png';
-import penalBundled from '@/assets/biblioteca/areas/direito-penal.png';
+import civilBundled from '@/assets/biblioteca/areas/direito-civil.webp';
+import concorrencialBundled from '@/assets/biblioteca/areas/direito-concorrencial.webp';
+import constitucionalBundled from '@/assets/biblioteca/areas/direito-constitucional.webp';
+import desportivoBundled from '@/assets/biblioteca/areas/direito-desportivo.webp';
+import trabalhoBundled from '@/assets/biblioteca/areas/direito-do-trabalho.webp';
+import empresarialBundled from '@/assets/biblioteca/areas/direito-empresarial.webp';
+import financeiroBundled from '@/assets/biblioteca/areas/direito-financeiro.webp';
+import intPrivadoBundled from '@/assets/biblioteca/areas/direito-internacional-privado.webp';
+import intPublicoBundled from '@/assets/biblioteca/areas/direito-internacional-publico.webp';
+import penalBundled from '@/assets/biblioteca/areas/direito-penal.webp';
 import previdenciarioBundled from '@/assets/biblioteca/areas/direito-previdenciario.webp';
 import procCivilBundled from '@/assets/biblioteca/areas/direito-processual-civil.webp';
 import procTrabalhoBundled from '@/assets/biblioteca/areas/direito-processual-do-trabalho.webp';

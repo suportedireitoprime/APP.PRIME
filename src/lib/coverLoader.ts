@@ -21,7 +21,7 @@ import cpp from '@/assets/lei-cover-cpp.webp';
 import defaultCover from '@/assets/lei-cover-default.webp';
 // Thematic covers per estatuto/lei — mantêm o brasão da República ao fundo.
 import eca from '@/assets/lei-cover-eca.webp';
-import ei from '@/assets/lei-cover-ei.jpg';
+import ei from '@/assets/lei-cover-ei.webp';
 import epd from '@/assets/lei-cover-epd.webp';
 import eir from '@/assets/lei-cover-eir.webp';
 import ec from '@/assets/lei-cover-ec.webp';

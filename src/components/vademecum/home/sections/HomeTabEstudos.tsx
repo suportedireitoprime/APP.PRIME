@@ -21,7 +21,7 @@ const PRATICAR_FUNCTIONS = [
     subtitle: 'Tiro ao alvo',
     icon: Target,
     color: '#f43f5e', // rose
-    image: '/assets/praticar-leiseca.png',
+    image: '/assets/praticar-leiseca.webp',
     path: '/lei-seca',
   },
   {
@@ -30,7 +30,7 @@ const PRATICAR_FUNCTIONS = [
     subtitle: 'Revisão ativa',
     icon: Layers,
     color: '#3b82f6', // blue
-    image: '/assets/praticar-flashcards.png',
+    image: '/assets/praticar-flashcards.webp',
     path: '/flashcards',
   },
   {
@@ -39,7 +39,7 @@ const PRATICAR_FUNCTIONS = [
     subtitle: 'Teste de fixação',
     icon: FileQuestion,
     color: '#10b981', // emerald
-    image: '/assets/praticar-questoes.png',
+    image: '/assets/praticar-questoes.webp',
     path: '/questoes',
   },
   {
@@ -48,7 +48,7 @@ const PRATICAR_FUNCTIONS = [
     subtitle: 'Treino real',
     icon: Timer,
     color: '#8b5cf6', // violet
-    image: '/assets/praticar-simulados.png',
+    image: '/assets/praticar-simulados.webp',
     path: '/simulados',
   }
 ];

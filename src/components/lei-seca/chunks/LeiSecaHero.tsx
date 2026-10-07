@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Sparkles, Trophy, Star, BookOpen, ChevronRight, ArrowLeft } from "lucide-react";
 import type { useLeiSecaResumoGlobal } from "@/hooks/useLeiSecaResumoGlobal";
 import { haptic } from "@/lib/nativeHaptics";
-import heroEstudanteImg from "@/assets/covers/hero-leiseca-estudante.jpg";
+import heroEstudanteImg from "@/assets/covers/hero-leiseca-estudante.webp";
 
 interface LeiSecaHeroProps {
   pctGlobal: number;
