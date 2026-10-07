@@ -1,22 +1,12 @@
-import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, HardDrive, BookMarked, Heart, Route as RouteIcon, FileUp } from 'lucide-react';
+import { ArrowLeft, HardDrive } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
-import { abrirAtalhoBiblioteca } from './BibliotecaBottomNav';
 import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, Mic, Crown, GraduationCap } from 'lucide-react';
-import { toast } from 'sonner';
+import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
 
-// Carrega dinamicamente a imagem do Sócrates
-import socratesImg from '../../../docs/filosofos/Sócrates.webp';
-
-const socratesData = {
-  name: 'Sócrates',
-  quote: 'É melhor sofrer uma injustiça do que cometê-la.',
-  img: socratesImg
-};
+import bibliotecaCoverImg from '@/assets/biblioteca-cover.jpg';
 
 interface Props {
   onBuscar?: () => void;
@@ -25,8 +15,7 @@ interface Props {
 
 const BibliotecaHero = ({ children }: Props) => {
   const navigate = useNavigate();
-
-  const currentPhil = socratesData;
+  const { data: totalCount = 2000, isLoading } = useTotalLivrosCount();
 
   return (
     <div
@@ -43,17 +32,17 @@ const BibliotecaHero = ({ children }: Props) => {
         aria-hidden="true"
       />
 
-      {/* Imagem de Fundo (Carrossel) */}
+      {/* Imagem de Fundo */}
       <AnimatePresence>
         <motion.img
-          key={currentPhil.img}
-          src={currentPhil.img}
-          alt={currentPhil.name}
+          key="biblioteca-cover"
+          src={bibliotecaCoverImg}
+          alt="Biblioteca Jurídica"
           initial={{ opacity: 0, scale: 1.03 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2 }}
-          className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
+          className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none opacity-50"
         />
       </AnimatePresence>
 
@@ -102,13 +91,13 @@ const BibliotecaHero = ({ children }: Props) => {
 
       {/* Conteúdo idêntico à altura da Home (Textos animando) */}
       <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[100px]">
-        <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[48%] max-w-[200px] ml-2 sm:ml-4">
+        <div className="flex flex-col items-center text-center gap-1 z-[10] relative w-[52%] max-w-[220px] ml-2 sm:ml-4">
           <div className="h-[65px] mb-1 w-full" />
           
           <div className="h-[90px] w-full flex flex-col items-center">
             <AnimatePresence mode="wait">
               <motion.div
-                key={currentPhil.name}
+                key="biblioteca-hero"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -116,13 +105,13 @@ const BibliotecaHero = ({ children }: Props) => {
                 className="flex flex-col items-center w-full"
               >
                 <h1 className="font-serif italic text-white text-[16px] sm:text-[18px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
-                  {currentPhil.name}
+                  Biblioteca Jurídica
                 </h1>
                 
                 <div className="mt-2 flex items-center text-left gap-2 w-full justify-center">
                   <div className="w-[2px] h-auto self-stretch bg-white/40 rounded-full shrink-0 min-h-[24px]" />
-                  <p className="font-serif italic text-white/90 text-[10px] sm:text-[11px] leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                    "{currentPhil.quote}"
+                  <p className="font-serif italic text-white/90 text-[11px] sm:text-[12px] leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                    Acervo permanente com <span className="text-amber-400 font-bold not-italic">+{isLoading ? '...' : totalCount} livros</span> ao seu dispor.
                   </p>
                 </div>
               </motion.div>
