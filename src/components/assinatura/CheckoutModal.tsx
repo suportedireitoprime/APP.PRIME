@@ -575,7 +575,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             size="icon" 
             onClick={() => step === 1 ? onOpenChange(false) : setStep(1)}
             disabled={loading}
-            className="rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            className="rounded-full bg-white/20 hover:bg-white/30 transition-colors"
           >
              {step === 1 ? <X className="w-6 h-6" /> : <ChevronLeft className="w-6 h-6" />}
           </Button>
@@ -615,11 +615,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     onClick={() => setActivePlan(plan?.includes('vitalicio') ? 'vitalicio_pix' : (plan === 'anual_pix' ? 'anual_pix' : 'anual_regular_pix'))}
                     className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
                       (activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix')
-                        ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
+                        ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
                         : 'text-muted-foreground hover:text-white hover:bg-white/5'
                     }`}
                   >
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M120.4 340.5l-44.5-44.4 75.3-75.3-75.2-75.2 44.5-44.5 75.2 75.2 75.3-75.3 44.4 44.5-75.2 75.2 75.2 75.3-44.4 44.4-75.3-75.2-75.3 75.3z" /><path d="M436.1 340.5l-44.5 44.4-75.3-75.3-75.2 75.2-44.5-44.4 75.2-75.2-75.3-75.3 44.4-44.5 75.2 75.2 75.2-75.3 44.4 44.4-75.3 75.2 75.3 75.3z" /></svg>
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path d="M11.954 1.34l-5.617 5.617a2.53 2.53 0 0 0 0 3.578L10.3 14.5a2.53 2.53 0 0 0 3.578 0l3.963-3.965a2.53 2.53 0 0 0 0-3.578L12.224 1.34a.19.19 0 0 0-.27 0zm8.012 8.653l3.056 3.056c.394.394.614.928.614 1.485s-.22 1.092-.614 1.485l-9.155 9.155c-.195.195-.45.293-.705.293s-.51-.098-.705-.293l-3.32-3.32 1.38-1.38 2.645 2.645 8.16-8.16-2.062-2.062a.19.19 0 0 0-.27 0l-3.518 3.518a4.42 4.42 0 0 1-6.251 0L5.3 12.443a.19.19 0 0 0-.27 0L2.969 14.51c-.195.195-.293.45-.293.705s.098.51.293.705l3.52 3.52-1.38 1.38-4.516-4.516c-.394-.394-.614-.928-.614-1.485s.22-1.092.614-1.485l9.156-9.155c.39-.39 1.02-.39 1.41 0l3.057 3.057a.19.19 0 0 0 .27 0l2.062-2.062a4.42 4.42 0 0 1 6.25 0l3.208 3.208-1.38 1.38-2.215-2.216z" /></svg>
                     <span>PIX à vista</span>
                   </button>
                   <button
@@ -735,8 +735,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
                     {!isPix && (
                       <>
-                        <div className="grid grid-cols-3 gap-3">
-                          <div className="col-span-2 space-y-1">
+                        <div className="space-y-1">
                             <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
                               <MapPin className="w-3.5 h-3.5"/> CEP
                             </Label>
@@ -749,19 +748,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                               inputMode="numeric"
                             />
                           </div>
-                          <div className="col-span-1 space-y-1">
-                            <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
-                              Nº
-                            </Label>
-                            <Input 
-                              value={formData.addressNumber} 
-                              onChange={handleChange('addressNumber')}
-                              onFocus={handleFocus}
-                              placeholder="123" 
-                              className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
-                            />
-                          </div>
-                        </div>
 
                         <AnimatePresence>
                           {addressInfo && (
