@@ -13,7 +13,7 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
   const cota = useMeExpliqueCota();
 
   return (
-    <div className="relative w-full overflow-hidden border-b border-border/80 shadow-2xl min-h-[260px] sm:min-h-[290px] bg-black">
+    <div className="relative w-full overflow-hidden rounded-b-[36px] shadow-2xl min-h-[260px] sm:min-h-[290px] bg-black">
       {/* Imagem de Fundo à Direita (Filósofo Sócrates) */}
       <picture>
         <img
@@ -39,8 +39,8 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
           className="absolute inset-0 overflow-hidden"
           style={{ clipPath: 'polygon(0 0, 52% 0, 38% 100%, 0% 100%)' }}
         >
-          <div className="absolute inset-0 bg-hero-panel" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.25),transparent_60%)]" />
+          <div className="absolute inset-0 bg-hero-panel-yellow" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,230,100,0.25),transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.6),transparent_65%)]" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
@@ -95,23 +95,6 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
 
       {/* Conteúdo Persuasivo à Esquerda (Sem Barra de Busca) */}
       <div className="relative z-10 pt-20 sm:pt-24 pb-6 px-4 sm:px-6 flex flex-col justify-center max-w-[48%] sm:max-w-[44%] min-h-[260px] sm:min-h-[290px]">
-        {/* Logo do Direito Prime */}
-        <div className="relative h-[65px] sm:h-[72px] mb-2">
-          <picture>
-            <source srcSet="/logo-prime.webp" type="image/webp" />
-            <img
-              src="/logo-prime.webp"
-              alt="Direito Prime"
-              loading="eager"
-              decoding="async"
-              width={70}
-              height={70}
-              fetchPriority="high"
-              className="w-auto h-[65px] sm:h-[72px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
-            />
-          </picture>
-        </div>
-
         <h1 className="font-serif italic text-white text-[20px] sm:text-[24px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)] whitespace-nowrap">
           Me Explique
         </h1>
