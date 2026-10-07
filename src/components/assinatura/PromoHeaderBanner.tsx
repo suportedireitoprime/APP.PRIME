@@ -104,10 +104,9 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
   const userEmail = user?.email || '';
   const initialName = user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || '';
 
-  const isESTADO_3 = isTrialEnded;
   const isESTADO_2 = !is24hActive && !isTrialEnded;
 
-  if (!isESTADO_3 && !isESTADO_2) {
+  if (isTrialEnded || !isESTADO_2) {
     return null;
   }
 
@@ -118,47 +117,7 @@ export const PromoHeaderBanner = memo(function PromoHeaderBanner({
           isDesktop ? 'pt-0 pb-3' : 'pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-1.5'
         } ${className}`}
       >
-        {isTrialEnded ? (
-          /* ──────────────────────────────────────────────────────────
-             ESTADO 3: TESTE EXPIRADO (VERMELHO SÓLIDO)
-             ────────────────────────────────────────────────────────── */
-          <div
-            onClick={handleBannerClick}
-            role="button"
-            tabIndex={0}
-            aria-label="Seu teste gratuito expirou. Assine agora."
-            className="group relative w-full flex items-center h-16 pl-3 sm:pl-4 pr-[114px] sm:pr-[134px] rounded-2xl border border-rose-500/50 bg-gradient-to-r from-[#280509]/95 via-[#440911]/95 to-[#280509]/95 backdrop-blur-md shadow-lg shadow-red-950/30 active:scale-[0.99] transition-all duration-200 cursor-pointer overflow-hidden select-none"
-          >
-            {/* Shimmer carmim acelerado por hardware */}
-            <div 
-              aria-hidden="true" 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-rose-300/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 pointer-events-none" 
-            />
-
-            {/* Ícone / Badge Vermelho à esquerda */}
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-rose-500/25 to-red-500/10 border border-rose-400/40 flex items-center justify-center shrink-0 text-rose-300 shadow-[0_0_12px_rgba(244,63,94,0.25)]">
-              <Clock className="w-5 h-5 sm:w-5 sm:h-5 text-rose-300" strokeWidth={2.4} />
-            </div>
-
-            {/* Texto Central Dinâmico */}
-            <div className="flex flex-col justify-center min-w-0 ml-2.5 sm:ml-3">
-              <div className="flex items-center gap-1.5 text-xs sm:text-[13px] font-semibold text-white/95 truncate">
-                <span>Seu teste grátis terminou</span>
-              </div>
-              <div className="text-[11px] sm:text-xs text-rose-200/90 truncate flex items-center gap-1 mt-0.5">
-                <span>Toque para reativar seu acesso</span>
-              </div>
-            </div>
-
-            {/* Botão de Ação à Direita */}
-            <div 
-              aria-hidden="true"
-              className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-12 px-4 sm:px-6 rounded-xl bg-gradient-to-r from-rose-600 via-red-500 to-rose-700 text-white font-display text-[12px] sm:text-[13px] font-extrabold tracking-wider flex items-center justify-center uppercase shadow-md shadow-red-950/40 group-hover:brightness-110 active:scale-95 transition-all"
-            >
-              ASSINAR
-            </div>
-          </div>
-        ) : !is24hActive && !isTrialEnded ? (
+        {!is24hActive && !isTrialEnded ? (
           /* ──────────────────────────────────────────────────────────
              ESTADO 2: TESTE GRATUITO 3 DIAS (VERMELHO URGÊNCIA)
              Altura exata da barra de pesquisa: h-16 (64px) com rounded-2xl
