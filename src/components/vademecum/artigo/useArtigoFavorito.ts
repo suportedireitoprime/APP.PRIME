@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { listNumerosFavoritosByTabela, toggleArtigoFavorito } from '@/services/favoritosService';
+import { listNumerosFavoritosByTabela, toggleArtigoFavorito, ARTIGOS_FAV_EVENT } from '@/lib/artigosFavoritos';
 import { haptic } from '@/lib/nativeHaptics';
 
-export const ARTIGOS_FAV_EVENT = 'artigos-favoritos-changed';
+
 
 interface UseArtigoFavoritoProps {
   artigo: any;
