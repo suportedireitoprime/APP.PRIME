@@ -616,7 +616,7 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
                 viewport={{ once: true }}
                 transition={{ duration: 1.5, ease: "easeOut" }}
                 aria-hidden="true"
-                className="absolute left-1/2 top-4 w-1 -translate-x-1/2 bg-gradient-to-b from-primary via-emerald-500/80 to-amber-500 rounded-full shadow-[0_0_15px_rgba(224,31,71,0.5)] z-0 origin-top" 
+                className="absolute left-1/2 top-4 w-[2px] -translate-x-1/2 bg-gradient-to-b from-primary via-emerald-500/80 to-amber-500 rounded-full shadow-[0_0_15px_rgba(224,31,71,0.5)] z-0 origin-top" 
               />
 
               <div className="space-y-12 sm:space-y-16 relative z-10">
