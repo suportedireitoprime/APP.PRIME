@@ -72,20 +72,32 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
       if (leiNome.toLowerCase().includes('leis do trabalho')) {
         setSobreHtml(`
           <p>
-            A <strong>Consolidação das Leis do Trabalho (CLT)</strong> foi aprovada pelo <strong>Decreto-Lei nº 5.452, de 1º de maio de 1943</strong>, unificando toda a legislação trabalhista existente no Brasil.
+            A <strong>Consolidação das Leis do Trabalho (CLT)</strong> foi aprovada pelo <strong>Decreto-Lei nº 5.452, de 1º de maio de 1943</strong>, sancionada pelo então presidente Getúlio Vargas. Seu propósito inicial foi unificar, integrar e sistematizar a vasta e esparsa legislação trabalhista existente no Brasil naquele período.
           </p>
           <p>
-            O objetivo principal da CLT é regulamentar as relações individuais e coletivas de trabalho. A legislação consolidou as conquistas dos trabalhadores e é dividida em títulos essenciais:
+            Historicamente inspirada em modelos corporativistas europeus, como a "Carta del Lavoro" italiana, a CLT tornou-se o grande marco dos direitos sociais no Brasil, garantindo proteção legal contra abusos nas relações de emprego e instituindo os alicerces da Justiça do Trabalho.
           </p>
-          <ul class="list-disc pl-5 space-y-1.5 text-zinc-400 mt-2">
+          <p>
+            O objetivo primordial da CLT é regulamentar as relações individuais e coletivas de trabalho. A legislação consolidou as conquistas da classe trabalhadora e, ao longo das décadas, sofreu profundas alterações, especialmente com a Constituição de 1988 e, mais recentemente, com a Reforma Trabalhista de 2017 (Lei nº 13.467).
+          </p>
+          <p>
+            A CLT é dividida e estruturada de forma orgânica em diversos Títulos essenciais, compreendendo:
+          </p>
+          <ul class="list-disc pl-5 space-y-1.5 text-zinc-400 mt-2 mb-4">
             <li>
-              <strong class="text-zinc-200">Normas Gerais e Especiais (Títulos II e III):</strong> estabelecem as regras de jornada, salário mínimo, férias, medicina do trabalho e normas para categorias específicas.
+              <strong class="text-zinc-200">Introdução e Normas Gerais (Títulos I e II):</strong> definem os conceitos básicos de empregador e empregado, além de regras sobre a identificação profissional (CTPS), duração do trabalho, jornada, intervalos, férias anuais remuneradas, salário mínimo e normas rigorosas de segurança e medicina do trabalho.
             </li>
             <li>
-              <strong class="text-zinc-200">Contrato de Trabalho (Título IV):</strong> disciplina a relação de emprego, remuneração, alteração, suspensão e rescisão do contrato de trabalho.
+              <strong class="text-zinc-200">Normas Especiais de Tutela (Título III):</strong> estabelecem disposições protetivas específicas para diversas categorias profissionais (bancários, ferroviários, professores, etc.) e regras dedicadas à proteção do trabalho da mulher e do menor.
             </li>
             <li>
-              <strong class="text-zinc-200">Organização Sindical e Justiça do Trabalho (Títulos V e VIII):</strong> tratam dos sindicatos, convenções coletivas, dissídios e a estrutura da Justiça Especializada e do processo trabalhista.
+              <strong class="text-zinc-200">O Contrato Individual de Trabalho (Título IV):</strong> disciplina a essência da relação de emprego, regras de remuneração, alteração, suspensão, interrupção e rescisão do contrato de trabalho, bem como as modalidades de dispensa, aviso prévio e estabilidade.
+            </li>
+            <li>
+              <strong class="text-zinc-200">Organização Sindical e Convenções (Título V e VI):</strong> tratam do direito de sindicalização, estrutura dos sindicatos, contribuições, prerrogativas e a negociação coletiva através de Convenções e Acordos Coletivos de Trabalho.
+            </li>
+            <li>
+              <strong class="text-zinc-200">Justiça do Trabalho e Processo Trabalhista (Títulos VIII a X):</strong> estabelecem toda a estrutura da Justiça Especializada, a organização das Varas, TRTs e TST, além dos trâmites processuais para julgamento e execução dos dissídios individuais e coletivos, os prazos e os recursos cabíveis.
             </li>
           </ul>
         `);
