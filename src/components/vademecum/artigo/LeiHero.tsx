@@ -131,10 +131,10 @@ const LeiHero: React.FC<LeiHeroProps> = ({
               <button
                 type="button"
                 onClick={() => setShowEmentaDialog(true)}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:opacity-70 shadow-lg"
+                className="inline-flex items-center justify-center gap-1.5 px-3 min-h-[48px] text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:opacity-70 shadow-lg"
               >
                 <ScrollText className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Ementa</span>
+                <span className="font-bold">Ementa</span>
               </button>
             )}
 
@@ -145,10 +145,10 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                   haptic.selection();
                   onOpenSobre();
                 }}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:opacity-70 shadow-lg"
+                className="inline-flex items-center justify-center gap-1.5 px-3 min-h-[48px] text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:opacity-70 shadow-lg"
               >
                 <Info className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Sobre</span>
+                <span className="font-bold">Sobre</span>
               </button>
             )}
 
@@ -157,10 +157,10 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                 href={planaltoUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm text-white hover:text-white transition-all font-bold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/25 active:opacity-70 shadow-xl hover:border-white/40"
+                className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 min-h-[48px] text-xs sm:text-sm text-white hover:text-white transition-all font-bold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/25 active:opacity-70 shadow-xl hover:border-white/40"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-zinc-300" />
-                <span className="hidden sm:inline">Planalto</span>
+                <span className="font-bold">Planalto</span>
               </a>
             )}
           </div>
@@ -193,99 +193,101 @@ const LeiHero: React.FC<LeiHeroProps> = ({
 
         {/* Atalhos Rápidos na Base do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST com altura ampliada e badges sem corte */}
         <div className="relative z-10 px-3 sm:px-6 pt-2.5 pb-6 sm:pb-7 w-full max-w-lg mx-auto">
-          <div className="grid grid-cols-4 gap-1 sm:gap-2">
-            {/* FAVORITOS DE ARTIGOS */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                onOpenOverlay?.('fav');
-              }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
-            >
-              {favCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#F43F5E] pointer-events-none">
-                  {favCount > 99 ? '99+' : favCount}
+          <div className="relative rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl overflow-hidden">
+            <div className="grid grid-cols-4 divide-x divide-white/10">
+              {/* FAVORITOS DE ARTIGOS */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  onOpenOverlay?.('fav');
+                }}
+                className="group flex flex-col items-center justify-center py-3 px-1 hover:bg-white/10 transition-colors active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer relative"
+              >
+                {favCount > 0 && (
+                  <span className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 bg-[#F43F5E] pointer-events-none">
+                    {favCount > 99 ? '99+' : favCount}
+                  </span>
+                )}
+                <Heart
+                  className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#F43F5E]"
+                  fill="none"
+                  strokeWidth={2}
+                />
+                <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                  Favorito
                 </span>
-              )}
-              <Heart
-                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#F43F5E]"
-                fill="none"
-                strokeWidth={2}
-              />
-              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
-                Favorito
-              </span>
-            </button>
+              </button>
 
-            {/* PRATICAR (LEI SECA) NO LUGAR DE ANOTAÇÕES */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                const catalogItem = LEIS_CATALOG.find((l) => l.id === selectedLeiId);
-                const trilha = fallbackTrilhas.find(
-                  (t) => t.sigla.toLowerCase() === catalogItem?.sigla.toLowerCase()
-                );
-                const targetSlug = trilha ? trilha.slug : selectedLeiId;
-                navigate(`/lei-seca/${targetSlug}`, { state: { returnToLei: selectedLeiId } });
-              }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
-            >
-              <Gamepad2
-                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#FACC15]"
-                strokeWidth={2}
-              />
-              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider text-center block">
-                Praticar
-              </span>
-            </button>
-
-            {/* RADAR */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                onOpenOverlay?.('radar');
-              }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
-            >
-              {radarCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#38BDF8] pointer-events-none">
-                  {radarCount > 99 ? '99+' : radarCount}
+              {/* PRATICAR (LEI SECA) */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  const catalogItem = LEIS_CATALOG.find((l) => l.id === selectedLeiId);
+                  const trilha = fallbackTrilhas.find(
+                    (t) => t.sigla.toLowerCase() === catalogItem?.sigla.toLowerCase()
+                  );
+                  const targetSlug = trilha ? trilha.slug : selectedLeiId;
+                  navigate(`/lei-seca/${targetSlug}`, { state: { returnToLei: selectedLeiId } });
+                }}
+                className="group flex flex-col items-center justify-center py-3 px-1 hover:bg-white/10 transition-colors active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer relative"
+              >
+                <Gamepad2
+                  className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#FACC15]"
+                  strokeWidth={2}
+                />
+                <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider text-center block">
+                  Praticar
                 </span>
-              )}
-              <Radar
-                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#38BDF8]"
-                strokeWidth={2}
-              />
-              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
-                Radar
-              </span>
-            </button>
+              </button>
 
-            {/* PLAYLIST */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                onOpenOverlay?.('playlist');
-              }}
-              className="group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] select-none cursor-pointer relative"
-            >
-              {playlistCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full text-white text-[10px] font-bold leading-none flex items-center justify-center border-2 border-[#050505] shadow-lg z-20 bg-[#A855F7] pointer-events-none">
-                  {playlistCount > 99 ? '99+' : playlistCount}
+              {/* RADAR */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  onOpenOverlay?.('radar');
+                }}
+                className="group flex flex-col items-center justify-center py-3 px-1 hover:bg-white/10 transition-colors active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer relative"
+              >
+                {radarCount > 0 && (
+                  <span className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 bg-[#38BDF8] pointer-events-none">
+                    {radarCount > 99 ? '99+' : radarCount}
+                  </span>
+                )}
+                <Radar
+                  className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#38BDF8]"
+                  strokeWidth={2}
+                />
+                <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                  Radar
                 </span>
-              )}
-              <ListMusic
-                className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#A855F7]"
-                strokeWidth={2}
-              />
-              <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
-                Playlist
-              </span>
-            </button>
+              </button>
+
+              {/* PLAYLIST */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  onOpenOverlay?.('playlist');
+                }}
+                className="group flex flex-col items-center justify-center py-3 px-1 hover:bg-white/10 transition-colors active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer relative"
+              >
+                {playlistCount > 0 && (
+                  <span className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 bg-[#A855F7] pointer-events-none">
+                    {playlistCount > 99 ? '99+' : playlistCount}
+                  </span>
+                )}
+                <ListMusic
+                  className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#A855F7]"
+                  strokeWidth={2}
+                />
+                <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                  Playlist
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
