@@ -389,7 +389,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         name: formData.name,
         cpfCnpj: formData.cpf.replace(/\D/g, ''),
         phone: formData.phone.replace(/\D/g, ''),
-        installmentCount: (activePlan === 'vitalicio' || activePlan === 'anual') ? installmentCount : 1
+        installmentCount: (activePlan === 'vitalicio') ? installmentCount : 1
       };
 
       if (!isPix) {
@@ -549,7 +549,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const getPlanInfo = () => {
     if (activePlan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mÃªs' };
-    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: ' (em até 6x)' };
+    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: ' (à vista)' };
     if (activePlan === 'anual_pix') return { title: 'Anual PromoÃ§Ã£o', price: 'R$ 149,90', sub: ' (no PIX)' };
     if (activePlan === 'anual_regular_pix') return { title: 'Anual PIX', price: 'R$ 149,90', sub: ' (à vista)' };
     if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 249,90', sub: ' (em até 10x)' };
@@ -607,7 +607,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
                 </div>
                 {(activePlan === 'anual') && (
-                  <p className="text-xs text-emerald-400 font-bold mt-1">ou até 6x no Cartão</p>
+                  <p className="text-xs text-emerald-400 font-bold mt-1">à vista no Cartão</p>
                 )}
                 {(activePlan === 'vitalicio') && (
                   <p className="text-xs text-emerald-400 font-bold mt-1">ou até 10x no Cartão</p>
@@ -628,7 +628,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                   }`}
                 >
                   <CreditCard className="w-4 h-4" />
-                  <span>Cartão (12x)</span>
+                  <span>{activePlan === 'vitalicio' || activePlan === 'vitalicio_pix' ? 'Cartão (10x)' : 'Cartão'}</span>
                 </button>
                 <button
                   type="button"
@@ -925,7 +925,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       </div>
                     </div>
 
-                    {(activePlan === 'vitalicio' || activePlan === 'anual') && (
+                    {(activePlan === 'vitalicio') && (
                       <div className="space-y-1">
                         <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Parcelamento</Label>
                         <div className="relative">

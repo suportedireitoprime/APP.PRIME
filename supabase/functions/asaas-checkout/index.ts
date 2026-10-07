@@ -112,13 +112,13 @@ Deno.serve(async (req) => {
       // Cobrança avulsa / parcelada via /payments (sem recorrência anual para Vitalício)
       // Preços oficiais: Vitalício = R$ 249,90 (até 10x), Anual = R$ 149,90 (até 6x), Mensal = R$ 29,90
       let baseValue = 149.90;
-      let maxInstallments = 6;
+      let maxInstallments = 1;
       if (plan === 'vitalicio' || plan === 'vitalicio_pix') {
         baseValue = 249.90;
         maxInstallments = 10;
       } else if (plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao') {
         baseValue = 149.90;
-        maxInstallments = 6;
+        maxInstallments = 1;
       } else if (plan === 'mensal') {
         baseValue = 29.90;
         maxInstallments = 1;
