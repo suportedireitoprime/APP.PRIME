@@ -962,6 +962,8 @@ function GlobalTrialGate() {
     cleanPath === '/assinatura' ||
     cleanPath.startsWith('/planos');
 
+  const isHome = cleanPath === '/';
+
   useEffect(() => {
     // Se não há usuário logado, ou está carregando, ou é admin, ou é premium, ou trial ativo, fecha e não abre
     if (!user || authLoading || subLoading || isAdmin || isUserPremium || isTrialActive || isPublicOrLanding) {
@@ -969,9 +971,14 @@ function GlobalTrialGate() {
       return;
     }
 
+    if (isHome) {
+      setShowModal(false);
+      return;
+    }
+
     // Se chegou aqui, o Trial expirou e não estamos na landing page. Força a exibição imediatamente.
     setShowModal(true);
-  }, [user, authLoading, subLoading, isAdmin, isUserPremium, isTrialActive, isPublicOrLanding, location.search]);
+  }, [user, authLoading, subLoading, isAdmin, isUserPremium, isTrialActive, isPublicOrLanding, isHome, location.search]);
 
   useEffect(() => {
     // Só anexa ouvintes se o usuário ESTIVER logado, o plano estiver identificado, não for admin, não for premium, o trial expirou E NÃO estiver na landing page

@@ -85,15 +85,15 @@ interface TrialExpiredModalProps {
 const COPIES = [
   {
     title: "NÃO DEIXE SUA EVOLUÇÃO PARAR",
-    message: "{name}, você experimentou o poder de estudar com o ecossistema jurídico mais completo do país. Não volte para métodos lentos e desatualizados: garanta acesso ilimitado à IA Horus, Vade Mecum inteligente e mais de 200 ferramentas agora.",
+    message: "{name}, os seus 3 dias de testes gratuitos terminaram. Não volte para métodos lentos e desatualizados: garanta acesso ilimitado à IA Horus, Vade Mecum inteligente e mais de 200 ferramentas agora.",
   },
   {
     title: "SEU ACESSO DE TESTE EXPIROU",
-    message: "{name}, cada dia de estudo conta para a sua aprovação. Mantenha seu ritmo acelerado e garanta acesso irrestrito a todas as leis comentadas, resumos esquematizados e simulados exclusivos.",
+    message: "{name}, os seus 3 dias de testes gratuitos terminaram. Mantenha seu ritmo acelerado e garanta acesso irrestrito a todas as leis comentadas, resumos esquematizados e simulados exclusivos.",
   },
   {
     title: "CONTINUE RUMO À SUA APROVAÇÃO",
-    message: "{name}, o seu foco não pode ser interrompido. Desbloqueie todo o acervo do Direito Prime hoje mesmo e conquiste o diferencial competitivo que você precisa.",
+    message: "{name}, os seus 3 dias de testes gratuitos terminaram. Desbloqueie todo o acervo do Direito Prime hoje mesmo e conquiste o diferencial competitivo que você precisa.",
   }
 ];
 
