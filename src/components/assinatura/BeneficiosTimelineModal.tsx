@@ -304,12 +304,34 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
         <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-6 pt-[calc(4rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(7.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
           <div className="max-w-4xl mx-auto pt-6">
             
+            {/* Banner de Introdução Persuasivo */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center max-w-xl mx-auto mb-10 sm:mb-14"
+            >
+              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase tracking-tight leading-tight">
+                Tudo o que você desbloqueia <br className="hidden sm:inline" />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-rose-400 to-amber-400">
+                  ao assinar o Direito Prime
+                </span>
+              </h1>
+              <p className="text-[13px] sm:text-[14px] text-zinc-400 font-medium mt-3 leading-relaxed">
+                Descubra por que milhares de estudantes e operadores do Direito abandonaram métodos tradicionais e alcançaram a aprovação com o nosso ecossistema integrado.
+              </p>
+            </motion.div>
+
             {/* Linha do Tempo (Timeline) */}
             <div className="relative mt-8">
               {/* Eixo Vertical Central Luminoso */}
-              <div 
+              <motion.div 
+                initial={{ height: 0 }}
+                whileInView={{ height: '100%' }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
                 aria-hidden="true"
-                className="absolute left-1/2 top-4 bottom-4 w-1 -translate-x-1/2 bg-gradient-to-b from-primary via-emerald-500/80 to-amber-500 rounded-full shadow-[0_0_15px_rgba(224,31,71,0.5)] z-0" 
+                className="absolute left-1/2 top-4 w-1 -translate-x-1/2 bg-gradient-to-b from-primary via-emerald-500/80 to-amber-500 rounded-full shadow-[0_0_15px_rgba(224,31,71,0.5)] z-0 origin-top" 
               />
 
               <div className="space-y-12 sm:space-y-16 relative z-10">
@@ -320,10 +342,10 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
                   return (
                     <motion.div
                       key={item.id}
-                      initial={{ opacity: 0, y: 35 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-40px" }}
-                      transition={{ duration: 0.5, delay: index * 0.05 }}
+                      initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      transition={{ duration: 0.6, type: "spring", bounce: 0.3, delay: 0.1 }}
                       className={`relative flex items-center w-full ${isEven ? 'justify-start' : 'justify-end'}`}
                     >
                       {/* Marcador Central da Timeline com Número */}
@@ -337,11 +359,11 @@ export const BeneficiosTimelineModal: React.FC<BeneficiosTimelineModalProps> = (
 
                       {/* Card Único Integrado */}
                       <div 
-                        className={`relative w-[calc(50%-1.25rem)] sm:w-[calc(50%-1.5rem)] md:w-[45%] flex flex-col p-4 pt-6 sm:p-6 sm:pt-8 rounded-2xl sm:rounded-3xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:border-primary/40 transition-all duration-300 mt-6`}
+                        className={`relative w-[calc(50%-1.25rem)] sm:w-[calc(50%-1.5rem)] md:w-[45%] flex flex-col p-4 pt-8 sm:p-6 sm:pt-10 rounded-2xl sm:rounded-3xl border border-white/10 bg-neutral-900/90 backdrop-blur-xl shadow-xl hover:border-primary/40 transition-all duration-300 mt-6`}
                       >
-                        {/* Ícone Vazado Metade Dentro/Metade Fora */}
-                        <div className={`absolute -top-5 sm:-top-6 left-4 sm:left-6 w-10 h-10 sm:w-12 sm:h-12 rounded-xl border-2 border-white/20 bg-[#08090C] flex items-center justify-center shadow-xl shrink-0 z-10`}>
-                          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white/80 stroke-[1.5]" />
+                        {/* Ícone Vazado Centralizado */}
+                        <div className={`absolute -top-5 sm:-top-6 left-1/2 -translate-x-1/2 bg-transparent flex items-center justify-center shrink-0 z-10`}>
+                          <Icon className={`w-10 h-10 sm:w-12 sm:h-12 ${item.cor.split(' ')[0].replace('from-', 'text-')} stroke-[1.5] drop-shadow-xl`} />
                         </div>
 
                         {/* Topo do Card */}
