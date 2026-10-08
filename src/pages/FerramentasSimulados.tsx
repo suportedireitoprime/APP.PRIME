@@ -7,6 +7,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, ChevronRight, ArrowLeft, History, BarChart3, ExternalLink, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface SimuladoItem {
