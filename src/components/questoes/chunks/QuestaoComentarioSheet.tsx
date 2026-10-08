@@ -62,17 +62,48 @@ export function TamanhoTextoFab({ fs, setFs }: { fs: number; setFs: (n: number) 
   );
 }
 
+// Quebra parágrafos gigantes em partes menores, unindo a cada 2 frases
+function groupSentences(text: string): string {
+  const blocks = text.split('\n\n');
+  return blocks.map(block => {
+    // Captura a última palavra antes do ponto
+    const marked = block.replace(/(^|\s)([\w\u00C0-\u00FF)'"]+[.?!]['")]?)\s+([A-Z\u00C0-\u00DF])/g, (match, p1, p2, p3) => {
+      const m = p2.toLowerCase();
+      // Se a última palavra for uma abreviação comum, não quebra
+      if (m.includes('art.') || m.includes('inc.') || m.includes('lei') || m.includes('n.') || m.includes('stf.') || m.includes('stj.')) {
+        return match;
+      }
+      return p1 + p2 + '@@@SPLIT@@@' + p3;
+    });
+    
+    const sentences = marked.split('@@@SPLIT@@@');
+    if (sentences.length <= 2) return block;
+    
+    const paragraphs = [];
+    for (let i = 0; i < sentences.length; i += 2) {
+      const s1 = sentences[i] ? sentences[i].trim() : '';
+      const s2 = sentences[i+1] ? sentences[i+1].trim() : '';
+      let p = s1;
+      if (s2) p += ' ' + s2;
+      if (p) paragraphs.push(p);
+    }
+    return paragraphs.join('\n\n');
+  }).join('\n\n');
+}
+
 // Helper to format plain text from spreadsheet into nice markdown
 function formatarComentario(texto: string | undefined): string {
   if (!texto) return '';
-  return texto
+  const formatado = texto
     // Add newlines before (A) Incorreta, (A), (B) e (C) Incorretas, etc. and bold them
     .replace(/((?:\([A-E]\)(?:,\s*|\s+e\s+)*)+)\s*(Incorret[ao]s?|Corret[ao]s?)[\.:-]?/gi, '\n\n**$1 $2:** ')
     // Highlight Súmulas
     .replace(/(Súmula\s+\d+\s+do\s+[A-Z]+)/gi, '**$1**')
-    // Highlight Articles
-    .replace(/(Art\.\s+\d+.*?)(?=[,.]|\s|$)/gi, '**$1**')
+    // Highlight Articles (Art. 14, artigo 14, etc.) along with the Law name if present
+    .replace(/((?:Art\.|Artigo)\s+\d+(?:º|o|°)?(?:[^.]*?(?:Lei|Código|Estatuto|Constituição|CLT|CP|CPP|CC|CDC|CTN|CF)[^.,;)]*(?:\([^)]+\))?)?)/gi, '**$1**')
     .trim();
+
+  return groupSentences(formatado);
 }
 
 export function ComentarioInner({ source }: { source: Fonte }) {
