@@ -6,6 +6,11 @@ import { pushRecente } from '@/lib/leisRecentes';
 import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
 import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.webp';
 
+import penaImg from '@/assets/covers/pena_wireframe.jpg';
+import livroImg from '@/assets/covers/livro_wireframe.jpg';
+import balancaImg from '@/assets/covers/balanca_wireframe.jpg';
+import { motion } from 'framer-motion';
+
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import HomeBrandBanner from './HomeBrandBanner';
 import HomeActionShortcuts from './HomeActionShortcuts';
@@ -22,6 +27,12 @@ const RecentesOverlay = lazyWithRetry(() => import('@/components/vademecum/overl
 export { RotatingStatCard, PHILOSOPHER_QUOTES, LEGAL_CURIOSITIES, TERMOS_JURIDICOS, type CardItem } from './RotatingStatCard';
 
 // Fallback covers and hooks removed because they are not used in rendering
+
+const ORBITING_ITEMS = [
+  { img: penaImg, glow: 'rgba(168,85,247,0.75)' },
+  { img: livroImg, glow: 'rgba(56,189,248,0.75)' },
+  { img: balancaImg, glow: 'rgba(251,191,36,0.75)' },
+];
 
 interface HomeHeaderHeroProps {
   onSearchOpenChange?: (open: boolean) => void;
@@ -84,7 +95,55 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
           className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
         />
 
-        {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisÃ³ria diagonal) */}
+        {/* 3 Imagens Flutuantes Orbitando à Direita */}
+        <div className="absolute right-[-10px] sm:right-6 top-[35%] -translate-y-1/2 w-[220px] h-[220px] sm:w-[280px] sm:h-[280px] pointer-events-none z-[2]">
+          {ORBITING_ITEMS.map((item, i) => {
+            const delay = i * 4.6;
+            return (
+              <motion.div
+                key={i}
+                className="absolute w-14 h-14 sm:w-20 sm:h-20 mix-blend-screen"
+                animate={{
+                  x: [
+                    100 * Math.cos(0),
+                    100 * Math.cos((2 * Math.PI) / 3),
+                    100 * Math.cos((4 * Math.PI) / 3),
+                    100 * Math.cos(2 * Math.PI),
+                  ],
+                  y: [
+                    42 * Math.sin(0),
+                    42 * Math.sin((2 * Math.PI) / 3),
+                    42 * Math.sin((4 * Math.PI) / 3),
+                    42 * Math.sin(2 * Math.PI),
+                  ],
+                  scale: [1, 0.72, 1.15, 1],
+                  opacity: [0.92, 0.5, 1, 0.92],
+                }}
+                transition={{
+                  duration: 14,
+                  repeat: Infinity,
+                  ease: 'linear',
+                  delay: -delay,
+                }}
+                style={{
+                  left: '50%',
+                  top: '50%',
+                  marginLeft: -28,
+                  marginTop: -28,
+                }}
+              >
+                <img
+                  src={item.img}
+                  alt=""
+                  className="w-full h-full object-contain filter drop-shadow-[0_0_12px_var(--glow)] rounded-full mix-blend-plus-lighter"
+                  style={{ ['--glow' as string]: item.glow }}
+                />
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisória diagonal) */}
         <div 
           className="absolute inset-0 z-[1] pointer-events-none"
           style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
