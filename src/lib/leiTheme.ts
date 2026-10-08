@@ -15,6 +15,7 @@ const COLOR_MAP: Record<string, string> = {
   cdc:  '#E11D48', // Rose 600
   eca:  '#4F46E5', // Indigo 600
   ctn:  '#D97706', // Amber 600
+  ctb:  '#16A34A', // Green 600
 };
 
 const TIPO_COLOR: Record<string, string> = {
@@ -49,6 +50,7 @@ const COVER_MAP: Record<string, string> = {
   clt:  COVERS.clt,
   cdc:  COVERS.cdc,
   ctn:  COVERS.ctn,
+  ctb:  COVERS.ctb,
   // Estatutos temáticos
   eca:  COVERS.eca,
   ei:   COVERS.ei,
