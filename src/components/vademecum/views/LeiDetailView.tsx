@@ -22,6 +22,7 @@ import { buildArtigoBreadcrumbsMap } from '@/components/vademecum/artigo/artigoB
 import OcrScanner from '@/components/vademecum/grifos_ocr/OcrScanner';
 import { haptic } from '@/lib/nativeHaptics';
 import { pushRecente } from '@/lib/leisRecentes';
+import brasaoImg from '@/assets/brasao.png';
 
 import NovidadesPanel from '@/components/vademecum/panels/NovidadesPanel';
 import { FavPanel, PlaylistPanel, AnotacoesPanel } from '@/components/vademecum/panels/OverlayPanels';
@@ -981,20 +982,38 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
         <div className={`flex ${isMasterDetail ? 'md:gap-6 md:items-start' : 'flex-col'}`}>
           <div className="flex-1 min-w-0 w-full relative">
             {activeTab === 'art' ? (
-              <LeiArtigosVirtualList
-                visibleArtigos={visibleArtigos}
-                shouldVirtualizeArtigos={shouldVirtualizeArtigos}
-                loadedKey={loadedKey}
-                selectedTabelaNome={selectedTabelaNome}
-                loadingArtigos={loadingArtigos}
-                openArtigoWithRecent={openArtigoWithRecent}
-                highlightedArtigoId={highlightedArtigoId}
-                searchQuery={searchQuery}
-                leiAccent={leiAccent}
-                isArtigoFav={isArtigoFav}
-                grifadoNumeros={grifadoNumeros}
-                anotadoNumeros={anotadoNumeros}
-              />
+              <div className="flex flex-col">
+                {/* Brasão, Nome da Lei e Ementa acima da lista de artigos */}
+                {!searchQuery && (
+                  <div className="flex flex-col items-center justify-center text-center px-4 pt-12 pb-14 opacity-90 select-none">
+                    <img 
+                      src={brasaoImg} 
+                      alt="Brasão da República" 
+                      className="w-16 h-16 sm:w-20 sm:h-20 opacity-[0.8] mb-5 drop-shadow-md mix-blend-luminosity" 
+                    />
+                    <h2 className="font-display text-[15px] sm:text-[17px] md:text-xl font-black tracking-[0.1em] text-primary mb-4 drop-shadow-sm uppercase text-balance leading-snug">
+                      {selectedLeiNome}
+                    </h2>
+                    <p className="font-serif text-sm sm:text-[15px] text-muted-foreground italic leading-relaxed max-w-2xl text-center drop-shadow-sm text-balance px-2">
+                      {selectedLeiEmenta}
+                    </p>
+                  </div>
+                )}
+                <LeiArtigosVirtualList
+                  visibleArtigos={visibleArtigos}
+                  shouldVirtualizeArtigos={shouldVirtualizeArtigos}
+                  loadedKey={loadedKey}
+                  selectedTabelaNome={selectedTabelaNome}
+                  loadingArtigos={loadingArtigos}
+                  openArtigoWithRecent={openArtigoWithRecent}
+                  highlightedArtigoId={highlightedArtigoId}
+                  searchQuery={searchQuery}
+                  leiAccent={leiAccent}
+                  isArtigoFav={isArtigoFav}
+                  grifadoNumeros={grifadoNumeros}
+                  anotadoNumeros={anotadoNumeros}
+                />
+              </div>
             ) : activeTab === 'cap' ? (
               <LeiCapitulosGrid
                 capitulos={capitulos}
