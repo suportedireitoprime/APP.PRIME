@@ -7,16 +7,9 @@ import {
 import { cn } from '@/lib/utils';
 import type { AcaoTipo } from '@/hooks/useQuestaoAcao';
 import { useGatedFeature } from '@/hooks/useGatedFeature';
-import {
-  Overlay,
-  PainelAcao,
-  TITULOS,
-  OPCOES_RESUMOS,
-  type Fonte,
-  type SeletorTipo,
-  ComentarioSheet,
-  ComentarioInner,
-} from './chunks';
+import { Overlay } from './chunks/QuestaoAcaoOverlay';
+import { PainelAcao, TITULOS, OPCOES_RESUMOS, type Fonte, type SeletorTipo } from './chunks/QuestaoPainelRecurso';
+import { ComentarioSheet, ComentarioInner } from './chunks/QuestaoComentarioSheet';
 
 export { ComentarioSheet, ComentarioInner };
 

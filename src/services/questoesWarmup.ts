@@ -4,7 +4,6 @@
  * estejam armazenados em memória e localStorage para abertura 0ms.
  */
 import { supabase } from '@/integrations/supabase/client';
-import { routePrefetch } from '@/lib/routePrefetch';
 
 let questoesWarmed = false;
 
@@ -16,7 +15,7 @@ export function warmQuestoesStartup(): void {
     try {
       // 1) Pré-carrega o chunk JS da rota
       try {
-        routePrefetch.questoes();
+        import('@/pages/Questoes.tsx');
       } catch {
         /* noop */
       }
