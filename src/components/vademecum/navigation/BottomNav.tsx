@@ -321,7 +321,7 @@ const BottomNav = () => {
             className="flex flex-col items-center justify-end gap-1 md:gap-1.5 py-1 md:py-3 md:justify-center md:rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer relative"
             aria-label="Pesquisar"
           >
-            <div className="bg-primary text-white p-2.5 sm:p-3 md:p-3 rounded-full shadow-[0_4px_14px_rgba(239,68,68,0.3)] flex items-center justify-center transform -translate-y-1 md:translate-y-0">
+            <div className="bg-[#9333ea] text-white p-2.5 sm:p-3 md:p-3 rounded-full shadow-[0_4px_14px_rgba(168,85,247,0.3)] flex items-center justify-center transform -translate-y-1 md:translate-y-0">
               <Search className="w-6 h-6 sm:w-7 sm:h-7 md:w-7 md:h-7 transition-transform drop-shadow-sm -scale-x-100" strokeWidth={2.5} />
             </div>
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5 text-white/90">Pesquisar</span>
