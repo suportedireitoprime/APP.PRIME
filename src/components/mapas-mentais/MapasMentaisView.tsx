@@ -519,7 +519,7 @@ export default function MapasMentaisView({
       )}
 
       {/* 3. Área de Conteúdo Principal */}
-      <main className="relative z-10 flex-1 pb-[calc(5.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      <main className={`relative z-10 flex-1 ${!(item || filtro === 'pastas' || filtro === 'sobre') ? 'pb-[calc(5.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]' : 'pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'}`}>
         {filtro === 'sobre' ? (
           <MapasMentaisSobre />
         ) : filtro === 'pastas' ? (
@@ -653,22 +653,24 @@ export default function MapasMentaisView({
         </div>
       )}
 
-      {/* 9. Bottom Navigation Principal */}
-      <MapasMentaisBottomNav
-        categoria={categoria}
-        setCategoria={(cat) => {
-          setCategoria(cat);
-          setBusca('');
-          setBuscaAtiva(false);
-          setItem(null);
-          setTema(null);
-        }}
-        buscaAtiva={buscaAtiva}
-        onSearchClick={() => {
-          setBuscaAtiva(!buscaAtiva);
-          if (buscaAtiva) setBusca('');
-        }}
-      />
+      {/* 9. Bottom Navigation Principal (Apenas na tela inicial dos mapas) */}
+      {!(item || filtro === 'pastas' || filtro === 'sobre') && (
+        <MapasMentaisBottomNav
+          categoria={categoria}
+          setCategoria={(cat) => {
+            setCategoria(cat);
+            setBusca('');
+            setBuscaAtiva(false);
+            setItem(null);
+            setTema(null);
+          }}
+          buscaAtiva={buscaAtiva}
+          onSearchClick={() => {
+            setBuscaAtiva(!buscaAtiva);
+            if (buscaAtiva) setBusca('');
+          }}
+        />
+      )}
     </div>
   );
 }
