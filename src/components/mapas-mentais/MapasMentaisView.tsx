@@ -26,6 +26,8 @@ import { MapasMentaisViewer } from './MapasMentaisViewer';
 import { MapasMentaisPastas } from './MapasMentaisPastas';
 import { MapasMentaisBottomNav } from './MapasMentaisBottomNav';
 import ShapeGrid from '@/components/ui/ShapeGrid';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { FILTROS } from './mapasConstants';
 
 export interface MapasMentaisViewProps {
   onClose: () => void;
@@ -519,10 +521,8 @@ export default function MapasMentaisView({
       )}
 
       {/* 3. Área de Conteúdo Principal */}
-      <main className={`relative z-10 flex-1 ${!(item || filtro === 'pastas' || filtro === 'sobre') ? 'pb-[calc(5.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]' : 'pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'}`}>
-        {filtro === 'sobre' ? (
-          <MapasMentaisSobre />
-        ) : filtro === 'pastas' ? (
+      <main className={`relative z-10 flex-1 ${!(item || filtro === 'pastas') ? 'pb-[calc(5.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]' : 'pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'}`}>
+        {filtro === 'pastas' ? (
           <MapasMentaisPastas
             prontos={prontos}
             onAbrir={(reg) => {
@@ -558,7 +558,7 @@ export default function MapasMentaisView({
         ) : (
           <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 pt-4">
             <MapasMentaisGrid
-              itens={listaItens}
+              itens={categoria === 'materias' ? (areas.length ? areas : MATERIAS) : itensDaCategoria(categoria)}
               limite={limite}
               onCarregarMais={() => setLimite((l) => l + 30)}
               prontos={prontos}
@@ -574,6 +574,50 @@ export default function MapasMentaisView({
           </div>
         )}
       </main>
+
+      {/* 3.1. Tela Secundária (Filtros) em Modal / Sheet */}
+      <Sheet open={filtro !== 'todos' && filtro !== 'pastas'} onOpenChange={(open) => { if (!open) setFiltro('todos'); }}>
+        <SheetContent side="bottom" className="h-[92dvh] rounded-t-[32px] p-0 bg-[#0a0a0a] border-t border-white/10 overflow-hidden flex flex-col z-[150] shadow-2xl">
+          <header className="relative z-20 pt-5 px-4 sm:px-6 pb-4 flex items-center gap-4 bg-[#120524] border-b border-white/5">
+            <button
+              onClick={() => {
+                haptic.light();
+                setFiltro('todos');
+              }}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-black/60 border border-purple-500/20 text-white transition-colors hover:bg-black/80"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h2 className="text-xl font-display font-bold text-white uppercase tracking-widest flex items-center gap-2">
+              {FILTROS.find(f => f.id === filtro)?.Icone && React.createElement(FILTROS.find(f => f.id === filtro)!.Icone, { className: "w-5 h-5 text-purple-400" })}
+              {FILTROS.find(f => f.id === filtro)?.label || 'Filtro'}
+            </h2>
+          </header>
+          <div className="flex-1 overflow-y-auto w-full">
+            {filtro === 'sobre' ? (
+              <MapasMentaisSobre />
+            ) : (
+              <div className="max-w-[1400px] mx-auto w-full px-4 sm:px-6 pt-4 pb-12">
+                <MapasMentaisGrid
+                  itens={listaItens}
+                  limite={limite}
+                  onCarregarMais={() => setLimite((l) => l + 30)}
+                  prontos={prontos}
+                  favoritos={favoritos}
+                  onToggleFavorito={alternarFavorito}
+                  onSelect={(selecionado) => {
+                    setItem(selecionado);
+                    setTema(null);
+                    setBuscaDetalhe('');
+                    setFiltro('todos'); // Fecha a sheet
+                  }}
+                  carregando={false}
+                />
+              </div>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* 4. Modal Limpo de Escolha de Formato */}
       <MapasMentaisFormatModal
