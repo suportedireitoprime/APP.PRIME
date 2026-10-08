@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Search, X, Heart, ChevronRight, FileText, Sparkles, BookOpen, Layers } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { CATEGORIA_COR, getCorParaItem } from './mapasConstants';
@@ -34,7 +34,7 @@ interface MapasMentaisDetalhesProps {
   scrollRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export function MapasMentaisDetalhes({
+export const MapasMentaisDetalhes = memo(function MapasMentaisDetalhes({
   categoria,
   item,
   busca,
@@ -354,4 +354,4 @@ export function MapasMentaisDetalhes({
       )}
     </div>
   );
-}
+});

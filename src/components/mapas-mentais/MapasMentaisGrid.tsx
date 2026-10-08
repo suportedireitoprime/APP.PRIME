@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Heart, Sparkles, Folder } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import type { CatalogoItem } from '@/lib/visuaisJuridicos/catalogo';
@@ -17,7 +17,7 @@ interface MapasMentaisGridProps {
   carregando?: boolean;
 }
 
-export function MapasMentaisGrid({
+export const MapasMentaisGrid = memo(function MapasMentaisGrid({
   itens,
   limite,
   onCarregarMais,
@@ -143,4 +143,4 @@ export function MapasMentaisGrid({
       )}
     </div>
   );
-}
+});
