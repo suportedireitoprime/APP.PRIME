@@ -1000,9 +1000,15 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       alt="Brasão da República" 
                       className="w-16 h-16 sm:w-20 sm:h-20 opacity-[0.8] mb-5 drop-shadow-md mix-blend-luminosity" 
                     />
-                    <h2 className="font-display text-[15px] sm:text-[17px] md:text-xl font-black tracking-[0.1em] text-primary mb-6 drop-shadow-sm uppercase text-balance leading-snug">
+                    <h2 className="font-display text-[15px] sm:text-[17px] md:text-xl font-black tracking-[0.1em] text-primary mb-2 drop-shadow-sm uppercase text-balance leading-snug">
                       {selectedLeiNome}
                     </h2>
+                    
+                    {selectedLeiDescricao && (
+                      <p className="text-muted-foreground/80 text-xs sm:text-[13px] font-medium tracking-wide mb-6 drop-shadow-sm">
+                        {selectedLeiDescricao}
+                      </p>
+                    )}
                     
                     <div className="flex items-center gap-3">
                       {ementaExibida && (
