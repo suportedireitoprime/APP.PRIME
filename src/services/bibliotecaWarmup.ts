@@ -38,28 +38,30 @@ async function prefetchColecoes(qc: QueryClient) {
       lote.map((colecao) =>
         qc
           .prefetchQuery({
-            queryKey: ['biblioteca-colecao', colecao.id],
+            queryKey: ['biblioteca-colecao-top20', colecao.id],
             staleTime: STALE,
             queryFn: async () => {
               let q: any = supabase.from(colecao.table as any).select(colecao.select);
               if (colecao.orderBy) q = q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
               
               const data = await withBundleFallback(
-                q.limit(1000).then((res: any) => {
+                q.limit(20).then((res: any) => {
                   if (res.error) throw res.error;
                   return res.data;
                 }),
                 async () => {
                   const bundleFnName = 'biblioteca' + colecao.id.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
                   if ((bundle as any)[bundleFnName]) {
-                    return await (bundle as any)[bundleFnName]();
+                    const rows = await (bundle as any)[bundleFnName]();
+                    return rows.slice(0, 20);
                   }
                   return [];
                 }
               );
               
               const list = (data as any[]).map((r) => normalizeLivro(r, colecao));
-              setPersistedColecao(colecao.id, list).catch(() => {});
+              // We don't overwrite the full persisted collection with just 20 items here,
+              // we just return it for the fast memory cache.
               return list;
             },
           })

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
   normalizeLivro,
@@ -9,11 +9,12 @@ import { getPersistedColecao, setPersistedColecao } from '@/services/offlineDb';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
 
 export function useLivrosDaColecao(colecao: ColecaoConfig | undefined) {
+  const queryClient = useQueryClient();
   return useQuery({
     queryKey: ['biblioteca-colecao', colecao?.id],
     enabled: !!colecao,
     staleTime: 10 * 60 * 1000,
-    placeholderData: (prev) => prev,
+    placeholderData: (prev) => prev ?? queryClient.getQueryData(['biblioteca-colecao-top20', colecao?.id]),
     queryFn: async () => {
       if (!colecao) return [];
       try {

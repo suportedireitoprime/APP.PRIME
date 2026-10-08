@@ -112,14 +112,15 @@ const useColecao = (id: string) => {
         if (cfg.orderBy) q = q.order(cfg.orderBy, { ascending: true, nullsFirst: false });
         
         const data = await withBundleFallback(
-          q.limit(2000).then((res: any) => {
+          q.limit(20).then((res: any) => {
             if (res.error) throw res.error;
             return res.data;
           }),
           async () => {
              const bundleFnName = 'biblioteca' + id.split('-').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('');
              if ((bundle as any)[bundleFnName]) {
-               return await (bundle as any)[bundleFnName]();
+               const rows = await (bundle as any)[bundleFnName]();
+               return rows.slice(0, 20);
              }
              return [];
           }

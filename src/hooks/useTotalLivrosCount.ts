@@ -12,6 +12,7 @@ export function useTotalLivrosCount() {
       
       for (const table of tables) {
         const { count, error } = await supabase
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .from(table as any)
           .select('*', { count: 'exact', head: true });
           
