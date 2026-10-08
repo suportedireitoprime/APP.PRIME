@@ -153,7 +153,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
         </header>
 
         {/* Conteúdo do Painel: Título e Identificação da Lei à Esquerda (sobre a área vermelha, alinhado à Home) */}
-        <div className="relative z-10 px-3 sm:px-4 ml-1 sm:ml-2 pt-1 sm:pt-2 pb-3.5 sm:pb-4 flex flex-col justify-start w-[65%] sm:w-[55%] max-w-[320px]">
+        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start px-3 sm:px-4 ml-1 sm:ml-2 min-h-[120px] w-[80%] sm:w-[65%] max-w-[340px]">
           {/* Brasão watermark sutil atrás do texto */}
           <img
             src={brasaoImg}
@@ -176,9 +176,8 @@ const LeiHero: React.FC<LeiHeroProps> = ({
         </div>
 
         {/* Atalhos Rápidos na Base do Painel: FAVORITO, ANOTAÇÕES, RADAR, PLAYLIST com altura ampliada e badges sem corte */}
-        <div className="relative z-10 px-3 sm:px-6 pt-2.5 pb-6 sm:pb-7 w-full max-w-lg mx-auto">
-          <div className="relative rounded-2xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl overflow-hidden">
-            <div className="grid grid-cols-4 divide-x divide-white/10">
+        <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3 w-full max-w-lg mx-auto">
+          <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
               {/* FAVORITOS DE ARTIGOS */}
               <button
                 type="button"
@@ -186,7 +185,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                   haptic.selection();
                   onOpenOverlay?.('fav');
                 }}
-                className="group flex flex-col items-center justify-center py-3 px-1 hover:bg-white/10 transition-colors active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer relative"
+                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
               >
                 {favCount > 0 && (
                   <span className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 bg-[#F43F5E] pointer-events-none">
@@ -194,11 +193,11 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                   </span>
                 )}
                 <Heart
-                  className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#F43F5E]"
-                  fill="none"
+                  className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                  style={{ color: '#F43F5E', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
                   strokeWidth={2}
                 />
-                <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
                   Favorito
                 </span>
               </button>
@@ -215,13 +214,14 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                   const targetSlug = trilha ? trilha.slug : selectedLeiId;
                   navigate(`/lei-seca/${targetSlug}`, { state: { returnToLei: selectedLeiId } });
                 }}
-                className="group flex flex-col items-center justify-center py-3 px-1 hover:bg-white/10 transition-colors active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer relative"
+                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
               >
                 <Feather
-                  className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#FACC15]"
+                  className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                  style={{ color: '#FACC15', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
                   strokeWidth={2}
                 />
-                <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider text-center block">
+                <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
                   Lições
                 </span>
               </button>
@@ -233,7 +233,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                   haptic.selection();
                   onOpenOverlay?.('radar');
                 }}
-                className="group flex flex-col items-center justify-center py-3 px-1 hover:bg-white/10 transition-colors active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer relative"
+                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
               >
                 {radarCount > 0 && (
                   <span className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 bg-[#38BDF8] pointer-events-none">
@@ -241,10 +241,11 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                   </span>
                 )}
                 <Radar
-                  className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#38BDF8]"
+                  className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                  style={{ color: '#38BDF8', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
                   strokeWidth={2}
                 />
-                <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
                   Radar
                 </span>
               </button>
@@ -256,7 +257,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                   haptic.selection();
                   onOpenOverlay?.('playlist');
                 }}
-                className="group flex flex-col items-center justify-center py-3 px-1 hover:bg-white/10 transition-colors active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer relative"
+                className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
               >
                 {playlistCount > 0 && (
                   <span className="absolute top-1 right-2 min-w-[18px] h-[18px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-[#050505] shadow-lg z-20 bg-[#A855F7] pointer-events-none">
@@ -264,14 +265,14 @@ const LeiHero: React.FC<LeiHeroProps> = ({
                   </span>
                 )}
                 <ListMusic
-                  className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-all group-hover:scale-110 text-[#A855F7]"
+                  className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110"
+                  style={{ color: '#A855F7', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
                   strokeWidth={2}
                 />
-                <span className="text-[8.5px] sm:text-[10px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
+                <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
                   Playlist
                 </span>
               </button>
-            </div>
           </div>
         </div>
       </div>
