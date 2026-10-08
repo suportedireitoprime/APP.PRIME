@@ -174,9 +174,11 @@ export function MapasMentaisHeader({
       {/* ── Elementos Integrados DENTRO da Capa (Funções e Pesquisa) ── */}
       <div className="relative z-10 px-4 sm:px-6 w-full pt-4 pb-5 space-y-3 max-w-[1400px] mx-auto">
         {/* 1. Funções (Favoritos, Recentes, Pastas, Sincronizados) estilo Home */}
-        <div className="grid grid-cols-2 gap-3 mx-1 mt-1">
+        <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
           {FILTROS.map(({ id, label, Icone, color }) => {
             const isAtivo = filtro === id;
+            // Simplifica labels para caberem em 4 colunas
+            const labelCurta = label.replace('Sincronizados', 'Sincron.').replace('Favoritos', 'Favoritos').replace('Recentes', 'Recentes').replace('Pastas', 'Pastas');
             return (
               <button
                 key={id}
@@ -185,22 +187,19 @@ export function MapasMentaisHeader({
                   haptic.selection();
                   setFiltro(isAtivo ? 'todos' : id);
                 }}
-                className={`group flex flex-col items-center justify-center py-4 px-2 rounded-2xl bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[64px] select-none cursor-pointer overflow-hidden ${
+                className={`group flex flex-col items-center justify-center py-2 px-1 rounded-[14px] bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer overflow-hidden ${
                   isAtivo
                     ? 'border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.35)]'
                     : 'border border-white/10'
                 }`}
               >
                 <Icone 
-                  className="w-6 h-6 shrink-0 transition-all group-hover:scale-110" 
+                  className="w-5 h-5 shrink-0 transition-all group-hover:scale-110" 
                   style={{ color: color }} 
                   strokeWidth={2} 
                 />
-                <span className={`text-[11px] font-extrabold leading-tight uppercase tracking-wider ${isAtivo ? 'text-white' : 'text-white/90'}`}>
-                  {label}
-                  {id === 'favoritos' && favoritosCount > 0 && ` (${favoritosCount})`}
-                  {id === 'recentes' && recentesCount > 0 && ` (${recentesCount})`}
-                  {id === 'pastas' && pastasCount > 0 && ` (${pastasCount})`}
+                <span className={`text-[8px] sm:text-[9px] font-bold leading-tight uppercase tracking-wider ${isAtivo ? 'text-white' : 'text-white/80'}`}>
+                  {labelCurta}
                 </span>
               </button>
             );
