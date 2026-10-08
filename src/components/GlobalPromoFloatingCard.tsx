@@ -11,7 +11,7 @@ import { useAppUpdateStore } from '@/lib/appUpdateStore';
 
 export function GlobalPromoFloatingCard() {
   const { user, loading: authLoading } = useAuth();
-  const { isPremium, loading: subLoading, isTrial } = useSubscription();
+  const { isPremium, loading: subLoading, isTrial, expiresAt } = useSubscription();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -115,25 +115,21 @@ export function GlobalPromoFloatingCard() {
       }
     }
 
-    // Se o usuário está em período de teste ativo (trial), exibe aviso a cada 6h
+    // Se o usuário está em período de teste ativo (trial), exibe aviso a cada sessão
     if (isTrial) {
-      const trialKey = getTrialKey();
-      if (!trialKey) return;
-      let lastShown = 0;
-      try {
-        const stored = localStorage.getItem(trialKey);
-        if (stored) lastShown = parseInt(stored, 10);
-      } catch {}
-
-      const sixHours = 6 * 60 * 60 * 1000;
-      if (Date.now() - lastShown > sixHours) {
+      const sessionKey = 'trial_promo_shown_this_session';
+      if (!sessionStorage.getItem(sessionKey)) {
         setPromoType('trial');
+        if (expiresAt) {
+          const diffSeconds = Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000);
+          setTimeLeft(Math.max(0, diffSeconds));
+        }
         setShowCard(true);
       }
     } else {
       setShowCard(false);
     }
-  }, [authLoading, subLoading, user, isHiddenRoute, isAdmin, isPremium, isTrial, incrementAppOpenCount, getPromoKey, getTrialKey]);
+  }, [authLoading, subLoading, user, isHiddenRoute, isAdmin, isPremium, isTrial, expiresAt, incrementAppOpenCount, getPromoKey]);
 
   // Atualizar timer da promo 24h
   useEffect(() => {
@@ -141,12 +137,12 @@ export function GlobalPromoFloatingCard() {
 
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 1) {
+        if (prev <= 1 && promoType === '24h') {
           clearInterval(timer);
-          setShowCard(false); // Esconde ao expirar
+          setShowCard(false); // Esconde ao expirar apenas se for 24h
           return 0;
         }
-        return prev - 1;
+        return Math.max(0, prev - 1);
       });
     }, 1000);
 
@@ -157,10 +153,10 @@ export function GlobalPromoFloatingCard() {
     haptic.light();
     setShowCard(false);
     
-    // Se for trial, registra o momento que foi fechado para só mostrar daqui a 6h
+    // Se for trial, registra na sessão atual que já foi mostrado
     if (promoType === 'trial') {
       try {
-        localStorage.setItem(getTrialKey(), String(Date.now()));
+        sessionStorage.setItem('trial_promo_shown_this_session', '1');
       } catch {}
     }
   };
@@ -177,9 +173,16 @@ export function GlobalPromoFloatingCard() {
   };
 
   const formatTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
+    const d = Math.floor(seconds / (3600 * 24));
+    const h = Math.floor((seconds % (3600 * 24)) / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
+    
+    if (promoType === 'trial') {
+      if (d > 0) return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m`;
+      return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+    
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
@@ -243,20 +246,18 @@ export function GlobalPromoFloatingCard() {
                 </div>
 
                 <div className="mt-4 flex items-center justify-between gap-3">
-                  {promoType === '24h' && (
-                    <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span className="text-xs font-bold font-mono tracking-wider">{formatTime(timeLeft)}</span>
-                    </div>
-                  )}
+                  <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${promoType === '24h' ? 'text-emerald-400 bg-emerald-500/10' : 'text-rose-400 bg-rose-500/10'}`}>
+                    <Clock className="w-3.5 h-3.5" />
+                    <span className="text-xs font-bold font-mono tracking-wider">{formatTime(timeLeft)}</span>
+                  </div>
 
                   <button 
                     onClick={handleAction}
                     className={`flex-1 rounded-xl py-2.5 px-3 text-xs font-bold text-white shadow-sm transition-all active:scale-[0.98] cursor-pointer text-center ${
-                      promoType === '24h' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-[#9333ea] hover:bg-[#a855f7]'
+                      promoType === '24h' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-rose-600 hover:bg-rose-500'
                     }`}
                   >
-                    Ver Planos
+                    {promoType === 'trial' ? 'Assinar Agora' : 'Ver Planos'}
                   </button>
                 </div>
               </div>
