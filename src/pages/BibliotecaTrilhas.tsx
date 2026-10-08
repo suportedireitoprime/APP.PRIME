@@ -141,26 +141,36 @@ const TimelineView = ({
                 {/* Card do Livro */}
                 <button 
                   onClick={() => { haptic.selection(); onOpenReader(livro); }}
-                  className={`w-[45%] text-left rounded-3xl p-3 relative z-30 transition-all duration-300 backdrop-blur-md border overflow-hidden ${
-                    concluido ? 'bg-primary/5 border-primary/20 shadow-sm opacity-90' : 'bg-card/80 border-border/50 shadow-lg hover:border-primary/50 cursor-pointer active:opacity-70'
-                }`}>
-                  <div className="w-full h-24 mb-2 bg-muted rounded-xl overflow-hidden relative">
+                  className={`group w-[45%] text-left rounded-3xl relative z-30 transition-all duration-300 origin-bottom flex flex-col p-2 box-border ${
+                    isLeft
+                      ? "hover:-rotate-[1deg] hover:-translate-x-1 hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.5)] hover:shadow-[0_22px_45px_rgba(0,0,0,0.65)]"
+                      : "hover:rotate-[1deg] hover:translate-x-1 hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.5)] hover:shadow-[0_22px_45px_rgba(0,0,0,0.65)]"
+                  }`}
+                  style={{
+                    background: concluido ? "rgba(var(--primary-rgb, 234, 179, 8), 0.1)" : "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+                    border: concluido ? "1px solid rgba(var(--primary-rgb, 234, 179, 8), 0.3)" : "1px solid rgba(255,255,255,0.15)",
+                    backdropFilter: "blur(12px)"
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-white/[0.08] pointer-events-none rounded-3xl" />
+                  
+                  <div className="w-full aspect-[2/3] mb-3 bg-muted rounded-2xl overflow-hidden relative shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]">
                     {livro.capa ? (
-                      <img src={livro.capa} alt={livro.titulo} loading="lazy" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} className="w-full h-full object-cover" />
+                      <img src={livro.capa} alt={livro.titulo} loading="lazy" decoding="async" onError={(e) => (e.currentTarget.style.display = 'none')} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><BookOpen className="w-6 h-6 text-muted-foreground/30" /></div>
                     )}
                     {concluido && (
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[2px]">
-                        <CheckCircle2 className="w-8 h-8 text-primary" />
+                        <CheckCircle2 className="w-10 h-10 text-primary drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" />
                       </div>
                     )}
                   </div>
-                  <div className="relative z-10 px-1">
-                    <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${concluido ? 'text-primary/70' : 'text-muted-foreground'}`}>
+                  <div className="relative z-10 w-full px-1 text-center">
+                    <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${concluido ? 'text-primary/90' : 'text-muted-foreground'}`}>
                       Livro {i + 1}
                     </p>
-                    <p className="text-[12px] text-foreground font-semibold line-clamp-2 leading-snug">
+                    <p className="text-[12px] text-foreground font-semibold line-clamp-2 leading-snug drop-shadow-md">
                       {livro.titulo}
                     </p>
                   </div>

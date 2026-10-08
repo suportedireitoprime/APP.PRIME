@@ -85,6 +85,12 @@ export const BibliotecaCategoriaLivroCard = memo(function BibliotecaCategoriaLiv
         </div>
       </div>
 
+      <div className="flex flex-col items-center justify-center pl-2 pr-1 shrink-0">
+         <span className="text-[11px] uppercase tracking-wide font-bold text-primary px-3 py-1.5 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors shrink-0">
+            Ler
+         </span>
+      </div>
+
       {/* Barra de progresso na base do card */}
       <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-border/40">
         {pct > 0 && (

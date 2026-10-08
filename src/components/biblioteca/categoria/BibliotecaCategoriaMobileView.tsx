@@ -48,7 +48,7 @@ export const BibliotecaCategoriaMobileView: React.FC<BibliotecaCategoriaMobileVi
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-dvh bg-background pb-[calc(96px+var(--sai-bottom,0px))]">
+    <div className="min-h-dvh bg-background pb-[calc(24px+var(--sai-bottom,0px))]">
       <PageHeader
         title={areaAtiva || colecao.label}
         subtitle={areaAtiva ? colecao.label : undefined}
@@ -189,8 +189,6 @@ export const BibliotecaCategoriaMobileView: React.FC<BibliotecaCategoriaMobileVi
         open={!!livroAberto}
         onClose={handleCloseLivro}
       />
-
-      <BibliotecaBottomNav />
     </div>
   );
 };
