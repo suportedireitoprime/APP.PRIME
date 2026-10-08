@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import FlashcardsMasterDeck from '@/components/flashcards/FlashcardsMasterDeck';
+import FlashcardsTrilhas from '@/components/flashcards/FlashcardsTrilhas';
 
 const ATALHOS_FLASHCARDS = [
   { id: 'decks', label: 'Decks', desc: 'Seus baralhos', icon: FolderPlus, route: '/flashcards/decks' },
@@ -31,6 +32,7 @@ const Flashcards = () => {
 
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [viewMode, setViewMode] = useState<'decks' | 'categorias' | 'lista'>('decks');
+  const [mainTab, setMainTab] = useState<'materias' | 'trilhas'>('materias');
   const [buscaMateria, setBuscaMateria] = useState('');
   const loading = loadingDash;
 
@@ -159,16 +161,33 @@ const Flashcards = () => {
           {/* ── Seção de Matérias e Trilhas (Decks 3D / Grade Completa) ───────────────────── */}
           <section className="pt-2 space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="h-4 w-1 rounded-full bg-[#36AF85]" />
-                <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                  Matérias e Trilhas ({areas.length})
-                </p>
+              <div className="flex items-center gap-2 bg-card/60 p-0.5 rounded-xl border border-border/80 shadow-sm backdrop-blur-sm">
+                <button
+                  type="button"
+                  onClick={() => { haptic.selection(); setMainTab('materias'); }}
+                  className={cn(
+                    "px-4 py-1.5 text-xs font-bold rounded-lg transition-all",
+                    mainTab === 'materias' ? "bg-[#36AF85] text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Matérias
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { haptic.selection(); setMainTab('trilhas'); }}
+                  className={cn(
+                    "px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5",
+                    mainTab === 'trilhas' ? "bg-[#36AF85] text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Trilhas <Sparkles className={cn("w-3.5 h-3.5", mainTab === 'trilhas' ? "text-amber-300" : "text-muted-foreground")} />
+                </button>
               </div>
 
-              <div className="flex items-center gap-1.5">
-                {/* Alternador de Modo: Decks 3D vs Grade */}
-                <div className="flex items-center rounded-xl bg-card/80 border border-border/80 p-0.5 shadow-sm backdrop-blur-sm">
+              {mainTab === 'materias' && (
+                <div className="flex items-center gap-1.5">
+                  {/* Alternador de Modo: Decks 3D vs Grade */}
+                  <div className="flex items-center rounded-xl bg-card/80 border border-border/80 p-0.5 shadow-sm backdrop-blur-sm">
                   <button
                     type="button"
                     onClick={() => { haptic.selection(); setViewMode('decks'); }}
@@ -213,9 +232,12 @@ const Flashcards = () => {
                   </button>
                 </div>
               </div>
+              )}
             </div>
 
-            {viewMode === 'decks' ? (
+            {mainTab === 'trilhas' ? (
+              <FlashcardsTrilhas areas={materiasFiltradas} navigate={navigate} />
+            ) : viewMode === 'decks' ? (
               <FlashcardsMasterDeck areas={areas} />
             ) : (
               <div className="space-y-3">

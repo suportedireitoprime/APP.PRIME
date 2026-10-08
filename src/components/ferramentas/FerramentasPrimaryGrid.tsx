@@ -13,8 +13,6 @@ export interface PrimaryToolItem {
 
 export const PRIMARY_TOOLS: PrimaryToolItem[] = [
   { id: 'documentos', label: 'Documentos Prontos', desc: 'Petições, Contratos e mais', icon: FolderOpen, route: '/documentos', color: '#F59E0B' },
-  { id: 'desktop', label: 'Modo Desktop', desc: 'Interface completa', icon: Monitor, route: '/desktop', color: '#10B981' },
-  { id: 'noticias', label: 'Notícias', desc: 'Notícias e atualizações', icon: Newspaper, route: '/noticias', color: '#EC4899' },
   { id: 'radares', label: 'Radares de Leis', desc: 'Projetos de Lei', icon: Radar, route: '/radares', color: '#0EA5E9' },
 ];
 
