@@ -503,7 +503,7 @@ export default function MapasMentaisView({
       )}
 
       {/* 3. Área de Conteúdo Principal */}
-      <main className="relative z-10 flex-1 pb-[calc(2.5rem+var(--sai-bottom))]">
+      <main className="relative z-10 flex-1 pb-[calc(5.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         {filtro === 'pastas' ? (
           <MapasMentaisPastas
             prontos={prontos}
