@@ -29,6 +29,7 @@ interface Row {
   googleId?: string | null;
   created_at?: string | null;
   faixaEtaria?: string | null;
+  logsCheckout?: { event_name: string; created_at: string; erro?: string; plano?: string }[];
 }
 
 function formatTempoCadastro(createdAt?: string | null, fallbackSubtitle?: string | null): string {
@@ -954,34 +955,54 @@ export function AdminHojeCards() {
           const { data: vpEvents } = await supabase
             .from('app_events')
             .select(`
-              id, user_id, created_at, email,
+              id, user_id, created_at, email, event_name, metadata,
               profiles:user_id ( display_name, is_premium ),
               users:user_id ( email, raw_user_meta_data )
             `)
-            .in('event_name', id === 'viu_planos' ? ['trial_click'] : ['trial_click', 'assinatura_aberta'])
+            .in('event_name', id === 'viu_planos' ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] : ['trial_click', 'assinatura_aberta'])
             .gte('created_at', minDate.toISOString())
-            .lt('created_at', maxDate.toISOString());
+            .lt('created_at', maxDate.toISOString())
+            .order('created_at', { ascending: true });
             
           if (vpEvents) {
-            // Remove Admin do Modal
-            const vpMapped = vpEvents
-              .filter((e: any) => {
-                const em = (e.users?.email || e.email || '').toLowerCase().trim();
-                return !ADMIN_EMAILS.includes(em);
-              })
-              .map((e: any) => {
-                const uemail = e.users?.email || e.email || 'Visitante';
+            // Group events by user
+            const userEventsMap = new Map<string, any>();
+            vpEvents.forEach((e: any) => {
+              const em = (e.users?.email || e.email || '').toLowerCase().trim();
+              if (ADMIN_EMAILS.includes(em)) return;
+              
+              const uid = e.user_id || em;
+              if (!userEventsMap.has(uid)) {
+                userEventsMap.set(uid, {
+                   ...e,
+                   uemail: e.users?.email || e.email || 'Visitante',
+                   logs: []
+                });
+              }
+              const userObj = userEventsMap.get(uid);
+              if (e.event_name !== 'trial_click' && e.event_name !== 'assinatura_aberta') {
+                 userObj.logs.push({
+                    event_name: e.event_name,
+                    created_at: e.created_at,
+                    erro: e.metadata?.erro,
+                    plano: e.metadata?.plano
+                 });
+              }
+            });
+
+            const vpMapped = Array.from(userEventsMap.values()).map((e: any) => {
                 return {
                   key: e.id,
                   user_id: e.user_id,
-                  title: e.profiles?.display_name || uemail.split('@')[0],
-                  email: uemail,
+                  title: e.profiles?.display_name || e.uemail.split('@')[0],
+                  email: e.uemail,
                   subtitle: id === 'viu_planos' ? 'Abriu checkout (Clicou)' : 'Abriu planos',
                   at: e.created_at,
                   acessos: null,
                   avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
                   is_premium: e.profiles?.is_premium || false,
-                  created_at: e.created_at
+                  created_at: e.created_at,
+                  logsCheckout: e.logs
                 };
             });
             allLists = allLists.concat(vpMapped);
@@ -1065,6 +1086,7 @@ export function AdminHojeCards() {
         planTag: r.planTag,
         created_at: r.created_at,
         faixaEtaria: r.faixa_etaria,
+        logsCheckout: r.logsCheckout,
       })).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()));
 
       if (id === 'trial' && list.length > 0) {
@@ -1518,6 +1540,21 @@ export function AdminHojeCards() {
                                 Até {r.planTag.expires_at}
                               </span>
                             )}
+                          </div>
+                        )}
+                        {r.logsCheckout && r.logsCheckout.length > 0 && (
+                          <div className="mt-2 space-y-1">
+                             {r.logsCheckout.map((log, idx) => (
+                               <div key={idx} className="flex items-center gap-1.5 text-[10px]">
+                                 <span className="text-muted-foreground/60">{hora(log.created_at)}</span>
+                                 {log.event_name === 'checkout_pix_gerado' && <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 rounded uppercase font-bold text-[9px]">PIX GERADO</span>}
+                                 {log.event_name === 'checkout_cc_enviado' && <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1 rounded uppercase font-bold text-[9px]">CC ENVIADO</span>}
+                                 {log.event_name === 'checkout_cc_recusado' && <span className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1 rounded uppercase font-bold text-[9px]">CC RECUSADO</span>}
+                                 {log.event_name === 'checkout_cc_aprovado' && <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 rounded uppercase font-bold text-[9px]">CC APROVADO</span>}
+                                 {log.plano && <span className="text-muted-foreground ml-1">({log.plano.replace('_', ' ')})</span>}
+                                 {log.erro && <span className="text-rose-400 ml-1 truncate max-w-[120px]" title={log.erro}>- {log.erro}</span>}
+                               </div>
+                             ))}
                           </div>
                         )}
                       </div>
