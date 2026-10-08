@@ -18,6 +18,7 @@ import { useLeiArtigos } from '@/hooks/domain/useLeiArtigos';
 import { getLeiColor } from '@/lib/leiTheme';
 import { prefetchRadarData } from '@/components/vademecum/outros/RadarLegislacaoContent';
 import type { ArtigoLei } from '@/data/mockData';
+import { LEIS_CATALOG } from '@/data/leisCatalog';
 import ArtigoBottomSheet from '@/components/vademecum/artigo/ArtigoBottomSheet';
 import { buildArtigoBreadcrumbsMap } from '@/components/vademecum/artigo/artigoBreadcrumbs';
 import OcrScanner from '@/components/vademecum/grifos_ocr/OcrScanner';
@@ -89,8 +90,6 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [gridReady, setGridReady] = useState(false);
   const [showEmentaDialog, setShowEmentaDialog] = useState(false);
 
-  const planaltoUrl = selectedLei?.url_planalto;
-  const ementaExibida = selectedLeiId === 'ctb' ? 'Institui o Código de Trânsito Brasileiro.' : selectedLeiEmenta;
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -289,6 +288,10 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const artigoBreadcrumbsMap = useMemo(() => buildArtigoBreadcrumbsMap(artigos), [artigos]);
   const { selectedLeiEmenta, dbAlteracoes, loadingDbAlteracoes, playlistNarracoes, loadingPlaylist } = useLeiData(selectedLeiId, selectedTabelaNome, overlayPanel);
   const { grifadoNumeros, anotadoNumeros, favArtigoNumeros, leiFavToggle, setLeiFavToggle, setFavArtigoNumeros } = useLeiUserTags(selectedTabelaNome);
+
+  const selectedLei = useMemo(() => LEIS_CATALOG.find((l) => l.id === selectedLeiId), [selectedLeiId]);
+  const planaltoUrl = selectedLei?.url_planalto;
+  const ementaExibida = selectedLeiId === 'ctb' ? 'Institui o Código de Trânsito Brasileiro.' : selectedLeiEmenta;
 
   useEffect(() => {
     if (!selectedTabelaNome) { setRecentIds([]); return; }
