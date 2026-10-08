@@ -266,7 +266,7 @@ const BottomNav = () => {
             }`}
             aria-label="Lições"
           >
-            <Pencil className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/lei-seca') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <Pencil className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/lei-seca') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} fill={path.startsWith('/lei-seca') ? 'currentColor' : 'none'} />
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Lições</span>
           </button>
 

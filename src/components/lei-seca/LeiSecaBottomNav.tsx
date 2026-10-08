@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Scale, Heart, History, BellRing } from 'lucide-react';
+import { Heart, History, BellRing, Pencil } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 const TABS = [
-  { id: 'trilhas', label: 'Leis', to: '/lei-seca', icon: Scale, match: (p: string) => p === '/lei-seca' },
+  { id: 'trilhas', label: 'Lições', to: '/lei-seca', icon: Pencil, match: (p: string) => p === '/lei-seca' },
   { id: 'favoritos', label: 'Favoritos', to: '/lei-seca/favoritos', icon: Heart, match: (p: string) => p.startsWith('/lei-seca/favoritos') },
   { id: 'recentes', label: 'Recentes', to: '/lei-seca/recentes', icon: History, match: (p: string) => p.startsWith('/lei-seca/recentes') },
   { id: 'lembretes', label: 'Lembretes', to: '/lei-seca/lembretes', icon: BellRing, match: (p: string) => p.startsWith('/lei-seca/lembretes') },
@@ -48,7 +48,7 @@ const LeiSecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
                     aria-hidden="true"
                   />
                 )}
-                <Icon className="relative w-6 h-6 sm:w-7 sm:h-7" strokeWidth={active ? 2.2 : 1.6} />
+                <Icon className="relative w-6 h-6 sm:w-7 sm:h-7" strokeWidth={active ? 2.2 : 1.6} fill={active ? 'currentColor' : 'none'} />
                 <span className={`relative text-[10px] sm:text-[11px] leading-none ${active ? 'font-bold' : 'font-medium'}`}>
                   {tab.label}
                 </span>
