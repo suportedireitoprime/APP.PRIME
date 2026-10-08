@@ -892,6 +892,45 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           onOpenVerTodos={() => setOverlayPanel('novidades')}
         />
 
+        {/* Carrossel de Recentes (logo abaixo de Novidades) */}
+        {recentArticles.length > 0 && (
+          <div className="mt-6 mb-2">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-[4px] h-[16px] rounded-r-sm bg-primary/90" />
+              <h3 className="font-display font-black text-[16px] tracking-wide text-foreground uppercase">
+                RECENTES
+              </h3>
+            </div>
+            <div 
+              className="flex items-stretch gap-2.5 overflow-x-auto no-scrollbar pb-2 pt-1 -mr-3 sm:-mr-4 md:-mr-6 pr-3 sm:pr-4 md:pr-6 snap-x snap-mandatory"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              {recentArticles.map((art) => {
+                const cleanNum = (art.numero || '').replace(/^art\.?\s*/i, '').trim();
+                return (
+                  <button
+                    key={art.id}
+                    type="button"
+                    onClick={() => {
+                      try { haptic.selection(); } catch {}
+                      openArtigoWithRecent(art);
+                    }}
+                    className="shrink-0 px-5 py-2.5 rounded-xl bg-zinc-800/40 hover:bg-zinc-800/60 border border-zinc-700/50 hover:border-zinc-500/80 transition-all shadow-sm snap-start flex items-center justify-center gap-2 group"
+                  >
+                    <History className="w-3.5 h-3.5 text-zinc-500 group-hover:text-primary transition-colors" />
+                    <span className="text-[13px] font-bold text-zinc-300 group-hover:text-white transition-colors">
+                      Art. {cleanNum}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Listra cinza separadora solicitada */}
+            <div className="w-full h-px bg-white/5 mt-5 mb-1 rounded-full" />
+          </div>
+        )}
+
         <div
           className={`sticky z-40 -mx-3 sm:-mx-4 md:-mx-6 px-3 sm:px-4 md:px-6 pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-2.5 bg-[#0e0e10]/95 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/40 space-y-2.5 transition-all duration-300 ${
             isHeaderHidden 
