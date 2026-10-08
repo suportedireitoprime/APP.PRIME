@@ -59,7 +59,7 @@ export function ExercicioRunner({ exercicio, artigoTexto = "", onRespondido, onR
 const ROSE_BTN =
   "bg-gradient-to-r from-[#e11d48] to-[#be123c] hover:from-[#f43f5e] hover:to-[#e11d48] text-white font-bold shadow-lg shadow-rose-900/40 disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed disabled:shadow-none";
 const ENUN =
-  "text-[1.05rem] sm:text-xl md:text-2xl font-normal normal-case tracking-normal leading-[1.65] text-white/95 mb-6 [text-wrap:pretty]";
+  "text-[1.05rem] sm:text-xl md:text-2xl font-body font-medium normal-case tracking-wide leading-relaxed text-white/95 mb-6 [text-wrap:pretty]";
 const ART_LABEL = "text-[11px] font-extrabold tracking-wider text-pink-300/90 uppercase mb-2";
 
 /* ------------------------- Organizar palavras ------------------------- */
