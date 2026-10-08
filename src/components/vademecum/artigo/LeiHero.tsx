@@ -102,7 +102,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
         >
           <div
             className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: 'polygon(0 0, 65% 0, 45% 100%, 0% 100%)' }}
+            style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
           >
             <div className="absolute inset-0" style={{ backgroundImage: bgGradient }} />
             <div className="absolute inset-0 opacity-15 mix-blend-overlay">
@@ -132,13 +132,13 @@ const LeiHero: React.FC<LeiHeroProps> = ({
         </header>
 
         {/* Conteúdo do Painel: Título e Identificação da Lei à Esquerda (sobre a área vermelha, alinhado à Home) */}
-        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start px-3 sm:px-4 ml-1 sm:ml-2 min-h-[120px] w-[80%] sm:w-[65%] max-w-[340px]">
+        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start px-3 sm:px-4 ml-1 sm:ml-2 min-h-[120px] w-[48%] max-w-[190px]">
           {/* Brasão watermark sutil atrás do texto */}
           <img
             src={brasaoImg}
             alt=""
             aria-hidden
-            className="absolute left-2 top-0 pointer-events-none select-none w-[100px] sm:w-[130px] opacity-[0.14] mix-blend-luminosity z-[-1]"
+            className="absolute left-2 top-0 pointer-events-none select-none w-[90px] sm:w-[110px] opacity-[0.14] mix-blend-luminosity z-[-1]"
           />
 
 
