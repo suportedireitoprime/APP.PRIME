@@ -54,7 +54,7 @@ export default defineConfig(({ mode }) => ({
           
           // Core React (separação agressiva do react e do router)
           if (id.includes("react-router-dom") || id.includes("react-router")) return "react-router";
-          if (id.includes("react-dom") || id.includes("/react/")) return "react-core";
+          if (id.includes("node_modules/react/") || id.includes("node_modules/react-dom/")) return "react-core";
           
           // Banco de dados e Cloud
           if (id.includes("@supabase/supabase-js") || id.includes("@supabase/postgrest-js") || id.includes("@supabase/realtime-js") || id.includes("@supabase/gotrue-js") || id.includes("@supabase/storage-js")) return "supabase";

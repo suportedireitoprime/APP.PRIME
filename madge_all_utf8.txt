@@ -1,0 +1,34 @@
+﻿Processed 1998 files (1m 39.9s) (22 warnings)
+
+1) components/vademecum/sheets/AnotacoesSheet.tsx > lib/artigoFuncoesPrefetch.ts
+2) lib/artigoFuncoesPrefetch.ts > components/vademecum/sheets/VideoaulasListSheet.tsx
+3) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Aprender.tsx > components/aprender/chunks/index.ts > components/aprender/chunks/AprenderMateriasContent.tsx > pages/AprenderArea.tsx
+4) lib/routePrefetch.ts > pages/Aprender.tsx > components/aprender/chunks/index.ts > components/aprender/chunks/AprenderMateriasContent.tsx > pages/AprenderArea.tsx > lib/aprenderAulaPrefetch.ts
+5) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Aprender.tsx > components/aprender/chunks/index.ts > components/aprender/chunks/AprenderMateriasContent.tsx > pages/FlashcardsArea.tsx
+6) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Aprender.tsx
+7) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/AprenderModulo.tsx
+8) hooks/useFeatureLimit.ts > lib/featureLimitDefaults.ts
+9) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Audioaulas.tsx
+10) lib/questoesSessoes.ts > hooks/useQuestoes.ts
+11) components/vademecum/desktop/DesktopSidebar.tsx > pages/AdminFuncoes.tsx > pages/AdminBoletins.tsx > components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/BibliotecaCategoria.tsx > components/biblioteca/categoria/BibliotecaCategoriaDesktopView.tsx
+12) lib/leisFavoritos.ts > services/warmFavoritosService.ts
+13) services/warmFavoritosService.ts > lib/leisRecentes.ts
+14) services/warmFavoritosService.ts > lib/resumosLocal.ts
+15) lib/routePrefetch.ts > pages/Bibliotecas.tsx > pages/BibliotecasDesktop.tsx > components/desktop/DesktopBibliotecaTabsBar.tsx
+16) components/vademecum/desktop/DesktopSidebar.tsx > pages/AdminFuncoes.tsx > pages/AdminBoletins.tsx > components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Bibliotecas.tsx > pages/BibliotecasDesktop.tsx
+17) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Boletins.tsx
+18) components/vademecum/desktop/DesktopSidebar.tsx > pages/AdminFuncoes.tsx > pages/AdminBoletins.tsx > components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/CategoriaLegislacao.tsx > pages/VadeMecum.tsx
+19) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/DicionarioJuridicoPage.tsx
+20) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Estudar.tsx
+21) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Ferramentas.tsx
+22) lib/routePrefetch.ts > pages/Jurisprudencia.tsx
+23) lib/leiSecaPrefetch.ts > pages/LeiSeca/LeiSecaParte.tsx
+24) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/LocaisJuridicos.tsx
+25) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/ModoOffline.tsx
+26) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Newsletter.tsx
+27) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/PeticaoInicial.tsx
+28) hooks/useQuestaoAcao.ts > services/questaoAcaoFrontend.ts
+29) components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/TematicaJuridica.tsx
+30) components/vademecum/desktop/DesktopSidebar.tsx > pages/AdminFuncoes.tsx > pages/AdminBoletins.tsx > components/layout/DesktopPageLayout.tsx > lib/routePrefetch.ts > pages/Videoaulas.tsx > pages/VideoaulasDesktop.tsx
+31) lib/routePrefetch.ts > pages/Videoaulas.tsx > pages/VideoaulasDesktop.tsx > components/videoaulas/desktop/VideoaulasDesktopTabsBar.tsx
+
