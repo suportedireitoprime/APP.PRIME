@@ -318,13 +318,11 @@ const BottomNav = () => {
             onClick={() => { haptic.selection(); setSearchOpen(true); }}
             data-track="bottom_nav_click"
             data-track-destino="pesquisar"
-            className="flex flex-col items-center justify-end gap-1 md:gap-1.5 py-1 md:py-3 md:justify-center md:rounded-xl transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer relative"
+            className="flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative text-white/80 hover:text-white md:hover:bg-white/10"
             aria-label="Pesquisar"
           >
-            <div className="bg-[#9333ea] text-white p-2.5 sm:p-3 md:p-3 rounded-full shadow-[0_4px_14px_rgba(168,85,247,0.3)] flex items-center justify-center transform -translate-y-1 md:translate-y-0">
-              <Search className="w-6 h-6 sm:w-7 sm:h-7 md:w-7 md:h-7 transition-transform drop-shadow-sm -scale-x-100" strokeWidth={2.5} />
-            </div>
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5 text-white/90">Pesquisar</span>
+            <Search className="w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-sm -scale-x-100" strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Pesquisar</span>
           </button>
 
           {/* Slot 6: Me Explique (Apenas Desktop) */}

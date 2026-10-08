@@ -55,16 +55,15 @@ export function MapasMentaisBottomNav({ categoria, setCategoria, onSearchClick, 
             haptic.selection();
             onSearchClick();
           }}
-          className="flex flex-col items-center justify-end gap-1 py-1 transition-all active:scale-95 duration-100 touch-manipulation cursor-pointer relative flex-1"
+          className={`flex flex-col items-center justify-end gap-1.5 py-1.5 transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative flex-1 ${
+            buscaAtiva ? 'text-white' : 'text-white/80 hover:text-white'
+          }`}
         >
-          <div className={`p-2.5 sm:p-3 rounded-full flex items-center justify-center transform -translate-y-1 transition-all ${
-            buscaAtiva 
-              ? 'bg-[#9333ea] shadow-[0_4px_14px_rgba(168,85,247,0.4)] ring-2 ring-purple-400' 
-              : 'bg-[#9333ea] hover:bg-[#7e22ce] shadow-[0_4px_14px_rgba(168,85,247,0.3)]'
-          }`}>
-            <Search className="w-6 h-6 sm:w-7 sm:h-7 text-white drop-shadow-sm -scale-x-100" strokeWidth={2.5} />
-          </div>
-          <span className={`font-body text-[11px] sm:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5 ${buscaAtiva ? 'text-purple-400' : 'text-white/90'}`}>
+          <Search 
+            className={`w-7 h-7 sm:w-8 sm:h-8 transition-transform drop-shadow-md -scale-x-100 ${buscaAtiva ? 'scale-110 text-purple-400' : 'drop-shadow-sm'}`} 
+            strokeWidth={1.5} 
+          />
+          <span className={`font-body text-[11px] sm:text-[12px] leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5 ${buscaAtiva ? 'font-bold text-purple-400' : 'font-medium'}`}>
             Pesquisar
           </span>
         </button>
