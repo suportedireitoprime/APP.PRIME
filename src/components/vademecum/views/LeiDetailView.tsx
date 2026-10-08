@@ -22,7 +22,7 @@ import { buildArtigoBreadcrumbsMap } from '@/components/vademecum/artigo/artigoB
 import OcrScanner from '@/components/vademecum/grifos_ocr/OcrScanner';
 import { haptic } from '@/lib/nativeHaptics';
 import { pushRecente } from '@/lib/leisRecentes';
-import brasaoImg from '@/assets/brasao.png';
+import brasaoImg from '@/assets/brasao-republica.webp';
 
 import NovidadesPanel from '@/components/vademecum/panels/NovidadesPanel';
 import { FavPanel, PlaylistPanel, AnotacoesPanel } from '@/components/vademecum/panels/OverlayPanels';
