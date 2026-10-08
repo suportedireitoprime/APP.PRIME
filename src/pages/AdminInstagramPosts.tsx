@@ -11,15 +11,8 @@ import { toPng } from 'html-to-image';
 import InstagramSlide from '@/components/admin/InstagramSlide';
 import InstagramFlashcardSlide from '@/components/admin/InstagramFlashcardSlide';
 
-// Imagens padrão de filósofos
-import aristoteles from '../../docs/filosofos/Aristóteles.webp';
-import kant from '../../docs/filosofos/Immanuel Kant.webp';
-import platao from '../../docs/filosofos/Platão.webp';
-import aquino from '../../docs/filosofos/Tomás de Aquino.webp';
-import socrates from '../../docs/filosofos/Sócrates.webp';
-import descartes from '../../docs/filosofos/René Descartes.webp';
-
-const FALLBACK_IMAGES = [platao, aristoteles, socrates, aquino, kant, descartes];
+// Usando uma imagem genérica como fallback para não quebrar o build
+const FALLBACK_IMAGES = ['/resumos-philosopher.webp', '/logo-prime.webp'];
 
 type Slide = {
   type: 'cover' | 'content' | 'flashcard';
