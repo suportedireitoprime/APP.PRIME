@@ -1,9 +1,6 @@
-# Task: Refatoração ArtigoBottomSheet.tsx
-
-- [x] Criar useArtigoTypography.ts e extrair lógicas de tipografia.
-- [x] Criar useArtigoFavorito.ts e extrair lógica de favoritar.
-- [x] Criar useArtigoIncisosCollapse.ts e extrair lógica de incisos.
-- [x] Criar useArtigoSheetsState.ts e extrair os estados visuais.
-- [x] Atualizar ArtigoBottomSheet.tsx para consumir os novos hooks.
-- [x] Testar localmente com tsc.CMD --noEmit.
-- [x] Commitar as alterações.
+- [x] Implement Edge Function iblioteca-contagem-areas to offload aggregate calculations to the database
+- [x] Deploy the Edge Function
+- [x] Update useBibliotecasData.ts to call the edge function and cache it via IDB instead of aggregating 2000 items in the frontend
+- [x] Refactor BibliotecaMateriaSheet.tsx to lazy-load the actual books for a selected area via useQuery while maintaining 0ms offline fallback
+- [x] Cleanup unused prop livrosAreas across Bibliotecas.tsx and BibliotecaModals.tsx
+- [x] Verify Type Safety

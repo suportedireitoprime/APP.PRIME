@@ -2,7 +2,10 @@ import { memo, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVirtualizer, type VirtualItem } from '@tanstack/react-virtual';
 import { ChevronRight, CheckCircle2, X } from 'lucide-react';
-import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { findColecao, normalizeLivro, type LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { styleForArea } from '@/lib/bibliotecaIcons';
 import { useBibliotecaCapa } from '@/hooks/useBibliotecaAsset';
 import { useIsPdfCached } from '@/hooks/useIsPdfCached';
@@ -66,22 +69,45 @@ const VirtualLivroItem = memo(function VirtualLivroItem({
 interface BibliotecaMateriaSheetProps {
   materiaAberta: string | null;
   onClose: () => void;
-  livrosAreas: LivroNormalizado[];
   onAbrirLivro: (l: LivroNormalizado) => void;
 }
 
 export default function BibliotecaMateriaSheet({
   materiaAberta,
   onClose,
-  livrosAreas,
   onAbrirLivro,
 }: BibliotecaMateriaSheetProps) {
   const parentRef = useRef<HTMLDivElement>(null);
 
-  const livrosDaMateria = useMemo(
-    () => (materiaAberta ? livrosAreas.filter((l) => (l.area || 'Outros') === materiaAberta) : []),
-    [livrosAreas, materiaAberta],
-  );
+  const { data: livrosDaMateria = [], isFetching } = useQuery({
+    queryKey: ['biblioteca-materia', materiaAberta],
+    enabled: !!materiaAberta,
+    staleTime: 60 * 60 * 1000,
+    queryFn: async () => {
+      const colecao = findColecao('areas');
+      if (!colecao) return [];
+      try {
+        const q = supabase.from(colecao.table).select(colecao.select);
+        if (materiaAberta === 'Outros') {
+          q.is('area', null);
+        } else {
+          q.eq('area', materiaAberta);
+        }
+        if (colecao.orderBy) q.order(colecao.orderBy, { ascending: true, nullsFirst: false });
+        
+        const data = await withBundleFallback(
+          q.then((res: any) => res.error ? Promise.reject(res.error) : res.data),
+          async () => {
+            const rows = await bundle.bibliotecaEstudos();
+            return rows ? rows.filter(r => (r.area || 'Outros') === materiaAberta) : [];
+          }
+        );
+        return data.map((r: any) => normalizeLivro(r, colecao));
+      } catch (e) {
+        return [];
+      }
+    }
+  });
 
   const rowVirtualizer = useVirtualizer({
     count: livrosDaMateria.length,

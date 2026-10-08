@@ -10,7 +10,6 @@ const BibliotecaMateriaSheet = lazyWithRetry(() => import('@/components/bibliote
 interface BibliotecaModalsProps {
   materiaAberta: string | null;
   onCloseMateria: () => void;
-  livrosAreas: LivroNormalizado[];
   livroAberto: LivroNormalizado | null;
   onCloseLivro: () => void;
   onAbrirLivro: (livro: LivroNormalizado) => void;
@@ -22,7 +21,6 @@ interface BibliotecaModalsProps {
 export const BibliotecaModals: React.FC<BibliotecaModalsProps> = ({
   materiaAberta,
   onCloseMateria,
-  livrosAreas,
   livroAberto,
   onCloseLivro,
   onAbrirLivro,
@@ -37,7 +35,6 @@ export const BibliotecaModals: React.FC<BibliotecaModalsProps> = ({
         <BibliotecaMateriaSheet
           materiaAberta={materiaAberta}
           onClose={onCloseMateria}
-          livrosAreas={livrosAreas}
           onAbrirLivro={onAbrirLivro}
         />
       </Suspense>

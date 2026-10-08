@@ -26,7 +26,6 @@ const Bibliotecas = () => {
     counts,
     materiaAberta,
     setMateriaAberta,
-    livrosAreas,
     livroAberto,
     setLivroAberto,
     customPdfUrl,
@@ -75,7 +74,6 @@ const Bibliotecas = () => {
         <BibliotecaModals
           materiaAberta={materiaAberta}
           onCloseMateria={() => setMateriaAberta(null)}
-          livrosAreas={livrosAreas}
           livroAberto={livroAberto}
           onCloseLivro={() => setLivroAberto(null)}
           onAbrirLivro={(l) => setLivroAberto(l)}

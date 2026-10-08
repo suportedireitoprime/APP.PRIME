@@ -147,53 +147,26 @@ export function useBibliotecasData() {
   );
   const colecoesAcervos = colecoesVisiveis;
 
-  const colecaoAreas = findColecao('areas');
-  const { data: livrosAreas = [] } = useQuery({
-    queryKey: ['biblioteca-colecao', 'areas'],
-    staleTime: 10 * 60 * 1000,
-    placeholderData: (prev: LivroNormalizado[] | undefined) => prev,
+  const { data: materias = [] } = useQuery({
+    queryKey: ['biblioteca-materias-count'],
+    staleTime: 60 * 60 * 1000, // 1h cache
+    placeholderData: (prev) => prev ?? [],
     queryFn: async () => {
-      if (!colecaoAreas) return [] as LivroNormalizado[];
       try {
-        let q = supabase.from(colecaoAreas.table as string).select(colecaoAreas.select);
-        if (colecaoAreas.orderBy) {
-          q = q.order(colecaoAreas.orderBy, { ascending: true, nullsFirst: false });
+        const { data, error } = await supabase.functions.invoke('biblioteca-contagem-areas');
+        if (error) throw error;
+        if (data?.data) {
+          setPersistedColecao('materias-count', data.data).catch(() => {});
+          return data.data as { name: string; capa?: string; count: number }[];
         }
-
-        const data = await withBundleFallback(
-          q.limit(2000).then((res: { data: unknown[] | null, error: unknown }) => {
-            if (res.error) throw res.error;
-            return res.data;
-          }),
-          async () => {
-            const rows = await bundle.bibliotecaEstudos();
-            return rows || [];
-          },
-        );
-
-        const normalized = Array.isArray(data)
-          ? data.map((r: Record<string, unknown>) => normalizeLivro(r, colecaoAreas))
-          : [];
-        setPersistedColecao('areas', normalized).catch(() => {});
-        return normalized;
+        return [];
       } catch (err) {
-        const cached = await getPersistedColecao<LivroNormalizado>('areas');
+        const cached = await getPersistedColecao<{ name: string; capa?: string; count: number }>('materias-count');
         if (cached && cached.length > 0) return cached;
         throw err;
       }
     },
   });
-
-  const materias = useMemo(() => {
-    const map = new Map<string, { name: string; capa?: string; count: number }>();
-    for (const l of livrosAreas) {
-      const a = l.area || 'Outros';
-      const cur = map.get(a);
-      if (cur) cur.count++;
-      else map.set(a, { name: a, capa: l.capa || undefined, count: 1 });
-    }
-    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }, [livrosAreas]);
 
   // SEO & Título dinâmico por aba da biblioteca
   useEffect(() => {
