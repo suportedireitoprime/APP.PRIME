@@ -6,11 +6,12 @@
  * - Parâmetros são normalizados para respeitar limites GA4/Firebase.
  */
 
-import { trackEvent as gaTrackEvent, setAnalyticsUser, GA_MEASUREMENT_ID } from "./analytics";
 import { fbTrack, fbTrackCustom, FbStandardEvent, fbSetUserData } from "./fbPixel";
 import { nativeLogEvent, nativeLogScreen, nativeSetUserId, nativeSetUserProperty } from "./nativeAnalytics";
 import { metaAppEvent } from "./metaAppEvents";
 import { Capacitor } from "@capacitor/core";
+
+export const GA_MEASUREMENT_ID = "G-86C6ZMZLQM";
 
 const DEBUG = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("ga_debug");
 
@@ -263,7 +264,9 @@ export function track(name: string, params: Record<string, unknown> = {}) {
     return;
   }
 
-  gaTrackEvent(name, payload.params);
+  if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+    (window as any).gtag("event", name, { send_to: GA_MEASUREMENT_ID, ...payload.params });
+  }
 
   if (typeof metaEvent === "string" && ["PageView", "ViewContent", "Search", "Lead", "CompleteRegistration", "InitiateCheckout", "StartTrial", "Subscribe", "Purchase"].includes(metaEvent)) {
     fbTrack(metaEvent as FbStandardEvent, payload.params);
@@ -301,7 +304,12 @@ export function flushOfflineQueue() {
 
 /** Define user_id em todas as plataformas. */
 export function trackSetUser(userId: string | null, userData?: { email?: string | null; phone?: string | null; isPremium?: boolean }) {
-  setAnalyticsUser(userId);
+  if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+    (window as any).gtag("config", GA_MEASUREMENT_ID, {
+      user_id: userId || undefined,
+      send_page_view: false,
+    });
+  }
   nativeSetUserId(userId);
   if (userData?.isPremium != null) {
     nativeSetUserProperty("is_premium", String(userData.isPremium));
@@ -342,4 +350,4 @@ export function initTrackClickListener() {
   });
 }
 
-export { resolveScreenName, getPlatform, isNativeApp, isConsentGranted, GA_MEASUREMENT_ID };
+export { resolveScreenName, getPlatform, isNativeApp, isConsentGranted };
