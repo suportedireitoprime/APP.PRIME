@@ -57,7 +57,7 @@ export function ExercicioRunner({ exercicio, artigoTexto = "", onRespondido, onR
 
 /* ---------------------- helpers ---------------------- */
 const ROSE_BTN =
-  "bg-gradient-to-br from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white shadow-lg shadow-rose-600/25";
+  "bg-gradient-to-r from-[#e11d48] to-[#be123c] hover:from-[#f43f5e] hover:to-[#e11d48] text-white font-bold shadow-lg shadow-rose-900/40 disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed disabled:shadow-none";
 const ENUN =
   "text-[1.05rem] sm:text-xl md:text-2xl font-normal normal-case tracking-normal leading-[1.65] text-white/95 mb-6 [text-wrap:pretty]";
 const ART_LABEL = "text-[11px] font-extrabold tracking-wider text-pink-300/90 uppercase mb-2";
