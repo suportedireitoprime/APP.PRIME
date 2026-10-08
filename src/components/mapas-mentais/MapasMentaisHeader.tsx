@@ -172,12 +172,12 @@ export function MapasMentaisHeader({
       </div>
 
       {/* ── Elementos Integrados DENTRO da Capa (Funções e Pesquisa) ── */}
-      <div className="relative z-10 px-4 sm:px-6 w-full pt-4 pb-5 space-y-3 max-w-[1400px] mx-auto">
+      <div className="relative z-10 w-full pt-4 pb-5 space-y-3 max-w-[1400px] mx-auto px-2 sm:px-4">
         {/* 1. Funções (Favoritos, Recentes, Pastas, Sincronizados) estilo Home */}
-        <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
+        <div className="flex items-center justify-between gap-1 sm:gap-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-[20px] sm:rounded-[24px] p-1.5 sm:p-2 shadow-2xl">
           {FILTROS.map(({ id, label, Icone, color }) => {
             const isAtivo = filtro === id;
-            // Simplifica labels para caberem em 4 colunas
+            // Simplifica labels para caberem
             const labelCurta = label.replace('Sincronizados', 'Sincron.').replace('Favoritos', 'Favoritos').replace('Recentes', 'Recentes').replace('Pastas', 'Pastas');
             return (
               <button
@@ -187,25 +187,23 @@ export function MapasMentaisHeader({
                   haptic.selection();
                   setFiltro(isAtivo ? 'todos' : id);
                 }}
-                className={`group flex flex-col items-center justify-center py-2 px-1 rounded-[14px] bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[56px] select-none cursor-pointer overflow-hidden ${
-                  isAtivo
-                    ? 'border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.35)]'
-                    : 'border border-white/10'
+                className={`flex-1 group flex flex-col items-center justify-center py-2 sm:py-2.5 px-0.5 rounded-xl sm:rounded-2xl hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden ${
+                  isAtivo ? 'bg-white/10 shadow-inner ring-1 ring-white/20' : ''
                 }`}
+                title={label}
               >
-                <Icone 
-                  className="w-5 h-5 shrink-0 transition-all group-hover:scale-110" 
-                  style={{ color: color }} 
-                  strokeWidth={2} 
+                <Icone
+                  className={`w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110`}
+                  style={{ color: color, filter: isAtivo ? 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' : 'none' }}
+                  strokeWidth={isAtivo ? 2.5 : 2}
                 />
-                <span className={`text-[8px] sm:text-[9px] font-bold leading-tight uppercase tracking-wider ${isAtivo ? 'text-white' : 'text-white/80'}`}>
+                <span className={`text-[8px] sm:text-[9px] uppercase tracking-wider font-bold truncate max-w-full w-full ${isAtivo ? 'text-white' : 'text-zinc-300 group-hover:text-zinc-100'}`}>
                   {labelCurta}
                 </span>
               </button>
             );
           })}
         </div>
-
       </div>
     </div>
   </>
