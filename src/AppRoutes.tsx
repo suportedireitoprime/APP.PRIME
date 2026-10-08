@@ -1461,7 +1461,7 @@ function AnimatedRoutes() {
           <Route path="/pessoal/tematicas" element={<ProtectedRoute><PageTransition><PessoalTematicas /></PageTransition></ProtectedRoute>} />
           <Route path="/meu-espaco" element={<ProtectedRoute><PageTransition instant><MeuEspaco /></PageTransition></ProtectedRoute>} />
           <Route path="/graficos/avaliacao" element={<ProtectedRoute><PageTransition><AvaliacaoInteligente /></PageTransition></ProtectedRoute>} />
-          <Route path="/tres-poderes/:poderId" element={<ProtectedRoute><PageTransition><PoderDetalhe /></PageTransition></ProtectedRoute>} />
+          <Route path="/tres-poderes/:id" element={<ProtectedRoute><PageTransition><PoderDetalhe /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/camara/agenda" element={<ProtectedRoute><PageTransition><AgendaCamara /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/senado/agenda" element={<ProtectedRoute><PageTransition><AgendaSenado /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/stf/agenda" element={<ProtectedRoute><PageTransition><AgendaSTF /></PageTransition></ProtectedRoute>} />
