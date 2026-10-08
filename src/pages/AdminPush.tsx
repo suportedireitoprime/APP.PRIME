@@ -711,6 +711,67 @@ export default function AdminPush() {
           </Card>
         )}
 
+        {view === 'manual' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <Card className="p-6 border-border/40 bg-zinc-900/40">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <Send className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold font-display text-foreground">Nova Mensagem Manual</h3>
+                  <p className="text-sm text-muted-foreground">Crie um novo alerta push avulso</p>
+                </div>
+              </div>
+              
+              <form onSubmit={handleCreatePush} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-foreground">Título da Notificação</label>
+                  <Input 
+                    placeholder="Ex: Nova atualização disponível" 
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="bg-zinc-950/50 border-border/30"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-foreground">Corpo da Mensagem</label>
+                  <Textarea 
+                    placeholder="Digite o conteúdo da notificação..." 
+                    className="resize-none bg-zinc-950/50 border-border/30 min-h-[100px]"
+                    value={body}
+                    onChange={(e) => setBody(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground text-right">{body.length} / 150 caracteres sugeridos</p>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-foreground flex items-center justify-between">
+                    <span>Agendamento (Opcional)</span>
+                    <Badge variant="outline" className="text-[10px] font-normal border-primary/20 text-primary bg-primary/5">Padrão: Envio Imediato</Badge>
+                  </label>
+                  <Input 
+                    type="datetime-local" 
+                    className="bg-zinc-950/50 border-border/30"
+                    value={scheduledTime}
+                    onChange={(e) => setScheduledTime(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">Deixe em branco para disparar assim que o cron rodar (máximo 5 min).</p>
+                </div>
+                
+                <Button type="submit" disabled={submitting} className="w-full mt-4 h-12 text-md font-bold">
+                  {submitting ? (
+                    <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> Processando...</>
+                  ) : (
+                    <><Send className="w-5 h-5 mr-2" /> Agendar / Enviar Push</>
+                  )}
+                </Button>
+              </form>
+            </Card>
+          </div>
+        )}
+
       </div>
 
       <PushEventsModal 
