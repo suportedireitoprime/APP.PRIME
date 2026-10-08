@@ -24,8 +24,16 @@ import story4Socrates from '@/assets/onboarding/story_4_socrates.webp';
 import story4Voce from '@/assets/onboarding/story_4_voce.webp';
 
 import { toast } from 'sonner';
-import type { CadastroResult } from './CadastroOnboardingOverlay';
-
+export type CadastroResult = {
+  persona: 'faculdade' | 'oab' | 'concurso' | 'advogado' | null;
+  personaLabel: string | null;
+  faixa: string | null;
+  nome: string;
+  areas?: string[];
+  interesses?: string[];
+  dores?: string[];
+  whatsapp?: string | null;
+};
 export interface TriagemModernaProps {
   initialName?: string;
   onComplete: (data: CadastroResult) => void;

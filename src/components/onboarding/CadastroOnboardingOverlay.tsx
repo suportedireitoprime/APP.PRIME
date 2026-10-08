@@ -1,16 +1,7 @@
 import React, { useRef, useCallback } from 'react';
-import TriagemModerna from './TriagemModerna';
+import TriagemModerna, { type CadastroResult } from './TriagemModerna';
 
-export type CadastroResult = {
-  persona: 'faculdade' | 'oab' | 'concurso' | 'advogado' | null;
-  personaLabel: string | null;
-  faixa: string | null;
-  nome: string;
-  areas?: string[];
-  interesses?: string[];
-  dores?: string[];
-  whatsapp?: string | null;
-};
+
 
 type Props = {
   open: boolean;
