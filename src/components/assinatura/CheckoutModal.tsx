@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, CreditCard, ShieldCheck, User, MapPin, Smartphone, ArrowRight, CheckCircle2, Copy, X, ChevronLeft, Clock, ChevronDown, QrCode, RefreshCw } from "lucide-react";
 import { supabase } from '@/integrations/supabase/client';
+import { logDb } from '@/lib/appEvents';
 import { toast } from "sonner";
 import { isFuture, addMonths } from 'date-fns';
 import { openExternal } from '@/lib/nativeBrowser';
@@ -472,6 +473,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         };
       }
 
+      if (!isPix) {
+        void logDb('checkout_cc_enviado', { plano: activePlan });
+      }
+
       const { data, error } = await supabase.functions.invoke('asaas-checkout', { body: payload });
 
       if (error) {
@@ -485,34 +490,42 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         throw new Error(errorMessage || 'Erro ao processar pagamento');
       }
 
-      if (data?.error) {
+        if (data?.error) {
+        if (!isPix) void logDb('checkout_cc_recusado', { erro: data.error });
         throw new Error(data.error);
       }
 
       if (isPix && data?.pixQrCode) {
+        void logDb('checkout_pix_gerado', { plano: activePlan });
         setPixData({ qrCode: data.pixQrCode, payload: data.pixCopyPaste });
         setPixExpiryTime(Date.now() + 600 * 1000);
         setStep(3);
       } else if (!isPix) {
         const status = data?.status;
         if (['CONFIRMED', 'RECEIVED', 'PAYMENT_RECEIVED', 'PAYMENT_CONFIRMED'].includes(status)) {
+          void logDb('checkout_cc_aprovado', { plano: activePlan });
           toast.success('Assinatura ativada com sucesso!');
           triggerSuccessAnimation();
         } else if (status === 'REJECTED') {
+          void logDb('checkout_cc_recusado', { erro: 'Pagamento recusado (REJECTED)' });
           throw new Error('Pagamento recusado. Verifique os dados e tente novamente.');
         } else if (status === 'PENDING' || status === 'ACTIVE') {
+          void logDb('checkout_cc_aprovado', { plano: activePlan });
           toast.info('Pagamento em processamento. O acesso será liberado em instantes!');
           triggerSuccessAnimation();
         } else {
           if (data?.invoiceUrl) {
+             void logDb('checkout_cc_aprovado', { plano: activePlan });
              openExternal(data.invoiceUrl);
              onSuccess();
              onOpenChange(false);
           } else {
+             void logDb('checkout_cc_recusado', { erro: 'Não autorizado' });
              throw new Error('Pagamento não foi autorizado. Tente outro Cartão.');
           }
         }
       } else if (data?.invoiceUrl) {
+        void logDb('checkout_pix_gerado', { plano: activePlan, hasUrl: true });
         openExternal(data.invoiceUrl);
         onSuccess();
         onOpenChange(false);
@@ -521,6 +534,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       }
 
     } catch (err: any) {
+      if (!isPix && !err.message?.includes('verifique os dados')) {
+         void logDb('checkout_cc_recusado', { erro: err.message });
+      }
       toast.error(err.message || 'Erro inesperado ao processar.');
     } finally {
       isProcessingRef.current = false;

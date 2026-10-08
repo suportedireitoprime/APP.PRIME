@@ -193,7 +193,6 @@ export function useBibliotecasData() {
     materiaAberta,
     setMateriaAberta,
     counts,
-    livrosAreas,
     materias,
     livroAberto,
     setLivroAberto,
