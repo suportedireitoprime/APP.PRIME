@@ -54,12 +54,12 @@ export function LeiSecaTrilhaCard({
             </span>
             {materia && (
               <span className="text-[9.5px] text-muted-foreground/80 font-bold truncate">
-                Â· {materia.nome}
+                • {materia.nome}
               </span>
             )}
             {concluido && (
               <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5">
-                <Check className="h-2.5 w-2.5" strokeWidth={4} /> ConcluÃ­do
+                <Check className="h-2.5 w-2.5" strokeWidth={4} /> Concluído
               </span>
             )}
           </div>
