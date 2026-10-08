@@ -120,6 +120,7 @@ const AdminNarracaoLeis = lazy(() => import('./pages/AdminNarracaoLeis.tsx'));
 const AdminSimulados = lazy(() => import("./pages/AdminSimulados.tsx"));
 const FerramentasSimulados = lazy(() => import("./pages/FerramentasSimulados.tsx"));
 const FerramentasSimuladosResolver = lazy(() => import("./pages/FerramentasSimuladosResolver.tsx"));
+const FerramentasSimuladosEstatisticas = lazy(() => import("./pages/FerramentasSimuladosEstatisticas.tsx"));
 const AdminMetricasAds = lazy(() => import("./pages/AdminMetricasAds.tsx"));
 import { supabase } from "@/integrations/supabase/client";
 
@@ -1186,6 +1187,7 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/stf/:id" element={<ProtectedRoute><PageTransition><SessaoSTFDetalhes /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial" element={<ProtectedRoute><PageTransition><PeticaoInicial /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados/provas" element={<ProtectedRoute><PageTransition><FerramentasSimulados /></PageTransition></ProtectedRoute>} />
+          <Route path="/simulados/estatisticas" element={<ProtectedRoute><PageTransition><FerramentasSimuladosEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados/resolver/:id" element={<ProtectedRoute><PageTransition><FerramentasSimuladosResolver /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/peticao-inicial/:id" element={<ProtectedRoute><PageTransition><PeticaoInicialEditor /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />

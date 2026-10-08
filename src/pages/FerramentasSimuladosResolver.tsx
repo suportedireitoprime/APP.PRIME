@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import ResolverPadrao from '@/components/questoes/ResolverPadrao';
@@ -19,7 +20,67 @@ export default function FerramentasSimuladosResolver() {
   const navigate = useNavigate();
   const [rodando, setRodando] = useState(true);
   const [segundos, setSegundos] = useState(0);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const { user } = useAuth();
+  const [historicoId, setHistoricoId] = useState<string | null>(null);
+  
+  // Track mutation
+  const { mutateAsync: registerHistory } = useMutation({
+    mutationFn: async () => {
+      if (!user || !id) return null;
+      
+      // Checar se já existe um histórico "em_andamento" para este usuário/simulado
+      const { data: existing } = await supabase
+        .from('user_simulados_historico')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('simulado_id', id)
+        .eq('status', 'em_andamento')
+        .order('started_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+        
+      if (existing) {
+        return existing.id;
+      }
+      
+      // Criar novo
+      const { data: newHistory, error } = await supabase
+        .from('user_simulados_historico')
+        .insert({
+          user_id: user.id,
+          simulado_id: id,
+          status: 'em_andamento',
+        })
+        .select('id')
+        .single();
+        
+      if (error) throw error;
+      return newHistory.id;
+    },
+    onSuccess: (hid) => {
+      if (hid) setHistoricoId(hid);
+    }
+  });
+
+  const { mutate: finishHistory } = useMutation({
+    mutationFn: async (hId: string) => {
+      if (!user) return;
+      await supabase
+        .from('user_simulados_historico')
+        .update({
+          status: 'finalizado',
+          completed_at: new Date().toISOString(),
+          total_questoes: questoesData?.length || 0,
+        })
+        .eq('id', hId);
+    }
+  });
+
+  useEffect(() => {
+    if (user && id && questoesData && !historicoId) {
+      registerHistory();
+    }
+  }, [user, id, questoesData, historicoId, registerHistory]);
 
   const { data: simulado, isLoading: loadingSimulado } = useQuery({
     queryKey: ['simulados', id],
@@ -93,11 +154,30 @@ export default function FerramentasSimuladosResolver() {
 
   const finalizar = () => {
     setRodando(false);
+    if (historicoId) {
+      finishHistory(historicoId);
+    }
   };
 
   const handleRegistrar = async (questaoId: string, alternativa: string, acertou: boolean) => {
-    // Optionally register statistics for this specific user attempt in the future
-    console.log(`Questão ${questaoId} resolvida: ${alternativa}, acertou: ${acertou}`);
+    if (!historicoId || !user) return;
+    
+    const questao = questoesData?.find(q => q.id === questaoId);
+    if (!questao) return;
+
+    try {
+      await supabase.from('user_simulados_respostas').insert({
+        historico_id: historicoId,
+        questao_id: questaoId,
+        acertou,
+        disciplina: questao.disciplina,
+        assunto: questao.assunto,
+      });
+
+      // Update acertos in history if needed or let the view aggregate
+    } catch (e) {
+      console.error('Erro ao registrar resposta:', e);
+    }
   };
 
   const mmss = `${String(Math.floor(segundos / 60)).padStart(2, '0')}:${String(segundos % 60).padStart(2, '0')}`;

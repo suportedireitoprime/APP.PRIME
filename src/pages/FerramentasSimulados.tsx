@@ -535,7 +535,7 @@ export default function FerramentasSimulados() {
               <span className="text-[10px] font-semibold tracking-wide">Simulados</span>
             </button>
             <button 
-              onClick={() => toast.info('Estatísticas em breve!')}
+              onClick={() => navigate('/simulados/estatisticas')}
               className="flex flex-col items-center gap-1.5 py-2 px-4 rounded-xl text-zinc-400 hover:text-zinc-200 hover:bg-white/5 transition-colors w-1/3"
             >
               <BarChart3 className="w-5 h-5" />
