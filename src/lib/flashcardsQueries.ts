@@ -3,27 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { getOfflineDecks } from '@/lib/flashcardsOfflineManager';
 import { saveOfflinePackage, getOfflinePackage } from '@/services/downloadManager';
-import { FALLBACK_FLASHCARDS_AREAS, FALLBACK_FLASHCARDS_DASH } from './flashcardsConstants';
-
-export type FlashcardsDash = {
-  total_cards: number;
-  estudados: number;
-  compreendidos: number;
-  a_revisar: number;
-  hoje: number;
-  streak: number;
-  atividade_30d: { dia: string; total: number }[];
-  temas_criticos: { area: string; tema: string; total: number }[];
-};
-
-export type FlashcardsAreaRow = {
-  area: string;
-  slug: string;
-  ordem: number;
-  total_cards: number;
-  compreendidos: number;
-  a_revisar: number;
-};
+import { FALLBACK_FLASHCARDS_AREAS, FALLBACK_FLASHCARDS_DASH, type FlashcardsDash, type FlashcardsAreaRow } from './flashcardsConstants';
+export type { FlashcardsDash, FlashcardsAreaRow };
 
 export type FlashcardCard = {
   id: string;
