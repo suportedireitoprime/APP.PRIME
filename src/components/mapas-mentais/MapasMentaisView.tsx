@@ -20,6 +20,7 @@ import { norm, isArtigoReal, type Filtro } from './mapasConstants';
 import { MapasMentaisHeader } from './MapasMentaisHeader';
 import { MapasMentaisGrid } from './MapasMentaisGrid';
 import { MapasMentaisDetalhes } from './MapasMentaisDetalhes';
+import { MapasMentaisSobre } from './MapasMentaisSobre';
 import { MapasMentaisFormatModal } from './MapasMentaisFormatModal';
 import { MapasMentaisViewer } from './MapasMentaisViewer';
 import { MapasMentaisPastas } from './MapasMentaisPastas';
@@ -251,6 +252,14 @@ export default function MapasMentaisView({
     } else if (filtro === 'recentes') {
       const ordem = new Map(recentes.map((k, idx) => [k, idx]));
       filtrados = filtrados.filter((i) => ordem.has(i.key)).sort((a, b) => (ordem.get(a.key) ?? 0) - (ordem.get(b.key) ?? 0));
+    } else if (filtro === 'sugeridos') {
+      // Usa uma semente baseada na data de hoje para os sugeridos mudarem diariamente
+      const seed = new Date().getDate();
+      filtrados = [...filtrados].sort((a, b) => {
+        const hashA = (a.key.charCodeAt(0) + a.key.charCodeAt(a.key.length - 1)) * seed;
+        const hashB = (b.key.charCodeAt(0) + b.key.charCodeAt(b.key.length - 1)) * seed;
+        return (hashA % 100) - (hashB % 100);
+      }).slice(0, 15); // Limita a 15 sugestões
     } else {
       const prioridades: Record<string, number> = {
         'lei:cf88': 1,
@@ -426,8 +435,8 @@ export default function MapasMentaisView({
         />
       )}
 
-      {/* 2. Barra de Navegação / Trilha quando estiver em detalhes ou pastas */}
-      {(item || filtro === 'pastas') && (
+      {/* 2. Barra de Navegação / Trilha quando estiver em detalhes, pastas ou sobre */}
+      {(item || filtro === 'pastas' || filtro === 'sobre') && (
         <header className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3 pt-[max(0.75rem,var(--sai-top))] bg-[#141416]/95 backdrop-blur-md border-b border-white/10 shrink-0">
           <button
             type="button"
@@ -451,7 +460,12 @@ export default function MapasMentaisView({
                 Início
               </span>
 
-              {filtro === 'pastas' ? (
+              {filtro === 'sobre' ? (
+                <>
+                  <ChevronRight className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                  <span className="text-white font-bold">Sobre os Mapas</span>
+                </>
+              ) : filtro === 'pastas' ? (
                 <>
                   <ChevronRight className="w-3.5 h-3.5 text-purple-400 shrink-0" />
                   <span className="text-white font-bold">Pastas Salvas</span>
@@ -486,7 +500,9 @@ export default function MapasMentaisView({
 
             <div className="flex items-center gap-2 mt-0.5 min-w-0">
               <h2 className="font-['Plus_Jakarta_Sans',sans-serif] text-sm sm:text-base font-bold text-white truncate leading-tight">
-                {filtro === 'pastas'
+                {filtro === 'sobre'
+                  ? 'Guia Visual'
+                  : filtro === 'pastas'
                   ? 'Pastas de Mapas e PDFs'
                   : tema
                   ? tema.tema
@@ -504,7 +520,9 @@ export default function MapasMentaisView({
 
       {/* 3. Área de Conteúdo Principal */}
       <main className="relative z-10 flex-1 pb-[calc(5.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-        {filtro === 'pastas' ? (
+        {filtro === 'sobre' ? (
+          <MapasMentaisSobre />
+        ) : filtro === 'pastas' ? (
           <MapasMentaisPastas
             prontos={prontos}
             onAbrir={(reg) => {

@@ -60,13 +60,15 @@ export const CATEGORIAS: VisualCategoria[] = ['codigos', 'estatutos', 'leis_espe
 
 export const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'pastas' | 'sincronizados';
+export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'sobre' | 'sugeridos';
+
+import { Sparkles, Info } from 'lucide-react';
 
 export const FILTROS: { id: Filtro; label: string; Icone: typeof Layers; color: string }[] = [
   { id: 'favoritos', label: 'Favoritos', Icone: Heart, color: '#34D399' },
   { id: 'recentes', label: 'Recentes', Icone: Clock, color: '#F87171' },
-  { id: 'pastas', label: 'Pastas', Icone: Folder, color: '#F97316' },
-  { id: 'sincronizados', label: 'Sincronizados', Icone: Network, color: '#38BDF8' },
+  { id: 'sugeridos', label: 'Sugeridos', Icone: Sparkles, color: '#FBBF24' },
+  { id: 'sobre', label: 'Sobre', Icone: Info, color: '#A78BFA' },
 ];
 
 /** Cabeçalhos estruturais (PARTE GERAL, TÍTULO, CAPÍTULO…) não são artigos. */

@@ -178,7 +178,7 @@ export function MapasMentaisHeader({
           {FILTROS.map(({ id, label, Icone, color }) => {
             const isAtivo = filtro === id;
             // Simplifica labels para caberem
-            const labelCurta = label.replace('Sincronizados', 'Sincron.').replace('Favoritos', 'Favoritos').replace('Recentes', 'Recentes').replace('Pastas', 'Pastas');
+            const labelCurta = label;
             return (
               <button
                 key={id}
