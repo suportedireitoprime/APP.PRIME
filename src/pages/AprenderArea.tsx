@@ -17,12 +17,9 @@ import {
 } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Search } from 'lucide-react';
-import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
-import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
-import { CANONICAL_AREA_TOPICS } from '@/components/aprender/MateriaFlashcardsDeckSection';
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 
@@ -182,176 +179,11 @@ const AprenderArea = () => {
     return list.sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   }, [modulos, data?.pendentes]);
 
-  // Busca lista oficial de áreas de flashcards com contagens e slugs
-  const { data: flashcardsAreasResumo } = useFlashcardsResumoAreas();
-
-  const officialFlashcardArea = useMemo(() => {
-    if (!flashcardsAreasResumo || flashcardsAreasResumo.length === 0) {
-      return effectiveAreaName;
-    }
-    const found =
-      flashcardsAreasResumo.find((a) => a.slug === slug) ||
-      flashcardsAreasResumo.find((a) => a.area.toLowerCase() === (area?.nome || effectiveAreaName).toLowerCase()) ||
-      flashcardsAreasResumo.find((a) => slug && (a.slug.includes(slug) || slug.includes(a.slug))) ||
-      flashcardsAreasResumo.find((a) => slug && a.area.toLowerCase().includes(slug.replace(/-/g, ' ')));
-    return found ? found.area : effectiveAreaName;
-  }, [flashcardsAreasResumo, slug, area?.nome, effectiveAreaName]);
-
-  const flashcardAreaRow = useMemo(() => {
-    if (!flashcardsAreasResumo) return null;
-    return flashcardsAreasResumo.find((a) => a.area === officialFlashcardArea || a.slug === slug) || null;
-  }, [flashcardsAreasResumo, officialFlashcardArea, slug]);
-
-  // Busca temas e cards de flashcards desta área no Supabase com fallback resiliente
-  const { data: temasFlashcards, isLoading: loadingFlashcards } = useQuery({
-    queryKey: ['area_flashcards_temas', officialFlashcardArea, effectiveAreaName, slug],
-    queryFn: async () => {
-      const candidates = Array.from(
-        new Set(
-          [
-            officialFlashcardArea,
-            effectiveAreaName,
-            area?.nome,
-            officialFlashcardArea?.startsWith('Direito ')
-              ? officialFlashcardArea.replace('Direito ', '')
-              : `Direito ${officialFlashcardArea}`,
-            effectiveAreaName?.startsWith('Direito ')
-              ? effectiveAreaName.replace('Direito ', '')
-              : `Direito ${effectiveAreaName}`,
-          ].filter(Boolean) as string[]
-        )
-      );
-
-      for (const cand of candidates) {
-        try {
-          const { data: res, error } = await supabase.rpc('flashcards_temas', { _area: cand });
-          if (!error && res && res.length > 0) {
-            return res as Array<{ tema: string; total: number; compreendidos: number; a_revisar: number }>;
-          }
-        } catch {}
-      }
-
-      // Se não encontrou temas via RPC ou se a área tiver tópicos canônicos configurados:
-      if (slug && CANONICAL_AREA_TOPICS[slug]) {
-        const defaultTotalPerTopic = flashcardAreaRow?.total_cards
-          ? Math.max(10, Math.floor(flashcardAreaRow.total_cards / CANONICAL_AREA_TOPICS[slug].length))
-          : 50;
-        return CANONICAL_AREA_TOPICS[slug].map((t) => ({
-          tema: t,
-          total: defaultTotalPerTopic,
-          compreendidos: 0,
-          a_revisar: 0,
-        }));
-      }
-
-      return [];
-    },
-    enabled: !!(officialFlashcardArea || effectiveAreaName || slug),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const totalFlashcardsArea = useMemo(() => {
-    if (flashcardAreaRow?.total_cards) return flashcardAreaRow.total_cards;
-    return (temasFlashcards || []).reduce((acc, t) => acc + (t.total || 0), 0);
-  }, [flashcardAreaRow?.total_cards, temasFlashcards]);
-
-  const isFlash = false;
-
   const iconInfo = areaIconFor(slug || area?.slug || area?.nome || 'geral');
   const AreaIconComp = iconInfo?.Icon || BookOpenText;
   const palette = useMemo(() => getAreaThemePalette(slug || area?.nome || area?.slug || 'geral'), [slug, area]);
 
-  // Progresso geral de flashcards da área
-  const totalCompreendidos = useMemo(() => {
-    return (temasFlashcards || []).reduce((acc, t) => acc + (t.compreendidos || 0), 0);
-  }, [temasFlashcards]);
-  const progressoPctFlash = totalFlashcardsArea > 0 ? Math.round((totalCompreendidos / totalFlashcardsArea) * 100) : 0;
-
-  // Itens unificados: na aba flashcards são sempre DECKS DE FLASHCARDS
   const itemsToRender = useMemo(() => {
-    if (isFlash && temasFlashcards && temasFlashcards.length > 0) {
-      return temasFlashcards.map((t, idx) => ({
-        key: `deck-${t.tema}-${idx}`,
-        titulo: t.tema,
-        ordemStr: String(idx + 1).padStart(2, '0'),
-        badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
-        displayTotal: t.total,
-        displayConcluidas: t.compreendidos,
-        displayLabel: t.total === 1 ? 'flashcard' : 'flashcards',
-        displayPct: t.total > 0 ? Math.round((t.compreendidos / t.total) * 100) : 0,
-        onClick: () => {
-          try { haptic.light(); } catch {}
-          navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(t.tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-            state: { from: `/aprender/area/${slug}?tab=flashcards` }
-          });
-        },
-      }));
-    }
-
-    if (isFlash) {
-      const fallbackTopics = (slug && CANONICAL_AREA_TOPICS[slug]) || [];
-      if (fallbackTopics.length > 0) {
-        const estTotal = totalFlashcardsArea > 0 ? Math.max(10, Math.floor(totalFlashcardsArea / fallbackTopics.length)) : 30;
-        return fallbackTopics.map((tema, idx) => ({
-          key: `canon-deck-${tema}-${idx}`,
-          titulo: tema,
-          ordemStr: String(idx + 1).padStart(2, '0'),
-          badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
-          displayTotal: estTotal,
-          displayConcluidas: 0,
-          displayLabel: 'flashcards',
-          displayPct: 0,
-          onClick: () => {
-            try { haptic.light(); } catch {}
-            navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-              state: { from: `/aprender/area/${slug}?tab=flashcards` }
-            });
-          },
-        }));
-      }
-
-      if (modulosOrdenados.length > 0) {
-        const estTotal = totalFlashcardsArea > 0 ? Math.max(10, Math.floor(totalFlashcardsArea / modulosOrdenados.length)) : 25;
-        return modulosOrdenados.map((m, idx) => ({
-          key: m.id,
-          titulo: m.titulo.replace(/^\d+\.\s*/, ''),
-          ordemStr: String(m.ordem || idx + 1).padStart(2, '0'),
-          badgeLabel: `Deck ${String(m.ordem || idx + 1).padStart(2, '0')}`,
-          displayTotal: estTotal,
-          displayConcluidas: 0,
-          displayLabel: 'flashcards',
-          displayPct: 0,
-          onClick: () => {
-            try { haptic.light(); } catch {}
-            navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(m.titulo)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-              state: { from: `/aprender/area/${slug}?tab=flashcards` }
-            });
-          },
-        }));
-      }
-
-      // Fallback absoluto: se totalFlashcardsArea > 0 mas nenhum deck foi gerado, cria um deck genérico
-      if (totalFlashcardsArea > 0) {
-        const areaLabel = officialFlashcardArea || area?.nome || effectiveAreaName || 'Geral';
-        return [{
-          key: `fallback-all-${slug}`,
-          titulo: areaLabel,
-          ordemStr: '01',
-          badgeLabel: 'Deck 01',
-          displayTotal: totalFlashcardsArea,
-          displayConcluidas: 0,
-          displayLabel: totalFlashcardsArea === 1 ? 'flashcard' : 'flashcards',
-          displayPct: 0,
-          onClick: () => {
-            try { haptic.light(); } catch {}
-            navigate(`/flashcards/estudar?area=${encodeURIComponent(areaLabel)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-              state: { from: `/aprender/area/${slug}?tab=flashcards` }
-            });
-          },
-        }];
-      }
-    }
-
     return modulosOrdenados.map((m: any, idx) => {
       const list = aulas.filter((a) => a.modulo_id === m.id);
       const total = m.isPendente ? (m.total_aulas || 0) : list.length;
@@ -409,7 +241,7 @@ const AprenderArea = () => {
             toast.loading(`Iniciando geração de "${m.titulo}"...`, { id: 'geracao-pendente' });
             
             // Buscar subtemas e criar módulo via RPC bypassando o RLS de cliente
-            const areaBusca = officialFlashcardArea || data?.area?.nome || effectiveAreaName;
+            const areaBusca = data?.area?.nome || effectiveAreaName;
             
             const geradorSlug = m.titulo.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") + "-" + Date.now();
             
@@ -447,7 +279,7 @@ const AprenderArea = () => {
         },
       };
     });
-  }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id, palette]);
+  }, [modulosOrdenados, aulas, progresso, activeTab, effectiveAreaName, slug, navigate, data?.area, user?.id, palette]);
 
 
   const filteredItems = useMemo(() => {
@@ -467,7 +299,7 @@ const AprenderArea = () => {
 
   const titleDisplay = (
     <span className="font-sans font-extrabold uppercase tracking-widest text-[15px] sm:text-[16px] text-white">
-      {officialFlashcardArea || area?.nome || effectiveAreaName}
+      {area?.nome || effectiveAreaName}
     </span>
   );
 
@@ -484,7 +316,7 @@ const AprenderArea = () => {
     <DesktopPageLayout
       wide
       activeId="aprender"
-      title={officialFlashcardArea || area?.nome || effectiveAreaName}
+      title={area?.nome || effectiveAreaName}
       subtitle="Trilha de Aprendizado"
       mobileHeader={mobileHeader}
     >
@@ -502,7 +334,7 @@ const AprenderArea = () => {
       </div>
 
       <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-20 pt-4 min-w-0 overflow-x-hidden box-border">
-        {loading && !data && !effectiveAreaName ? (
+        {loading && (!data || modulosOrdenados.length === 0) ? (
           <div className="space-y-4 px-4 py-5 sm:px-6">
             <div className="h-44 rounded-2xl bg-muted animate-pulse" />
             {[...Array(4)].map((_, i) => <div key={i} className="h-20 rounded-2xl bg-muted animate-pulse" />)}
@@ -559,40 +391,8 @@ const AprenderArea = () => {
                 </div>
               </div>
             </div>
-            {/* Barra de progresso geral da área */}
-            {isFlash && totalFlashcardsArea > 0 && (
-              <div className="w-full mt-2 mb-1">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                    {totalCompreendidos} / {totalFlashcardsArea} dominados
-                  </span>
-                  <span 
-                    className="text-[11px] sm:text-xs font-bold tabular-nums"
-                    style={{ color: palette.primary }}
-                  >
-                    {progressoPctFlash}%
-                  </span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{
-                      width: `${Math.max(progressoPctFlash, 1)}%`,
-                      background: `linear-gradient(90deg, ${palette.primary}, ${palette.accent || palette.primary})`,
-                      boxShadow: `0 0 8px ${palette.primary}66`,
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {isFlash && loadingFlashcards && itemsToRender.length === 0 ? (
-              <div className="space-y-4 py-6">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-36 rounded-2xl bg-muted/40 animate-pulse border border-white/5" />
-                ))}
-              </div>
-            ) : itemsToRender.length === 0 ? (
+            
+            {itemsToRender.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <BookOpenText className="w-12 h-12 text-white/20 mb-4" />
                 <h3 className="text-lg font-medium text-white/60 mb-2">Nenhum módulo encontrado</h3>
