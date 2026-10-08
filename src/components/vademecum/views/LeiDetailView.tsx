@@ -1123,8 +1123,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                             setOverlayPanel('pesquisa');
                           }}
                           aria-label="Pesquisar"
-                          className="absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-primary shadow-[0_10px_26px_rgba(0,0,0,0.6)] active:scale-95 transition-transform cursor-pointer pointer-events-auto"
-                          style={{ backgroundColor: leiAccent || '#E11D48', boxShadow: `0 10px 26px ${leiAccent || '#E11D48'}99` }}
+                          className="absolute -top-11 left-1/2 -translate-x-1/2 w-[76px] h-[76px] xs:w-[80px] xs:h-[80px] md:relative md:top-0 md:left-0 md:translate-x-0 md:w-auto md:h-auto md:bg-transparent md:shadow-none rounded-full flex items-center justify-center overflow-hidden bg-primary shadow-[0_10px_26px_rgba(225,29,72,0.6)] active:scale-95 transition-transform cursor-pointer pointer-events-auto"
                         >
                           <Search className="relative w-10 h-10 xs:w-11 xs:h-11 md:w-9 md:h-9 text-white md:text-white/90 drop-shadow-lg" aria-hidden="true" strokeWidth={1.2} />
                           <span
