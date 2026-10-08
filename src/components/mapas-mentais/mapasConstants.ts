@@ -25,6 +25,7 @@ export const CATEGORIA_ICON: Record<VisualCategoria, typeof Brain> = {
   previdenciario: ShieldCheck,
   leis: Scale,
   jurisprudencia: Gavel,
+  sumulas: Gavel,
 };
 
 export const CATEGORIA_COR: Record<VisualCategoria, string> = {
@@ -35,6 +36,7 @@ export const CATEGORIA_COR: Record<VisualCategoria, string> = {
   previdenciario: '#a855f7',
   leis: '#e01f47',
   jurisprudencia: '#a78bfa',
+  sumulas: '#c084fc',
 };
 
 export const ITEM_CORES = ['#a855f7', '#38bdf8', '#f59e0b', '#22c55e', '#ec4899', '#14b8a6', '#f97316', '#8b5cf6'];
@@ -54,17 +56,17 @@ export function getCorParaItem(key: string, categoria: VisualCategoria | string 
 }
 
 export const TIPOS: VisualTipo[] = ['mapa_mental', 'infografico', 'fluxograma', 'diagrama'];
-export const CATEGORIAS: VisualCategoria[] = ['materias', 'codigos', 'estatutos', 'leis_especiais', 'previdenciario'];
+export const CATEGORIAS: VisualCategoria[] = ['codigos', 'estatutos', 'leis_especiais', 'sumulas'];
 
 export const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'pastas';
+export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'pastas' | 'sincronizados';
 
 export const FILTROS: { id: Filtro; label: string; Icone: typeof Layers; color: string }[] = [
-  { id: 'todos', label: 'Todos', Icone: Layers, color: '#FACC15' },
   { id: 'favoritos', label: 'Favoritos', Icone: Heart, color: '#34D399' },
   { id: 'recentes', label: 'Recentes', Icone: Clock, color: '#F87171' },
   { id: 'pastas', label: 'Pastas', Icone: Folder, color: '#F97316' },
+  { id: 'sincronizados', label: 'Sincronizados', Icone: Network, color: '#38BDF8' },
 ];
 
 /** Cabeçalhos estruturais (PARTE GERAL, TÍTULO, CAPÍTULO…) não são artigos. */

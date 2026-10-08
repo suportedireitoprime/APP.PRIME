@@ -173,8 +173,8 @@ export function MapasMentaisHeader({
 
       {/* ── Elementos Integrados DENTRO da Capa (Funções e Pesquisa) ── */}
       <div className="relative z-10 px-4 sm:px-6 w-full pt-4 pb-5 space-y-3 max-w-[1400px] mx-auto">
-        {/* 1. Funções (Todos, Favoritos, Recentes, Pastas) estilo Home */}
-        <div className="grid grid-cols-4 gap-2 mx-1 mt-1">
+        {/* 1. Funções (Favoritos, Recentes, Pastas, Sincronizados) estilo Home */}
+        <div className="grid grid-cols-2 gap-3 mx-1 mt-1">
           {FILTROS.map(({ id, label, Icone, color }) => {
             const isAtivo = filtro === id;
             return (
@@ -183,20 +183,20 @@ export function MapasMentaisHeader({
                 type="button"
                 onClick={() => {
                   haptic.selection();
-                  setFiltro(id);
+                  setFiltro(isAtivo ? 'todos' : id);
                 }}
-                className={`group flex flex-col items-center justify-center py-3 px-1 rounded-2xl bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[48px] select-none cursor-pointer overflow-hidden ${
+                className={`group flex flex-col items-center justify-center py-4 px-2 rounded-2xl bg-black/45 backdrop-blur-md shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-2 text-center min-h-[64px] select-none cursor-pointer overflow-hidden ${
                   isAtivo
                     ? 'border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.35)]'
                     : 'border border-white/10'
                 }`}
               >
                 <Icone 
-                  className="w-5 h-5 shrink-0 transition-all group-hover:scale-110" 
+                  className="w-6 h-6 shrink-0 transition-all group-hover:scale-110" 
                   style={{ color: color }} 
                   strokeWidth={2} 
                 />
-                <span className={`text-[9px] font-extrabold leading-tight uppercase tracking-wider ${isAtivo ? 'text-white' : 'text-white/90'}`}>
+                <span className={`text-[11px] font-extrabold leading-tight uppercase tracking-wider ${isAtivo ? 'text-white' : 'text-white/90'}`}>
                   {label}
                   {id === 'favoritos' && favoritosCount > 0 && ` (${favoritosCount})`}
                   {id === 'recentes' && recentesCount > 0 && ` (${recentesCount})`}
@@ -207,73 +207,7 @@ export function MapasMentaisHeader({
           })}
         </div>
 
-        {/* 2. Barra de Pesquisa Rápida (Estilo Home / Vade Mecum) */}
-        <div className="relative flex-1 h-16 w-full flex items-center mt-3">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-6 sm:h-6 text-purple-400 shrink-0 pointer-events-none" strokeWidth={2.2} />
-          <input
-            type="text"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value.slice(0, 60))}
-            placeholder="Pesquisar matéria, código, tema ou artigo..."
-            className="h-full w-full rounded-2xl bg-black/75 backdrop-blur-sm border border-white/15 shadow-lg shadow-black/30 pl-12 pr-[140px] font-sans text-[14px] sm:text-[15px] font-medium text-white placeholder:text-white/40 outline-none focus:border-purple-500/50 transition-all"
-          />
-          {busca && (
-            <button
-              type="button"
-              onClick={() => setBusca('')}
-              aria-label="Limpar pesquisa"
-              className="absolute right-[115px] top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-1 cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-          <button 
-            type="button"
-            onClick={() => {
-               if (ouvindo) stop(); else start();
-            }}
-            className={`absolute right-1.5 top-1/2 -translate-y-1/2 h-12 px-4 rounded-xl text-white font-display text-[13px] font-bold tracking-wider flex items-center justify-center cursor-pointer uppercase shadow-md active:opacity-70 transition-all ${
-               ouvindo ? 'bg-red-500 animate-pulse' : 'bg-[#9333ea] hover:bg-[#7e22ce]'
-            }`}
-          >
-             {ouvindo ? <Mic className="w-5 h-5" /> : 'PESQUISAR'}
-          </button>
-        </div>
       </div>
-    </div>
-
-    {/* 3. Abas de Categorias ABAIXO do painel (Matérias, Códigos, Estatutos, Leis Especiais) com Margem de Segurança */}
-    <div className="px-4 sm:px-6 mt-4 sm:mt-6 mb-3 sm:mb-4 flex items-center gap-2 overflow-x-auto no-scrollbar max-w-[1400px] mx-auto w-full relative z-10 shrink-0">
-      {CATEGORIAS.map((catKey) => {
-        const info = CATEGORIA_INFO[catKey];
-        const isAtiva = categoria === catKey;
-        const CatIcon = CATEGORIA_ICON[catKey];
-        const cor = CATEGORIA_COR[catKey];
-        return (
-          <button
-            key={catKey}
-            type="button"
-            onClick={() => {
-              haptic.selection();
-              setCategoria(catKey);
-              setBusca('');
-            }}
-            className={`flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold tracking-wide whitespace-nowrap transition-all border cursor-pointer active:scale-[0.98] ${
-              isAtiva
-                ? 'bg-[#9333ea] text-white border-purple-400 shadow-lg shadow-purple-600/30 ring-1 ring-purple-400/40'
-                : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-300 hover:text-white border-white/10'
-            }`}
-          >
-            {CatIcon && (
-              <CatIcon 
-                className="w-4 h-4 transition-colors" 
-                style={{ color: isAtiva ? '#ffffff' : cor }} 
-              />
-            )}
-            {info?.label ?? catKey}
-          </button>
-        );
-      })}
     </div>
   </>
   );

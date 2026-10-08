@@ -115,4 +115,5 @@ export const CATEGORIA_INFO: Record<VisualCategoria, { label: string; desc: stri
   previdenciario: { label: 'Previdenciário', desc: 'Benefícios, custeio e previdência social' },
   leis: { label: 'Leis', desc: 'Códigos, estatutos e leis do Vade Mecum — com artigo opcional' },
   jurisprudencia: { label: 'Jurisprudência', desc: 'Súmulas, precedentes e teses dos tribunais' },
+  sumulas: { label: 'Súmulas', desc: 'Súmulas vinculantes, STF, STJ e repercussão geral' },
 };

@@ -23,6 +23,7 @@ import { MapasMentaisDetalhes } from './MapasMentaisDetalhes';
 import { MapasMentaisFormatModal } from './MapasMentaisFormatModal';
 import { MapasMentaisViewer } from './MapasMentaisViewer';
 import { MapasMentaisPastas } from './MapasMentaisPastas';
+import { MapasMentaisBottomNav } from './MapasMentaisBottomNav';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 export interface MapasMentaisViewProps {
@@ -54,6 +55,7 @@ export default function MapasMentaisView({
   const [filtro, setFiltro] = useState<Filtro>('todos');
   const [busca, setBusca] = useState('');
   const [buscaDetalhe, setBuscaDetalhe] = useState('');
+  const [buscaAtiva, setBuscaAtiva] = useState(false);
   const [limite, setLimite] = useState(30);
 
   // Itens selecionados na navegação
@@ -598,6 +600,56 @@ export default function MapasMentaisView({
         open={gateOpen}
         onClose={() => setGateOpen(false)}
         feature="mapa_mental"
+      />
+
+      {/* 8. Barra de Pesquisa Flutuante (abre ao clicar em Pesquisar no BottomNav) */}
+      {buscaAtiva && (
+        <div className="fixed bottom-[calc(4.5rem+16px+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] left-4 right-4 z-40 animate-in slide-in-from-bottom-4 fade-in duration-200">
+          <div className="relative h-14 w-full flex items-center shadow-2xl shadow-black/80">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400 shrink-0 pointer-events-none" strokeWidth={2.2} />
+            <input
+              autoFocus
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value.slice(0, 60))}
+              placeholder="Pesquisar matéria, código, tema..."
+              className="h-full w-full rounded-2xl bg-[#1a1025]/95 backdrop-blur-md border border-purple-500/30 pl-12 pr-14 font-sans text-[15px] font-medium text-white placeholder:text-white/40 outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400 transition-all shadow-inner"
+            />
+            {busca && (
+              <button
+                type="button"
+                onClick={() => setBusca('')}
+                className="absolute right-[52px] top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-2 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setBuscaAtiva(false)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white cursor-pointer transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 9. Bottom Navigation Principal */}
+      <MapasMentaisBottomNav
+        categoria={categoria}
+        setCategoria={(cat) => {
+          setCategoria(cat);
+          setBusca('');
+          setBuscaAtiva(false);
+          setItem(null);
+          setTema(null);
+        }}
+        buscaAtiva={buscaAtiva}
+        onSearchClick={() => {
+          setBuscaAtiva(!buscaAtiva);
+          if (buscaAtiva) setBusca('');
+        }}
       />
     </div>
   );

@@ -8,7 +8,7 @@
  */
 
 export type VisualTipo = 'mapa_mental' | 'infografico' | 'fluxograma' | 'diagrama';
-export type VisualCategoria = 'materias' | 'codigos' | 'estatutos' | 'leis_especiais' | 'previdenciario' | 'leis' | 'jurisprudencia';
+export type VisualCategoria = 'materias' | 'codigos' | 'estatutos' | 'leis_especiais' | 'previdenciario' | 'leis' | 'jurisprudencia' | 'sumulas';
 export type VisualEstilo = 'limpo' | 'rascunho';
 
 export interface VisualBase {
