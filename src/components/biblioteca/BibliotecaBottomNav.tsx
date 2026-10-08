@@ -12,14 +12,14 @@ export function abrirAtalhoBiblioteca(tab: BibliotecaAtalhoTab) {
 }
 
 type Slot = {
-  id: 'oab' | 'toga' | 'pesquisar' | 'oratoria' | 'lideranca';
+  id: 'oab' | 'fora-da-toga' | 'pesquisar' | 'oratoria' | 'lideranca';
   label: string;
   icon: typeof Search;
 };
 
 const SLOTS: Slot[] = [
   { id: 'oab', label: 'OAB', icon: GraduationCap },
-  { id: 'toga', label: 'Fora da Toga', icon: Briefcase },
+  { id: 'fora-da-toga', label: 'Fora da Toga', icon: Briefcase },
   { id: 'pesquisar', label: 'Pesquisar', icon: Search },
   { id: 'oratoria', label: 'Oratória', icon: Mic },
   { id: 'lideranca', label: 'Liderança', icon: Crown },
@@ -44,7 +44,7 @@ const BibliotecaBottomNav = ({ hidden = false }: { hidden?: boolean }) => {
       window.dispatchEvent(new CustomEvent('biblioteca-abrir-pesquisa'));
       return;
     }
-    setActive(slot.id);
+    navigate(`/bibliotecas/${slot.id}`);
   };
 
   return (

@@ -1,9 +1,10 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
 const LivroDetailSheet = lazyWithRetry(() => import('@/components/biblioteca/LivroDetailSheet'));
+const BibliotecaBuscaOverlay = lazyWithRetry(() => import('@/components/biblioteca/BibliotecaBuscaOverlay'));
 const PdfScrollReader = lazyWithRetry(() => import('@/components/biblioteca/PdfScrollReader'));
 const BibliotecaMateriaSheet = lazyWithRetry(() => import('@/components/biblioteca/BibliotecaMateriaSheet'));
 
@@ -28,6 +29,14 @@ export const BibliotecaModals: React.FC<BibliotecaModalsProps> = ({
   customPdfTitle,
   onCloseCustomPdf,
 }) => {
+  const [buscaOpen, setBuscaOpen] = useState(false);
+
+  useEffect(() => {
+    const onOpen = () => setBuscaOpen(true);
+    window.addEventListener('biblioteca-abrir-pesquisa', onOpen);
+    return () => window.removeEventListener('biblioteca-abrir-pesquisa', onOpen);
+  }, []);
+
   return (
     <>
       {/* Matéria: bottom sheet sob demanda */}
@@ -61,6 +70,15 @@ export const BibliotecaModals: React.FC<BibliotecaModalsProps> = ({
             />
           )}
         </AnimatePresence>
+      </Suspense>
+
+      {/* Busca Overlay sob demanda */}
+      <Suspense fallback={null}>
+        <BibliotecaBuscaOverlay
+          open={buscaOpen}
+          onClose={() => setBuscaOpen(false)}
+          onAbrirLivro={onAbrirLivro}
+        />
       </Suspense>
     </>
   );
