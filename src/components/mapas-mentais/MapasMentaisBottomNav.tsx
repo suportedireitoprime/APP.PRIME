@@ -2,7 +2,8 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import type { VisualCategoria } from '@/lib/visuaisJuridicos/types';
-import { CATEGORIAS, CATEGORIA_ICON, CATEGORIA_INFO, CATEGORIA_COR } from './mapasConstants';
+import { CATEGORIA_INFO } from '@/lib/visuaisJuridicos/catalogo';
+import { CATEGORIAS, CATEGORIA_ICON, CATEGORIA_COR } from './mapasConstants';
 
 interface MapasMentaisBottomNavProps {
   categoria: VisualCategoria;
