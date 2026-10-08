@@ -67,7 +67,7 @@ export const LivroHeaderBackdrop = ({
             alt=""
             aria-hidden
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-50 transition-opacity duration-300"
             onError={handleBgError}
@@ -82,7 +82,7 @@ export const LivroHeaderBackdrop = ({
             alt=""
             aria-hidden
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover opacity-85 transition-opacity duration-300"
             style={{ objectPosition: 'center' }}

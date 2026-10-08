@@ -23,7 +23,7 @@ if (typeof window !== 'undefined') {
   ITENS.forEach((f) => {
     const im = new Image();
     im.decoding = 'async';
-    (im as any).fetchPriority = 'high';
+    (im as any).fetchpriority = 'high';
     im.src = f.img;
     // link rel=preload garante prioridade alta antes mesmo do componente montar
     if (!document.head.querySelector(`link[data-cinema-preload="${f.img}"]`)) {
@@ -32,7 +32,7 @@ if (typeof window !== 'undefined') {
       link.as = 'image';
       link.href = f.img;
       link.setAttribute('data-cinema-preload', f.img);
-      (link as any).fetchPriority = 'high';
+      (link as any).fetchpriority = 'high';
       document.head.appendChild(link);
     }
   });

@@ -169,7 +169,7 @@ function getMonogram(text?: string): string {
  * 
  * Benefícios de Engenharia:
  * 1. Zero Cumulative Layout Shift (CLS < 0.01) garantido por aspect-ratio e container estrito.
- * 2. Otimização automática de LCP via fetchPriority="high" e loading="eager" quando priority=true.
+ * 2. Otimização automática de LCP via fetchpriority="high" e loading="eager" quando priority=true.
  * 3. Lazy loading nativo e decoding="async" desacoplado da thread da UI para rolagem a 120fps.
  * 4. Redimensionamento dinâmico via directImg() evitando download de imagens 4K em cards pequenos.
  * 5. Skeleton escuro grafite (sem flashes brancos em tema escuro) com transição de opacidade suave.
@@ -403,7 +403,7 @@ export function PrimeImageBase({
           aria-hidden={decorative ? "true" : undefined}
           loading={priority ? "eager" : "lazy"}
           decoding={priority ? "sync" : "async"}
-          // @ts-expect-error React 18 / 19 fetchPriority compatibility
+          // @ts-expect-error React 18 / 19 fetchpriority compatibility
           fetchpriority={priority ? "high" : "low"}
           onLoad={handleLoad}
           onError={handleError}

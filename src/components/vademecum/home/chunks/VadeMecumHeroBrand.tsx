@@ -10,7 +10,7 @@ const VadeMecumHeroBrand: React.FC = () => {
           alt="Brasão da República Federativa do Brasil"
           loading="eager"
           decoding="async"
-          fetchPriority="high"
+          fetchpriority="high"
           width={75}
           height={75}
           className="w-auto h-[75px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"

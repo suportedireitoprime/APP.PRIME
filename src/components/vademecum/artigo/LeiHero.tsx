@@ -88,7 +88,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
           alt={`Capa — ${selectedLeiNome}`}
           loading="eager"
           decoding="async"
-          fetchPriority="high"
+          fetchpriority="high"
           className="absolute inset-0 w-full h-full object-cover object-right z-0 pointer-events-none"
         />
 

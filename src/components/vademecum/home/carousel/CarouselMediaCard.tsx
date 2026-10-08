@@ -57,7 +57,7 @@ const CarouselMediaCard = ({ item, isActive, index, onOpen, variant = 'default' 
             width={640}
             height={360}
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
             onError={(e) => {
               e.currentTarget.style.display = 'none';

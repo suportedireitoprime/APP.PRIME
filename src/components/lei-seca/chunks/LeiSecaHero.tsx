@@ -79,7 +79,7 @@ export function LeiSecaHero({
         alt="Estudante estudando Lei Seca"
         aria-hidden="true"
         loading="eager"
-        fetchPriority="high"
+        fetchpriority="high"
         decoding="async"
         className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
       />

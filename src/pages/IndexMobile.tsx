@@ -100,7 +100,7 @@ const IndexMobile = () => {
         />
         <div>
           <main ref={contentRef} className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
-            <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
+            <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchpriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
             
             <MobileHomeSections />
           </main>

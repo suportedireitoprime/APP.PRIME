@@ -41,7 +41,7 @@ export function scheduleAppWarmup(qc: QueryClient): void {
       try {
         const img = new Image();
         img.decoding = 'async';
-        (img as any).fetchPriority = 'low';
+        (img as any).fetchpriority = 'low';
         img.src = brasaoImg;
       } catch {
         /* noop */

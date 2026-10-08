@@ -61,7 +61,7 @@ export const AuthMobileHero: React.FC<AuthMobileHeroProps> = ({
           alt="Tribunal de Justiça"
           loading="eager"
           decoding="sync"
-          fetchPriority="high"
+          fetchpriority="high"
           className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent h-[40%] top-auto" />

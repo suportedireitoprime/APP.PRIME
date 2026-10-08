@@ -124,7 +124,7 @@ export default function NoticiaViewerSheet({ noticia, onClose }: Props) {
                     alt={noticia.titulo}
                     className="w-full h-full object-cover"
                     decoding="async"
-                    fetchPriority="high"
+                    fetchpriority="high"
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                 ) : (

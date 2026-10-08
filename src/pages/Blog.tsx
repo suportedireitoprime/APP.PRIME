@@ -88,7 +88,7 @@ const Blog = () => {
       link.rel = 'preload';
       link.as = 'image';
       link.href = blogThumb(p.imagem_url);
-      (link as HTMLLinkElement & { fetchPriority?: string }).fetchPriority = 'high';
+      (link as HTMLLinkElement & { fetchpriority?: string }).fetchpriority = 'high';
       document.head.appendChild(link);
       links.push(link);
     });

@@ -652,7 +652,7 @@ const ApresentacaoPlayer = () => {
                   src={slide.imagem_url}
                   alt={`Slide ${idx + 1}`}
                   loading="eager"
-                  fetchPriority="high"
+                  fetchpriority="high"
                   decoding="async"
                   className={`shadow-[0_10px_40px_rgba(0,0,0,0.5)] border-white/5 ${deitado ? 'w-full h-full object-contain' : 'w-full h-auto border-y'}`}
                 />

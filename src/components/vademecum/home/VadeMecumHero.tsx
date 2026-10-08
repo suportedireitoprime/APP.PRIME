@@ -40,7 +40,7 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
           alt=""
           aria-hidden="true"
           loading="eager"
-          fetchPriority="high"
+          fetchpriority="high"
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover object-center z-0"
         />

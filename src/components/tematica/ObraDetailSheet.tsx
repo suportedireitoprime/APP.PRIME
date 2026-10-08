@@ -324,7 +324,7 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
                   src={obra.backdrop_url}
                   alt=""
                   loading="eager"
-                  fetchPriority="high"
+                  fetchpriority="high"
                   decoding="async"
                   className="w-full h-full object-cover"
                 />
@@ -333,7 +333,7 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
                   src={obra.poster_url}
                   alt=""
                   loading="eager"
-                  fetchPriority="high"
+                  fetchpriority="high"
                   decoding="async"
                   className="w-full h-full object-cover object-top"
                 />
@@ -367,7 +367,7 @@ export default function ObraDetailSheet({ obra, open, onClose }: Props) {
                       src={obra.poster_url}
                       alt={obra.titulo}
                       loading="eager"
-                      fetchPriority="high"
+                      fetchpriority="high"
                       decoding="async"
                       className="w-24 sm:w-28 aspect-[2/3] rounded-xl object-cover shadow-xl border border-border/50 shrink-0"
                     />

@@ -173,7 +173,7 @@ export default function BlogPostSheet({ post, onClose, showGoTo = false, inline 
                   alt={post.titulo}
                   className="absolute inset-0 h-full w-full object-cover object-top bg-black"
                   decoding="async"
-                  fetchPriority="high"
+                  fetchpriority="high"
                 />
 
                 <FloatingCoverIcons seed={post.id.length + (post.titulo?.length || 0)} count={7} />

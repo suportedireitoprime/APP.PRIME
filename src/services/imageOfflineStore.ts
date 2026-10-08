@@ -74,6 +74,7 @@ export async function getImageOfflineUrl(remoteUrl: string | null | undefined): 
     if (!store) return null;
 
     const record = await get<CachedImageRecord>(key, store);
+    if (!record) return null;
     let objectUrl = '';
 
     if (Capacitor.isNativePlatform()) {

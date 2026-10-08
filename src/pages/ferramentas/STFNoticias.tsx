@@ -264,7 +264,7 @@ export default function STFNoticias() {
                       src={heroNoticia.imagem_url}
                       alt={heroNoticia.titulo}
                       className="w-full h-full object-cover"
-                      fetchPriority="high"
+                      fetchpriority="high"
                       decoding="async"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />

@@ -28,7 +28,6 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import HomeTresPoderes from '@/components/vademecum/home/sections/HomeTresPoderes';
 import HomeApresentacoesTimeline from '@/components/vademecum/home/sections/HomeApresentacoesTimeline';
 import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
-import DesktopTopHeader from '@/components/vademecum/desktop/DesktopTopHeader';
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 

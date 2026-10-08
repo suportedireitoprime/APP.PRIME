@@ -308,7 +308,7 @@ const PessoalSheet = ({ open, onClose }: PessoalSheetProps) => {
               alt="Capa do perfil"
               loading="eager"
               decoding="async"
-              fetchPriority="high"
+              fetchpriority="high"
               className="absolute inset-0 w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background" />

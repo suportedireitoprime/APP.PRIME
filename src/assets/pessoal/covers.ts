@@ -48,7 +48,7 @@ export function preloadCover(id: string | null | undefined): void {
     link.rel = 'preload';
     link.as = 'image';
     link.href = src;
-    (link as any).fetchPriority = 'high';
+    (link as any).fetchpriority = 'high';
     document.head.appendChild(link);
     const img = new Image();
     img.decoding = 'async';

@@ -174,10 +174,10 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
       <aside 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`fixed top-0 left-0 h-screen ${collapsed ? 'w-[72px]' : 'w-[268px]'} bg-background border-r border-border/50 flex flex-col overflow-hidden shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.5)] z-50`} 
+        className={`absolute top-0 left-0 h-screen ${collapsed ? 'w-[72px]' : 'w-[268px]'} bg-zinc-950 border-r border-border/50 flex flex-col overflow-hidden shrink-0 ${collapsed ? '' : 'shadow-[4px_0_24px_rgba(0,0,0,0.5)]'} z-50`} 
         style={{ transitionProperty: 'width', transitionDuration: '320ms', transitionTimingFunction: 'cubic-bezier(0.22, 0.61, 0.36, 1)' }}>
         {/* Header – user profile */}
-        <div className="h-[104px] flex items-center px-4 shrink-0 border-b border-border/50">
+        <div className="h-[104px] flex items-center px-4 shrink-0 border-b border-border/50 bg-zinc-950">
             <div className="w-12 h-12 rounded-2xl overflow-hidden bg-primary/15 flex items-center justify-center border-2 border-transparent hover:border-primary/50 transition-colors shrink-0">
               {avatarUrl ? (
                 <img src={avatarUrl} alt={displayName} onError={() => setAvatarBroken(true)} className="w-full h-full object-cover" />

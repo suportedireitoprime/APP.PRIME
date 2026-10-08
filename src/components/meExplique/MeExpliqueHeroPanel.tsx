@@ -21,7 +21,7 @@ const MeExpliqueHeroPanel: React.FC<Props> = ({ onVoltar, onOpenConfig }) => {
           alt="Sócrates orientando um estudante de direito"
           loading="eager"
           decoding="async"
-          fetchPriority="high"
+          fetchpriority="high"
           className="absolute right-0 top-0 h-full w-[65%] sm:w-[68%] object-cover object-center pointer-events-none select-none"
         />
       </picture>

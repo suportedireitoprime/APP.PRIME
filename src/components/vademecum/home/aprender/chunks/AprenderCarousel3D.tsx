@@ -277,7 +277,7 @@ export const AprenderCarousel3D = memo(({ items, onItemClick }: AprenderCarousel
               src={item.image}
               alt={item.fullName}
               loading="eager"
-              fetchPriority="high"
+              fetchpriority="high"
               decoding="async"
               draggable={false}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 group-data-[is-center=true]:scale-105 pointer-events-none select-none"

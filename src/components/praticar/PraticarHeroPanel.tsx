@@ -37,7 +37,7 @@ export default function PraticarHeroPanel({
         transition={{ duration: 0.7, ease: 'easeOut', delay: 0.05 }}
         className="pointer-events-none absolute -right-2 bottom-0 h-[108%] w-[40%] max-w-[210px] object-contain object-bottom-right drop-shadow-[0_8px_12px_rgba(0,0,0,0.35)]"
         loading="eager"
-        fetchPriority="high"
+        fetchpriority="high"
       />
 
 

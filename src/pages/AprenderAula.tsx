@@ -649,7 +649,7 @@ const AprenderAula = () => {
                       src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                       alt=""
                       loading="eager"
-                      fetchPriority="high"
+                      fetchpriority="high"
                       decoding="async"
                       className="w-72 h-72 sm:w-96 sm:h-96 md:w-[440px] md:h-[440px] object-contain"
                     />

@@ -201,7 +201,7 @@ const FlashcardsEstudo = () => {
               alt=""
               aria-hidden="true"
               loading="eager"
-              fetchPriority="high"
+              fetchpriority="high"
               decoding="async"
               className="w-[320px] sm:w-[440px] md:w-[520px] max-w-[88vw] h-auto object-contain opacity-25 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.25)] pointer-events-none"
               style={{

@@ -390,7 +390,7 @@ export const FerramentasLivrosCarrossel = () => {
                       src={cdnImg(livro.capa, 240)}
                       alt={livro.titulo}
                       loading="eager"
-                      fetchPriority="high"
+                      fetchpriority="high"
                       decoding="async"
                       onError={(e) => {
                         e.currentTarget.style.display = 'none';

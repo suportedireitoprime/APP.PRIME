@@ -79,7 +79,7 @@ const AreaHeroPanel = ({
               transition={{ duration: 0.6, ease: 'easeOut' }}
               className="absolute bottom-0 right-0 h-full w-full object-contain object-bottom-right drop-shadow-[0_6px_10px_rgba(0,0,0,0.15)]"
               loading="eager"
-              fetchPriority="high"
+              fetchpriority="high"
             />
           </AnimatePresence>
         ) : cover?.cover ? (
@@ -89,7 +89,7 @@ const AreaHeroPanel = ({
             aria-hidden="true"
             className="absolute bottom-0 right-0 h-[112%] w-full object-contain object-bottom-right drop-shadow-[0_6px_10px_rgba(0,0,0,0.25)]"
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="sync"
           />
         ) : null}

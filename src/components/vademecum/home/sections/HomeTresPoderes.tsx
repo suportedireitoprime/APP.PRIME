@@ -68,7 +68,7 @@ const HomeTresPoderes = () => {
               <img
                 src={poder.img}
                 alt={poder.titulo}
-                fetchPriority="high"
+                fetchpriority="high"
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
               {/* Degradê muito sutil apenas na base/esquerda para leitura do texto, sem escurecer a imagem inteira */}

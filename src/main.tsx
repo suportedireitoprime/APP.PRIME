@@ -58,7 +58,7 @@ function preloadImage(url: string) {
   link.as = "image";
   link.href = url;
   link.type = "image/webp";
-  link.fetchPriority = "high";
+  link.fetchpriority = "high";
   document.head.appendChild(link);
   // Aquece também o cache de decode do browser
   const img = new Image();

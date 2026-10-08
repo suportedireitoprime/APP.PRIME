@@ -41,7 +41,7 @@ const HomeBrandBanner = () => {
             decoding="async"
             width={75}
             height={75}
-            fetchPriority="high"
+            fetchpriority="high"
             className="w-auto h-[75px] object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)]"
           />
         </picture>

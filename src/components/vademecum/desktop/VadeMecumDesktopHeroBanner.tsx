@@ -34,7 +34,7 @@ const VadeMecumDesktopHeroBanner = ({ typingHint = 'Buscar lei...', onSearchClic
           className="absolute inset-0 w-full h-full object-cover object-[25%_center] z-0 pointer-events-none transition-transform duration-700 group-hover:scale-105"
           loading="eager"
           decoding="async"
-          fetchPriority="high"
+          fetchpriority="high"
         />
 
         {/* Overlay vermelho com recorte poligonal cobrindo parte da esquerda */}

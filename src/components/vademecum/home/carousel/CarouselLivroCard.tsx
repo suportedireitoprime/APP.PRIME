@@ -66,7 +66,7 @@ const CarouselLivroCard = ({ item, isActive, index, onOpen }: CarouselLivroCardP
               src={cdnImg(l.imagem, 240)}
               alt=""
               loading="eager"
-              fetchPriority="high"
+              fetchpriority="high"
               decoding="async"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';

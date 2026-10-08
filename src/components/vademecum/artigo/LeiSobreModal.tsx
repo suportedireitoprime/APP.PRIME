@@ -214,7 +214,7 @@ export const LeiSobreModal: React.FC<LeiSobreModalProps> = ({
             alt=""
             aria-hidden="true"
             loading="eager"
-            fetchPriority="high"
+            fetchpriority="high"
             decoding="async"
             className="absolute inset-0 w-full h-full object-cover object-right z-0 pointer-events-none"
           />

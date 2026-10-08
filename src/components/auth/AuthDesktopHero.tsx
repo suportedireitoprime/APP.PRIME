@@ -15,7 +15,7 @@ export const AuthDesktopHero: React.FC = () => {
           alt="Tribunal de Justiça"
           loading="eager"
           decoding="sync"
-          fetchPriority="high"
+          fetchpriority="high"
           className="absolute inset-y-0 left-0 w-[55%] h-full object-cover object-center"
           style={{
             WebkitMaskImage: 'linear-gradient(to right, black 70%, transparent 100%)',
@@ -27,7 +27,7 @@ export const AuthDesktopHero: React.FC = () => {
           alt="Themis e a advocacia"
           loading="eager"
           decoding="sync"
-          fetchPriority="high"
+          fetchpriority="high"
           className="absolute inset-y-0 right-0 w-[55%] h-full object-cover object-center"
           style={{
             WebkitMaskImage: 'linear-gradient(to left, black 70%, transparent 100%)',

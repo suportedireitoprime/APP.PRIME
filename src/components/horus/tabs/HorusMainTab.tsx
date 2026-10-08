@@ -84,7 +84,7 @@ export function HorusMainTab({
           height={400}
           loading="eager"
           decoding="sync"
-          fetchPriority="high"
+          fetchpriority="high"
           className="absolute -right-3 -bottom-10 w-[160px] h-[160px] object-contain drop-shadow-xl pointer-events-none select-none z-10"
           initial={{ opacity: 0, scale: 0.85, rotate: -6 }}
           animate={{ opacity: 1, scale: 1, rotate: 0 }}

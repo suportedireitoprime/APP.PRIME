@@ -74,7 +74,7 @@ const HeroTribunal = ({ onAcessar, onConhecer }: Props) => {
           alt="Plenário de tribunal com a estátua da Justiça"
           width={1920}
           height={1088}
-          fetchPriority="high"
+          fetchpriority="high"
           decoding="async"
           className="w-full h-full object-cover object-center lp-hero-zoom"
         />

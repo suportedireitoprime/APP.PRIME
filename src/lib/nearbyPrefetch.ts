@@ -71,7 +71,7 @@ export function prefetchAsset(href: string, as: 'image' | 'fetch' | 'script' = '
     link.rel = 'prefetch';
     link.href = href;
     link.as = as;
-    (link as any).fetchPriority = 'low';
+    (link as any).fetchpriority = 'low';
     if (as === 'image') link.crossOrigin = 'anonymous';
     document.head.appendChild(link);
     prefetchedAssets.add(href);

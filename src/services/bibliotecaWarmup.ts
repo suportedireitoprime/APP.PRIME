@@ -81,7 +81,7 @@ async function aquecerCapas(qc: QueryClient) {
       if (!l.capa) return;
       const img = new Image();
       img.decoding = 'async';
-      (img as any).fetchPriority = 'high';
+      (img as any).fetchpriority = 'high';
       img.src = directImg(l.capa, 300);
     });
   });

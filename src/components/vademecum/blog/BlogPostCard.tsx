@@ -124,7 +124,7 @@ export const BlogPostCard = memo(function BlogPostCard({
           className="absolute inset-0 w-full h-full object-cover object-center"
           loading={index < 3 ? 'eager' : 'lazy'}
           decoding="async"
-          fetchPriority={index < 3 ? 'high' : 'auto'}
+          fetchpriority={index < 3 ? 'high' : 'auto'}
         />
         {/* Degradê à direita ligando ao card */}
         <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-r from-transparent to-card" />

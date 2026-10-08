@@ -183,7 +183,7 @@ const BibliotecaAtividadeRail = ({ onAbrirLivro }: Props) => {
                   >
               <span className="w-9 h-12 rounded-md overflow-hidden shrink-0 bg-muted border border-border/50">
                 {snap.capa ? (
-                  <img src={snap.capa} alt="" loading="eager" fetchPriority="high" decoding="async" className="w-full h-full object-cover" />
+                  <img src={snap.capa} alt="" loading="eager" fetchpriority="high" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <BookOpen className="w-4 h-4 text-muted-foreground" />

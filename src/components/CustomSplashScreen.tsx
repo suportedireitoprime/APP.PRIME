@@ -51,7 +51,7 @@ export function CustomSplashScreen({ onComplete }: { onComplete: () => void }) {
           className="w-36 h-36 sm:w-44 sm:h-44 object-contain"
           decoding="async"
           loading="eager"
-          fetchPriority="high"
+          fetchpriority="high"
         />
       </div>
       

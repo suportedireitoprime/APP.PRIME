@@ -67,7 +67,7 @@ const HeroCoverCarousel = ({ covers, forcePosition }: HeroCoverCarouselProps) =>
         alt=""
         loading="eager"
         decoding="async"
-        fetchPriority="high"
+        fetchpriority="high"
         width={1024}
         height={1024}
         onError={(e) => {
