@@ -127,28 +127,7 @@ const LeiHero: React.FC<LeiHeroProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            {selectedLeiEmenta && (
-              <button
-                type="button"
-                onClick={() => setShowEmentaDialog(true)}
-                className="inline-flex items-center justify-center gap-1.5 px-3 min-h-[48px] text-xs text-white/90 hover:text-white transition-all font-semibold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/20 active:opacity-70 shadow-lg"
-              >
-                <ScrollText className="w-3.5 h-3.5" />
-                <span className="font-bold">Ementa</span>
-              </button>
-            )}
-
-            {planaltoUrl && (
-              <a
-                href={planaltoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 min-h-[48px] text-xs sm:text-sm text-white hover:text-white transition-all font-bold bg-black/50 hover:bg-black/70 backdrop-blur-md rounded-full border border-white/25 active:opacity-70 shadow-xl hover:border-white/40"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-zinc-300" />
-                <span className="font-bold">Planalto</span>
-              </a>
-            )}
+            {/* Botões movidos para LeiDetailView */}
           </div>
         </header>
 

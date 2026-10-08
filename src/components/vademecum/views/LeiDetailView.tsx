@@ -1,11 +1,12 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef, useLayoutEffect, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info, Layers } from 'lucide-react';
+import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info, Layers, ScrollText, ExternalLink } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useSubscription } from '@/hooks/useSubscription';
 import PremiumGate from '@/components/PremiumGate';
 import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toggleArtigoFavorito } from '@/lib/artigosFavoritos';
 import { toast } from 'sonner';
 import { useIsDesktop } from '@/hooks/use-desktop';
@@ -86,6 +87,11 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   
   const [showFooter, setShowFooter] = useState(false);
   const [gridReady, setGridReady] = useState(false);
+  const [showEmentaDialog, setShowEmentaDialog] = useState(false);
+
+  const planaltoUrl = selectedLei?.url_planalto;
+  const ementaExibida = selectedLeiId === 'ctb' ? 'Institui o Código de Trânsito Brasileiro.' : selectedLeiEmenta;
+
   useEffect(() => {
     const t = setTimeout(() => {
       setShowFooter(true);
@@ -983,7 +989,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           <div className="flex-1 min-w-0 w-full relative">
             {activeTab === 'art' ? (
               <div className="flex flex-col">
-                {/* Brasão, Nome da Lei e Ementa acima da lista de artigos */}
+                {/* Brasão, Nome da Lei e Botões Ementa/Planalto acima da lista de artigos */}
                 {!searchQuery && (
                   <div className="flex flex-col items-center justify-center text-center px-4 pt-12 pb-14 opacity-90 select-none">
                     <img 
@@ -991,12 +997,34 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                       alt="Brasão da República" 
                       className="w-16 h-16 sm:w-20 sm:h-20 opacity-[0.8] mb-5 drop-shadow-md mix-blend-luminosity" 
                     />
-                    <h2 className="font-display text-[15px] sm:text-[17px] md:text-xl font-black tracking-[0.1em] text-primary mb-4 drop-shadow-sm uppercase text-balance leading-snug">
+                    <h2 className="font-display text-[15px] sm:text-[17px] md:text-xl font-black tracking-[0.1em] text-primary mb-6 drop-shadow-sm uppercase text-balance leading-snug">
                       {selectedLeiNome}
                     </h2>
-                    <p className="font-serif text-sm sm:text-[15px] text-muted-foreground italic leading-relaxed max-w-2xl text-center drop-shadow-sm text-balance px-2">
-                      {selectedLeiEmenta}
-                    </p>
+                    
+                    <div className="flex items-center gap-3">
+                      {ementaExibida && (
+                        <button
+                          type="button"
+                          onClick={() => setShowEmentaDialog(true)}
+                          className="inline-flex items-center justify-center gap-1.5 px-4 min-h-[44px] text-[13px] sm:text-sm text-foreground/90 hover:text-white transition-all font-semibold bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md rounded-full border border-white/10 active:opacity-70 shadow-lg"
+                        >
+                          <ScrollText className="w-3.5 h-3.5" />
+                          <span>Ementa</span>
+                        </button>
+                      )}
+
+                      {planaltoUrl && (
+                        <a
+                          href={planaltoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-1.5 px-4 min-h-[44px] text-[13px] sm:text-sm text-foreground/90 hover:text-white transition-all font-semibold bg-zinc-900/50 hover:bg-zinc-800/80 backdrop-blur-md rounded-full border border-white/10 active:opacity-70 shadow-lg"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
+                          <span>Planalto</span>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
                 <LeiArtigosVirtualList
@@ -1298,6 +1326,21 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           <ArrowUp className="w-6 h-6" />
         </button>
       )}
+
+      {/* Dialog da Ementa movido do LeiHero */}
+      <Dialog open={showEmentaDialog} onOpenChange={setShowEmentaDialog}>
+        <DialogContent className="max-w-lg border-primary/30 bg-gradient-to-b from-primary/10 to-background/95 backdrop-blur-xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-primary">
+              <ScrollText className="w-4 h-4" />
+              Ementa
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm md:text-[15px] italic leading-relaxed text-foreground/90 whitespace-pre-line">
+            {ementaExibida}
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
