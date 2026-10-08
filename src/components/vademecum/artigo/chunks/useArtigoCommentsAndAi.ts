@@ -216,23 +216,48 @@ export function useArtigoCommentsAndAi({
 
     if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
     supabase
-      .from('artigo_ai_cache')
-      .select('tipo, conteudo')
+      .from('resumos_juridicos')
+      .select('markdown, exemplos, termos')
       .eq('tabela_codigo', tabelaNome)
       .eq('numero_artigo', artigo.numero)
-      .in('tipo', modes)
-      .then(({ data }) => {
+      .maybeSingle()
+      .then(({ data: resumo }) => {
         if (activeArtigoIdRef.current !== currentId) return;
-        if (data && data.length > 0) {
-          const cached: Record<string, string> = {};
+        if (resumo?.markdown) {
+          const cached: Record<string, string> = {
+            explicacao: resumo.markdown,
+            exemplo: resumo.exemplos || '',
+            termos: resumo.termos || ''
+          };
           import('@/lib/aiCacheLocal').then(({ setLocalAiCache }) => {
             if (activeArtigoIdRef.current !== currentId) return;
-            data.forEach((row: any) => {
-              cached[row.tipo] = row.conteudo;
-              setLocalAiCache(tabelaNome, artigo.numero, row.tipo, row.conteudo);
-            });
+            setLocalAiCache(tabelaNome, artigo.numero, 'explicacao', resumo.markdown);
+            if (resumo.exemplos) setLocalAiCache(tabelaNome, artigo.numero, 'exemplo', resumo.exemplos);
+            if (resumo.termos) setLocalAiCache(tabelaNome, artigo.numero, 'termos', resumo.termos);
             setAiContent((prev) => ({ ...prev, ...cached }));
           });
+        } else {
+          // Fallback para artigo_ai_cache
+          supabase
+            .from('artigo_ai_cache')
+            .select('tipo, conteudo')
+            .eq('tabela_codigo', tabelaNome)
+            .eq('numero_artigo', artigo.numero)
+            .in('tipo', modes)
+            .then(({ data }) => {
+              if (activeArtigoIdRef.current !== currentId) return;
+              if (data && data.length > 0) {
+                const cached: Record<string, string> = {};
+                import('@/lib/aiCacheLocal').then(({ setLocalAiCache }) => {
+                  if (activeArtigoIdRef.current !== currentId) return;
+                  data.forEach((row: any) => {
+                    cached[row.tipo] = row.conteudo;
+                    setLocalAiCache(tabelaNome, artigo.numero, row.tipo, row.conteudo);
+                  });
+                  setAiContent((prev) => ({ ...prev, ...cached }));
+                });
+              }
+            });
         }
       });
 
@@ -281,13 +306,37 @@ export function useArtigoCommentsAndAi({
       setAiGeneratingStep(0);
 
       supabase
-        .from('artigo_ai_cache')
-        .select('conteudo')
+        .from('resumos_juridicos')
+        .select('markdown, exemplos, termos')
         .eq('tabela_codigo', cacheKey.tabela)
         .eq('numero_artigo', cacheKey.numero)
-        .eq('tipo', cacheKey.modo)
         .maybeSingle()
-        .then(({ data: cached }) => {
+        .then(({ data: resumo }) => {
+          if (activeArtigoIdRef.current !== currentId) return;
+
+          let content = '';
+          if (resumo?.markdown) {
+            if (cacheKey.modo === 'explicacao') content = resumo.markdown;
+            if (cacheKey.modo === 'exemplo') content = resumo.exemplos || '';
+            if (cacheKey.modo === 'termos') content = resumo.termos || '';
+          }
+
+          if (content && content.length > 20) {
+            setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, content);
+            setAiContent((prev) => ({ ...prev, [activeTab]: content }));
+            setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+            setAiGeneratingMode(null);
+            return;
+          }
+
+          supabase
+            .from('artigo_ai_cache')
+            .select('conteudo')
+            .eq('tabela_codigo', cacheKey.tabela)
+            .eq('numero_artigo', cacheKey.numero)
+            .eq('tipo', cacheKey.modo)
+            .maybeSingle()
+            .then(({ data: cached }) => {
           if (activeArtigoIdRef.current !== currentId) return;
           if (cached?.conteudo) {
             const raw = String(cached.conteudo).trim();
@@ -392,8 +441,9 @@ export function useArtigoCommentsAndAi({
               setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
               setAiGeneratingMode(null);
             });
-        });
-    });
+          }); // Fecha o .then de artigo_ai_cache
+        }); // Fecha o .then de resumos_juridicos
+    }); // Fecha o import('@/lib/aiCacheLocal')
 
     return () => {
       activeAiAbortCtrlRef.current?.abort();
@@ -432,13 +482,30 @@ export function useArtigoCommentsAndAi({
       setAiGeneratingStep(0);
 
       supabase
-        .from('artigo_ai_cache')
-        .select('conteudo')
+        .from('resumos_juridicos')
+        .select('termos')
         .eq('tabela_codigo', cacheKey.tabela)
         .eq('numero_artigo', cacheKey.numero)
-        .eq('tipo', 'termos')
         .maybeSingle()
-        .then(({ data: cached }) => {
+        .then(({ data: resumo }) => {
+          if (activeArtigoIdRef.current !== currentId) return;
+          
+          if (resumo?.termos && resumo.termos.length > 10) {
+            setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', resumo.termos);
+            setAiContent((prev) => ({ ...prev, termos: resumo.termos }));
+            setAiLoading((prev) => ({ ...prev, termos: false }));
+            setAiGeneratingMode(null);
+            return;
+          }
+
+          supabase
+            .from('artigo_ai_cache')
+            .select('conteudo')
+            .eq('tabela_codigo', cacheKey.tabela)
+            .eq('numero_artigo', cacheKey.numero)
+            .eq('tipo', 'termos')
+            .maybeSingle()
+            .then(({ data: cached }) => {
           if (activeArtigoIdRef.current !== currentId) return;
           if (cached?.conteudo) {
             setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', cached.conteudo as string);
@@ -524,8 +591,9 @@ export function useArtigoCommentsAndAi({
               setAiLoading((prev) => ({ ...prev, termos: false }));
               setAiGeneratingMode(null);
             });
-        });
-    });
+          }); // Fecha o .then de artigo_ai_cache
+        }); // Fecha o .then de resumos_juridicos
+    }); // Fecha o import('@/lib/aiCacheLocal')
 
     return () => {
       activeTermosAbortCtrlRef.current?.abort();

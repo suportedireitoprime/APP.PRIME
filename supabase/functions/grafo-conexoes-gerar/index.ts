@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
     // 2. Se não existir, gera via IA
     const prompt = `
 Você é um especialista em estruturação de dados jurídicos. Sua tarefa é extrair um mapa de conexões (Nós e Arestas) a partir do texto do dispositivo legal fornecido.
-Isso será usado para renderizar um Grafo interativo para estudantes de direito.
+Isso será usado para renderizar um Grafo interativo para estudantes de direito no formato de triagem (fluxograma passo a passo).
 
 TEXTO DO DISPOSITIVO:
 "${titulo}"
@@ -115,23 +115,26 @@ REGRAS:
     {
       "id": "node_central", // ID único (use camelCase curto)
       "label": "TÍTULO CURTO", // O rótulo que aparecerá na bolha (ex: "Art. 482 CLT", "Justa Causa")
-      "type": "central", // Pode ser: "central", "conceito", "consequencia", "excecao", "lei_relacionada", "requisito", "procedimento"
-      "icon": "BookOpen" // Escolha OBRIGATORIAMENTE um destes nomes exatos de ícones (Lucide): Scale, ShieldAlert, BookOpen, Key, Zap, ListChecks, CheckCircle2, AlertTriangle, Layers, Briefcase, FileText, Gavel, Users, User, Banknote, MapPin, Search, Crosshair, ArrowRightCircle, Target, ShieldCheck, Flame, Scale3d, Hand, Eye, Clock, Calendar, Lock, Globe, Car, Building, Home, Plane, Activity, Flag
+      "type": "central", // Pode ser: "central", "caput", "inciso", "alinea", "conceito", "consequencia", "excecao", "requisito", "procedimento", "condicional"
+      "icon": "BookOpen" // Escolha OBRIGATORIAMENTE um destes nomes exatos de ícones (Lucide): Scale, ShieldAlert, BookOpen, Key, Zap, ListChecks, CheckCircle2, AlertTriangle, Layers, Briefcase, FileText, Gavel, Users, User, Banknote, MapPin, Search, Crosshair, ArrowRightCircle, Target, ShieldCheck, Flame, Scale3d, Hand, Eye, Clock, Calendar, Lock, Globe, Car, Building, Home, Plane, Activity, Flag, GitBranch, Split
     }
   ],
   "edges": [
     {
       "source": "id_do_no_origem",
       "target": "id_do_no_destino",
-      "label": "Rótulo curto da seta (ex: 'gera', 'exceto', 'depende de', 'define')",
-      "description": "Explicação rica, completa e detalhada (2 a 3 frases) sobre a relação, aprofundando o conceito, ESTRITAMENTE baseada na transcrição."
+      "label": "Rótulo curto da seta (ex: 'se cumprir', 'se não cumprir', 'gera', 'exceto')",
+      "description": "Explicação rica, detalhada e estruturada (use quebras de linha com \\n\\n). DEVE conter: 1. Explicação do dispositivo. 2. Exceções ou Pontos de Atenção. 3. Exemplo prático de aplicação."
     }
   ]
 }
 
-3. O "node_central" DEVE ser o próprio artigo em questão e só deve haver 1 node do tipo "central" (Use o icon BookOpen, Gavel ou Scale).
-4. SEJA ENXUTO E DIRETO: Crie no máximo 4 a 7 nós para mapear apenas a essência do artigo, baseando-se EXCLUSIVAMENTE na transcrição gerada.
-5. Os 'labels' dos nodes devem ser muito curtos (máx 2-3 palavras). Escolha o 'icon' que melhor represente visualmente a palavra. Toda a complexidade jurídica DEVE ficar na 'description' das setas.
+3. ESTRUTURA EXIGIDA (MUITO IMPORTANTE):
+- O "node_central" DEVE ser o artigo em questão.
+- Separe os elementos estruturais em nós distintos (Caput, Incisos, Alíneas, Parágrafos), ligando-os adequadamente para formar uma árvore/triagem clara.
+- Crie nós e setas para CAMINHOS CONDICIONAIS ("se a pessoa fizer isso -> acontece X", "se não fizer -> acontece Y"). Use os labels das setas para indicar a condição (ex: "Sim", "Não", "Se cumprir").
+- A descrição ("description") da seta DEVE ser rica, trazendo a explicação, alertas de atenção e UM EXEMPLO PRÁTICO para facilitar o entendimento.
+- Crie de 5 a 10 nós no máximo para mapear a lógica, baseando-se EXCLUSIVAMENTE no texto.
     `.trim();
 
     let conteudo = null;

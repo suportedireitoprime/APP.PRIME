@@ -37,6 +37,9 @@ const VideoaulaSheet = lazyWithRetry(
 const VideoaulasListSheet = lazyWithRetry(
   () => import('@/components/vademecum/sheets/VideoaulasListSheet')
 );
+const GrafoOverlay = lazyWithRetry(
+  () => import('@/components/vademecum/overlays/GrafoOverlay')
+);
 
 interface ArtigoOverlaysProps {
   showEraseSheet: boolean;
@@ -264,7 +267,26 @@ export const ArtigoOverlays = memo(function ArtigoOverlays({
           />
         )}
 
-
+        {tabelaNome && artigo && showGrafo && (
+          <GrafoOverlay
+            open={showGrafo}
+            onClose={() => setShowGrafo(false)}
+            tabelaNome={tabelaNome}
+            leiNome={tabelaNome}
+            artigoNumero={String(artigo.numero)}
+            artigoTexto={[
+              artigo.caput,
+              ...(artigo.incisos?.map((x: any) =>
+                typeof x === 'string' ? x : x?.texto
+              ) || []),
+              ...(artigo.paragrafos?.map((x: any) =>
+                typeof x === 'string' ? x : x?.texto
+              ) || []),
+            ]
+              .filter(Boolean)
+              .join('\n\n')}
+          />
+        )}
 
         <PremiumGate
           open={showPremiumGate}

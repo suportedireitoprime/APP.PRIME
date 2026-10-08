@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robô Gerador de Explicações - Código Civil</title>
+    <style>
+        body { font-family: monospace; background: #0D0D0D; color: #E0E0E0; padding: 20px; line-height: 1.5; }
+        h1 { color: #fff; font-size: 20px; }
+        .log-container { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+        .log { padding: 8px; border-radius: 4px; border-left: 4px solid; }
+        .log.info { background: rgba(0, 150, 255, 0.1); border-color: #0096ff; }
+        .log.success { background: rgba(0, 255, 100, 0.1); border-color: #00ff64; }
+        .log.cached { background: rgba(255, 200, 0, 0.1); border-color: #ffc800; }
+        .log.error { background: rgba(255, 50, 50, 0.1); border-color: #ff3232; }
+        .stats { padding: 16px; background: #1a1a1a; border-radius: 8px; margin-bottom: 20px; display: inline-block; font-size: 16px; font-weight: bold; }
+        button { background: #E11D48; color: white; border: none; padding: 12px 24px; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+    <h1>🤖 Robô Gerador de Explicações (Omniroute Sandbox)</h1>
+    <div class="stats">
+        Progresso: <span id="current">0</span> / <span id="total">0</span> artigos processados
+    </div>
+    <br>
+    <button id="btn-start" onclick="startRobot()">▶ Iniciar Processamento do Código Civil</button>
+    <button id="btn-stop" onclick="stopRobot()" style="background:#444; display:none;">⏹ Parar</button>
+    
+    <div class="log-container" id="logs"></div>
+
+    <script>
+        const API_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/functions/v1/gerar-resumo-artigo';
+        let isRunning = false;
+        
+        function appendLog(message, type = 'info') {
+            const el = document.createElement('div');
+            el.className = `log ${type}`;
+            el.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('logs').prepend(el);
+        }
+
+        function updateStats(current, total) {
+            document.getElementById('current').textContent = current;
+            document.getElementById('total').textContent = total;
+        }
+
+        async function startRobot() {
+            if (isRunning) return;
+            isRunning = true;
+            document.getElementById('btn-start').style.display = 'none';
+            document.getElementById('btn-stop').style.display = 'inline-block';
+            
+            appendLog('Carregando laws-bundle/cc.json...', 'info');
+            
+            try {
+                const res = await fetch('/laws-bundle/cc.json');
+                if (!res.ok) throw new Error('Falha ao baixar cc.json');
+                const data = await res.json();
+                
+                // Filtrar apenas os blocos que são "artigos" (ignora LIVRO, TÍTULO, CAPÍTULO...)
+                const artigos = data.filter(b => b.tipo === 'art');
+                updateStats(0, artigos.length);
+                
+                appendLog(`Total de artigos encontrados: ${artigos.length}`, 'success');
+
+                for (let i = 0; i < artigos.length; i++) {
+                    if (!isRunning) {
+                        appendLog('Processamento parado pelo usuário.', 'info');
+                        break;
+                    }
+                    
+                    const artigo = artigos[i];
+                    updateStats(i + 1, artigos.length);
+                    
+                    appendLog(`Iniciando Artigo ${artigo.numero}...`);
+                    
+                    const payload = {
+                        tabela_codigo: "CC_CODIGO_CIVIL",
+                        numero_artigo: artigo.numero,
+                        area: "Direito Civil",
+                        lei_nome: "Código Civil",
+                        texto: artigo.texto
+                    };
+                    
+                    try {
+                        const apiRes = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        
+                        const json = await apiRes.json();
+                        
+                        if (!apiRes.ok) {
+                            if (apiRes.status === 429) {
+                                appendLog(`[Art. ${artigo.numero}] Rate limit atingido. Aguardando 15 segundos...`, 'error');
+                                await new Promise(r => setTimeout(r, 15000));
+                                i--; // Tentar de novo
+                                continue;
+                            }
+                            throw new Error(json.error || `HTTP ${apiRes.status}`);
+                        }
+                        
+                        if (json.cached) {
+                            appendLog(`[Art. ${artigo.numero}] Já existia no banco de dados (Cache/Supabase). Pulando.`, 'cached');
+                        } else {
+                            appendLog(`[Art. ${artigo.numero}] Gerado com SUCESSO! Salvo no Supabase.`, 'success');
+                            // Respeita o limite do Gemini (apenas p/ segurança para não tomar 429 rápido)
+                            await new Promise(r => setTimeout(r, 2000)); 
+                        }
+                    } catch (e) {
+                        appendLog(`[Art. ${artigo.numero}] ERRO: ${e.message}`, 'error');
+                    }
+                }
+                
+                if (isRunning) {
+                    appendLog('✅ Finalizado o processamento de todo o Código Civil!', 'success');
+                    isRunning = false;
+                }
+                
+            } catch (error) {
+                appendLog('Erro global: ' + error.message, 'error');
+                isRunning = false;
+            }
+            
+            document.getElementById('btn-start').style.display = 'inline-block';
+            document.getElementById('btn-stop').style.display = 'none';
+        }
+
+        function stopRobot() {
+            isRunning = false;
+        }
+    </script>
+</body>
+</html>

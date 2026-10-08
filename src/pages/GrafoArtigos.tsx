@@ -234,7 +234,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
         }));
 
         requestAnimationFrame(() => {
-          const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'TB');
+          const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'LR');
           setNodes(layoutedNodes);
           setEdges(layoutedEdges);
         });
@@ -325,7 +325,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
         }));
 
         requestAnimationFrame(() => {
-          const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'TB');
+          const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(rfNodes, rfEdges, 'LR');
           setNodes(layoutedNodes);
           setEdges(layoutedEdges);
         });
@@ -392,7 +392,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
         />
       )}
       {embedded && (
-        <div className="flex items-center justify-between px-5 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+1rem)] pb-4 border-b border-border/50 shrink-0">
+        <div className="flex items-center justify-between px-5 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+2rem)] pb-4 border-b border-border/50 shrink-0">
           <div>
             <h2 className="font-display font-bold text-lg text-foreground">Grafo de Conexões</h2>
             <p className="text-xs text-muted-foreground line-clamp-1">{formatLeiNome(leiNome)} — Art. {artigoNumero}</p>
@@ -412,7 +412,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
         {loading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            <p className="text-sm font-semibold text-foreground/80 animate-pulse">A IA está mapeando as conexões...</p>
+            <p className="text-sm font-semibold text-foreground/80 animate-pulse">Gerando mapa de conexões...</p>
           </div>
         ) : nodes.length === 0 ? (
           <div className="absolute inset-0 flex items-center justify-center p-6 text-center">
@@ -446,7 +446,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
             </ReactFlow>
 
             {!selectedEdgeInfo && (
-              <div className="absolute bottom-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur-md border border-border/50 rounded-full px-5 py-2 pointer-events-none shadow-lg text-center z-10">
+              <div className="absolute bottom-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+5rem)] left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur-md border border-border/50 rounded-full px-5 py-2 pointer-events-none shadow-lg text-center z-10">
                 <p className="text-[13px] font-semibold text-primary">Toque nos nós ou setas para entender a relação</p>
               </div>
             )}
@@ -476,7 +476,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 320 }}
-              className="absolute bottom-0 left-0 right-0 z-40 bg-card rounded-t-[1.5rem] border-t border-border/50 shadow-[0_-8px_30px_rgba(0,0,0,0.4)] p-6 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+1.5rem)] pointer-events-auto"
+              className="absolute bottom-0 left-0 right-0 z-40 bg-card rounded-t-[1.5rem] border-t border-border/50 shadow-[0_-8px_30px_rgba(0,0,0,0.4)] p-6 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+4rem)] pointer-events-auto"
               onPointerDown={(e) => e.stopPropagation()}
             >
               <div className="w-10 h-1 rounded-full bg-muted-foreground/20 mx-auto mb-4 -mt-2" />
@@ -505,7 +505,7 @@ const GrafoArtigos = (props: GrafoArtigosProps) => {
                 
                 <div className="mt-1">
                   <span className="text-[11px] uppercase font-extrabold text-red-100 tracking-widest opacity-90">Explicação ({selectedEdgeInfo.label})</span>
-                  <p className="text-[15px] font-medium text-white mt-1.5 leading-relaxed">
+                  <p className="text-[15px] font-medium text-white mt-1.5 leading-relaxed whitespace-pre-wrap">
                     {selectedEdgeInfo.description}
                   </p>
                 </div>

@@ -103,6 +103,11 @@ function extractBlocos(html: string): Bloco[] {
 
   body = removePlanaltoAnnotationBlocks(body);
 
+  // Forçar quebra de linha antes de Incisos, Parágrafos e Alíneas se vieram grudados por erro do Planalto
+  body = body.replace(/([:;])\s+(?=[IVXLCDM]+\s*[-–.)])/g, "$1\n");
+  body = body.replace(/([:;])\s+(?=(?:§|Par[áa]grafo|Art\.?\s*\d))/gi, "$1\n");
+  body = body.replace(/([:;])\s+(?=[a-z]\))/g, "$1\n");
+
   const linhasBrutas = body
     .split(/\n/)
     .map((l) => l.replace(/\s+/g, " ").trim())
