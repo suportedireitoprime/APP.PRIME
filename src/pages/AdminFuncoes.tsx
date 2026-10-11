@@ -43,6 +43,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
   '/admin-assinantes': () => import('./AdminAssinantes'),
+  '/admin-assinantes-asaas': () => import('./AdminAssinantesAsaas'),
   '/admin-usuarios': () => import('./AdminUsuarios'),
   '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
@@ -135,7 +136,8 @@ const CATEGORIES: Category[] = [
     desc: 'Lista de assinantes, limites free e paywall',
     icon: Crown,
     items: [
-      { id: 'admin-assinantes', label: 'Assinantes Asaas', icon: Users, desc: 'Lista de todos os assinantes do Asaas', route: '/admin-assinantes' },
+      { id: 'admin-assinantes', label: 'Assinantes App', icon: Users, desc: 'Lista de todos os assinantes via banco local', route: '/admin-assinantes' },
+      { id: 'admin-assinantes-asaas', label: 'Assinantes API Asaas', icon: Users, desc: 'Lista de todos os assinantes via API Asaas', route: '/admin-assinantes-asaas' },
       { id: 'admin-usuarios', label: 'Usuários Cadastrados', icon: UserCheck, desc: 'Lista de todos os usuários cadastrados e status', route: '/admin-usuarios' },
       { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função (blog, narração, biblioteca, IA…)', route: '/admin-funcoes-assinantes' },
     ],
