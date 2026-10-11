@@ -669,17 +669,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             {step !== 2 && (
               <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-4 flex flex-col items-center justify-center relative overflow-hidden shadow-xl">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                  VOCÊ ESTÁ ASSINANDO:
+                  PAGAMENTO ÚNICO
                 </p>
                 <h3 className="font-display text-lg font-black text-foreground/90 mb-1">
-                  Estudos Jurídicos {planInfo.title}
+                  ACESSO VITALÍCIO
                 </h3>
                 <div className="flex items-baseline gap-1">
                   <span className="font-display text-4xl font-black text-foreground">{planInfo.price}</span>
                   <span className="text-sm font-semibold text-muted-foreground">{planInfo.sub}</span>
                 </div>
-                
-                
               </div>
             )}
 
