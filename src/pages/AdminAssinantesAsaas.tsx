@@ -36,10 +36,11 @@ type AsaasPayment = {
   description?: string;
   billingType: string;
   installment?: string;
+  dateCreated?: string;
 };
 
 type UnifiedRecord = {
-  id: string; // payment id or sub id
+  id: string;
   type: 'subscription' | 'payment';
   planClass: 'Mensal' | 'Anual' | 'Vitalício' | 'Desconhecido';
   customerName: string;
@@ -48,6 +49,7 @@ type UnifiedRecord = {
   billingType: string;
   status: string;
   date: string;
+  isInstallment?: boolean;
 };
 
 export default function AdminAssinantesAsaas() {
@@ -117,8 +119,33 @@ export default function AdminAssinantesAsaas() {
     const custMap = new Map<string, AsaasCustomer>();
     customers.forEach(c => custMap.set(c.id, c));
 
+    // Mapear pagamentos para saber o que foi REALMENTE pago
+    const subPayments = new Map<string, AsaasPayment[]>();
+    const installmentGroups = new Map<string, AsaasPayment[]>();
+    const singlePayments: AsaasPayment[] = [];
+
+    payments.forEach(pay => {
+      const subId = (pay as any).subscription;
+      if (subId) {
+        if (!subPayments.has(subId)) subPayments.set(subId, []);
+        subPayments.get(subId)!.push(pay);
+      } else if (pay.installment) {
+        if (!installmentGroups.has(pay.installment)) installmentGroups.set(pay.installment, []);
+        installmentGroups.get(pay.installment)!.push(pay);
+      } else {
+        singlePayments.push(pay);
+      }
+    });
+
+    const isPaid = (p: AsaasPayment) => ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'].includes(p.status);
+
     // Processar assinaturas
     subscriptions.forEach(sub => {
+      // Verificar se a assinatura tem pelo menos um pagamento concluído (ignorar PIX abandonado)
+      const p = subPayments.get(sub.id) || [];
+      const hasPaid = p.some(isPaid);
+      if (!hasPaid) return; 
+
       const c = custMap.get(sub.customer);
       const desc = (sub.description || '').toLowerCase();
       let pClass: 'Mensal' | 'Anual' | 'Vitalício' | 'Desconhecido' = 'Desconhecido';
@@ -135,15 +162,14 @@ export default function AdminAssinantesAsaas() {
         value: sub.value,
         billingType: sub.billingType,
         status: sub.status,
-        date: sub.nextDueDate,
+        date: sub.nextDueDate || sub.dateCreated || '',
+        isInstallment: false
       });
     });
 
-    // Processar pagamentos isolados (vitalícios e afins) que não têm subscription associada
-    payments.forEach(pay => {
-      // Pular pagamentos que já pertencem a uma subscription ou que são apenas "gerados" (PIX não pago)
-      if ((pay as any).subscription) return;
-      if (pay.status === 'PENDING') return; // Ignorar cobranças pendentes que não foram concluídas
+    // Processar pagamentos isolados (single)
+    singlePayments.forEach(pay => {
+      if (!isPaid(pay)) return; // Apenas pagamentos concluídos
 
       const c = custMap.get(pay.customer);
       const desc = (pay.description || '').toLowerCase();
@@ -162,7 +188,41 @@ export default function AdminAssinantesAsaas() {
         value: pay.value,
         billingType: pay.billingType,
         status: pay.status,
-        date: pay.dueDate,
+        date: pay.dueDate || pay.dateCreated || '',
+        isInstallment: false
+      });
+    });
+
+    // Processar parcelamentos (Installments)
+    installmentGroups.forEach((groupPayments, installmentId) => {
+      // Se não tem nenhum pagamento pago no parcelamento, ignora
+      const hasPaid = groupPayments.some(isPaid);
+      if (!hasPaid) return;
+
+      // Somar o valor total de todas as parcelas geradas
+      const totalValue = groupPayments.reduce((acc, curr) => acc + curr.value, 0);
+
+      // Pegar a base (primeiro pagamento ou o mais recente pago)
+      const basePay = groupPayments.find(isPaid) || groupPayments[0];
+      const c = custMap.get(basePay.customer);
+      const desc = (basePay.description || '').toLowerCase();
+      let pClass: 'Mensal' | 'Anual' | 'Vitalício' | 'Desconhecido' = 'Desconhecido';
+      
+      if (desc.includes('vitalicio') || desc.includes('vitalício')) pClass = 'Vitalício';
+      else if (desc.includes('anual')) pClass = 'Anual';
+      else if (desc.includes('mensal')) pClass = 'Mensal';
+
+      list.push({
+        id: installmentId,
+        type: 'payment',
+        planClass: pClass,
+        customerName: c?.name || 'Sem nome',
+        customerEmail: c?.email || 'Sem email',
+        value: totalValue, // VALOR CHEIO
+        billingType: basePay.billingType,
+        status: basePay.status,
+        date: basePay.dueDate || basePay.dateCreated || '',
+        isInstallment: true
       });
     });
 
@@ -304,7 +364,7 @@ export default function AdminAssinantesAsaas() {
                           {item.planClass}
                         </span>
                         <div className="text-xs text-muted-foreground mt-1.5 opacity-60">
-                          {item.type === 'subscription' ? 'Assinatura' : 'Pagto Único'}
+                          {item.type === 'subscription' ? 'Assinatura' : item.isInstallment ? 'Parcelado no Cartão' : 'Pagto Único'}
                         </div>
                       </td>
                       <td className="px-6 py-4 font-semibold text-emerald-400">
