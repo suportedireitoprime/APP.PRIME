@@ -138,6 +138,32 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       setInstallmentCount(4);
     }
   }, [activePlan, installmentCount]);
+
+  const getInstallmentDetails = (num: number, basePrice = 149.90) => {
+    if (num <= 1) {
+      return {
+        total: basePrice,
+        installmentValue: basePrice,
+        label: `1x de R$ ${basePrice.toFixed(2).replace('.', ',')} à vista`
+      };
+    }
+    // Juros de intermediação Asaas + taxa de adiantamento das parcelas
+    const rates: Record<number, number> = {
+      2: 0.058, // ~5.8% (juros + antecipação Asaas)
+      3: 0.083, // ~8.3% (juros + antecipação Asaas)
+      4: 0.108  // ~10.8% (juros + antecipação Asaas)
+    };
+    const rate = rates[num] ?? (0.0349 + num * 0.0249);
+    const total = Number((basePrice * (1 + rate)).toFixed(2));
+    const installmentValue = Number((total / num).toFixed(2));
+
+    return {
+      total,
+      installmentValue,
+      label: `${num}x de R$ ${installmentValue.toFixed(2).replace('.', ',')} (com juros Asaas)`
+    };
+  };
+
   const [addressInfo, setAddressInfo] = useState<string>('');
   const [isFlipped, setIsFlipped] = useState(false);
   
@@ -782,8 +808,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             <CreditCard className="w-4 h-4" />
                             <span>Opção de Parcelamento</span>
                           </Label>
-                          <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                            Sem Juros
+                          <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            Com Juros Asaas
                           </span>
                         </div>
                         <div className="relative">
@@ -794,12 +820,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             className="w-full h-12 rounded-xl bg-black/80 border border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary font-black px-3.5 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white cursor-pointer shadow-inner"
                           >
                             {Array.from({ length: 4 }, (_, idx) => idx + 1).map(num => {
-                              const totalWithTax = 149.90;
-                              const installmentValue = totalWithTax / num;
-
+                              const details = getInstallmentDetails(num);
                               return (
                                 <option key={num} value={num} className="bg-zinc-900 text-white font-medium py-1">
-                                  {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ' sem juros'}
+                                  {details.label}
                                 </option>
                               );
                             })}
@@ -984,7 +1008,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                       <div className="space-y-1.5 p-3 rounded-2xl bg-primary/10 border border-primary/30">
                         <Label className="text-xs font-black text-primary uppercase tracking-wider flex items-center justify-between">
                           <span>Opção de Parcelamento</span>
-                          <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Sem juros</span>
+                          <span className="text-[10px] text-amber-400 font-bold uppercase tracking-wider">Com Juros Asaas</span>
                         </Label>
                         <div className="relative">
                           <select 
@@ -994,12 +1018,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             className="w-full h-12 rounded-xl bg-black/60 border border-white/20 focus:border-primary focus:ring-1 focus:ring-primary font-bold px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white cursor-pointer"
                           >
                           {Array.from({ length: 4 }, (_, idx) => idx + 1).map(num => {
-                            const totalWithTax = 149.90;
-                            const installmentValue = totalWithTax / num;
-
+                            const details = getInstallmentDetails(num);
                             return (
                               <option key={num} value={num} className="bg-zinc-900 text-white font-medium py-1">
-                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ''}
+                                {details.label}
                               </option>
                             );
                           })}

@@ -381,8 +381,8 @@ export default function Assinatura() {
                 onClick={() => startPurchase('vitalicio')}
                 className="relative overflow-hidden w-full h-[60px] rounded-[20px] border-2 border-primary/50 font-display font-bold tracking-wide transition-all active:scale-[0.98] group bg-[#121212] hover:bg-primary/10 text-primary shadow-md flex flex-col items-center justify-center py-1"
               >
-                <span className="text-[16px] leading-tight font-black">PARCELAR EM ATÉ 4X</span>
-                <span className="text-[11px] text-muted-foreground font-sans font-semibold">4x de R$ 37,47 sem juros</span>
+                <span className="text-[17px] leading-tight font-black uppercase tracking-wider">QUERO PARCELAR</span>
+                <span className="text-[11px] text-muted-foreground font-sans font-semibold">em até 4x no cartão (com juros Asaas)</span>
               </Button>
             </div>
 

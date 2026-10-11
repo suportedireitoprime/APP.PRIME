@@ -129,10 +129,14 @@ Deno.serve(async (req) => {
       let totalWithTax = baseValue;
 
       if (isCreditCard && num > 1) {
-        let taxRate = 0;
-        if (num <= 6) taxRate = 0.0389;
-        else taxRate = 0.0439;
-        totalWithTax = Number(((baseValue + 0.29) / (1 - taxRate)).toFixed(2));
+        // Juros de intermediação Asaas + taxa de adiantamento das parcelas
+        const rates: Record<number, number> = {
+          2: 0.058, // ~5.8% (juros + antecipação Asaas)
+          3: 0.083, // ~8.3% (juros + antecipação Asaas)
+          4: 0.108  // ~10.8% (juros + antecipação Asaas)
+        };
+        const rate = rates[num] ?? (0.0349 + num * 0.0249);
+        totalWithTax = Number((baseValue * (1 + rate)).toFixed(2));
       }
 
       const isPromo = plan === 'promocao';
