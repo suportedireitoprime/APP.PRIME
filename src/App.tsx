@@ -99,7 +99,7 @@ import { scheduleAppWarmup } from "@/services/appWarmupService";
 import { scheduleBackgroundImageWarmup } from "@/services/imageBackgroundSync";
 import { populateFTS5FromBundle } from "@/services/fts5Populator";
 import { GlobalDelayedPrompts } from "@/components/GlobalDelayedPrompts";
-import { GlobalPromoFloatingCard } from "@/components/GlobalPromoFloatingCard";
+
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -229,7 +229,7 @@ const App = () => (
                   <AppWarmupInitializer />
                   <NativeBackButtonHandler />
                   <GlobalDelayedPrompts />
-          <GlobalPromoFloatingCard />
+
                   
                   <Suspense fallback={null}>
                     <GeofencePresenceBanner />
