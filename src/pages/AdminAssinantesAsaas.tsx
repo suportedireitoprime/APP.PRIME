@@ -162,7 +162,7 @@ export default function AdminAssinantesAsaas() {
         value: sub.value,
         billingType: sub.billingType,
         status: sub.status,
-        date: sub.nextDueDate || sub.dateCreated || '',
+        date: sub.dateCreated || sub.nextDueDate || '',
         isInstallment: false
       });
     });
@@ -188,7 +188,7 @@ export default function AdminAssinantesAsaas() {
         value: pay.value,
         billingType: pay.billingType,
         status: pay.status,
-        date: pay.dueDate || pay.dateCreated || '',
+        date: pay.dateCreated || pay.dueDate || '',
         isInstallment: false
       });
     });
@@ -202,8 +202,10 @@ export default function AdminAssinantesAsaas() {
       // Somar o valor total de todas as parcelas geradas
       const totalValue = groupPayments.reduce((acc, curr) => acc + curr.value, 0);
 
-      // Pegar a base (primeiro pagamento ou o mais recente pago)
-      const basePay = groupPayments.find(isPaid) || groupPayments[0];
+      // Usar a data do primeiro pagamento
+      const sortedByDate = [...groupPayments].sort((a, b) => new Date(a.dateCreated || a.dueDate).getTime() - new Date(b.dateCreated || b.dueDate).getTime());
+      const basePay = sortedByDate[0];
+      
       const c = custMap.get(basePay.customer);
       const desc = (basePay.description || '').toLowerCase();
       let pClass: 'Mensal' | 'Anual' | 'Vitalício' | 'Desconhecido' = 'Desconhecido';
@@ -221,7 +223,7 @@ export default function AdminAssinantesAsaas() {
         value: totalValue, // VALOR CHEIO
         billingType: basePay.billingType,
         status: basePay.status,
-        date: basePay.dueDate || basePay.dateCreated || '',
+        date: basePay.dateCreated || basePay.dueDate || '',
         isInstallment: true
       });
     });
