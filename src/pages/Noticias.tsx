@@ -107,6 +107,9 @@ const Noticias = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    try {
+      localStorage.setItem('noticias_last_seen', String(Date.now()));
+    } catch {}
     if (getNoticiasCache()) return; // já hidratado no state inicial
     prefetchNoticias().then(() => {
       const data = getNoticiasCache();

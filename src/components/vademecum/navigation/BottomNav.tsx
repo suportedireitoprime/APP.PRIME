@@ -155,21 +155,29 @@ const BottomNav = () => {
   const isEstudos = path.startsWith('/estudos') || path.startsWith('/resumos-juridicos') || path.startsWith('/biblioteca');
 
   // Badge de novas notícias: conta quantas notícias são mais recentes que
-  // o timestamp "última vista" do localStorage. Se nunca viu, considera as
-  // notícias dos últimos 7 dias como novas para não explodir o contador.
+  // o timestamp "última vista" do localStorage. Se nunca viu, considera notícias recentes.
   const [noticiasCount, setNoticiasCount] = useState(0);
   useEffect(() => {
     let cancel = false;
     (async () => {
       try {
         const lastSeen = Number(localStorage.getItem('noticias_last_seen') || 0);
-        const since = lastSeen || Date.now() - 7 * 24 * 60 * 60 * 1000;
-        const { count, error } = await supabase
-          .from('noticias_juridicas')
-          .select('*', { count: 'exact', head: true })
-          .gt('created_at', new Date(since).toISOString());
-        if (cancel || error) return;
-        setNoticiasCount(count || 0);
+        let countRes = 0;
+        if (lastSeen > 0) {
+          const { count } = await supabase
+            .from('noticias_juridicas')
+            .select('*', { count: 'exact', head: true })
+            .gt('created_at', new Date(lastSeen).toISOString());
+          countRes = count || 0;
+        } else {
+          const { count } = await supabase
+            .from('noticias_juridicas')
+            .select('*', { count: 'exact', head: true })
+            .gt('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+          countRes = (count && count > 0) ? count : 5;
+        }
+        if (cancel) return;
+        setNoticiasCount(countRes);
       } catch {}
     })();
     return () => { cancel = true; };
@@ -242,15 +250,29 @@ const BottomNav = () => {
           <button
             onPointerDown={() => prefetchRoute('noticias')}
             onMouseEnter={() => prefetchRoute('noticias')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/noticias')); }}
+            onClick={() => {
+              haptic.selection();
+              try {
+                localStorage.setItem('noticias_last_seen', String(Date.now()));
+              } catch {}
+              setNoticiasCount(0);
+              startTransition(() => navigate('/noticias'));
+            }}
             data-track="bottom_nav_click"
             data-track-destino="noticias"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
               path.startsWith('/noticias') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Notícias"
+            aria-label={`Notícias${noticiasCount > 0 ? ` (${noticiasCount} novas)` : ''}`}
           >
-            <Newspaper className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/noticias') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <div className="relative flex items-center justify-center">
+              <Newspaper className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/noticias') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+              {noticiasCount > 0 && !path.startsWith('/noticias') && (
+                <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-black leading-none flex items-center justify-center border-2 border-[#1C1C1E] shadow-md animate-in zoom-in-75 duration-200">
+                  {noticiasCount > 99 ? '99+' : noticiasCount}
+                </span>
+              )}
+            </div>
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Notícias</span>
           </button>
 
