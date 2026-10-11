@@ -51,7 +51,7 @@ export default function Assinatura() {
 
   const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
 
-  const [tab, setTab] = useState<'mensal' | 'anual' | 'vitalicio'>(isNewUser ? 'anual' : 'anual');
+  const [tab, setTab] = useState<'mensal' | 'anual' | 'vitalicio'>('vitalicio');
   const [showHorusPromo, setShowHorusPromo] = useState(false);
   const [hasClosedPromo, setHasClosedPromo] = useState(false);
   
@@ -391,20 +391,26 @@ export default function Assinatura() {
               onSelectPlan={setTab} 
             />
 
-            <div className="px-4 space-y-4 -mt-1">
+            <div className="px-4 flex flex-col gap-3 -mt-1">
               <Button
-                onClick={() => {
-                  startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : tab === 'anual' ? 'anual_regular_pix' : 'mensal');
-                }}
-                className="btn-shine-loop relative overflow-hidden w-full h-[60px] rounded-[20px] font-display text-[19px] font-black tracking-wider transition-all active:scale-[0.98] group bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_12px_35px_rgba(224,31,71,0.4)]"
+                onClick={() => startPurchase('vitalicio_pix')}
+                className="btn-shine-loop relative overflow-hidden w-full h-[60px] rounded-[20px] font-display text-[19px] font-black tracking-wider transition-all active:scale-[0.98] group bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_12px_35px_rgba(16,185,129,0.4)]"
               >
                 <span className="flex items-center justify-center gap-2">
-                  {tab === 'anual' ? 'ASSINAR ANUAL' : tab === 'vitalicio' ? 'ASSINAR VITALÍCIO' : 'ASSINAR MENSAL'}
+                  PAGAR À VISTA
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
                 </span>
               </Button>
               
-
+              <Button
+                variant="outline"
+                onClick={() => startPurchase('vitalicio')}
+                className="relative overflow-hidden w-full h-[60px] rounded-[20px] border-2 border-primary/50 font-display text-[17px] font-bold tracking-wide transition-all active:scale-[0.98] group bg-[#121212] hover:bg-primary/10 text-primary shadow-md"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  EU QUERO PARCELAR
+                </span>
+              </Button>
             </div>
 
             <FeaturesList tabKey={tab} />
