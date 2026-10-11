@@ -253,7 +253,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
               }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer uppercase"
             >
-              <span>VER PLANOS</span>
+              <span>ACESSO VITALÍCIO</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>

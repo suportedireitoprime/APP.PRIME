@@ -114,8 +114,8 @@ Deno.serve(async (req) => {
       let baseValue = 149.90;
       let maxInstallments = 1;
       if (plan === 'vitalicio' || plan === 'vitalicio_pix') {
-        baseValue = 249.90;
-        maxInstallments = 10;
+        baseValue = 149.90;
+        maxInstallments = 4;
       } else if (plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao') {
         baseValue = 149.90;
         maxInstallments = 1;

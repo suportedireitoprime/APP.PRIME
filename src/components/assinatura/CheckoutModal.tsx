@@ -130,12 +130,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
 
   const isPix = activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix';
 
-  // Garantir limite de parcelas ao alternar entre Anual (máx 6x) e Vitalício (máx 10x)
+  // Garantir limite de parcelas ao alternar entre Anual (máx 6x) e Vitalício (máx 4x)
   useEffect(() => {
     if (activePlan === 'anual' && installmentCount > 6) {
       setInstallmentCount(6);
-    } else if (activePlan === 'vitalicio' && installmentCount > 10) {
-      setInstallmentCount(10);
+    } else if (activePlan === 'vitalicio' && installmentCount > 4) {
+      setInstallmentCount(4);
     }
   }, [activePlan, installmentCount]);
   const [addressInfo, setAddressInfo] = useState<string>('');
@@ -628,8 +628,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: '' };
     if (activePlan === 'anual_pix') return { title: 'Anual', price: 'R$ 149,90', sub: '' };
     if (activePlan === 'anual_regular_pix') return { title: 'Anual', price: 'R$ 149,90', sub: '' };
-    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 249,90', sub: '' };
-    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício', price: 'R$ 249,90', sub: '' };
+    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 149,90', sub: '' };
+    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício', price: 'R$ 149,90', sub: '' };
     return { title: '', price: '', sub: '' };
   };
 
@@ -708,7 +708,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     }`}
                   >
                     <CreditCard className="w-4 h-4" />
-                    <span>{activePlan === 'vitalicio' || activePlan === 'vitalicio_pix' ? 'Cartão (10x)' : 'Cartão'}</span>
+                    <span>{activePlan === 'vitalicio' || activePlan === 'vitalicio_pix' ? 'Cartão (até 4x)' : 'Cartão'}</span>
                   </button>
               </div>
             )}
@@ -989,9 +989,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                             onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
                             className="w-full h-11 rounded-xl bg-black/40 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white"
                           >
-                          {Array.from({ length: activePlan === 'vitalicio' ? 10 : 6 }, (_, idx) => idx + 1).map(num => {
+                          {Array.from({ length: activePlan === 'vitalicio' ? 4 : 6 }, (_, idx) => idx + 1).map(num => {
                             // Cálculo sem juros no display (absorvidos pela operação)
-                            const totalWithTax = activePlan === 'vitalicio' ? 249.90 : 149.90;
+                            const totalWithTax = 149.90;
                             const installmentValue = totalWithTax / num;
 
                             return (
