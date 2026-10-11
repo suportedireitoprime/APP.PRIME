@@ -106,7 +106,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const isAdmin = isAdminEmail(userEmail);
 
   const highlightTrio: Item[] = !isPremium ? [
-    { id: 'planos',  label: 'Minha assinatura',  icon: Gem },
+    { id: 'planos',  label: 'Ver Planos',  icon: Gem },
   ] : [];
 
   const computedGroups = GROUPS.map(g => {
