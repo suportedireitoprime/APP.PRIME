@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { isAdminEmail } from "@/lib/adminEmails";
 import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
-import { BeneficiosTimelineModal } from "@/components/assinatura/BeneficiosTimelineModal";
+
 import { useBodyScrollLock, resetBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
@@ -104,7 +104,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   const { refresh: refreshSubscription } = useSubscription();
   const [ativo, setAtivo] = useState(0);
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
-  const [showBeneficios, setShowBeneficios] = useState(false);
+
   const [copyIndex] = useState(() => Math.floor(Math.random() * COPIES.length));
 
   const isAdmin = isAdminEmail(user?.email);
@@ -147,19 +147,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/85 p-4 py-8">
-      {/* Checkout direto mantendo o fundo fosco */}
-      {/* Tela Fullscreen de Benefícios em Linha do Tempo */}
-      <BeneficiosTimelineModal
-        open={showBeneficios}
-        onClose={() => setShowBeneficios(false)}
-        onGoToPlans={() => {
-          setShowBeneficios(false);
-          haptic.medium();
-          resetBodyScrollLock(true);
-          window.scrollTo(0, 0);
-          navigate('/assinatura?preview=plans', { replace: true });
-        }}
-      />
+
 
       <CheckoutModal
         open={!!checkoutPlan}
@@ -259,11 +247,13 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
             <button
               onClick={() => {
                 haptic.medium();
-                setShowBeneficios(true);
+                resetBodyScrollLock(true);
+                window.scrollTo(0, 0);
+                navigate('/assinatura', { replace: true });
               }}
               className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer uppercase"
             >
-              <span>VER BENEFÍCIOS</span>
+              <span>VER PLANOS</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
