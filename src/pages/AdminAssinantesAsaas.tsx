@@ -65,7 +65,7 @@ export default function AdminAssinantesAsaas() {
   // Filtros
   const [q, setQ] = useState('');
   const [planFilter, setPlanFilter] = useState<'Todos' | 'Mensal' | 'Anual' | 'Vitalício'>('Todos');
-  const [statusFilter, setStatusFilter] = useState<'Todos' | 'Ativos' | 'Cancelados' | 'Inadimplentes'>('Todos');
+  const [statusFilter, setStatusFilter] = useState<'Todos' | 'Ativos' | 'Cancelados' | 'Inadimplentes'>('Ativos');
 
   const loadData = async () => {
     setLoading(true);
@@ -141,8 +141,9 @@ export default function AdminAssinantesAsaas() {
 
     // Processar pagamentos isolados (vitalícios e afins) que não têm subscription associada
     payments.forEach(pay => {
-      // Pular pagamentos que já pertencem a uma subscription (para evitar duplicação)
+      // Pular pagamentos que já pertencem a uma subscription ou que são apenas "gerados" (PIX não pago)
       if ((pay as any).subscription) return;
+      if (pay.status === 'PENDING') return; // Ignorar cobranças pendentes que não foram concluídas
 
       const c = custMap.get(pay.customer);
       const desc = (pay.description || '').toLowerCase();
@@ -262,6 +263,7 @@ export default function AdminAssinantesAsaas() {
               <thead className="bg-muted/30 border-b border-border">
                 <tr>
                   <th className="px-6 py-4 font-medium text-muted-foreground">Cliente</th>
+                  <th className="px-6 py-4 font-medium text-muted-foreground">Data</th>
                   <th className="px-6 py-4 font-medium text-muted-foreground">Plano</th>
                   <th className="px-6 py-4 font-medium text-muted-foreground">Valor</th>
                   <th className="px-6 py-4 font-medium text-muted-foreground">Método</th>
@@ -271,13 +273,13 @@ export default function AdminAssinantesAsaas() {
               <tbody className="divide-y divide-border">
                 {loading && filteredList.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground">
+                    <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
                       Carregando dados da API do Asaas...
                     </td>
                   </tr>
                 ) : filteredList.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-10 text-center text-muted-foreground">
+                    <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
                       Nenhum assinante encontrado para esses filtros.
                     </td>
                   </tr>
@@ -289,6 +291,9 @@ export default function AdminAssinantesAsaas() {
                         <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
                           <Mail className="w-3 h-3" /> {item.customerEmail}
                         </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm">
+                        {item.date ? new Date(item.date).toLocaleDateString('pt-BR') : '-'}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
