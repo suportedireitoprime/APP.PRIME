@@ -1012,9 +1012,22 @@ function GlobalTrialGate() {
 
 function AnimatedRoutes() {
   const location = useLocation();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const { data: profile } = useProfileSummary();
   const qc = useQueryClient();
+
+  // Deslogar automático da conta wes@gmail.com solicitado pelo usuário (Jetski Preview sem DevTools)
+  useEffect(() => {
+    if (user?.email && user.email.toLowerCase().trim() === 'wes@gmail.com') {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch {}
+      void signOut().finally(() => {
+        window.location.href = '/landing';
+      });
+    }
+  }, [user, signOut]);
 
   // Safety: ensure body scroll/touch locks left over from bottom sheets or
   // overlays are always cleared when navigating to a new route. Without this a stale
