@@ -29,7 +29,7 @@ import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
-import { HorusPromoModal } from '@/components/assinatura/HorusPromoModal';
+
 import { PricingCards } from '@/components/assinatura/PricingCards';
 import { FeaturesList } from '@/components/assinatura/FeaturesList';
 import { FaqAccordion } from '@/components/assinatura/FaqAccordion';
@@ -52,8 +52,7 @@ export default function Assinatura() {
   const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
 
   const [tab, setTab] = useState<'mensal' | 'anual' | 'vitalicio'>('vitalicio');
-  const [showHorusPromo, setShowHorusPromo] = useState(false);
-  const [hasClosedPromo, setHasClosedPromo] = useState(false);
+
   
   const [timeLeft, setTimeLeft] = useState(() => {
     if (!session?.user?.created_at) return 24 * 60 * 60 - 1;
@@ -83,12 +82,7 @@ export default function Assinatura() {
     }
   }, [welcomeFlag]);
 
-  useEffect(() => {
-    if (isNewUser && !hasClosedPromo && !isPremium && !welcomeFlag) {
-      const t = setTimeout(() => setShowHorusPromo(true), 800);
-      return () => clearTimeout(t);
-    }
-  }, [isNewUser, hasClosedPromo, isPremium, welcomeFlag]);
+
 
   const closeWelcome = () => {
     setShowWelcome(false);
@@ -304,29 +298,7 @@ export default function Assinatura() {
           </SheetContent>
         </Sheet>
 
-        <HorusPromoModal 
-          open={showHorusPromo}
-          timeLeft={timeLeft}
-          onClose={() => { setShowHorusPromo(false); setHasClosedPromo(true); }}
-          onRedeem={() => { setShowHorusPromo(false); setHasClosedPromo(true); setTab('anual'); startPurchase('anual'); }}
-        />
 
-        {!showHorusPromo && hasClosedPromo && isNewUser && tab !== 'anual' && (
-          <button
-            onClick={() => {
-              setTab('anual');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="fixed bottom-[calc(5.5rem+var(--sai-bottom,0px))] right-6 z-40 w-14 h-14 bg-emerald-500 rounded-full shadow-[0_10px_30px_rgba(16,185,129,0.5)] flex items-center justify-center border-2 border-white/20 hover:bg-emerald-400 active:opacity-70 transition-transform hover:scale-105"
-            aria-label="Abrir promoÃƒÂ§ÃƒÂ£o"
-          >
-            <Gift className="w-6 h-6 text-white" />
-            <span className="absolute -top-2 -right-2 flex h-5 w-5">
-               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-               <span className="relative inline-flex rounded-full h-5 w-5 bg-primary items-center justify-center text-[10px] font-black text-white shadow-sm">1</span>
-            </span>
-          </button>
-        )}
 
         <PageHeader
           title={

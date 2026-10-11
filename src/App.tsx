@@ -229,7 +229,6 @@ const App = () => (
                   <AppWarmupInitializer />
                   <NativeBackButtonHandler />
                   <GlobalDelayedPrompts />
-
                   
                   <Suspense fallback={null}>
                     <GeofencePresenceBanner />

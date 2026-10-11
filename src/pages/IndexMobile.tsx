@@ -34,7 +34,7 @@ import { Capacitor } from '@capacitor/core';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
-import PromoHeaderBanner from '@/components/assinatura/PromoHeaderBanner';
+
 
 const HERO_CONFIG = { radar: camaraHero, legislacao: heroImage, noticias: senadoHero } as const;
 
@@ -44,7 +44,7 @@ const IndexMobile = () => {
   const navigate = useNavigate();
   const { data: profileSummary } = useProfileSummary();
   const { isPremium, isTrial } = useSubscription();
-  const hasPromoBanner = !isPremium || isTrial;
+
   useHideSplashScreen(250, Boolean(profileSummary !== undefined || !Capacitor.isNativePlatform()));
 
   // Invocação Híbrida desativada: A View Nativa (Swift/Compose) sobrepunha a UI e ocultava o menu de rodapé (BottomNav).
@@ -92,15 +92,14 @@ const IndexMobile = () => {
         <ShapeGrid />
       </div>
       <div className="relative z-10">
-        <PromoHeaderBanner />
         <HomeHeaderHero
           onOpenMenu={() => setMenuOpen(true)}
           onOpenSearch={() => setSearchOpen(true)}
-          hasTopBanner={hasPromoBanner}
+          hasTopBanner={false}
         />
         <div>
           <main ref={contentRef} className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-2">
-            <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchpriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
+            <img src={primeLogo} alt="" aria-hidden="true" loading="eager" decoding="sync" fetchPriority="high" className="absolute w-0 h-0 opacity-0 pointer-events-none" />
             
             <MobileHomeSections />
           </main>
