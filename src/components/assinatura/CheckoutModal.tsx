@@ -667,9 +667,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             
             {/* Plan Info Card - Hidden on Step 2 as requested */}
             {step !== 2 && (
-              <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-4 flex flex-col items-center justify-center relative overflow-hidden shadow-xl">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                  PAGAMENTO ÚNICO
+              <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-4 flex flex-col items-center justify-center relative overflow-hidden shadow-xl text-center">
+                <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">
+                  {isPix ? 'PAGAMENTO ÚNICO VIA PIX' : 'PARCELAMENTO EM ATÉ 4X'}
                 </p>
                 <h3 className="font-display text-lg font-black text-foreground/90 mb-1">
                   ACESSO VITALÍCIO
@@ -681,33 +681,33 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
               </div>
             )}
 
-            {/* Alternador de Método de Pagamento (Cartão vs PIX) para Planos Vitalício / Anual */}
-            {step === 1 && (plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix') && (
+            {/* Alternador de Método de Pagamento só se o plano não for pré-definido pelo botão clicado */}
+            {step === 1 && !plan?.includes('vitalicio') && (plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix') && (
               <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
-                                  <button
-                    type="button"
-                    onClick={() => setActivePlan(plan?.includes('vitalicio') ? 'vitalicio_pix' : (plan === 'anual_pix' ? 'anual_pix' : 'anual_regular_pix'))}
-                    className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                      (activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix')
-                        ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
-                        : 'text-muted-foreground hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path d="M11.954 1.34l-5.617 5.617a2.53 2.53 0 0 0 0 3.578L10.3 14.5a2.53 2.53 0 0 0 3.578 0l3.963-3.965a2.53 2.53 0 0 0 0-3.578L12.224 1.34a.19.19 0 0 0-.27 0zm8.012 8.653l3.056 3.056c.394.394.614.928.614 1.485s-.22 1.092-.614 1.485l-9.155 9.155c-.195.195-.45.293-.705.293s-.51-.098-.705-.293l-3.32-3.32 1.38-1.38 2.645 2.645 8.16-8.16-2.062-2.062a.19.19 0 0 0-.27 0l-3.518 3.518a4.42 4.42 0 0 1-6.251 0L5.3 12.443a.19.19 0 0 0-.27 0L2.969 14.51c-.195.195-.293.45-.293.705s.098.51.293.705l3.52 3.52-1.38 1.38-4.516-4.516c-.394-.394-.614-.928-.614-1.485s.22-1.092.614-1.485l9.156-9.155c.39-.39 1.02-.39 1.41 0l3.057 3.057a.19.19 0 0 0 .27 0l2.062-2.062a4.42 4.42 0 0 1 6.25 0l3.208 3.208-1.38 1.38-2.215-2.216z" /></svg>
-                    <span>PIX à vista</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setActivePlan(plan?.includes('vitalicio') ? 'vitalicio' : 'anual')}
-                    className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                      (activePlan === 'vitalicio' || activePlan === 'anual')
-                        ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
-                        : 'text-muted-foreground hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    <CreditCard className="w-4 h-4" />
-                    <span>{activePlan === 'vitalicio' || activePlan === 'vitalicio_pix' ? 'Cartão (até 4x)' : 'Cartão'}</span>
-                  </button>
+                <button
+                  type="button"
+                  onClick={() => setActivePlan(plan === 'anual_pix' ? 'anual_pix' : 'anual_regular_pix')}
+                  className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    (activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix')
+                      ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
+                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg"><path d="M11.954 1.34l-5.617 5.617a2.53 2.53 0 0 0 0 3.578L10.3 14.5a2.53 2.53 0 0 0 3.578 0l3.963-3.965a2.53 2.53 0 0 0 0-3.578L12.224 1.34a.19.19 0 0 0-.27 0zm8.012 8.653l3.056 3.056c.394.394.614.928.614 1.485s-.22 1.092-.614 1.485l-9.155 9.155c-.195.195-.45.293-.705.293s-.51-.098-.705-.293l-3.32-3.32 1.38-1.38 2.645 2.645 8.16-8.16-2.062-2.062a.19.19 0 0 0-.27 0l-3.518 3.518a4.42 4.42 0 0 1-6.251 0L5.3 12.443a.19.19 0 0 0-.27 0L2.969 14.51c-.195.195-.293.45-.293.705s.098.51.293.705l3.52 3.52-1.38 1.38-4.516-4.516c-.394-.394-.614-.928-.614-1.485s.22-1.092.614-1.485l9.156-9.155c.39-.39 1.02-.39 1.41 0l3.057 3.057a.19.19 0 0 0 .27 0l2.062-2.062a4.42 4.42 0 0 1 6.25 0l3.208 3.208-1.38 1.38-2.215-2.216z" /></svg>
+                  <span>PIX à vista</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActivePlan('anual')}
+                  className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                    (activePlan === 'vitalicio' || activePlan === 'anual')
+                      ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
+                      : 'text-muted-foreground hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  <CreditCard className="w-4 h-4" />
+                  <span>Cartão</span>
+                </button>
               </div>
             )}
 
@@ -913,6 +913,36 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                        isFlipped={isFlipped}
                     />
 
+                    {/* Seleção de Parcelamento em 1º Lugar antes dos dados do cartão */}
+                    {activePlan === 'vitalicio' && (
+                      <div className="space-y-1.5 p-3 rounded-2xl bg-primary/10 border border-primary/30">
+                        <Label className="text-xs font-black text-primary uppercase tracking-wider flex items-center justify-between">
+                          <span>Opção de Parcelamento</span>
+                          <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Sem juros</span>
+                        </Label>
+                        <div className="relative">
+                          <select 
+                            value={installmentCount}
+                            onChange={(e) => setInstallmentCount(Number(e.target.value))}
+                            onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
+                            className="w-full h-12 rounded-xl bg-black/60 border border-white/20 focus:border-primary focus:ring-1 focus:ring-primary font-bold px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white cursor-pointer"
+                          >
+                          {Array.from({ length: 4 }, (_, idx) => idx + 1).map(num => {
+                            const totalWithTax = 149.90;
+                            const installmentValue = totalWithTax / num;
+
+                            return (
+                              <option key={num} value={num} className="bg-zinc-900 text-white font-medium py-1">
+                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ''}
+                              </option>
+                            );
+                          })}
+                          </select>
+                          <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary pointer-events-none" />
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-1">
                       <Label className="text-[10px] font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
                         <CreditCard className="w-3 h-3"/> Número do Cartão
@@ -976,33 +1006,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                         />
                       </div>
                     </div>
-
-                    {(activePlan === 'vitalicio') && (
-                      <div className="space-y-1">
-                        <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Parcelamento</Label>
-                        <div className="relative">
-                          <select 
-                            value={installmentCount}
-                            onChange={(e) => setInstallmentCount(Number(e.target.value))}
-                            onFocus={(e) => { setIsFlipped(false); handleFocus(e); }}
-                            className="w-full h-11 rounded-xl bg-black/40 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary font-medium px-3 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white"
-                          >
-                          {Array.from({ length: activePlan === 'vitalicio' ? 4 : 6 }, (_, idx) => idx + 1).map(num => {
-                            // Cálculo sem juros no display (absorvidos pela operação)
-                            const totalWithTax = 149.90;
-                            const installmentValue = totalWithTax / num;
-
-                            return (
-                              <option key={num} value={num} className="bg-background text-foreground">
-                                {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ''}
-                              </option>
-                            );
-                          })}
-                          </select>
-                          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                        </div>
-                      </div>
-                    )}
 
                     <div className="pt-4">
                       <Button 
