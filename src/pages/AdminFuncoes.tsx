@@ -156,6 +156,7 @@ const CATEGORIES: Category[] = [
     title: 'Assinantes Asaas',
     desc: 'Lista de assinantes do Asaas via API',
     icon: Users,
+    route: '/admin-assinantes-asaas',
     items: [
       { id: 'admin-assinantes-asaas', label: 'Assinantes API Asaas', icon: Users, desc: 'Lista de assinantes buscando direto do Asaas', route: '/admin-assinantes-asaas' },
     ],

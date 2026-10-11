@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
 import { toast } from 'sonner';
-import { DesktopPageLayout } from '@/components/admin/DesktopPageLayout';
+
 
 type AsaasCustomer = {
   id: string;
@@ -75,29 +75,30 @@ export default function AdminAssinantesAsaas() {
       const accessToken = session?.session?.access_token;
       if (!accessToken) throw new Error('Sessão expirada');
 
-      // Paraleliza requests para Edge Function Proxy
-      const [resCust, resSub, resPay] = await Promise.all([
-        supabase.functions.invoke('admin-asaas-proxy', {
-          body: { endpoint: 'customers', params: { limit: 100 } },
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }),
-        supabase.functions.invoke('admin-asaas-proxy', {
-          body: { endpoint: 'subscriptions', params: { limit: 100 } },
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }),
-        supabase.functions.invoke('admin-asaas-proxy', {
-          body: { endpoint: 'payments', params: { limit: 100 } },
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }),
+      const fetchAll = async (endpoint: string, maxPages = 10) => {
+        let allData: any[] = [];
+        for (let i = 0; i < maxPages; i++) {
+          const res = await supabase.functions.invoke('admin-asaas-proxy', {
+            body: { endpoint, params: { limit: 100, offset: i * 100 } },
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+          if (res.error) throw new Error(res.error.message || `Erro fetch ${endpoint}`);
+          const data = res.data?.data || [];
+          allData = [...allData, ...data];
+          if (data.length < 100) break;
+        }
+        return allData;
+      };
+
+      const [customersData, subscriptionsData, paymentsData] = await Promise.all([
+        fetchAll('customers'),
+        fetchAll('subscriptions'),
+        fetchAll('payments')
       ]);
 
-      if (resCust.error) throw new Error(resCust.error.message || 'Erro fetch customers');
-      if (resSub.error) throw new Error(resSub.error.message || 'Erro fetch subscriptions');
-      if (resPay.error) throw new Error(resPay.error.message || 'Erro fetch payments');
-
-      setCustomers(resCust.data?.data || []);
-      setSubscriptions(resSub.data?.data || []);
-      setPayments(resPay.data?.data || []);
+      setCustomers(customersData);
+      setSubscriptions(subscriptionsData);
+      setPayments(paymentsData);
 
     } catch (err: any) {
       setError(err.message);
@@ -210,7 +211,7 @@ export default function AdminAssinantesAsaas() {
   );
 
   return (
-    <DesktopPageLayout activeId="admin" title="Assinantes Asaas" mobileHeader={mobileHeader}>
+    <div className="min-h-dvh bg-background pb-20">{mobileHeader}
       <div className="space-y-6 max-w-7xl mx-auto md:py-6">
         {error && (
           <div className="p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20 text-sm">
@@ -342,6 +343,6 @@ export default function AdminAssinantesAsaas() {
           </div>
         </div>
       </div>
-    </DesktopPageLayout>
+    </div>
   );
 }
