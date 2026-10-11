@@ -213,6 +213,7 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
           )}
         </motion.div>
       </AnimatePresence>
+      </LayoutGroup>
     </div>
   );
 }
