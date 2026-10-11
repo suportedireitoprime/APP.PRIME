@@ -25,6 +25,7 @@ type AsaasSubscription = {
   status: string;
   description?: string;
   billingType: string;
+  dateCreated?: string;
 };
 
 type AsaasPayment = {
@@ -66,8 +67,7 @@ export default function AdminAssinantesAsaas() {
 
   // Filtros
   const [q, setQ] = useState('');
-  const [planFilter, setPlanFilter] = useState<'Todos' | 'Mensal' | 'Anual' | 'Vitalício'>('Todos');
-  const [statusFilter, setStatusFilter] = useState<'Todos' | 'Ativos' | 'Cancelados' | 'Inadimplentes'>('Ativos');
+  const [viewFilter, setViewFilter] = useState<'Todos' | 'Somente Vitalícios' | 'Somente Anuais' | 'Somente Mensais' | 'Mensais Cancelados'>('Todos');
 
   const loadData = async () => {
     setLoading(true);
@@ -237,20 +237,31 @@ export default function AdminAssinantesAsaas() {
         item.customerName.toLowerCase().includes(qLower) || 
         item.customerEmail.toLowerCase().includes(qLower);
         
-      const matchPlan = planFilter === 'Todos' || item.planClass === planFilter;
-      
-      let matchStatus = true;
-      if (statusFilter === 'Ativos') {
-        matchStatus = ['ACTIVE', 'RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'].includes(item.status);
-      } else if (statusFilter === 'Cancelados') {
-        matchStatus = ['CANCELED', 'DELETED', 'REFUNDED'].includes(item.status);
-      } else if (statusFilter === 'Inadimplentes') {
-        matchStatus = ['OVERDUE'].includes(item.status);
+      let match = false;
+      const isActive = ['ACTIVE', 'RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'].includes(item.status);
+      const isCanceled = ['CANCELED', 'DELETED', 'REFUNDED'].includes(item.status);
+
+      switch (viewFilter) {
+        case 'Todos':
+          match = isActive; 
+          break;
+        case 'Somente Vitalícios':
+          match = item.planClass === 'Vitalício' && isActive;
+          break;
+        case 'Somente Anuais':
+          match = item.planClass === 'Anual' && isActive;
+          break;
+        case 'Somente Mensais':
+          match = item.planClass === 'Mensal' && isActive;
+          break;
+        case 'Mensais Cancelados':
+          match = item.planClass === 'Mensal' && isCanceled;
+          break;
       }
 
-      return matchText && matchPlan && matchStatus;
+      return matchText && match;
     });
-  }, [unifiedList, q, planFilter, statusFilter]);
+  }, [unifiedList, q, viewFilter]);
 
   const fmtBRL = (val: number) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -294,24 +305,15 @@ export default function AdminAssinantesAsaas() {
                 className="bg-muted px-4 py-2 rounded-xl text-sm w-full sm:w-64 border-none focus:ring-1 focus:ring-primary"
               />
               <select 
-                value={planFilter}
-                onChange={e => setPlanFilter(e.target.value as any)}
-                className="bg-muted px-4 py-2 rounded-xl text-sm border-none focus:ring-1 focus:ring-primary outline-none"
+                value={viewFilter}
+                onChange={e => setViewFilter(e.target.value as any)}
+                className="bg-muted px-4 py-2 rounded-xl text-sm border-none focus:ring-1 focus:ring-primary outline-none w-full sm:w-auto"
               >
-                <option value="Todos">Todos os Planos</option>
-                <option value="Mensal">Mensal</option>
-                <option value="Anual">Anual</option>
-                <option value="Vitalício">Vitalício</option>
-              </select>
-              <select 
-                value={statusFilter}
-                onChange={e => setStatusFilter(e.target.value as any)}
-                className="bg-muted px-4 py-2 rounded-xl text-sm border-none focus:ring-1 focus:ring-primary outline-none"
-              >
-                <option value="Todos">Todos os Status</option>
-                <option value="Ativos">Ativos / Pagos</option>
-                <option value="Inadimplentes">Inadimplentes (Overdue)</option>
-                <option value="Cancelados">Cancelados</option>
+                <option value="Todos">Todos os Ativos</option>
+                <option value="Somente Vitalícios">Somente Vitalícios</option>
+                <option value="Somente Anuais">Somente Anuais</option>
+                <option value="Somente Mensais">Somente Mensais</option>
+                <option value="Mensais Cancelados">Mensais Cancelados</option>
               </select>
             </div>
           </div>
