@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import horusAsset from '@/assets/horus/03_coruja_balanca_justica.webp';
@@ -16,6 +16,11 @@ import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
 import { useBodyScrollLock, resetBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
+
+// Pré-carregamento imediato no módulo para transição a 0ms
+if (typeof window !== "undefined") {
+  import("@/pages/Assinatura").catch(() => {});
+}
 
 import penalCover from '@/assets/biblioteca/areas/direito-penal.webp';
 import civilCover from '@/assets/biblioteca/areas/direito-civil.webp';
@@ -105,6 +110,8 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   const [ativo, setAtivo] = useState(0);
   const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
 
+  const [isNavigating, setIsNavigating] = useState(false);
+
   const [copyIndex] = useState(() => Math.floor(Math.random() * COPIES.length));
 
   const isAdmin = isAdminEmail(user?.email);
@@ -112,11 +119,9 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   useBodyScrollLock(Boolean(open && !isAdmin && user));
 
   useEffect(() => {
-    // Pré-carregamento agressivo em background da página de assinatura e checkout
+    // Pré-carregamento instantâneo em background da página de assinatura e checkout (Padrão 0ms)
     if (typeof window !== "undefined") {
-      setTimeout(() => {
-        import("@/pages/Assinatura");
-      }, 500);
+      import("@/pages/Assinatura").catch(() => {});
     }
     
     return () => {
@@ -124,6 +129,17 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
       resetBodyScrollLock(true);
     };
   }, []);
+
+  const handleAcessar = () => {
+    setIsNavigating(true);
+    haptic.medium();
+    resetBodyScrollLock(true);
+    if (onClose) onClose();
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    } catch {}
+    navigate('/assinatura', { replace: true });
+  };
 
   const firstName =
     user?.user_metadata?.full_name?.split(' ')[0] ||
@@ -245,16 +261,23 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
           {/* Botões de Ação */}
           <div className="w-full pt-2 space-y-2.5">
             <button
-              onClick={() => {
-                haptic.medium();
-                resetBodyScrollLock(true);
-                window.scrollTo(0, 0);
-                navigate('/assinatura', { replace: true });
-              }}
-              className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer uppercase"
+              disabled={isNavigating}
+              onClick={handleAcessar}
+              onPointerDown={() => { import("@/pages/Assinatura").catch(() => {}); }}
+              onMouseEnter={() => { import("@/pages/Assinatura").catch(() => {}); }}
+              className="btn-shine-loop relative overflow-hidden w-full h-14 rounded-2xl font-display font-black text-base tracking-wider bg-primary text-primary-foreground active:scale-[0.98] transition-transform flex items-center justify-center gap-2 shadow-lg shadow-primary/30 group cursor-pointer uppercase disabled:opacity-85"
             >
-              <span>ACESSO VITALÍCIO</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {isNavigating ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>ABRINDO ASSINATURA...</span>
+                </>
+              ) : (
+                <>
+                  <span>ACESSO VITALÍCIO</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
           </div>
         </div>

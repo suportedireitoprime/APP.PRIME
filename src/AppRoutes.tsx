@@ -674,6 +674,7 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
 // Preload critical chunks in idle time
 if (typeof window !== 'undefined') {
   const preloadChunks = () => {
+    import('./pages/Assinatura.tsx');
     import('./pages/CategoriaLegislacao.tsx');
     routePrefetch.estudos();
     routePrefetch.ferramentas();
@@ -1376,7 +1377,7 @@ function AnimatedRoutes() {
           <Route path="/admin-monitor-usuarios" element={<ProtectedRoute><PageTransition><AdminMonitorUsuarios /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitoramento" element={<ProtectedRoute><PageTransition><AdminMonitoramento /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor-apis" element={<ProtectedRoute><PageTransition><AdminMonitorApis /></PageTransition></ProtectedRoute>} />
-          <Route path="/assinatura" element={<ProtectedRoute><PageTransition><Assinatura /></PageTransition></ProtectedRoute>} />
+          <Route path="/assinatura" element={<ProtectedRoute><PageTransition instant><Assinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
           <Route path="/opiniao" element={<ProtectedRoute><PageTransition><Opiniao /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
