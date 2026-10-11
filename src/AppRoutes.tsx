@@ -44,7 +44,7 @@ import PageTransition from "@/components/PageTransition";
 import { ScrollRestorationWatcher } from "@/components/navigation/ScrollRestorationWatcher";
 import { useMediaQuery } from "./hooks/useMediaQuery.ts";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { routePrefetch, prefetchRoute } from "@/lib/routePrefetch";
+import { routePrefetch, prefetchRoute, type PrefetchKey } from "@/lib/routePrefetch";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import OfflineStatusBadge from "@/components/OfflineStatusBadge";
 import OfflineWatcher from "@/components/OfflineWatcher";
@@ -974,14 +974,9 @@ function GlobalTrialGate() {
       return;
     }
 
-    if (isHome) {
-      setShowModal(false);
-      return;
-    }
-
-    // Se chegou aqui, o Trial expirou e não estamos na landing page. Força a exibição imediatamente.
+    // Trial expirado: Exibe o card/modal imediatamente na tela, inclusive na Home, sem exigir clique
     setShowModal(true);
-  }, [user, authLoading, subLoading, isAdmin, isUserPremium, isTrialActive, isPublicOrLanding, isHome, location.search]);
+  }, [user, authLoading, subLoading, isAdmin, isUserPremium, isTrialActive, isPublicOrLanding, location.search]);
 
   useEffect(() => {
     // Só anexa ouvintes se o usuário ESTIVER logado, o plano estiver identificado, não for admin, não for premium, o trial expirou E NÃO estiver na landing page
