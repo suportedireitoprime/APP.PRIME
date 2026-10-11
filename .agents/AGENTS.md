@@ -105,10 +105,13 @@
 - **Validação Prática com Browser:** Sempre que construir uma nova interface de administração ou fluxo complexo de UI, utilize a tool `browser_subagent` (ou teste manual se necessário) para simular o clique do usuário final, conferindo se os "toasts" de sucesso aparecem e se não ocorrem erros ("Bucket not found", "Unhandled Rejection", etc) antes de considerar a tarefa como concluída.
 - **Sincronia com Edge Functions:** Toda vez que for fazer um novo ajuste, criar uma nova funcionalidade (no Frontend) ou realizar uma correção, VERIFIQUE OBRIGATORIAMENTE se é necessário também refletir ou adaptar essa alteração no Supabase (especialmente em Edge Functions) para que as mudanças de interface não quebrem a API e vice-versa.
 
+## ⚡ Velocidade Máxima & Ação Cirúrgica (Direto no Erro)
+- **REGRA SUPREMA DE AGILIDADE:** Quando o usuário pedir para corrigir, ajustar ou alterar algo, seja **ultra-rápida, direta e cirúrgica**. 
+- **PROIBIDO ENROLAR OU PERDER TEMPO COM CHECAGENS EXCESSIVAS:** Vá imediatamente e com máxima precisão no ponto exato do erro ou alteração solicitada. Altere o código, rode a checagem rápida de tipos, faça commit/push e conclua a resposta. Não fique vasculhando dezenas de arquivos irrelevantes ou fazendo investigações desnecessárias quando o objetivo já estiver claro.
+
 ## 📋 Planejamento Obrigatório (Planning Mode Restrito)
-- **REGRA ABSOLUTA DE PLANEJAMENTO:** Toda vez que o usuário pedir qualquer coisa (mesmo o comando ou ajuste mais simples possível), você **DEVE** obrigatoriamente fazer uma análise prévia e criar um plano de implementação (`implementation_plan.md`). NUNCA pule essa etapa, independente da complexidade.
-- **Task Checklist:** Logo após a aprovação do plano (ou junto da execução), você **DEVE** sempre criar ou atualizar um arquivo `task.md` detalhando os passos em um checklist (`[ ]` / `[x]`).
-- **Objetivo:** Essa obrigação elimina o risco de esquecimentos, garante precisão na codificação e permite que o usuário valide a intenção técnica antes de qualquer código ser alterado. Você só está autorizado a codar *depois* que o plano for estabelecido.
+- **REGRA DE PLANEJAMENTO:** Para ajustes diretos, correções e instruções pontuais do usuário, mantenha o foco na velocidade imediata ("ir direto no erro") sem travar a execução com planos longos ou passos burocráticos. Em recursos grandes novos, realize o plano de forma concisa e parta para a codificação sem demora.
+- **Task Checklist:** Execute diretamente os passos técnicos com precisão cirúrgica.
 
 ## Diretivas Lovable (System Prompt)
 
