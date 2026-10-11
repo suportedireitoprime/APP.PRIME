@@ -137,9 +137,8 @@ const CATEGORIES: Category[] = [
     icon: Crown,
     items: [
       { id: 'admin-assinantes', label: 'Assinantes App', icon: Users, desc: 'Lista de todos os assinantes via banco local', route: '/admin-assinantes' },
-      { id: 'admin-assinantes-asaas', label: 'Assinantes API Asaas', icon: Users, desc: 'Lista de todos os assinantes via API Asaas', route: '/admin-assinantes-asaas' },
       { id: 'admin-usuarios', label: 'Usuários Cadastrados', icon: UserCheck, desc: 'Lista de todos os usuários cadastrados e status', route: '/admin-usuarios' },
-      { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função (blog, narração, biblioteca, IA…)', route: '/admin-funcoes-assinantes' },
+      { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função', route: '/admin-funcoes-assinantes' },
     ],
   },
   {
@@ -150,6 +149,15 @@ const CATEGORIES: Category[] = [
     route: '/admin-instagram-posts',
     items: [
       { id: 'instagram-posts', label: 'Instagram Posts', icon: ImageIcon, desc: 'Gerar carrosséis com IA no padrão Vade Mecum', route: '/admin-instagram-posts' },
+    ],
+  },
+  {
+    id: 'assinantes-asaas-api',
+    title: 'Assinantes Asaas',
+    desc: 'Lista de assinantes do Asaas via API',
+    icon: Users,
+    items: [
+      { id: 'admin-assinantes-asaas', label: 'Assinantes API Asaas', icon: Users, desc: 'Lista de assinantes buscando direto do Asaas', route: '/admin-assinantes-asaas' },
     ],
   },
   {
