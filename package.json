@@ -28,7 +28,6 @@
     "@assistant-ui/react": "^0.14.29",
     "@assistant-ui/react-markdown": "^0.14.17",
     "@assistant-ui/react-ui": "^0.2.1",
-    "@capacitor-community/admob": "^8.2.1",
     "@capacitor-community/file-opener": "^8.0.1",
     "@capacitor-community/in-app-review": "^8.0.0",
     "@capacitor-community/keep-awake": "^8.0.1",
