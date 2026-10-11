@@ -17,7 +17,12 @@ interface SubscriptionState {
 }
 
 // Evita repetir o resgate de assinatura legada a cada montagem do hook.
+// Persiste entre reloads via localStorage para não disparar RPC desnecessário.
 const claimedOnce = new Set<string>();
+try {
+  const _claimed = localStorage.getItem('direitoprime:legacy_claimed');
+  if (_claimed) JSON.parse(_claimed).forEach((id: string) => claimedOnce.add(id));
+} catch { /* ignore */ }
 
 // Cache compartilhado em memória para eliminar waterfalls e checagens redundantes a cada rota
 interface CachedSubEntry {
@@ -178,13 +183,17 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         const graceIso = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
         // 1. Paralelizar a busca de cancelamentos e das assinaturas ativas em todas as lojas
-        const [cancelRes, playRes, appleRes, legadoRes, profileRes] = await Promise.all([
+        // Inclui legacy_subscribers no lote para evitar round-trip sequencial no fallback is_premium
+        const _t0 = performance.now();
+        const [cancelRes, playRes, appleRes, legadoRes, profileRes, legacyFallbackRes] = await Promise.all([
           supabase.from('assinatura_cancelamentos' as any).select('canceled_at').eq('user_id', user.id).maybeSingle(),
           supabase.from('play_subscriptions').select('product_id, status, expires_at').eq('user_id', user.id).in('status', ACTIVE_STATUSES).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
           supabase.from('apple_subscriptions').select('product_id, status, expires_at, start_time').eq('user_id', user.id).in('status', ['active', 'in_grace']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
           supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).limit(1).maybeSingle(),
-          supabase.from('profiles').select('is_premium').eq('id', user.id).maybeSingle()
+          supabase.from('profiles').select('is_premium').eq('id', user.id).maybeSingle(),
+          supabase.from('legacy_subscribers' as any).select('tipo, expires_at, created_at').or(`claimed_user_id.eq.${user.id},email.ilike.${user.email || ''}`).limit(1).maybeSingle(),
         ]);
+        console.log(`[useSubscription] queries paralelas: ${(performance.now() - _t0).toFixed(0)}ms`);
 
         if (cancelled) return true;
 
@@ -230,16 +239,13 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         }
 
         // 3.1. Fallback de Segurança Máxima: se profiles.is_premium for true, garante que o usuário nunca seja bloqueado
+        // Usa legacyFallbackRes já buscado em paralelo (sem round-trip extra)
         if (profileRes.data?.is_premium) {
-          const { data: legacyRow } = await supabase.from('legacy_subscribers' as any)
-            .select('tipo, expires_at, created_at')
-            .or(`claimed_user_id.eq.${user.id},email.ilike.${user.email || ''}`)
-            .limit(1).maybeSingle();
-
-          const planoFallback = (legacyRow as any)?.tipo || 'anual';
+          const legacyRow = legacyFallbackRes.data as any;
+          const planoFallback = legacyRow?.tipo || 'anual';
           persist({
             isPremium: true, loading: false,
-            plano: planoFallback, expiresAt: (legacyRow as any)?.expires_at ?? null, startedAt: (legacyRow as any)?.created_at ?? null, source: 'asaas',
+            plano: planoFallback, expiresAt: legacyRow?.expires_at ?? null, startedAt: legacyRow?.created_at ?? null, source: 'asaas',
             status: 'ACTIVE', isAdminOverride: false, isTrial: false,
           });
           return true;
@@ -301,8 +307,10 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         }
 
         // 4. Sem plano: tenta resgatar (1× por sessão) uma assinatura do app antigo
+        // claimedOnce persiste em localStorage para evitar RPC repetido entre reloads
         if (!skipStoreSync && !claimedOnce.has(user.id)) {
           claimedOnce.add(user.id);
+          try { localStorage.setItem('direitoprime:legacy_claimed', JSON.stringify([...claimedOnce])); } catch {}
           try {
             const { data: claimed } = await supabase.rpc('claim_my_legacy_subscription' as any);
             if (cancelled) return true;

@@ -1,7 +1,8 @@
-# Checklist de Tarefas - Ajuste Resumos Jurídicos
+# Checklist - Bug de Assinatura Pro / Expiração Indevida
 
-- [x] 1. Remover logo do cabeçalho em `ResumosHero.tsx` e readequar tipografia
-- [x] 2. Remover barra de pesquisa fixa do topo em `ResumosHero.tsx`
-- [x] 3. Criar botão flutuante (FAB) de pesquisa no canto inferior direito em `ResumosJuridicosAreas.tsx`
-- [x] 4. Validar integração com `tsc.CMD --noEmit`
-- [x] 5. Git auto-commit e push
+- [ ] 1. Localizar onde a tela do print é renderizada (ex: `AdminMonitorUsuarios` ou `AdminAssinantes`) e verificar de onde vem a coroa e a contagem
+- [ ] 2. Analisar `useSubscription.ts` e verificar a regra de checagem de assinatura ativa no cliente
+- [ ] 3. Checar Edge Functions de pagamento/assinatura e regras de expiração no Supabase
+- [ ] 4. Identificar a divergência que faz o cliente ver "expirado/renove" enquanto no admin está ativo
+- [ ] 5. Corrigir a causa raiz no código/Edge Functions
+- [ ] 6. Validar com `tsc.CMD --noEmit` e auto-commit & push

@@ -1,19 +1,17 @@
-# Plano de Implementação - Ajustes no Cabeçalho e Busca Flutuante (Resumos Jurídicos)
+# Plano de Investigação - Bug de Assinatura Pro / Expiração Prematura
 
-## 1. Requisitos do Usuário
-- **Remover o Logo** do painel hero de Resumos Jurídicos (não precisa mostrar o logo).
-- **Remover a Barra de Pesquisa do Topo** (que estava dentro do banner).
-- **Adicionar Botão Flutuante de Pesquisa (FAB)**: posicionado no canto inferior direito, moderno, com ícone de pesquisa, sombra premium e feedback tátil, permitindo pesquisar de forma prática sem ocupar espaço no topo.
+## 1. Problema Relatado
+- Usuários como `leandrofs2010@gmail.com` e `limadesouzawagner0@gmail.com` compraram plano Pro anual (cadastrados há 18 e 22 dias).
+- No painel administrativo aparecem com coroa (Pro), porém no app do usuário o acesso foi cortado ou aparece o banner/card de assinatura expirada pedindo para assinar novamente.
 
-## 2. Etapas
-1. **`ResumosHero.tsx`**:
-   - Remover a renderização do logo (`<picture>` / `<img src="/logo-prime.webp" ... />` ou coruja).
-   - Ajustar o espaçamento superior e tipografia para manter a harmonia visual.
-   - Remover a barra de pesquisa inferior do hero.
-2. **`ResumosJuridicosAreas.tsx`**:
-   - Inserir o botão flutuante (FAB) no canto inferior direito com suporte à pesquisa (seja abrindo sheet/overlay de busca rápida ou expandindo input flutuante).
-   - Permitir filtrar matérias/temas dinamicamente mantendo o estado `q` / `setQ`.
-3. **Validação**:
-   - Executar `tsc.CMD --noEmit` para garantir zero erros TypeScript.
-4. **Versionamento Git**:
-   - Auto-commit e push para o GitHub.
+## 2. Hipóteses a Investigar
+- **Cálculo da Data de Expiração (`expires_at`, `period_end`)**: verificar se planos anuais foram gravados com 30 dias por engano ou se houve confusão entre plano mensal e anual.
+- **Divergência entre Painel Admin vs `useSubscription`**: como o admin consulta (ex: tabela `profiles`, `subscriptions` ou `user_roles`) versus como o frontend do cliente (`useSubscription.ts`) valida (`status === 'active'`, `expires_at > now()`, etc.).
+- **Cache local / Subscriptions Memory Cache**: se o cache `subMemoryCache` ou token JWT não é invalidado após renovação/criação.
+- **Edge Function de Webhook (Stripe / Hotmart / Asaas / Kiwify / MercadoPago)**: como a data de expiração anual é calculada no webhook de compra.
+
+## 3. Passos
+1. Investigar `useSubscription.ts` e arquivos relacionados a assinatura no cliente.
+2. Investigar o painel administrativo (onde mostra a coroa `👑 19x`) para entender de qual tabela/coluna vem o status Pro.
+3. Investigar as Edge Functions de webhook de pagamento e renovação.
+4. Identificar o bug exato e aplicar correção robusta.
