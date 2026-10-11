@@ -407,10 +407,29 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         toast.error('Preencha um CEP válido.');
         return;
       }
-      if (!formData.addressNumber) {
-        toast.error('Preencha o número do endereço.');
-        return;
+
+      // Auto-extrai o número se o usuário tiver digitado junto ao logradouro (ex: "Rua do Mestre, 13")
+      let resolvedNumber = formData.addressNumber.trim();
+      if (!resolvedNumber && formData.address) {
+        const match = formData.address.match(/(?:,\s*|\s+n[ºo]?\s*|\s+)(\d+[a-zA-Z]?)(?:\s*|$)/i);
+        if (match && match[1]) {
+          resolvedNumber = match[1];
+          setFormData(prev => ({ ...prev, addressNumber: resolvedNumber }));
+        } else {
+          // Se não houver número identificado, assume S/N para não bloquear o checkout
+          resolvedNumber = 'S/N';
+          setFormData(prev => ({ ...prev, addressNumber: 'S/N' }));
+        }
       }
+
+      void logDb('checkout_etapa1_concluida', { 
+        plano: activePlan,
+        parcelas: installmentCount,
+        cep: formData.cep,
+        cidade: formData.city,
+        uf: formData.uf
+      });
+
       setStep(2);
     } else {
       processCheckout();
@@ -755,6 +774,41 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                     transition={{ duration: 0.3 }}
                     className="space-y-3"
                   >
+                    {/* Seleção de Parcelamento como a 1ª Coisa no Cartão */}
+                    {!isPix && activePlan === 'vitalicio' && (
+                      <div className="space-y-2 p-3.5 rounded-2xl bg-gradient-to-r from-primary/20 via-primary/10 to-primary/5 border border-primary/40 shadow-[0_0_25px_rgba(224,31,71,0.15)]">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs font-black text-primary uppercase tracking-wider flex items-center gap-1.5">
+                            <CreditCard className="w-4 h-4" />
+                            <span>Opção de Parcelamento</span>
+                          </Label>
+                          <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                            Sem Juros
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <select 
+                            value={installmentCount}
+                            onChange={(e) => setInstallmentCount(Number(e.target.value))}
+                            onFocus={handleFocus}
+                            className="w-full h-12 rounded-xl bg-black/80 border border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary font-black px-3.5 text-sm appearance-none outline-none backdrop-blur-md transition-all text-white cursor-pointer shadow-inner"
+                          >
+                            {Array.from({ length: 4 }, (_, idx) => idx + 1).map(num => {
+                              const totalWithTax = 149.90;
+                              const installmentValue = totalWithTax / num;
+
+                              return (
+                                <option key={num} value={num} className="bg-zinc-900 text-white font-medium py-1">
+                                  {num}x de R$ {installmentValue.toFixed(2).replace('.', ',')} {num === 1 ? ' à vista' : ' sem juros'}
+                                </option>
+                              );
+                            })}
+                          </select>
+                          <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-primary pointer-events-none" />
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-1">
                       <Label className="text-xs font-bold text-muted-foreground flex items-center gap-1 uppercase tracking-wider">
                         <User className="w-3.5 h-3.5"/> Nome Completo
@@ -831,15 +885,27 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                               exit={{ opacity: 0, height: 0 }}
                               className="space-y-3 pt-2"
                             >
-                              <div className="space-y-1">
-                                <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Endereço</Label>
-                                <Input 
-                                  value={formData.address} 
-                                  onChange={handleChange('address')}
-                                  onFocus={handleFocus}
-                                  placeholder="Rua, Avenida..." 
-                                  className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
-                                />
+                              <div className="grid grid-cols-12 gap-2">
+                                <div className="col-span-8 space-y-1">
+                                  <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Endereço</Label>
+                                  <Input 
+                                    value={formData.address} 
+                                    onChange={handleChange('address')}
+                                    onFocus={handleFocus}
+                                    placeholder="Rua, Avenida..." 
+                                    className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
+                                  />
+                                </div>
+                                <div className="col-span-4 space-y-1">
+                                  <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider pl-1">Número</Label>
+                                  <Input 
+                                    value={formData.addressNumber} 
+                                    onChange={handleChange('addressNumber')}
+                                    onFocus={handleFocus}
+                                    placeholder="Nº ou S/N" 
+                                    className="h-11 rounded-xl bg-black/40 border-white/10 focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary font-medium text-sm backdrop-blur-md transition-all"
+                                  />
+                                </div>
                               </div>
                               <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-1">
