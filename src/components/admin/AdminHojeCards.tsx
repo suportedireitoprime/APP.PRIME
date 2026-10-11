@@ -1116,14 +1116,25 @@ export function AdminHojeCards() {
         maxD.setDate(maxD.getDate() + 1);
         maxD.setHours(0, 0, 0, 0);
 
-        // Run ALL enrichment queries in parallel (was sequential waterfall before)
-        const [{ data: provs }, { data: acts }, { data: pvs }, { data: sessions }, { data: profs }] = await Promise.all([
+        // Buscar acessos específicos para o card:
+        // - No card 'paywall': conta quantas vezes cada usuário abriu a tela de assinaturas ('assinatura_aberta' / 'paywall_view') no período.
+        // - Nos demais cards ('online', etc.): conta quantas sessões reais (aberturas do app em user_sessions) o usuário teve no período.
+        const [
+          { data: provs },
+          { data: acts },
+          { data: pwEvents },
+          { data: userSessionsPeriodo },
+          { data: profs }
+        ] = await Promise.all([
           supabase.rpc('admin_user_auth_providers' as any, { _ids: ids }),
           supabase.from('activity_logs').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
-          supabase.from('app_events').select('user_id, created_at').eq('event_name', 'page_view').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()),
-          supabase.from('user_sessions').select('user_id, initial_route').in('user_id', ids),
+          id === 'paywall'
+            ? supabase.from('app_events').select('user_id, created_at').in('event_name', ['assinatura_aberta', 'paywall_view']).in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString())
+            : Promise.resolve({ data: [] }),
+          supabase.from('user_sessions').select('user_id, initial_route, started_at').in('user_id', ids).gte('started_at', minD.toISOString()).lt('started_at', maxD.toISOString()),
           supabase.from('profiles').select('id, created_at, faixa_etaria').in('id', ids)
         ]);
+
         const map = new Map<string, string>(((provs as any[]) || []).map((p) => [p.user_id || p.id, p.provider]));
         const profMap = new Map<string, { created_at?: string; faixa_etaria?: string }>(
           ((profs as any[]) || []).map((p: any) => [p.id, { created_at: p.created_at, faixa_etaria: p.faixa_etaria }])
@@ -1152,23 +1163,33 @@ export function AdminHojeCards() {
           });
         }
 
-        if (pvs) {
-          const pvsByUser: Record<string, number> = {};
-          pvs.forEach((pv: any) => {
-             pvsByUser[pv.user_id] = (pvsByUser[pv.user_id] || 0) + 1;
+        if (id === 'paywall' && pwEvents) {
+          // Conta exatamente quantas vezes o usuário abriu a tela de assinaturas no período
+          const pwByUser: Record<string, number> = {};
+          pwEvents.forEach((pw: any) => {
+            if (pw.user_id) pwByUser[pw.user_id] = (pwByUser[pw.user_id] || 0) + 1;
           });
-          Object.keys(pvsByUser).forEach(uid => {
-             acessosMap.set(uid, pvsByUser[uid]);
+          Object.keys(pwByUser).forEach(uid => {
+            acessosMap.set(uid, pwByUser[uid]);
+          });
+        } else if (userSessionsPeriodo) {
+          // Conta quantas sessões reais de abertura do aplicativo no período
+          const sessByUser: Record<string, number> = {};
+          userSessionsPeriodo.forEach((s: any) => {
+            if (s.user_id) sessByUser[s.user_id] = (sessByUser[s.user_id] || 0) + 1;
+          });
+          Object.keys(sessByUser).forEach(uid => {
+            acessosMap.set(uid, sessByUser[uid]);
           });
         }
 
         const mapFav = new Map<string, string>();
-        if (sessions && sessions.length > 0) {
+        if (userSessionsPeriodo && userSessionsPeriodo.length > 0) {
           ids.forEach(uid => {
-            const userSessions = sessions.filter(s => s.user_id === uid && s.initial_route);
+            const userSessions = userSessionsPeriodo.filter((s: any) => s.user_id === uid && s.initial_route);
             if (userSessions.length > 0) {
               const freq: Record<string, number> = {};
-              userSessions.forEach(s => { freq[s.initial_route!] = (freq[s.initial_route!] || 0) + 1; });
+              userSessions.forEach((s: any) => { freq[s.initial_route!] = (freq[s.initial_route!] || 0) + 1; });
               const fav = Object.keys(freq).reduce((a, b) => freq[a] > freq[b] ? a : b);
               mapFav.set(uid, rotaParaFuncao(fav).label);
             }
@@ -1186,7 +1207,7 @@ export function AdminHojeCards() {
               provider: rProv,
               funcaoPreferida: mapFav.get(rUid),
               tempo_tela: tempoMap.get(rUid) || null,
-              acessos: (calcAcessos !== undefined && calcAcessos > 0) ? calcAcessos : 1,
+              acessos: (calcAcessos !== undefined && calcAcessos > 0) ? calcAcessos : (r.acessos || 1),
               created_at: r.created_at || profData?.created_at || null,
               faixaEtaria: r.faixaEtaria || profData?.faixa_etaria || null
             };
