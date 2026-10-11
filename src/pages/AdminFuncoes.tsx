@@ -139,6 +139,7 @@ const CATEGORIES: Category[] = [
       { id: 'admin-assinantes', label: 'Assinantes App', icon: Users, desc: 'Lista de todos os assinantes via banco local', route: '/admin-assinantes' },
       { id: 'admin-usuarios', label: 'Usuários Cadastrados', icon: UserCheck, desc: 'Lista de todos os usuários cadastrados e status', route: '/admin-usuarios' },
       { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função', route: '/admin-funcoes-assinantes' },
+      { id: 'admin-admob', label: 'Anúncios AdMob', icon: Target, desc: 'Controle e estratégia de monetização via anúncios', route: '/admin-admob' },
     ],
   },
   {
