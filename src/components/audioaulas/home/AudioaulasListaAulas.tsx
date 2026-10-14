@@ -6,6 +6,19 @@ import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 import { CapaOtimizada } from './CapaOtimizada';
 import { motion, AnimatePresence } from 'framer-motion';
 
+function obterDescricaoAmigavel(a: AulaAudio): string {
+  if (a.area && /eca|criança|adolescente/i.test(a.area)) {
+    return 'Lei nº 8.069/1990 • Estatuto da Criança e do Adolescente';
+  }
+  if (a.tema && !/^(liv\.|tít\.|cap\.|seç\.)/i.test(a.tema.trim())) {
+    return `${a.tema} • Áudio Explicativo`;
+  }
+  if (a.area) {
+    return `${a.area} • Áudio Explicativo`;
+  }
+  return 'Áudio Explicativo • Legislação';
+}
+
 interface LinhaAulaProps {
   a: AulaAudio;
   indice?: number;
@@ -60,13 +73,16 @@ const LinhaAula = React.memo(function LinhaAula({
           </span>
         </span>
         <div className="min-w-0 flex-1 py-1">
-          <p className={`text-sm font-semibold break-words text-left ${ativo ? 'text-primary' : 'text-foreground'}`}>
+          <p className={`text-sm font-semibold break-words text-left leading-snug ${ativo ? 'text-primary' : 'text-foreground'}`}>
             {typeof indice === 'number' ? `${indice}. ` : ''}
             {a.titulo}
           </p>
-          <p className="text-xs text-muted-foreground break-words mt-0.5 text-left line-clamp-1">
-            {a.url_audio ? a.tema || a.area : 'Áudio em breve'}
-          </p>
+          <div className="flex items-center gap-1.5 mt-1 text-left">
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${ativo && tocando ? 'bg-primary animate-pulse' : 'bg-emerald-400'}`} />
+            <p className="text-xs text-zinc-400 break-words text-left truncate font-medium">
+              {a.url_audio ? obterDescricaoAmigavel(a) : 'Áudio em breve'}
+            </p>
+          </div>
         </div>
       </motion.button>
 
@@ -143,7 +159,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
     }
 
     return (
-      <div className="mx-auto w-full max-w-[1400px] px-4 space-y-6 mt-4 lg:px-10 2xl:max-w-[1600px]">
+      <div className="mx-auto w-full max-w-[1400px] px-4 space-y-6 mt-4 lg:px-10 2xl:max-w-[1600px] pb-24">
         <AnimatePresence mode="wait">
           {capituloSelecionado === null ? (
             /* ════════════ VISTA 1: LISTA DE CAPÍTULOS ════════════ */
@@ -311,7 +327,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
 
   // Se for abas extras (favoritas, baixadas, buscar)
   return (
-    <div className="mx-auto w-full max-w-[1400px] px-4 space-y-4 mt-4 lg:px-10 2xl:max-w-[1600px]">
+    <div className="mx-auto w-full max-w-[1400px] px-4 space-y-4 mt-4 lg:px-10 2xl:max-w-[1600px] pb-24">
       <h2 className="text-lg font-bold text-white">
         {aba === 'favoritas' ? 'Favoritas' : aba === 'baixadas' ? 'Baixadas' : 'Resultados da Busca'}
       </h2>

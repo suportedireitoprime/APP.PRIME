@@ -76,61 +76,83 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
           <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-zinc-950/90 to-black" />
         </div>
 
-        {/* Header do Player */}
-        <div className="flex items-center justify-between px-4 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+1rem)] pb-2 shrink-0">
+        {/* Header do Player — z-30 fixo para nunca ser sobreposto */}
+        <div className="relative z-30 flex items-center justify-between px-4 pt-[calc(var(--sai-top,env(safe-area-inset-top,0px))+0.75rem)] pb-2 shrink-0">
           <button
-            onClick={() => setAberto(false)}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setAberto(false);
+            }}
             aria-label="Minimizar player"
-            className="h-11 w-11 grid place-items-center rounded-full hover:bg-white/10 text-white transition active:opacity-70"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md border border-white/20 text-white shadow-lg grid place-items-center transition active:scale-95 cursor-pointer z-30 shrink-0"
           >
-            <ChevronDown className="h-6 w-6" />
+            <ChevronDown className="w-6 h-6" strokeWidth={2.5} />
           </button>
-          <div className="text-center min-w-0">
-            <p className="text-[11px] uppercase tracking-widest font-semibold text-primary">Em Reprodução</p>
-            <p className="text-sm font-bold text-white truncate max-w-[60vw]">{atual.area}</p>
+          
+          <div className="text-center min-w-0 px-2 flex-1">
+            <p className="text-[10px] sm:text-[11px] uppercase tracking-widest font-black text-primary leading-tight">
+              Em Reprodução
+            </p>
+            <p className="text-xs sm:text-sm font-bold text-white truncate max-w-[200px] sm:max-w-xs mx-auto mt-0.5">
+              {atual.area}
+            </p>
           </div>
-          <div className="h-11 w-11" />
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              alternarFavorito(atual);
+            }}
+            aria-label={favoritos.has(audioIdOf(atual)) ? 'Remover dos favoritos' : 'Favoritar'}
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md border border-white/20 text-white shadow-lg grid place-items-center transition active:scale-95 cursor-pointer z-30 shrink-0"
+          >
+            <Heart
+              className={`w-5 h-5 transition ${
+                favoritos.has(audioIdOf(atual)) ? 'fill-rose-500 text-rose-500' : 'text-white'
+              }`}
+            />
+          </button>
         </div>
 
-        {/* Conteúdo Principal do Player */}
-        <div className="mx-auto w-full max-w-xl flex-1 min-h-0 flex flex-col justify-center px-6 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+3rem)] lg:pb-12">
-          <div className="relative flex items-center justify-center my-auto">
-            <span className="h-52 w-52 sm:h-64 sm:w-64 rounded-3xl overflow-hidden shadow-2xl shadow-black/80 border border-white/10">
+        {/* Conteúdo Principal do Player — Scroll suave se viewport for baixa */}
+        <div className="mx-auto w-full max-w-xl flex-1 min-h-0 flex flex-col justify-between overflow-y-auto px-6 py-2 pb-[calc(var(--sai-bottom,env(safe-area-inset-bottom,0px))+2rem)] lg:pb-8">
+          {/* Capa Compacta e Centralizada — Sem my-auto excessivo para não sobrepor topo */}
+          <div className="flex items-center justify-center shrink-0 my-2 sm:my-3">
+            <span className="w-40 h-40 xs:w-44 xs:h-44 sm:w-52 sm:h-52 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-black/90 border border-white/15 relative">
               <CapaOtimizada src={capaDaArea(atual.area || '')} alt="" animacaoEntrada />
             </span>
-            <button
-              onClick={() => alternarFavorito(atual)}
-              aria-label={favoritos.has(audioIdOf(atual)) ? 'Remover dos favoritos' : 'Favoritar'}
-              className="absolute right-2 top-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full border border-white/10 bg-black/40 backdrop-blur-md transition hover:bg-white/20 active:opacity-70"
-            >
-              <Heart
-                className={`h-6 w-6 transition ${
-                  favoritos.has(audioIdOf(atual)) ? 'fill-rose-500 text-rose-500' : 'text-white'
-                }`}
-              />
-            </button>
           </div>
 
-          <div className="mt-4 text-center sm:text-left">
-            <h2 className="text-xl sm:text-2xl font-black text-white tracking-wider line-clamp-2">
+          {/* Título e Metadados da Aula */}
+          <div className="text-center shrink-0 space-y-1">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white tracking-wide line-clamp-2 leading-tight">
               {atual.titulo}
             </h2>
-            <p className="text-sm font-medium text-primary mt-1 truncate">{atual.tema || atual.area}</p>
+            <p className="text-xs sm:text-sm font-semibold text-primary truncate max-w-md mx-auto">
+              {atual.tema || atual.area}
+            </p>
             {atual.descricao && (
-              <div className="mt-2 flex flex-col items-center sm:items-start">
-                <p className="text-xs text-zinc-400 line-clamp-2">{atual.descricao}</p>
+              <div className="mt-1.5 flex flex-col items-center">
+                <p className="text-[11px] sm:text-xs text-zinc-400 line-clamp-2 max-w-md leading-relaxed">
+                  {atual.descricao}
+                </p>
                 <button
+                  type="button"
                   onClick={() => setExpandirDesc(true)}
-                  className="text-primary text-[11px] font-bold mt-1.5 hover:underline uppercase tracking-wider"
+                  className="text-primary text-[10px] sm:text-[11px] font-bold mt-1 hover:underline uppercase tracking-wider inline-flex items-center gap-1"
                 >
-                  Ver mais
+                  <span>Ver detalhes</span>
                 </button>
               </div>
             )}
           </div>
 
           {/* Progresso de Áudio */}
-          <div className="mt-6">
+          <div className="shrink-0 mt-3 sm:mt-4">
             <input
               type="range"
               min={0}
@@ -148,8 +170,9 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
           </div>
 
           {/* Controles de Reprodução */}
-          <div className="mt-6 flex items-center justify-center gap-6">
+          <div className="shrink-0 mt-3 sm:mt-4 flex items-center justify-center gap-5 sm:gap-7">
             <button
+              type="button"
               onClick={() => seek(Math.max(0, tempo - 15))}
               aria-label="Voltar 15 segundos"
               title="Voltar 15s"
@@ -159,6 +182,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
             </button>
 
             <button
+              type="button"
               onClick={() => pular(-1)}
               disabled={atualIdx <= 0}
               aria-label="Aula anterior"
@@ -168,6 +192,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
             </button>
 
             <button
+              type="button"
               onClick={togglePlay}
               aria-label={tocando ? 'Pausar' : 'Tocar'}
               className="h-16 w-16 grid place-items-center rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/40 active:opacity-70 transition hover:scale-105"
@@ -176,6 +201,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
             </button>
 
             <button
+              type="button"
               onClick={() => pular(1)}
               disabled={atualIdx < 0 || atualIdx >= fila.length - 1}
               aria-label="Próxima aula"
@@ -185,6 +211,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
             </button>
 
             <button
+              type="button"
               onClick={() => seek(Math.min(dur, tempo + 15))}
               aria-label="Avançar 15 segundos"
               title="Avançar 15s"
@@ -195,11 +222,12 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
           </div>
 
           {/* Opções de Velocidade e Download */}
-          <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+          <div className="shrink-0 mt-3 sm:mt-4 flex items-center justify-between border-t border-white/10 pt-3">
             <div className="flex items-center gap-1.5">
               <Gauge className="h-4 w-4 text-primary mr-1" />
               {VELOCIDADES.map((v) => (
                 <button
+                  type="button"
                   key={v}
                   onClick={() => setVelocidade(v)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-bold transition ${
