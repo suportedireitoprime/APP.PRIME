@@ -642,14 +642,12 @@ export function useArtigoNarracao({
     }
 
     if (narracaoUrl) {
-      const played = await playNarracao(narracaoUrl, {
-        onRecover: () => { gerarNarracao({ autoplay: true, forceRegenerate: false }).catch(() => {}); },
-      });
+      const played = await playNarracao(narracaoUrl);
       if (played) return;
     }
 
-    await gerarNarracao();
-  }, [artigo, narracaoPlaying, narracaoUrl, playNarracao, gerarNarracao, stopProgressTracking]);
+    toast.info('A narração deste artigo estará disponível em breve.');
+  }, [artigo, narracaoPlaying, narracaoUrl, playNarracao, stopProgressTracking]);
 
   const activeNarracaoWordIndex = narracaoPlaying ? narracaoActiveWordIndex : -1;
 
@@ -676,7 +674,8 @@ export function useArtigoNarracao({
         await playNarracao(narracaoUrl);
         return;
       }
-      await gerarNarracao({ autoplay: true, forceRegenerate: false });
+      // Se a narração ainda não estiver disponível, avisa sem gerar manualmente
+      toast.info('A narração deste artigo estará disponível em breve.');
     } catch (e) {
       console.error('Erro ao acionar narração:', e);
       if (isPremium) {
@@ -687,7 +686,7 @@ export function useArtigoNarracao({
     } finally {
       narrarActionInFlightRef.current = false;
     }
-  }, [handleNarrar, isPremium, narracaoLoading, narracaoPlaying, narracaoUrl, playNarracao, gerarNarracao, openPremiumGate]);
+  }, [handleNarrar, isPremium, narracaoLoading, narracaoPlaying, narracaoUrl, playNarracao, openPremiumGate]);
 
   return {
     // State

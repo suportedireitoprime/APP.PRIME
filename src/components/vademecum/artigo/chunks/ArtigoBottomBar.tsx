@@ -182,8 +182,10 @@ export const ArtigoBottomBar = memo(function ArtigoBottomBar({
             onTouchStart={handleNarrarButtonPress}
             onClick={handleNarrarButtonPress}
             disabled={narracaoLoading}
-            className="relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none"
-            aria-label="Narrar"
+            className={`relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none ${
+              !narracaoUrl && !narracaoLoading ? 'opacity-85' : ''
+            }`}
+            aria-label={narracaoPlaying ? 'Pausar áudio' : narracaoUrl ? 'Ouvir narração' : 'Sem áudio disponível'}
           >
             <div className="w-7 h-7 sm:w-8 sm:h-8 invisible" aria-hidden="true" />
             <div className="absolute bottom-[28px] sm:bottom-[32px] pointer-events-none">
@@ -191,7 +193,9 @@ export const ArtigoBottomBar = memo(function ArtigoBottomBar({
                 className={`relative w-[4rem] h-[4rem] sm:w-[4.5rem] sm:h-[4.5rem] rounded-full flex items-center justify-center shadow-lg ring-4 ring-zinc-900 transition-all duration-300 pointer-events-auto ${
                   narracaoPlaying
                     ? 'bg-primary shadow-primary/40 scale-105'
-                    : 'bg-primary shadow-primary/30 hover:bg-primary/90'
+                    : narracaoUrl
+                    ? 'bg-primary shadow-primary/30 hover:bg-primary/90'
+                    : 'bg-zinc-800 text-zinc-400 shadow-none ring-zinc-800/80 hover:bg-zinc-800/90'
                 }`}
               >
                 {narracaoPlaying && (
@@ -238,13 +242,19 @@ export const ArtigoBottomBar = memo(function ArtigoBottomBar({
                   <Loader2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground animate-spin relative z-20" />
                 ) : narracaoPlaying ? (
                   <Pause className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
-                ) : (
+                ) : narracaoUrl ? (
                   <Volume2 className="w-8 h-8 sm:w-9 sm:h-9 text-primary-foreground relative z-20" />
+                ) : (
+                  <Volume2 className="w-8 h-8 sm:w-9 sm:h-9 text-zinc-400 relative z-20 opacity-70" />
                 )}
               </span>
             </div>
-            <span className="font-body text-[11px] sm:text-[12px] font-semibold text-primary leading-tight">
-              {narracaoPlaying ? 'Pausar' : narracaoUrl ? 'Ouvir' : 'Narrar'}
+            <span
+              className={`font-body text-[11px] sm:text-[12px] font-semibold leading-tight ${
+                narracaoUrl ? 'text-primary' : 'text-zinc-500'
+              }`}
+            >
+              {narracaoPlaying ? 'Pausar' : narracaoUrl ? 'Ouvir' : 'Sem áudio'}
             </span>
           </button>
         )}

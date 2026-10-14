@@ -412,6 +412,7 @@ const AdminLeituraNativa = lazy(() => import("./pages/AdminLeituraNativa.tsx"));
 const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
 const LeisCantadas = lazy(() => import("./pages/LeisCantadas.tsx"));
+const Audioleis = lazyWithRetry(routePrefetch.audioleis);
 const AdminLeisCantadas = lazy(() => import("./pages/AdminLeisCantadas.tsx"));
 const AdminConteudoFila = lazy(() => import("./pages/AdminConteudoFila.tsx"));
 const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
@@ -1439,7 +1440,7 @@ function AnimatedRoutes() {
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/leis-cantadas" element={<ProtectedRoute><PageTransition><LeisCantadas /></PageTransition></ProtectedRoute>} />
-          <Route path="/audioleis" element={<Navigate to="/leis-cantadas" replace />} />
+          <Route path="/audioleis" element={<ProtectedRoute><PageTransition><Audioleis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-leis-cantadas" element={<ProtectedRoute><PageTransition><AdminLeisCantadas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-conteudo-fila" element={<ProtectedRoute><PageTransition><AdminConteudoFila /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-radares-leis" element={<ProtectedRoute><PageTransition><AdminRadaresLeis /></PageTransition></ProtectedRoute>} />
