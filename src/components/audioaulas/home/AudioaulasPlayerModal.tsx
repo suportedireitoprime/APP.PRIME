@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ChevronDown, Heart, RotateCcw, RotateCw, SkipBack, SkipForward, Play, Pause, Gauge, X, BookOpen, Scale } from 'lucide-react';
 import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 import { BotaoDownloadAudio } from './BotaoDownloadAudio';
-import { capaDaArea, fmt, VELOCIDADES } from '@/lib/audioaulasHelper';
+import { capaDaArea, fmt, VELOCIDADES, decomporTituloCapitulo } from '@/lib/audioaulasHelper';
 import { CapaOtimizada } from './CapaOtimizada';
 import { haptic } from '@/lib/nativeHaptics';
 import { buscarTextoOficialArtigo } from '@/lib/audioaulasArtigoFetcher';
@@ -70,13 +70,8 @@ function extrairArtigoInfo(aula: AulaAudio) {
     ? (temaArtigo ? `Art. ${numeroArtigo}: ${temaArtigo}` : `Art. ${numeroArtigo}`)
     : (textoBase || rawTitulo);
 
-  // Capítulo limpo (remover Liv. I, Tít. I — e (arts. 1 a 6))
-  let capituloLimpo = (aula.tema || '').trim();
-  capituloLimpo = capituloLimpo.replace(/\s*\((?:arts?\.?|artigos?)\s*[^)]+\)$/i, '').trim();
-  const partesTrav = capituloLimpo.split(/\s+[—–-]\s+/);
-  if (partesTrav.length > 1 && /^(?:liv|t[íi]t|cap|se[çc]|parte)/i.test(partesTrav[0].trim())) {
-    capituloLimpo = partesTrav.slice(1).join(' — ').trim();
-  }
+  // Capítulo limpo (remover Liv., Tít., Cap., traços e faixa de artigos)
+  const capituloLimpo = aula.tema ? decomporTituloCapitulo(aula.tema).tituloLimpo : '';
 
   return {
     numeroArtigo,

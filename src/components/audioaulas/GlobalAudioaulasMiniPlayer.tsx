@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, ArrowRight, X } from 'lucide-react';
 import { useAudioaulasPlayer } from '@/contexts/AudioaulasPlayerContext';
+import { decomporTituloCapitulo } from '@/lib/audioaulasHelper';
 
 /**
  * Mini Player Flutuante de Áudio Aulas — Estilo Cápsula idêntico ao Narração do Artigo.
@@ -128,7 +129,7 @@ export default function GlobalAudioaulasMiniPlayer() {
                 {atual.titulo}
               </p>
               <p className="text-[10.5px] text-white/60 truncate leading-tight">
-                {atual.area} {atual.tema ? `• ${atual.tema}` : ''}
+                {atual.area} {atual.tema ? `• ${decomporTituloCapitulo(atual.tema).tituloLimpo}` : ''}
               </p>
             </button>
 

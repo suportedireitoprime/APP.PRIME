@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Play, Pause, Heart, ArrowLeft, BookOpen, ChevronRight, ChevronLeft, Headphones, Layers, Sparkles } from 'lucide-react';
 import { BotaoDownloadAudio } from './BotaoDownloadAudio';
-import { capaDaArea } from '@/lib/audioaulasHelper';
+import { capaDaArea, decomporTituloCapitulo } from '@/lib/audioaulasHelper';
 import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 import { CapaOtimizada } from './CapaOtimizada';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -34,6 +34,15 @@ function obterDescricaoAmigavel(a: AulaAudio): string {
   if (a.area && /eca|criança|adolescente/i.test(a.area)) {
     return 'Lei nº 8.069/1990';
   }
+  if (a.area && /oab|advocacia/i.test(a.area)) {
+    return 'Lei nº 8.906/1994';
+  }
+  if (a.tema) {
+    const { tituloLimpo } = decomporTituloCapitulo(a.tema);
+    if (tituloLimpo && tituloLimpo !== a.tema) {
+      return `${tituloLimpo} • Áudio Explicativo`;
+    }
+  }
   if (a.tema && !/^(liv\.|tít\.|cap\.|seç\.)/i.test(a.tema.trim())) {
     return `${a.tema} • Áudio Explicativo`;
   }
@@ -41,41 +50,6 @@ function obterDescricaoAmigavel(a: AulaAudio): string {
     return `${a.area} • Áudio Explicativo`;
   }
   return 'Áudio Explicativo • Legislação';
-}
-
-function decomporTituloCapitulo(tema: string) {
-  let nome = (tema || '').trim();
-  let faixaArtigos = '';
-
-  // 1. Extrair faixa de artigos entre parênteses no final, ex: "(arts. 1 a 6)" ou "(arts. 7 a 14-A)"
-  const matchParen = nome.match(/\((?:arts?\.?|artigos?)\s*([^)]+)\)$/i);
-  if (matchParen) {
-    faixaArtigos = `Arts. ${matchParen[1].trim()}`;
-    nome = nome.replace(/\s*\((?:arts?\.?|artigos?)\s*[^)]+\)$/i, '').trim();
-  }
-
-  // 2. Remover divisões legais prefixadas: Liv., Livro, Tít., Título, Cap., Capítulo, Seção, etc.
-  const partesTravessao = nome.split(/\s+[—–-]\s+/);
-  if (partesTravessao.length > 1) {
-    if (/^(?:liv(?:ro|\.)?|t[íi]t(?:ulo|\.)?|cap(?:[íi]tulo|\.)?|se[çc](?:[ãa]o|\.)?|parte)/i.test(partesTravessao[0].trim())) {
-      nome = partesTravessao.slice(1).join(' — ').trim();
-    }
-  } else {
-    nome = nome.replace(/^(?:liv(?:ro|\.)?\s*[^:,—–-]+|t[íi]t(?:ulo|\.)?\s*[^:,—–-]+|cap(?:[íi]tulo|\.)?\s*[^:,—–-]+|se[çc](?:[ãa]o|\.)?\s*[^:,—–-]+)\s*[:—–-]\s*/i, '').trim();
-  }
-
-  // Fallback se não pegou faixaArtigos
-  if (!faixaArtigos) {
-    const matchArtAvulso = tema.match(/(?:arts?\.?|artigos?)\s*([0-9]+(?:\s*(?:a|ao|-|até)\s*[0-9]+[A-Za-z]*)?)/i);
-    if (matchArtAvulso) {
-      faixaArtigos = `Arts. ${matchArtAvulso[1].trim()}`;
-    }
-  }
-
-  return {
-    tituloLimpo: nome || tema,
-    faixaArtigos
-  };
 }
 
 interface LinhaAulaProps {

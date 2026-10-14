@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Play, Pause, X, Headphones, Sparkles } from 'lucide-react';
 import { useAudioaulasPlayer } from '@/contexts/AudioaulasPlayerContext';
 import { obterUltimoProgressoAudioaula, limparProgressoAudioaula, type ProgressoAudioaula } from '@/lib/audioaulaProgresso';
-import { capaDaArea, fmt } from '@/lib/audioaulasHelper';
+import { capaDaArea, fmt, decomporTituloCapitulo } from '@/lib/audioaulasHelper';
 import { CapaOtimizada } from './CapaOtimizada';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -96,7 +96,7 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
             {/* Informações da Aula */}
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-primary uppercase tracking-wider line-clamp-1">
-                {progresso.area} {progresso.tema ? `• ${progresso.tema}` : ''}
+                {progresso.area} {progresso.tema ? `• ${decomporTituloCapitulo(progresso.tema).tituloLimpo}` : ''}
               </p>
               <h4 className="text-sm sm:text-base !font-sans font-bold text-white leading-tight line-clamp-1 group-hover:text-primary transition-colors mt-0.5 tracking-normal normal-case">
                 {progresso.titulo}
