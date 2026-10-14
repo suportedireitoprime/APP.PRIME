@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
       const m = a.url_audio.match(/id=([a-zA-Z0-9_-]{20,})/);
       if (m) {
         const fileId = m[1];
-        const novaUrl = `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
+        const novaUrl = `https://drive.usercontent.google.com/download?id=${fileId}&export=view&authuser=0`;
         if (a.url_audio !== novaUrl) {
           await admin
             .from("audioaulas_acervo")

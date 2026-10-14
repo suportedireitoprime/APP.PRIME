@@ -238,13 +238,15 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           el.src = src;
           el.playbackRate = velocidade;
           notifyMediaPlay('audioaula');
-          await el.play();
+          el.play().catch((playErr: unknown) => {
+            console.warn('[AudioaulasPlayer] play() pausado ou bloqueado:', playErr);
+          });
         }
         setTocando(true);
       } catch (err) {
-        console.error('[AudioaulasPlayer] Erro ao carregar/reproduzir áudio:', err);
+        console.error('[AudioaulasPlayer] Erro ao carregar áudio:', err);
         setTocando(false);
-        toast.error('Não foi possível reproduzir este áudio. Verifique sua conexão.');
+        toast.error('Não foi possível carregar este áudio.');
       }
     },
     [atualId, velocidade],
