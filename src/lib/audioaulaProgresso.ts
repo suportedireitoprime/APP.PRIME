@@ -54,7 +54,9 @@ export function normalizarStreamAudio(url: string | null | undefined): string {
   const m = u.match(/(?:id=|\/d\/|\/file\/d\/)([\w-]{20,})/);
   if (m) {
     const fileId = m[1];
-    return `https://drive.usercontent.google.com/download?id=${fileId}&export=download&authuser=0`;
+    // export=view retorna Content-Disposition: inline, que o <audio> consegue streamar
+    // export=download retorna attachment e bloqueia o player no navegador
+    return `https://drive.usercontent.google.com/download?id=${fileId}&export=view&authuser=0`;
   }
   return u;
 }
