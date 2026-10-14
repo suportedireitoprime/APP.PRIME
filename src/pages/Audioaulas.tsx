@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import AudioaulasBottomNav from '@/components/audioaulas/AudioaulasBottomNav';
@@ -143,6 +143,7 @@ const Audioaulas = () => {
         seek={state.seek}
         pular={state.pular}
         setVelocidade={state.setVelocidade}
+        tocandoIntro={state.tocandoIntro}
       />
 
       {/* Navegação Inferior das Áudio Aulas */}

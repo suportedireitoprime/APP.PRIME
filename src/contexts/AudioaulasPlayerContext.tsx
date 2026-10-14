@@ -7,6 +7,8 @@ import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 import { toast } from 'sonner';
 import { salvarProgressoAudioaula, obterUltimoProgressoAudioaula, normalizarStreamAudio } from '@/lib/audioaulaProgresso';
 
+export const INTRO_AUDIOAULA_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/vinhetas/intro_audioaulas.mp3';
+
 export interface AulaAudio {
   id: number;
   area: string;
@@ -32,7 +34,7 @@ interface AudioaulasPlayerContextType {
   favoritos: Set<string>;
   alternarFavorito: (a: AulaAudio) => void;
   setAberto: (v: boolean) => void;
-  tocar: (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number) => Promise<void>;
+  tocar: (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number, pularIntro?: boolean) => Promise<void>;
   retomarUltimoProgresso: () => void;
   togglePlay: () => void;
   pular: (dir: 1 | -1) => void;
@@ -40,6 +42,7 @@ interface AudioaulasPlayerContextType {
   setVelocidade: (rate: number) => void;
   fechar: () => void;
   audioRef: React.RefObject<HTMLAudioElement>;
+  tocandoIntro: boolean;
 }
 
 const FAV_KEY = 'aa_favoritos';
@@ -78,6 +81,7 @@ const fallbackAudioaulasContext: AudioaulasPlayerContextType = {
   setVelocidade: () => {},
   fechar: () => {},
   audioRef: fallbackAudioRef,
+  tocandoIntro: false,
 };
 
 const Ctx = createContext<AudioaulasPlayerContextType | undefined>(undefined);
@@ -198,33 +202,20 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     });
   }, []);
 
-  const tempoInicialRef = useRef<number | null>(null);
+  const [tocandoIntro, setTocandoIntro] = useState(false);
+  const audioAulaPendenteRef = useRef<{ aula: AulaAudio; tempoInicial?: number } | null>(null);
 
-  const tocar = useCallback(
-    async (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number) => {
+  const tocarConteudoAula = useCallback(
+    async (a: AulaAudio, tempoInicial?: number) => {
       const el = audioRef.current;
-      if (!a.url_audio) return;
-
-      if (customFila) {
-        setFilaCustom(customFila);
-      }
+      if (!el || !a.url_audio) return;
+      setTocandoIntro(false);
+      audioAulaPendenteRef.current = null;
 
       if (typeof tempoInicial === 'number' && tempoInicial > 0) {
         tempoInicialRef.current = tempoInicial;
       } else {
         tempoInicialRef.current = null;
-      }
-
-      if (atualId === a.id) {
-        if (el?.paused) {
-          notifyMediaPlay('audioaula');
-          await el.play().catch(() => {});
-          setTocando(true);
-        } else {
-          el?.pause();
-          setTocando(false);
-        }
-        return;
       }
 
       setAtualId(a.id);
@@ -239,7 +230,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           el.playbackRate = velocidade;
           notifyMediaPlay('audioaula');
           el.play().catch((playErr: unknown) => {
-            console.warn('[AudioaulasPlayer] play() pausado ou bloqueado:', playErr);
+            console.warn('[AudioaulasPlayer] play() da aula pausado ou bloqueado:', playErr);
           });
         }
         setTocando(true);
@@ -249,7 +240,61 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         toast.error('Não foi possível carregar este áudio.');
       }
     },
-    [atualId, velocidade],
+    [velocidade],
+  );
+
+  const tocar = useCallback(
+    async (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number, pularIntro = false) => {
+      const el = audioRef.current;
+      if (!a.url_audio) return;
+
+      if (customFila) {
+        setFilaCustom(customFila);
+      }
+
+      // Se já for a mesma aula tocando/pausada
+      if (atualId === a.id) {
+        if (el?.paused) {
+          notifyMediaPlay('audioaula');
+          await el.play().catch(() => {});
+          setTocando(true);
+        } else {
+          el?.pause();
+          setTocando(false);
+        }
+        return;
+      }
+
+      // Se deve pular intro (ex: retomando progresso do meio da aula ou se tempoInicial for informado)
+      if (pularIntro || (typeof tempoInicial === 'number' && tempoInicial > 0)) {
+        await tocarConteudoAula(a, tempoInicial);
+        return;
+      }
+
+      // Inicia com a intro exclusiva de audioaulas
+      setAtualId(a.id);
+      setTempo(0);
+      setDur(0);
+      setTocandoIntro(true);
+      audioAulaPendenteRef.current = { aula: a, tempoInicial };
+
+      try {
+        if (el) {
+          el.src = INTRO_AUDIOAULA_URL;
+          el.playbackRate = 1;
+          notifyMediaPlay('audioaula');
+          el.play().catch((err: unknown) => {
+            console.warn('[AudioaulasPlayer] Intro bloqueada ou cancelada, tocando aula diretamente:', err);
+            void tocarConteudoAula(a, tempoInicial);
+          });
+        }
+        setTocando(true);
+      } catch (err) {
+        console.warn('[AudioaulasPlayer] Falha na intro, tocando aula diretamente:', err);
+        void tocarConteudoAula(a, tempoInicial);
+      }
+    },
+    [atualId, tocarConteudoAula],
   );
 
   const retomarUltimoProgresso = useCallback(() => {
@@ -257,7 +302,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     if (!ultimo) return;
     const aulaEncontrada = aulas.find((x) => x.id === ultimo.id);
     if (aulaEncontrada) {
-      void tocar(aulaEncontrada, undefined, ultimo.tempo);
+      void tocar(aulaEncontrada, undefined, ultimo.tempo, true);
       setAberto(true);
     }
   }, [aulas, tocar]);
@@ -299,8 +344,8 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   const setVelocidade = useCallback((rate: number) => {
     setVelocidadeState(rate);
     const el = audioRef.current;
-    if (el) el.playbackRate = rate;
-  }, []);
+    if (el && !tocandoIntro) el.playbackRate = rate;
+  }, [tocandoIntro]);
 
   const fechar = useCallback(() => {
     const el = audioRef.current;
@@ -311,6 +356,8 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       clearMediaSession(el);
     }
     setTocando(false);
+    setTocandoIntro(false);
+    audioAulaPendenteRef.current = null;
     setAtualId(null);
     setTempo(0);
     setDur(0);
@@ -340,6 +387,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     setVelocidade,
     fechar,
     audioRef,
+    tocandoIntro,
   };
 
   return (
@@ -353,7 +401,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           const t = e.currentTarget.currentTime;
           setTempo(t);
           const d = e.currentTarget.duration || 0;
-          if (atual && t > 1) {
+          if (atual && t > 1 && !tocandoIntro) {
             salvarProgressoAudioaula({
               id: atual.id,
               area: atual.area,
@@ -370,7 +418,12 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         onLoadedMetadata={(e) => {
           const d = e.currentTarget.duration || 0;
           setDur(d);
-          if (tempoInicialRef.current !== null && tempoInicialRef.current > 0 && tempoInicialRef.current < d) {
+          if (
+            !tocandoIntro &&
+            tempoInicialRef.current !== null &&
+            tempoInicialRef.current > 0 &&
+            tempoInicialRef.current < d
+          ) {
             e.currentTarget.currentTime = tempoInicialRef.current;
             setTempo(tempoInicialRef.current);
             tempoInicialRef.current = null;
@@ -380,10 +433,23 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         onPause={() => setTocando(false)}
         onError={(e) => {
           console.error('[AudioaulasPlayer] Erro no elemento de áudio:', e);
+          if (tocandoIntro && audioAulaPendenteRef.current) {
+            // Se falhar a intro, toca a aula diretamente
+            const pendente = audioAulaPendenteRef.current;
+            void tocarConteudoAula(pendente.aula, pendente.tempoInicial);
+            return;
+          }
           setTocando(false);
           toast.error('Erro de carregamento do áudio.');
         }}
         onEnded={() => {
+          if (tocandoIntro && audioAulaPendenteRef.current) {
+            // Intro finalizada com sucesso! Inicia a audioaula imediatamente
+            const pendente = audioAulaPendenteRef.current;
+            void tocarConteudoAula(pendente.aula, pendente.tempoInicial);
+            return;
+          }
+
           setTocando(false);
           if (atualIdx >= 0 && fila[atualIdx + 1]) {
             void tocar(fila[atualIdx + 1]);

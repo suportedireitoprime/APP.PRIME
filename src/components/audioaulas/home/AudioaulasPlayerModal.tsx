@@ -21,6 +21,7 @@ interface AudioaulasPlayerModalProps {
   seek: (t: number) => void;
   pular: (dir: number) => void;
   setVelocidade: (v: number) => void;
+  tocandoIntro?: boolean;
 }
 
 export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
@@ -38,7 +39,8 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
   togglePlay,
   seek,
   pular,
-  setVelocidade
+  setVelocidade,
+  tocandoIntro = false,
 }: AudioaulasPlayerModalProps) {
   const [expandirDesc, setExpandirDesc] = useState(false);
 
@@ -129,6 +131,11 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
 
           {/* Título e Metadados da Aula */}
           <div className="text-center shrink-0 space-y-1">
+            {tocandoIntro && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary text-[10px] font-bold uppercase tracking-wider mb-1 animate-pulse">
+                <span>Vinheta de Abertura</span>
+              </div>
+            )}
             <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white tracking-wide line-clamp-2 leading-tight">
               {atual.titulo}
             </h2>

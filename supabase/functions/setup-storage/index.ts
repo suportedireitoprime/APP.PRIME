@@ -14,6 +14,28 @@ Deno.serve(async (req) => {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
+    const body = await req.json().catch(() => ({}));
+    if (body.upload_intro_base64) {
+      const binaryStr = atob(body.upload_intro_base64);
+      const len = binaryStr.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) {
+        bytes[i] = binaryStr.charCodeAt(i);
+      }
+      const storagePath = "vinhetas/intro_audioaulas.mp3";
+      const { error: upErr } = await admin.storage
+        .from("audios")
+        .upload(storagePath, bytes, {
+          contentType: "audio/mpeg",
+          upsert: true,
+        });
+      if (upErr) throw upErr;
+      const { data: pubData } = admin.storage.from("audios").getPublicUrl(storagePath);
+      return new Response(JSON.stringify({ ok: true, url: pubData.publicUrl }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
     // 1. List buckets
     const { data: buckets, error: bErr } = await admin.storage.listBuckets();
     console.log("Existing buckets:", buckets, bErr);

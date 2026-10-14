@@ -26,6 +26,7 @@ export function useAudioaulas(areaAtual: string | null) {
     pular,
     seek,
     setVelocidade,
+    tocandoIntro,
   } = useAudioaulasPlayer();
 
   const [baixadas, setBaixadas] = useState<Set<string>>(new Set());
@@ -139,6 +140,7 @@ export function useAudioaulas(areaAtual: string | null) {
     // Player
     aulas, loading, atualId, atual, atualIdx, tocando, tempo, dur,
     velocidade, aberto, fila, setAberto, togglePlay, pular, seek, setVelocidade,
+    tocandoIntro,
     
     // Data lists
     areas, daArea, temasDaArea, listaAba,
