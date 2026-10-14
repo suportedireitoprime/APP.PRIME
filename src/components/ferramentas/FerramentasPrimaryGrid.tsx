@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, FolderOpen, Monitor, Newspaper, Radar, type LucideIcon } from 'lucide-react';
+import { ChevronRight, FolderOpen, Monitor, Newspaper, Radar, Bird, Speech, type LucideIcon } from 'lucide-react';
 
 export interface PrimaryToolItem {
   id: string;
@@ -12,6 +12,8 @@ export interface PrimaryToolItem {
 }
 
 export const PRIMARY_TOOLS: PrimaryToolItem[] = [
+  { id: 'assistente', label: 'Assistente (IA)', desc: 'Tutor Hórus inteligente', icon: Bird, route: '/assistente-horus', color: '#A855F7' },
+  { id: 'me-explique', label: 'Me Explique (IA)', desc: 'Explicações com IA', icon: Speech, route: '/me-explique', color: '#F97316' },
   { id: 'documentos', label: 'Documentos Prontos', desc: 'Petições, Contratos e mais', icon: FolderOpen, route: '/documentos', color: '#F59E0B' },
   { id: 'radares', label: 'Radares de Leis', desc: 'Projetos de Lei', icon: Radar, route: '/radares', color: '#0EA5E9' },
 ];

@@ -23,6 +23,9 @@ import {
   Scale,
   Trophy,
   Bot,
+  Bird,
+  Speech,
+  FolderOpen,
   CalendarDays,
   Gamepad2,
   Camera,
@@ -51,6 +54,23 @@ export type DesktopToolGroup = {
  * garantindo que nenhuma função fique acessível só no mobile.
  */
 export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
+  {
+    id: 'ia',
+    label: 'Inteligência Artificial',
+    hint: 'Tutores jurídicos e ferramentas com inteligência artificial',
+    tools: [
+      { id: 'assistente', label: 'Assistente (IA)', desc: 'Tire dúvidas jurídicas com o tutor inteligente Hórus', icon: Bird, route: '/assistente-horus', color: '#A855F7' },
+      { id: 'me-explique', label: 'Me Explique (IA)', desc: 'Explicações jurídicas com voz, câmera e avatar interativo', icon: Speech, route: '/me-explique', color: '#F97316' },
+    ],
+  },
+  {
+    id: 'pratica',
+    label: 'Prática Forense',
+    hint: 'Modelos e documentos para o dia a dia',
+    tools: [
+      { id: 'documentos', label: 'Documentos Prontos', desc: 'Petições, Contratos e modelos jurídicos', icon: FolderOpen, route: '/documentos', color: '#F59E0B' },
+    ],
+  },
   {
     id: 'monitoramento',
     label: 'Monitoramento',
