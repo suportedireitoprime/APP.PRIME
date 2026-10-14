@@ -5,30 +5,54 @@ import { BotaoDownloadAudio } from './BotaoDownloadAudio';
 import { capaDaArea, fmt, VELOCIDADES } from '@/lib/audioaulasHelper';
 import { CapaOtimizada } from './CapaOtimizada';
 import { haptic } from '@/lib/nativeHaptics';
-import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from '@/lib/legislacaoBackend';
+import { buscarTextoOficialArtigo } from '@/lib/audioaulasArtigoFetcher';
 
 function extrairArtigoInfo(aula: AulaAudio) {
-  const titulo = aula.titulo || '';
-  const area = aula.area || '';
+  const rawTitulo = (aula.titulo || '').trim();
+  const area = (aula.area || '').trim();
 
-  // Determinar número do artigo (ex: "Art. 1", "Art. 14-A", "1. ECA — Art. 2")
-  const matchArt = titulo.match(/art(?:igo|\.)?\s*([0-9]+(?:\s*[-–—]\s*[A-Za-z]+|[A-Za-z]+)?)[º°ª]?/i);
-  const numeroArtigo = matchArt ? matchArt[1].replace(/\s+/g, '').trim() : null;
-
-  // Título limpo do artigo:
-  let tituloLimpo = titulo;
-  const matchAposTraco = titulo.match(/^[0-9]+[. \t\-–—]+(?:[A-Za-z0-9]+[. \t\-–—]+)?(Art\..*)$/i);
-  if (matchAposTraco) {
-    tituloLimpo = matchAposTraco[1];
-  } else {
-    tituloLimpo = titulo.replace(/^[0-9]+[. \t\-–—]+(?:ECA\s*[—–-]\s*)?/i, '');
-  }
-
-  // Identificação da Lei
-  const isEca = /eca|criança|adolescente/i.test(area) || /eca/i.test(titulo);
+  // 1. Identificação da Lei
+  const isEca = /eca|criança|adolescente/i.test(area) || /eca/i.test(rawTitulo);
   const sigla = isEca ? 'ECA' : area || 'Legislação';
   const nomeLei = isEca ? 'ECA • Lei nº 8.069/1990' : area;
   const slugLei = isEca ? 'eca' : 'estatuto-eca';
+
+  // 2. Limpar prefixos indesejados (ex: "1. ECA — ", "ECA — ", "ECA - ")
+  let textoBase = rawTitulo
+    .replace(/^[0-9]+[. \t\-–—]+/i, '') // remove número inicial ex: "1. "
+    .trim();
+
+  // Remove qualquer prefixo de código/sigla ex: "ECA — ", "ECA - ", "CF/88 — "
+  textoBase = textoBase
+    .replace(/^(?:ECA|CF\/?88|CP|CPP|CC|CPC|CLT|CTN|CDC|CTB|OAB|EOAB)\s*[-–—:]\s*/i, '')
+    .trim();
+
+  // Se ainda sobrar outro ECA (ex: "ECA - ECA"), remove novamente
+  textoBase = textoBase.replace(/^(?:ECA\s*[-–—:]\s*)+/i, '').trim();
+
+  // 3. Extrair número do artigo e tema para formar "Art. 1: Proteção Integral"
+  let numeroArtigo: string | null = null;
+  let temaArtigo: string = '';
+
+  const matchRegex = textoBase.match(/^art(?:igo|\.)?\s*([0-9]+(?:\s*[-–—]\s*[A-Za-z]+|[A-Za-z]+)?)[º°ª]?(?:\s*[-–—:]\s*(.*))?$/i);
+  if (matchRegex) {
+    numeroArtigo = matchRegex[1].replace(/\s+/g, '').trim();
+    const resto = (matchRegex[2] || '').trim();
+    if (resto) {
+      temaArtigo = resto.charAt(0).toUpperCase() + resto.slice(1);
+    }
+  } else {
+    const matchNum = rawTitulo.match(/art(?:igo|\.)?\s*([0-9]+(?:\s*[-–—]\s*[A-Za-z]+|[A-Za-z]+)?)[º°ª]?/i);
+    if (matchNum) {
+      numeroArtigo = matchNum[1].replace(/\s+/g, '').trim();
+    }
+    temaArtigo = textoBase;
+  }
+
+  // Título formatado limpo: "Art. 1: Proteção Integral"
+  const tituloLimpo = numeroArtigo
+    ? (temaArtigo ? `Art. ${numeroArtigo}: ${temaArtigo}` : `Art. ${numeroArtigo}`)
+    : (textoBase || rawTitulo);
 
   // Capítulo limpo (remover Liv. I, Tít. I — e (arts. 1 a 6))
   let capituloLimpo = (aula.tema || '').trim();
@@ -40,6 +64,7 @@ function extrairArtigoInfo(aula: AulaAudio) {
 
   return {
     numeroArtigo,
+    temaArtigo,
     tituloLimpo,
     sigla,
     nomeLei,
@@ -99,7 +124,7 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
     if (!aberto) setAbrirArtigo(false);
   }, [aberto, atual]);
 
-  // Carregar o texto oficial do artigo citado quando abrir o modal de artigo
+  // Carregar o texto oficial da lei seca do artigo quando abrir o modal de artigo
   useEffect(() => {
     if (!abrirArtigo || !atual || !artigoInfo) return;
 
@@ -114,50 +139,22 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
 
     (async () => {
       try {
-        // 1. Tentar buscar pelo slug da lei (ex: 'eca') e número exato
-        const lRes = await fetch(
-          `${LEIS_SUPABASE_URL}/rest/v1/vade_mecum_leis?slug=ilike.*${encodeURIComponent(artigoInfo.slugLei)}*&select=id,nome&limit=1`,
-          { headers: { apikey: LEIS_SUPABASE_ANON_KEY, Authorization: `Bearer ${LEIS_SUPABASE_ANON_KEY}` } }
-        );
-        const leis = lRes.ok ? await lRes.json() : [];
-        const leiId = leis[0]?.id;
-
-        if (leiId) {
-          const aRes = await fetch(
-            `${LEIS_SUPABASE_URL}/rest/v1/vade_mecum_artigos?lei_id=eq.${leiId}&numero=eq.${encodeURIComponent(artigoInfo.numeroArtigo)}&select=id,numero,texto,epigrafe&limit=1`,
-            { headers: { apikey: LEIS_SUPABASE_ANON_KEY, Authorization: `Bearer ${LEIS_SUPABASE_ANON_KEY}` } }
-          );
-          const arts = aRes.ok ? await aRes.json() : [];
-          if (arts[0] && !cancel) {
-            setArtigoTexto(arts[0].texto);
-            setArtigoTituloOficial(`Art. ${arts[0].numero}º`);
-            setArtigoCarregando(false);
-            return;
-          }
-        }
-
-        // 2. Fallback: buscar por tabela direta do ECA
-        const tabRes = await fetch(
-          `${LEIS_SUPABASE_URL}/rest/v1/ECA_ESTATUTO_CRIANCA_ADOLESCENTE?numero=eq.${encodeURIComponent(artigoInfo.numeroArtigo)}&limit=1`,
-          { headers: { apikey: LEIS_SUPABASE_ANON_KEY, Authorization: `Bearer ${LEIS_SUPABASE_ANON_KEY}` } }
-        );
-        if (tabRes.ok) {
-          const rows = await tabRes.json();
-          if (rows[0] && !cancel) {
-            setArtigoTexto(rows[0].caput || rows[0].texto);
-            setArtigoTituloOficial(`Art. ${rows[0].numero}º`);
-            setArtigoCarregando(false);
-            return;
-          }
-        }
+        const termoLei = artigoInfo.slugLei || artigoInfo.sigla || atual.area || 'eca';
+        const resOficial = await buscarTextoOficialArtigo(termoLei, artigoInfo.numeroArtigo);
 
         if (!cancel) {
-          setArtigoTexto(atual.descricao || 'Consulte o artigo completo no Vade Mecum.');
-          setArtigoTituloOficial(artigoInfo.tituloLimpo);
+          if (resOficial?.texto) {
+            setArtigoTexto(resOficial.texto);
+            setArtigoTituloOficial(`Art. ${resOficial.numero}º`);
+          } else {
+            setArtigoTexto(atual.descricao || 'Consulte o artigo completo no Vade Mecum.');
+            setArtigoTituloOficial(artigoInfo.tituloLimpo);
+          }
           setArtigoCarregando(false);
         }
-      } catch {
+      } catch (err) {
         if (!cancel) {
+          console.warn('Erro ao buscar artigo oficial:', err);
           setArtigoTexto(atual.descricao || 'Consulte o artigo completo no Vade Mecum.');
           setArtigoTituloOficial(artigoInfo.tituloLimpo);
           setArtigoCarregando(false);
@@ -264,8 +261,11 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
               </span>
             </div>
 
-            {/* Título do Artigo em Destaque — Sem poluição de números redundantes ou caixas altas */}
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-normal leading-snug line-clamp-2">
+            {/* Título do Artigo em Destaque — Tipografia Elegante (Plus Jakarta Sans) */}
+            <h2 
+              className="text-xl sm:text-2xl md:text-[26px] font-bold text-white tracking-tight leading-snug line-clamp-2"
+              style={{ fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" }}
+            >
               {artigoInfo?.tituloLimpo || atual.titulo}
             </h2>
 
@@ -400,10 +400,15 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
           <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
             <div className="min-w-0 pr-3">
               <span className="text-[11px] font-bold text-primary uppercase tracking-wider block">
-                {artigoInfo?.sigla || 'LEGISLAÇÃO'} • {artigoInfo?.nomeLei || atual.area}
+                {artigoInfo?.nomeLei || atual.area}
               </span>
-              <h3 className="text-base sm:text-lg font-bold text-white leading-tight mt-0.5 truncate">
-                {artigoTituloOficial || artigoInfo?.tituloLimpo || atual.titulo}
+              <h3 
+                className="text-base sm:text-lg font-bold text-white leading-tight mt-0.5 truncate"
+                style={{ fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" }}
+              >
+                {artigoTituloOficial && artigoInfo?.temaArtigo
+                  ? `${artigoTituloOficial}: ${artigoInfo.temaArtigo}`
+                  : artigoInfo?.tituloLimpo || atual.titulo}
               </h3>
             </div>
             <button 
@@ -426,12 +431,17 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
                 <p className="text-xs font-semibold">Carregando texto oficial do artigo...</p>
               </div>
             ) : (
-              <div className="p-4 sm:p-6 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4">
-                <p className="text-sm sm:text-base text-zinc-100 font-serif leading-relaxed sm:leading-loose whitespace-pre-line text-justify selection:bg-primary/30">
+              <div className="p-4 sm:p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-4">
+                <p 
+                  className="text-sm sm:text-base text-zinc-100 leading-relaxed sm:leading-loose whitespace-pre-line text-justify selection:bg-primary/30"
+                  style={{ fontFamily: "'Literata', Georgia, serif" }}
+                >
                   {artigoTexto}
                 </p>
                 <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-zinc-400">
-                  <span>✓ Texto compilado oficial</span>
+                  <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
+                    <span>✓</span> Texto compilado oficial da Lei Seca
+                  </span>
                   <span className="text-primary font-semibold">{artigoInfo?.sigla || 'Legislação'}</span>
                 </div>
               </div>
