@@ -85,15 +85,6 @@ const HomeTabEstudos = ({
         <HomeEmAltaCarousel />
       </div>
 
-      {/* Carrossel de Biblioteca Jurídica fixo */}
-      {!hideNoticias && (
-        <div className="pt-2 pb-2 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
-          <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}>
-            <HomeLivrosCarousel />
-          </Suspense>
-        </div>
-      )}
-
       {/* Em Alta — leis (Vade Mecum) ou funções de estudo (home) */}
       {emAltaLeis ? (
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
@@ -120,7 +111,59 @@ const HomeTabEstudos = ({
         </div>
       ) : (
         <div className="flex flex-col gap-6 pt-2">
-          
+          {/* Seção Estudos Livres — posicionada logo após o carrossel de Leis em Alta */}
+          <div className="flex flex-col gap-3">
+            <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
+              <div>
+                <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
+                  <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
+                  Estudos Livres
+                </h3>
+                <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
+                  Ferramentas complementares para seus estudos
+                </p>
+              </div>
+            </div>
+            
+            <div key="grid-estudos" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4">
+              {EMALTA_CATS.map((c, i) => (
+                <HomeCard
+                  key={`cat-${c.id}`}
+                  icon={c.icon}
+                  label={c.label}
+                  sublabel={c.sublabel}
+                  color={c.color}
+                  delay={i * 0.05}
+                  className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
+                  badge={c.emBreve ? 'Em breve' : undefined}
+                  onClick={() => {
+                    if (c.emBreve) {
+                      toast({ title: 'Em breve', description: 'Essa função está sendo preparada.' });
+                      return;
+                    }
+                    if (c.id === 'ea-areas') {
+                      onOpenAreas();
+                      return;
+                    }
+                    navigate(c.route);
+                  }}
+                  data-track="home_card_click"
+                  data-track-name={c.label}
+                  data-track-section="estudos"
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Carrossel de Biblioteca Jurídica fixo */}
+          {!hideNoticias && (
+            <div className="pt-2 pb-2 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+              <Suspense fallback={<div className="h-48 bg-muted/20 animate-pulse rounded-xl mx-4" />}>
+                <HomeLivrosCarousel />
+              </Suspense>
+            </div>
+          )}
+
           {/* Seção Praticar */}
           <div className="flex flex-col gap-3">
             <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
@@ -193,50 +236,6 @@ const HomeTabEstudos = ({
               ))}
             </div>
             </div>
-          </div>
-
-          {/* Seção Estudos Livre */}
-          <div className="flex flex-col gap-3">
-            <div className="mb-1 relative z-10 flex items-start justify-between gap-3">
-              <div>
-              <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 uppercase tracking-widest">
-                <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
-                Estudos Livre
-              </h3>
-              <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3">
-                Ferramentas complementares para seus estudos
-              </p>
-            </div>
-          </div>
-          
-          <div key="grid-estudos" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4">
-            {EMALTA_CATS.map((c, i) => (
-              <HomeCard
-                key={`cat-${c.id}`}
-                icon={c.icon}
-                label={c.label}
-                sublabel={c.sublabel}
-                color={c.color}
-                delay={i * 0.05}
-                className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-                badge={c.emBreve ? 'Em breve' : undefined}
-                onClick={() => {
-                  if (c.emBreve) {
-                    toast({ title: 'Em breve', description: 'Essa função está sendo preparada.' });
-                    return;
-                  }
-                  if (c.id === 'ea-areas') {
-                    onOpenAreas();
-                    return;
-                  }
-                  navigate(c.route);
-                }}
-                data-track="home_card_click"
-                data-track-name={c.label}
-                data-track-section="estudos"
-              />
-            ))}
-          </div>
           </div>
         </div>
       )}
