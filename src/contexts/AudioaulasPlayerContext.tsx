@@ -204,6 +204,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
 
   const [tocandoIntro, setTocandoIntro] = useState(false);
   const audioAulaPendenteRef = useRef<{ aula: AulaAudio; tempoInicial?: number } | null>(null);
+  const tempoInicialRef = useRef<number | null>(null);
 
   const tocarConteudoAula = useCallback(
     async (a: AulaAudio, tempoInicial?: number) => {
