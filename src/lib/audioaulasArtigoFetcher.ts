@@ -9,34 +9,39 @@ export const leisSupabaseClient = createClient(LEIS_SUPABASE_URL, LEIS_SUPABASE_
 });
 
 // Cache em memória para resolução instantânea a 0ms de leis e artigos
-const leisCache = new Map();
-const artigosCache = new Map();
+const leisCache = new Map<string, string>();
+const artigosCache = new Map<string, { texto: string; numero: string; epigrafe?: string | null }>();
 
 /**
  * Busca o texto oficial de um artigo no Vade Mecum unificado.
  */
-export async function buscarTextoOficialArtigo(slugOrNomeLei, numeroArtigo) {
+export async function buscarTextoOficialArtigo(
+  slugOrNomeLei: string,
+  numeroArtigo: string | number
+): Promise<{ texto: string; numero: string; epigrafe?: string | null } | null> {
   if (!slugOrNomeLei || !numeroArtigo) return null;
 
   const cacheKey = `${slugOrNomeLei.toLowerCase()}::${numeroArtigo}`;
   if (artigosCache.has(cacheKey)) {
-    return artigosCache.get(cacheKey);
+    return artigosCache.get(cacheKey)!;
   }
 
   try {
     // 1. Identificar o lei_id
     let leiId = leisCache.get(slugOrNomeLei.toLowerCase());
-
     if (!leiId) {
       const isEca = /eca|criança|adolescente/i.test(slugOrNomeLei);
+      const isOab = /oab|advocacia|eoab/i.test(slugOrNomeLei);
       let query = leisSupabaseClient
         .from('vade_mecum_leis')
         .select('id, slug, total_artigos');
 
       if (isEca) {
         query = query.or('slug.eq.eca,slug.ilike.%eca%');
+      } else if (isOab) {
+        query = query.or('slug.eq.estatuto-oab,slug.eq.eoab,slug.ilike.%oab%');
       } else {
-        query = query.or(`slug.ilike.%${slugOrNomeLei}%,sigla.ilike.%${slugOrNomeLei}%,nome.ilike.%${slugOrNomeLei}%`);
+        query = query.or(`slug.ilike.%${slugOrNomeLei}%,nome.ilike.%${slugOrNomeLei}%`);
       }
 
       const { data: leis } = await query

@@ -13,11 +13,27 @@ function extrairArtigoInfo(aula: AulaAudio) {
 
   // 1. Identificação da Lei
   const isEca = /eca|criança|adolescente/i.test(area) || /eca/i.test(rawTitulo);
-  const sigla = isEca ? 'ECA' : area || 'Legislação';
-  const nomeLei = isEca ? 'ECA • Lei nº 8.069/1990' : area;
-  const slugLei = isEca ? 'eca' : 'estatuto-eca';
+  const isOab = /oab|advocacia|eoab/i.test(area) || /oab|eoab/i.test(rawTitulo);
 
-  // 2. Limpar prefixos indesejados (ex: "1. ECA — ", "ECA — ", "ECA - ")
+  let sigla = 'Legislação';
+  let nomeLei = area || 'Legislação';
+  let slugLei = 'eca';
+
+  if (isEca) {
+    sigla = 'ECA';
+    nomeLei = 'ECA • Lei nº 8.069/1990';
+    slugLei = 'eca';
+  } else if (isOab) {
+    sigla = 'EOAB';
+    nomeLei = 'EOAB • Lei nº 8.906/1994';
+    slugLei = 'estatuto-oab';
+  } else if (area) {
+    sigla = area;
+    nomeLei = area;
+    slugLei = area.toLowerCase();
+  }
+
+  // 2. Limpar prefixos indesejados (ex: "1. ECA — ", "ECA — ", "ECA - ", "EOAB - ")
   let textoBase = rawTitulo
     .replace(/^[0-9]+[. \t\-–—]+/i, '') // remove número inicial ex: "1. "
     .trim();
@@ -27,8 +43,8 @@ function extrairArtigoInfo(aula: AulaAudio) {
     .replace(/^(?:ECA|CF\/?88|CP|CPP|CC|CPC|CLT|CTN|CDC|CTB|OAB|EOAB)\s*[-–—:]\s*/i, '')
     .trim();
 
-  // Se ainda sobrar outro ECA (ex: "ECA - ECA"), remove novamente
-  textoBase = textoBase.replace(/^(?:ECA\s*[-–—:]\s*)+/i, '').trim();
+  // Se ainda sobrar outro prefixo duplicado (ex: "ECA - ECA"), remove novamente
+  textoBase = textoBase.replace(/^(?:(?:ECA|OAB|EOAB)\s*[-–—:]\s*)+/i, '').trim();
 
   // 3. Extrair número do artigo e tema para formar "Art. 1: Proteção Integral"
   let numeroArtigo: string | null = null;

@@ -148,10 +148,11 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     id: 'eoab',
     sigla: 'EOAB',
     nome: 'Estatuto da Advocacia e da OAB',
-    subtitulo: 'Lei nº 8.906/1994 — Ética e prerrogativas',
+    subtitulo: 'Lei nº 8.906/1994 — Ética e prerrogativas artigo por artigo',
     capa: '/assets/eoab-woman-fixed.webp',
-    aulasInfo: 'Exame OAB & Prática',
-    rota: '/legislacao/estatuto-oab'
+    aulasInfo: '96 aulas',
+    destaque: true,
+    rota: '/audioaulas/Estatuto%20da%20OAB'
   },
   {
     id: 'ei',

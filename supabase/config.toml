@@ -1,5 +1,8 @@
 project_id = "dnjrgpldcwcpoywamorr"
 
+[functions.importar-audioaulas-oab]
+verify_jwt = false
+
 [functions.play-billing-webhook]
 verify_jwt = false
 
