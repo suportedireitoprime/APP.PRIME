@@ -1,9 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronDown, Heart, RotateCcw, RotateCw, SkipBack, SkipForward, Play, Pause, Gauge, X } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ChevronDown, Heart, RotateCcw, RotateCw, SkipBack, SkipForward, Play, Pause, Gauge, X, BookOpen, Scale } from 'lucide-react';
 import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 import { BotaoDownloadAudio } from './BotaoDownloadAudio';
 import { capaDaArea, fmt, VELOCIDADES } from '@/lib/audioaulasHelper';
 import { CapaOtimizada } from './CapaOtimizada';
+import { haptic } from '@/utils/haptics';
+import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from '@/lib/legislacaoBackend';
+
+function extrairArtigoInfo(aula: AulaAudio) {
+  const titulo = aula.titulo || '';
+  const area = aula.area || '';
+
+  // Determinar número do artigo (ex: "Art. 1", "Art. 14-A", "1. ECA — Art. 2")
+  const matchArt = titulo.match(/art(?:igo|\.)?\s*([0-9]+(?:\s*[-–—]\s*[A-Za-z]+|[A-Za-z]+)?)[º°ª]?/i);
+  const numeroArtigo = matchArt ? matchArt[1].replace(/\s+/g, '').trim() : null;
+
+  // Título limpo do artigo:
+  let tituloLimpo = titulo;
+  const matchAposTraco = titulo.match(/^[0-9]+[. \t\-–—]+(?:[A-Za-z0-9]+[. \t\-–—]+)?(Art\..*)$/i);
+  if (matchAposTraco) {
+    tituloLimpo = matchAposTraco[1];
+  } else {
+    tituloLimpo = titulo.replace(/^[0-9]+[. \t\-–—]+(?:ECA\s*[—–-]\s*)?/i, '');
+  }
+
+  // Identificação da Lei
+  const isEca = /eca|criança|adolescente/i.test(area) || /eca/i.test(titulo);
+  const sigla = isEca ? 'ECA' : area || 'Legislação';
+  const nomeLei = isEca ? 'ECA • Lei nº 8.069/1990' : area;
+  const slugLei = isEca ? 'eca' : 'estatuto-eca';
+
+  // Capítulo limpo (remover Liv. I, Tít. I — e (arts. 1 a 6))
+  let capituloLimpo = (aula.tema || '').trim();
+  capituloLimpo = capituloLimpo.replace(/\s*\((?:arts?\.?|artigos?)\s*[^)]+\)$/i, '').trim();
+  const partesTrav = capituloLimpo.split(/\s+[—–-]\s+/);
+  if (partesTrav.length > 1 && /^(?:liv|t[íi]t|cap|se[çc]|parte)/i.test(partesTrav[0].trim())) {
+    capituloLimpo = partesTrav.slice(1).join(' — ').trim();
+  }
+
+  return {
+    numeroArtigo,
+    tituloLimpo,
+    sigla,
+    nomeLei,
+    slugLei,
+    capituloLimpo
+  };
+}
 
 interface AudioaulasPlayerModalProps {
   aberto: boolean;
@@ -42,12 +85,88 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
   setVelocidade,
   tocandoIntro = false,
 }: AudioaulasPlayerModalProps) {
-  const [expandirDesc, setExpandirDesc] = useState(false);
+  const [abrirArtigo, setAbrirArtigo] = useState(false);
+  const [artigoCarregando, setArtigoCarregando] = useState(false);
+  const [artigoTexto, setArtigoTexto] = useState<string | null>(null);
+  const [artigoTituloOficial, setArtigoTituloOficial] = useState<string | null>(null);
 
-  // Resetar o estado da descrição quando mudar a aula ou fechar o modal
+  const artigoInfo = useMemo(() => {
+    return atual ? extrairArtigoInfo(atual) : null;
+  }, [atual]);
+
+  // Resetar o estado do artigo quando mudar a aula ou fechar o modal
   useEffect(() => {
-    if (!aberto) setExpandirDesc(false);
+    if (!aberto) setAbrirArtigo(false);
   }, [aberto, atual]);
+
+  // Carregar o texto oficial do artigo citado quando abrir o modal de artigo
+  useEffect(() => {
+    if (!abrirArtigo || !atual || !artigoInfo) return;
+
+    if (!artigoInfo.numeroArtigo) {
+      setArtigoTexto(atual.descricao || 'Consulte o artigo completo no Vade Mecum.');
+      setArtigoTituloOficial(artigoInfo.tituloLimpo);
+      return;
+    }
+
+    let cancel = false;
+    setArtigoCarregando(true);
+
+    (async () => {
+      try {
+        // 1. Tentar buscar pelo slug da lei (ex: 'eca') e número exato
+        const lRes = await fetch(
+          `${LEIS_SUPABASE_URL}/rest/v1/vade_mecum_leis?slug=ilike.*${encodeURIComponent(artigoInfo.slugLei)}*&select=id,nome&limit=1`,
+          { headers: { apikey: LEIS_SUPABASE_ANON_KEY, Authorization: `Bearer ${LEIS_SUPABASE_ANON_KEY}` } }
+        );
+        const leis = lRes.ok ? await lRes.json() : [];
+        const leiId = leis[0]?.id;
+
+        if (leiId) {
+          const aRes = await fetch(
+            `${LEIS_SUPABASE_URL}/rest/v1/vade_mecum_artigos?lei_id=eq.${leiId}&numero=eq.${encodeURIComponent(artigoInfo.numeroArtigo)}&select=id,numero,texto,epigrafe&limit=1`,
+            { headers: { apikey: LEIS_SUPABASE_ANON_KEY, Authorization: `Bearer ${LEIS_SUPABASE_ANON_KEY}` } }
+          );
+          const arts = aRes.ok ? await aRes.json() : [];
+          if (arts[0] && !cancel) {
+            setArtigoTexto(arts[0].texto);
+            setArtigoTituloOficial(`Art. ${arts[0].numero}º`);
+            setArtigoCarregando(false);
+            return;
+          }
+        }
+
+        // 2. Fallback: buscar por tabela direta do ECA
+        const tabRes = await fetch(
+          `${LEIS_SUPABASE_URL}/rest/v1/ECA_ESTATUTO_CRIANCA_ADOLESCENTE?numero=eq.${encodeURIComponent(artigoInfo.numeroArtigo)}&limit=1`,
+          { headers: { apikey: LEIS_SUPABASE_ANON_KEY, Authorization: `Bearer ${LEIS_SUPABASE_ANON_KEY}` } }
+        );
+        if (tabRes.ok) {
+          const rows = await tabRes.json();
+          if (rows[0] && !cancel) {
+            setArtigoTexto(rows[0].caput || rows[0].texto);
+            setArtigoTituloOficial(`Art. ${rows[0].numero}º`);
+            setArtigoCarregando(false);
+            return;
+          }
+        }
+
+        if (!cancel) {
+          setArtigoTexto(atual.descricao || 'Consulte o artigo completo no Vade Mecum.');
+          setArtigoTituloOficial(artigoInfo.tituloLimpo);
+          setArtigoCarregando(false);
+        }
+      } catch {
+        if (!cancel) {
+          setArtigoTexto(atual.descricao || 'Consulte o artigo completo no Vade Mecum.');
+          setArtigoTituloOficial(artigoInfo.tituloLimpo);
+          setArtigoCarregando(false);
+        }
+      }
+    })();
+
+    return () => { cancel = true; };
+  }, [abrirArtigo, atual, artigoInfo]);
 
   if (!atual) return null;
 
@@ -129,33 +248,48 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
             </span>
           </div>
 
-          {/* Título e Metadados da Aula */}
-          <div className="text-center shrink-0 space-y-1">
+          {/* Título e Metadados da Aula — Design Despoluído e Focado (conforme solicitado pelo usuário) */}
+          <div className="text-center shrink-0 space-y-2 max-w-lg mx-auto">
             {tocandoIntro && (
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary text-[10px] font-bold uppercase tracking-wider mb-1 animate-pulse">
                 <span>Vinheta de Abertura</span>
               </div>
             )}
-            <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white tracking-wide line-clamp-2 leading-tight">
-              {atual.titulo}
+
+            {/* Tag da Lei (ex: ECA • Lei nº 8.069/1990) */}
+            <div className="flex items-center justify-center">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-semibold text-zinc-300 shadow-sm">
+                <Scale className="w-3.5 h-3.5 text-primary" />
+                <span>{artigoInfo?.nomeLei || atual.area}</span>
+              </span>
+            </div>
+
+            {/* Título do Artigo em Destaque — Sem poluição de números redundantes ou caixas altas */}
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white tracking-normal leading-snug line-clamp-2">
+              {artigoInfo?.tituloLimpo || atual.titulo}
             </h2>
-            <p className="text-xs sm:text-sm font-semibold text-primary truncate max-w-md mx-auto">
-              {atual.tema || atual.area}
-            </p>
-            {atual.descricao && (
-              <div className="mt-1.5 flex flex-col items-center">
-                <p className="text-[11px] sm:text-xs text-zinc-400 line-clamp-2 max-w-md leading-relaxed">
-                  {atual.descricao}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setExpandirDesc(true)}
-                  className="text-primary text-[10px] sm:text-[11px] font-bold mt-1 hover:underline uppercase tracking-wider inline-flex items-center gap-1"
-                >
-                  <span>Ver detalhes</span>
-                </button>
-              </div>
+
+            {/* Capítulo Limpo */}
+            {artigoInfo?.capituloLimpo && (
+              <p className="text-xs sm:text-[13px] text-zinc-400 font-medium truncate max-w-sm mx-auto">
+                {artigoInfo.capituloLimpo}
+              </p>
             )}
+
+            {/* Botão VER ARTIGO (conforme áudio do usuário) */}
+            <div className="pt-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setAbrirArtigo(true);
+                }}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider shadow-lg shadow-primary/30 hover:bg-primary/90 active:scale-95 transition-all cursor-pointer"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>Ver Artigo</span>
+              </button>
+            </div>
           </div>
 
           {/* Progresso de Áudio */}
@@ -252,24 +386,56 @@ export const AudioaulasPlayerModal = React.memo(function AudioaulasPlayerModal({
           </div>
         </div>
 
-        {/* Modal/Overlay da Descrição (expande de baixo para cima) */}
+        {/* Bottom Sheet do Artigo (desliza de baixo para cima ao clicar em VER ARTIGO) */}
         <div 
-          className={`absolute inset-x-0 bottom-0 z-50 bg-zinc-950/95 backdrop-blur-xl border-t border-white/10 p-6 shadow-[0_-20px_50px_rgba(0,0,0,0.8)] rounded-t-3xl transition-transform duration-300 ease-out flex flex-col ${
-            expandirDesc ? 'translate-y-0' : 'translate-y-full'
+          className={`absolute inset-x-0 bottom-0 z-50 bg-zinc-950/98 backdrop-blur-2xl border-t border-white/10 p-5 sm:p-6 shadow-[0_-25px_60px_rgba(0,0,0,0.9)] rounded-t-3xl transition-transform duration-300 ease-out flex flex-col ${
+            abrirArtigo ? 'translate-y-0 pointer-events-auto' : 'translate-y-full pointer-events-none'
           }`}
-          style={{ maxHeight: '70%' }}
+          style={{ maxHeight: '82%', height: '82%' }}
         >
-          <div className="flex items-center justify-between mb-4 shrink-0">
-            <h3 className="text-sm font-black text-white uppercase tracking-widest">Descrição da Aula</h3>
+          {/* Barra de arrasto visual */}
+          <div className="w-12 h-1.5 rounded-full bg-white/20 mx-auto mb-3 shrink-0" />
+
+          {/* Cabeçalho do Bottom Sheet */}
+          <div className="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+            <div className="min-w-0 pr-3">
+              <span className="text-[11px] font-bold text-primary uppercase tracking-wider block">
+                {artigoInfo?.sigla || 'LEGISLAÇÃO'} • {artigoInfo?.nomeLei || atual.area}
+              </span>
+              <h3 className="text-base sm:text-lg font-bold text-white leading-tight mt-0.5 truncate">
+                {artigoTituloOficial || artigoInfo?.tituloLimpo || atual.titulo}
+              </h3>
+            </div>
             <button 
-              onClick={() => setExpandirDesc(false)}
-              className="h-8 w-8 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 transition active:opacity-70"
+              onClick={() => {
+                haptic.selection();
+                setAbrirArtigo(false);
+              }}
+              aria-label="Fechar artigo"
+              className="h-9 w-9 grid place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 active:scale-95 transition shrink-0 cursor-pointer"
             >
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="overflow-y-auto pb-6 text-sm text-zinc-300 leading-relaxed custom-scrollbar">
-            {atual.descricao}
+
+          {/* Conteúdo do Artigo com tipografia jurídica e scroll suave */}
+          <div className="overflow-y-auto flex-1 py-4 custom-scrollbar space-y-4">
+            {artigoCarregando ? (
+              <div className="py-16 flex flex-col items-center justify-center gap-3 text-zinc-400">
+                <div className="w-7 h-7 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <p className="text-xs font-semibold">Carregando texto oficial do artigo...</p>
+              </div>
+            ) : (
+              <div className="p-4 sm:p-6 rounded-2xl bg-white/[0.03] border border-white/5 space-y-4">
+                <p className="text-sm sm:text-base text-zinc-100 font-serif leading-relaxed sm:leading-loose whitespace-pre-line text-justify selection:bg-primary/30">
+                  {artigoTexto}
+                </p>
+                <div className="pt-3 border-t border-white/5 flex items-center justify-between text-[11px] text-zinc-400">
+                  <span>✓ Texto compilado oficial</span>
+                  <span className="text-primary font-semibold">{artigoInfo?.sigla || 'Legislação'}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
