@@ -37,6 +37,13 @@ const Audioaulas = () => {
     }
   }, [searchParams, state.aulas, state.loading]);
 
+  const [capituloSelecionado, setCapituloSelecionado] = useState<string | null>(null);
+
+  // Reset capítulo ao trocar de área
+  useEffect(() => {
+    setCapituloSelecionado(null);
+  }, [areaAtual]);
+
   const content = (
     <div className={`w-full bg-zinc-950 text-foreground relative ${isDesktop ? 'rounded-2xl pb-12 min-h-[700px] border border-white/5 overflow-hidden' : 'min-h-screen pb-40'}`}>
       <div className="absolute inset-0 z-0 opacity-60">
@@ -58,6 +65,13 @@ const Audioaulas = () => {
         areaAtual={areaAtual}
         loading={state.loading}
         totalAulas={areaAtual ? state.daArea.length : state.aulas.length}
+        onVoltar={
+          capituloSelecionado
+            ? () => setCapituloSelecionado(null)
+            : areaAtual
+              ? () => navigate('/audioaulas')
+              : () => navigate('/')
+        }
       />
 
       {/* Continue de onde parou (card de retomada rapida) */}
@@ -80,6 +94,8 @@ const Audioaulas = () => {
           favoritos={state.favoritos}
           alternarFavorito={state.alternarFavorito}
           handleTocarAula={state.handleTocarAula}
+          capituloSelecionado={capituloSelecionado}
+          setCapituloSelecionado={setCapituloSelecionado}
         />
       ) : state.aba === 'aulas' ? (
         /* ───────── HUB DE ÁREAS ───────── */

@@ -110,6 +110,8 @@ interface AudioaulasListaAulasProps {
   favoritos: Set<string>;
   alternarFavorito: (a: AulaAudio) => void;
   handleTocarAula: (a: AulaAudio) => void;
+  capituloSelecionado?: string | null;
+  setCapituloSelecionado?: (cap: string | null) => void;
 }
 
 export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
@@ -122,9 +124,14 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   tocando,
   favoritos,
   alternarFavorito,
-  handleTocarAula
+  handleTocarAula,
+  capituloSelecionado: capituloExterno,
+  setCapituloSelecionado: setCapituloExterno
 }: AudioaulasListaAulasProps) {
-  const [capituloSelecionado, setCapituloSelecionado] = useState<string | null>(null);
+  const [capituloLocal, setCapituloLocal] = useState<string | null>(null);
+
+  const capituloSelecionado = capituloExterno !== undefined ? capituloExterno : capituloLocal;
+  const setCapituloSelecionado = setCapituloExterno || setCapituloLocal;
 
   // Encontrar índice do capítulo selecionado para navegação anterior/próximo
   const capituloIdx = useMemo(() => {
@@ -144,7 +151,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
       setCapituloSelecionado(temasDaArea[novoIdx][0]);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [capituloIdx, temasDaArea]);
+  }, [capituloIdx, setCapituloSelecionado, temasDaArea]);
 
   // Se estiver visualizando a área específica (ex: ECA ou Direito Constitucional)
   if (areaAtual) {
@@ -181,7 +188,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                   </h3>
                 </div>
                 <span className="text-xs text-zinc-400 font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
-                  {temasDaArea.length} capítulo(s)
+                  {temasDaArea.length} {temasDaArea.length === 1 ? 'capítulo' : 'capítulos'}
                 </span>
               </div>
 
@@ -217,7 +224,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                           <div className="flex items-center gap-2 mt-1.5">
                             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-400">
                               <Headphones className="w-3 h-3 text-primary" />
-                              {lista.length} aula(s)
+                              {lista.length} {lista.length === 1 ? 'aula' : 'aulas'}
                             </span>
 
                             {contemAulaTocando && (
@@ -247,20 +254,15 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
               transition={{ duration: 0.2 }}
               className="space-y-6"
             >
-              {/* Barra Superior do Capítulo */}
+              {/* Barra Superior do Capítulo — Sem botão duplicado de voltar */}
               <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <button
-                    onClick={() => setCapituloSelecionado(null)}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10 transition active:scale-95"
-                    aria-label="Voltar para a lista de capítulos"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>Voltar aos Capítulos</span>
-                  </button>
-
                   <span className="text-xs font-bold text-primary px-3 py-1 rounded-full bg-primary/15 border border-primary/30">
                     Capítulo {capituloIdx + 1} de {temasDaArea.length}
+                  </span>
+
+                  <span className="text-xs font-semibold text-zinc-400 px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">
+                    {aulasDoCapitulo.length} {aulasDoCapitulo.length === 1 ? 'aula' : 'aulas'}
                   </span>
                 </div>
 
@@ -269,7 +271,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                     {capituloSelecionado}
                   </h3>
                   <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                    {aulasDoCapitulo.length} aula(s) disponível(is) neste capítulo
+                    {aulasDoCapitulo.length} {aulasDoCapitulo.length === 1 ? 'aula disponível' : 'aulas disponíveis'} neste capítulo
                   </p>
                 </div>
               </div>

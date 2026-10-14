@@ -46,7 +46,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     nome: 'Constituição Federal',
     subtitulo: 'Aprenda a base fundamental do Estado',
     capa: '/pilulas/cf_portrait.webp',
-    aulasInfo: '26 aula(s)',
+    aulasInfo: '26 aulas',
     rota: '/audioaulas/Direito%20Constitucional'
   },
   {
@@ -55,7 +55,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     nome: 'Código Penal',
     subtitulo: 'Ouça a explicação dos artigos penais',
     capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp'),
-    aulasInfo: '11 aula(s)',
+    aulasInfo: '11 aulas',
     rota: '/audioaulas/Direito%20Penal'
   },
   {
@@ -64,7 +64,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     nome: 'Código de Processo Penal',
     subtitulo: 'Ritos, provas e procedimentos penais',
     capa: '/pilulas/cpp_portrait.webp',
-    aulasInfo: '35 aula(s)',
+    aulasInfo: '35 aulas',
     rota: '/audioaulas/Processo%20Penal'
   },
   {
@@ -82,7 +82,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     nome: 'Código de Processo Civil',
     subtitulo: 'Prazos, recursos e tutela jurisdicional',
     capa: '/assets/direito-civil.webp',
-    aulasInfo: '17 aula(s)',
+    aulasInfo: '17 aulas',
     rota: '/audioaulas/Processo%20Civil'
   },
   {
@@ -91,7 +91,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     nome: 'Consolidação das Leis do Trabalho',
     subtitulo: 'Direitos, regras e deveres trabalhistas',
     capa: '/pilulas/clt_portrait.webp',
-    aulasInfo: '7 aula(s)',
+    aulasInfo: '7 aulas',
     rota: '/audioaulas/Direito%20do%20Trabalho'
   },
   {
@@ -140,7 +140,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     nome: 'Estatuto da Criança e do Adolescente',
     subtitulo: 'Lei nº 8.069/1990 — Aulas completas artigo por artigo',
     capa: '/assets/eca-kids.webp',
-    aulasInfo: '322 aula(s)',
+    aulasInfo: '322 aulas',
     destaque: true,
     rota: '/audioaulas/ECA%20(Crian%C3%A7a%20e%20Adolescente)'
   },
@@ -354,7 +354,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
                             <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
                               {nomeFormatado}
                             </p>
-                            <p className="text-[11px] text-zinc-300 mt-0.5">{total} aula(s)</p>
+                            <p className="text-[11px] text-zinc-300 mt-0.5">{total} {total === 1 ? 'aula' : 'aulas'}</p>
                           </div>
                           <span className="shrink-0 h-7 w-7 sm:h-8 sm:w-8 grid place-items-center rounded-full bg-white/20 text-white backdrop-blur group-hover:bg-primary group-hover:text-primary-foreground transition">
                             <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -647,7 +647,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
                             <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
                               {nomeFormatado}
                             </p>
-                            <p className="text-[11px] text-zinc-300 mt-0.5">{total} aula(s)</p>
+                            <p className="text-[11px] text-zinc-300 mt-0.5">{total} {total === 1 ? 'aula' : 'aulas'}</p>
                           </div>
                           <span className="shrink-0 h-7 w-7 sm:h-8 sm:w-8 grid place-items-center rounded-full bg-white/20 text-white backdrop-blur group-hover:bg-primary group-hover:text-primary-foreground transition">
                             <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
