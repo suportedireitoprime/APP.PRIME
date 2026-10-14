@@ -5,6 +5,7 @@ import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { fonteDeAudio } from '@/lib/nativo/audioOffline';
 import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 import { toast } from 'sonner';
+import { salvarProgressoAudioaula, obterUltimoProgressoAudioaula, normalizarStreamAudio } from '@/lib/audioaulaProgresso';
 
 export interface AulaAudio {
   id: number;
@@ -31,7 +32,8 @@ interface AudioaulasPlayerContextType {
   favoritos: Set<string>;
   alternarFavorito: (a: AulaAudio) => void;
   setAberto: (v: boolean) => void;
-  tocar: (a: AulaAudio, customFila?: AulaAudio[]) => Promise<void>;
+  tocar: (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number) => Promise<void>;
+  retomarUltimoProgresso: () => void;
   togglePlay: () => void;
   pular: (dir: 1 | -1) => void;
   seek: (v: number) => void;
@@ -69,6 +71,7 @@ const fallbackAudioaulasContext: AudioaulasPlayerContextType = {
   alternarFavorito: () => {},
   setAberto: () => {},
   tocar: async () => {},
+  retomarUltimoProgresso: () => {},
   togglePlay: () => {},
   pular: () => {},
   seek: () => {},
@@ -195,13 +198,21 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     });
   }, []);
 
+  const tempoInicialRef = useRef<number | null>(null);
+
   const tocar = useCallback(
-    async (a: AulaAudio, customFila?: AulaAudio[]) => {
+    async (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number) => {
       const el = audioRef.current;
       if (!a.url_audio) return;
 
       if (customFila) {
         setFilaCustom(customFila);
+      }
+
+      if (typeof tempoInicial === 'number' && tempoInicial > 0) {
+        tempoInicialRef.current = tempoInicial;
+      } else {
+        tempoInicialRef.current = null;
       }
 
       if (atualId === a.id) {
@@ -217,11 +228,12 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       }
 
       setAtualId(a.id);
-      setTempo(0);
+      setTempo(tempoInicial ?? 0);
       setDur(0);
 
       try {
-        const src = await fonteDeAudio(audioIdOf(a), a.url_audio);
+        const streamUrl = normalizarStreamAudio(a.url_audio);
+        const src = await fonteDeAudio(audioIdOf(a), streamUrl);
         if (el) {
           el.src = src;
           el.playbackRate = velocidade;
@@ -237,6 +249,16 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     },
     [atualId, velocidade],
   );
+
+  const retomarUltimoProgresso = useCallback(() => {
+    const ultimo = obterUltimoProgressoAudioaula();
+    if (!ultimo) return;
+    const aulaEncontrada = aulas.find((x) => x.id === ultimo.id);
+    if (aulaEncontrada) {
+      void tocar(aulaEncontrada, undefined, ultimo.tempo);
+      setAberto(true);
+    }
+  }, [aulas, tocar]);
 
   const togglePlay = useCallback(() => {
     const el = audioRef.current;
@@ -309,6 +331,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     alternarFavorito,
     setAberto,
     tocar,
+    retomarUltimoProgresso,
     togglePlay,
     pular,
     seek,
@@ -317,8 +340,6 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     audioRef,
   };
 
-
-
   return (
     <Ctx.Provider value={value}>
       {children}
@@ -326,8 +347,33 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         ref={audioRef}
         preload="auto"
         playsInline
-        onTimeUpdate={(e) => setTempo(e.currentTarget.currentTime)}
-        onLoadedMetadata={(e) => setDur(e.currentTarget.duration || 0)}
+        onTimeUpdate={(e) => {
+          const t = e.currentTarget.currentTime;
+          setTempo(t);
+          const d = e.currentTarget.duration || 0;
+          if (atual && t > 1) {
+            salvarProgressoAudioaula({
+              id: atual.id,
+              area: atual.area,
+              tema: atual.tema,
+              titulo: atual.titulo,
+              sequencia: atual.sequencia,
+              url_audio: atual.url_audio,
+              tempo: t,
+              duracao: d,
+              timestamp: Date.now(),
+            });
+          }
+        }}
+        onLoadedMetadata={(e) => {
+          const d = e.currentTarget.duration || 0;
+          setDur(d);
+          if (tempoInicialRef.current !== null && tempoInicialRef.current > 0 && tempoInicialRef.current < d) {
+            e.currentTarget.currentTime = tempoInicialRef.current;
+            setTempo(tempoInicialRef.current);
+            tempoInicialRef.current = null;
+          }
+        }}
         onPlay={() => setTocando(true)}
         onPause={() => setTocando(false)}
         onError={(e) => {

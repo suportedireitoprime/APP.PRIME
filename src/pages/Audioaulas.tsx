@@ -12,6 +12,7 @@ import { AudioaulasGridAreas } from '@/components/audioaulas/home/AudioaulasGrid
 import { AudioaulasListaAulas } from '@/components/audioaulas/home/AudioaulasListaAulas';
 import { AudioaulasBuscaInput } from '@/components/audioaulas/home/AudioaulasBuscaInput';
 import { AudioaulasPlayerModal } from '@/components/audioaulas/home/AudioaulasPlayerModal';
+import { AudioaulasContinuarOuvindo } from '@/components/audioaulas/home/AudioaulasContinuarOuvindo';
 
 const Audioaulas = () => {
   const navigate = useNavigate();
@@ -58,6 +59,9 @@ const Audioaulas = () => {
         loading={state.loading}
         totalAulas={areaAtual ? state.daArea.length : state.aulas.length}
       />
+
+      {/* Continue de onde parou (card de retomada rapida) */}
+      <AudioaulasContinuarOuvindo />
 
       {state.loading ? (
         <div className="py-20 grid place-items-center text-muted-foreground">
