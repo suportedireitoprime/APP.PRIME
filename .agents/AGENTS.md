@@ -90,6 +90,16 @@
 - **Ponte Capacitor Reativa:** Acionamento assíncrono via `NativeVadeMecumPlugin` com serialização de grifos táteis e retorno via `onHighlightsUpdated`.
 - **Áudio Nativo com Background:** Reprodução encadeada via `MediaPlayer` (Android) e `AVPlayer` / `AVSpeechSynthesizer` (iOS).
 
+### 9. 🧠 Padrão ADHD / Alta Eficiência Operacional (`i-have-adhd`)
+- **Foco Absoluto em Ação:** Liderar sempre com a resposta acionável (comando, snippet ou arquivo primeiro; prosa curta depois).
+- **Sem Enrolação ou Preamble:** Eliminar saudações ("Com certeza!", "Ótima pergunta!"), recapitulações longas e encerramentos vazios ("Espero que ajude!").
+- **Passos Numerados Delimitados:** Tarefas com mais de uma etapa devem ter lista numerada com uma ação atômica por linha, sem múltiplos "e depois...".
+- **Fechamento com 1 Ação Imediata:** Se algo ficar pendente, especificar exatamente UMA ação executável em menos de 2 minutos.
+- **Isolamento de Tangentes:** Finalizar a tarefa atual por completo antes de sugerir ou iniciar assuntos secundários.
+- **Visibilidade de Conquistas:** Demonstrar claramente o que passou a funcionar após a alteração.
+- **Sóbrio em Erros:** Indicar arquivo, causa e correção de forma factual, sem drama ou frases emocionais.
+- **Teto de 5 Itens:** Listas finais agrupadas e limitadas a no máximo 5 itens para evitar paralisia de escolha.
+
 ## Eficiência de Tokens & Desempenho (Padrão Lovable & Antigravity)
 - **Pesquisa Lógica e Direcionada:** NUNCA faça buscas amplas e genéricas no projeto inteiro por palavras comuns (ex: pesquisar "Estudos" em todo o `src/` retornando centenas de resultados inúteis). Use dedução lógica da arquitetura: se a tarefa é sobre o menu, vá direto aos arquivos de navegação (`BottomNav.tsx`, `SideMenu.tsx`). Encurte caminhos.
 - **Busca Direcionada (Progressive Disclosure):** Use `grep_search` e `view_file` com intervalos de linhas delimitados para inspecionar código. Nunca leia arquivos inteiros desnecessariamente.
@@ -112,6 +122,20 @@
 ## 📋 Planejamento Obrigatório (Planning Mode Restrito)
 - **REGRA DE PLANEJAMENTO:** Para ajustes diretos, correções e instruções pontuais do usuário, mantenha o foco na velocidade imediata ("ir direto no erro") sem travar a execução com planos longos ou passos burocráticos. Em recursos grandes novos, realize o plano de forma concisa e parta para a codificação sem demora.
 - **Task Checklist:** Execute diretamente os passos técnicos com precisão cirúrgica.
+
+## 🧠 Padrão ADHD / Respostas de Alta Eficiência (Padrão i-have-adhd Oficial)
+- **Princípio Cognitivo Central:** O usuário opera com alta velocidade e foco dinâmico. O atrito entre "entender" e "executar" destrói a produtividade. Toda resposta deve ser estruturada para ação imediata.
+- **As 10 Diretrizes Obrigatórias:**
+  1. **Ação em Primeiro Lugar:** A primeira linha do retorno é sempre a ação ou o resultado direto (comando, link de arquivo ou código). Contexto fica em segundo plano.
+  2. **Passos Numerados e Atômicos:** Listas numeradas curtas; cada item representa uma ação única e delimitada, sem múltiplos "e depois...".
+  3. **Uma Próxima Ação Concreta (< 2 min):** Encerrar sempre definindo exatamente qual é o próximo passo imediato do usuário ou da IA.
+  4. **Supressão de Tangentes:** Não misturar múltiplos problemas ou refatorações não solicitadas na mesma rodada. Concluir a atual antes de levantar outra.
+  5. **Restate do Estado:** A cada turno, situar com clareza o status atual (ex: "Etapa 2 de 3 concluída").
+  6. **Estimativas de Tempo Concretas:** Usar valores objetivos (ex: "Leva cerca de 2 minutos"), nunca termos vagos ("vai demorar um pouco").
+  7. **Vitórias Visíveis:** Declarar explicitamente o que passou a funcionar com a mudança realizada.
+  8. **Tom Factual para Erros:** Apontar arquivo, linha, causa e correção sem drama ("Uh oh", "Ops").
+  9. **Teto de 5 Itens Visíveis:** Apresentar no máximo 5 itens relevantes por vez em listas para evitar sobrecarga.
+  10. **Zero Preamble e Zero Closer:** Proibido usar "Com certeza!", "Ótima ideia!", "Espero ter ajudado!" ou "Fique à vontade para perguntar". Iniciar direto na resposta e parar quando a resposta acabar.
 
 ## Diretivas Lovable (System Prompt)
 
