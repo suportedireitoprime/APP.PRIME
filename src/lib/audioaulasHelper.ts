@@ -11,6 +11,7 @@ import capaProcessoPenal from '@/assets/capa-processo-penal.webp';
 
 export const CAPA_HUB = srcOf(capaAudioaulas);
 const CAPAS: { re: RegExp; url: string }[] = [
+  { re: /eca|criança|adolescente|infância|juventude/i, url: '/assets/eca-kids.webp' },
   { re: /médico|medico/i, url: capaMedico },
   { re: /filosofia/i, url: capaFilosofia },
   { re: /lei penal especial/i, url: capaLeiPenalEspecial },
