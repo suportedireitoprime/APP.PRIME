@@ -98,7 +98,7 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
               <p className="text-xs font-semibold text-primary uppercase tracking-wider line-clamp-1">
                 {progresso.area} {progresso.tema ? `• ${progresso.tema}` : ''}
               </p>
-              <h4 className="text-sm sm:text-base font-bold text-white leading-tight line-clamp-1 group-hover:text-primary transition-colors mt-0.5">
+              <h4 className="text-sm sm:text-base !font-sans font-bold text-white leading-tight line-clamp-1 group-hover:text-primary transition-colors mt-0.5 tracking-normal normal-case">
                 {progresso.titulo}
               </h4>
 

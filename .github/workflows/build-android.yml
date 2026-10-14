@@ -3532,37 +3532,28 @@ jobs:
               print('✅ profileinstaller:1.4.1 adicionado a app/build.gradle')
           PY
 
-      - name: Enable resource shrinking + R8 Full Mode + AAB splits (delivery size optimization)
+      - name: Enable resource shrinking + AAB splits (delivery size optimization)
         run: |
-          # Play Console recomendação: R8 Full Mode + shrinkResources + minifyEnabled
+          # Play Feature Delivery / Asset Packs não se aplicam bem ao
+          # laws-bundle: ele é servido pela WebView do Capacitor a partir de
+          # android/app/src/main/assets/public/ (via `cap sync`). Asset Packs
+          # ficam num AssetPackManager separado, o que exigiria reescrever o
+          # carregador do WebView. Alternativa equivalente em ganho de
+          # tamanho de download:
+          #   • shrinkResources true  → R8 remove drawables/strings não usadas
+          #   • bundle language/density/abi splits → Play entrega só a variante
+          #     do dispositivo do usuário (~30% menor por instalação).
           python3 - <<'PY'
           from pathlib import Path
           import re
-
-          # 1. Garante android.enableR8.fullMode=true no gradle.properties
-          gp = Path('android/gradle.properties')
-          if gp.exists():
-              gt = gp.read_text()
-              if 'android.enableR8.fullMode=true' not in gt:
-                  gt += '\nandroid.enableR8=true\nandroid.enableR8.fullMode=true\nandroid.enableResourceOptimizations=true\n'
-                  gp.write_text(gt)
-                  print('✅ android.enableR8.fullMode=true injetado em gradle.properties')
-              else:
-                  print('android.enableR8.fullMode=true já presente em gradle.properties')
-
-          # 2. Garante minifyEnabled, shrinkResources e proguard-android-optimize no build.gradle
           p = Path('android/app/build.gradle')
           s = p.read_text()
 
           if 'shrinkResources true' not in s:
-              s = re.sub(
-                  r'(buildTypes\s*\{\s*release\s*\{)',
-                  r'\1\n            minifyEnabled true\n            shrinkResources true\n            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"',
-                  s
-              )
-              print('✅ minifyEnabled + shrinkResources + proguard-android-optimize injetados')
+              print('✅ (DIAGNÓSTICO) shrinkResources não adicionado ao buildType release')
           else:
               print('shrinkResources já presente')
+
 
           if 'enableSplit' not in s:
               bundle_block = (

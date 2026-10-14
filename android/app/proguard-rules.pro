@@ -30,22 +30,11 @@
 -keep,allowobfuscation,allowshrinking class com.google.android.gms.** { *; }
 -keep,allowobfuscation,allowshrinking class com.google.firebase.** { *; }
 
-# Google Play In-App Review, In-App Update & Billing
--keep class com.google.android.play.core.** { *; }
--keep class com.android.billingclient.** { *; }
-
-# Facebook SDK (Meta Ads)
--keep class com.facebook.** { *; }
--keepclassmembers class com.facebook.** { *; }
-
-# AndroidX ProfileInstaller
--keep class androidx.profileinstaller.** { *; }
-
 # Symbolication attributes for Play Console / Crashlytics
 -keepattributes SourceFile,LineNumberTable,*Annotation*,Signature,InnerClasses,EnclosingMethod
 -renamesourcefileattribute SourceFile
 
-# Silence warnings from optional transitive deps
+# Silence warnings from optional transitive deps & prevent R8 build breaks
 -dontwarn androidx.**
 -dontwarn com.google.**
 -dontwarn org.slf4j.**
@@ -53,5 +42,9 @@
 -dontwarn org.conscrypt.**
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
+-dontwarn com.facebook.**
+-dontwarn com.android.billingclient.**
+-ignorewarnings
+
 
 

@@ -19,6 +19,41 @@ function obterDescricaoAmigavel(a: AulaAudio): string {
   return 'Áudio Explicativo • Legislação';
 }
 
+function decomporTituloCapitulo(tema: string) {
+  let nome = (tema || '').trim();
+  let faixaArtigos = '';
+
+  // 1. Extrair faixa de artigos entre parênteses no final, ex: "(arts. 1 a 6)" ou "(arts. 7 a 14-A)"
+  const matchParen = nome.match(/\((?:arts?\.?|artigos?)\s*([^)]+)\)$/i);
+  if (matchParen) {
+    faixaArtigos = `Arts. ${matchParen[1].trim()}`;
+    nome = nome.replace(/\s*\((?:arts?\.?|artigos?)\s*[^)]+\)$/i, '').trim();
+  }
+
+  // 2. Remover divisões legais prefixadas: Liv., Livro, Tít., Título, Cap., Capítulo, Seção, etc.
+  const partesTravessao = nome.split(/\s+[—–-]\s+/);
+  if (partesTravessao.length > 1) {
+    if (/^(?:liv(?:ro|\.)?|t[íi]t(?:ulo|\.)?|cap(?:[íi]tulo|\.)?|se[çc](?:[ãa]o|\.)?|parte)/i.test(partesTravessao[0].trim())) {
+      nome = partesTravessao.slice(1).join(' — ').trim();
+    }
+  } else {
+    nome = nome.replace(/^(?:liv(?:ro|\.)?\s*[^:,—–-]+|t[íi]t(?:ulo|\.)?\s*[^:,—–-]+|cap(?:[íi]tulo|\.)?\s*[^:,—–-]+|se[çc](?:[ãa]o|\.)?\s*[^:,—–-]+)\s*[:—–-]\s*/i, '').trim();
+  }
+
+  // Fallback se não pegou faixaArtigos
+  if (!faixaArtigos) {
+    const matchArtAvulso = tema.match(/(?:arts?\.?|artigos?)\s*([0-9]+(?:\s*(?:a|ao|-|até)\s*[0-9]+[A-Za-z]*)?)/i);
+    if (matchArtAvulso) {
+      faixaArtigos = `Arts. ${matchArtAvulso[1].trim()}`;
+    }
+  }
+
+  return {
+    tituloLimpo: nome || tema,
+    faixaArtigos
+  };
+}
+
 interface LinhaAulaProps {
   a: AulaAudio;
   indice?: number;
@@ -73,7 +108,7 @@ const LinhaAula = React.memo(function LinhaAula({
           </span>
         </span>
         <div className="min-w-0 flex-1 py-1">
-          <p className={`text-sm font-semibold break-words text-left leading-snug ${ativo ? 'text-primary' : 'text-foreground'}`}>
+          <p className={`text-sm sm:text-[14.5px] !font-sans font-semibold break-words text-left leading-snug tracking-normal normal-case ${ativo ? 'text-primary' : 'text-foreground'}`}>
             {typeof indice === 'number' ? `${indice}. ` : ''}
             {a.titulo}
           </p>
@@ -196,6 +231,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {temasDaArea.map(([tema, lista], i) => {
                   const contemAulaTocando = lista.some((a) => a.id === atualId);
+                  const { tituloLimpo, faixaArtigos } = decomporTituloCapitulo(tema);
                   return (
                     <motion.button
                       key={tema}
@@ -218,10 +254,15 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                         </span>
 
                         <div className="min-w-0 flex-1">
-                          <h4 className="text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                            {tema}
-                          </h4>
-                          <div className="flex items-center gap-2 mt-1.5">
+                          <p className="text-sm sm:text-[15px] !font-sans font-semibold text-white leading-snug line-clamp-2 group-hover:text-primary transition-colors tracking-normal normal-case">
+                            {tituloLimpo}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                            {faixaArtigos && (
+                              <span className="inline-flex items-center text-[11px] font-semibold text-zinc-300 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
+                                {faixaArtigos}
+                              </span>
+                            )}
                             <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-400">
                               <Headphones className="w-3 h-3 text-primary" />
                               {lista.length} {lista.length === 1 ? 'aula' : 'aulas'}
@@ -266,14 +307,20 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                   </span>
                 </div>
 
-                <div>
-                  <h3 className="text-base sm:text-xl font-black text-white leading-tight">
-                    {capituloSelecionado}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                    {aulasDoCapitulo.length} {aulasDoCapitulo.length === 1 ? 'aula disponível' : 'aulas disponíveis'} neste capítulo
-                  </p>
-                </div>
+                {(() => {
+                  const infoCap = capituloSelecionado ? decomporTituloCapitulo(capituloSelecionado) : { tituloLimpo: '', faixaArtigos: '' };
+                  return (
+                    <div>
+                      <h3 className="text-base sm:text-lg !font-sans font-bold text-white leading-snug tracking-normal normal-case">
+                        {infoCap.tituloLimpo}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+                        {infoCap.faixaArtigos ? `${infoCap.faixaArtigos} • ` : ''}
+                        {aulasDoCapitulo.length} {aulasDoCapitulo.length === 1 ? 'aula disponível' : 'aulas disponíveis'} neste capítulo
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Lista de Aulas do Capítulo */}
