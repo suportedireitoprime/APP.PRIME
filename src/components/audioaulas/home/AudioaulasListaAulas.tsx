@@ -6,9 +6,33 @@ import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 import { CapaOtimizada } from './CapaOtimizada';
 import { motion, AnimatePresence } from 'framer-motion';
 
+function formatarTituloAula(rawTitulo: string): string {
+  if (!rawTitulo) return '';
+
+  // 1. Remover número sequencial no início, ex: "1. ", "2. ", "01 - "
+  let texto = rawTitulo.trim().replace(/^[0-9]+[. \t\-–—]+/i, '').trim();
+
+  // 2. Remover prefixo de sigla ou código, ex: "ECA — ", "ECA - ", "CF/88 — "
+  texto = texto.replace(/^(?:ECA|CF\/?88|CP|CPP|CC|CPC|CLT|CTN|CDC|CTB|OAB|EOAB)\s*[-–—:]\s*/i, '').trim();
+  texto = texto.replace(/^(?:ECA\s*[-–—:]\s*)+/i, '').trim();
+
+  // 3. Formatar para iniciar direto no Art. <número>: <tema>
+  const matchArtigo = texto.match(/^art(?:igo|\.)?\s*([0-9]+(?:\s*[-–—]\s*[A-Za-z]+|[A-Za-z]+)?)[º°ª]?(?:\s*[-–—:]\s*(.*))?$/i);
+  if (matchArtigo) {
+    const num = matchArtigo[1].replace(/\s+/g, '').trim();
+    const resto = (matchArtigo[2] || '').trim();
+    if (resto) {
+      return `Art. ${num}: ${resto.charAt(0).toUpperCase() + resto.slice(1)}`;
+    }
+    return `Art. ${num}`;
+  }
+
+  return texto;
+}
+
 function obterDescricaoAmigavel(a: AulaAudio): string {
   if (a.area && /eca|criança|adolescente/i.test(a.area)) {
-    return 'Lei nº 8.069/1990 • Estatuto da Criança e do Adolescente';
+    return 'Lei nº 8.069/1990';
   }
   if (a.tema && !/^(liv\.|tít\.|cap\.|seç\.)/i.test(a.tema.trim())) {
     return `${a.tema} • Áudio Explicativo`;
@@ -56,7 +80,6 @@ function decomporTituloCapitulo(tema: string) {
 
 interface LinhaAulaProps {
   a: AulaAudio;
-  indice?: number;
   atualId: number | null;
   tocando: boolean;
   favoritos: Set<string>;
@@ -66,7 +89,6 @@ interface LinhaAulaProps {
 
 const LinhaAula = React.memo(function LinhaAula({
   a,
-  indice,
   atualId,
   tocando,
   favoritos,
@@ -109,8 +131,7 @@ const LinhaAula = React.memo(function LinhaAula({
         </span>
         <div className="min-w-0 flex-1 py-1">
           <p className={`text-sm sm:text-[14.5px] !font-sans font-semibold break-words text-left leading-snug tracking-normal normal-case ${ativo ? 'text-primary' : 'text-foreground'}`}>
-            {typeof indice === 'number' ? `${indice}. ` : ''}
-            {a.titulo}
+            {formatarTituloAula(a.titulo)}
           </p>
           <div className="flex items-center gap-1.5 mt-1 text-left">
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${ativo && tocando ? 'bg-primary animate-pulse' : 'bg-emerald-400'}`} />
@@ -337,7 +358,6 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                   <LinhaAula
                     key={a.id}
                     a={a}
-                    indice={a.sequencia ?? i + 1}
                     atualId={atualId}
                     tocando={tocando}
                     favoritos={favoritos}
