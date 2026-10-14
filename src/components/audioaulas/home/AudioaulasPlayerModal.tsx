@@ -4,7 +4,7 @@ import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 import { BotaoDownloadAudio } from './BotaoDownloadAudio';
 import { capaDaArea, fmt, VELOCIDADES } from '@/lib/audioaulasHelper';
 import { CapaOtimizada } from './CapaOtimizada';
-import { haptic } from '@/utils/haptics';
+import { haptic } from '@/lib/nativeHaptics';
 import { LEIS_SUPABASE_URL, LEIS_SUPABASE_ANON_KEY } from '@/lib/legislacaoBackend';
 
 function extrairArtigoInfo(aula: AulaAudio) {

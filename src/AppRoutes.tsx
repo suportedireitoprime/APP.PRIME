@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
+import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";
 import { useScreenTracking } from "@/lib/screenTracking";
 import { initNavTelemetry, markRouteChange } from "@/lib/navTelemetry";
@@ -409,7 +410,7 @@ const BibliotecaEditar = lazy(() => import("./pages/BibliotecaEditar.tsx"));
 const BibliotecaCaderno = lazy(() => import("./pages/BibliotecaCaderno.tsx"));
 const AdminLeituraNativa = lazy(() => import("./pages/AdminLeituraNativa.tsx"));
 const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
-const Audioaulas = lazy(routePrefetch.audioaulas);
+const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
 const LeisCantadas = lazy(() => import("./pages/LeisCantadas.tsx"));
 const AdminLeisCantadas = lazy(() => import("./pages/AdminLeisCantadas.tsx"));
 const AdminConteudoFila = lazy(() => import("./pages/AdminConteudoFila.tsx"));

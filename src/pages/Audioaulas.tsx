@@ -8,7 +8,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 
 import { useAudioaulas } from '@/hooks/useAudioaulas';
 import { AudioaulasHero } from '@/components/audioaulas/home/AudioaulasHero';
-import { AudioaulasGridAreas } from '@/components/audioaulas/home/AudioaulasGridAreas';
+import { AudioaulasGridAreas, type ModoVisualizacao } from '@/components/audioaulas/home/AudioaulasGridAreas';
 import { AudioaulasListaAulas } from '@/components/audioaulas/home/AudioaulasListaAulas';
 import { AudioaulasBuscaInput } from '@/components/audioaulas/home/AudioaulasBuscaInput';
 import { AudioaulasPlayerModal } from '@/components/audioaulas/home/AudioaulasPlayerModal';
@@ -38,14 +38,24 @@ const Audioaulas = () => {
   }, [searchParams, state.aulas, state.loading]);
 
   const [capituloSelecionado, setCapituloSelecionado] = useState<string | null>(null);
+  const [modoVerTodos, setModoVerTodos] = useState<ModoVisualizacao>('hub');
 
-  // Reset capítulo ao trocar de área
+  // Reset capítulo e modo ao trocar de área
   useEffect(() => {
     setCapituloSelecionado(null);
+    setModoVerTodos('hub');
   }, [areaAtual]);
 
+  const isBottomNavVisivel = !state.aberto && !areaAtual && modoVerTodos === 'hub' && state.aba === 'aulas';
+
   const content = (
-    <div className={`w-full bg-zinc-950 text-foreground relative ${isDesktop ? 'rounded-2xl pb-12 min-h-[700px] border border-white/5 overflow-hidden' : 'min-h-screen pb-40'}`}>
+    <div className={`w-full bg-zinc-950 text-foreground relative ${
+      isDesktop
+        ? 'rounded-2xl pb-12 min-h-[700px] border border-white/5 overflow-hidden'
+        : isBottomNavVisivel
+          ? 'min-h-screen pb-40'
+          : 'min-h-screen pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]'
+    }`}>
       <div className="absolute inset-0 z-0 opacity-60">
         <ShapeGrid 
           speed={0.5} 
@@ -61,21 +71,26 @@ const Audioaulas = () => {
       <div className="relative z-10">
         {state.gateNodes}
 
-      <AudioaulasHero 
-        areaAtual={areaAtual}
-        loading={state.loading}
-        totalAulas={areaAtual ? state.daArea.length : state.aulas.length}
-        onVoltar={
-          capituloSelecionado
-            ? () => setCapituloSelecionado(null)
-            : areaAtual
-              ? () => navigate('/audioaulas')
-              : () => navigate('/')
-        }
-      />
+      {/* Hero: exibido na home e na página da área. No "Ver todos", oculta para a lista iniciar direto no topo com um só botão voltar */}
+      {(areaAtual !== null || modoVerTodos === 'hub') && (
+        <AudioaulasHero 
+          areaAtual={areaAtual}
+          loading={state.loading}
+          totalAulas={areaAtual ? state.daArea.length : state.aulas.length}
+          onVoltar={
+            capituloSelecionado
+              ? () => setCapituloSelecionado(null)
+              : areaAtual
+                ? () => navigate('/audioaulas')
+                : () => navigate('/')
+          }
+        />
+      )}
 
-      {/* Continue de onde parou (card de retomada rapida) */}
-      <AudioaulasContinuarOuvindo />
+      {/* Continue de onde parou (card de retomada rápida) — exclusivo da home hub */}
+      {!areaAtual && modoVerTodos === 'hub' && state.aba === 'aulas' && (
+        <AudioaulasContinuarOuvindo />
+      )}
 
       {state.loading ? (
         <div className="py-20 grid place-items-center text-muted-foreground">
@@ -98,8 +113,12 @@ const Audioaulas = () => {
           setCapituloSelecionado={setCapituloSelecionado}
         />
       ) : state.aba === 'aulas' ? (
-        /* ───────── HUB DE ÁREAS ───────── */
-        <AudioaulasGridAreas areas={state.areas} />
+        /* ───────── HUB DE ÁREAS / MODO VER TODOS EM LISTA ───────── */
+        <AudioaulasGridAreas
+          areas={state.areas}
+          modo={modoVerTodos}
+          onModoChange={setModoVerTodos}
+        />
       ) : (
         /* ───────── ABAS: favoritas / baixadas / buscar ───────── */
         <>
@@ -146,10 +165,10 @@ const Audioaulas = () => {
         tocandoIntro={state.tocandoIntro}
       />
 
-      {/* Navegação Inferior das Áudio Aulas */}
+      {/* Navegação Inferior das Áudio Aulas — visível estritamente no início */}
       <AudioaulasBottomNav
         ativo={areaAtual ? null : state.aba}
-        hidden={state.aberto}
+        hidden={!isBottomNavVisivel}
         onSelect={(t) => {
           if (areaAtual) navigate('/audioaulas');
           state.setAba(t);

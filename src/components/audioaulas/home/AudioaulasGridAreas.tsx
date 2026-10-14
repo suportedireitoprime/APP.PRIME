@@ -200,15 +200,22 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
   }
 ];
 
+export type ModoVisualizacao = 'hub' | 'areas' | 'codigos' | 'estatutos';
+
 interface AudioaulasGridAreasProps {
   areas: [string, number][];
+  modo?: ModoVisualizacao;
+  onModoChange?: (modo: ModoVisualizacao) => void;
 }
 
-type ModoVisualizacao = 'hub' | 'areas' | 'codigos' | 'estatutos';
-
-export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ areas }: AudioaulasGridAreasProps) {
+export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
+  areas,
+  modo: modoProp,
+  onModoChange,
+}: AudioaulasGridAreasProps) {
   const navigate = useNavigate();
-  const [modo, setModo] = useState<ModoVisualizacao>('hub');
+  const [modoInterno, setModoInterno] = useState<ModoVisualizacao>('hub');
+  const modo = modoProp !== undefined ? modoProp : modoInterno;
   const [busca, setBusca] = useState('');
 
   const refCarrosselAreas = useRef<HTMLDivElement>(null);
@@ -249,10 +256,16 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
     );
   }, [busca]);
 
-  const voltarParaHub = useCallback(() => {
-    setModo('hub');
+  const alterarModo = useCallback((novoModo: ModoVisualizacao) => {
+    setModoInterno(novoModo);
+    onModoChange?.(novoModo);
     setBusca('');
-  }, []);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [onModoChange]);
+
+  const voltarParaHub = useCallback(() => {
+    alterarModo('hub');
+  }, [alterarModo]);
 
   if (areas.length === 0) {
     return (
@@ -296,7 +309,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
 
                 <div className="flex items-center gap-2 shrink-0">
                   <button
-                    onClick={() => { setModo('areas'); setBusca(''); }}
+                    onClick={() => alterarModo('areas')}
                     className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-primary/20 hover:border-primary/40 transition active:scale-95"
                     aria-label="Ver todas as áreas do direito"
                   >
@@ -396,7 +409,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
 
                   <div className="flex items-center gap-2 shrink-0">
                     <button
-                      onClick={() => { setModo('codigos'); setBusca(''); }}
+                      onClick={() => alterarModo('codigos')}
                       className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-primary/20 hover:border-primary/40 transition active:scale-95"
                       aria-label="Ver todos os códigos"
                     >
@@ -478,7 +491,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
 
                   <div className="flex items-center gap-2 shrink-0">
                     <button
-                      onClick={() => { setModo('estatutos'); setBusca(''); }}
+                      onClick={() => alterarModo('estatutos')}
                       className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-primary/20 hover:border-primary/40 transition active:scale-95"
                       aria-label="Ver todos os estatutos"
                     >
@@ -571,14 +584,14 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.2 }}
-            className="space-y-6"
+            className="space-y-6 pt-[calc(1.25rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-12"
           >
-            {/* Header da Lista */}
+            {/* Header da Lista — Começa no Topo com Único Botão de Voltar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <button
                   onClick={voltarParaHub}
-                  aria-label="Voltar para o hub"
+                  aria-label="Voltar para a home de audioaulas"
                   className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-white/10 transition shrink-0 active:scale-95"
                 >
                   <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
@@ -618,135 +631,161 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({ are
               </div>
             </div>
 
-            {/* Grid dos Itens da Lista Selecionada */}
+            {/* ───────── LISTA VERTICAL: ÁREAS DO DIREITO ───────── */}
             {modo === 'areas' && (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="flex flex-col gap-2.5 sm:gap-3">
                 {areasFiltradasLista.map(([nome, total]) => {
                   const nomeFormatado = nome.replace(/^Direitos?\s+(do\s+)?/i, '').trim();
                   return (
                     <button
                       key={nome}
                       onClick={() => navigate(`/audioaulas/${encodeURIComponent(nome)}`)}
-                      className="group relative aspect-square rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
+                      className="group flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/[0.04] border border-white/5 hover:border-primary/40 hover:bg-white/[0.07] transition-all duration-200 active:scale-[0.99] text-left"
                     >
-                      <CapaOtimizada
-                        src={capaDaArea(nome)}
-                        alt={nome}
-                        animacaoEntrada
-                        className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
+                      <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                        {/* Capa à esquerda */}
+                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-900 border border-white/10 shadow-md">
+                          <CapaOtimizada
+                            src={capaDaArea(nome)}
+                            alt={nome}
+                            animacaoEntrada
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        </div>
 
-                      <div className="absolute inset-0 p-3.5 flex flex-col justify-between">
-                        <span className="self-start h-8 w-8 sm:h-9 sm:w-9 grid place-items-center rounded-xl bg-primary/90 text-primary-foreground shadow-lg shadow-black/40">
-                          <Headphones className="h-4 w-4 sm:h-5 sm:w-5" />
-                        </span>
-
-                        <div className="flex items-end justify-between gap-1.5">
-                          <div className="min-w-0 pr-1">
-                            <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
-                              {nomeFormatado}
-                            </p>
-                            <p className="text-[11px] text-zinc-300 mt-0.5">{total} {total === 1 ? 'aula' : 'aulas'}</p>
+                        {/* Informações ao centro */}
+                        <div className="min-w-0">
+                          <p className="font-bold text-sm sm:text-base text-white tracking-wide truncate group-hover:text-primary transition-colors">
+                            {nomeFormatado}
+                          </p>
+                          <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-1">
+                            <span className="flex items-center gap-1 text-primary font-medium">
+                              <Headphones className="w-3.5 h-3.5 shrink-0" />
+                              <span>{total} {total === 1 ? 'aula' : 'aulas'}</span>
+                            </span>
+                            <span className="text-zinc-600">•</span>
+                            <span className="text-zinc-400 truncate">Direito {nomeFormatado}</span>
                           </div>
-                          <span className="shrink-0 h-7 w-7 sm:h-8 sm:w-8 grid place-items-center rounded-full bg-white/20 text-white backdrop-blur group-hover:bg-primary group-hover:text-primary-foreground transition">
-                            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                          </span>
                         </div>
                       </div>
+
+                      {/* Seta à direita */}
+                      <span className="shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-zinc-400 group-hover:text-primary group-hover:bg-primary/10 transition">
+                        <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </span>
                     </button>
                   );
                 })}
               </div>
             )}
 
+            {/* ───────── LISTA VERTICAL: CÓDIGOS ───────── */}
             {modo === 'codigos' && (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="flex flex-col gap-2.5 sm:gap-3">
                 {codigosFiltrados.map((cod) => (
                   <button
                     key={cod.id}
                     onClick={() => navigate(cod.rota)}
-                    className="group relative aspect-[3/4] rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
+                    className="group flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/[0.04] border border-white/5 hover:border-primary/40 hover:bg-white/[0.07] transition-all duration-200 active:scale-[0.99] text-left"
                   >
-                    <CapaOtimizada
-                      src={cod.capa}
-                      alt={cod.nome}
-                      animacaoEntrada
-                      className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                    <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                      {/* Capa à esquerda com sigla */}
+                      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-900 border border-white/10 shadow-md">
+                        <CapaOtimizada
+                          src={cod.capa}
+                          alt={cod.nome}
+                          animacaoEntrada
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                        <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-[10px] font-black text-white border border-white/20 backdrop-blur">
+                          {cod.sigla}
+                        </span>
+                      </div>
 
-                    <div className="absolute inset-0 p-3.5 flex flex-col justify-between">
-                      <span className="self-start px-2 py-0.5 rounded-md bg-black/60 text-white font-black text-[11px] tracking-wider border border-white/20 backdrop-blur">
-                        {cod.sigla}
-                      </span>
-
+                      {/* Informações ao centro */}
                       <div className="min-w-0">
-                        <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
+                        <p className="font-bold text-sm sm:text-base text-white tracking-wide truncate group-hover:text-primary transition-colors">
                           {cod.nome}
                         </p>
+                        <p className="text-xs text-zinc-400 truncate mt-0.5">
+                          {cod.subtitulo}
+                        </p>
                         {cod.aulasInfo && (
-                          <p className="text-[11px] text-primary font-semibold mt-1 flex items-center gap-1">
-                            <Headphones className="w-3 h-3" />
-                            {cod.aulasInfo}
-                          </p>
+                          <div className="flex items-center gap-1.5 text-xs text-primary font-semibold mt-1">
+                            <Headphones className="w-3.5 h-3.5 shrink-0" />
+                            <span>{cod.aulasInfo}</span>
+                          </div>
                         )}
                       </div>
                     </div>
+
+                    {/* Seta à direita */}
+                    <span className="shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-zinc-400 group-hover:text-primary group-hover:bg-primary/10 transition">
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </span>
                   </button>
                 ))}
               </div>
             )}
 
+            {/* ───────── LISTA VERTICAL: ESTATUTOS ───────── */}
             {modo === 'estatutos' && (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+              <div className="flex flex-col gap-2.5 sm:gap-3">
                 {estatutosFiltrados.map((est) => (
                   <button
                     key={est.id}
                     onClick={() => navigate(est.rota)}
-                    className={`group relative aspect-[3/4] rounded-2xl overflow-hidden text-left transition-all duration-300 focus-visible:outline-none active:scale-[0.98] ${
+                    className={`group flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/[0.04] transition-all duration-200 active:scale-[0.99] text-left ${
                       est.destaque
-                        ? 'border-2 border-primary/60 shadow-lg shadow-primary/25 hover:border-primary hover:shadow-2xl hover:shadow-primary/30'
-                        : 'border border-white/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20'
+                        ? 'border-2 border-primary/50 hover:border-primary hover:bg-primary/[0.06] shadow-lg shadow-primary/15'
+                        : 'border border-white/5 hover:border-primary/40 hover:bg-white/[0.07]'
                     }`}
                   >
-                    <CapaOtimizada
-                      src={est.capa}
-                      alt={est.nome}
-                      animacaoEntrada
-                      className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
-
-                    <div className="absolute inset-0 p-3.5 flex flex-col justify-between">
-                      <div className="flex items-center justify-between gap-1">
-                        <span className={`px-2 py-0.5 rounded-md font-black text-[11px] tracking-wider border backdrop-blur ${
-                          est.destaque
-                            ? 'bg-primary text-primary-foreground border-primary'
-                            : 'bg-black/60 text-white border-white/20'
-                        }`}>
+                    <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                      {/* Capa à esquerda com sigla */}
+                      <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden shrink-0 bg-zinc-900 border border-white/10 shadow-md">
+                        <CapaOtimizada
+                          src={est.capa}
+                          alt={est.nome}
+                          animacaoEntrada
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                        <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-black/80 text-[10px] font-black text-white border border-white/20 backdrop-blur">
                           {est.sigla}
                         </span>
-
-                        {est.destaque && (
-                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold">
-                            <Sparkles className="w-3 h-3 text-rose-400" /> Destaque
-                          </span>
-                        )}
                       </div>
 
+                      {/* Informações ao centro */}
                       <div className="min-w-0">
-                        <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
-                          {est.nome}
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-sm sm:text-base text-white tracking-wide truncate group-hover:text-primary transition-colors">
+                            {est.nome}
+                          </p>
+                          {est.destaque && (
+                            <span className="shrink-0 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold flex items-center gap-1">
+                              <Sparkles className="w-2.5 h-2.5 text-rose-400" /> Destaque
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-zinc-400 truncate mt-0.5">
+                          {est.subtitulo}
                         </p>
                         {est.aulasInfo && (
-                          <p className="text-[11px] text-primary font-bold mt-1 flex items-center gap-1">
-                            <Headphones className="w-3 h-3" />
-                            {est.aulasInfo}
-                          </p>
+                          <div className="flex items-center gap-1.5 text-xs text-primary font-semibold mt-1">
+                            <Headphones className="w-3.5 h-3.5 shrink-0" />
+                            <span>{est.aulasInfo}</span>
+                          </div>
                         )}
                       </div>
                     </div>
+
+                    {/* Seta à direita */}
+                    <span className="shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-zinc-400 group-hover:text-primary group-hover:bg-primary/10 transition">
+                      <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </span>
                   </button>
                 ))}
               </div>
