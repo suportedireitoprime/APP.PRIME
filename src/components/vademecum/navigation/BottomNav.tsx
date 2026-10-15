@@ -268,8 +268,10 @@ const BottomNav = () => {
             <div className="relative flex items-center justify-center">
               <Newspaper className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/noticias') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
               {noticiasCount > 0 && !path.startsWith('/noticias') && (
-                <span className="absolute -top-1.5 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-black leading-none flex items-center justify-center border-2 border-[#1C1C1E] shadow-md animate-in zoom-in-75 duration-200">
-                  {noticiasCount > 99 ? '99+' : noticiasCount}
+                <span className="absolute -top-1.5 -right-2.5 min-w-[19px] h-[18px] px-1.5 rounded-full bg-primary text-white text-[10px] font-medium tracking-tight leading-none flex items-center justify-center border-[1.5px] border-[#1C1C1E] shadow-[0_2px_8px_rgba(0,0,0,0.7),0_0_6px_rgba(225,29,72,0.4)] drop-shadow-md animate-in zoom-in-75 duration-200">
+                  <span className="drop-shadow-[0_1px_1.5px_rgba(0,0,0,0.7)]">
+                    {noticiasCount > 99 ? '99+' : noticiasCount}
+                  </span>
                 </span>
               )}
             </div>

@@ -42,10 +42,12 @@ const HomeActionShortcuts = () => {
           >
             {badgeCount > 0 && item.badgeColor && (
               <span
-                className="absolute top-1 right-2 min-w-[16px] h-[16px] px-1 rounded-full text-white text-[9px] font-bold leading-none flex items-center justify-center border border-white/20 shadow z-10"
+                className="absolute top-1 right-2 min-w-[17px] h-[16px] px-1 rounded-full text-white text-[9.5px] font-medium tracking-tight leading-none flex items-center justify-center border border-white/20 shadow-md drop-shadow z-10"
                 style={{ backgroundColor: item.badgeColor }}
               >
-                {badgeCount > 99 ? '99+' : badgeCount}
+                <span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.7)]">
+                  {badgeCount > 99 ? '99+' : badgeCount}
+                </span>
               </span>
             )}
 
