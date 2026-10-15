@@ -1,7 +1,7 @@
 /**
- * Robô Gerador em Massa de Conteúdos de IA para Artigos de Leis
+ * Robô Gerador em Massa de Conteúdos de IA para Artigos de Leis (Modo Turbo em Lotes de 15)
  * 
- * Gera automaticamente:
+ * Gera simultaneamente em lotes de 15 artigos:
  * 1. Explicação didática com estrutura por seções (Caput, Incisos, etc.)
  * 2. Exemplos práticos realistas com casos concretos
  * 3. Termos jurídicos explicados de forma simples
@@ -12,10 +12,10 @@
  * - artigo_ai_cache (tipo: 'explicacao', 'exemplo', 'termos')
  * 
  * Uso no Terminal:
- *   node scripts/gerador_ia_artigos.cjs --lei clt               (Processa CLT)
- *   node scripts/gerador_ia_artigos.cjs --lei cdc --limite 10     (Processa 10 artigos do CDC)
- *   node scripts/gerador_ia_artigos.cjs --todas                  (Processa todas as leis)
- *   node scripts/gerador_ia_artigos.cjs --lei cp --concorrencia 3 (3 artigos em paralelo)
+ *   node scripts/gerador_ia_artigos.cjs --todas               (Processa todas as leis em lotes de 15)
+ *   node scripts/gerador_ia_artigos.cjs --lei cc              (Processa Código Civil em lotes de 15)
+ *   node scripts/gerador_ia_artigos.cjs --lei cdc --lote 15   (Processa CDC em lotes de 15)
+ *   node scripts/gerador_ia_artigos.cjs --lei cp --limite 30  (Processa 30 artigos do Código Penal)
  */
 
 const fs = require('fs');
@@ -101,41 +101,64 @@ const TABELAS_MAP = {
   ldb: 'LDB_DIRETRIZES_EDUCACAO',
 };
 
-// Prompts oficiais alinhados com o assistente-juridica do app
+// Prompt 3-em-1 unificado de alta performance (gera Explicação + Exemplo + Termos de uma vez)
+const PROMPT_UNIFICADO_3EM1 = `Você é um jurista brasileiro de alto nível e professor de direito.
+Para o artigo de lei fornecido, você DEVE gerar as 3 seções completas utilizando RIGOROSAMENTE as tags delimitadoras abaixo, sem saudações ou preâmbulos:
+
+<<<SECAO_EXPLICACAO>>>
+Estrutura por seções usando o marcador '---SECAO---' em linha sozinha entre seções.
+Seção 1 DEVE ser '## Caput'. Depois '## Inciso I', '## Parágrafo único', etc. conforme constar no texto.
+Dentro de cada seção inclua:
+### Em uma frase (ideia central em 1 linha)
+### Destrinchando (3 parágrafos curtos explicando elementos e efeitos práticos)
+### Exemplo prático (caso com nomes fictícios e consequência legal)
+### Pegadinha de prova (alerta sobre pegadinhas comuns em concursos/OAB)
+
+<<<SECAO_EXEMPLO>>>
+Crie exatamente 3 exemplos práticos e realistas usando nomes fictícios.
+Separe os exemplos com o marcador '---EXEMPLO---' em linha sozinha antes de cada um.
+Cada exemplo deve ter:
+## Exemplo X: [Título curto]
+### O caso (situação em 2 a 4 linhas)
+### Encaixando na lei (como a norma se aplica ao fato)
+### Se mudasse um detalhe (uma variação jurídica)
+
+<<<SECAO_TERMOS>>>
+Separe cada termo com o marcador '---TERMO---' em uma linha sozinha.
+Formato: '## [Nome do Termo]' seguido da explicação simples e analogia do dia a dia.
+Explique de 3 a 8 termos essenciais presentes no dispositivo.`;
+
+// Prompts individuais mantidos para fallback
 const PROMPT_EXPLICACAO = `Você é um jurista brasileiro que explica artigos de lei de forma direta, técnica e didática.
 REGRAS:
-- NUNCA use saudações ("Olá", "Bem-vindo", "Hoje vamos aprender"). Vá DIRETO ao ponto.
-- Primeira linha SEMPRE entra na explicação, sem preâmbulo.
+- NUNCA use saudações. Vá DIRETO ao ponto.
 - Organize por seções usando o marcador "---SECAO---" em linha sozinha entre seções.
-- Seção 1 DEVE ser "## Caput". Depois "## Inciso I", "## Parágrafo único" conforme couber.
-- Dentro de cada seção inclua:
-  ### Em uma frase (ideia central em 1 linha)
-  ### Destrinchando (3 parágrafos curtos explicando elementos e efeitos práticos)
-  ### Exemplo prático (caso com nomes fictícios e consequência legal)
-  ### Pegadinha de prova (alerta sobre pegadinhas comuns em concursos/OAB)
-- Use markdown limpo.`;
+- Seção 1 DEVE ser "## Caput". Depois incisos e parágrafos.
+- Em cada seção:
+  ### Em uma frase
+  ### Destrinchando
+  ### Exemplo prático
+  ### Pegadinha de prova`;
 
-const PROMPT_EXEMPLO = `Você é um jurista brasileiro que ilustra artigos de lei com exemplos práticos.
+const PROMPT_EXEMPLO = `Você é um jurista brasileiro que ilustra artigos de lei com 3 exemplos práticos e realistas.
 REGRAS:
-- NUNCA use saudações. Vá DIRETO aos exemplos.
-- Crie exatamente 3 exemplos práticos e realistas usando nomes fictícios.
+- NUNCA use saudações.
 - Separe os exemplos com o marcador "---EXEMPLO---" em linha sozinha antes de cada um.
-- Cada exemplo deve ter:
+- Cada exemplo:
   ## Exemplo X: [Título curto]
-  ### O caso (situação em 2 a 4 linhas)
-  ### Encaixando na lei (como a norma se aplica ao fato)
-  ### Se mudasse um detalhe (uma variação jurídica)`;
+  ### O caso
+  ### Encaixando na lei
+  ### Se mudasse um detalhe`;
 
-const PROMPT_TERMOS = `Você é um glossarista jurídico. Identifique os termos técnicos ou jurídicos presentes no artigo e explique em linguagem simples.
+const PROMPT_TERMOS = `Você é um glossarista jurídico. Explique de 3 a 8 termos técnicos do artigo em linguagem simples.
 REGRAS:
-- Separe cada termo com o marcador "---TERMO---" em uma linha sozinha.
-- Formato: "## [Nome do Termo]" seguido da explicação simples e analogia do dia a dia.
-- Explique de 3 a 8 termos essenciais presentes no dispositivo.`;
+- Separe cada termo com o marcador "---TERMO---" em linha sozinha.
+- Formato: "## [Nome do Termo]" seguido da explicação simples e analogia.`;
 
-async function chamarOmniRoute(systemPrompt, userText, maxTentativas = 4) {
+async function chamarOmniRoute(systemPrompt, userText, maxTentativas = 2) {
   for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 90000); // 90s de tolerância contra fila do OmniRoute
+    const timeout = setTimeout(() => controller.abort(), 60000); // 60s de tolerância por requisição
 
     try {
       const res = await fetch(OMNIROUTE_URL, {
@@ -170,10 +193,35 @@ async function chamarOmniRoute(systemPrompt, userText, maxTentativas = 4) {
     } catch (err) {
       clearTimeout(timeout);
       if (tentativa === maxTentativas) throw err;
-      const espera = 3000 * tentativa;
-      await new Promise(r => setTimeout(r, espera));
+      await new Promise(r => setTimeout(r, 2000 * tentativa));
     }
   }
+}
+
+function extrairSecoes(raw) {
+  let explicacao = '';
+  let exemplo = '';
+  let termos = '';
+
+  const idxExp = raw.indexOf('<<<SECAO_EXPLICACAO>>>');
+  const idxEx = raw.indexOf('<<<SECAO_EXEMPLO>>>');
+  const idxTer = raw.indexOf('<<<SECAO_TERMOS>>>');
+
+  if (idxExp !== -1 && idxEx !== -1 && idxTer !== -1) {
+    explicacao = raw.slice(idxExp + '<<<SECAO_EXPLICACAO>>>'.length, idxEx).trim();
+    exemplo = raw.slice(idxEx + '<<<SECAO_EXEMPLO>>>'.length, idxTer).trim();
+    termos = raw.slice(idxTer + '<<<SECAO_TERMOS>>>'.length).trim();
+  } else {
+    const matchExp = raw.match(/<<<\s*SECAO_EXPLICACAO\s*>>>([\s\S]*?)(?=<<<\s*SECAO_EXEMPLO\s*>>>|$)/i);
+    const matchEx = raw.match(/<<<\s*SECAO_EXEMPLO\s*>>>([\s\S]*?)(?=<<<\s*SECAO_TERMOS\s*>>>|$)/i);
+    const matchTer = raw.match(/<<<\s*SECAO_TERMOS\s*>>>([\s\S]*?)$/i);
+
+    if (matchExp) explicacao = matchExp[1].trim();
+    if (matchEx) exemplo = matchEx[1].trim();
+    if (matchTer) termos = matchTer[1].trim();
+  }
+
+  return { explicacao, exemplo, termos };
 }
 
 function carregarProgresso() {
@@ -200,14 +248,42 @@ async function processarArtigo(artigo, leiNome, slug, progresso) {
   }
 
   const numLimpo = String(artigo.numero || '').replace(/^art(?:igo|\.)?\s*/i, '').trim();
-  const contextText = `LEGISLAÇÃO: ${leiNome}\nDISPOSITIVO: Artigo ${numLimpo}\nTEXTO OFICIAL:\n${artigo.texto || ''}`;
+  const textoLimpo = (artigo.texto || '').trim().slice(0, 3200);
+  const contextText = `LEGISLAÇÃO: ${leiNome}\nDISPOSITIVO: Artigo ${numLimpo}\nTEXTO OFICIAL:\n${textoLimpo}`;
 
-  // Executa as 3 gerações em paralelo para máxima velocidade
-  const [explicacao, exemplo, termos] = await Promise.all([
-    chamarOmniRoute(PROMPT_EXPLICACAO, contextText),
-    chamarOmniRoute(PROMPT_EXEMPLO, contextText),
-    chamarOmniRoute(PROMPT_TERMOS, contextText),
-  ]);
+  let explicacao = '';
+  let exemplo = '';
+  let termos = '';
+
+  try {
+    // 1. Gera as 3 seções de uma vez em chamada única ultrarrápida
+    const raw3em1 = await chamarOmniRoute(PROMPT_UNIFICADO_3EM1, contextText);
+    const extraidas = extrairSecoes(raw3em1);
+    explicacao = extraidas.explicacao;
+    exemplo = extraidas.exemplo;
+    termos = extraidas.termos;
+  } catch (err) {
+    // Fallback de contingência
+    const [resExp, resEx, resTer] = await Promise.all([
+      chamarOmniRoute(PROMPT_EXPLICACAO, contextText),
+      chamarOmniRoute(PROMPT_EXEMPLO, contextText),
+      chamarOmniRoute(PROMPT_TERMOS, contextText),
+    ]);
+    explicacao = resExp;
+    exemplo = resEx;
+    termos = resTer;
+  }
+
+  // Se por alguma razão pontual faltou uma seção, completa individualmente
+  if (!explicacao || explicacao.length < 20) {
+    explicacao = await chamarOmniRoute(PROMPT_EXPLICACAO, contextText);
+  }
+  if (!exemplo || exemplo.length < 20) {
+    exemplo = await chamarOmniRoute(PROMPT_EXEMPLO, contextText);
+  }
+  if (!termos || termos.length < 20) {
+    termos = await chamarOmniRoute(PROMPT_TERMOS, contextText);
+  }
 
   // 1. Atualiza vade_mecum_artigos
   await sb
@@ -270,16 +346,22 @@ async function main() {
   const args = process.argv.slice(2);
   const leiFilterIndex = args.indexOf('--lei');
   const limiteIndex = args.indexOf('--limite');
+  const loteIndex = args.indexOf('--lote');
+  const concorrenciaIndex = args.indexOf('--concorrencia');
 
   const leiFiltro = leiFilterIndex !== -1 ? args[leiFilterIndex + 1]?.toLowerCase() : null;
   const limite = limiteIndex !== -1 ? parseInt(args[limiteIndex + 1], 10) : null;
+  const TAMANHO_LOTE = loteIndex !== -1 ? parseInt(args[loteIndex + 1], 10) :
+                       concorrenciaIndex !== -1 ? parseInt(args[concorrenciaIndex + 1], 10) : 15;
 
-  console.log('╔═══════════════════════════════════════════════════════════╗');
-  console.log('║   ROBÔ GERADOR DE EXPLICAÇÃO, EXEMPLO E TERMOS COM IA    ║');
-  console.log('╚═══════════════════════════════════════════════════════════╝\n');
-  console.log(`• Motor IA: OmniRoute (${OMNIROUTE_MODEL}) em chamadas paralelas`);
-  console.log(`• Filtro de Lei: ${leiFiltro ? leiFiltro.toUpperCase() : 'Todas as Leis'}`);
-  if (limite) console.log(`• Limite por Execução: ${limite} artigos`);
+  console.log('╔═════════════════════════════════════════════════════════════════╗');
+  console.log('║   ROBÔ IA TURBO: 15 EM 15 ARTIGOS SIMULTÂNEOS [3-EM-1]          ║');
+  console.log('╚═════════════════════════════════════════════════════════════════╝\n');
+  console.log(`• Modo: Lotes de ${TAMANHO_LOTE} artigos gerados de uma vez simultaneamente`);
+  console.log(`• Conteúdo por Artigo: [Explicação Completa + 3 Exemplos + Glossário de Termos]`);
+  console.log(`• Motor IA: OmniRoute (${OMNIROUTE_MODEL}) via pipeline 3-em-1`);
+  console.log(`• Filtro de Lei: ${leiFiltro ? leiFiltro.toUpperCase() : 'Todas as Leis (--todas)'}`);
+  if (limite) console.log(`• Limite Total da Sessão: ${limite} artigos`);
   console.log('');
 
   // Busca catálogo de leis
@@ -307,7 +389,7 @@ async function main() {
     const lei = leisParaProcessar[idxLei];
     console.log(`\n📚 [${idxLei + 1}/${leisParaProcessar.length}] ${lei.nome} (Slug: ${lei.slug})`);
 
-    // Busca TODOS os artigos da lei com paginação (sem limite de 1000)
+    // Busca TODOS os artigos da lei com paginação
     let artigos = [];
     let from = 0;
     const step = 1000;
@@ -333,49 +415,71 @@ async function main() {
       continue;
     }
 
-    const pendentes = artigosReais.filter(
-      a => !progresso.processados[a.id] && (!a.explicacao_resumido || !a.exemplo || !a.termos)
-    );
+    // Filtra apenas artigos pendentes
+    const pendentes = artigosReais.filter(art => {
+      const numLimpo = String(art.numero || '').replace(/^art(?:igo|\.)?\s*/i, '').trim();
+      const jaProcessado = progresso.processados[art.id] || 
+        (art.explicacao_resumido && art.exemplo && art.termos &&
+         art.explicacao_resumido.length > 20 && art.exemplo.length > 20 && art.termos.length > 20);
 
-    console.log(`  ↪ Artigos Reais: ${artigosReais.length} (Cabeçalhos ignorados: ${artigos.length - artigosReais.length}) | Pendentes: ${pendentes.length}`);
+      if (jaProcessado && !progresso.processados[art.id]) {
+        progresso.processados[art.id] = { numero: numLimpo, lei: lei.nome, data: new Date().toISOString() };
+      }
+      return !jaProcessado;
+    });
+
+    salvarProgresso(progresso);
+
+    console.log(`  ↪ Artigos Reais: ${artigosReais.length} | Já concluídos: ${artigosReais.length - pendentes.length} | Pendentes: ${pendentes.length}`);
 
     if (pendentes.length === 0) {
       console.log(`  ✅ Todos os artigos desta lei já estão 100% preenchidos!`);
       continue;
     }
 
-    for (let i = 0; i < artigosReais.length; i++) {
+    // Processamento em lotes de TAMANHO_LOTE (15 em 15 simultâneos)
+    const totalLotes = Math.ceil(pendentes.length / TAMANHO_LOTE);
+
+    for (let i = 0; i < pendentes.length; i += TAMANHO_LOTE) {
       if (limite && totalProcessados >= limite) {
         console.log(`\n🛑 Limite de ${limite} artigos atingido.`);
         return;
       }
 
-      const art = artigosReais[i];
-      const numLimpo = String(art.numero || '').replace(/^art(?:igo|\.)?\s*/i, '').trim();
+      const lote = pendentes.slice(i, i + TAMANHO_LOTE);
+      const loteNum = Math.floor(i / TAMANHO_LOTE) + 1;
+      const numerosArtigos = lote.map(a => String(a.numero || '').replace(/^art(?:igo|\.)?\s*/i, '').trim());
+      const inicioArt = numerosArtigos[0];
+      const fimArt = numerosArtigos[numerosArtigos.length - 1];
 
-      // Checar se já foi processado no arquivo de progresso OU se já está completo no banco
-      if (progresso.processados[art.id] || (art.explicacao_resumido && art.exemplo && art.termos)) {
-        if (!progresso.processados[art.id]) {
-          progresso.processados[art.id] = { numero: numLimpo, lei: lei.nome, data: new Date().toISOString() };
-          salvarProgresso(progresso);
+      console.log(`\n⚡ [Lote ${loteNum}/${totalLotes}] Disparando ${lote.length} artigos simultâneos (Arts. ${inicioArt} ao ${fimArt})...`);
+      const tLote0 = Date.now();
+
+      // Dispara os 15 artigos em paralelo
+      const promessasLote = lote.map(async (art) => {
+        const numLimpo = String(art.numero || '').replace(/^art(?:igo|\.)?\s*/i, '').trim();
+        const tArt0 = Date.now();
+        try {
+          await processarArtigo(art, lei.nome, lei.slug, progresso);
+          const dur = ((Date.now() - tArt0) / 1000).toFixed(1);
+          console.log(`  ✓ Art. ${numLimpo} pronto (${dur}s) [Explicação + Exemplo + Termos]`);
+          return { success: true, numero: numLimpo };
+        } catch (err) {
+          const dur = ((Date.now() - tArt0) / 1000).toFixed(1);
+          console.log(`  ✗ Art. ${numLimpo} falhou (${dur}s): ${err.message}`);
+          return { success: false, numero: numLimpo, erro: err.message };
         }
-        continue;
-      }
+      });
 
-      process.stdout.write(`  [${i + 1}/${artigosReais.length}] Art. ${numLimpo}... `);
+      const resultados = await Promise.all(promessasLote);
+      const sucessos = resultados.filter(r => r.success).length;
+      totalProcessados += sucessos;
 
-      try {
-        const t0 = Date.now();
-        await processarArtigo(art, lei.nome, lei.slug, progresso);
-        const tempo = ((Date.now() - t0) / 1000).toFixed(1);
-        console.log(`✓ Concluído (${tempo}s) [Explicação + Exemplo + Termos]`);
-        totalProcessados++;
-      } catch (err) {
-        console.log(`✗ Erro: ${err.message}`);
-      }
+      const tempoLote = ((Date.now() - tLote0) / 1000).toFixed(1);
+      console.log(`🏁 Lote ${loteNum} finalizado em ${tempoLote}s (${sucessos}/${lote.length} artigos salvos no Supabase)`);
 
-      // Pequena pausa preventiva contra rate-limits
-      await new Promise(r => setTimeout(r, 300));
+      // Pausa rápida entre lotes para respeitar a rede
+      await new Promise(r => setTimeout(r, 600));
     }
   }
 
