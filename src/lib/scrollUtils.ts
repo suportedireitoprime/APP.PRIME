@@ -38,3 +38,8 @@ export function resetGlobalScroll() {
     }
   });
 }
+
+// Injeta também no escopo global do window para segurança total contra ReferenceErrors em HMR
+if (typeof window !== 'undefined') {
+  (window as any).resetGlobalScroll = resetGlobalScroll;
+}

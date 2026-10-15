@@ -132,12 +132,12 @@ REGRAS:
 - Formato: "## [Nome do Termo]" seguido da explicação simples e analogia do dia a dia.
 - Explique de 3 a 8 termos essenciais presentes no dispositivo.`;
 
-async function chamarOmniRoute(systemPrompt, userText, maxTentativas = 3) {
+async function chamarOmniRoute(systemPrompt, userText, maxTentativas = 4) {
   for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 45000);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 90000); // 90s de tolerância contra fila do OmniRoute
 
+    try {
       const res = await fetch(OMNIROUTE_URL, {
         method: 'POST',
         headers: {
@@ -168,8 +168,10 @@ async function chamarOmniRoute(systemPrompt, userText, maxTentativas = 3) {
 
       throw new Error('Resposta vazia da IA');
     } catch (err) {
+      clearTimeout(timeout);
       if (tentativa === maxTentativas) throw err;
-      await new Promise(r => setTimeout(r, 2000 * tentativa));
+      const espera = 3000 * tentativa;
+      await new Promise(r => setTimeout(r, espera));
     }
   }
 }
