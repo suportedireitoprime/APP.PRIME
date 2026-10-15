@@ -214,13 +214,14 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       audioAulaPendenteRef.current = null;
 
       if (typeof tempoInicial === 'number' && tempoInicial > 0) {
-        tempoInicialRef.current = tempoInicial;
+        // Inicia 1 segundo antes do tempo registrado para garantir contexto contínuo
+        tempoInicialRef.current = Math.max(0, tempoInicial - 1.0);
       } else {
         tempoInicialRef.current = null;
       }
 
       setAtualId(a.id);
-      setTempo(tempoInicial ?? 0);
+      setTempo(tempoInicialRef.current ?? 0);
       setDur(0);
 
       try {
@@ -303,7 +304,8 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     if (!ultimo) return;
     const aulaEncontrada = aulas.find((x) => x.id === ultimo.id);
     if (aulaEncontrada) {
-      void tocar(aulaEncontrada, undefined, ultimo.tempo, true);
+      const tempoRecuado = Math.max(0, (ultimo.tempo || 0) - 1.0);
+      void tocar(aulaEncontrada, undefined, tempoRecuado, true);
       setAberto(true);
     }
   }, [aulas, tocar]);
@@ -402,6 +404,15 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           const t = e.currentTarget.currentTime;
           setTempo(t);
           const d = e.currentTarget.duration || 0;
+
+          // Se estiver tocando a vinheta de abertura, começa a áudio aula 1 segundo antes do término da vinheta
+          if (tocandoIntro && audioAulaPendenteRef.current && d > 1.5 && t >= d - 1.0) {
+            const pendente = audioAulaPendenteRef.current;
+            audioAulaPendenteRef.current = null;
+            void tocarConteudoAula(pendente.aula, pendente.tempoInicial);
+            return;
+          }
+
           if (atual && t > 1 && !tocandoIntro) {
             salvarProgressoAudioaula({
               id: atual.id,
