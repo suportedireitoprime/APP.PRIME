@@ -55,7 +55,7 @@ export function PainelAcao({ source, tipo }: { source: Fonte; tipo: AcaoTipo }) 
     if (itens.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-          <Scale className="h-10 w-10 text-muted-foreground/30 mb-3" />
+          <ScaleIcon className="h-10 w-10 text-muted-foreground/30 mb-3" />
           <p className="text-sm font-semibold text-foreground/70">Nenhuma lei específica</p>
           <p className="text-xs text-muted-foreground mt-1">A IA não encontrou um artigo de lei específico que responda diretamente a esta questão (pode ser doutrina, jurisprudência ou caso puramente prático).</p>
         </div>
