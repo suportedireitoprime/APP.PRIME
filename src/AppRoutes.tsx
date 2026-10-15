@@ -10,6 +10,9 @@ import { prefetchNearby } from "@/lib/nearbyPrefetch";
 import { SkipToContent } from "@/components/a11y/SkipToContent";
 const AnalyticsDebugPanel = lazy(() => import("@/components/AnalyticsDebugPanel"));
 import { Capacitor } from '@capacitor/core';
+import { isAdminEmail } from "@/lib/adminEmails";
+import { shouldBypassAsAdmin, isSimulatingExpired } from "@/lib/devSimulation";
+import { useSubscription } from "@/hooks/useSubscription";
 
 
 
@@ -463,13 +466,6 @@ const AssistenteApp = lazy(() => import("./pages/AssistenteApp.tsx"));
 const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 
 
-
-const preloadImage = new Image();
-preloadImage.src = brasaoImg;
-preloadImage.decoding = 'async';
-import { isAdminEmail } from "@/lib/adminEmails";
-import { shouldBypassAsAdmin, isSimulatingExpired } from "@/lib/devSimulation";
-import { useSubscription } from "@/hooks/useSubscription";
 
 const TrialExpiredModal = lazy(() => import("@/components/TrialExpiredModal").then(m => ({ default: m.TrialExpiredModal })));
 
