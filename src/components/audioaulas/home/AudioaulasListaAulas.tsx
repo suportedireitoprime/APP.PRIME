@@ -159,9 +159,52 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   setCapituloSelecionado: setCapituloExterno
 }: AudioaulasListaAulasProps) {
   const [capituloLocal, setCapituloLocal] = useState<string | null>(null);
+  const [isShimmering, setIsShimmering] = useState(false);
+  const [isAbaShimmering, setIsAbaShimmering] = useState(false);
 
   const capituloSelecionado = capituloExterno !== undefined ? capituloExterno : capituloLocal;
   const setCapituloSelecionado = setCapituloExterno || setCapituloLocal;
+
+  const prevCapituloRef = useRef<string | null>(capituloSelecionado);
+  const prevAbaRef = useRef(aba);
+
+  const handleSelecionarCapitulo = useCallback(
+    (tema: string | null) => {
+      setIsShimmering(true);
+      setCapituloSelecionado(tema);
+      const timer = setTimeout(() => {
+        setIsShimmering(false);
+      }, 120);
+      return () => clearTimeout(timer);
+    },
+    [setCapituloSelecionado],
+  );
+
+  useEffect(() => {
+    if (capituloSelecionado !== prevCapituloRef.current) {
+      prevCapituloRef.current = capituloSelecionado;
+      if (capituloSelecionado !== null) {
+        setIsShimmering(true);
+        const timer = setTimeout(() => {
+          setIsShimmering(false);
+        }, 120);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [capituloSelecionado]);
+
+  useEffect(() => {
+    if (aba !== prevAbaRef.current) {
+      prevAbaRef.current = aba;
+      if (aba !== 'aulas') {
+        setIsAbaShimmering(true);
+        const timer = setTimeout(() => {
+          setIsAbaShimmering(false);
+        }, 120);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [aba]);
 
   // Encontrar índice do capítulo selecionado para navegação anterior/próximo
   const capituloIdx = useMemo(() => {
@@ -178,10 +221,10 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
     if (capituloIdx < 0) return;
     const novoIdx = capituloIdx + dir;
     if (novoIdx >= 0 && novoIdx < temasDaArea.length) {
-      setCapituloSelecionado(temasDaArea[novoIdx][0]);
+      handleSelecionarCapitulo(temasDaArea[novoIdx][0]);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [capituloIdx, setCapituloSelecionado, temasDaArea]);
+  }, [capituloIdx, handleSelecionarCapitulo, temasDaArea]);
 
   // Se estiver visualizando a área específica (ex: ECA ou Direito Constitucional)
   if (areaAtual) {
@@ -228,7 +271,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                       key={tema}
                       whileHover={{ scale: 1.015 }}
                       whileTap={{ scale: 0.985 }}
-                      onClick={() => setCapituloSelecionado(tema)}
+                      onClick={() => handleSelecionarCapitulo(tema)}
                       className={`group relative flex items-center justify-between gap-3 p-4 rounded-2xl text-left border transition-all duration-200 ${
                         contemAulaTocando
                           ? 'bg-primary/15 border-primary/40 shadow-lg shadow-primary/15'
@@ -314,28 +357,47 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                 })()}
               </div>
 
-              {/* Lista de Aulas do Capítulo */}
-              <motion.div
-                className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-2 sm:p-3 divide-y divide-white/[0.06]"
-                variants={{
-                  hidden: { opacity: 0 },
-                  show: { opacity: 1, transition: { staggerChildren: 0.04 } }
-                }}
-                initial="hidden"
-                animate="show"
-              >
-                {aulasDoCapitulo.map((a, i) => (
-                  <LinhaAula
-                    key={a.id}
-                    a={a}
-                    atualId={atualId}
-                    tocando={tocando}
-                    favoritos={favoritos}
-                    alternarFavorito={alternarFavorito}
-                    handleTocarAula={handleTocarAula}
-                  />
-                ))}
-              </motion.div>
+              {/* Lista de Aulas do Capítulo (com feedback sutil de Skeleton Shimmer de 120ms) */}
+              {isShimmering ? (
+                <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-2 sm:p-3 space-y-2">
+                  {[1, 2, 3, 4, 5].map((idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-3.5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] animate-pulse"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-white/10 shrink-0" />
+                      <div className="flex-1 space-y-2 min-w-0">
+                        <div className="h-4 bg-white/10 rounded w-3/4" />
+                        <div className="h-3 bg-white/5 rounded w-1/3" />
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-white/5 shrink-0" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <motion.div
+                  key={`aulas-${capituloSelecionado}`}
+                  className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-2 sm:p-3 divide-y divide-white/[0.06]"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: { opacity: 1, transition: { staggerChildren: 0.03 } }
+                  }}
+                  initial="hidden"
+                  animate="show"
+                >
+                  {aulasDoCapitulo.map((a) => (
+                    <LinhaAula
+                      key={a.id}
+                      a={a}
+                      atualId={atualId}
+                      tocando={tocando}
+                      favoritos={favoritos}
+                      alternarFavorito={alternarFavorito}
+                      handleTocarAula={handleTocarAula}
+                    />
+                  ))}
+                </motion.div>
+              )}
 
               {/* Navegação entre Capítulos no Rodapé */}
               <div className="flex items-center justify-between gap-3 pt-2">
@@ -371,7 +433,23 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
         {aba === 'favoritas' ? 'Favoritas' : aba === 'baixadas' ? 'Baixadas' : 'Resultados da Busca'}
       </h2>
 
-      {listaAba.length === 0 ? (
+      {isAbaShimmering ? (
+        <div className="rounded-2xl bg-white/[0.02] border border-white/[0.05] p-3 space-y-2">
+          {[1, 2, 3, 4].map((idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-3.5 p-3 rounded-xl bg-white/[0.02] border border-white/[0.04] animate-pulse"
+            >
+              <div className="w-10 h-10 rounded-xl bg-white/10 shrink-0" />
+              <div className="flex-1 space-y-2 min-w-0">
+                <div className="h-4 bg-white/10 rounded w-3/4" />
+                <div className="h-3 bg-white/5 rounded w-1/3" />
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white/5 shrink-0" />
+            </div>
+          ))}
+        </div>
+      ) : listaAba.length === 0 ? (
         <p className="py-16 text-center text-sm text-muted-foreground bg-white/[0.02] border border-white/[0.05] rounded-2xl">
           {aba === 'favoritas'
             ? 'Nenhuma favorita ainda. Toque no coração de uma aula para adicionar.'
