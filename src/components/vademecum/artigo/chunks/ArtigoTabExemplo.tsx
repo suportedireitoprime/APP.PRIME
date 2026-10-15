@@ -51,7 +51,7 @@ export const ArtigoTabExemplo: React.FC<ArtigoTabExemploProps> = ({
         <div className="flex flex-col items-center justify-center py-12 gap-3">
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground font-body">
-            Gerando exemplos práticos com IA...
+            Carregando exemplos práticos...
           </p>
         </div>
       ) : aiContent ? (

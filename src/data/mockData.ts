@@ -25,6 +25,9 @@ export interface ArtigoLei {
   subsecao?: string;
   /** Sort order from DB. Values > 10000 indicate ADCT / Disposições Transitórias in CF88. */
   ordem?: number;
+  explicacao_resumido?: string;
+  exemplo?: string;
+  termos?: string;
 }
 
 export interface Explicacao {

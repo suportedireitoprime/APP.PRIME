@@ -99,7 +99,7 @@ export async function resolveLeiRef(tabelaNome: string): Promise<LeiRef | undefi
 async function fetchFromVadeMecum(leiId: string, offset: number, limit: number): Promise<ArtigoLei[]> {
   try {
     const res = await fetch(
-      `${supabaseUrl}/rest/v1/vade_mecum_artigos?lei_id=eq.${leiId}&select=id,numero,texto,ordem,epigrafe&order=ordem.asc&offset=${offset}&limit=${limit}`,
+      `${supabaseUrl}/rest/v1/vade_mecum_artigos?lei_id=eq.${leiId}&select=id,numero,texto,ordem,epigrafe,explicacao_resumido,exemplo,termos&order=ordem.asc&offset=${offset}&limit=${limit}`,
       { headers: { apikey: supabaseKey, Authorization: `Bearer ${supabaseKey}` } }
     );
     if (!res.ok) {
@@ -123,6 +123,9 @@ async function fetchFromVadeMecum(leiId: string, offset: number, limit: number):
         nomen_juris: r.epigrafe ? fixMojibake(r.epigrafe) : undefined,
         capitulo: undefined,
         ordem: typeof r.ordem === 'number' ? r.ordem : undefined,
+        explicacao_resumido: r.explicacao_resumido || undefined,
+        exemplo: r.exemplo || undefined,
+        termos: r.termos || undefined,
       }))
       .filter((a: ArtigoLei) => a.caput.trim() !== '');
   } catch (e) {

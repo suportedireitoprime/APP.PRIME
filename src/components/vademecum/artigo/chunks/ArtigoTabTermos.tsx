@@ -50,7 +50,7 @@ export const ArtigoTabTermos: React.FC<ArtigoTabTermosProps> = ({
         <div className="flex flex-col items-center justify-center py-12 gap-3">
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground font-body">
-            Analisando termos jurídicos com IA...
+            Carregando termos jurídicos...
           </p>
         </div>
       ) : aiContent ? (

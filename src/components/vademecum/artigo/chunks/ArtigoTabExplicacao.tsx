@@ -130,7 +130,7 @@ export const ArtigoTabExplicacao: React.FC<ArtigoTabExplicacaoProps> = ({
             <div className="flex flex-col items-center justify-center py-12 gap-3">
               <Loader2 className="w-6 h-6 animate-spin text-primary" />
               <p className="text-sm text-muted-foreground font-body">
-                Gerando explicação com IA...
+                Carregando explicação...
               </p>
             </div>
           ) : aiContent ? (

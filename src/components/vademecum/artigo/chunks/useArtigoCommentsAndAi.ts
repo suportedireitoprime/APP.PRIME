@@ -289,6 +289,8 @@ export function useArtigoCommentsAndAi({
           ? (artigo as any).explicacao_resumido || (artigo as any).explicacao_tecnico || (artigo as any).explicacao
           : activeTab === 'exemplo'
           ? (artigo as any).exemplo
+          : activeTab === 'termos'
+          ? (artigo as any).termos
           : null;
 
       if (preCarregado && typeof preCarregado === 'string' && preCarregado.trim().length > 20) {
@@ -304,6 +306,7 @@ export function useArtigoCommentsAndAi({
         if (activeArtigoIdRef.current === currentId) {
           setAiContent((prev) => ({ ...prev, [activeTab]: localVal }));
           setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+          setAiGeneratingMode(null);
         }
         return;
       }
@@ -314,67 +317,81 @@ export function useArtigoCommentsAndAi({
             [activeTab]: 'Sem internet — este conteúdo ainda não foi gerado. Conecte-se para gerar.',
           }));
           setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+          setAiGeneratingMode(null);
         }
         return;
       }
-      const mode = activeTab as 'explicacao' | 'exemplo';
-      // Mostra o gatinho instantaneamente enquanto verifica o cache online
-      setAiGeneratingMode(mode);
-      setAiGeneratingStep(0);
 
-      supabase
+      // Consulta bancos remotos em busca do conteúdo já gerado (sem disparar animação de geração prematura!)
+      const buscaResumo = supabase
         .from('resumos_juridicos')
         .select('markdown, exemplos, termos')
         .eq('tabela_codigo', cacheKey.tabela)
         .eq('numero_artigo', cacheKey.numero)
-        .maybeSingle()
-        .then(({ data: resumo }) => {
-          if (activeArtigoIdRef.current !== currentId) return;
+        .maybeSingle();
 
-          let content = '';
-          if (resumo?.markdown) {
-            if (cacheKey.modo === 'explicacao') content = resumo.markdown;
-            if (cacheKey.modo === 'exemplo') content = resumo.exemplos || '';
-            if (cacheKey.modo === 'termos') content = resumo.termos || '';
-          }
-
-          if (content && content.length > 20) {
-            setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, content);
-            setAiContent((prev) => ({ ...prev, [activeTab]: content }));
-            setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
-            setAiGeneratingMode(null);
-            return;
-          }
-
-          supabase
-            .from('artigo_ai_cache')
-            .select('conteudo')
-            .eq('tabela_codigo', cacheKey.tabela)
-            .eq('numero_artigo', cacheKey.numero)
-            .eq('tipo', cacheKey.modo)
+      const buscaArtigo = artigo.id
+        ? supabase
+            .from('vade_mecum_artigos')
+            .select('explicacao_resumido, exemplo, termos')
+            .eq('id', artigo.id)
             .maybeSingle()
-            .then(({ data: cached }) => {
-          if (activeArtigoIdRef.current !== currentId) return;
-          if (cached?.conteudo) {
-            const raw = String(cached.conteudo).trim();
-            const isBad =
-              raw.toLowerCase().includes('consegui gerar uma resposta') ||
-              raw.toLowerCase().includes('prepayment credits') ||
-              raw.toLowerCase().includes('"code": 429') ||
-              raw.toLowerCase().includes('"code":429');
-            if (!isBad && raw.length > 20) {
-              setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, raw);
-              setAiContent((prev) => ({ ...prev, [activeTab]: raw }));
-              setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
-              setAiGeneratingMode(null); // Esconde o gatinho se achou no cache
-              return;
-            }
-          }
+        : Promise.resolve({ data: null, error: null });
 
-          // Item 5: Aborta requisição de IA anterior e associa novo controller
-          activeAiAbortCtrlRef.current?.abort();
-          const aiAbortCtrl = new AbortController();
-          activeAiAbortCtrlRef.current = aiAbortCtrl;
+      const buscaCache = supabase
+        .from('artigo_ai_cache')
+        .select('conteudo')
+        .eq('tabela_codigo', cacheKey.tabela)
+        .eq('numero_artigo', cacheKey.numero)
+        .eq('tipo', cacheKey.modo)
+        .maybeSingle();
+
+      Promise.all([buscaResumo, buscaArtigo, buscaCache]).then(([resResumo, resArtigo, resCache]) => {
+        if (activeArtigoIdRef.current !== currentId) return;
+
+        let content = '';
+
+        if (resResumo.data?.markdown) {
+          if (cacheKey.modo === 'explicacao') content = resResumo.data.markdown;
+          if (cacheKey.modo === 'exemplo') content = resResumo.data.exemplos || '';
+          if (cacheKey.modo === 'termos') content = resResumo.data.termos || '';
+        }
+
+        if (!content && resArtigo.data) {
+          if (cacheKey.modo === 'explicacao') content = resArtigo.data.explicacao_resumido || '';
+          if (cacheKey.modo === 'exemplo') content = resArtigo.data.exemplo || '';
+          if (cacheKey.modo === 'termos') content = resArtigo.data.termos || '';
+        }
+
+        if (!content && resCache.data?.conteudo) {
+          const raw = String(resCache.data.conteudo).trim();
+          const isBad =
+            raw.toLowerCase().includes('consegui gerar uma resposta') ||
+            raw.toLowerCase().includes('prepayment credits') ||
+            raw.toLowerCase().includes('"code": 429') ||
+            raw.toLowerCase().includes('"code":429');
+          if (!isBad && raw.length > 20) {
+            content = raw;
+          }
+        }
+
+        if (content && content.length > 20) {
+          setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, content);
+          setAiContent((prev) => ({ ...prev, [activeTab]: content }));
+          setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+          setAiGeneratingMode(null);
+          return;
+        }
+
+        // Somente se NÃO encontrou conteúdo em nenhuma tabela pré-gerada, abre o loader de IA e chama o backend
+        const mode = activeTab as 'explicacao' | 'exemplo';
+        setAiGeneratingMode(mode);
+        setAiGeneratingStep(0);
+
+        // Item 5: Aborta requisição de IA anterior e associa novo controller
+        activeAiAbortCtrlRef.current?.abort();
+        const aiAbortCtrl = new AbortController();
+        activeAiAbortCtrlRef.current = aiAbortCtrl;
 
           const timeoutId = setTimeout(() => {
             aiAbortCtrl.abort();
@@ -458,8 +475,7 @@ export function useArtigoCommentsAndAi({
               setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
               setAiGeneratingMode(null);
             });
-          }); // Fecha o .then de artigo_ai_cache
-        }); // Fecha o .then de resumos_juridicos
+        }); // Fecha o .then de Promise.all
     }); // Fecha o import('@/lib/aiCacheLocal')
 
     return () => {
@@ -505,122 +521,131 @@ export function useArtigoCommentsAndAi({
         }
         return;
       }
-      // Mostra o overlay animado instantaneamente
-      setAiGeneratingMode('termos');
-      setAiGeneratingStep(0);
-
-      supabase
+      // Busca em paralelo sem abrir overlay de carregamento prematuro
+      const buscaResumo = supabase
         .from('resumos_juridicos')
         .select('termos')
         .eq('tabela_codigo', cacheKey.tabela)
         .eq('numero_artigo', cacheKey.numero)
-        .maybeSingle()
-        .then(({ data: resumo }) => {
-          if (activeArtigoIdRef.current !== currentId) return;
-          
-          if (resumo?.termos && resumo.termos.length > 10) {
-            setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', resumo.termos);
-            setAiContent((prev) => ({ ...prev, termos: resumo.termos }));
-            setAiLoading((prev) => ({ ...prev, termos: false }));
-            setAiGeneratingMode(null);
-            return;
-          }
+        .maybeSingle();
 
-          supabase
-            .from('artigo_ai_cache')
-            .select('conteudo')
-            .eq('tabela_codigo', cacheKey.tabela)
-            .eq('numero_artigo', cacheKey.numero)
-            .eq('tipo', 'termos')
+      const buscaArtigo = artigo.id
+        ? supabase
+            .from('vade_mecum_artigos')
+            .select('termos')
+            .eq('id', artigo.id)
             .maybeSingle()
-            .then(({ data: cached }) => {
-          if (activeArtigoIdRef.current !== currentId) return;
-          if (cached?.conteudo) {
-            setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', cached.conteudo as string);
-            setAiContent((prev) => ({ ...prev, termos: cached.conteudo as string }));
+        : Promise.resolve({ data: null, error: null });
+
+      const buscaCache = supabase
+        .from('artigo_ai_cache')
+        .select('conteudo')
+        .eq('tabela_codigo', cacheKey.tabela)
+        .eq('numero_artigo', cacheKey.numero)
+        .eq('tipo', 'termos')
+        .maybeSingle();
+
+      Promise.all([buscaResumo, buscaArtigo, buscaCache]).then(([resResumo, resArtigo, resCache]) => {
+        if (activeArtigoIdRef.current !== currentId) return;
+
+        let content = '';
+        if (resResumo.data?.termos && resResumo.data.termos.length > 10) {
+          content = resResumo.data.termos;
+        } else if (resArtigo.data?.termos && resArtigo.data.termos.length > 10) {
+          content = resArtigo.data.termos;
+        } else if (resCache.data?.conteudo && String(resCache.data.conteudo).length > 10) {
+          content = String(resCache.data.conteudo);
+        }
+
+        if (content && content.length > 10) {
+          setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', content);
+          setAiContent((prev) => ({ ...prev, termos: content }));
+          setAiLoading((prev) => ({ ...prev, termos: false }));
+          setAiGeneratingMode(null);
+          return;
+        }
+
+        // Somente se NÃO encontrou termos em nenhuma tabela, ativa o overlay gerador de termos!
+        setAiGeneratingMode('termos');
+        setAiGeneratingStep(0);
+
+        // Item 5: Aborta chamada de termos anterior e associa novo controller
+        activeTermosAbortCtrlRef.current?.abort();
+        const aiAbortCtrl = new AbortController();
+        activeTermosAbortCtrlRef.current = aiAbortCtrl;
+
+        const timeoutId = setTimeout(() => {
+          aiAbortCtrl.abort();
+          if (activeArtigoIdRef.current === currentId) {
+            setAiContent((prev) => ({
+              ...prev,
+              termos: 'Tempo limite excedido. O servidor demorou muito para responder.',
+            }));
             setAiLoading((prev) => ({ ...prev, termos: false }));
             setAiGeneratingMode(null);
+          }
+        }, 35000); // Failsafe de 35s
+
+        stepInterval = setInterval(() => {
+          if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) {
+            if (stepInterval) clearInterval(stepInterval);
             return;
           }
+          setAiGeneratingStep((prev) => (prev < 2 ? prev + 1 : prev));
+        }, 1800);
 
-          // Item 5: Aborta chamada de termos anterior e associa novo controller
-          activeTermosAbortCtrlRef.current?.abort();
-          const aiAbortCtrl = new AbortController();
-          activeTermosAbortCtrlRef.current = aiAbortCtrl;
-
-          const timeoutId = setTimeout(() => {
-            aiAbortCtrl.abort();
-            if (activeArtigoIdRef.current === currentId) {
+        supabase.functions
+          .invoke('assistente-juridica', {
+            body: {
+              mode: 'termos',
+              artigoTexto: artigo.caput,
+              artigoNumero: artigo.numero,
+              leiNome: tabelaNome || '',
+            },
+            // @ts-ignore
+            signal: aiAbortCtrl.signal,
+          })
+          .then(({ data, error }) => {
+            if (stepInterval) clearInterval(stepInterval);
+            clearTimeout(timeoutId);
+            if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
+            if (!error && data?.reply) {
+              setAiGeneratingStep(3);
+              setAiContent((prev) => ({ ...prev, termos: data.reply }));
+              setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', data.reply);
+              supabase
+                .from('artigo_ai_cache')
+                .upsert(
+                  {
+                    tabela_codigo: cacheKey.tabela,
+                    numero_artigo: cacheKey.numero,
+                    tipo: 'termos',
+                    conteudo: data.reply,
+                  },
+                  { onConflict: 'tabela_codigo,numero_artigo,tipo' }
+                )
+                .then(() => {});
+            } else {
               setAiContent((prev) => ({
                 ...prev,
-                termos: 'Tempo limite excedido. O servidor demorou muito para responder.',
+                termos: 'Não foi possível gerar os termos. Tente novamente.',
               }));
-              setAiLoading((prev) => ({ ...prev, termos: false }));
-              setAiGeneratingMode(null);
             }
-          }, 35000); // Failsafe de 35s
-
-          stepInterval = setInterval(() => {
-            if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) {
-              if (stepInterval) clearInterval(stepInterval);
-              return;
-            }
-            setAiGeneratingStep((prev) => (prev < 2 ? prev + 1 : prev));
-          }, 1800);
-
-          supabase.functions
-            .invoke('assistente-juridica', {
-              body: {
-                mode: 'termos',
-                artigoTexto: artigo.caput,
-                artigoNumero: artigo.numero,
-                leiNome: tabelaNome || '',
-              },
-              // @ts-ignore
-              signal: aiAbortCtrl.signal,
-            })
-            .then(({ data, error }) => {
-              if (stepInterval) clearInterval(stepInterval);
-              clearTimeout(timeoutId);
-              if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
-              if (!error && data?.reply) {
-                setAiGeneratingStep(3);
-                setAiContent((prev) => ({ ...prev, termos: data.reply }));
-                setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', data.reply);
-                supabase
-                  .from('artigo_ai_cache')
-                  .upsert(
-                    {
-                      tabela_codigo: cacheKey.tabela,
-                      numero_artigo: cacheKey.numero,
-                      tipo: 'termos',
-                      conteudo: data.reply,
-                    },
-                    { onConflict: 'tabela_codigo,numero_artigo,tipo' }
-                  )
-                  .then(() => {});
-              } else {
-                setAiContent((prev) => ({
-                  ...prev,
-                  termos: 'Não foi possível gerar os termos. Tente novamente.',
-                }));
+            setAiLoading((prev) => ({ ...prev, termos: false }));
+            setTimeout(() => {
+              if (activeArtigoIdRef.current === currentId) {
+                setAiGeneratingMode(null);
               }
-              setAiLoading((prev) => ({ ...prev, termos: false }));
-              setTimeout(() => {
-                if (activeArtigoIdRef.current === currentId) {
-                  setAiGeneratingMode(null);
-                }
-              }, 500);
-            })
-            .catch((err: any) => {
-              if (stepInterval) clearInterval(stepInterval);
-              clearTimeout(timeoutId);
-              if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
-              setAiLoading((prev) => ({ ...prev, termos: false }));
-              setAiGeneratingMode(null);
-            });
-          }); // Fecha o .then de artigo_ai_cache
-        }); // Fecha o .then de resumos_juridicos
+            }, 500);
+          })
+          .catch((err: any) => {
+            if (stepInterval) clearInterval(stepInterval);
+            clearTimeout(timeoutId);
+            if (aiAbortCtrl.signal.aborted || activeArtigoIdRef.current !== currentId) return;
+            setAiLoading((prev) => ({ ...prev, termos: false }));
+            setAiGeneratingMode(null);
+          });
+      }); // Fecha o .then de Promise.all
     }); // Fecha o import('@/lib/aiCacheLocal')
 
     return () => {
