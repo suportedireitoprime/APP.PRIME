@@ -1,6 +1,8 @@
 import { ReactNode, useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+import { resetGlobalScroll } from "@/lib/scrollUtils";
+
 interface PageTransitionProps {
   children: ReactNode;
   className?: string;
@@ -16,24 +18,8 @@ const PageTransition = ({ children, className }: PageTransitionProps) => {
   const location = useLocation();
 
   useLayoutEffect(() => {
-    try {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    } catch {}
-    if (document.documentElement) document.documentElement.scrollTop = 0;
-    if (document.body) document.body.scrollTop = 0;
-
-    const desktopContainer = document.querySelector<HTMLElement>('#desktop-scroll-container, [data-desktop-scroll="true"]');
-    if (desktopContainer) {
-      desktopContainer.scrollTop = 0;
-    }
-    
-    const overflowContainers = document.querySelectorAll('.overflow-y-auto, .overflow-y-scroll');
-    overflowContainers.forEach(el => {
-      if (el instanceof HTMLElement && !el.classList.contains('preserve-scroll')) {
-        el.scrollTop = 0;
-      }
-    });
-  }, [location.pathname]);
+    resetGlobalScroll();
+  }, [location.pathname, location.search, location.key]);
 
   const cls = `min-h-dvh w-full max-w-full overflow-x-hidden ${className || ""}`.trim();
   return <div className={cls}>{children}</div>;

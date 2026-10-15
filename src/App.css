@@ -1,5 +1,10 @@
 /* App styles handled by Tailwind */
 
+html, body {
+  overflow-anchor: none;
+  scroll-behavior: auto !important;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

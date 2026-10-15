@@ -33,6 +33,7 @@ import ShapeGrid from "@/components/ui/ShapeGrid";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { haptic } from "@/lib/nativeHaptics";
 import { directImg } from "@/lib/cdnImg";
+import { resetGlobalScroll } from "@/lib/scrollUtils";
 
 type AreaRow = { area: string; total: number };
 
@@ -94,7 +95,7 @@ export default function ResumosMaterias() {
   const [q, setQ] = useState("");
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    resetGlobalScroll();
   }, []);
 
   useEffect(() => {

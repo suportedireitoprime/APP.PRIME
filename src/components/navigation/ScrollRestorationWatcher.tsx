@@ -3,6 +3,7 @@ import { useLocation, useNavigationType } from 'react-router-dom';
 import { resetBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { cancelMouseDragScroll } from '@/lib/enableMouseDragScroll';
 import { haptic } from '@/lib/nativeHaptics';
+import { resetGlobalScroll } from '@/lib/scrollUtils';
 
 const scrollMemory = new Map<string, { windowY: number; containerY: number }>();
 
@@ -44,7 +45,6 @@ export function ScrollRestorationWatcher() {
   const navType = useNavigationType();
   const currentKey = `${location.pathname}${location.search}`;
   const prevKeyRef = useRef<string>(currentKey);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const observerRef = useRef<MutationObserver | null>(null);
 
   // 1. Salva a posição de rolagem ativamente durante a leitura/scroll
@@ -146,65 +146,43 @@ export function ScrollRestorationWatcher() {
     // Purga qualquer trava de scroll residual deixada por modais ou menus
     resetBodyScrollLock();
 
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    // Reposiciona a barra de rolagem na nova rota
-    timeoutRef.current = setTimeout(() => {
-      const desktopContainer = document.querySelector<HTMLElement>(
-        '#desktop-scroll-container, [data-desktop-scroll="true"]'
-      );
-
-      // Item 27: Se a rota possui âncora (#hash), rola até ela ou aguarda montagem assíncrona
-      if (location.hash) {
-        const targetId = location.hash.replace('#', '');
-        const targetEl = document.getElementById(targetId);
-        if (targetEl) {
-          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          haptic.light(); // Item 31
-          prevKeyRef.current = currentKey;
-          return;
-        }
-
-        // Aguarda montagem dinâmica (ex: artigos ou súmulas carregados assincronamente)
-        const obs = new MutationObserver(() => {
-          const el = document.getElementById(targetId);
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            haptic.light(); // Item 31
-            obs.disconnect();
-            if (observerRef.current === obs) observerRef.current = null;
-          }
-        });
-        observerRef.current = obs;
-        obs.observe(document.body, { childList: true, subtree: true });
-        setTimeout(() => {
-          obs.disconnect();
-          if (observerRef.current === obs) observerRef.current = null;
-        }, 2500);
-
+    // Se a rota possui âncora (#hash), rola até ela ou aguarda montagem assíncrona
+    if (location.hash) {
+      const targetId = location.hash.replace('#', '');
+      const targetEl = document.getElementById(targetId);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        haptic.light();
         prevKeyRef.current = currentKey;
         return;
       }
 
-      // A pedido do usuário, independente de ser 'POP' (Voltar) ou 'PUSH', sempre inicia no topo
-      // (Scroll restoration de POP foi removida)
-
-      // Itens 21 e 24: Navegação PUSH / REPLACE comum reseta ambos para o topo (0, 0)
-      window.scrollTo(0, 0);
-      if (desktopContainer) {
-        desktopContainer.scrollTop = 0;
-      }
-      haptic.light(); // Item 31
+      const obs = new MutationObserver(() => {
+        const el = document.getElementById(targetId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          haptic.light();
+          obs.disconnect();
+          if (observerRef.current === obs) observerRef.current = null;
+        }
+      });
+      observerRef.current = obs;
+      obs.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => {
+        obs.disconnect();
+        if (observerRef.current === obs) observerRef.current = null;
+      }, 2500);
 
       prevKeyRef.current = currentKey;
-    }, 85);
+      return;
+    }
+
+    // Navegação comum (PUSH, POP, REPLACE): reseta imediatamente a 0ms
+    resetGlobalScroll();
+    requestAnimationFrame(() => resetGlobalScroll());
+    prevKeyRef.current = currentKey;
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
       if (observerRef.current) {
         observerRef.current.disconnect();
         observerRef.current = null;

@@ -9,6 +9,7 @@ import { ResumosAreaChips } from "@/components/resumos/home/ResumosAreaChips";
 import { ResumosAreaCard } from "@/components/resumos/home/ResumosAreaCard";
 import { ResumosTemaCard } from "@/components/resumos/home/ResumosTemaCard";
 import { haptic } from "@/lib/nativeHaptics";
+import { resetGlobalScroll } from "@/lib/scrollUtils";
 
 export default function ResumosJuridicosAreas() {
   const navigate = useNavigate();
@@ -29,6 +30,10 @@ export default function ResumosJuridicosAreas() {
 
   const [searchOpen, setSearchOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    resetGlobalScroll();
+  }, []);
 
   useEffect(() => {
     if (searchOpen) {

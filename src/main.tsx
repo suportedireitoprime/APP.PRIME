@@ -1,3 +1,7 @@
+if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
 import "./lib/domGuard";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";

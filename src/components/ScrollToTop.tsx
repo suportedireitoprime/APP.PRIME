@@ -1,58 +1,76 @@
-import { useEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { resetGlobalScroll } from '@/lib/scrollUtils';
+
+export { resetGlobalScroll };
 
 export default function ScrollToTop() {
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const observerRef = useRef<MutationObserver | null>(null);
 
-  useEffect(() => {
-    let ticking = true;
+  // useLayoutEffect garante execução síncrona ANTES da pintura na GPU
+  useLayoutEffect(() => {
+    let active = true;
 
-    const reset = () => {
-      // 1. Janela Principal (Mobile)
-      try {
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      } catch {}
-      if (document.documentElement) document.documentElement.scrollTop = 0;
-      if (document.body) document.body.scrollTop = 0;
-      if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+    // Se a rota possui âncora explícita (#art-5), não forçamos topo
+    if (location.hash) {
+      return;
+    }
 
-      // 2. Container Desktop/Tablet
-      const desktopContainer = document.querySelector<HTMLElement>('#desktop-scroll-container, [data-desktop-scroll="true"]');
-      if (desktopContainer) {
-        desktopContainer.scrollTop = 0;
-      }
-      
-      // 3. Qualquer outro container que possa ter overflow
-      const overflowContainers = document.querySelectorAll('.overflow-y-auto, .overflow-y-scroll');
-      overflowContainers.forEach(el => {
-        if (el instanceof HTMLElement && !el.classList.contains('preserve-scroll')) {
-          el.scrollTop = 0;
-        }
-      });
-    };
+    // 1. Reseta imediatamente no ciclo síncrono antes do primeiro paint
+    resetGlobalScroll();
 
-    // Reseta imediatamente
-    reset();
-
-    // Reseta nos próximos frames para garantir que o React já renderizou o novo layout
+    // 2. Reseta nos frames iniciais pós-renderização do React
     requestAnimationFrame(() => {
-      if (ticking) reset();
+      if (active) resetGlobalScroll();
       requestAnimationFrame(() => {
-        if (ticking) reset();
+        if (active) resetGlobalScroll();
       });
     });
 
-    const t1 = setTimeout(reset, 10);
-    const t2 = setTimeout(reset, 50);
-    const t3 = setTimeout(reset, 150); // Garante reset após carregamentos curtos
+    // 3. Timers graduais para capturar chunks de lazy loading e hidratação de queries assíncronas
+    const t1 = setTimeout(() => { if (active) resetGlobalScroll(); }, 15);
+    const t2 = setTimeout(() => { if (active) resetGlobalScroll(); }, 60);
+    const t3 = setTimeout(() => { if (active) resetGlobalScroll(); }, 150);
+    const t4 = setTimeout(() => { if (active) resetGlobalScroll(); }, 300);
+    const t5 = setTimeout(() => { if (active) resetGlobalScroll(); }, 600);
+
+    // 4. MutationObserver por 800ms: se novos cards/conteúdos forem injetados e causarem
+    // scroll involuntário pelo layout engine (scroll anchoring), traz de volta ao topo instantaneamente
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    const obs = new MutationObserver(() => {
+      if (!active || location.hash) return;
+      const currentScroll = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      if (currentScroll > 0) {
+        resetGlobalScroll();
+      }
+    });
+
+    observerRef.current = obs;
+    try {
+      obs.observe(document.body, { childList: true, subtree: true });
+    } catch {}
+
+    const stopObsTimer = setTimeout(() => {
+      obs.disconnect();
+      if (observerRef.current === obs) observerRef.current = null;
+    }, 800);
 
     return () => {
-      ticking = false;
+      active = false;
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      clearTimeout(t4);
+      clearTimeout(t5);
+      clearTimeout(stopObsTimer);
+      obs.disconnect();
+      if (observerRef.current === obs) observerRef.current = null;
     };
-  }, [pathname]);
+  }, [location.pathname, location.search, location.key, location.hash]);
 
   return null;
 }
