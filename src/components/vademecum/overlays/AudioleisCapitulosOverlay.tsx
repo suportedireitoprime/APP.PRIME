@@ -144,6 +144,40 @@ export const AudioleisCapitulosOverlay: React.FC<AudioleisCapitulosOverlayProps>
     return count;
   }, [realArtigos, audioMap]);
 
+  const totalMinutosTexto = useMemo(() => {
+    if (totalAudiosDisponiveis === 0) return '0 min';
+    const tabelaKey = (tabelaNome || '').toUpperCase();
+    const idKey = (leiId || '').toLowerCase();
+
+    const DURACOES_TOTAIS: Record<string, number> = {
+      CDC_CODIGO_DEFESA_CONSUMIDOR: 51,
+      CP_CODIGO_PENAL: 175,
+      CPC_CODIGO_PROCESSO_CIVIL: 220,
+      CTN_CODIGO_TRIBUTARIO_NACIONAL: 95,
+      CE_CODIGO_ELEITORAL: 155,
+      CC_CODIGO_CIVIL: 320,
+    };
+
+    let duracaoBase = DURACOES_TOTAIS[tabelaKey];
+    if (!duracaoBase) {
+      if (idKey === 'cdc' || tabelaKey.includes('CONSUMIDOR')) duracaoBase = 51;
+      else if (idKey === 'cp' || (tabelaKey.includes('PENAL') && !tabelaKey.includes('PROCESSO'))) duracaoBase = 175;
+      else if (idKey === 'cpc' || tabelaKey.includes('PROCESSO_CIVIL')) duracaoBase = 220;
+      else if (idKey === 'ctn' || tabelaKey.includes('TRIBUTARIO')) duracaoBase = 95;
+      else if (idKey === 'ce' || tabelaKey.includes('ELEITORAL')) duracaoBase = 155;
+      else if (idKey === 'cc' || tabelaKey.includes('CIVIL')) duracaoBase = 320;
+    }
+
+    if (duracaoBase && realArtigos.length > 0) {
+      const proporcao = totalAudiosDisponiveis / realArtigos.length;
+      const minsCalculados = Math.max(1, Math.round(duracaoBase * Math.min(1, proporcao)));
+      return `${minsCalculados} min`;
+    }
+
+    const mins = Math.max(1, Math.round((totalAudiosDisponiveis * 23.6) / 60));
+    return `${mins} min`;
+  }, [totalAudiosDisponiveis, realArtigos.length, tabelaNome, leiId]);
+
   const pctGravado = useMemo(() => {
     if (realArtigos.length === 0) return 0;
     return Math.min(100, Math.round((totalAudiosDisponiveis / realArtigos.length) * 100));
@@ -375,28 +409,29 @@ export const AudioleisCapitulosOverlay: React.FC<AudioleisCapitulosOverlayProps>
                   </span>
                 </div>
                 <div className="flex flex-col items-center justify-center px-2 py-2.5">
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Áudios Prontos</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-white/60">Tempo Total</span>
                   <span className="mt-0.5 font-display text-base sm:text-lg font-black leading-none text-emerald-300">
-                    {totalAudiosDisponiveis}
+                    {totalMinutosTexto}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Campo de Pesquisa Rápida */}
-            <div className="relative mt-3">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+            {/* Campo de Pesquisa Rápida Responsivo e Ergonômico para Mobile */}
+            <div className="relative mt-4">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60 pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Pesquisar capítulo ou número do artigo..."
-                className="w-full bg-black/40 border border-white/15 rounded-xl pl-10 pr-9 py-2.5 text-xs sm:text-sm text-white placeholder-white/50 focus:outline-none focus:border-white/40 transition-colors shadow-inner"
+                className="w-full min-h-[52px] bg-black/35 backdrop-blur-md border border-white/20 rounded-2xl pl-12 pr-11 py-3.5 text-sm sm:text-base text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:bg-black/50 transition-all shadow-md"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white"
+                  aria-label="Limpar pesquisa"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 active:scale-95 transition-all"
                 >
                   <X className="w-4 h-4" />
                 </button>
