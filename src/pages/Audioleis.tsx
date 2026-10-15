@@ -177,6 +177,7 @@ export default function AudioleisPage() {
     }
     return 'CP_CODIGO_PENAL';
   });
+  const [mostrarOutrasLeis, setMostrarOutrasLeis] = useState<boolean>(!tabelaParam);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [artigos, setArtigos] = useState<NarracaoItem[]>([]);
@@ -324,6 +325,7 @@ export default function AudioleisPage() {
           title: `Artigo ${item.artigo_numero} — ${currentLaw.nome}`,
           artist: 'Audioleis Prime',
           album: currentLaw.nome,
+          audio,
         });
       }).catch((e) => {
         console.error('Erro ao iniciar áudio:', e);
@@ -466,74 +468,123 @@ export default function AudioleisPage() {
       {/* Conteúdo Principal */}
       <main className="relative z-10 flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
         {/* Seletor de Códigos / Leis (Tabs Carrossel) */}
-        <section className="mb-6">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
-              Escolha a Lei para Ouvir
-            </h2>
-            <span className="text-[11px] text-zinc-400 font-mono">
-              {currentLaw.status === 'completo' ? '100% narrado' : 'Em produção'}
-            </span>
-          </div>
+        {/* Seletor de Códigos / Leis ou Banner Focado */}
+        {!mostrarOutrasLeis ? (
+          <section className="mb-6 p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <span
+                className="w-11 h-11 rounded-xl flex items-center justify-center font-black text-sm font-mono shrink-0 shadow-md"
+                style={{
+                  backgroundColor: `${currentLaw.color}20`,
+                  color: currentLaw.color,
+                  border: `1px solid ${currentLaw.color}40`,
+                }}
+              >
+                {currentLaw.sigla}
+              </span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-bold text-sm sm:text-base text-white truncate">{currentLaw.nome}</h2>
+                  <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 shrink-0">
+                    <CheckCircle2 className="w-3 h-3" />
+                    {totalCount} artigos
+                  </span>
+                </div>
+                <p className="text-[11.5px] text-zinc-400 truncate mt-0.5">{currentLaw.descricao}</p>
+              </div>
+            </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-            {LAWS_CONFIG.map((law) => {
-              const isSelected = selectedTabela === law.tabela_nome;
-              return (
-                <button
-                  key={law.id}
-                  onClick={() => {
-                    haptic.selection();
-                    if (law.status === 'em_breve') {
-                      toast.info(`A narração do ${law.nome} está sendo produzida e estará disponível em breve!`);
-                      return;
-                    }
-                    setSelectedTabela(law.tabela_nome);
-                  }}
-                  className={`group relative p-3 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[92px] ${
-                    isSelected
-                      ? 'bg-rose-500/10 border-rose-500/50 shadow-lg shadow-rose-500/10 scale-[1.02]'
-                      : 'bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className="w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs font-mono"
-                      style={{
-                        backgroundColor: `${law.color}20`,
-                        color: law.color,
-                        border: `1px solid ${law.color}40`,
-                      }}
-                    >
-                      {law.sigla}
-                    </span>
-                    {law.status === 'completo' ? (
-                      <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
-                        <CheckCircle2 className="w-3 h-3" />
-                        Pronto
-                      </span>
-                    ) : (
-                      <span className="text-[10px] font-semibold text-zinc-500 bg-zinc-800/60 px-1.5 py-0.5 rounded-full border border-zinc-700/40">
-                        Em breve
-                      </span>
-                    )}
-                  </div>
+            <button
+              onClick={() => {
+                haptic.selection();
+                setMostrarOutrasLeis(true);
+              }}
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-750 border border-zinc-700/60 transition-all shrink-0 active:scale-95 cursor-pointer shadow-sm"
+            >
+              Trocar Lei
+            </button>
+          </section>
+        ) : (
+          <section className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
+                Escolha a Lei para Ouvir
+              </h2>
+              <div className="flex items-center gap-3">
+                {tabelaParam && (
+                  <button
+                    onClick={() => setMostrarOutrasLeis(false)}
+                    className="text-xs text-rose-400 hover:underline font-semibold"
+                  >
+                    Voltar para {currentLaw.sigla}
+                  </button>
+                )}
+                <span className="text-[11px] text-zinc-400 font-mono">
+                  {currentLaw.status === 'completo' ? '100% narrado' : 'Em produção'}
+                </span>
+              </div>
+            </div>
 
-                  <div>
-                    <h3 className="font-semibold text-xs text-white leading-tight mt-2 line-clamp-1">
-                      {law.nome}
-                    </h3>
-                    <p className="text-[10.5px] text-zinc-400 mt-0.5">
-                      {law.status === 'completo'
-                        ? `${law.artigosCount || totalCount} artigos`
-                        : 'Gravação em breve'}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+              {LAWS_CONFIG.map((law) => {
+                const isSelected = selectedTabela === law.tabela_nome;
+                return (
+                  <button
+                    key={law.id}
+                    onClick={() => {
+                      haptic.selection();
+                      if (law.status === 'em_breve') {
+                        toast.info(`A narração do ${law.nome} está sendo produzida e estará disponível em breve!`);
+                        return;
+                      }
+                      setSelectedTabela(law.tabela_nome);
+                      if (tabelaParam) setMostrarOutrasLeis(false);
+                    }}
+                    className={`group relative p-3 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[92px] ${
+                      isSelected
+                        ? 'bg-rose-500/10 border-rose-500/50 shadow-lg shadow-rose-500/10 scale-[1.02]'
+                        : 'bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className="w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs font-mono"
+                        style={{
+                          backgroundColor: `${law.color}20`,
+                          color: law.color,
+                          border: `1px solid ${law.color}40`,
+                        }}
+                      >
+                        {law.sigla}
+                      </span>
+                      {law.status === 'completo' ? (
+                        <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Pronto
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-semibold text-zinc-500 bg-zinc-800/60 px-1.5 py-0.5 rounded-full border border-zinc-700/40">
+                          Em breve
+                        </span>
+                      )}
+                    </div>
+
+                    <div>
+                      <h3 className="font-semibold text-xs text-white leading-tight mt-2 line-clamp-1">
+                        {law.nome}
+                      </h3>
+                      <p className="text-[10.5px] text-zinc-400 mt-0.5">
+                        {law.status === 'completo'
+                          ? `${law.artigosCount || totalCount} artigos`
+                          : 'Gravação em breve'}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Barra de Busca de Artigo */}
         <section className="mb-6">

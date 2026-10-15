@@ -38,6 +38,8 @@ import LeiSobreModal from '@/components/vademecum/artigo/LeiSobreModal';
 import { useScrapedUpdates } from '@/hooks/useScrapedUpdates';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { extractLeiCapitulos, isStructuralArtigo, formatArtigoNumeroOnly } from '@/lib/leiStructure';
+import { AnimatePresence } from 'framer-motion';
+import { AudioleisCapitulosOverlay } from '@/components/vademecum/overlays/AudioleisCapitulosOverlay';
 
 const MOBILE_ARTIGOS_VIRTUAL_THRESHOLD = 120;
 
@@ -85,6 +87,7 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [overlayPanel, setOverlayPanel] = useState<'fav' | 'playlist' | 'novidades' | 'anotacoes' | 'radar' | 'pesquisa' | null>(null);
   const [selectedAlteracaoDetail, setSelectedAlteracaoDetail] = useState<AlteracaoDetailData | null>(null);
   const [showSobreModal, setShowSobreModal] = useState(false);
+  const [showAudioleisOverlay, setShowAudioleisOverlay] = useState(false);
   
   const [showFooter, setShowFooter] = useState(false);
   const [gridReady, setGridReady] = useState(false);
@@ -674,10 +677,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
 
   const handleOpenAudioleis = useCallback(() => {
     haptic.selection();
-    const artNum = getArtigoAtualNumero();
-    toast.info(`Abrindo Áudio Leis • Art. ${artNum}`);
-    navigate(`/audioleis?tabela=${encodeURIComponent(selectedTabelaNome || '')}&artigo=${encodeURIComponent(artNum)}`);
-  }, [getArtigoAtualNumero, navigate, selectedTabelaNome]);
+    setShowAudioleisOverlay(true);
+  }, []);
 
   const handleOpenAudioaulas = useCallback(() => {
     haptic.selection();
@@ -1405,6 +1406,23 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           </p>
         </DialogContent>
       </Dialog>
+
+      {/* Overlay de Áudio Leis por Capítulos (Estilo VACATIO Mapas Mentais) */}
+      <AnimatePresence>
+        {showAudioleisOverlay && (
+          <AudioleisCapitulosOverlay
+            leiId={selectedLeiId}
+            leiNome={selectedLeiNome}
+            tabelaNome={selectedTabelaNome}
+            artigos={artigos}
+            onClose={() => setShowAudioleisOverlay(false)}
+            onOpenArtigo={(art) => {
+              setShowAudioleisOverlay(false);
+              setOpenArtigo(art);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
