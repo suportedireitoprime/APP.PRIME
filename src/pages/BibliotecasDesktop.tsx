@@ -48,7 +48,7 @@ const BibliotecasDesktop = () => {
       <div className="flex flex-1 min-h-0">
         <DesktopSidebar activeTab="biblioteca" onTabChange={handleTabChange} />
 
-        <div className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden relative contain-content overscroll-contain">
+        <div id="desktop-scroll-container" data-desktop-scroll="true" className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden relative contain-content overscroll-contain">
           <DesktopBibliotecaTabsBar />
 
           <AnimatePresence mode="wait">

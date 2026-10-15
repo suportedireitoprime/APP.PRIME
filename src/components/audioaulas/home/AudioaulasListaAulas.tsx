@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { Play, Pause, Heart, ArrowLeft, BookOpen, ChevronRight, ChevronLeft, Headphones, Layers, Sparkles } from 'lucide-react';
+import { Play, Pause, Heart, ArrowLeft, BookOpen, ChevronRight, ChevronLeft, Headphones, Sparkles } from 'lucide-react';
 import { BotaoDownloadAudio } from './BotaoDownloadAudio';
 import { capaDaArea, decomporTituloCapitulo } from '@/lib/audioaulasHelper';
 import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
@@ -208,18 +208,14 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
               transition={{ duration: 0.2 }}
               className="space-y-4"
             >
-              <div className="flex items-center justify-between gap-3 mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="p-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20">
-                    <Layers className="w-4 h-4" />
-                  </span>
-                  <h3 className="text-lg sm:text-xl font-black text-white uppercase tracking-widest">
-                    Capítulos & Títulos
-                  </h3>
-                </div>
-                <span className="text-xs text-zinc-400 font-semibold px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
-                  {temasDaArea.length} {temasDaArea.length === 1 ? 'capítulo' : 'capítulos'}
-                </span>
+              <div className="mb-3">
+                <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
+                  <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+                  <span className="truncate">Capítulos & Títulos</span>
+                </h3>
+                <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
+                  {temasDaArea.length} {temasDaArea.length === 1 ? 'capítulo catalogado com aulas narradas' : 'capítulos catalogados com aulas narradas'}
+                </p>
               </div>
 
               {/* Grid de Capítulos */}

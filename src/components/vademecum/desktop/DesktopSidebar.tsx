@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-type Tab = 'legislacao' | 'noticias' | 'ferramentas';
+type Tab = 'legislacao' | 'noticias' | 'ferramentas' | 'biblioteca';
 
 interface DesktopSidebarProps {
   activeTab: Tab;

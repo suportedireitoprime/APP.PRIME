@@ -20,17 +20,20 @@ export function resetGlobalScroll() {
   if (document.body) document.body.scrollTop = 0;
   if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
 
+  const root = document.getElementById('root');
+  if (root) root.scrollTop = 0;
+
   // Container Desktop/Tablet
-  const desktopContainer = document.querySelector<HTMLElement>(
+  const desktopContainers = document.querySelectorAll<HTMLElement>(
     '#desktop-scroll-container, [data-desktop-scroll="true"]'
   );
-  if (desktopContainer) {
-    desktopContainer.scrollTop = 0;
-  }
+  desktopContainers.forEach(el => {
+    el.scrollTop = 0;
+  });
 
-  // Qualquer container com overflow interno
+  // Qualquer container com overflow vertical interno
   const overflowContainers = document.querySelectorAll<HTMLElement>(
-    '.overflow-y-auto, .overflow-y-scroll, main, [data-scrollable="true"]'
+    '#desktop-scroll-container, [data-desktop-scroll="true"], .overflow-y-auto, .overflow-y-scroll, .overflow-auto, [class*="overflow-y-auto"], [class*="overflow-auto"], main, [data-scrollable="true"]'
   );
   overflowContainers.forEach(el => {
     if (!el.classList.contains('preserve-scroll')) {

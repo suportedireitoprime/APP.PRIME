@@ -1,8 +1,12 @@
 /* App styles handled by Tailwind */
 
-html, body {
-  overflow-anchor: none;
+html, body, #root {
+  overflow-anchor: none !important;
   scroll-behavior: auto !important;
+}
+
+*, *::before, *::after {
+  overflow-anchor: none;
 }
 
 .logo {

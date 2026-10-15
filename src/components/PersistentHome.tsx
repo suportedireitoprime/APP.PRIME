@@ -1,6 +1,8 @@
 import { useLocation } from "react-router-dom";
+import { useLayoutEffect } from "react";
 import Index from "@/pages/Index";
 import { useAuth } from "@/hooks/useAuth";
+import { resetGlobalScroll } from "@/lib/scrollUtils";
 
 const HEAVY_GPU_PATHS = new Set([
   "/grafo-artigos",
@@ -21,6 +23,13 @@ const HEAVY_GPU_PATHS = new Set([
 const PersistentHome = () => {
   const location = useLocation();
   const { user, loading } = useAuth();
+
+  // Ao sair da Home (ou alternar rotas), zera imediatamente o scroll do documento antes do paint
+  useLayoutEffect(() => {
+    if (location.pathname !== "/") {
+      resetGlobalScroll();
+    }
+  }, [location.pathname]);
 
   // Só monta depois que a auth resolveu e temos usuário — evita rodar
   // efeitos da Home no fluxo público (auth/landing/etc).

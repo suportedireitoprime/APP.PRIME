@@ -40,6 +40,7 @@ import { pushRecente } from '@/lib/leisRecentes';
 import { warmCoverCache } from '@/lib/coverLoader';
 import { DESKTOP_TOOL_GROUPS } from '@/config/desktopTools';
 import { useHomeWarmup } from '@/hooks/useHomeWarmup';
+import { resetGlobalScroll } from '@/lib/scrollUtils';
 
 const HERO_CONFIG: Record<string, { image: string; title: string }> = {
   radar: { image: camaraHero, title: 'Radar Legislativo' },
@@ -47,7 +48,7 @@ const HERO_CONFIG: Record<string, { image: string; title: string }> = {
   noticias: { image: senadoHero, title: 'Aprender' },
 };
 
-type Tab = 'legislacao' | 'noticias' | 'ferramentas';
+type Tab = 'legislacao' | 'noticias' | 'ferramentas' | 'biblioteca';
 
 const DESKTOP_TABS: { id: string; label: string; icon: React.ElementType }[] = [
   { id: 'legislacao', label: 'Início', icon: Scale },
@@ -113,6 +114,10 @@ const IndexDesktop = () => {
   const handleSearchClose = useCallback(() => setSearchOpen(false), []);
   const handleAssistenteClose = useCallback(() => setAssistenteOpen(false), []);
 
+  useEffect(() => {
+    resetGlobalScroll();
+  }, [activeTab]);
+
   return (
     <div className="h-dvh bg-zinc-950 flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 z-0">
@@ -122,7 +127,7 @@ const IndexDesktop = () => {
         <DesktopOnboardingOverlay />
         
         <DesktopSidebar activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="flex flex-col flex-1 h-full min-w-0 relative overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+          <div id="desktop-scroll-container" data-desktop-scroll="true" className="flex flex-col flex-1 h-full min-w-0 relative overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           
             <div className={`border-b border-white/5 transition-colors duration-300 bg-transparent`}>
               <DesktopTopHeader onAssistenteClick={() => setAssistenteOpen(true)} />

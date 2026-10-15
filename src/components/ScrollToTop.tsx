@@ -2,8 +2,6 @@ import { useLayoutEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { resetGlobalScroll } from '@/lib/scrollUtils';
 
-export { resetGlobalScroll };
-
 export default function ScrollToTop() {
   const location = useLocation();
   const observerRef = useRef<MutationObserver | null>(null);
@@ -11,11 +9,20 @@ export default function ScrollToTop() {
   // useLayoutEffect garante execução síncrona ANTES da pintura na GPU
   useLayoutEffect(() => {
     let active = true;
+    let userScrolledManually = false;
 
     // Se a rota possui âncora explícita (#art-5), não forçamos topo
     if (location.hash) {
       return;
     }
+
+    // Flag para detectar se o usuário já tocou ativamente na tela após abrir a nova página
+    const onUserTouch = () => {
+      userScrolledManually = true;
+    };
+    window.addEventListener('touchstart', onUserTouch, { passive: true, capture: true });
+    window.addEventListener('mousedown', onUserTouch, { passive: true, capture: true });
+    window.addEventListener('wheel', onUserTouch, { passive: true, capture: true });
 
     // 1. Reseta imediatamente no ciclo síncrono antes do primeiro paint
     resetGlobalScroll();
@@ -29,22 +36,42 @@ export default function ScrollToTop() {
     });
 
     // 3. Timers graduais para capturar chunks de lazy loading e hidratação de queries assíncronas
-    const t1 = setTimeout(() => { if (active) resetGlobalScroll(); }, 15);
-    const t2 = setTimeout(() => { if (active) resetGlobalScroll(); }, 60);
-    const t3 = setTimeout(() => { if (active) resetGlobalScroll(); }, 150);
-    const t4 = setTimeout(() => { if (active) resetGlobalScroll(); }, 300);
-    const t5 = setTimeout(() => { if (active) resetGlobalScroll(); }, 600);
+    const t1 = setTimeout(() => { if (active && !userScrolledManually) resetGlobalScroll(); }, 20);
+    const t2 = setTimeout(() => { if (active && !userScrolledManually) resetGlobalScroll(); }, 60);
+    const t3 = setTimeout(() => { if (active && !userScrolledManually) resetGlobalScroll(); }, 120);
+    const t4 = setTimeout(() => { if (active && !userScrolledManually) resetGlobalScroll(); }, 250);
+    const t5 = setTimeout(() => { if (active && !userScrolledManually) resetGlobalScroll(); }, 500);
+    const t6 = setTimeout(() => { if (active && !userScrolledManually) resetGlobalScroll(); }, 800);
+    const t7 = setTimeout(() => { if (active && !userScrolledManually) resetGlobalScroll(); }, 1200);
 
-    // 4. MutationObserver por 800ms: se novos cards/conteúdos forem injetados e causarem
+    // 4. Intercepta saltos involuntários de scroll restoration ou inércia da rota anterior
+    const onScrollCheck = () => {
+      if (!active || location.hash || userScrolledManually) return;
+      const currentScroll = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      const desktopContainer = document.querySelector<HTMLElement>('#desktop-scroll-container, [data-desktop-scroll="true"]');
+      const containerScroll = desktopContainer ? desktopContainer.scrollTop : 0;
+      if (currentScroll > 0 || containerScroll > 0) {
+        resetGlobalScroll();
+      }
+    };
+    window.addEventListener('scroll', onScrollCheck, { passive: true });
+    const desktopEl = document.querySelector<HTMLElement>('#desktop-scroll-container, [data-desktop-scroll="true"]');
+    if (desktopEl) {
+      desktopEl.addEventListener('scroll', onScrollCheck, { passive: true });
+    }
+
+    // 5. MutationObserver por 1200ms: se novos cards/conteúdos forem injetados e causarem
     // scroll involuntário pelo layout engine (scroll anchoring), traz de volta ao topo instantaneamente
     if (observerRef.current) {
       observerRef.current.disconnect();
     }
 
     const obs = new MutationObserver(() => {
-      if (!active || location.hash) return;
+      if (!active || location.hash || userScrolledManually) return;
       const currentScroll = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-      if (currentScroll > 0) {
+      const desktopContainer = document.querySelector<HTMLElement>('#desktop-scroll-container, [data-desktop-scroll="true"]');
+      const containerScroll = desktopContainer ? desktopContainer.scrollTop : 0;
+      if (currentScroll > 0 || containerScroll > 0) {
         resetGlobalScroll();
       }
     });
@@ -57,7 +84,12 @@ export default function ScrollToTop() {
     const stopObsTimer = setTimeout(() => {
       obs.disconnect();
       if (observerRef.current === obs) observerRef.current = null;
-    }, 800);
+      window.removeEventListener('scroll', onScrollCheck);
+      if (desktopEl) desktopEl.removeEventListener('scroll', onScrollCheck);
+      window.removeEventListener('touchstart', onUserTouch, true);
+      window.removeEventListener('mousedown', onUserTouch, true);
+      window.removeEventListener('wheel', onUserTouch, true);
+    }, 1200);
 
     return () => {
       active = false;
@@ -66,9 +98,16 @@ export default function ScrollToTop() {
       clearTimeout(t3);
       clearTimeout(t4);
       clearTimeout(t5);
+      clearTimeout(t6);
+      clearTimeout(t7);
       clearTimeout(stopObsTimer);
       obs.disconnect();
       if (observerRef.current === obs) observerRef.current = null;
+      window.removeEventListener('scroll', onScrollCheck);
+      if (desktopEl) desktopEl.removeEventListener('scroll', onScrollCheck);
+      window.removeEventListener('touchstart', onUserTouch, true);
+      window.removeEventListener('mousedown', onUserTouch, true);
+      window.removeEventListener('wheel', onUserTouch, true);
     };
   }, [location.pathname, location.search, location.key, location.hash]);
 
