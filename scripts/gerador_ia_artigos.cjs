@@ -254,6 +254,16 @@ async function processarArtigo(artigo, leiNome, slug, progresso) {
   return { success: true, numero: numLimpo };
 }
 
+function ehArtigoReal(numero, texto) {
+  if (!numero || !texto) return false;
+  const numStr = String(numero).trim();
+  if (/^(t[ií]tulo|cap[ií]tulo|se[cç][aã]o|subse[cç][aã]o|livro|parte|anexo|disposi[cç][õo]es|índice|pre[âa]mbulo)/i.test(numStr)) {
+    return false;
+  }
+  if (texto.trim().length < 15) return false;
+  return true;
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const leiFilterIndex = args.indexOf('--lei');
@@ -291,38 +301,66 @@ async function main() {
   const progresso = carregarProgresso();
   let totalProcessados = 0;
 
-  for (const lei of leisParaProcessar) {
-    console.log(`\n📚 [${lei.nome}] (Slug: ${lei.slug})`);
+  for (let idxLei = 0; idxLei < leisParaProcessar.length; idxLei++) {
+    const lei = leisParaProcessar[idxLei];
+    console.log(`\n📚 [${idxLei + 1}/${leisParaProcessar.length}] ${lei.nome} (Slug: ${lei.slug})`);
 
-    // Busca artigos da lei
-    const { data: artigos, error } = await sb
-      .from('vade_mecum_artigos')
-      .select('id, numero, texto, ordem')
-      .eq('lei_id', lei.id)
-      .order('ordem', { ascending: true });
+    // Busca TODOS os artigos da lei com paginação (sem limite de 1000)
+    let artigos = [];
+    let from = 0;
+    const step = 1000;
+    while (true) {
+      const { data, error } = await sb
+        .from('vade_mecum_artigos')
+        .select('id, numero, texto, ordem, explicacao_resumido, exemplo, termos')
+        .eq('lei_id', lei.id)
+        .order('ordem', { ascending: true })
+        .range(from, from + step - 1);
 
-    if (error || !artigos || artigos.length === 0) {
-      console.log(`  ↪ Nenhum artigo encontrado para esta lei no banco.`);
+      if (error || !data || data.length === 0) break;
+      artigos = artigos.concat(data);
+      if (data.length < step) break;
+      from += step;
+    }
+
+    // Filtra apenas dispositivos que são artigos reais (ignora TÍTULO I, CAPÍTULO II, etc.)
+    const artigosReais = artigos.filter(a => ehArtigoReal(a.numero, a.texto));
+
+    if (artigosReais.length === 0) {
+      console.log(`  ↪ Nenhum artigo real encontrado para esta lei.`);
       continue;
     }
 
-    console.log(`  ↪ ${artigos.length} artigos encontrados.`);
+    const pendentes = artigosReais.filter(
+      a => !progresso.processados[a.id] && (!a.explicacao_resumido || !a.exemplo || !a.termos)
+    );
 
-    for (let i = 0; i < artigos.length; i++) {
+    console.log(`  ↪ Artigos Reais: ${artigosReais.length} (Cabeçalhos ignorados: ${artigos.length - artigosReais.length}) | Pendentes: ${pendentes.length}`);
+
+    if (pendentes.length === 0) {
+      console.log(`  ✅ Todos os artigos desta lei já estão 100% preenchidos!`);
+      continue;
+    }
+
+    for (let i = 0; i < artigosReais.length; i++) {
       if (limite && totalProcessados >= limite) {
         console.log(`\n🛑 Limite de ${limite} artigos atingido.`);
         return;
       }
 
-      const art = artigos[i];
+      const art = artigosReais[i];
       const numLimpo = String(art.numero || '').replace(/^art(?:igo|\.)?\s*/i, '').trim();
 
-      // Checar se já foi processado
-      if (progresso.processados[art.id]) {
+      // Checar se já foi processado no arquivo de progresso OU se já está completo no banco
+      if (progresso.processados[art.id] || (art.explicacao_resumido && art.exemplo && art.termos)) {
+        if (!progresso.processados[art.id]) {
+          progresso.processados[art.id] = { numero: numLimpo, lei: lei.nome, data: new Date().toISOString() };
+          salvarProgresso(progresso);
+        }
         continue;
       }
 
-      process.stdout.write(`  [${i + 1}/${artigos.length}] Art. ${numLimpo}... `);
+      process.stdout.write(`  [${i + 1}/${artigosReais.length}] Art. ${numLimpo}... `);
 
       try {
         const t0 = Date.now();
@@ -334,12 +372,12 @@ async function main() {
         console.log(`✗ Erro: ${err.message}`);
       }
 
-      // Pequena pausa entre artigos
-      await new Promise(r => setTimeout(r, 400));
+      // Pequena pausa preventiva contra rate-limits
+      await new Promise(r => setTimeout(r, 300));
     }
   }
 
-  console.log(`\n🎉 Processamento finalizado! Total de artigos gerados: ${totalProcessados}`);
+  console.log(`\n🎉 Processamento finalizado! Total de artigos gerados nesta sessão: ${totalProcessados}`);
 }
 
 main().catch(console.error);
