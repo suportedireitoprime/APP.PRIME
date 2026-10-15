@@ -118,57 +118,77 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
 
       <div className="flex-1 overflow-y-auto px-4 pb-[calc(2rem+var(--sai-bottom))] pt-3 space-y-4">
         {/* Profile card */}
-        <div className="rounded-3xl bg-gradient-to-br from-secondary/80 to-secondary/40 border border-border p-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => { navigate('/perfil'); onClose(); }}
-              className="relative shrink-0 group"
-              aria-label="Editar perfil"
-            >
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt={String(displayName)}
-                  referrerPolicy="no-referrer"
-                  onError={() => setAvatarBroken(true)}
-                  className="w-14 h-14 rounded-full object-cover border-2 border-primary/50"
-                />
-              ) : (
-                <div className="w-14 h-14 rounded-full border-2 border-primary/50 bg-primary/15 flex items-center justify-center">
-                  <span className="font-display text-primary text-lg font-bold">{iniciais}</span>
-                </div>
-              )}
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-2 border-card">
-                <Pencil className="w-3 h-3 text-primary-foreground" />
-              </div>
-            </button>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="font-display text-base font-bold text-foreground leading-tight truncate">{displayName}</h2>
-                {isTrial ? (
-                  <TrialBadge expiresAt={expiresAt} />
-                ) : isPremium ? (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[#F59E0B]/40 bg-[#F59E0B]/10 text-[10px] font-body font-bold uppercase tracking-wider text-[#FBBF24] shadow-sm shadow-[#F59E0B]/10">
-                    <Crown className="w-3.5 h-3.5 text-[#F59E0B]" strokeWidth={2.4} /> Premium
-                  </span>
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-secondary/80 to-secondary/40 border border-border p-4">
+          <div className="flex items-start justify-between gap-3">
+            {/* Lado Esquerdo: Avatar + Identificação */}
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              <button
+                onClick={() => { navigate('/perfil'); onClose(); }}
+                className="relative shrink-0 group"
+                aria-label="Editar perfil"
+              >
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={String(displayName)}
+                    referrerPolicy="no-referrer"
+                    onError={() => setAvatarBroken(true)}
+                    className="w-14 h-14 rounded-full object-cover border-2 border-primary/50 shadow-md"
+                  />
                 ) : (
+                  <div className="w-14 h-14 rounded-full border-2 border-primary/50 bg-primary/15 flex items-center justify-center shadow-md">
+                    <span className="font-display text-primary text-lg font-bold">{iniciais}</span>
+                  </div>
+                )}
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center border-2 border-card shadow-sm">
+                  <Pencil className="w-3 h-3 text-primary-foreground" />
+                </div>
+              </button>
+
+              <div className="min-w-0 flex-1">
+                <h2 className="font-display text-base font-bold text-foreground leading-tight truncate">
+                  {displayName}
+                </h2>
+                <p className="text-xs text-muted-foreground font-body truncate mt-0.5">
+                  {userEmail}
+                </p>
+              </div>
+            </div>
+
+            {/* Lado Direito: Tag Premium elegante posicionada um pouco mais para cima com animação de reflexo */}
+            <div className="shrink-0 -mt-1 flex items-center">
+              {isTrial ? (
+                <TrialBadge expiresAt={expiresAt} />
+              ) : isPremium ? (
+                <div className="relative group overflow-hidden inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-amber-400/50 bg-gradient-to-r from-amber-500/20 via-amber-400/15 to-amber-500/20 text-[10.5px] font-body font-black uppercase tracking-wider text-amber-300 shadow-md shadow-amber-500/15">
+                  {/* Faixa de reflexo luminoso dinâmico (Shine reflection sweep) */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-y-0 -left-full w-full -skew-x-12 animate-[planos-shine_2.8s_ease-in-out_infinite]"
+                    style={{
+                      background:
+                        'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.75) 50%, transparent 100%)',
+                    }}
+                  />
+                  <Crown className="relative w-3.5 h-3.5 text-amber-400 fill-amber-400/20 shrink-0 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" strokeWidth={2.4} />
+                  <span className="relative drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">Premium</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 rounded-full bg-muted border border-border text-[10px] font-body font-bold uppercase tracking-wider text-muted-foreground">
                     Free
                   </span>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground font-body truncate">{userEmail}</p>
+                  <button
+                    onMouseEnter={() => { import('@/pages/Assinatura.tsx').catch(() => {}); }}
+                    onPointerDown={() => { import('@/pages/Assinatura.tsx').catch(() => {}); }}
+                    onClick={() => { navigate('/assinatura'); onClose(); }}
+                    className="px-3 py-1.5 rounded-xl bg-primary text-primary-foreground text-xs font-body font-semibold whitespace-nowrap active:opacity-70 transition-transform shadow-sm"
+                  >
+                    Atualizar
+                  </button>
+                </div>
+              )}
             </div>
-            {!isPremium && (
-              <button
-                onMouseEnter={() => { import('@/pages/Assinatura.tsx').catch(() => {}); }}
-                onPointerDown={() => { import('@/pages/Assinatura.tsx').catch(() => {}); }}
-                onClick={() => { navigate('/assinatura'); onClose(); }}
-                className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-body font-semibold whitespace-nowrap active:opacity-70 transition-transform"
-              >
-                Atualizar
-              </button>
-            )}
           </div>
         </div>
 
