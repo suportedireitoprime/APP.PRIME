@@ -20,7 +20,44 @@
 
 const fs = require('fs');
 const path = require('path');
+const dns = require('dns');
 const { createClient } = require('@supabase/supabase-js');
+
+// Configura servidores DNS de alta disponibilidade para blindar contra quedas de DNS local (EAI_AGAIN)
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4', '1.0.0.1']);
+} catch {}
+
+// Cache de DNS em memória para eliminar latência e prevenir 'fetch failed / getaddrinfo'
+const dnsCache = new Map();
+const origLookup = dns.lookup;
+dns.lookup = function(hostname, options, callback) {
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
+  }
+  
+  if (dnsCache.has(hostname)) {
+    const cached = dnsCache.get(hostname);
+    if (Date.now() - cached.ts < 3600000) { // 1 hora de TTL
+      if (options && options.all) {
+        return callback(null, [{ address: cached.ip, family: 4 }]);
+      }
+      return callback(null, cached.ip, 4);
+    }
+  }
+
+  dns.resolve4(hostname, (err, addrs) => {
+    if (!err && addrs && addrs.length > 0) {
+      dnsCache.set(hostname, { ip: addrs[0], ts: Date.now() });
+      if (options && options.all) {
+        return callback(null, addrs.map(a => ({ address: a, family: 4 })));
+      }
+      return callback(null, addrs[0], 4);
+    }
+    return origLookup(hostname, options, callback);
+  });
+};
 
 const SUPABASE_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0';
@@ -155,10 +192,10 @@ REGRAS:
 - Separe cada termo com o marcador "---TERMO---" em linha sozinha.
 - Formato: "## [Nome do Termo]" seguido da explicação simples e analogia.`;
 
-async function chamarOmniRoute(systemPrompt, userText, maxTentativas = 2) {
+async function chamarOmniRoute(systemPrompt, userText, maxTentativas = 4) {
   for (let tentativa = 1; tentativa <= maxTentativas; tentativa++) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 60000); // 60s de tolerância por requisição
+    const timeout = setTimeout(() => controller.abort(), 65000); // 65s de tolerância por requisição
 
     try {
       const res = await fetch(OMNIROUTE_URL, {
@@ -193,7 +230,8 @@ async function chamarOmniRoute(systemPrompt, userText, maxTentativas = 2) {
     } catch (err) {
       clearTimeout(timeout);
       if (tentativa === maxTentativas) throw err;
-      await new Promise(r => setTimeout(r, 2000 * tentativa));
+      const espera = 2500 * tentativa; // 2.5s, 5s, 7.5s de backoff
+      await new Promise(r => setTimeout(r, espera));
     }
   }
 }
@@ -455,8 +493,9 @@ async function main() {
       console.log(`\n⚡ [Lote ${loteNum}/${totalLotes}] Disparando ${lote.length} artigos simultâneos (Arts. ${inicioArt} ao ${fimArt})...`);
       const tLote0 = Date.now();
 
-      // Dispara os 15 artigos em paralelo
-      const promessasLote = lote.map(async (art) => {
+      // Dispara os 15 artigos em paralelo com suave escalonamento (100ms) para evitar picos de conexão
+      const promessasLote = lote.map(async (art, idxNoLote) => {
+        if (idxNoLote > 0) await new Promise(r => setTimeout(r, idxNoLote * 100));
         const numLimpo = String(art.numero || '').replace(/^art(?:igo|\.)?\s*/i, '').trim();
         const tArt0 = Date.now();
         try {
