@@ -282,6 +282,23 @@ export function useArtigoCommentsAndAi({
 
     import('@/lib/aiCacheLocal').then(({ getLocalAiCache, setLocalAiCache }) => {
       if (activeArtigoIdRef.current !== currentId) return;
+
+      // Prioridade 0: Conteúdo já pré-gerado em vade_mecum_artigos (latência 0ms)
+      const preCarregado =
+        activeTab === 'explicacao'
+          ? (artigo as any).explicacao_resumido || (artigo as any).explicacao_tecnico || (artigo as any).explicacao
+          : activeTab === 'exemplo'
+          ? (artigo as any).exemplo
+          : null;
+
+      if (preCarregado && typeof preCarregado === 'string' && preCarregado.trim().length > 20) {
+        setLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo, preCarregado.trim());
+        setAiContent((prev) => ({ ...prev, [activeTab]: preCarregado.trim() }));
+        setAiLoading((prev) => ({ ...prev, [activeTab]: false }));
+        setAiGeneratingMode(null);
+        return;
+      }
+
       const localVal = getLocalAiCache(cacheKey.tabela, cacheKey.numero, cacheKey.modo);
       if (localVal) {
         if (activeArtigoIdRef.current === currentId) {
@@ -462,6 +479,17 @@ export function useArtigoCommentsAndAi({
 
     import('@/lib/aiCacheLocal').then(({ getLocalAiCache, setLocalAiCache }) => {
       if (activeArtigoIdRef.current !== currentId) return;
+
+      // Prioridade 0: Termos já pré-gerados em vade_mecum_artigos (latência 0ms)
+      const termosPre = (artigo as any).termos;
+      if (termosPre && typeof termosPre === 'string' && termosPre.trim().length > 10) {
+        setLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos', termosPre.trim());
+        setAiContent((prev) => ({ ...prev, termos: termosPre.trim() }));
+        setAiLoading((prev) => ({ ...prev, termos: false }));
+        setAiGeneratingMode(null);
+        return;
+      }
+
       const localVal = getLocalAiCache(cacheKey.tabela, cacheKey.numero, 'termos');
       if (localVal) {
         if (activeArtigoIdRef.current === currentId) {
