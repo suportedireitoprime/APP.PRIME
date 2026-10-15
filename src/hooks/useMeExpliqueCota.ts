@@ -3,16 +3,22 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { haptic } from '@/lib/nativo';
 
 export const LIMITE_PREMIUM_SEG = 300; // 5 minutos por dia
-export const LIMITE_FREE_SEG = 60;     // 1 minuto de degustação
+export const LIMITE_FREE_SEG = 60;     // 1 minuto por mês
 
-function getTodayStorageKey(): string {
-  const hoje = new Date().toISOString().slice(0, 10);
-  return `me_explique_uso_${hoje}`;
+function getCotaStorageKey(isPremium: boolean): string {
+  const d = new Date();
+  if (isPremium) {
+    const hoje = d.toISOString().slice(0, 10);
+    return `me_explique_uso_dia_${hoje}`;
+  }
+  // Plano Free: 1 minuto por mês
+  const mesAno = `${d.getFullYear()}_${String(d.getMonth() + 1).padStart(2, '0')}`;
+  return `me_explique_uso_mes_${mesAno}`;
 }
 
-function lerTempoUsadoHoje(): number {
+function lerTempoUsado(isPremium: boolean): number {
   try {
-    const raw = localStorage.getItem(getTodayStorageKey());
+    const raw = localStorage.getItem(getCotaStorageKey(isPremium));
     if (!raw) return 0;
     const val = parseInt(raw, 10);
     return isNaN(val) ? 0 : Math.max(0, val);
@@ -21,9 +27,9 @@ function lerTempoUsadoHoje(): number {
   }
 }
 
-function salvarTempoUsadoHoje(segundos: number): void {
+function salvarTempoUsado(isPremium: boolean, segundos: number): void {
   try {
-    localStorage.setItem(getTodayStorageKey(), String(Math.max(0, segundos)));
+    localStorage.setItem(getCotaStorageKey(isPremium), String(Math.max(0, segundos)));
   } catch {
     // Ignora erro em modo privado
   }
@@ -31,7 +37,7 @@ function salvarTempoUsadoHoje(segundos: number): void {
 
 export function useMeExpliqueCota() {
   const { isPremium, loading: carregandoPlano } = useSubscription();
-  const [tempoUsado, setTempoUsado] = useState<number>(lerTempoUsadoHoje);
+  const [tempoUsado, setTempoUsado] = useState<number>(() => lerTempoUsado(isPremium));
   const [limiteModalAberto, setLimiteModalAberto] = useState(false);
   const [timerAtivo, setTimerAtivo] = useState(false);
 
@@ -41,8 +47,9 @@ export function useMeExpliqueCota() {
 
   // Sincroniza com outros componentes
   useEffect(() => {
+    setTempoUsado(lerTempoUsado(isPremium));
     const onSync = () => {
-      setTempoUsado(lerTempoUsadoHoje());
+      setTempoUsado(lerTempoUsado(isPremium));
     };
     window.addEventListener('me-explique-cota-updated', onSync);
     window.addEventListener('storage', onSync);
@@ -50,12 +57,12 @@ export function useMeExpliqueCota() {
       window.removeEventListener('me-explique-cota-updated', onSync);
       window.removeEventListener('storage', onSync);
     };
-  }, []);
+  }, [isPremium]);
 
   const consumirSegundos = useCallback((qtd: number) => {
     setTempoUsado((atual) => {
       const novo = atual + qtd;
-      salvarTempoUsadoHoje(novo);
+      salvarTempoUsado(isPremium, novo);
       window.dispatchEvent(new CustomEvent('me-explique-cota-updated'));
       if (novo >= limiteSegundos) {
         setLimiteModalAberto(true);
@@ -63,7 +70,7 @@ export function useMeExpliqueCota() {
       }
       return novo;
     });
-  }, [limiteSegundos]);
+  }, [isPremium, limiteSegundos]);
 
   const iniciarTimer = useCallback(() => {
     setTimerAtivo(true);
@@ -84,7 +91,7 @@ export function useMeExpliqueCota() {
     timerRef.current = window.setInterval(() => {
       setTempoUsado((prev) => {
         const next = prev + 1;
-        salvarTempoUsadoHoje(next);
+        salvarTempoUsado(isPremium, next);
         if (next % 5 === 0) {
           window.dispatchEvent(new CustomEvent('me-explique-cota-updated'));
         }
@@ -100,7 +107,7 @@ export function useMeExpliqueCota() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [timerAtivo, limiteAtingido, limiteSegundos]);
+  }, [timerAtivo, limiteAtingido, limiteSegundos, isPremium]);
 
   const minutosRestantes = Math.floor(tempoRestante / 60);
   const segundosRestantes = tempoRestante % 60;

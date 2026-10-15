@@ -39,6 +39,29 @@ export interface MapasMentaisViewProps {
   onRotaChange?: (segmentos: string[]) => void;
 }
 
+function getMapasAcessadosMes(): string[] {
+  try {
+    const d = new Date();
+    const chaveMes = `mapas_mentais_vistos_${d.getFullYear()}_${d.getMonth() + 1}`;
+    const raw = localStorage.getItem(chaveMes);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function registrarMapaAcessado(itemKey: string): void {
+  try {
+    const d = new Date();
+    const chaveMes = `mapas_mentais_vistos_${d.getFullYear()}_${d.getMonth() + 1}`;
+    const vistos = getMapasAcessadosMes();
+    if (!vistos.includes(itemKey)) {
+      vistos.push(itemKey);
+      localStorage.setItem(chaveMes, JSON.stringify(vistos));
+    }
+  } catch {}
+}
+
 export default function MapasMentaisView({
   onClose,
   tipoInicial = 'mapa_mental',
@@ -333,11 +356,19 @@ export default function MapasMentaisView({
     kind: 'artigo' | 'tema' = 'artigo',
     temaPai?: string
   ) => {
-    if (!podeGerar) {
-      setGateOpen(true);
-      return;
-    }
     const valor = (sub ?? '').trim();
+    const chave = chaveDe(alvo, temaPai ? `${temaPai} ${valor}` : valor, kind);
+    const isAdmin = isAdminEmail(user?.email);
+
+    // Regra de Degustação: Não assinante tem direito a até 2 mapas mentais. A partir do 3º, trava e abre o PremiumGate.
+    if (!isPremium && !isAdmin) {
+      const vistos = getMapasAcessadosMes();
+      if (!vistos.includes(chave) && vistos.length >= 2) {
+        setGateOpen(true);
+        return;
+      }
+    }
+
     const rotulo = valor
       ? kind === 'tema'
         ? `${alvo.label} — ${temaPai ? `${temaPai} · ${valor}` : valor}`
@@ -356,11 +387,15 @@ export default function MapasMentaisView({
     const base = targetGeracao.alvo;
     const valor = targetGeracao.sub ?? '';
     const chave = chaveDe(base, targetGeracao.temaPai ? `${targetGeracao.temaPai} ${valor}` : valor, targetGeracao.kind);
+    const isAdmin = isAdminEmail(user?.email);
 
     // Se já estiver pronto no cache, abre instantaneamente a 0ms
     const cache = visuaisEmCache();
     const prontoEmCache = cache?.find((r) => r.item_key === chave && r.tipo === tipoEscolhido);
     if (prontoEmCache) {
+      if (!isPremium && !isAdmin) {
+        registrarMapaAcessado(chave);
+      }
       marcarRecente(chave);
       setAberto(prontoEmCache);
       return;

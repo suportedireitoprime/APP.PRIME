@@ -1,10 +1,13 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { Play, Pause, Heart, ArrowLeft, BookOpen, ChevronRight, ChevronLeft, Headphones, Sparkles } from 'lucide-react';
+import { Play, Pause, Heart, ArrowLeft, BookOpen, ChevronRight, ChevronLeft, Headphones, Sparkles, Crown } from 'lucide-react';
 import { BotaoDownloadAudio } from './BotaoDownloadAudio';
 import { capaDaArea, decomporTituloCapitulo } from '@/lib/audioaulasHelper';
 import { type AulaAudio, audioIdOf } from '@/contexts/AudioaulasPlayerContext';
 import { CapaOtimizada } from './CapaOtimizada';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSubscription } from '@/hooks/useSubscription';
+import PremiumGate from '@/components/PremiumGate';
+import { haptic } from '@/lib/nativeHaptics';
 
 function formatarTituloAula(rawTitulo: string): string {
   if (!rawTitulo) return '';
@@ -59,6 +62,8 @@ interface LinhaAulaProps {
   favoritos: Set<string>;
   alternarFavorito: (a: AulaAudio) => void;
   handleTocarAula: (a: AulaAudio) => void;
+  isLocked?: boolean;
+  onOpenGate?: () => void;
 }
 
 const LinhaAula = React.memo(function LinhaAula({
@@ -67,10 +72,21 @@ const LinhaAula = React.memo(function LinhaAula({
   tocando,
   favoritos,
   alternarFavorito,
-  handleTocarAula
+  handleTocarAula,
+  isLocked = false,
+  onOpenGate
 }: LinhaAulaProps) {
   const ativo = a.id === atualId;
   const fav = favoritos.has(audioIdOf(a));
+
+  const handleClick = () => {
+    if (isLocked) {
+      haptic.impact('medium');
+      onOpenGate?.();
+      return;
+    }
+    void handleTocarAula(a);
+  };
 
   return (
     <motion.div
@@ -79,14 +95,14 @@ const LinhaAula = React.memo(function LinhaAula({
         show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
       }}
       className={`flex items-center gap-3 px-3 py-3 rounded-xl transition ${
-        ativo ? 'bg-primary/15 border border-primary/30 shadow-sm' : 'hover:bg-white/5'
+        ativo ? 'bg-primary/15 border border-primary/30 shadow-sm' : isLocked ? 'hover:bg-amber-500/[0.04]' : 'hover:bg-white/5'
       }`}
     >
       <motion.button
         whileHover={{ scale: 1.015 }}
         whileTap={{ scale: 0.98 }}
-        onClick={() => void handleTocarAula(a)}
-        disabled={!a.url_audio}
+        onClick={handleClick}
+        disabled={!a.url_audio && !isLocked}
         className="flex items-center gap-3 min-w-0 flex-1 text-left disabled:opacity-50 group focus-visible:outline-none"
       >
         <span className="relative h-12 w-12 shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md border border-white/5">
@@ -95,8 +111,10 @@ const LinhaAula = React.memo(function LinhaAula({
             alt=""
             className="transition-transform group-hover:scale-105"
           />
-          <span className="absolute inset-0 grid place-items-center bg-black/40 text-white transition-opacity">
-            {ativo && tocando ? (
+          <span className={`absolute inset-0 grid place-items-center transition-opacity ${isLocked ? 'bg-black/60 text-amber-400' : 'bg-black/40 text-white'}`}>
+            {isLocked ? (
+              <Crown className="h-5 w-5 text-amber-400 fill-amber-400/20" />
+            ) : ativo && tocando ? (
               <Pause className="h-5 w-5 text-primary fill-primary" />
             ) : (
               <Play className="h-5 w-5 ml-0.5" />
@@ -104,19 +122,27 @@ const LinhaAula = React.memo(function LinhaAula({
           </span>
         </span>
         <div className="min-w-0 flex-1 py-1">
-          <p className={`text-sm sm:text-[14.5px] !font-sans font-semibold break-words text-left leading-snug tracking-normal normal-case ${ativo ? 'text-primary' : 'text-foreground'}`}>
-            {formatarTituloAula(a.titulo)}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className={`text-sm sm:text-[14.5px] !font-sans font-semibold break-words text-left leading-snug tracking-normal normal-case truncate ${ativo ? 'text-primary' : 'text-foreground'}`}>
+              {formatarTituloAula(a.titulo)}
+            </p>
+            {isLocked && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-mono font-bold tracking-wider uppercase text-amber-300 bg-amber-500/20 border border-amber-400/40 shrink-0">
+                <Crown className="w-2.5 h-2.5 text-amber-400" />
+                PREMIUM
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-1.5 mt-1 text-left">
-            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${ativo && tocando ? 'bg-primary animate-pulse' : 'bg-emerald-400'}`} />
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${ativo && tocando ? 'bg-primary animate-pulse' : isLocked ? 'bg-amber-400' : 'bg-emerald-400'}`} />
             <p className="text-xs text-zinc-400 break-words text-left truncate font-medium">
-              {a.url_audio ? obterDescricaoAmigavel(a) : 'Áudio em breve'}
+              {isLocked ? 'Exclusivo Assinantes • Toque para liberar' : a.url_audio ? obterDescricaoAmigavel(a) : 'Áudio em breve'}
             </p>
           </div>
         </div>
       </motion.button>
 
-      <BotaoDownloadAudio aula={a} />
+      {!isLocked && <BotaoDownloadAudio aula={a} />}
 
       <button
         onClick={() => alternarFavorito(a)}
@@ -158,6 +184,8 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   capituloSelecionado: capituloExterno,
   setCapituloSelecionado: setCapituloExterno
 }: AudioaulasListaAulasProps) {
+  const { isPremium } = useSubscription();
+  const [showPremiumGate, setShowPremiumGate] = useState(false);
   const [capituloLocal, setCapituloLocal] = useState<string | null>(null);
   const [isShimmering, setIsShimmering] = useState(false);
   const [isAbaShimmering, setIsAbaShimmering] = useState(false);
@@ -385,17 +413,22 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                   initial="hidden"
                   animate="show"
                 >
-                  {aulasDoCapitulo.map((a) => (
-                    <LinhaAula
-                      key={a.id}
-                      a={a}
-                      atualId={atualId}
-                      tocando={tocando}
-                      favoritos={favoritos}
-                      alternarFavorito={alternarFavorito}
-                      handleTocarAula={handleTocarAula}
-                    />
-                  ))}
+                  {aulasDoCapitulo.map((a, index) => {
+                    const isLocked = !isPremium && index >= 2;
+                    return (
+                      <LinhaAula
+                        key={a.id}
+                        a={a}
+                        atualId={atualId}
+                        tocando={tocando}
+                        favoritos={favoritos}
+                        alternarFavorito={alternarFavorito}
+                        handleTocarAula={handleTocarAula}
+                        isLocked={isLocked}
+                        onOpenGate={() => setShowPremiumGate(true)}
+                      />
+                    );
+                  })}
                 </motion.div>
               )}
 
@@ -422,6 +455,13 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
             </motion.div>
           )}
         </AnimatePresence>
+
+        <PremiumGate
+          open={showPremiumGate}
+          onClose={() => setShowPremiumGate(false)}
+          feature="audioaula"
+          usageLabel="As 2 primeiras audioaulas desta lei são gratuitas. Assine o Prime para ouvir todos os episódios!"
+        />
       </div>
     );
   }
@@ -469,19 +509,31 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
           initial="hidden"
           animate="show"
         >
-          {listaAba.map((a) => (
-            <LinhaAula
-              key={a.id}
-              a={a}
-              atualId={atualId}
-              tocando={tocando}
-              favoritos={favoritos}
-              alternarFavorito={alternarFavorito}
-              handleTocarAula={handleTocarAula}
-            />
-          ))}
+          {listaAba.map((a, index) => {
+            const isLocked = !isPremium && index >= 2;
+            return (
+              <LinhaAula
+                key={a.id}
+                a={a}
+                atualId={atualId}
+                tocando={tocando}
+                favoritos={favoritos}
+                alternarFavorito={alternarFavorito}
+                handleTocarAula={handleTocarAula}
+                isLocked={isLocked}
+                onOpenGate={() => setShowPremiumGate(true)}
+              />
+            );
+          })}
         </motion.div>
       )}
+
+      <PremiumGate
+        open={showPremiumGate}
+        onClose={() => setShowPremiumGate(false)}
+        feature="audioaula"
+        usageLabel="As 2 primeiras audioaulas desta lei são gratuitas. Assine o Prime para ouvir todos os episódios!"
+      />
     </div>
   );
 });

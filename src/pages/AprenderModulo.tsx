@@ -7,8 +7,10 @@ import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
   ArrowLeft, BookOpen, CheckCircle2, ChevronRight, Footprints, Home, Cloud, Brain,
-  Loader2, Sparkles, CircleCheck
+  Loader2, Sparkles, CircleCheck, Crown
 } from 'lucide-react';
+import { useSubscription } from '@/hooks/useSubscription';
+import PremiumGate from '@/components/PremiumGate';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { shortenAreaName } from '@/lib/areaNameShortener';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
@@ -168,6 +170,9 @@ const AprenderModulo = () => {
   const { moduloId } = useParams<{ moduloId: string }>();
   const { user } = useAuth();
   const uid = user?.id ?? null;
+  const { isPremium } = useSubscription();
+  const [premiumGateOpen, setPremiumGateOpen] = useState(false);
+  const [premiumGateFeature, setPremiumGateFeature] = useState<'aprender' | 'flashcards'>('aprender');
 
   const tabParam = searchParams.get('tab') || (location.state as any)?.tab;
   const [activeTab, setActiveTab] = useState<'aulas' | 'flashcards' | 'questoes'>(() => {
@@ -841,8 +846,9 @@ const AprenderModulo = () => {
                     {flashcardsData.subtemas.map((subtema, idx) => {
                       const memorizadosDoSubtema = subtema.cards.filter((c) => userCardsProgress?.has(c.id)).length;
                       const pctSubtema = subtema.total > 0 ? Math.round((memorizadosDoSubtema / subtema.total) * 100) : 0;
-                      const isCompleted = subtema.total > 0 && memorizadosDoSubtema === subtema.total;
+                      const isCompleted = subtema.total > 0 && memorizadosDoSubtema >= subtema.total;
                       const isNext = !isCompleted && (idx === 0 || flashcardsData.subtemas[idx - 1]?.cards.every(c => userCardsProgress?.has(c.id)));
+                      const isLocked = !isPremium && idx >= 2;
 
                       return (
                         <motion.div
@@ -856,14 +862,18 @@ const AprenderModulo = () => {
                           <div
                             className={cn(
                               'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-medium shrink-0 transition-all shadow-md',
-                              isCompleted
+                              isLocked
+                                ? 'bg-amber-500/10 text-amber-400 border-amber-400/60 shadow-amber-500/10'
+                                : isCompleted
                                 ? 'bg-emerald-500 text-white border-emerald-500'
                                 : isNext
                                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500 animate-pulse'
                                 : 'bg-card text-muted-foreground border-border/80'
                             )}
                           >
-                            {isCompleted ? (
+                            {isLocked ? (
+                              <Crown className="w-4 h-4 text-amber-400 fill-amber-400/20" />
+                            ) : isCompleted ? (
                               <CheckCircle2 className="w-4 h-4" />
                             ) : (
                               <span>{idx + 1}</span>
@@ -873,6 +883,12 @@ const AprenderModulo = () => {
                           <button
                             type="button"
                             onClick={() => {
+                              if (isLocked) {
+                                haptic.impact('medium');
+                                setPremiumGateFeature('flashcards');
+                                setPremiumGateOpen(true);
+                                return;
+                              }
                               try { haptic.light(); } catch {}
                               navigate(
                                 `/flashcards/estudar?area=${encodeURIComponent(modulo.areaNome)}&temas=${encodeURIComponent(flashcardsData?.matchedTema || modulo.titulo)}&subtema=${encodeURIComponent(subtema.nome)}&limite=1000&cor=${encodeURIComponent(palette.primary)}`,
@@ -887,7 +903,9 @@ const AprenderModulo = () => {
                             }}
                             className={cn(
                               'relative min-h-[120px] sm:min-h-[136px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
-                              isNext
+                              isLocked
+                                ? 'border-amber-500/30 bg-amber-500/[0.03] hover:border-amber-400/50'
+                                : isNext
                                 ? 'border-emerald-500/60 bg-card hover:border-emerald-500 shadow-emerald-500/5'
                                 : isCompleted
                                 ? 'border-border/60 bg-card/70 hover:border-emerald-500/40'
@@ -895,8 +913,13 @@ const AprenderModulo = () => {
                             )}
                           >
                             <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[64px] sm:w-[72px]">
-                              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
-                                {modulo?.areaSlug === 'direito-penal' ? (
+                              <div className={cn(
+                                "w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center border overflow-hidden shadow-inner shrink-0",
+                                isLocked ? "bg-amber-500/15 border-amber-400/40 text-amber-300" : "bg-white/5 border-white/10"
+                              )}>
+                                {isLocked ? (
+                                  <Crown className="w-6 h-6 sm:w-7 sm:h-7 text-amber-400 fill-amber-400/20" />
+                                ) : modulo?.areaSlug === 'direito-penal' ? (
                                   <img
                                     src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                                     alt=""
@@ -915,7 +938,12 @@ const AprenderModulo = () => {
                                   <FlashcardsIcon className="w-6 h-6 sm:w-7 sm:h-7 text-emerald-400/90 group-hover:text-emerald-400 transition-colors select-none" />
                                 )}
                               </div>
-                              {isCompleted ? (
+                              {isLocked ? (
+                                <span className="inline-flex items-center gap-0.5 text-[8.5px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 border border-amber-400/30 px-1 py-0.2 rounded text-center">
+                                  <Crown className="w-2.5 h-2.5 text-amber-400" />
+                                  PREMIUM
+                                </span>
+                              ) : isCompleted ? (
                                 <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
                                   Concluída
                                 </span>
@@ -1039,6 +1067,7 @@ const AprenderModulo = () => {
                   <div className="relative space-y-4 ml-3 sm:ml-4">
                     {aulas.map((aula, idx) => {
                       const isNext = !aula.concluida && (idx === 0 || aulas[idx - 1]?.concluida);
+                      const isLocked = !isPremium && idx >= 2;
 
                       return (
                         <motion.div
@@ -1052,14 +1081,18 @@ const AprenderModulo = () => {
                           <div
                             className={cn(
                               'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-medium shrink-0 transition-all shadow-md',
-                              aula.concluida
+                              isLocked
+                                ? 'bg-amber-500/10 text-amber-400 border-amber-400/60 shadow-amber-500/10'
+                                : aula.concluida
                                 ? 'bg-emerald-500 text-white border-emerald-500'
                                 : isNext
                                 ? 'bg-primary/20 text-primary border-primary animate-pulse'
                                 : 'bg-card text-muted-foreground border-border/80'
                             )}
                           >
-                            {aula.concluida ? (
+                            {isLocked ? (
+                              <Crown className="w-4 h-4 text-amber-400 fill-amber-400/20" />
+                            ) : aula.concluida ? (
                               <CheckCircle2 className="w-4 h-4" />
                             ) : (
                               <span>{idx + 1}</span>
@@ -1069,6 +1102,12 @@ const AprenderModulo = () => {
                           <button
                             type="button"
                             onClick={() => {
+                              if (isLocked) {
+                                haptic.impact('medium');
+                                setPremiumGateFeature('aprender');
+                                setPremiumGateOpen(true);
+                                return;
+                              }
                               try { haptic.light(); } catch {}
                               navigate(`/aprender/aula/${aula.id}`, {
                                 state: {
@@ -1080,10 +1119,12 @@ const AprenderModulo = () => {
                                 },
                               });
                             }}
-                            onPointerEnter={() => prefetchAprenderAula(aula.id)}
+                            onPointerEnter={() => !isLocked && prefetchAprenderAula(aula.id)}
                             className={cn(
                               'relative min-h-[120px] sm:min-h-[136px] p-3 sm:p-3.5 overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
-                              isNext
+                              isLocked
+                                ? 'border-amber-500/30 bg-amber-500/[0.03] hover:border-amber-400/50'
+                                : isNext
                                 ? 'border-primary/60 bg-card hover:border-primary shadow-primary/5'
                                 : aula.concluida
                                 ? 'border-emerald-500/40 bg-card/70 hover:border-emerald-500/60'
@@ -1093,8 +1134,13 @@ const AprenderModulo = () => {
                             )}
                           >
                             <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[64px] sm:w-[72px]">
-                              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
-                                {modulo?.areaSlug === 'direito-penal' ? (
+                              <div className={cn(
+                                "w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center border overflow-hidden shadow-inner shrink-0",
+                                isLocked ? "bg-amber-500/15 border-amber-400/40 text-amber-300" : "bg-white/5 border-white/10"
+                              )}>
+                                {isLocked ? (
+                                  <Crown className="w-6 h-6 sm:w-7 sm:h-7 text-amber-400 fill-amber-400/20" />
+                                ) : modulo?.areaSlug === 'direito-penal' ? (
                                   <img
                                     src="/images/gamificacao/direito_penal_prisao_vazado.webp"
                                     alt=""
@@ -1113,7 +1159,12 @@ const AprenderModulo = () => {
                                   <BookOpen className="w-6 h-6 sm:w-7 sm:h-7 text-white/80" strokeWidth={1.8} />
                                 )}
                               </div>
-                              {aula.concluida ? (
+                              {isLocked ? (
+                                <span className="inline-flex items-center gap-0.5 text-[8.5px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 border border-amber-400/30 px-1 py-0.2 rounded text-center">
+                                  <Crown className="w-2.5 h-2.5 text-amber-400" />
+                                  PREMIUM
+                                </span>
+                              ) : aula.concluida ? (
                                 <span className="text-[9px] sm:text-[10px] font-medium uppercase tracking-wider text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded text-center leading-none border border-emerald-500/20">
                                   Concluída
                                 </span>
@@ -1215,6 +1266,17 @@ const AprenderModulo = () => {
           </>
         )}
       </div>
+
+      <PremiumGate
+        open={premiumGateOpen}
+        onClose={() => setPremiumGateOpen(false)}
+        feature={premiumGateFeature}
+        usageLabel={
+          premiumGateFeature === 'aprender'
+            ? 'As 2 primeiras aulas deste módulo são gratuitas. Assine o Prime para desbloquear a grade completa!'
+            : 'Os 2 primeiros conjuntos de flashcards deste módulo são gratuitos. Assine o Prime para praticar todos!'
+        }
+      />
     </DesktopPageLayout>
   );
 };

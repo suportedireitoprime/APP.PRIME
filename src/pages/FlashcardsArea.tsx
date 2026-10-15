@@ -24,10 +24,14 @@ import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
 import { CANONICAL_AREA_TOPICS } from '@/components/aprender/MateriaFlashcardsDeckSection';
 import { haptic } from '@/lib/nativeHaptics';
+import { useSubscription } from '@/hooks/useSubscription';
+import PremiumGate from '@/components/PremiumGate';
 import { cn } from '@/lib/utils';
 
 const FlashcardsArea = () => {
   useTrackArea("flashcards_area_aberta");
+  const { isPremium } = useSubscription();
+  const [premiumGateOpen, setPremiumGateOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const goBack = () => navigate('/flashcards');
@@ -274,64 +278,91 @@ const FlashcardsArea = () => {
   // Itens unificados: na aba flashcards são sempre DECKS DE FLASHCARDS
   const itemsToRender = useMemo(() => {
     if (isFlash && temasFlashcards && temasFlashcards.length > 0) {
-      return temasFlashcards.map((t, idx) => ({
-        key: `deck-${t.tema}-${idx}`,
-        titulo: t.tema,
-        ordemStr: String(idx + 1).padStart(2, '0'),
-        badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
-        displayTotal: t.total,
-        displayConcluidas: t.compreendidos,
-        displayLabel: t.total === 1 ? 'flashcard' : 'flashcards',
-        displayPct: t.total > 0 ? Math.round((t.compreendidos / t.total) * 100) : 0,
-        onClick: () => {
-          try { haptic.light(); } catch {}
-          navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(t.tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-            state: { from: `/flashcards/area/${slug}` }
-          });
-        },
-      }));
+      return temasFlashcards.map((t, idx) => {
+        const isLocked = !isPremium && idx >= 2;
+        return {
+          key: `deck-${t.tema}-${idx}`,
+          titulo: t.tema,
+          ordemStr: String(idx + 1).padStart(2, '0'),
+          badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
+          displayTotal: t.total,
+          displayConcluidas: t.compreendidos,
+          displayLabel: t.total === 1 ? 'flashcard' : 'flashcards',
+          displayPct: t.total > 0 ? Math.round((t.compreendidos / t.total) * 100) : 0,
+          isLocked,
+          onClick: () => {
+            if (isLocked) {
+              haptic.impact('medium');
+              setPremiumGateOpen(true);
+              return;
+            }
+            try { haptic.light(); } catch {}
+            navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(t.tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
+              state: { from: `/flashcards/area/${slug}` }
+            });
+          },
+        };
+      });
     }
 
     if (isFlash) {
       const fallbackTopics = (slug && CANONICAL_AREA_TOPICS[slug]) || [];
       if (fallbackTopics.length > 0) {
         const estTotal = totalFlashcardsArea > 0 ? Math.max(10, Math.floor(totalFlashcardsArea / fallbackTopics.length)) : 30;
-        return fallbackTopics.map((tema, idx) => ({
-          key: `canon-deck-${tema}-${idx}`,
-          titulo: tema,
-          ordemStr: String(idx + 1).padStart(2, '0'),
-          badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
-          displayTotal: estTotal,
-          displayConcluidas: 0,
-          displayLabel: 'flashcards',
-          displayPct: 0,
-          onClick: () => {
-            try { haptic.light(); } catch {}
-            navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-              state: { from: `/flashcards/area/${slug}` }
-            });
-          },
-        }));
+        return fallbackTopics.map((tema, idx) => {
+          const isLocked = !isPremium && idx >= 2;
+          return {
+            key: `canon-deck-${tema}-${idx}`,
+            titulo: tema,
+            ordemStr: String(idx + 1).padStart(2, '0'),
+            badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
+            displayTotal: estTotal,
+            displayConcluidas: 0,
+            displayLabel: 'flashcards',
+            displayPct: 0,
+            isLocked,
+            onClick: () => {
+              if (isLocked) {
+                haptic.impact('medium');
+                setPremiumGateOpen(true);
+                return;
+              }
+              try { haptic.light(); } catch {}
+              navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(tema)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
+                state: { from: `/flashcards/area/${slug}` }
+              });
+            },
+          };
+        });
       }
 
       if (modulosOrdenados.length > 0) {
         const estTotal = totalFlashcardsArea > 0 ? Math.max(10, Math.floor(totalFlashcardsArea / modulosOrdenados.length)) : 25;
-        return modulosOrdenados.map((m, idx) => ({
-          key: m.id,
-          titulo: m.titulo.replace(/^\d+\.\s*/, ''),
-          ordemStr: String(m.ordem || idx + 1).padStart(2, '0'),
-          badgeLabel: `Deck ${String(m.ordem || idx + 1).padStart(2, '0')}`,
-          displayTotal: estTotal,
-          displayConcluidas: 0,
-          displayLabel: 'flashcards',
-          displayPct: 0,
-          onClick: () => {
-            try { haptic.light(); } catch {}
-            navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(m.titulo)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
-              state: { from: `/flashcards/area/${slug}` }
-            });
-          },
-        }));
+        return modulosOrdenados.map((m, idx) => {
+          const isLocked = !isPremium && idx >= 2;
+          return {
+            key: m.id,
+            titulo: m.titulo.replace(/^\d+\.\s*/, ''),
+            ordemStr: String(m.ordem || idx + 1).padStart(2, '0'),
+            badgeLabel: `Deck ${String(m.ordem || idx + 1).padStart(2, '0')}`,
+            displayTotal: estTotal,
+            displayConcluidas: 0,
+            displayLabel: 'flashcards',
+            displayPct: 0,
+            isLocked,
+            onClick: () => {
+              if (isLocked) {
+                haptic.impact('medium');
+                setPremiumGateOpen(true);
+                return;
+              }
+              try { haptic.light(); } catch {}
+              navigate(`/flashcards/estudar?area=${encodeURIComponent(officialFlashcardArea || area?.nome || effectiveAreaName)}&temas=${encodeURIComponent(m.titulo)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`, {
+                state: { from: `/flashcards/area/${slug}` }
+              });
+            },
+          };
+        });
       }
 
       // Fallback absoluto: se totalFlashcardsArea > 0 mas nenhum deck foi gerado, cria um deck genérico
@@ -421,7 +452,7 @@ const FlashcardsArea = () => {
         },
       };
     });
-  }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id, palette]);
+  }, [isFlash, temasFlashcards, modulosOrdenados, aulas, progresso, activeTab, area?.nome, officialFlashcardArea, effectiveAreaName, slug, navigate, data?.area, totalFlashcardsArea, user?.id, palette, isPremium]);
 
   const filteredItems = useMemo(() => {
     if (!searchTerm) return itemsToRender;
@@ -573,6 +604,13 @@ const FlashcardsArea = () => {
           </>
         )}
       </div>
+
+      <PremiumGate
+        open={premiumGateOpen}
+        onClose={() => setPremiumGateOpen(false)}
+        feature="flashcards"
+        usageLabel="Os 2 primeiros decks deste tema são gratuitos. Assine o Prime para estudar todos os decks!"
+      />
     </DesktopPageLayout>
   );
 };

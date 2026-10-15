@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, FileText, Heart, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain } from "lucide-react";
+import { ArrowLeft, FileText, Heart, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain, Crown } from "lucide-react";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
@@ -15,6 +15,8 @@ import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { getAreaThemePalette } from "@/lib/areasDireitoIcons";
 import { ResumosMetodosDeck } from "@/components/resumos/ResumosMetodosDeck";
 import { cn } from "@/lib/utils";
+import { useSubscription } from "@/hooks/useSubscription";
+import PremiumGate from "@/components/PremiumGate";
 
 const RED = "#ef4444";
 
@@ -31,6 +33,8 @@ export default function ResumosJuridicosSubtemas() {
   const navigate = useNavigate();
   
   const palette = useMemo(() => getAreaThemePalette(decodedArea), [decodedArea]);
+  const { isPremium } = useSubscription();
+  const [gateOpen, setGateOpen] = useState(false);
   
   const cacheKey = useMemo(() => `${decodedArea}:${decodedTema}`, [decodedArea, decodedTema]);
   const [rows, setRows] = useState<ResumoRow[]>(() => subtemasCache.get(cacheKey) || []);
@@ -342,6 +346,7 @@ export default function ResumosJuridicosSubtemas() {
                   ordem === "crono" ? i + 1 : rows.findIndex((s) => s.id === r.id) + 1
                 ).padStart(2, "0");
                 const isFav = favs.includes(r.id);
+                const isLocked = !isPremium && i >= 2;
                 
                 return (
                   <motion.div
@@ -357,66 +362,98 @@ export default function ResumosJuridicosSubtemas() {
                     <div
                       className={cn(
                         'w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-all shadow-md',
-                        isFav
+                        isLocked
+                          ? 'bg-amber-500/10 text-amber-400 border-amber-400/60 shadow-amber-500/10'
+                          : isFav
                           ? 'bg-[#ef4444]/20 text-[#ef4444] border-[#ef4444]'
                           : 'bg-card text-muted-foreground border-border/80'
                       )}
                     >
-                      <span>{numero}</span>
+                      {isLocked ? (
+                        <Crown className="w-4 h-4 text-amber-400 fill-amber-400/20" />
+                      ) : (
+                        <span>{numero}</span>
+                      )}
                     </div>
 
                     <button
                       type="button"
                       onClick={() => {
+                        if (isLocked) {
+                          haptic.impact('medium');
+                          setGateOpen(true);
+                          return;
+                        }
                         haptic.selection();
                         openReader(r, "conceitos");
                       }}
                       className={cn(
                         'relative min-h-[72px] sm:min-h-[88px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none',
-                        isFav
+                        isLocked
+                          ? 'border-amber-500/30 bg-amber-500/[0.03] hover:border-amber-400/50 hover:bg-amber-500/[0.06]'
+                          : isFav
                           ? 'bg-card shadow-sm'
                           : 'border-border/50 bg-card/40'
                       )}
                       style={{
-                        borderColor: isFav ? `${palette.primary}99` : undefined,
+                        borderColor: isLocked ? undefined : isFav ? `${palette.primary}99` : undefined,
                       }}
                     >
-                      <div className="absolute inset-y-0 left-0 w-1 opacity-20 group-hover:opacity-100 transition-opacity" style={{ background: `linear-gradient(to bottom, ${palette.primary}, transparent)` }} />
+                      <div className="absolute inset-y-0 left-0 w-1 opacity-20 group-hover:opacity-100 transition-opacity" style={{ background: isLocked ? 'linear-gradient(to bottom, #fbbf24, transparent)' : `linear-gradient(to bottom, ${palette.primary}, transparent)` }} />
                       
                       <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[56px] sm:w-[64px] pl-1">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-white/5 border border-white/10 overflow-hidden shadow-inner shrink-0">
-                          <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-white/80 group-hover:text-white transition-colors select-none" strokeWidth={1.8} aria-hidden="true" />
+                        <div className={cn(
+                          "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border overflow-hidden shadow-inner shrink-0",
+                          isLocked
+                            ? "bg-amber-500/15 border-amber-400/40 text-amber-300"
+                            : "bg-white/5 border-white/10 text-white/80 group-hover:text-white"
+                        )}>
+                          {isLocked ? (
+                            <Crown className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400 fill-amber-400/20" />
+                          ) : (
+                            <FileText className="w-5 h-5 sm:w-6 sm:h-6 transition-colors select-none" strokeWidth={1.8} aria-hidden="true" />
+                          )}
                         </div>
                       </div>
                       
                       <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-1 pr-2">
-                        <h3 className="text-sm sm:text-base font-medium font-sans text-foreground break-words leading-snug line-clamp-3 transition-colors" style={{ '--tw-text-opacity': '1' } as any}>
-                          {r.subtema || r.tema}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm sm:text-base font-medium font-sans text-foreground break-words leading-snug line-clamp-3 transition-colors">
+                            {r.subtema || r.tema}
+                          </h3>
+                          {isLocked && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-mono font-bold tracking-wider uppercase text-amber-300 bg-amber-500/20 border border-amber-400/40 shrink-0">
+                              <Crown className="w-2.5 h-2.5 text-amber-400" />
+                              PREMIUM
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="flex flex-col items-end gap-2 shrink-0 pr-1">
-                        <div
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            haptic.selection();
-                            resumosLocal.toggleFavorito({
-                              id: r.id,
-                              area: r.area,
-                              tema: r.tema,
-                              subtema: r.subtema,
-                            });
-                            refreshFavs();
-                          }}
-                          className="p-1 -mr-1 rounded-full hover:bg-secondary/50 active:opacity-70 transition-transform"
-                        >
-                          {isFav ? (
-                            <Heart className="w-5 h-5" style={{ fill: palette.primary, color: palette.primary }} />
-                          ) : (
-                            <Heart className="w-5 h-5 text-muted-foreground/50" />
-                          )}
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground/40 transition-transform duration-300 group-hover:translate-x-0.5" style={{ color: palette.primary }} />
+                        {!isLocked && (
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              haptic.selection();
+                              resumosLocal.toggleFavorito({
+                                id: r.id,
+                                area: r.area,
+                                tema: r.tema,
+                                subtema: r.subtema,
+                              });
+                              refreshFavs();
+                            }}
+                            className="p-1 -mr-1 rounded-full hover:bg-secondary/50 active:opacity-70 transition-transform"
+                          >
+                            {isFav ? (
+                              <Heart className="w-5 h-5" style={{ fill: palette.primary, color: palette.primary }} />
+                            ) : (
+                              <Heart className="w-5 h-5 text-muted-foreground/50" />
+                            )}
+                          </div>
+                        )}
+                        <ChevronRight className="w-4 h-4 text-muted-foreground/40 transition-transform duration-300 group-hover:translate-x-0.5" style={{ color: isLocked ? '#fbbf24' : palette.primary }} />
                       </div>
                     </button>
                   </motion.div>
@@ -508,6 +545,13 @@ export default function ResumosJuridicosSubtemas() {
           setAutoStartMetodo(null);
         }}
         onFavoritoChange={refreshFavs}
+      />
+
+      <PremiumGate
+        open={gateOpen}
+        onClose={() => setGateOpen(false)}
+        feature="resumo"
+        usageLabel="Os 2 primeiros resumos deste tema são gratuitos. Assine o Prime para acessar todos os resumos!"
       />
       </div>
     </div>

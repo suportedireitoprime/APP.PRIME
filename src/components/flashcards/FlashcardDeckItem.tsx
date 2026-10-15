@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Layers, Play } from 'lucide-react';
+import { Layers, Play, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const FlashcardDeckItem = memo(({ item, i, palette, isLast, coverUrl }: any) => {
@@ -121,11 +121,20 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast, coverUrl }: a
                   style={{ backgroundColor: `${palette.primary}50` }}
                 />
 
-                {/* Botão de Play Minimalista e Moderno */}
+                {/* Botão de Play ou Coroa de Bloqueio */}
                 <div
-                  className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full bg-black/50 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/90 shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_22px_rgba(245,158,11,0.6)]"
+                  className={cn(
+                    "relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full backdrop-blur-md border flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110",
+                    item.isLocked
+                      ? "bg-black/75 border-amber-400/50 text-amber-400 group-hover:border-amber-300 group-hover:shadow-[0_0_22px_rgba(245,158,11,0.6)]"
+                      : "bg-black/50 border-white/30 text-white/90 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_22px_rgba(245,158,11,0.6)]"
+                  )}
                 >
-                  <Play className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 fill-current translate-x-0.5 transition-colors" />
+                  {item.isLocked ? (
+                    <Crown className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 fill-amber-400/20 text-amber-400" />
+                  ) : (
+                    <Play className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 fill-current translate-x-0.5 transition-colors" />
+                  )}
                 </div>
               </div>
             </div>
@@ -208,10 +217,16 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast, coverUrl }: a
             >
               <span
                 className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
-                style={{ color: palette.primary }}
+                style={{ color: item.isLocked ? '#fbbf24' : palette.primary }}
               >
                 {item.badgeLabel}
               </span>
+              {item.isLocked && (
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 border border-amber-400/40">
+                  <Crown className="w-2.5 h-2.5 text-amber-400" />
+                  PREMIUM
+                </span>
+              )}
               <span className="w-1 h-1 rounded-full bg-white/25" />
               <span className="text-[10px] sm:text-[12px] font-light text-zinc-400">
                 {item.displayTotal} {item.displayLabel}

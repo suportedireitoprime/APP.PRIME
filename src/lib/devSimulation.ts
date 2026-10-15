@@ -1,6 +1,6 @@
 import { isAdminEmail } from '@/lib/adminEmails';
 
-export type DevSimulationMode = 'premium' | 'new_user' | 'expired';
+export type DevSimulationMode = 'premium' | 'free';
 
 export const DEV_SIMULATION_STORAGE_KEY = 'direitoprime:dev_simulation_mode';
 export const DEV_SIMULATION_EVENT = 'direitoprime:dev-simulation-change';
@@ -16,16 +16,18 @@ export function isDevSimulatorEligible(email?: string | null): boolean {
 
 /**
  * Obtém o modo de simulação atual.
- * - 'premium': Assinante Premium Vitalício (Acesso total)
- * - 'new_user': Recém-cadastrado (Degustação gratuita de 3 dias ativa)
- * - 'expired': 3 dias encerrados (Trial expirado / Modo Free com paywalls ativos)
+ * - 'premium': Assinante Premium (Acesso total irrestrito)
+ * - 'free': Não Assinante (Plano gratuito com degustação de 2 itens e travas ativas)
  */
 export function getDevSimulationMode(): DevSimulationMode {
   if (typeof localStorage === 'undefined') return 'premium';
   try {
     const saved = localStorage.getItem(DEV_SIMULATION_STORAGE_KEY);
-    if (saved === 'new_user' || saved === 'expired' || saved === 'premium') {
-      return saved;
+    if (saved === 'free' || saved === 'expired' || saved === 'new_user') {
+      return 'free';
+    }
+    if (saved === 'premium') {
+      return 'premium';
     }
   } catch {
     // fallback seguro
@@ -62,11 +64,11 @@ export function shouldBypassAsAdmin(email?: string | null): boolean {
 }
 
 /**
- * Retorna se a conta admin está simulando ativamente o modo com trial expirado.
+ * Retorna se a conta admin está simulando ativamente o modo Não Assinante (Free).
  */
 export function isSimulatingExpired(email?: string | null): boolean {
   if (!isAdminEmail(email)) return false;
-  return getDevSimulationMode() === 'expired';
+  return getDevSimulationMode() === 'free';
 }
 
 /**
@@ -87,35 +89,15 @@ export function getDevSimulatedSubscriptionState(email?: string | null): {
   if (!isAdminEmail(email)) return null;
   const mode = getDevSimulationMode();
 
-  if (mode === 'new_user') {
-    const now = Date.now();
-    const startedAt = new Date(now - 2 * 60 * 60 * 1000).toISOString(); // criado há 2h
-    const expiresAt = new Date(now + 3 * 24 * 60 * 60 * 1000).toISOString(); // expira daqui a 3 dias
-    return {
-      isPremium: true,
-      loading: false,
-      plano: 'Teste de 3 Dias',
-      startedAt,
-      expiresAt,
-      source: null,
-      status: 'SUBSCRIPTION_STATE_ACTIVE',
-      isAdminOverride: false,
-      isTrial: true,
-    };
-  }
-
-  if (mode === 'expired') {
-    const now = Date.now();
-    const startedAt = new Date(now - 4 * 24 * 60 * 60 * 1000).toISOString(); // criado há 4 dias
-    const expiresAt = new Date(now - 1 * 24 * 60 * 60 * 1000).toISOString(); // expirou há 1 dia
+  if (mode === 'free') {
     return {
       isPremium: false,
       loading: false,
       plano: null,
-      startedAt,
-      expiresAt,
+      startedAt: null,
+      expiresAt: null,
       source: null,
-      status: 'EXPIRED',
+      status: 'FREE_LIMITED',
       isAdminOverride: false,
       isTrial: false,
     };
@@ -139,7 +121,7 @@ export function getDevSimulatedSubscriptionState(email?: string | null): {
 }
 
 /**
- * Metadados descritivos de cada modo para renderização na interface.
+ * Metadados descritivos dos 2 modos para renderização na interface.
  */
 export const DEV_SIMULATION_INFO = {
   premium: {
@@ -147,24 +129,17 @@ export const DEV_SIMULATION_INFO = {
     name: 'Assinante Premium',
     badge: 'PREMIUM',
     badgeClass: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
-    description: 'Acesso vitalício completo liberado, sem bloqueios ou paywalls.',
+    description: 'Acesso vitalício irrestrito. Sem travas ou paywalls.',
     tag: 'Acesso Total',
   },
-  new_user: {
-    id: 'new_user' as const,
-    name: 'Recém-cadastrado',
-    badge: 'TRIAL 3 DIAS',
-    badgeClass: 'text-sky-400 bg-sky-500/10 border-sky-500/30',
-    description: 'Degustação gratuita ativa de 3 dias com contagem regressiva.',
-    tag: 'Degustação Ativa',
-  },
-  expired: {
-    id: 'expired' as const,
-    name: '3 Dias Terminados',
-    badge: 'EXPIRADO / FREE',
+  free: {
+    id: 'free' as const,
+    name: 'Não Assinante',
+    badge: 'NÃO ASSINANTE',
     badgeClass: 'text-rose-400 bg-rose-500/10 border-rose-500/30',
-    description: 'Período encerrado. Bloqueios de paywall e limites do plano Free ativos.',
-    tag: 'Modo Free / Bloqueado',
+    description: 'Acesso limitado: 2 degustações por lei/tema e paywalls ativos.',
+    tag: 'Modo Gratuito',
   },
 } as const;
+
 

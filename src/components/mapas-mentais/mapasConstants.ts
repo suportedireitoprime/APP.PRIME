@@ -60,7 +60,7 @@ export const CATEGORIAS: VisualCategoria[] = ['codigos', 'estatutos', 'leis_espe
 
 export const norm = (v: string) => v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'sobre' | 'sugeridos';
+export type Filtro = 'todos' | 'favoritos' | 'recentes' | 'sobre' | 'sugeridos' | 'pastas';
 
 import { Sparkles, Info } from 'lucide-react';
 
