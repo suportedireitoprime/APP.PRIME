@@ -148,7 +148,7 @@ async function resolveUserPlanInternal(
 
       const { data: profiles } = await admin
         .from("profiles")
-        .select("id, email, telefone, whatsapp_number, is_premium")
+        .select("id, telefone, whatsapp_number, is_premium")
         .or(variants.map((v) => `telefone.ilike.%${v}%,whatsapp_number.ilike.%${v}%`).join(","))
         .limit(5);
 
@@ -164,13 +164,13 @@ async function resolveUserPlanInternal(
 
       if (bestProfile) {
         effectiveUserId = bestProfile.id;
-        if (bestProfile.email && ADMIN_EMAILS.includes(bestProfile.email.toLowerCase().trim())) {
+        if (bestProfile.is_premium) {
           return {
             isPremium: true,
             plano: "pro",
-            expiresAt: "2099-12-31T23:59:59.000Z",
-            isAdmin: true,
-            reason: "admin_profile_email",
+            expiresAt: null,
+            isAdmin: false,
+            reason: "profile_is_premium_by_phone",
           };
         }
       }
@@ -413,24 +413,33 @@ export async function syncHorusSubscriptionStatus(
     const now = new Date().toISOString();
     const planLabel = isPremium ? "pro" : "free";
 
-    // 2. Vincula/atualiza em horus_whatsapp_users
-    const { data: existingUser } = await admin
-      .from("horus_whatsapp_users")
-      .select("id, linked_user_id, display_name")
-      .eq("phone_e164", phone)
-      .maybeSingle();
+    // 2. Vincula/atualiza em horus_whatsapp_users (suportando variantes brasileiras de 9º dígito)
+    const phoneVariants = [phone];
+    if (phone.startsWith("55") && phone.length === 12) {
+      phoneVariants.push("55" + phone.slice(2, 4) + "9" + phone.slice(4));
+    } else if (phone.startsWith("55") && phone.length === 13) {
+      phoneVariants.push("55" + phone.slice(2, 4) + phone.slice(5));
+    }
 
-    if (existingUser) {
-      await admin
-        .from("horus_whatsapp_users")
-        .update({
-          linked_user_id: userId,
-          user_id: userId,
-          onboarding_state: "ativo",
-          display_name: existingUser.display_name || displayName,
-          updated_at: now,
-        })
-        .eq("id", existingUser.id);
+    const { data: existingList } = await admin
+      .from("horus_whatsapp_users")
+      .select("id, phone_e164, linked_user_id, user_id, msg_count, display_name")
+      .in("phone_e164", phoneVariants);
+
+    if (existingList && existingList.length > 0) {
+      // Ordena pelo que tem mais mensagens ou já interagiu
+      existingList.sort((a: any, b: any) => (b.msg_count || 0) - (a.msg_count || 0));
+      for (const row of existingList) {
+        await admin
+          .from("horus_whatsapp_users")
+          .update({
+            linked_user_id: userId,
+            onboarding_state: "ativo",
+            display_name: row.display_name || displayName,
+            updated_at: now,
+          })
+          .eq("id", row.id);
+      }
     } else {
       await admin.from("horus_whatsapp_users").insert({
         phone_e164: phone,
@@ -441,7 +450,7 @@ export async function syncHorusSubscriptionStatus(
         first_seen_at: now,
         last_seen_at: now,
         msg_count: 0,
-      });
+      }).catch((e: any) => console.warn("syncHorusSubscriptionStatus insert error", e?.message));
     }
 
     // 3. Atualiza/upsert em horus_user_stats

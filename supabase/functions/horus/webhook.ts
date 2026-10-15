@@ -363,6 +363,50 @@ async function handleIncomingMessage(admin: any, body: any) {
   }
 }
 
+function getBrazilianVariant(phone: string): string | null {
+  const digits = String(phone || "").replace(/\D/g, "");
+  if (digits.startsWith("55") && digits.length === 12) {
+    // 55 + DDD(2) + 8 dígitos -> adiciona o 9: 55 + DDD(2) + 9 + 8 dígitos
+    return "55" + digits.slice(2, 4) + "9" + digits.slice(4);
+  }
+  if (digits.startsWith("55") && digits.length === 13) {
+    // 55 + DDD(2) + 9 + 8 dígitos -> remove o 9: 55 + DDD(2) + 8 dígitos
+    return "55" + digits.slice(2, 4) + digits.slice(5);
+  }
+  return null;
+}
+
+function buildPhoneVariants(phone: string): string[] {
+  const digits = String(phone || "").replace(/\D/g, "");
+  if (!digits) return [];
+  const set = new Set<string>([digits]);
+  if (digits.length >= 10) set.add(digits.slice(-11));
+  if (digits.length >= 10) set.add(digits.slice(-10));
+  if (digits.length >= 8) set.add(digits.slice(-8));
+  if (digits.length >= 9) set.add(digits.slice(-9));
+
+  if (digits.startsWith("55")) {
+    if (digits.length === 12) {
+      set.add("55" + digits.slice(2, 4) + "9" + digits.slice(4));
+      set.add(digits.slice(2, 4) + "9" + digits.slice(4));
+    } else if (digits.length === 13) {
+      set.add("55" + digits.slice(2, 4) + digits.slice(5));
+      set.add(digits.slice(2, 4) + digits.slice(5));
+    }
+  } else {
+    if (digits.length === 10) {
+      set.add(digits.slice(0, 2) + "9" + digits.slice(2));
+      set.add("55" + digits);
+      set.add("55" + digits.slice(0, 2) + "9" + digits.slice(2));
+    } else if (digits.length === 11) {
+      set.add(digits.slice(0, 2) + digits.slice(3));
+      set.add("55" + digits);
+      set.add("55" + digits.slice(0, 2) + digits.slice(3));
+    }
+  }
+  return Array.from(set).filter(Boolean);
+}
+
 async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessage) {
   const pushName = extractPushName(body);
 
@@ -373,30 +417,101 @@ async function processIncomingMessage(admin: any, body: any, parsed: ParsedMessa
     return;
   }
 
-  // 1a) Comando especial #VINCULAR (Item 17)
-  if (parsed.text.toUpperCase().startsWith("#VINCULAR")) {
-    const email = parsed.text.split(" ")[1]?.trim();
-    if (!email) {
-      await evolution.sendText(parsed.remoteJid || parsed.from, "❌ Digite o comando assim: *#VINCULAR seue-mail@gmail.com* (coloque o e-mail que você usou para comprar).").catch(() => {});
+  // 1a) Comando especial #VINCULAR
+  const cleanIncomingText = (parsed.text || "").replace(/[*_~`]/g, "").trim();
+  if (cleanIncomingText.toUpperCase().startsWith("#VINCULAR")) {
+    const parts = cleanIncomingText.split(/\s+/);
+    const email = parts[1]?.trim()?.toLowerCase();
+    if (!email || !email.includes("@")) {
+      await evolution.sendText(parsed.remoteJid || parsed.from, "❌ Digite o comando assim: *#VINCULAR seue-mail@gmail.com* (coloque o e-mail que você usou para comprar ou criar conta).").catch(() => {});
       return;
     }
     
-    // Busca assinatura Asaas pelo email fornecido
-    const { data: asaasFallback } = await admin
-      .from("asaas_subscriptions")
-      .select("status, user_id")
-      .ilike("customer_email", email)
-      .in("status", ["ACTIVE", "ACTIVE_GRACE"])
+    let targetUserId: string | null = null;
+    let foundReason = "";
+
+    // 1. Busca em legacy_subscribers (vitalícios / compras anteriores)
+    const { data: legSub } = await admin
+      .from("legacy_subscribers")
+      .select("claimed_user_id, status")
+      .ilike("email", email)
+      .eq("status", "active")
       .limit(1)
       .maybeSingle();
 
-    if (asaasFallback && asaasFallback.user_id && userRow?.id) {
+    if (legSub?.claimed_user_id) {
+      targetUserId = legSub.claimed_user_id;
+      foundReason = "Assinante Vitalício";
+    }
+
+    // 2. Busca assinatura Asaas pelo email fornecido
+    if (!targetUserId) {
+      const { data: asaasFallback } = await admin
+        .from("asaas_subscriptions")
+        .select("status, user_id")
+        .ilike("customer_email", email)
+        .in("status", ["ACTIVE", "ACTIVE_GRACE"])
+        .limit(1)
+        .maybeSingle();
+
+      if (asaasFallback?.user_id) {
+        targetUserId = asaasFallback.user_id;
+        foundReason = "Assinatura Asaas";
+      }
+    }
+
+    // 3. Busca em perfis cadastrados no app via auth admin
+    if (!targetUserId) {
+      try {
+        const { data: authUsers } = await admin.auth.admin.listUsers();
+        const matchedAuth = (authUsers?.users || []).find(
+          (u: any) => u.email?.toLowerCase().trim() === email
+        );
+        if (matchedAuth?.id) {
+          targetUserId = matchedAuth.id;
+          foundReason = "Conta do Aplicativo";
+        }
+      } catch (err) {
+        console.warn("horus-webhook auth listUsers error", err);
+      }
+    }
+
+    if (targetUserId && userRow?.id) {
+      // Reconcilia em horus_whatsapp_users
       await admin.from("horus_whatsapp_users")
-        .update({ linked_user_id: asaasFallback.user_id, linked_at: new Date().toISOString(), onboarding_state: "ativo" })
+        .update({
+          linked_user_id: targetUserId,
+          linked_at: new Date().toISOString(),
+          onboarding_state: "ativo"
+        })
         .eq("id", userRow.id);
-      await evolution.sendText(parsed.remoteJid || parsed.from, "✅ *Conta vinculada com sucesso!* Identifiquei sua assinatura. Pode mandar sua dúvida jurídica!").catch(() => {});
+
+      // Sincroniza também a variante de 9º dígito se existir
+      const varPhone = getBrazilianVariant(parsed.from);
+      if (varPhone) {
+        await admin.from("horus_whatsapp_users")
+          .update({ linked_user_id: targetUserId, onboarding_state: "ativo" })
+          .eq("phone_e164", varPhone);
+      }
+
+      // Valida o plano do usuário
+      const plan = await resolveUserPlan(admin, { userId: targetUserId, phone: parsed.from });
+      if (plan.isPremium) {
+        await evolution.sendText(
+          parsed.remoteJid || parsed.from,
+          `✅ *Conta vinculada com sucesso!*\n\nIdentifiquei sua assinatura Premium ativa (${foundReason}). Seu acesso ao Hórus está 100% liberado!\n\nComo posso ajudar você agora? Envie sua dúvida!`
+        ).catch(() => {});
+      } else {
+        await evolution.sendText(
+          parsed.remoteJid || parsed.from,
+          `✅ *Conta vinculada!*\n\nSua conta com o e-mail *${email}* foi associada ao seu WhatsApp. Porém, no momento essa conta está no plano gratuito. Para acessar sem limites, assine em *Perfil → Assinaturas* no aplicativo.`
+        ).catch(() => {});
+      }
     } else {
-      await evolution.sendText(parsed.remoteJid || parsed.from, "⚠️ Não encontrei uma assinatura Asaas ativa para esse e-mail. Se comprou via *Google Play* ou *Apple*, o vínculo é automático se o número do celular no app for igual ao seu WhatsApp. Ajuste no app se necessário.").catch(() => {});
+      await evolution.sendText(
+        parsed.remoteJid || parsed.from,
+        `⚠️ Não localizei uma assinatura ou conta ativa com o e-mail *${email}*.\n\nPor favor, confirme se digitou o mesmo e-mail utilizado na sua compra ou no cadastro do aplicativo *Vade Mecum*. Se comprou via Apple Store ou Google Play, verifique o e-mail da sua conta da loja.`
+      ).catch(() => {});
     }
     return;
   }
@@ -801,11 +916,22 @@ function extractPushName(body: any): string {
 
 async function ensureUser(admin: any, phone: string, pushName: string) {
   // Try find existing
-  const { data: existing } = await admin
+  let { data: existing } = await admin
     .from("horus_whatsapp_users")
     .select("id, phone_e164, blocked, linked_user_id, user_id, display_name, contexto_resumo, msg_count, onboarding_state, off_topic_streak, perfil_pessoal, created_at")
     .eq("phone_e164", phone)
     .maybeSingle();
+
+  const variantPhone = getBrazilianVariant(phone);
+  let variantRow: any = null;
+  if (variantPhone) {
+    const { data: vRow } = await admin
+      .from("horus_whatsapp_users")
+      .select("id, phone_e164, blocked, linked_user_id, user_id, display_name, contexto_resumo, msg_count, onboarding_state, off_topic_streak, perfil_pessoal, created_at")
+      .eq("phone_e164", variantPhone)
+      .maybeSingle();
+    variantRow = vRow;
+  }
 
   const now = new Date().toISOString();
 
@@ -819,6 +945,18 @@ async function ensureUser(admin: any, phone: string, pushName: string) {
       patch.linked_at = now;
       patch.onboarding_state = "ativo";
       existing.linked_user_id = existing.user_id;
+    }
+
+    // Se não tem linked_user_id, herda da variante de 9º dígito se existir
+    if (!existing.linked_user_id && variantRow) {
+      const vUid = variantRow.linked_user_id || variantRow.user_id;
+      if (vUid) {
+        patch.linked_user_id = vUid;
+        patch.linked_at = now;
+        patch.onboarding_state = "ativo";
+        if (!patch.display_name && variantRow.display_name) patch.display_name = variantRow.display_name;
+        existing.linked_user_id = vUid;
+      }
     }
 
     // Try auto-link if not linked yet: look up profile by phone
@@ -837,13 +975,17 @@ async function ensureUser(admin: any, phone: string, pushName: string) {
     return { ...existing, ...patch };
   }
 
-  const linked = await tryLinkProfile(admin, phone);
+  const inheritedUid = variantRow?.linked_user_id || variantRow?.user_id;
+  const linked = inheritedUid
+    ? { id: inheritedUid, display_name: variantRow?.display_name }
+    : await tryLinkProfile(admin, phone);
+
   const insertRow: any = {
     phone_e164: phone,
     first_seen_at: now,
     last_seen_at: now,
     msg_count: 1,
-    display_name: pushName || linked?.display_name || null,
+    display_name: pushName || linked?.display_name || variantRow?.display_name || null,
     linked_user_id: linked?.id ?? null,
     linked_at: linked ? now : null,
     onboarding_state: linked ? "ativo" : "novo",
@@ -857,13 +999,8 @@ async function ensureUser(admin: any, phone: string, pushName: string) {
 }
 
 async function tryLinkProfile(admin: any, phone: string): Promise<{ id: string; display_name: string | null } | null> {
-  const digits = phone.replace(/\D/g, "");
-  if (!digits) return null;
-  const variants = new Set<string>([digits]);
-  if (digits.length >= 10) variants.add(digits.slice(-11));
-  if (digits.length >= 11) variants.add("55" + digits.slice(-11));
-  if (digits.length >= 9) variants.add(digits.slice(-9));
-  const list = Array.from(variants);
+  const list = buildPhoneVariants(phone);
+  if (!list.length) return null;
   const { data: rows } = await admin
     .from("profiles")
     .select("id, display_name, telefone, whatsapp_number")
