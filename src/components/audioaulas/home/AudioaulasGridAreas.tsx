@@ -5,11 +5,7 @@ import {
   ChevronLeft,
   ArrowLeft,
   Search,
-  X,
-  BookOpen,
-  Scale,
-  ShieldCheck,
-  Sparkles
+  X
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { capaDaArea } from '@/lib/audioaulasHelper';
@@ -297,6 +293,75 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
     return areas.filter(([nome]) => !/eca|estatuto/i.test(nome));
   }, [areas]);
 
+  // Mapeamento dinâmico de aulas por área
+  const areaAulasMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const [nome, qtd] of areas) {
+      map.set(nome.toLowerCase().trim(), qtd);
+    }
+    return map;
+  }, [areas]);
+
+  // Função para sincronizar a quantidade de aulas de cada card em tempo real com o banco
+  const getAulasInfoDinamica = useCallback(
+    (rota: string, fallback?: string) => {
+      if (rota.startsWith('/audioaulas/')) {
+        const areaNome = decodeURIComponent(rota.replace('/audioaulas/', '')).toLowerCase().trim();
+        const count = areaAulasMap.get(areaNome);
+        if (typeof count === 'number') {
+          return `${count} ${count === 1 ? 'aula' : 'aulas'}`;
+        }
+      }
+      return fallback;
+    },
+    [areaAulasMap]
+  );
+
+  // Total dinâmico de aulas nas Áreas Tradicionais
+  const totalAulasAreas = useMemo(() => {
+    return areasTradicionais.reduce((acc, [, qtd]) => acc + qtd, 0);
+  }, [areasTradicionais]);
+
+  // Total dinâmico de aulas dos Códigos
+  const totalAulasCodigos = useMemo(() => {
+    let total = 0;
+    for (const cod of CATALOGO_CODIGOS) {
+      if (cod.rota.startsWith('/audioaulas/')) {
+        const areaNome = decodeURIComponent(cod.rota.replace('/audioaulas/', '')).toLowerCase().trim();
+        const count = areaAulasMap.get(areaNome);
+        if (typeof count === 'number') {
+          total += count;
+          continue;
+        }
+      }
+      const match = cod.aulasInfo?.match(/(\d+)\s*aulas?/i);
+      if (match) {
+        total += parseInt(match[1], 10);
+      }
+    }
+    return total;
+  }, [areaAulasMap]);
+
+  // Total dinâmico de aulas dos Estatutos
+  const totalAulasEstatutos = useMemo(() => {
+    let total = 0;
+    for (const est of CATALOGO_ESTATUTOS) {
+      if (est.rota.startsWith('/audioaulas/')) {
+        const areaNome = decodeURIComponent(est.rota.replace('/audioaulas/', '')).toLowerCase().trim();
+        const count = areaAulasMap.get(areaNome);
+        if (typeof count === 'number') {
+          total += count;
+          continue;
+        }
+      }
+      const match = est.aulasInfo?.match(/(\d+)\s*aulas?/i);
+      if (match) {
+        total += parseInt(match[1], 10);
+      }
+    }
+    return total;
+  }, [areaAulasMap]);
+
   // Se o usuário pedir para ver "Todas as Áreas", exibe todas mesmo
   const areasFiltradasLista = useMemo(() => {
     const q = busca.toLowerCase().trim();
@@ -357,17 +422,15 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
             {/* ═════════════ SEÇÃO 1: ÁREAS DO DIREITO (CARROSSEL) ═════════════ */}
             <section className="space-y-4">
               <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="p-1.5 rounded-lg bg-primary/10 text-primary border border-primary/20">
-                      <Scale className="w-4 h-4" />
-                    </span>
-                    <h2 className="text-[19px] sm:text-[22px] font-black text-white uppercase tracking-widest truncate">
-                      Áreas do Direito
-                    </h2>
-                  </div>
-                  <p className="mt-1 text-xs sm:text-[13px] text-zinc-400 line-clamp-1">
-                    Mergulhe no conhecimento jurídico através de aulas completas em áudio.
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
+                    <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+                    <span className="truncate">Áreas do Direito</span>
+                  </h2>
+                  <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
+                    {totalAulasAreas > 0
+                      ? `${totalAulasAreas} aulas completas distribuídas em ${areasTradicionais.length} ramos jurídicos`
+                      : 'Mergulhe no conhecimento jurídico através de aulas completas em áudio'}
                   </p>
                 </div>
 
@@ -446,29 +509,19 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
 
             {/* ═════════════ SEÇÃO 2: LEGISLAÇÃO (CÓDIGOS E ESTATUTOS) ═════════════ */}
             <div className="pt-4 border-t border-white/5 space-y-10">
-              {/* CABEÇALHO GERAL DE LEGISLAÇÃO */}
-              <div className="space-y-1">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-primary uppercase tracking-widest">
-                  <BookOpen className="w-3.5 h-3.5" /> Leis & Normas
-                </span>
-                <h2 className="text-[22px] sm:text-[25px] font-black text-white uppercase tracking-widest">
-                  Legislação em Áudio
-                </h2>
-                <p className="text-xs sm:text-[13px] text-zinc-400 max-w-2xl truncate">
-                  Estude códigos e estatutos com aulas narradas artigo por artigo.
-                </p>
-              </div>
-
               {/* ──────────────── CÓDIGOS (CARROSSEL) ──────────────── */}
               <section className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <h3 className="text-lg sm:text-xl font-bold text-white tracking-wide flex items-center gap-2">
-                      <span>Códigos</span>
-                      <span className="text-[11px] font-normal px-2 py-0.5 rounded-full bg-white/5 text-zinc-400 border border-white/10">
-                        {CATALOGO_CODIGOS.length} principais
-                      </span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
+                      <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+                      <span className="truncate">CÓDIGOS</span>
                     </h3>
+                    <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
+                      {totalAulasCodigos > 0
+                        ? `${totalAulasCodigos} aulas narradas artigo por artigo em ${CATALOGO_CODIGOS.length} códigos`
+                        : `Estude ${CATALOGO_CODIGOS.length} códigos principais com aulas narradas artigo por artigo`}
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
@@ -505,52 +558,58 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                   ref={refCarrosselCodigos}
                   className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-3 pt-1 snap-x scrollbar-none select-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
                 >
-                  {CATALOGO_CODIGOS.map((cod) => (
-                    <button
-                      key={cod.id}
-                      onClick={() => navigate(cod.rota)}
-                      className="group relative w-[145px] sm:w-[175px] md:w-[195px] aspect-[3/4] shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
-                    >
-                      <CapaOtimizada
-                        src={cod.capa}
-                        alt={cod.nome}
-                        animacaoEntrada
-                        className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                  {CATALOGO_CODIGOS.map((cod) => {
+                    const infoAula = getAulasInfoDinamica(cod.rota, cod.aulasInfo);
+                    return (
+                      <button
+                        key={cod.id}
+                        onClick={() => navigate(cod.rota)}
+                        className="group relative w-[145px] sm:w-[175px] md:w-[195px] aspect-[3/4] shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
+                      >
+                        <CapaOtimizada
+                          src={cod.capa}
+                          alt={cod.nome}
+                          animacaoEntrada
+                          className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
 
-                      <div className="absolute inset-0 p-3 flex flex-col justify-between">
-                        <span className="self-start px-2 py-0.5 rounded-md bg-black/60 text-white font-black text-[11px] tracking-wider border border-white/20 backdrop-blur">
-                          {cod.sigla}
-                        </span>
+                        <div className="absolute inset-0 p-3 flex flex-col justify-between">
+                          <span className="self-start px-2 py-0.5 rounded-md bg-black/60 text-white font-black text-[11px] tracking-wider border border-white/20 backdrop-blur">
+                            {cod.sigla}
+                          </span>
 
-                        <div className="min-w-0">
-                          <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
-                            {cod.nome}
-                          </p>
-                          {cod.aulasInfo && (
-                            <p className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 flex items-center gap-1">
-                              <Headphones className="w-3 h-3 text-zinc-400" />
-                              {cod.aulasInfo}
+                          <div className="min-w-0">
+                            <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
+                              {cod.nome}
                             </p>
-                          )}
+                            {infoAula && (
+                              <p className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 flex items-center gap-1">
+                                <Headphones className="w-3 h-3 text-zinc-400" />
+                                {infoAula}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </section>
 
               {/* ──────────────── ESTATUTOS (CARROSSEL) ──────────────── */}
               <section className="space-y-4">
                 <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <h3 className="text-lg sm:text-xl font-bold text-white tracking-wide flex items-center gap-2">
-                      <span>Estatutos</span>
-                      <span className="text-[11px] font-normal px-2 py-0.5 rounded-full bg-white/5 text-zinc-400 border border-white/10">
-                        {CATALOGO_ESTATUTOS.length} disponíveis
-                      </span>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
+                      <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+                      <span className="truncate">ESTATUTOS</span>
                     </h3>
+                    <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
+                      {totalAulasEstatutos > 0
+                        ? `${totalAulasEstatutos} aulas especializadas em ${CATALOGO_ESTATUTOS.length} estatutos fundamentais`
+                        : `Estude ${CATALOGO_ESTATUTOS.length} estatutos disponíveis com legislação em áudio`}
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
@@ -587,41 +646,44 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                   ref={refCarrosselEstatutos}
                   className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-3 pt-1 snap-x scrollbar-none select-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
                 >
-                  {CATALOGO_ESTATUTOS.map((est) => (
-                    <button
-                      key={est.id}
-                      onClick={() => navigate(est.rota)}
-                      className="group relative w-[145px] sm:w-[175px] md:w-[195px] aspect-[3/4] shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
-                    >
-                      <CapaOtimizada
-                        src={est.capa}
-                        alt={est.nome}
-                        animacaoEntrada
-                        className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
+                  {CATALOGO_ESTATUTOS.map((est) => {
+                    const infoAula = getAulasInfoDinamica(est.rota, est.aulasInfo);
+                    return (
+                      <button
+                        key={est.id}
+                        onClick={() => navigate(est.rota)}
+                        className="group relative w-[145px] sm:w-[175px] md:w-[195px] aspect-[3/4] shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
+                      >
+                        <CapaOtimizada
+                          src={est.capa}
+                          alt={est.nome}
+                          animacaoEntrada
+                          className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent" />
 
-                      <div className="absolute inset-0 p-3 flex flex-col justify-between">
-                        <div className="flex items-center justify-between gap-1">
-                          <span className="px-2 py-0.5 rounded-md font-black text-[11px] tracking-wider border backdrop-blur bg-black/60 text-white border-white/20">
-                            {est.sigla}
-                          </span>
-                        </div>
+                        <div className="absolute inset-0 p-3 flex flex-col justify-between">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="px-2 py-0.5 rounded-md font-black text-[11px] tracking-wider border backdrop-blur bg-black/60 text-white border-white/20">
+                              {est.sigla}
+                            </span>
+                          </div>
 
-                        <div className="min-w-0">
-                          <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
-                            {est.nome}
-                          </p>
-                          {est.aulasInfo && (
-                            <p className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 flex items-center gap-1">
-                              <Headphones className="w-3 h-3 text-zinc-400" />
-                              {est.aulasInfo}
+                          <div className="min-w-0">
+                            <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
+                              {est.nome}
                             </p>
-                          )}
+                            {infoAula && (
+                              <p className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 flex items-center gap-1">
+                                <Headphones className="w-3 h-3 text-zinc-400" />
+                                {infoAula}
+                              </p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </section>
             </div>
@@ -647,12 +709,15 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                   <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
                 </button>
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-widest">
-                    {modo === 'areas' && 'Todas as Áreas do Direito'}
-                    {modo === 'codigos' && 'Todos os Códigos'}
-                    {modo === 'estatutos' && 'Todos os Estatutos'}
+                  <h2 className="font-display text-foreground text-xl sm:text-2xl font-bold uppercase tracking-widest flex items-center gap-2">
+                    <span className="w-1 h-6 rounded-full bg-primary shrink-0" />
+                    <span>
+                      {modo === 'areas' && 'Todas as Áreas do Direito'}
+                      {modo === 'codigos' && 'Todos os Códigos'}
+                      {modo === 'estatutos' && 'Todos os Estatutos'}
+                    </span>
                   </h2>
-                  <p className="text-xs sm:text-sm text-zinc-400">
+                  <p className="font-body text-muted-foreground text-xs sm:text-sm ml-3 mt-0.5">
                     {modo === 'areas' && `${areasFiltradasLista.length} área(s) com audioaulas disponíveis`}
                     {modo === 'codigos' && `${codigosFiltrados.length} código(s) catalogados`}
                     {modo === 'estatutos' && `${estatutosFiltrados.length} estatuto(s) catalogados`}
@@ -762,12 +827,15 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                         <p className="text-xs text-zinc-400 truncate mt-0.5">
                           {cod.subtitulo}
                         </p>
-                        {cod.aulasInfo && (
-                          <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium mt-1">
-                            <Headphones className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
-                            <span>{cod.aulasInfo}</span>
-                          </div>
-                        )}
+                        {(() => {
+                          const info = getAulasInfoDinamica(cod.rota, cod.aulasInfo);
+                          return info ? (
+                            <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium mt-1">
+                              <Headphones className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
+                              <span>{info}</span>
+                            </div>
+                          ) : null;
+                        })()}
                       </div>
                     </div>
 
@@ -812,12 +880,15 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                         <p className="text-xs text-zinc-400 truncate mt-0.5">
                           {est.subtitulo}
                         </p>
-                        {est.aulasInfo && (
-                          <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium mt-1">
-                            <Headphones className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
-                            <span>{est.aulasInfo}</span>
-                          </div>
-                        )}
+                        {(() => {
+                          const info = getAulasInfoDinamica(est.rota, est.aulasInfo);
+                          return info ? (
+                            <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium mt-1">
+                              <Headphones className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
+                              <span>{info}</span>
+                            </div>
+                          ) : null;
+                        })()}
                       </div>
                     </div>
 
