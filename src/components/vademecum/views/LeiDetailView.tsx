@@ -327,60 +327,6 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     return () => window.removeEventListener('narracao-flutuante:reopen', handler);
   }, []);
 
-  // Obter número do artigo atualmente em foco (ou último lido, ou primeiro da lei)
-  const getArtigoAtualNumero = useCallback(() => {
-    if (openArtigo) {
-      return String(openArtigo.numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
-    }
-    try {
-      if (selectedTabelaNome) {
-        const raw = localStorage.getItem(`last_artigo_${selectedTabelaNome}`);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed?.numero) {
-            return String(parsed.numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
-          }
-        }
-      }
-    } catch {}
-    if (visibleArtigos && visibleArtigos.length > 0) {
-      return String(visibleArtigos[0].numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
-    }
-    return '1';
-  }, [openArtigo, selectedTabelaNome, visibleArtigos]);
-
-  // Mapear legislação para a área correspondente de Audioaulas
-  const getAreaAudioaula = useCallback(() => {
-    const t = (selectedTabelaNome || '').toUpperCase();
-    const id = (selectedLeiId || '').toLowerCase();
-    if (t.includes('PROCESSO_CIVIL') || id === 'cpc') return 'Processo Civil';
-    if (t.includes('PENAL') && !t.includes('PROCESSO') || id === 'cp') return 'Direito Penal';
-    if (t.includes('PROCESSO_PENAL') || id === 'cpp') return 'Processo Penal';
-    if (t.includes('CONSTITUICAO') || id === 'cf88') return 'Direito Constitucional';
-    if (t.includes('TRABALHO') || id === 'clt') return 'Direito do Trabalho';
-    if (t.includes('CRIANCA') || id === 'eca') return 'ECA (Criança e Adolescente)';
-    if (t.includes('OAB') || id === 'eaoab') return 'Estatuto da OAB';
-    if (t.includes('TRIBUTARIO') || id === 'ctn') return 'Processo Civil';
-    if (t.includes('ELEITORAL') || id === 'ce') return 'Direito Constitucional';
-    if (t.includes('CONSUMIDOR') || id === 'cdc') return 'Processo Civil';
-    return 'Processo Civil';
-  }, [selectedTabelaNome, selectedLeiId]);
-
-  const handleOpenAudioleis = useCallback(() => {
-    haptic.selection();
-    const artNum = getArtigoAtualNumero();
-    toast.info(`Abrindo Áudio Leis • Art. ${artNum}`);
-    navigate(`/audioleis?tabela=${encodeURIComponent(selectedTabelaNome || '')}&artigo=${encodeURIComponent(artNum)}`);
-  }, [getArtigoAtualNumero, navigate, selectedTabelaNome]);
-
-  const handleOpenAudioaulas = useCallback(() => {
-    haptic.selection();
-    const artNum = getArtigoAtualNumero();
-    const area = getAreaAudioaula();
-    toast.info(`Abrindo Áudio Aulas • ${area} (Art. ${artNum})`);
-    navigate(`/audioaulas?area=${encodeURIComponent(area)}&artigo=${encodeURIComponent(artNum)}&busca=${encodeURIComponent('Art. ' + artNum)}`);
-  }, [getArtigoAtualNumero, getAreaAudioaula, navigate]);
-
   const togglePlayAudio = useCallback((url: string) => {
     if (playingUrl === url && audioRef.current) {
       audioRef.current.pause();
@@ -683,6 +629,63 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   );
 
   const leiAccent = getLeiColor(selectedLeiId, tipo);
+
+  // Obter número do artigo atualmente em foco (ou último lido, ou primeiro da lei)
+  const getArtigoAtualNumero = useCallback(() => {
+    if (openArtigo) {
+      return String(openArtigo.numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
+    }
+    try {
+      if (selectedTabelaNome) {
+        const raw = localStorage.getItem(`last_artigo_${selectedTabelaNome}`);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.numero) {
+            return String(parsed.numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
+          }
+        }
+      }
+    } catch {}
+    if (visibleArtigos && visibleArtigos.length > 0) {
+      return String(visibleArtigos[0].numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
+    }
+    if (artigos && artigos.length > 0) {
+      return String(artigos[0].numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
+    }
+    return '1';
+  }, [openArtigo, selectedTabelaNome, visibleArtigos, artigos]);
+
+  // Mapear legislação para a área correspondente de Audioaulas
+  const getAreaAudioaula = useCallback(() => {
+    const t = (selectedTabelaNome || '').toUpperCase();
+    const id = (selectedLeiId || '').toLowerCase();
+    if (t.includes('PROCESSO_CIVIL') || id === 'cpc') return 'Processo Civil';
+    if (t.includes('PENAL') && !t.includes('PROCESSO') || id === 'cp') return 'Direito Penal';
+    if (t.includes('PROCESSO_PENAL') || id === 'cpp') return 'Processo Penal';
+    if (t.includes('CONSTITUICAO') || id === 'cf88') return 'Direito Constitucional';
+    if (t.includes('TRABALHO') || id === 'clt') return 'Direito do Trabalho';
+    if (t.includes('CRIANCA') || id === 'eca') return 'ECA (Criança e Adolescente)';
+    if (t.includes('OAB') || id === 'eaoab') return 'Estatuto da OAB';
+    if (t.includes('TRIBUTARIO') || id === 'ctn') return 'Processo Civil';
+    if (t.includes('ELEITORAL') || id === 'ce') return 'Direito Constitucional';
+    if (t.includes('CONSUMIDOR') || id === 'cdc') return 'Processo Civil';
+    return 'Processo Civil';
+  }, [selectedTabelaNome, selectedLeiId]);
+
+  const handleOpenAudioleis = useCallback(() => {
+    haptic.selection();
+    const artNum = getArtigoAtualNumero();
+    toast.info(`Abrindo Áudio Leis • Art. ${artNum}`);
+    navigate(`/audioleis?tabela=${encodeURIComponent(selectedTabelaNome || '')}&artigo=${encodeURIComponent(artNum)}`);
+  }, [getArtigoAtualNumero, navigate, selectedTabelaNome]);
+
+  const handleOpenAudioaulas = useCallback(() => {
+    haptic.selection();
+    const artNum = getArtigoAtualNumero();
+    const area = getAreaAudioaula();
+    toast.info(`Abrindo Áudio Aulas • ${area} (Art. ${artNum})`);
+    navigate(`/audioaulas?area=${encodeURIComponent(area)}&artigo=${encodeURIComponent(artNum)}&busca=${encodeURIComponent('Art. ' + artNum)}`);
+  }, [getArtigoAtualNumero, getAreaAudioaula, navigate]);
 
   const overlayLabels: Record<string, { label: string; icon: typeof Heart; desc: string }> = {
     fav: { label: 'Favoritos', icon: Heart, desc: 'Aqui ficam os artigos que você marcou com o coração. Favoritar facilita o acesso rápido aos dispositivos que você mais consulta.' },
