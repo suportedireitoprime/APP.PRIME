@@ -206,7 +206,6 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     subtitulo: 'Lei nº 8.069/1990 — Aulas completas artigo por artigo',
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-crianca-adolescente-eca.webp`),
     aulasInfo: '322 aulas',
-    destaque: true,
     rota: '/audioaulas/ECA%20(Crian%C3%A7a%20e%20Adolescente)'
   },
   {
@@ -216,7 +215,6 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     subtitulo: 'Lei nº 8.906/1994 — Ética e prerrogativas artigo por artigo',
     capa: '/assets/eoab-woman-fixed.webp',
     aulasInfo: '96 aulas',
-    destaque: true,
     rota: '/audioaulas/Estatuto%20da%20OAB'
   },
   {
@@ -456,8 +454,8 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                 <h2 className="text-[22px] sm:text-[25px] font-black text-white uppercase tracking-widest">
                   Legislação em Áudio
                 </h2>
-                <p className="text-xs sm:text-[13px] text-zinc-400 max-w-2xl">
-                  Estude códigos e estatutos com aulas narradas artigo por artigo, prontas para ouvir onde e quando quiser.
+                <p className="text-xs sm:text-[13px] text-zinc-400 max-w-2xl truncate">
+                  Estude códigos e estatutos com aulas narradas artigo por artigo.
                 </p>
               </div>
 
@@ -531,8 +529,8 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                             {cod.nome}
                           </p>
                           {cod.aulasInfo && (
-                            <p className="text-[10px] sm:text-[11px] text-primary font-semibold mt-1 flex items-center gap-1">
-                              <Headphones className="w-3 h-3" />
+                            <p className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 flex items-center gap-1">
+                              <Headphones className="w-3 h-3 text-zinc-400" />
                               {cod.aulasInfo}
                             </p>
                           )}
@@ -593,11 +591,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                     <button
                       key={est.id}
                       onClick={() => navigate(est.rota)}
-                      className={`group relative w-[150px] sm:w-[185px] md:w-[205px] aspect-[3/4] shrink-0 snap-start rounded-2xl overflow-hidden text-left transition-all duration-300 focus-visible:outline-none active:scale-[0.98] ${
-                        est.destaque
-                          ? 'border-2 border-primary/60 shadow-lg shadow-primary/25 hover:border-primary hover:shadow-2xl hover:shadow-primary/30'
-                          : 'border border-white/10 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20'
-                      }`}
+                      className="group relative w-[145px] sm:w-[175px] md:w-[195px] aspect-[3/4] shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
                     >
                       <CapaOtimizada
                         src={est.capa}
@@ -609,19 +603,9 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
 
                       <div className="absolute inset-0 p-3 flex flex-col justify-between">
                         <div className="flex items-center justify-between gap-1">
-                          <span className={`px-2 py-0.5 rounded-md font-black text-[11px] tracking-wider border backdrop-blur ${
-                            est.destaque
-                              ? 'bg-primary text-primary-foreground border-primary'
-                              : 'bg-black/60 text-white border-white/20'
-                          }`}>
+                          <span className="px-2 py-0.5 rounded-md font-black text-[11px] tracking-wider border backdrop-blur bg-black/60 text-white border-white/20">
                             {est.sigla}
                           </span>
-
-                          {est.destaque && (
-                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold">
-                              <Sparkles className="w-3 h-3 text-rose-400" /> Destaque
-                            </span>
-                          )}
                         </div>
 
                         <div className="min-w-0">
@@ -629,8 +613,8 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                             {est.nome}
                           </p>
                           {est.aulasInfo && (
-                            <p className="text-[10px] sm:text-[11px] text-primary font-bold mt-1 flex items-center gap-1">
-                              <Headphones className="w-3 h-3" />
+                            <p className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 flex items-center gap-1">
+                              <Headphones className="w-3 h-3 text-zinc-400" />
                               {est.aulasInfo}
                             </p>
                           )}
@@ -726,8 +710,8 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                             {nomeFormatado}
                           </p>
                           <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-1">
-                            <span className="flex items-center gap-1 text-primary font-medium">
-                              <Headphones className="w-3.5 h-3.5 shrink-0" />
+                            <span className="flex items-center gap-1 text-zinc-400 font-medium">
+                              <Headphones className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
                               <span>{total} {total === 1 ? 'aula' : 'aulas'}</span>
                             </span>
                             <span className="text-zinc-600">•</span>
@@ -779,8 +763,8 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                           {cod.subtitulo}
                         </p>
                         {cod.aulasInfo && (
-                          <div className="flex items-center gap-1.5 text-xs text-primary font-semibold mt-1">
-                            <Headphones className="w-3.5 h-3.5 shrink-0" />
+                          <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium mt-1">
+                            <Headphones className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
                             <span>{cod.aulasInfo}</span>
                           </div>
                         )}
@@ -803,11 +787,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                   <button
                     key={est.id}
                     onClick={() => navigate(est.rota)}
-                    className={`group flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/[0.04] transition-all duration-200 active:scale-[0.99] text-left ${
-                      est.destaque
-                        ? 'border-2 border-primary/50 hover:border-primary hover:bg-primary/[0.06] shadow-lg shadow-primary/15'
-                        : 'border border-white/5 hover:border-primary/40 hover:bg-white/[0.07]'
-                    }`}
+                    className="group flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/[0.04] border border-white/5 hover:border-primary/40 hover:bg-white/[0.07] transition-all duration-200 active:scale-[0.99] text-left"
                   >
                     <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
                       {/* Capa à esquerda com sigla */}
@@ -826,22 +806,15 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
 
                       {/* Informações ao centro */}
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-sm sm:text-base text-white tracking-wide truncate group-hover:text-primary transition-colors">
-                            {est.nome}
-                          </p>
-                          {est.destaque && (
-                            <span className="shrink-0 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-[10px] font-bold flex items-center gap-1">
-                              <Sparkles className="w-2.5 h-2.5 text-rose-400" /> Destaque
-                            </span>
-                          )}
-                        </div>
+                        <p className="font-bold text-sm sm:text-base text-white tracking-wide truncate group-hover:text-primary transition-colors">
+                          {est.nome}
+                        </p>
                         <p className="text-xs text-zinc-400 truncate mt-0.5">
                           {est.subtitulo}
                         </p>
                         {est.aulasInfo && (
-                          <div className="flex items-center gap-1.5 text-xs text-primary font-semibold mt-1">
-                            <Headphones className="w-3.5 h-3.5 shrink-0" />
+                          <div className="flex items-center gap-1.5 text-xs text-zinc-400 font-medium mt-1">
+                            <Headphones className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
                             <span>{est.aulasInfo}</span>
                           </div>
                         )}
