@@ -38,6 +38,8 @@ export interface EstatutoItem {
   rota: string;
 }
 
+const SUPABASE_STORAGE_CAPAS = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_areas';
+
 // Catálogo dos Códigos
 const CATALOGO_CODIGOS: CodigoItem[] = [
   {
@@ -45,7 +47,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     sigla: 'CF/88',
     nome: 'Constituição Federal',
     subtitulo: 'Aprenda a base fundamental do Estado',
-    capa: '/pilulas/cf_portrait.webp',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-constitucional.webp`),
     aulasInfo: '26 aulas',
     rota: '/audioaulas/Direito%20Constitucional'
   },
@@ -53,8 +55,8 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     id: 'cp',
     sigla: 'CP',
     nome: 'Código Penal',
-    subtitulo: 'Ouça a explicação dos artigos penais',
-    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_v2.webp'),
+    subtitulo: 'Crimes, penas e tipicidade penal',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-penal.webp`),
     aulasInfo: '11 aulas',
     rota: '/audioaulas/Direito%20Penal'
   },
@@ -62,8 +64,8 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     id: 'cpp',
     sigla: 'CPP',
     nome: 'Código de Processo Penal',
-    subtitulo: 'Ritos, provas e procedimentos penais',
-    capa: '/pilulas/cpp_portrait.webp',
+    subtitulo: 'Ritos, inquérito, provas e procedimentos',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-processual-penal.webp`),
     aulasInfo: '35 aulas',
     rota: '/audioaulas/Processo%20Penal'
   },
@@ -71,8 +73,8 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     id: 'cc',
     sigla: 'CC',
     nome: 'Código Civil',
-    subtitulo: 'Entenda relações e direitos civis',
-    capa: '/pilulas/cc_portrait.webp',
+    subtitulo: 'Pessoas, bens, obrigações e contratos',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-civil.webp`),
     aulasInfo: 'Acervo de Leis',
     rota: '/audioaulas/Processo%20Civil'
   },
@@ -81,7 +83,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     sigla: 'CPC',
     nome: 'Código de Processo Civil',
     subtitulo: 'Prazos, recursos e tutela jurisdicional',
-    capa: '/assets/direito-civil.webp',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-processual-civil.webp`),
     aulasInfo: '17 aulas',
     rota: '/audioaulas/Processo%20Civil'
   },
@@ -90,16 +92,25 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     sigla: 'CLT',
     nome: 'Consolidação das Leis do Trabalho',
     subtitulo: 'Direitos, regras e deveres trabalhistas',
-    capa: '/pilulas/clt_portrait.webp',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-do-trabalho.webp`),
     aulasInfo: '7 aulas',
     rota: '/audioaulas/Direito%20do%20Trabalho'
+  },
+  {
+    id: 'cpt',
+    sigla: 'CPT',
+    nome: 'Processo do Trabalho',
+    subtitulo: 'Audiências, dissídios, ritos e execução',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-processual-do-trabalho.webp`),
+    aulasInfo: 'Legislação em Áudio',
+    rota: '/audioaulas/Processo%20do%20Trabalho'
   },
   {
     id: 'ctn',
     sigla: 'CTN',
     nome: 'Código Tributário Nacional',
-    subtitulo: 'Tributos, competência e obrigações',
-    capa: '/assets/biblioteca/areas/direito-tributario.webp',
+    subtitulo: 'Tributos, competência, crédito e obrigações',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-tributario.webp`),
     aulasInfo: 'Legislação em Áudio',
     rota: '/legislacao/ctn'
   },
@@ -108,9 +119,72 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     sigla: 'CDC',
     nome: 'Código de Defesa do Consumidor',
     subtitulo: 'Relações de consumo e proteção do consumidor',
-    capa: '/assets/biblioteca/areas/direito-civil.webp',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-do-consumidor.webp`),
     aulasInfo: 'Legislação em Áudio',
     rota: '/legislacao/cdc'
+  },
+  {
+    id: 'ccom',
+    sigla: 'CCOM',
+    nome: 'Código Comercial & Empresarial',
+    subtitulo: 'Sociedades, títulos de crédito e falência',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-empresarial.webp`),
+    aulasInfo: 'Legislação em Áudio',
+    rota: '/audioaulas/Direito%20Empresarial'
+  },
+  {
+    id: 'ce',
+    sigla: 'CE',
+    nome: 'Código Eleitoral',
+    subtitulo: 'Organização, garantias e processo eleitoral',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-eleitoral.webp`),
+    aulasInfo: 'Legislação em Áudio',
+    rota: '/legislacao/ce'
+  },
+  {
+    id: 'adm',
+    sigla: 'ADM',
+    nome: 'Direito Administrativo',
+    subtitulo: 'Licitações, atos administrativos e servidores',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-administrativo.webp`),
+    aulasInfo: 'Legislação em Áudio',
+    rota: '/audioaulas/Direito%20Administrativo'
+  },
+  {
+    id: 'amb',
+    sigla: 'AMB',
+    nome: 'Direito Ambiental',
+    subtitulo: 'Código Florestal, fauna, flora e crimes ambientais',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-ambiental.webp`),
+    aulasInfo: 'Legislação em Áudio',
+    rota: '/audioaulas/Direito%20Ambiental'
+  },
+  {
+    id: 'prev',
+    sigla: 'PREV',
+    nome: 'Direito Previdenciário',
+    subtitulo: 'Benefícios, custeio e seguridade social',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-previdenciario.webp`),
+    aulasInfo: 'Legislação em Áudio',
+    rota: '/audioaulas/Direito%20Previdenciário'
+  },
+  {
+    id: 'int',
+    sigla: 'INT',
+    nome: 'Direito Internacional',
+    subtitulo: 'Tratados, extradição e cooperação internacional',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-internacional.webp`),
+    aulasInfo: 'Legislação em Áudio',
+    rota: '/audioaulas/Direito%20Internacional'
+  },
+  {
+    id: 'dh',
+    sigla: 'DH',
+    nome: 'Direitos Humanos',
+    subtitulo: 'Pactos, convenções e garantias fundamentais',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direitos-humanos.webp`),
+    aulasInfo: 'Legislação em Áudio',
+    rota: '/audioaulas/Direitos%20Humanos'
   },
   {
     id: 'ctb',
@@ -120,15 +194,6 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     capa: '/assets/capa-lei-penal-especial.webp',
     aulasInfo: 'Legislação em Áudio',
     rota: '/legislacao/ctb'
-  },
-  {
-    id: 'ce',
-    sigla: 'CE',
-    nome: 'Código Eleitoral',
-    subtitulo: 'Organização, garantias e processo eleitoral',
-    capa: '/assets/biblioteca/areas/direito-constitucional.webp',
-    aulasInfo: 'Legislação em Áudio',
-    rota: '/legislacao/ce'
   }
 ];
 
@@ -139,7 +204,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     sigla: 'ECA',
     nome: 'Estatuto da Criança e do Adolescente',
     subtitulo: 'Lei nº 8.069/1990 — Aulas completas artigo por artigo',
-    capa: '/assets/eca-kids.webp',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-crianca-adolescente-eca.webp`),
     aulasInfo: '322 aulas',
     destaque: true,
     rota: '/audioaulas/ECA%20(Crian%C3%A7a%20e%20Adolescente)'
@@ -168,7 +233,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     sigla: 'EPD',
     nome: 'Estatuto da Pessoa com Deficiência',
     subtitulo: 'Lei nº 13.146/2015 — Inclusão e acessibilidade',
-    capa: '/assets/biblioteca/areas/direitos-humanos.webp',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direitos-humanos.webp`),
     aulasInfo: 'Direitos Humanos',
     rota: '/legislacao/estatuto-pessoa-deficiencia'
   },
@@ -177,7 +242,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     sigla: 'EIR',
     nome: 'Estatuto da Igualdade Racial',
     subtitulo: 'Lei nº 12.288/2010 — Reparação e igualdade',
-    capa: '/assets/biblioteca/areas/direitos-humanos.webp',
+    capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direitos-humanos.webp`),
     aulasInfo: 'Direitos Fundamentais',
     rota: '/legislacao/estatuto-igualdade-racial'
   },

@@ -10,16 +10,29 @@ import capaLeiPenalEspecial from '@/assets/capa-lei-penal-especial.webp';
 import capaProcessoPenal from '@/assets/capa-processo-penal.webp';
 
 export const CAPA_HUB = srcOf(capaAudioaulas);
+const SUPABASE_STORAGE_CAPAS = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_areas';
+
 const CAPAS: { re: RegExp; url: string }[] = [
-  { re: /eca|criança|adolescente|infância|juventude/i, url: '/assets/eca-kids.webp' },
+  { re: /eca|criança|adolescente|infância|juventude/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-crianca-adolescente-eca.webp` },
   { re: /médico|medico/i, url: capaMedico },
   { re: /filosofia/i, url: capaFilosofia },
   { re: /lei penal especial/i, url: capaLeiPenalEspecial },
-  { re: /processo penal/i, url: capaProcessoPenal },
-  { re: /penal/i, url: srcOf(capaPenal) },
-  { re: /civil/i, url: srcOf(capaCivil) },
-  { re: /constitu/i, url: srcOf(capaConstituicao) },
-  { re: /trabalh|clt/i, url: srcOf(capaClt) },
+  { re: /processo penal/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-processual-penal.webp` },
+  { re: /processo civil/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-processual-civil.webp` },
+  { re: /processo do trabalho/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-processual-do-trabalho.webp` },
+  { re: /penal/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-penal.webp` },
+  { re: /civil/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-civil.webp` },
+  { re: /constitu/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-constitucional.webp` },
+  { re: /trabalh|clt/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-do-trabalho.webp` },
+  { re: /tribut/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-tributario.webp` },
+  { re: /consumidor/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-do-consumidor.webp` },
+  { re: /eleitoral/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-eleitoral.webp` },
+  { re: /empresarial|comercial/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-empresarial.webp` },
+  { re: /administrativ/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-administrativo.webp` },
+  { re: /ambiental/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-ambiental.webp` },
+  { re: /previdenci/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-previdenciario.webp` },
+  { re: /internacional/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-internacional.webp` },
+  { re: /direitos humanos/i, url: `${SUPABASE_STORAGE_CAPAS}/direitos-humanos.webp` },
 ];
 
 export const capaDaArea = (area: string) => CAPAS.find((c) => c.re.test(area))?.url || CAPA_HUB;
