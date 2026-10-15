@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { normalizar } from '@/lib/audioaulasHelper';
 import AudioaulasBottomNav from '@/components/audioaulas/AudioaulasBottomNav';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { useIsDesktop } from '@/hooks/use-desktop';
@@ -24,18 +26,54 @@ const Audioaulas = () => {
   const state = useAudioaulas(areaAtual);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Handle deep link from push notifications
+  const { aulas, loading: loadingAulas, handleTocarAula, setAba, setBusca } = state;
+
+  // Handle deep link from push notifications or artigo query
   useEffect(() => {
     const playId = searchParams.get('play_id');
-    if (playId && state.aulas.length > 0 && !state.loading) {
-      const aulaToPlay = state.aulas.find(a => String(a.id) === String(playId));
+    if (playId && aulas.length > 0 && !loadingAulas) {
+      const aulaToPlay = aulas.find(a => String(a.id) === String(playId));
       if (aulaToPlay) {
-        state.handleTocarAula(aulaToPlay);
-        // Remove play_id from url to prevent looping on reload
+        handleTocarAula(aulaToPlay);
         setSearchParams({}, { replace: true });
+        return;
       }
     }
-  }, [searchParams, state.aulas, state.loading]);
+
+    const artigoParam = searchParams.get('artigo');
+    const buscaParam = searchParams.get('busca');
+    if ((artigoParam || buscaParam) && aulas.length > 0 && !loadingAulas) {
+      const cleanNum = (artigoParam || '').replace(/^art(?:igo|\.)?\s*/i, '').replace(/[º°ª]/g, '').trim();
+      const termo = buscaParam || (cleanNum ? `Art. ${cleanNum}` : '');
+
+      const aulaMatch = aulas.find(a => {
+        const t = normalizar(a.titulo || '');
+        const tema = normalizar(a.tema || '');
+        const desc = normalizar(a.descricao || '');
+        if (cleanNum) {
+          if (t.includes(`art ${cleanNum}`) || t.includes(`artigo ${cleanNum}`) || 
+              tema.includes(`art ${cleanNum}`) || tema.includes(`artigo ${cleanNum}`) ||
+              desc.includes(`art ${cleanNum}`) || desc.includes(`artigo ${cleanNum}`)) {
+            return true;
+          }
+        }
+        if (termo) {
+          const q = normalizar(termo);
+          return t.includes(q) || tema.includes(q);
+        }
+        return false;
+      });
+
+      if (aulaMatch) {
+        handleTocarAula(aulaMatch);
+        toast.success(`Áudio Aula personalizada: ${aulaMatch.titulo}`);
+        setSearchParams({}, { replace: true });
+      } else if (termo) {
+        setAba('buscar');
+        setBusca(termo);
+      }
+    }
+  }, [searchParams, aulas, loadingAulas, handleTocarAula, setAba, setBusca, setSearchParams]);
 
   const [capituloSelecionado, setCapituloSelecionado] = useState<string | null>(null);
   const [modoVerTodos, setModoVerTodos] = useState<ModoVisualizacao>('hub');

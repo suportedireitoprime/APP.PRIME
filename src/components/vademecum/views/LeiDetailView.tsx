@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useCallback, useRef, useLayoutEffect, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info, Layers, ScrollText, ExternalLink } from 'lucide-react';
+import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info, Layers, ScrollText, ExternalLink, GraduationCap, Volume2 } from 'lucide-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -326,6 +326,60 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
     window.addEventListener('narracao-flutuante:reopen', handler);
     return () => window.removeEventListener('narracao-flutuante:reopen', handler);
   }, []);
+
+  // Obter número do artigo atualmente em foco (ou último lido, ou primeiro da lei)
+  const getArtigoAtualNumero = useCallback(() => {
+    if (openArtigo) {
+      return String(openArtigo.numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
+    }
+    try {
+      if (selectedTabelaNome) {
+        const raw = localStorage.getItem(`last_artigo_${selectedTabelaNome}`);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed?.numero) {
+            return String(parsed.numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
+          }
+        }
+      }
+    } catch {}
+    if (visibleArtigos && visibleArtigos.length > 0) {
+      return String(visibleArtigos[0].numero).replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
+    }
+    return '1';
+  }, [openArtigo, selectedTabelaNome, visibleArtigos]);
+
+  // Mapear legislação para a área correspondente de Audioaulas
+  const getAreaAudioaula = useCallback(() => {
+    const t = (selectedTabelaNome || '').toUpperCase();
+    const id = (selectedLeiId || '').toLowerCase();
+    if (t.includes('PROCESSO_CIVIL') || id === 'cpc') return 'Processo Civil';
+    if (t.includes('PENAL') && !t.includes('PROCESSO') || id === 'cp') return 'Direito Penal';
+    if (t.includes('PROCESSO_PENAL') || id === 'cpp') return 'Processo Penal';
+    if (t.includes('CONSTITUICAO') || id === 'cf88') return 'Direito Constitucional';
+    if (t.includes('TRABALHO') || id === 'clt') return 'Direito do Trabalho';
+    if (t.includes('CRIANCA') || id === 'eca') return 'ECA (Criança e Adolescente)';
+    if (t.includes('OAB') || id === 'eaoab') return 'Estatuto da OAB';
+    if (t.includes('TRIBUTARIO') || id === 'ctn') return 'Processo Civil';
+    if (t.includes('ELEITORAL') || id === 'ce') return 'Direito Constitucional';
+    if (t.includes('CONSUMIDOR') || id === 'cdc') return 'Processo Civil';
+    return 'Processo Civil';
+  }, [selectedTabelaNome, selectedLeiId]);
+
+  const handleOpenAudioleis = useCallback(() => {
+    haptic.selection();
+    const artNum = getArtigoAtualNumero();
+    toast.info(`Abrindo Áudio Leis • Art. ${artNum}`);
+    navigate(`/audioleis?tabela=${encodeURIComponent(selectedTabelaNome || '')}&artigo=${encodeURIComponent(artNum)}`);
+  }, [getArtigoAtualNumero, navigate, selectedTabelaNome]);
+
+  const handleOpenAudioaulas = useCallback(() => {
+    haptic.selection();
+    const artNum = getArtigoAtualNumero();
+    const area = getAreaAudioaula();
+    toast.info(`Abrindo Áudio Aulas • ${area} (Art. ${artNum})`);
+    navigate(`/audioaulas?area=${encodeURIComponent(area)}&artigo=${encodeURIComponent(artNum)}&busca=${encodeURIComponent('Art. ' + artNum)}`);
+  }, [getArtigoAtualNumero, getAreaAudioaula, navigate]);
 
   const togglePlayAudio = useCallback((url: string) => {
     if (playingUrl === url && audioRef.current) {
@@ -952,10 +1006,10 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
           {/* Abas no Desktop (no mobile a navegação fica no rodapé) */}
           {isDesktop && (
             <div className="flex flex-col gap-3 w-full">
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 {[
-                  { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
-                  { key: 'cap' as const, icon: LayoutGrid, label: 'Capítulos' },
+                  { key: 'audioaulas' as const, icon: GraduationCap, label: 'Áudio Aulas' },
+                  { key: 'audioleis' as const, icon: Volume2, label: 'Áudio Leis' },
                   { key: 'pesq' as const, icon: Search, label: 'Pesquisar' },
                   { key: 'sob' as const, icon: Info, label: 'Sobre' },
                   { key: 'rec' as const, icon: History, label: 'Recentes' },
@@ -963,20 +1017,19 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                   <button
                     key={tab.key}
                     onClick={() => {
-                      if (tab.key === 'sob') {
+                      if (tab.key === 'audioaulas') {
+                        handleOpenAudioaulas();
+                      } else if (tab.key === 'audioleis') {
+                        handleOpenAudioleis();
+                      } else if (tab.key === 'sob') {
                         setShowSobreModal(true);
                       } else if (tab.key === 'pesq') {
                         setOverlayPanel('pesquisa');
-                      } else {
-                        setActiveTab(tab.key as 'art' | 'cap' | 'rec' | 'sob');
+                      } else if (tab.key === 'rec') {
+                        setActiveTab('rec');
                       }
                     }}
-                    disabled={loadingArtigos}
-                    className={`flex items-center justify-center gap-1.5 px-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all py-2 cursor-pointer ${
-                      activeTab === tab.key
-                        ? 'bg-hero-panel text-white shadow-md shadow-red-950/40'
-                        : 'bg-secondary text-foreground hover:text-foreground'
-                    } ${loadingArtigos ? 'opacity-70' : ''}`}
+                    className="flex items-center justify-center gap-1.5 px-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all py-2 cursor-pointer bg-secondary text-foreground hover:text-foreground"
                   >
                     <tab.icon className="w-4 h-4" />
                     <span>{tab.label}</span>
@@ -1164,8 +1217,8 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
             <div className="max-w-lg mx-auto px-1 pt-3.5 pb-3.5 md:max-w-2xl md:px-2 md:py-8 md:h-full md:flex md:flex-col md:justify-center md:gap-6">
               <div className="grid grid-cols-5 items-end md:grid-cols-1 md:items-stretch md:gap-6">
                 {[
-                  { key: 'art' as const, icon: BookOpen, label: 'Artigos' },
-                  { key: 'cap' as const, icon: Layers, label: 'Capítulos' },
+                  { key: 'audioaulas' as const, icon: GraduationCap, label: 'Áudio Aulas' },
+                  { key: 'audioleis' as const, icon: Volume2, label: 'Áudio Leis' },
                   { key: 'pesq' as const, icon: Search, label: 'Pesquisar', isCenter: true },
                   { key: 'fav' as const, icon: Heart, label: 'Favoritos' },
                   { key: 'sob' as const, icon: Info, label: 'Sobre' },
@@ -1201,28 +1254,27 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
                     );
                   }
 
-                  const active = activeTab === tab.key && tab.key !== 'fav';
                   const Icon = tab.icon;
                   return (
                     <button
                       key={tab.key}
                       onClick={() => {
                         haptic.selection();
-                        if (tab.key === 'sob') {
+                        if (tab.key === 'audioaulas') {
+                          handleOpenAudioaulas();
+                        } else if (tab.key === 'audioleis') {
+                          handleOpenAudioleis();
+                        } else if (tab.key === 'sob') {
                           setShowSobreModal(true);
                         } else if (tab.key === 'fav') {
                           setOverlayPanel('fav');
-                        } else {
-                          setActiveTab(tab.key as 'art' | 'cap' | 'rec' | 'sob');
                         }
                       }}
-                      className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative ${
-                        active ? 'text-white' : 'text-white/80 hover:text-white md:hover:bg-white/10'
-                      }`}
+                      className="flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 cursor-pointer relative text-white/80 hover:text-white md:hover:bg-white/10"
                       aria-label={tab.label}
                     >
-                      <Icon className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${active ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-                      <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">{tab.label}</span>
+                      <Icon className="w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md" strokeWidth={1.5} />
+                      <span className="font-body text-[10px] sm:text-[11px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">{tab.label}</span>
                     </button>
                   );
                 })}

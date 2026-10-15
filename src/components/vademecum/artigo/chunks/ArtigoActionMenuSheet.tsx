@@ -21,6 +21,8 @@ import {
   LayoutGrid,
   X,
   ArrowLeft,
+  Volume2,
+  GraduationCap,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -128,6 +130,28 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               gateFeature('videoaula', 'videoaula', 'Videoaulas', () =>
                 setShowVideoaulasListSheet(true)
               );
+            },
+          },
+          {
+            icon: Volume2,
+            label: 'Áudio Leis',
+            desc: 'Ouvir narração em estúdio deste artigo',
+            color: '#3B82F6',
+            onClick: () => {
+              setActiveActionMenu(null);
+              const cleanArt = String(artigoNumero || '').replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
+              navigate(`/audioleis?tabela=${encodeURIComponent(tabelaNome || '')}&artigo=${encodeURIComponent(cleanArt)}`);
+            },
+          },
+          {
+            icon: GraduationCap,
+            label: 'Áudio Aulas',
+            desc: 'Podcast e explicação em áudio do tema',
+            color: '#10B981',
+            onClick: () => {
+              setActiveActionMenu(null);
+              const cleanArt = String(artigoNumero || '').replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
+              navigate(`/audioaulas?artigo=${encodeURIComponent(cleanArt)}&busca=${encodeURIComponent('Art. ' + cleanArt)}`);
             },
           },
           {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   Search,
@@ -160,9 +160,23 @@ function formatAudioTime(seconds: number): string {
 
 export default function AudioleisPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tabelaParam = searchParams.get('tabela') || searchParams.get('lei');
+  const artigoParam = searchParams.get('artigo');
 
   // Estados principais
-  const [selectedTabela, setSelectedTabela] = useState<string>('CP_CODIGO_PENAL');
+  const [selectedTabela, setSelectedTabela] = useState<string>(() => {
+    if (tabelaParam) {
+      const match = LAWS_CONFIG.find(
+        (l) =>
+          l.tabela_nome.toLowerCase() === tabelaParam.toLowerCase() ||
+          l.id.toLowerCase() === tabelaParam.toLowerCase() ||
+          l.sigla.toLowerCase() === tabelaParam.toLowerCase()
+      );
+      if (match) return match.tabela_nome;
+    }
+    return 'CP_CODIGO_PENAL';
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [artigos, setArtigos] = useState<NarracaoItem[]>([]);
@@ -243,6 +257,26 @@ export default function AudioleisPage() {
       isCancelled = true;
     };
   }, [selectedTabela]);
+
+  // Se veio com parâmetro artigo, filtra e inicia reprodução automaticamente
+  useEffect(() => {
+    if (!artigoParam || artigos.length === 0) return;
+    const cleanTarget = artigoParam.replace(/^art(?:igo|\.)?\s*/i, '').replace(/[º°ª]/g, '').trim().toLowerCase();
+
+    const match = artigos.find(a => 
+      a.artigo_numero.toLowerCase() === cleanTarget ||
+      a.artigo_numero.toLowerCase().replace(/[º°ª]/g, '') === cleanTarget
+    );
+
+    if (match) {
+      setCurrentArtigo(match);
+      setIsPlaying(true);
+      setSearchQuery(`Art. ${match.artigo_numero}`);
+      toast.success(`Áudio Lei carregada: Artigo ${match.artigo_numero}`);
+    } else {
+      setSearchQuery(artigoParam);
+    }
+  }, [artigoParam, artigos]);
 
   // Filtragem com busca
   const filteredArtigos = useMemo(() => {
