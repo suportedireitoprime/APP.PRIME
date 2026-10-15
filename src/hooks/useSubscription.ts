@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
+import { getDevSimulatedSubscriptionState, DEV_SIMULATION_EVENT } from '@/lib/devSimulation';
 
 interface SubscriptionState {
   isPremium: boolean;
@@ -51,23 +52,10 @@ export function useSubscription(options: Options = {}): SubscriptionState {
   // premium quando o dispositivo está sem rede.
   const cacheKey = user ? `direitoprime:sub:${user.id}` : null;
   const emailLower = (user?.email || '').toLowerCase();
-  const isAdmin = isAdminEmail(emailLower);
   const [state, setState] = useState<Omit<SubscriptionState, 'refresh'>>(() => {
-    if (isAdmin) {
-      const startedAt = new Date();
-      const expiresAt = new Date(startedAt);
-      expiresAt.setFullYear(expiresAt.getFullYear() + 100);
-      return {
-        isPremium: true,
-        loading: false,
-        plano: 'vitalício',
-        startedAt: startedAt.toISOString(),
-        expiresAt: expiresAt.toISOString(),
-        source: 'play',
-        status: 'SUBSCRIPTION_STATE_ACTIVE',
-        isAdminOverride: true,
-        isTrial: false,
-      };
+    const devSub = getDevSimulatedSubscriptionState(emailLower);
+    if (devSub) {
+      return devSub;
     }
     // 1. Memória imediata (0ms)
     if (user && subMemoryCache.has(user.id)) {
@@ -118,23 +106,10 @@ export function useSubscription(options: Options = {}): SubscriptionState {
       setState({ isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false, isTrial: false });
       return;
     }
-    // Atalho instantâneo (0ms) para administradores sem bater em rede
-    if (isAdminEmail(user.email)) {
-      const startedAt = new Date();
-      const expiresAt = new Date(startedAt);
-      expiresAt.setFullYear(expiresAt.getFullYear() + 100);
-      const adminSub = {
-        isPremium: true,
-        loading: false,
-        plano: 'vitalício',
-        startedAt: startedAt.toISOString(),
-        expiresAt: expiresAt.toISOString(),
-        source: 'play' as const,
-        status: 'SUBSCRIPTION_STATE_ACTIVE',
-        isAdminOverride: true,
-        isTrial: false,
-      };
-      persist(adminSub);
+    // Atalho instantâneo (0ms) para administradores / Modo Dev
+    const devSub = getDevSimulatedSubscriptionState(user.email);
+    if (devSub) {
+      persist(devSub);
       return;
     }
     // Se já temos cache fresco em memória e não é polling forçado pós-compra nem refresh explícito, reutiliza sem fazer 5 queries
@@ -197,15 +172,11 @@ export function useSubscription(options: Options = {}): SubscriptionState {
 
         if (cancelled) return true;
 
-        // 2. Atalho incondicional para administradores
+        // 2. Atalho incondicional para administradores / Modo Dev
         const email = (user.email || '').toLowerCase();
-        if (isAdminEmail(email)) {
-          const startedAt = new Date();
-          const expiresAt = new Date(startedAt);
-          expiresAt.setFullYear(expiresAt.getFullYear() + 100);
-          persist({
-            isPremium: true, loading: false, plano: 'vitalício', startedAt: startedAt.toISOString(), expiresAt: expiresAt.toISOString(), source: 'play', status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: true, isTrial: false,
-          });
+        const devSub = getDevSimulatedSubscriptionState(email);
+        if (devSub) {
+          persist(devSub);
           return true;
         }
 
@@ -449,5 +420,22 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     ).catch(() => {});
   }, [state.isPremium, state.loading, state.isAdminOverride, state.plano, state.source, state.startedAt, user?.id]);
 
+  // Atualização reativa instantânea (0ms) ao alternar perfil no Simulador de Desenvolvedor
+  useEffect(() => {
+    const handleDevChange = () => {
+      if (user) {
+        subMemoryCache.delete(user.id);
+        inflightFetches.delete(user.id);
+        if (cacheKey && typeof localStorage !== 'undefined') {
+          try { localStorage.removeItem(cacheKey); } catch {}
+        }
+      }
+      refresh();
+    };
+    window.addEventListener(DEV_SIMULATION_EVENT, handleDevChange);
+    return () => window.removeEventListener(DEV_SIMULATION_EVENT, handleDevChange);
+  }, [user, cacheKey, refresh]);
+
   return { ...state, refresh };
 }
+

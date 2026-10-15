@@ -58,6 +58,7 @@ function periodStart(period: FeatureLimitPeriod): Date {
 }
 
 import { isAdminEmail } from '@/lib/adminEmails';
+import { shouldBypassAsAdmin, isSimulatingExpired } from '@/lib/devSimulation';
 
 interface UseFeatureLimitOptions {
   scope?: string | null;
@@ -88,10 +89,12 @@ export function useFeatureLimit(
 ): UseFeatureLimitResult {
   const { user } = useAuth();
   const { isPremium } = useSubscription();
-  const isAdmin = isAdminEmail(user?.email);
+  const isAdmin = shouldBypassAsAdmin(user?.email);
 
   const isTrialExpired = useMemo(() => {
     if (!user) return false;
+    if (isAdmin) return false;
+    if (isSimulatingExpired(user?.email)) return true;
     if (isPremium) return false;
 
     const createdAt = new Date(user.created_at);
@@ -127,7 +130,7 @@ export function useFeatureLimit(
 
     const isTrialActive = !isClockTampered && !isDeviceAbuse && trialEndsAt.getTime() > nowMs;
     return !isTrialActive;
-  }, [user, isPremium]);
+  }, [user, isPremium, isAdmin]);
 
   const [config, setConfig] = useState<FeatureLimitConfig | null>(null);
   const [used, setUsed] = useState(0);

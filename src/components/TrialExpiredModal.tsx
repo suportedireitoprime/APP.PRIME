@@ -11,6 +11,7 @@ import horusOwl2 from '@/assets/horus/02_coruja_estudando.webp';
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { isAdminEmail } from "@/lib/adminEmails";
+import { shouldBypassAsAdmin, isDevSimulatorEligible } from "@/lib/devSimulation";
 import { CheckoutModal } from "@/components/assinatura/CheckoutModal";
 
 import { useBodyScrollLock, resetBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -113,10 +114,12 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   const [isNavigating, setIsNavigating] = useState(false);
 
   const [copyIndex] = useState(() => Math.floor(Math.random() * COPIES.length));
+  const [devDismissed, setDevDismissed] = useState(false);
 
-  const isAdmin = isAdminEmail(user?.email);
+  const isAdmin = shouldBypassAsAdmin(user?.email);
+  const isDev = isDevSimulatorEligible(user?.email);
 
-  useBodyScrollLock(Boolean(open && !isAdmin && user));
+  useBodyScrollLock(Boolean(open && !isAdmin && user && !devDismissed));
 
   useEffect(() => {
     // Pré-carregamento instantâneo em background da página de assinatura e checkout (Padrão 0ms)
@@ -157,7 +160,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
     return () => clearInterval(interval);
   }, []);
 
-  if (isAdmin || !open || !user) {
+  if (isAdmin || !open || !user || devDismissed) {
     return null;
   }
 
@@ -181,11 +184,14 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
       />
 
       <div className="relative mx-auto w-full max-w-md mt-8">
-        {onClose && (
+        {(onClose || isDev) && (
           <button
-            onClick={onClose}
+            onClick={() => {
+              if (onClose) onClose();
+              setDevDismissed(true);
+            }}
             aria-label="Fechar"
-            className="absolute -top-12 right-0 p-2.5 rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors"
+            className="absolute -top-12 right-0 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -196,6 +202,13 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
         <div
           className="relative z-10 space-y-4 rounded-3xl border border-white/10 bg-[#121417]/95 backdrop-blur-2xl p-6 sm:p-7 shadow-2xl shadow-black/60 text-center"
         >
+          {isDev && (
+            <div className="text-center pb-1">
+              <span className="text-[10.5px] font-mono font-bold text-violet-300 bg-violet-500/20 border border-violet-500/40 px-3 py-1 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm">
+                <span>🛠️ Simulador Dev: 3 Dias Encerrados</span>
+              </span>
+            </div>
+          )}
           {/* Decks com as capas do Aprender passando no automático */}
           <div className="relative flex flex-col items-center justify-center pt-2 pb-1">
             <div className="relative flex items-center justify-center w-full max-w-[320px] h-[165px] sm:h-[175px]">

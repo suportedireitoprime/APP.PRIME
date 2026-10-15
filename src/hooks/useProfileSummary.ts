@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
+import { shouldBypassAsAdmin, isSimulatingExpired } from '@/lib/devSimulation';
 
 export interface ProfileSummary {
   displayName: string;
@@ -99,7 +100,7 @@ async function fetchProfileSummary(
     return {
       displayName: metaName || emailFallback,
       nomeCompleto: metaName || null,
-      isPremium: isAdminEmail(fallbackEmail),
+      isPremium: (!isSimulatingExpired(fallbackEmail) && !!isAdminEmail(fallbackEmail)) && shouldBypassAsAdmin(fallbackEmail),
       avatarUrl: fallbackAvatar || '',
       bio: '',
       capaId: 'capa1',
@@ -133,7 +134,7 @@ async function fetchProfileSummary(
   const summary: ProfileSummary = {
     displayName: resolvedDisplayName,
     nomeCompleto: resolvedNomeCompleto,
-    isPremium: !!p.is_premium || isAdminEmail(fallbackEmail),
+    isPremium: (!isSimulatingExpired(fallbackEmail) && !!p.is_premium) || shouldBypassAsAdmin(fallbackEmail),
     avatarUrl: p.avatar_url || fallbackAvatar || '',
     bio: p.bio ?? '',
     capaId: p.capa_id ?? 'capa1',

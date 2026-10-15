@@ -467,9 +467,11 @@ const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 const preloadImage = new Image();
 preloadImage.src = brasaoImg;
 preloadImage.decoding = 'async';
-const TrialExpiredModal = lazy(() => import("@/components/TrialExpiredModal").then(m => ({ default: m.TrialExpiredModal })));
 import { isAdminEmail } from "@/lib/adminEmails";
+import { shouldBypassAsAdmin, isSimulatingExpired } from "@/lib/devSimulation";
 import { useSubscription } from "@/hooks/useSubscription";
+
+const TrialExpiredModal = lazy(() => import("@/components/TrialExpiredModal").then(m => ({ default: m.TrialExpiredModal })));
 
 function ProtectedRoute({ children, requireOnboarding = true }: { children: React.ReactNode; requireOnboarding?: boolean }) {
   const { user, loading } = useAuth();
@@ -662,7 +664,10 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
       cleanPath.startsWith('/termos') ||
       cleanPath.startsWith('/privacidade');
     
-    const isUserPremium = !!profile.isPremium || (isSubPremium && !isSubTrial) || isAdminEmail(user.email);
+    const isUserPremium =
+      (!isSimulatingExpired(user.email) && !!profile.isPremium) ||
+      (isSubPremium && !isSubTrial) ||
+      shouldBypassAsAdmin(user.email);
 
     if (!isUserPremium && !isTrialActive && !isAllowedPath) {
       // Redireciona para o início disparando a exibição do painel
@@ -916,12 +921,13 @@ function GlobalTrialGate() {
   const location = useLocation();
   const [showModal, setShowModal] = useState(false);
 
-  const isAdmin = isAdminEmail(user?.email);
-  const isUserPremium = isAdmin || !!user?.user_metadata?.isPremium || (isSubPremium && status !== 'trialing');
+  const isAdmin = shouldBypassAsAdmin(user?.email);
+  const isExpiredSim = isSimulatingExpired(user?.email);
+  const isUserPremium = isAdmin || (!isExpiredSim && !!user?.user_metadata?.isPremium) || (isSubPremium && status !== 'trialing');
 
-  let isTrialActive = isTrial && expiresAt && new Date(expiresAt).getTime() > Date.now();
+  let isTrialActive = !isExpiredSim && isTrial && expiresAt && new Date(expiresAt).getTime() > Date.now();
   
-  if (user && !isTrialActive && !isUserPremium) {
+  if (user && !isTrialActive && !isUserPremium && !isExpiredSim) {
     const createdAt = new Date(user.created_at);
     const maxAllowedTrialMs = createdAt.getTime() + 3 * 24 * 60 * 60 * 1000;
     let trialEndsAt = new Date(maxAllowedTrialMs);
@@ -988,8 +994,13 @@ function GlobalTrialGate() {
 
     const handler = (e: MouseEvent | TouchEvent) => {
       const target = e.target as HTMLElement;
-      // Permite cliques se estiverem dentro de um modal (dialog) ou z-9999 (TrialExpiredModal)
-      if (target.closest('.z-\\[9999\\]') || target.closest('[role="dialog"]')) {
+      // Permite cliques se estiverem dentro de um modal (dialog), z-9999, data-dev-control ou se o SideMenu estiver aberto
+      if (
+        target.closest('.z-\\[9999\\]') ||
+        target.closest('[role="dialog"]') ||
+        target.closest('[data-dev-control]') ||
+        document.body.dataset.sideMenuOpen === 'true'
+      ) {
         return;
       }
       e.stopPropagation();
@@ -1007,7 +1018,7 @@ function GlobalTrialGate() {
 
   return showModal ? (
     <Suspense fallback={null}>
-      <TrialExpiredModal open={true} />
+      <TrialExpiredModal open={true} onClose={() => setShowModal(false)} />
     </Suspense>
   ) : null;
 }
