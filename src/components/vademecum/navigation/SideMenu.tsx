@@ -5,6 +5,7 @@ import {
   LifeBuoy, Lock, Gem, MessageSquareHeart,
   Pencil, Crown, Timer, Bird, Star,
 } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -26,11 +27,35 @@ interface SideMenuProps {
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const [opiniaoOpen, setOpiniaoOpen] = useState(false);
   const [avaliarOpen, setAvaliarOpen] = useState(false);
+  const [appVersion, setAppVersion] = useState<string>('v1.0.0 (Build 1)');
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { isPremium, isTrial, expiresAt } = useSubscription();
   useBodyScrollLock(open);
+
+  // Obter versão e compilação da build nativa (Android, iOS ou Web)
+  useEffect(() => {
+    let cancel = false;
+    const obterVersao = async () => {
+      try {
+        if (Capacitor.isNativePlatform()) {
+          const { App: CapacitorApp } = await import('@capacitor/app');
+          const info = await CapacitorApp.getInfo();
+          if (!cancel && info) {
+            const buildNum = info.build ? ` (Build ${info.build})` : '';
+            setAppVersion(`v${info.version}${buildNum}`);
+          }
+        } else {
+          setAppVersion('v1.0.0 (Build 1)');
+        }
+      } catch (err) {
+        if (!cancel) setAppVersion('v1.0.0');
+      }
+    };
+    void obterVersao();
+    return () => { cancel = true; };
+  }, []);
 
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('sidemenu-state', { detail: { open } }));
@@ -227,6 +252,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           <MenuRow
             icon={Info}
             label="Sobre o App"
+            hint={appVersion}
             onClick={() => handleItemClick('sobre')}
           />
         </GroupCard>
@@ -252,9 +278,14 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           />
         </GroupCard>
 
-        <p className="text-center text-xs font-body text-muted-foreground pt-4 pb-2">
-          Direito Prime © 2026
-        </p>
+        <div className="text-center pt-4 pb-2 space-y-1">
+          <p className="text-xs font-mono font-medium text-muted-foreground/80">
+            Versão do aplicativo: {appVersion}
+          </p>
+          <p className="text-[11px] font-body text-muted-foreground/50">
+            Direito Prime © 2026
+          </p>
+        </div>
       </div>
     </div>
   ) : null;
@@ -298,12 +329,14 @@ function MenuRow({
   onClick,
   danger,
   iconColor,
+  hint,
 }: {
-  icon: any;
+  icon: React.ElementType;
   label: string;
   onClick: () => void;
   danger?: boolean;
   iconColor?: string;
+  hint?: string;
 }) {
   return (
     <button
@@ -313,7 +346,7 @@ function MenuRow({
         danger ? 'text-red-400 hover:text-red-300' : 'text-foreground/90 hover:bg-secondary'
       }`}
     >
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         <Icon
           className={`w-5 h-5 shrink-0 ${
             danger
@@ -325,9 +358,16 @@ function MenuRow({
         />
         <span className="font-body text-[15px] font-medium flex-1 truncate">{label}</span>
       </div>
-      {!danger && (
-        <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" strokeWidth={2.4} aria-hidden="true" />
-      )}
+      <div className="flex items-center gap-2 shrink-0">
+        {hint && (
+          <span className="text-[11px] font-mono font-semibold text-zinc-300 bg-white/5 border border-white/10 px-2 py-0.5 rounded-md">
+            {hint}
+          </span>
+        )}
+        {!danger && (
+          <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" strokeWidth={2.4} aria-hidden="true" />
+        )}
+      </div>
     </button>
   );
 }
