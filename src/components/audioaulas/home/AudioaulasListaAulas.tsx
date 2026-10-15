@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { Play, Pause, Heart, ArrowLeft, BookOpen, ChevronRight, ChevronLeft, Headphones, Sparkles } from 'lucide-react';
 import { BotaoDownloadAudio } from './BotaoDownloadAudio';
 import { capaDaArea, decomporTituloCapitulo } from '@/lib/audioaulasHelper';
