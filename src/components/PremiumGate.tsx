@@ -476,21 +476,30 @@ const PremiumGate = ({
         <>
           {/* Backdrop Escuro com Blur Suave */}
           <motion.div
+            data-premium-gate="true"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/85 backdrop-blur-md z-[200000]"
-            onClick={onClose}
+            className="fixed inset-0 bg-black/85 backdrop-blur-md z-[200000] !pointer-events-auto"
+            style={{ pointerEvents: 'auto' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
           />
 
           {/* Bottom Sheet Modal Container que sobe de baixo para cima */}
           <motion.div
+            data-premium-gate="true"
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-            className="fixed inset-x-0 bottom-0 sm:inset-0 sm:m-auto z-[200001] w-full sm:max-w-[460px] h-[90dvh] max-h-[820px] bg-[#0E0F12] border-t sm:border border-white/10 rounded-t-[28px] sm:rounded-[28px] shadow-[0_-16px_40px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden text-foreground"
+            className="fixed inset-x-0 bottom-0 sm:inset-0 sm:m-auto z-[200001] w-full sm:max-w-[460px] h-[90dvh] max-h-[820px] bg-[#0E0F12] border-t sm:border border-white/10 rounded-t-[28px] sm:rounded-[28px] shadow-[0_-16px_40px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden text-foreground !pointer-events-auto"
+            style={{ pointerEvents: 'auto' }}
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
           >
             {/* Topo do Modal: Pílula de arrasto centralizada e Botão de Fechar Grande */}
             <div className="pt-3 px-5 pb-2 flex items-center justify-between shrink-0 relative z-30">
@@ -716,11 +725,15 @@ const PremiumGate = ({
           <AnimatePresence>
             {showBenefits && (
               <motion.div
+                data-premium-gate="true"
                 initial={{ y: '100%' }}
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-                className="fixed inset-x-0 bottom-0 z-[200010] max-h-[88dvh] mx-auto w-full md:max-w-[600px] bg-card border-t border-border md:border-x rounded-t-3xl overflow-hidden flex flex-col shadow-2xl"
+                className="fixed inset-x-0 bottom-0 z-[200010] max-h-[88dvh] mx-auto w-full md:max-w-[600px] bg-card border-t border-border md:border-x rounded-t-3xl overflow-hidden flex flex-col shadow-2xl !pointer-events-auto"
+                style={{ pointerEvents: 'auto' }}
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
               >
                 <div
                   className="relative py-3.5 px-4 flex items-center gap-2 shrink-0 overflow-hidden"

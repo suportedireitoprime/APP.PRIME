@@ -102,7 +102,7 @@ Deno.serve(async (req) => {
 
     const isCreditCard = !!creditCard;
     const isVitalicio = plan === 'vitalicio' || plan === 'vitalicio_pix' || plan === 'promocao';
-    const isPixPlan = plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao';
+    const isPixPlan = plan === 'vitalicio_pix' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'mensal_pix' || plan === 'promocao';
     const billingType = isPixPlan ? 'PIX' : (isCreditCard ? 'CREDIT_CARD' : 'UNDEFINED');
     const isInstallment = installmentCount && installmentCount > 1;
     
@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
       } else if (plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao') {
         baseValue = 149.90;
         maxInstallments = 1;
-      } else if (plan === 'mensal') {
+      } else if (plan === 'mensal' || plan === 'mensal_pix') {
         baseValue = 29.90;
         maxInstallments = 1;
       }
@@ -174,7 +174,7 @@ Deno.serve(async (req) => {
         externalReference: user.id
       };
 
-      if (plan === 'mensal') {
+      if (plan === 'mensal' || plan === 'mensal_pix') {
         subPayload.value = 29.90;
         subPayload.cycle = 'MONTHLY';
         subPayload.description = 'Mensal Estudos Jurídicos';

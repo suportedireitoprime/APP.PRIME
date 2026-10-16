@@ -16,7 +16,7 @@ import confetti from 'canvas-confetti';
 interface CheckoutModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  plan: 'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix' | null;
+  plan: 'mensal' | 'mensal_pix' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix' | null;
   userEmail: string;
   userName: string;
   onSuccess: () => void;
@@ -120,7 +120,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const [loading, setLoading] = useState(false);
   const [verifyingPayment, setVerifyingPayment] = useState(false);
   const [installmentCount, setInstallmentCount] = useState<number>(1);
-  const [activePlan, setActivePlan] = useState<'mensal' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix'>('anual');
+  const [activePlan, setActivePlan] = useState<'mensal' | 'mensal_pix' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_pix' | 'anual_regular_pix'>('anual');
 
   useEffect(() => {
     if (plan) {
@@ -128,7 +128,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     }
   }, [plan]);
 
-  const isPix = activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix';
+  const isPix = activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix' || activePlan === 'mensal_pix';
 
   // Garantir limite de parcelas ao alternar entre Anual (máx 6x) e Vitalício (máx 4x)
   useEffect(() => {
@@ -669,13 +669,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   };
 
   const getPlanInfo = () => {
-    if (activePlan === 'mensal') return { title: 'Mensal', price: 'R$ 29,90', sub: '/ mês' };
-    if (activePlan === 'anual') return { title: 'Anual', price: 'R$ 149,90', sub: '' };
-    if (activePlan === 'anual_pix') return { title: 'Anual', price: 'R$ 149,90', sub: '' };
-    if (activePlan === 'anual_regular_pix') return { title: 'Anual', price: 'R$ 149,90', sub: '' };
-    if (activePlan === 'vitalicio') return { title: 'Vitalício', price: 'R$ 149,90', sub: '' };
-    if (activePlan === 'vitalicio_pix') return { title: 'Vitalício', price: 'R$ 149,90', sub: '' };
-    return { title: '', price: '', sub: '' };
+    if (activePlan === 'mensal' || activePlan === 'mensal_pix') return { title: 'Plano Mensal', price: 'R$ 29,90', sub: '/ mês' };
+    if (activePlan === 'anual' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix') return { title: 'Plano Anual', price: 'R$ 149,90', sub: '/ ano' };
+    if (activePlan === 'vitalicio' || activePlan === 'vitalicio_pix') return { title: 'Acesso Vitalício', price: 'R$ 149,90', sub: '' };
+    return { title: 'Plano Prime', price: '', sub: '' };
   };
 
   const planInfo = getPlanInfo();
@@ -714,10 +711,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             {step !== 2 && (
               <div className="rounded-2xl border border-white/10 bg-black/40 backdrop-blur-sm p-5 mb-4 flex flex-col items-center justify-center relative overflow-hidden shadow-xl text-center">
                 <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">
-                  {isPix ? 'PAGAMENTO ÚNICO VIA PIX' : 'PARCELAMENTO EM ATÉ 4X'}
+                  {isPix ? 'PAGAMENTO VIA PIX (SEM CEP)' : (activePlan.includes('anual') ? 'PARCELAMENTO EM ATÉ 6X NO CARTÃO' : 'ASSINATURA MENSAL')}
                 </p>
-                <h3 className="font-display text-lg font-black text-foreground/90 mb-1">
-                  ACESSO VITALÍCIO
+                <h3 className="font-display text-lg font-black text-foreground/90 mb-1 uppercase">
+                  {planInfo.title}
                 </h3>
                 <div className="flex items-baseline gap-1">
                   <span className="font-display text-4xl font-black text-foreground">{planInfo.price}</span>
@@ -726,14 +723,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
               </div>
             )}
 
-            {/* Alternador de Método de Pagamento só se o plano não for pré-definido pelo botão clicado */}
-            {step === 1 && !plan?.includes('vitalicio') && (plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix') && (
+            {/* Alternador de Método de Pagamento no topo do checkout */}
+            {step === 1 && !plan?.includes('vitalicio') && (
               <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/50 rounded-2xl border border-white/10 mb-5">
                 <button
                   type="button"
-                  onClick={() => setActivePlan(plan === 'anual_pix' ? 'anual_pix' : 'anual_regular_pix')}
+                  onClick={() => setActivePlan(activePlan.includes('anual') ? 'anual_regular_pix' : 'mensal_pix')}
                   className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    (activePlan === 'vitalicio_pix' || activePlan === 'anual_pix' || activePlan === 'anual_regular_pix')
+                    isPix
                       ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/30'
                       : 'text-muted-foreground hover:text-white hover:bg-white/5'
                   }`}
@@ -743,9 +740,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
                 </button>
                 <button
                   type="button"
-                  onClick={() => setActivePlan('anual')}
+                  onClick={() => setActivePlan(activePlan.includes('anual') ? 'anual' : 'mensal')}
                   className={`py-2.5 px-3 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                    (activePlan === 'vitalicio' || activePlan === 'anual')
+                    !isPix
                       ? 'bg-primary text-white shadow-[0_0_20px_rgba(224,31,71,0.5)] border border-red-400/30'
                       : 'text-muted-foreground hover:text-white hover:bg-white/5'
                   }`}

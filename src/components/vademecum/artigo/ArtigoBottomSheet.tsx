@@ -927,6 +927,7 @@ const ArtigoBottomSheet = ({
   };
 
   const anyPanelOpen =
+    showPremiumGate ||
     showAnotacoesSheet ||
     showPerguntarSheet ||
     showPraticarSheet ||
@@ -1018,8 +1019,12 @@ const ArtigoBottomSheet = ({
       <Sheet
         open={Boolean(artigo)}
         onOpenChange={(open) => {
-          if (!open) handleSheetClose();
+          if (!open) {
+            if (showPremiumGate || anyPanelOpen) return;
+            handleSheetClose();
+          }
         }}
+        modal={!showPremiumGate && !anyPanelOpen}
       >
         <SheetContent
           data-artigo-sheet={artigo ? 'open' : undefined}
@@ -1036,24 +1041,36 @@ const ArtigoBottomSheet = ({
           onInteractOutside={(e) => {
             const t = e.target as HTMLElement | null;
             if (
+              showPremiumGate ||
+              anyPanelOpen ||
               iaFull ||
               (t &&
-                (t.closest('[data-artigo-rail]') ||
+                (t.closest('[data-premium-gate]') ||
+                  t.closest('[data-radix-portal]') ||
+                  t.closest('[data-artigo-rail]') ||
                   t.closest('[data-artigo-menu]') ||
-                  t.closest('[data-artigo-ia-fullscreen]')))
-            )
+                  t.closest('[data-artigo-ia-fullscreen]') ||
+                  t.closest('[role="dialog"]')))
+            ) {
               e.preventDefault();
+            }
           }}
           onPointerDownOutside={(e) => {
             const t = e.target as HTMLElement | null;
             if (
+              showPremiumGate ||
+              anyPanelOpen ||
               iaFull ||
               (t &&
-                (t.closest('[data-artigo-rail]') ||
+                (t.closest('[data-premium-gate]') ||
+                  t.closest('[data-radix-portal]') ||
+                  t.closest('[data-artigo-rail]') ||
                   t.closest('[data-artigo-menu]') ||
-                  t.closest('[data-artigo-ia-fullscreen]')))
-            )
+                  t.closest('[data-artigo-ia-fullscreen]') ||
+                  t.closest('[role="dialog"]')))
+            ) {
               e.preventDefault();
+            }
           }}
         >
           <div className="shrink-0 flex justify-center pt-2 pb-0.5 bg-[#0f0f0f] sm:hidden">
