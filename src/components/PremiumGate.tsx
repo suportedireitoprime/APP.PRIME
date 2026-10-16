@@ -16,7 +16,7 @@ import { logAreaEvent } from '@/lib/appEvents';
 import { haptic } from '@/lib/nativeHaptics';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
-import { shouldBypassAsAdmin, isSimulatingExpired } from '@/lib/devSimulation';
+import { shouldBypassAsAdmin, isSimulatingExpired, isDevSimulatorEligible } from '@/lib/devSimulation';
 import { TrialExpiredModal } from '@/components/TrialExpiredModal';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
@@ -309,11 +309,15 @@ const PremiumGate = ({
   const [showBenefits, setShowBenefits] = useState(false);
   const { user } = useAuth();
 
-  // Verifica se o trial expirou (usando a mesma lógica do AppRoutes)
-  const isTrialExpired = useMemo(() => {
+  const [overrideSimulatedTrial, setOverrideSimulatedTrial] = useState<boolean | null>(null);
+
+  // Verifica se o trial expirou ou se o usuário já utilizou os 3 dias
+  const calculatedTrialExpired = useMemo(() => {
     if (!user) return false;
-    if (shouldBypassAsAdmin(user?.email)) return false;
     if (isSimulatingExpired(user?.email)) return true;
+    if (user.user_metadata?.trial_claimed === true || user.user_metadata?.trial_used === true) {
+      return true;
+    }
     const createdAt = new Date(user.created_at);
     let trialEndsAt = new Date(createdAt.getTime() + 3 * 24 * 60 * 60 * 1000);
     
@@ -327,8 +331,17 @@ const PremiumGate = ({
       trialEndsAt = new Date(trialStart + (3 * 24 * 60 * 60 * 1000));
     }
 
-    return Date.now() > trialEndsAt.getTime();
+    if (Date.now() > trialEndsAt.getTime()) return true;
+
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('direitoprime:device:trial_claimed')) {
+      return true;
+    }
+
+    return false;
   }, [user]);
+
+  const isTrialExpired = overrideSimulatedTrial !== null ? overrideSimulatedTrial : calculatedTrialExpired;
+  const isDev = isDevSimulatorEligible(user?.email);
 
   // Player de demonstração de narração
   const [isPlayingDemo, setIsPlayingDemo] = useState(false);
@@ -392,10 +405,10 @@ const PremiumGate = ({
     }
   }, [open, feature]);
 
-  // Mensalidade do plano anual — a App Store exige o patamar de R$ 19,90.
+  // Mensalidade do plano anual
   const isIOS = useMemo(() => Capacitor.getPlatform() === 'ios', []);
   const [mensalidade, setMensalidade] = useState(isIOS ? '19,90' : '16,66');
-  const [totalAnual, setTotalAnual] = useState(isIOS ? 'total R$ 238,80/ano' : 'total R$ 119,90/ano');
+  const [totalAnual, setTotalAnual] = useState(isIOS ? 'R$ 238,80/ano' : 'R$ 119,90/ano');
   const [economia, setEconomia] = useState(isIOS ? '33%' : '44%');
 
   useEffect(() => {
@@ -416,7 +429,7 @@ const PremiumGate = ({
                   maximumFractionDigits: 2,
                 });
                 setMensalidade(mensalStr);
-                setTotalAnual(`total ${anualProd.price}/ano`);
+                setTotalAnual(`${anualProd.price}/ano`);
               }
             }
           }
@@ -428,222 +441,324 @@ const PremiumGate = ({
     loadPricing();
   }, [open]);
 
-  const ctaLabel = 'Começar 3 dias grátis';
-  const goToCheckout = () => {
+  const handleStartTrial = () => {
     haptic.medium();
     setShowBenefits(false);
     onClose();
     navigate('/assinatura?plano=anual&trial=1');
   };
 
-  if (isTrialExpired && open) {
-    return <TrialExpiredModal open={open} onClose={onClose} />;
-  }
+  const handleGoToPlanos = (plano?: string) => {
+    haptic.medium();
+    setShowBenefits(false);
+    onClose();
+    navigate(plano ? `/assinatura?plano=${plano}` : '/assinatura');
+  };
 
   const content = (
     <AnimatePresence>
       {open && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop Escuro com Blur */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 z-[10050]"
+            transition={{ duration: 0.22 }}
+            className="fixed inset-0 bg-black/85 backdrop-blur-md z-[10060]"
             onClick={onClose}
           />
 
-          {/* Modal Container */}
+          {/* Bottom Sheet Modal Container que sobe de baixo para cima */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.93, y: 18 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 14 }}
-            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-            className="fixed inset-0 z-[10051] flex items-center justify-center px-4 py-6 pointer-events-none"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 28, stiffness: 290 }}
+            className="fixed inset-x-0 bottom-0 sm:inset-0 sm:m-auto z-[10061] w-full sm:max-w-[480px] h-[94dvh] sm:h-auto sm:max-h-[92dvh] bg-[#111215] border-t sm:border border-white/10 rounded-t-[32px] sm:rounded-[32px] shadow-[0_-16px_50px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden"
           >
-            <div className="relative w-full max-w-[364px] max-h-[90dvh] overflow-y-auto overscroll-contain bg-[#121214] border border-primary/30 rounded-[28px] shadow-2xl shadow-black/80 pointer-events-auto flex flex-col">
-              {/* Faixa superior com degradê bordô e marca d'água */}
-              <div
-                className="relative py-3.5 px-6 flex items-center justify-center overflow-hidden shrink-0"
-                style={{
-                  background:
-                    'linear-gradient(135deg, hsl(var(--brand-burgundy-deep)) 0%, hsl(var(--brand-burgundy-bright)) 55%, hsl(var(--primary)) 100%)',
-                }}
-              >
-                <Gavel className="absolute -left-3 -top-2 w-20 h-20 text-primary-foreground/10 rotate-[-18deg] pointer-events-none" />
-                <Scale className="absolute -right-4 -bottom-5 w-20 h-20 text-primary-foreground/10 pointer-events-none" />
-                <span className="relative text-[10.5px] font-extrabold tracking-[0.22em] uppercase text-primary-foreground flex items-center gap-1.5">
-                  <Crown className="w-3.5 h-3.5 fill-current" /> Direito Prime · Exclusivo
+            {/* Pílula de arrasto Mobile */}
+            <div className="pt-3 pb-1 flex justify-center sm:hidden shrink-0">
+              <span className="w-12 h-1.5 rounded-full bg-white/20" />
+            </div>
+
+            {/* Faixa superior com degradê bordô e marca d'água */}
+            <div
+              className="relative py-3.5 px-6 flex items-center justify-between shrink-0 overflow-hidden border-b border-white/5"
+              style={{
+                background:
+                  'linear-gradient(135deg, hsl(var(--brand-burgundy-deep)) 0%, hsl(var(--brand-burgundy-bright)) 55%, hsl(var(--primary)) 100%)',
+              }}
+            >
+              <Gavel className="absolute -left-3 -top-2 w-20 h-20 text-white/10 rotate-[-18deg] pointer-events-none" />
+              <Scale className="absolute -right-4 -bottom-5 w-20 h-20 text-white/10 pointer-events-none" />
+              
+              <div className="relative flex items-center gap-2">
+                <Crown className="w-4 h-4 text-white fill-current" />
+                <span className="text-[11px] font-black tracking-[0.22em] uppercase text-white">
+                  DIREITO PRIME · EXCLUSIVO
                 </span>
-                <button
-                  onClick={() => {
-                    haptic.selection();
-                    onClose();
-                  }}
-                  aria-label="Fechar"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-primary-foreground/20 active:bg-primary-foreground/30 transition-colors"
-                >
-                  <X className="w-4 h-4 text-primary-foreground" />
-                </button>
               </div>
 
-              {/* Corpo do Modal */}
-              <div className="relative px-5 pt-5 pb-6 flex flex-col items-center text-center overflow-hidden">
-                <Scale className="absolute -bottom-10 -right-10 w-48 h-48 text-primary/[0.05] pointer-events-none" />
+              <button
+                onClick={() => {
+                  haptic.selection();
+                  onClose();
+                }}
+                aria-label="Fechar"
+                className="relative p-2 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 text-white transition-colors"
+              >
+                <X className="w-4 h-4 text-white" />
+              </button>
+            </div>
 
-                {/* 🦉 Horus Mascot & Speech Bubble */}
-                <div className="relative flex flex-col items-center mb-4 w-full">
-                  <motion.div
-                    animate={{ y: [0, -4, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    className="relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-b from-amber-500/20 via-primary/15 to-transparent p-1.5 border border-amber-500/30 shadow-xl shadow-primary/25 flex items-center justify-center mb-2.5"
-                  >
-                    <img
-                      src={horusOwl}
-                      alt="Horus"
-                      className="w-full h-full object-contain filter drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
-                      draggable={false}
-                    />
-                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-amber-400 to-amber-600 text-black text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full shadow-md flex items-center gap-0.5 ring-1 ring-black/40">
-                      <Crown className="w-2.5 h-2.5 fill-current" /> Prime
-                    </span>
-                  </motion.div>
-
-                  {/* Balão de fala do Horus */}
-                  <div className="relative w-full bg-secondary/50 border border-primary/25 rounded-2xl p-3 shadow-md text-center">
-                    <div className="flex items-center justify-center gap-1.5 text-[11px] font-bold text-amber-400 mb-1">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      <span>Horus Assistente</span>
-                    </div>
-                    <p className="text-xs text-foreground/90 font-medium leading-relaxed italic">
-                      "{info.horusQuote}"
-                    </p>
+            {/* Conteúdo com rolagem suave */}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-4 pb-8 space-y-4">
+              {/* Seletor de simulação Dev rápido (para o admin testar ambos os estados) */}
+              {isDev && (
+                <div className="flex items-center justify-between p-2 rounded-xl bg-violet-500/10 border border-violet-500/30 text-[11px]">
+                  <span className="font-mono text-violet-300 font-bold">🛠️ Teste Dev:</span>
+                  <div className="flex gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setOverrideSimulatedTrial(false)}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-colors ${
+                        !isTrialExpired
+                          ? 'bg-emerald-500 text-white shadow'
+                          : 'bg-white/5 text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      3 Dias Elegíveis
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOverrideSimulatedTrial(true)}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-colors ${
+                        isTrialExpired
+                          ? 'bg-amber-500 text-white shadow'
+                          : 'bg-white/5 text-zinc-400 hover:text-white'
+                      }`}
+                    >
+                      Já Testou os 3 Dias
+                    </button>
                   </div>
                 </div>
+              )}
 
-                {/* Título & Descrição da funcionalidade */}
-                <div className="flex items-center gap-2 mb-1 justify-center">
-                  <span className="w-6 h-6 rounded-lg bg-primary/20 flex items-center justify-center text-primary shrink-0">
-                    <Icon className="w-3.5 h-3.5" />
-                  </span>
-                  <h3 className="font-display text-[20px] font-bold leading-tight text-foreground tracking-wide">
-                    {shownTitle}
-                  </h3>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-3 max-w-[290px]">
+              {/* Ícone e Nome da Função Requisitada */}
+              <div className="flex flex-col items-center text-center pt-1">
+                <motion.div
+                  initial={{ scale: 0.85 }}
+                  animate={{ scale: 1 }}
+                  className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/30 to-amber-500/20 border border-primary/40 flex items-center justify-center text-primary shadow-xl shadow-primary/20 mb-3"
+                >
+                  <Icon className="w-8 h-8 text-primary" strokeWidth={2.2} />
+                </motion.div>
+
+                <h2 className="text-xl sm:text-2xl font-display font-black text-white tracking-wide leading-tight">
+                  {shownTitle}
+                </h2>
+                <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-sm leading-relaxed">
                   {shownDesc}
                 </p>
+              </div>
 
-                {/* 🎧 Demonstrador de Áudio para Narração */}
-                {feature === 'narracao' && (
-                  <div className="relative w-full rounded-2xl border border-primary/30 bg-primary/10 p-3.5 mb-3.5 text-left shadow-inner">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-md">
-                          <Volume2 className="w-4 h-4" />
-                        </span>
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-foreground truncate">Demonstração de Narração</p>
-                          <p className="text-[10.5px] text-muted-foreground truncate">Art. 3º da Constituição Federal</p>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={togglePlayDemo}
-                        className={`px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all active:opacity-70 shadow-md shrink-0 ${
-                          isPlayingDemo
-                            ? 'bg-primary text-primary-foreground shadow-primary/40'
-                            : 'bg-primary/20 text-primary hover:bg-primary hover:text-primary-foreground'
-                        }`}
-                      >
-                        {isPlayingDemo ? (
-                          <>
-                            <Pause className="w-3.5 h-3.5 fill-current" /> Pausar
-                          </>
-                        ) : (
-                          <>
-                            <Play className="w-3.5 h-3.5 fill-current" /> Ouvir exemplo
-                          </>
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Barra de progresso do áudio de teste */}
-                    <div className="w-full bg-secondary/80 rounded-full h-1.5 overflow-hidden my-2">
-                      <div
-                        className="bg-gradient-to-r from-primary to-primary-light h-full rounded-full transition-all duration-100"
-                        style={{ width: `${demoProgress}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between items-center text-[10px] text-muted-foreground font-mono">
-                      <span>{isPlayingDemo ? demoCurrentTime : '0:00'}</span>
-                      <span className="text-primary/90 font-sans font-medium text-[10px]">Voz humana de alta fidelidade</span>
-                      <span>{demoDuration}</span>
-                    </div>
+              {/* Balão com a fala do mascote Horus */}
+              <div className="relative flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-2xl p-3.5 shadow-md">
+                <img
+                  src={horusOwl}
+                  alt="Horus"
+                  className="w-11 h-11 object-contain shrink-0 filter drop-shadow"
+                />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 text-[10.5px] font-bold text-amber-400 mb-0.5">
+                    <Sparkles className="w-3 h-3" />
+                    <span>Horus Assistente</span>
                   </div>
-                )}
-
-                {/* Preço — mensalidade em destaque */}
-                <div className="relative w-full rounded-2xl border border-primary/25 bg-secondary/40 px-4 py-3 mb-3.5">
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                      Plano anual
-                    </span>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary-foreground bg-primary rounded-full px-2 py-0.5">
-                      -{economia}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-muted-foreground text-sm font-medium">R$</span>
-                    <span className="text-foreground text-[36px] font-bold leading-none tracking-tight">
-                      {mensalidade}
-                    </span>
-                    <span className="text-muted-foreground text-sm">/mês</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground/90 mt-1">
-                    12x de R$ {mensalidade} · {totalAnual}
+                  <p className="text-xs text-zinc-300 font-medium leading-snug italic">
+                    "{info.horusQuote}"
                   </p>
-                  <div className="flex items-center justify-center gap-1.5 mt-1.5 text-[11px] font-semibold text-primary">
-                    <Check className="w-3.5 h-3.5" />
-                    3 dias grátis · cancele quando quiser
+                </div>
+              </div>
+
+              {/* Player Demonstrativo (se for narração ou áudio) */}
+              {(feature === 'narracao' || feature === 'audioaula') && (
+                <div className="rounded-2xl border border-primary/30 bg-primary/10 p-3.5 shadow-inner">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="w-8 h-8 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-md">
+                        <Volume2 className="w-4 h-4" />
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-white truncate">Demonstração de Áudio</p>
+                        <p className="text-[10.5px] text-zinc-400 truncate">Voz humana gravada em estúdio</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={togglePlayDemo}
+                      className="px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all bg-primary text-primary-foreground hover:bg-primary-light active:scale-95 shadow-md shrink-0"
+                    >
+                      {isPlayingDemo ? (
+                        <>
+                          <Pause className="w-3.5 h-3.5 fill-current" /> Pausar
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-3.5 h-3.5 fill-current" /> Ouvir exemplo
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden my-2">
+                    <div
+                      className="bg-primary h-full rounded-full transition-all duration-100"
+                      style={{ width: `${demoProgress}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between items-center text-[10px] text-zinc-400 font-mono">
+                    <span>{isPlayingDemo ? demoCurrentTime : '0:00'}</span>
+                    <span>{demoDuration}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* CARD DE STATUS DOS 3 DIAS (LÓGICA CONFORME SOLICITADO PELO USUÁRIO) */}
+              {isTrialExpired ? (
+                /* CASO 1: A pessoa JÁ testou os 3 dias gratuitos */
+                <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-amber-300 uppercase tracking-wide">
+                        Você já utilizou os 3 dias gratuitos
+                      </h4>
+                      <p className="text-xs text-zinc-300 leading-relaxed mt-0.5">
+                        O seu período de teste chegou ao fim. Assine um dos planos abaixo para continuar estudando com acesso irrestrito a todas as leis comentadas, videoaulas e IA.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => handleGoToPlanos()}
+                    className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl shadow-primary/30 hover:bg-primary-light active:scale-[0.98] transition-transform"
+                  >
+                    <span>VER PLANOS E ASSINAR</span>
+                    <Crown className="w-4 h-4 fill-current" />
+                  </button>
+                </div>
+              ) : (
+                /* CASO 2: A pessoa AINDA NÃO testou os 3 dias gratuitos */
+                <div className="rounded-2xl bg-emerald-500/10 border border-emerald-500/30 p-4 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0 text-emerald-400">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-emerald-300 uppercase tracking-wide">
+                        3 Dias Gratuitos Disponíveis
+                      </h4>
+                      <p className="text-xs text-zinc-300 leading-relaxed mt-0.5">
+                        Experimente {shownTitle} e mais de 200 ferramentas do Direito Prime por 3 dias sem pagar nada agora. Cancele com 1 clique antes do término se não quiser continuar.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleStartTrial}
+                    className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-display font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-xl shadow-primary/30 hover:bg-primary-light active:scale-[0.98] transition-transform"
+                  >
+                    <Crown className="w-4 h-4 fill-current" />
+                    <span>TESTAR 3 DIAS GRATUITOS</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleGoToPlanos()}
+                    className="w-full py-2.5 rounded-xl border border-white/10 bg-white/5 text-zinc-300 font-semibold text-xs hover:bg-white/10 hover:text-white transition-colors"
+                  >
+                    Ver todos os planos de assinatura
+                  </button>
+                </div>
+              )}
+
+              {/* GRADE COMPACTA DOS PLANOS OFICIAIS */}
+              <div className="space-y-2 pt-1">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 text-center">
+                  Escolha o plano ideal para você
+                </p>
+
+                {/* Plano Anual */}
+                <div
+                  onClick={() => handleGoToPlanos('anual')}
+                  className="relative p-3.5 rounded-2xl border-2 border-primary bg-primary/10 hover:bg-primary/15 transition-all cursor-pointer flex items-center justify-between gap-3 shadow-md active:scale-[0.99]"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-black uppercase text-white tracking-wide">
+                        Plano Anual
+                      </span>
+                      <span className="text-[9.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary text-primary-foreground">
+                        ECONOMIZE {economia}
+                      </span>
+                    </div>
+                    <p className="text-[11.5px] text-zinc-300">
+                      12x de <strong className="text-white font-bold">R$ {mensalidade}/mês</strong> ({totalAnual})
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="inline-block px-3 py-1.5 rounded-xl bg-primary text-white text-xs font-bold shadow">
+                      Assinar
+                    </span>
                   </div>
                 </div>
 
-                {/* Botão Principal de CTA */}
-                <button
-                  onClick={goToCheckout}
-                  className="relative w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary-light transition-all active:scale-[0.98] shadow-lg shadow-primary/30 mb-2 flex items-center justify-center gap-2"
+                {/* Plano Mensal */}
+                <div
+                  onClick={() => handleGoToPlanos('mensal')}
+                  className="p-3.5 rounded-2xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all cursor-pointer flex items-center justify-between gap-3 active:scale-[0.99]"
                 >
-                  <Crown className="w-4 h-4 fill-current" />
-                  {ctaLabel}
-                </button>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-bold uppercase text-white tracking-wide">
+                        Plano Mensal
+                      </span>
+                      <span className="text-[9.5px] text-zinc-400 font-semibold">
+                        Sem fidelidade
+                      </span>
+                    </div>
+                    <p className="text-[11.5px] text-zinc-400">
+                      <strong className="text-white font-bold">R$ 24,90/mês</strong> · Renova todo mês
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="inline-block px-3 py-1.5 rounded-xl bg-white/10 text-white text-xs font-bold hover:bg-white/20">
+                      Escolher
+                    </span>
+                  </div>
+                </div>
+              </div>
 
-                {/* Botão Secundário: Ver tudo que desbloqueia */}
-                <button
-                  onClick={() => {
-                    haptic.selection();
-                    setShowBenefits(true);
-                  }}
-                  className="relative w-full py-2.5 rounded-xl border border-border bg-secondary/50 text-foreground font-semibold text-xs hover:bg-secondary transition-colors active:scale-[0.98] mb-2"
-                >
-                  Ver tudo que desbloqueia
-                </button>
+              {/* Botão para ver benefícios detalhados */}
+              <button
+                onClick={() => {
+                  haptic.selection();
+                  setShowBenefits(true);
+                }}
+                className="w-full py-2.5 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] text-zinc-300 text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <span>Ver todos os benefícios inclusos</span>
+                <ChevronLeft className="w-3.5 h-3.5 rotate-180" />
+              </button>
 
-                <button
-                  onClick={() => {
-                    haptic.selection();
-                    onClose();
-                    navigate('/assinatura');
-                  }}
-                  className="relative text-[11.5px] text-muted-foreground hover:text-foreground transition-colors border-b border-transparent hover:border-border pb-0.5"
-                >
-                  Ver outros planos
-                </button>
-
-                <p className="relative mt-2.5 flex items-center gap-1.5 text-[10px] text-muted-foreground/80">
-                  <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                  Pagamento pela {isIOS ? 'App Store' : 'Google Play'} · sem fidelidade
-                </p>
+              {/* Rodapé de Segurança e Garantia */}
+              <div className="flex flex-col items-center gap-1 pt-1 text-[10.5px] text-zinc-500 text-center">
+                <div className="flex items-center gap-1.5 text-zinc-400">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Garantia incondicional de 7 dias · Cancele em 1 clique</span>
+                </div>
+                <span>Pagamento 100% seguro via {isIOS ? 'Apple App Store' : 'Google Play / Cartão / PIX'}</span>
               </div>
             </div>
           </motion.div>

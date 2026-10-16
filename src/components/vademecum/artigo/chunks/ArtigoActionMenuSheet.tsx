@@ -140,7 +140,9 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             onClick: () => {
               setActiveActionMenu(null);
               const cleanArt = String(artigoNumero || '').replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
-              navigate(`/audioleis?tabela=${encodeURIComponent(tabelaNome || '')}&artigo=${encodeURIComponent(cleanArt)}`);
+              gateFeature('narracao', 'narracao', 'Áudio Leis', () =>
+                navigate(`/audioleis?tabela=${encodeURIComponent(tabelaNome || '')}&artigo=${encodeURIComponent(cleanArt)}`)
+              );
             },
           },
           {
@@ -151,7 +153,9 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             onClick: () => {
               setActiveActionMenu(null);
               const cleanArt = String(artigoNumero || '').replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
-              navigate(`/audioaulas?artigo=${encodeURIComponent(cleanArt)}&busca=${encodeURIComponent('Art. ' + cleanArt)}`);
+              gateFeature('audioaula', 'audioaula', 'Áudio Aulas', () =>
+                navigate(`/audioaulas?artigo=${encodeURIComponent(cleanArt)}&busca=${encodeURIComponent('Art. ' + cleanArt)}`)
+              );
             },
           },
           {
@@ -161,7 +165,9 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             color: '#F97316',
             onClick: () => {
               setActiveActionMenu(null);
-              setShowHistoricoSheet?.(true);
+              gateFeature('default', 'default', 'Histórico', () =>
+                setShowHistoricoSheet?.(true)
+              );
             },
           },
           {
@@ -171,7 +177,9 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             color: '#A855F7',
             onClick: () => {
               if (!requireOnline('Me explique')) return;
-              setShowMeExpliqueChoice(true);
+              gateFeature('explicacao', 'explicacao', 'Me explique', () =>
+                setShowMeExpliqueChoice(true)
+              );
             },
           },
           ...(tabelaNome

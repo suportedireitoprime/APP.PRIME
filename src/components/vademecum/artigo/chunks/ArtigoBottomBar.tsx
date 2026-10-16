@@ -112,10 +112,6 @@ export const ArtigoBottomBar = memo(function ArtigoBottomBar({
         ) : (
           <button
             onClick={() => {
-              if (!isPremium) {
-                openPremiumGate('praticar');
-                return;
-              }
               setShowPraticarSheet(true);
             }}
             className="flex flex-col items-center justify-end gap-1 py-2 text-zinc-300 hover:text-white transition-colors"
