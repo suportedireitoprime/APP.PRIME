@@ -1,5 +1,6 @@
 import React, { useRef, useCallback } from 'react';
 import TriagemModerna, { type CadastroResult } from './TriagemModerna';
+export type { CadastroResult };
 
 
 

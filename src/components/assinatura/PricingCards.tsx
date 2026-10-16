@@ -6,11 +6,11 @@ import { haptic } from '@/lib/nativeHaptics';
 interface PricingCardsProps {
   selectedPlan: 'mensal' | 'anual' | 'vitalicio';
   isNewUser: boolean;
-  onSelectPlan: (plan: 'mensal' | 'anual' | 'vitalicio') => void;
+  onSelectPlan: (plan: 'mensal' | 'anual') => void;
 }
 
 export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingCardsProps) {
-  const activePlan = selectedPlan === 'promocao' as any ? 'anual' : selectedPlan;
+  const activePlan: 'mensal' | 'anual' = selectedPlan === 'mensal' ? 'mensal' : 'anual';
 
   const anualMessages = [
     "Acesso total por 1 ano inteiro",
@@ -28,16 +28,43 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
 
   return (
     <div className="w-full flex flex-col gap-4 px-4 pt-2 pb-4">
+      {/* Seletor de Planos: Anual (Recomendado) vs Mensal */}
+      <div className="grid grid-cols-2 p-1 bg-white/5 border border-white/10 rounded-2xl relative">
+        <button
+          type="button"
+          onClick={() => {
+            haptic.selection();
+            onSelectPlan('anual');
+          }}
+          className={`relative z-10 py-2.5 px-3 rounded-xl font-display font-black text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 ${
+            activePlan === 'anual' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-zinc-400 hover:text-white'
+          }`}
+        >
+          <Crown className="w-3.5 h-3.5" />
+          <span>Anual (Recomendado)</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            haptic.selection();
+            onSelectPlan('mensal');
+          }}
+          className={`relative z-10 py-2.5 px-3 rounded-xl font-display font-black text-xs sm:text-sm tracking-wider uppercase transition-all flex items-center justify-center gap-1.5 ${
+            activePlan === 'mensal' ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-zinc-400 hover:text-white'
+          }`}
+        >
+          <span>Mensal</span>
+        </button>
+      </div>
+
       <LayoutGroup id="pricing-toggle">
-      {/* 
-        Aba de Planos Desativada temporariamente para focar no Vitalício 
-      */}      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait">
         <motion.div
           key={activePlan}
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -15 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.25 }}
           className="w-full"
         >
 
@@ -152,62 +179,6 @@ export function PricingCards({ selectedPlan, isNewUser, onSelectPlan }: PricingC
 
               <div className="w-full pt-1 mt-1 border-t border-white/10 flex items-center justify-center relative z-10">
                 <TypewriterText messages={mensalMessages} className="text-[11px] font-bold text-muted-foreground drop-shadow-md mt-2" />
-              </div>
-            </button>
-          )}
-
-          {activePlan === 'vitalicio' && (
-            <button
-              type="button"
-              onClick={() => onSelectPlan('vitalicio')}
-              className="relative w-full rounded-3xl border-2 transition-all duration-300 text-left p-4 overflow-hidden border-primary bg-primary/5 shadow-[0_0_40px_rgba(224,31,71,0.15)] ring-1 ring-primary/50"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent pointer-events-none" />
-              
-              {/* Imagem de Fundo Vazada */}
-              <div className="absolute top-0 bottom-0 right-0 w-3/5 pointer-events-none overflow-hidden rounded-r-3xl z-0" style={{ WebkitMaskImage: 'linear-gradient(to right, transparent, black 40%)' }}>
-                <img src="/vitalicio_premium_v2.webp" alt="" className="w-full h-full object-cover object-top opacity-60 mix-blend-screen translate-x-4 translate-y-1" loading="lazy" />
-              </div>
-
-              <div className="flex justify-between items-start mb-1.5 relative z-10">
-                <div>
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                     <ShieldCheck className="w-4 h-4 text-primary" />
-                     <h3 className="font-display font-black text-primary text-base uppercase tracking-wider shadow-black/50 drop-shadow-md">Licença Vitalícia</h3>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-baseline gap-1.5 mb-1 text-foreground relative z-10">
-                <span className="font-display text-3xl font-black shadow-black/50 drop-shadow-md">R$ 149,90</span>
-                <span className="font-display text-lg font-bold shadow-black/50 drop-shadow-md text-muted-foreground">único</span>
-              </div>
-
-              <p className="text-[11px] font-bold text-muted-foreground mb-2 relative z-10 drop-shadow-md shadow-black/50">
-                Pagamento único, pague somente uma vez
-              </p>
-              
-              <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">
-                <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso para sempre</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Acesso 100% ilimitado ao APP</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">+200 ferramentas desbloqueadas</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-primary shrink-0" />
-                  <span className="text-[12px] font-bold text-white shadow-black/50 drop-shadow-md">Inteligência Artificial Horus no WhatsApp</span>
-                </div>
-              </div>
-
-              <div className="w-full pt-1 mt-1 border-t border-primary/20 flex items-center justify-center relative z-10">
-                <TypewriterText messages={["Pague uma vez e acesse para sempre", "Todas as atualizações inclusas", "Sem cobranças recorrentes"]} className="text-[11px] font-bold text-primary drop-shadow-md mt-2" />
               </div>
             </button>
           )}

@@ -51,7 +51,7 @@ export default function Assinatura() {
 
   const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
 
-  const [tab, setTab] = useState<'mensal' | 'anual' | 'vitalicio'>('vitalicio');
+  const [tab, setTab] = useState<'mensal' | 'anual'>('anual');
 
   
   const [timeLeft, setTimeLeft] = useState(() => {
@@ -208,7 +208,7 @@ export default function Assinatura() {
                   Finalize sua assinatura
                 </SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-2 text-muted-foreground max-w-[280px]">
-                  Escolha como prefere ativar seu plano {tab === 'vitalicio' ? 'Vitalício' : 'Anual'}. O acesso é liberado na hora.
+                  Escolha como prefere ativar seu plano {tab === 'anual' ? 'Anual' : 'Mensal'}. O acesso é liberado na hora.
                 </SheetDescription>
               </SheetHeader>
 
@@ -218,7 +218,7 @@ export default function Assinatura() {
                   className="h-auto py-3 flex items-center justify-start gap-4 px-4 border-2 border-[#27272a] bg-[#121212] hover:border-emerald-500 hover:bg-emerald-500/5 transition-all rounded-2xl group relative overflow-hidden shadow-md"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
-                    startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : 'anual_regular_pix');
+                    startPurchase(tab === 'anual' ? 'anual_regular_pix' : 'mensal' as any);
                   }}
                 >
                   <svg className="w-8 h-8 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -226,10 +226,10 @@ export default function Assinatura() {
                   </svg>
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-black text-base text-white">PIX</span>
-                    {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-emerald-500">R$ 249,90 à vista</span>
-                    ) : (
+                    {tab === 'anual' ? (
                       <span className="text-xs font-bold text-emerald-500">R$ 149,90 à vista</span>
+                    ) : (
+                      <span className="text-xs font-bold text-emerald-500">R$ 29,90 à vista</span>
                     )}
                   </div>
                   <ArrowRight className="w-5 h-5 text-zinc-500 group-hover:text-emerald-500 transition-colors group-hover:translate-x-1" />
@@ -240,7 +240,7 @@ export default function Assinatura() {
                   className="h-auto py-3 flex items-center justify-start gap-4 px-4 border-2 border-[#27272a] bg-[#121212] hover:border-primary hover:bg-primary/5 transition-all rounded-2xl group relative overflow-hidden shadow-md"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
-                    startPurchase(tab === 'vitalicio' ? 'vitalicio' : 'anual');
+                    startPurchase(tab === 'anual' ? 'anual' : 'mensal');
                   }}
                 >
                   <svg
@@ -257,10 +257,10 @@ export default function Assinatura() {
                   </svg>
                   <div className="flex flex-col items-start text-left flex-1">
                     <span className="font-black text-base text-white">Cartão de Crédito</span>
-                    {tab === 'vitalicio' ? (
-                      <span className="text-xs font-bold text-zinc-400">Até 10x de R$ 24,99</span>
+                    {tab === 'anual' ? (
+                      <span className="text-xs font-bold text-zinc-400">Até 12x de R$ 14,99</span>
                     ) : (
-                      <span className="text-xs font-bold text-zinc-400">R$ 149,90 à vista</span>
+                      <span className="text-xs font-bold text-zinc-400">R$ 29,90/mês</span>
                     )}
                   </div>
                   <ArrowRight className="w-5 h-5 text-zinc-500 group-hover:text-primary transition-colors group-hover:translate-x-1" />
@@ -367,7 +367,7 @@ export default function Assinatura() {
 
             <div className="px-4 flex flex-col gap-3 -mt-1">
               <Button
-                onClick={() => startPurchase('vitalicio_pix')}
+                onClick={() => startPurchase(tab === 'anual' ? 'anual_regular_pix' : 'mensal' as any)}
                 className="btn-shine-loop relative overflow-hidden w-full h-[60px] rounded-[20px] font-display text-[19px] font-black tracking-wider transition-all active:scale-[0.98] group bg-emerald-500 hover:bg-emerald-600 text-white shadow-[0_12px_35px_rgba(16,185,129,0.4)]"
               >
                 <span className="flex items-center justify-center gap-2">
@@ -378,11 +378,13 @@ export default function Assinatura() {
               
               <Button
                 variant="outline"
-                onClick={() => startPurchase('vitalicio')}
+                onClick={() => startPurchase(tab === 'anual' ? 'anual' : 'mensal')}
                 className="relative overflow-hidden w-full h-[60px] rounded-[20px] border-2 border-primary/50 font-display font-bold tracking-wide transition-all active:scale-[0.98] group bg-[#121212] hover:bg-primary/10 text-primary shadow-md flex flex-col items-center justify-center py-1"
               >
-                <span className="text-[17px] leading-tight font-black uppercase tracking-wider">QUERO PARCELAR</span>
-                <span className="text-[11px] text-muted-foreground font-sans font-semibold">em até 4x no cartão (com juros Asaas)</span>
+                <span className="text-[17px] leading-tight font-black uppercase tracking-wider">CARTÃO DE CRÉDITO</span>
+                <span className="text-[11px] text-muted-foreground font-sans font-semibold">
+                  {tab === 'anual' ? 'em até 12x no cartão' : 'assinatura mensal sem fidelidade'}
+                </span>
               </Button>
             </div>
 

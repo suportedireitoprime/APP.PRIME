@@ -287,7 +287,7 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
                 </>
               ) : (
                 <>
-                  <span>ACESSO VITALÍCIO</span>
+                  <span>SEJA PREMIUM</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </>
               )}
