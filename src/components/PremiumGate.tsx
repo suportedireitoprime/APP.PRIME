@@ -289,9 +289,9 @@ interface PremiumGateProps {
   usageLabel?: string;
 }
 
-// URL assinada de narração de exemplo (Art. 3º da CF88 narrado em alta fidelidade)
+// URL pública de demonstração de narração com voz humana em estúdio
 const SAMPLE_NARRACAO_URL =
-  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/sign/audios/narracoes/CF88_CONSTITUICAO_FEDERAL/3o.mp3?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83M2I5MjhkMi05YmEyLTQ5ODEtODAzMi0wYjE4OWEzYjI4YzQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJhdWRpb3MvbmFycmFjb2VzL0NGODhfQ09OU1RJVFVJQ0FPX0ZFREVSQUwvM28ubXAzIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc4NTYyNTQxNywiZXhwIjoyMTAwOTg1NDE3fQ.gaDI47cbKvmezV72n-KGVZ4pAmZgXSwSppGGABVku90';
+  'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/narracoes/CP_CODIGO_PENAL/fatiado/2__completo.wav';
 
 const PremiumGate = ({
   open,
@@ -480,7 +480,7 @@ const PremiumGate = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/85 backdrop-blur-md z-[10060]"
+            className="fixed inset-0 bg-black/85 backdrop-blur-md z-[200000]"
             onClick={onClose}
           />
 
@@ -490,7 +490,7 @@ const PremiumGate = ({
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 320 }}
-            className="fixed inset-x-0 bottom-0 sm:inset-0 sm:m-auto z-[10061] w-full sm:max-w-[460px] max-h-[92dvh] sm:h-auto bg-[#0E0F12] border-t sm:border border-white/10 rounded-t-[28px] sm:rounded-[28px] shadow-[0_-16px_40px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden text-foreground"
+            className="fixed inset-x-0 bottom-0 sm:inset-0 sm:m-auto z-[200001] w-full sm:max-w-[460px] h-[90dvh] max-h-[820px] bg-[#0E0F12] border-t sm:border border-white/10 rounded-t-[28px] sm:rounded-[28px] shadow-[0_-16px_40px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden text-foreground"
           >
             {/* Topo do Modal: Pílula de arrasto centralizada e Botão de Fechar Grande */}
             <div className="pt-3 px-5 pb-2 flex items-center justify-between shrink-0 relative z-30">
@@ -515,7 +515,7 @@ const PremiumGate = ({
             </div>
 
             {/* Conteúdo com rolagem suave e espaçamento refinado */}
-            <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-1 pb-6 space-y-4">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 pt-1 pb-6 space-y-4">
               {/* Seletor Dev Minimalista (apenas para contas de desenvolvimento) */}
               {isDev && (
                 <div className="relative z-30 flex items-center justify-between p-2 rounded-xl bg-white/[0.04] border border-white/10 text-[11px]">
@@ -720,7 +720,7 @@ const PremiumGate = ({
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', stiffness: 320, damping: 32 }}
-                className="fixed inset-x-0 bottom-0 z-[10052] max-h-[88dvh] mx-auto w-full md:max-w-[600px] bg-card border-t border-border md:border-x rounded-t-3xl overflow-hidden flex flex-col shadow-2xl"
+                className="fixed inset-x-0 bottom-0 z-[200010] max-h-[88dvh] mx-auto w-full md:max-w-[600px] bg-card border-t border-border md:border-x rounded-t-3xl overflow-hidden flex flex-col shadow-2xl"
               >
                 <div
                   className="relative py-3.5 px-4 flex items-center gap-2 shrink-0 overflow-hidden"

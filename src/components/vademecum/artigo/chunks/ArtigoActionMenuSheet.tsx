@@ -23,8 +23,10 @@ import {
   ArrowLeft,
   Volume2,
   GraduationCap,
+  Crown,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSubscription } from '@/hooks/useSubscription';
 
 interface ArtigoActionMenuSheetProps {
   activeActionMenu: 'funcoes' | 'grifar' | null;
@@ -87,6 +89,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
   grifoIaDefaultOn,
   setGrifoIaDefault,
 }: ArtigoActionMenuSheetProps) {
+  const { isPremium } = useSubscription();
   const [showMeExpliqueChoice, setShowMeExpliqueChoice] = React.useState(false);
 
   React.useEffect(() => {
@@ -107,6 +110,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             label: 'Jurisprudência',
             desc: 'Súmulas, temas e acórdãos do STF/STJ',
             color: '#D4AF37',
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               if (!requireOnline('Jurisprudência')) return;
@@ -124,6 +128,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             label: 'Videoaulas',
             desc: 'Aulas em vídeo sobre este artigo',
             color: 'hsl(348 78% 38%)',
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               if (!requireOnline('Videoaulas')) return;
@@ -137,6 +142,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             label: 'Áudio Leis',
             desc: 'Ouvir narração em estúdio deste artigo',
             color: '#3B82F6',
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               const cleanArt = String(artigoNumero || '').replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
@@ -150,6 +156,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             label: 'Áudio Aulas',
             desc: 'Podcast e explicação em áudio do tema',
             color: '#10B981',
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               const cleanArt = String(artigoNumero || '').replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
@@ -163,6 +170,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             label: 'Histórico',
             desc: 'Linha do tempo e alterações do artigo',
             color: '#F97316',
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               gateFeature('default', 'default', 'Histórico', () =>
@@ -175,6 +183,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             label: 'Me explique',
             desc: 'Entenda este artigo com a IA',
             color: '#A855F7',
+            exclusive: true,
             onClick: () => {
               if (!requireOnline('Me explique')) return;
               gateFeature('explicacao', 'explicacao', 'Me explique', () =>
@@ -189,6 +198,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
                   label: 'Grafo de conexões',
                   desc: 'Ver relações do artigo',
                   color: '#10B981',
+                  exclusive: true,
                   onClick: () => {
                     setActiveActionMenu(null);
                     gateFeature('grafo', 'grafo', 'Grafo de conexões', () =>
@@ -214,6 +224,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             label: 'Baixar artigo',
             desc: 'PDF ou imagem, lei seca ou comentado',
             color: '#0EA5E9',
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               gateFeature('baixar', 'baixar', 'Baixar artigo', () =>
@@ -249,6 +260,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             desc: 'Marcar com o dedo',
             color: '#EC4899',
             active: highlightMode,
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               if (highlightMode) {
@@ -266,6 +278,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             active: magicMode,
             spin: magicLoading,
             badge: magicHighlightsCount,
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               gateGrifo('Grifar', () => handleToggleMagic());
@@ -276,6 +289,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             label: 'Grifar por voz',
             desc: 'Dite o trecho a destacar',
             color: '#DC2626',
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               gateGrifo('Grifar', () => setVoiceGrifoActive(true));
@@ -286,6 +300,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
             label: 'Grifar de foto',
             desc: 'OCR de imagem',
             color: '#3B82F6',
+            exclusive: true,
             onClick: () => {
               setActiveActionMenu(null);
               gateGrifo('Grifar', () => setShowGrifoFoto(true));
@@ -320,6 +335,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               label: 'Chat',
               desc: 'Tire dúvidas conversando com a IA',
               color: '#A855F7',
+              exclusive: true,
               onClick: () => {
                 setActiveActionMenu(null);
                 setShowMeExpliqueChoice(false);
@@ -334,6 +350,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               label: 'Me explique livre (Avatar)',
               desc: 'IA visual usando a câmera',
               color: '#F97316',
+              exclusive: true,
               onClick: () => {
                 setActiveActionMenu(null);
                 setShowMeExpliqueChoice(false);
@@ -430,6 +447,20 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
                           <span className="ml-2 inline-flex min-w-[22px] h-[22px] px-1.5 rounded-full bg-primary text-primary-foreground text-[11px] font-bold items-center justify-center">
                             {(item as any).badge}
                           </span>
+                        )}
+                        {!isPremium && Boolean((item as any).exclusive) && (
+                          <div
+                            title="Recurso exclusivo para assinantes Prime"
+                            className="relative ml-auto mr-0.5 flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-amber-500/15 via-amber-400/10 to-amber-600/5 border border-amber-500/35 text-amber-400 shrink-0 overflow-hidden shadow-[0_0_12px_rgba(245,158,11,0.22)]"
+                          >
+                            <Crown className="w-4 h-4 fill-amber-400 text-amber-400 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+                            <span
+                              className="absolute inset-0 pointer-events-none bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                              style={{
+                                animation: 'shimmer-reflect-loop 2.8s ease-in-out infinite',
+                              }}
+                            />
+                          </div>
                         )}
                       </button>
                       {i < arr.length - 1 && <div className="mx-5 h-px bg-border/60" />}
