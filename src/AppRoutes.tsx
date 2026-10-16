@@ -467,13 +467,9 @@ const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 
 
 
-const TrialExpiredModal = lazy(() => import("@/components/TrialExpiredModal").then(m => ({ default: m.TrialExpiredModal })));
-
 function ProtectedRoute({ children, requireOnboarding = true }: { children: React.ReactNode; requireOnboarding?: boolean }) {
   const { user, loading } = useAuth();
   const location = useLocation();
-  const { data: profile, isLoading: profileLoading } = useProfileSummary();
-  const { isPremium: isSubPremium, isTrial: isSubTrial } = useSubscription();
 
   // Leitura síncrona do cache — não bloqueia o paint.
   const cacheKey = user ? `onboarding_completed:${user.id}` : null;
@@ -606,69 +602,6 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
   // porque o Navigate vem antes do return children).
   if (requireOnboarding && needsOnboarding && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />;
-  }
-
-  // Check Trial Expiration (com proteção contra fraude de relógio local - Item 26, Item 27, Item 29 e Item 31)
-  if (user && !profileLoading && profile) {
-    const createdAt = new Date(user.created_at);
-    const maxAllowedTrialMs = createdAt.getTime() + 3 * 24 * 60 * 60 * 1000;
-    let trialEndsAt = new Date(maxAllowedTrialMs);
-
-    if (user.user_metadata?.trial_ends_at) {
-      const metaTrial = new Date(user.user_metadata.trial_ends_at);
-      if (!isNaN(metaTrial.getTime()) && metaTrial.getTime() <= maxAllowedTrialMs) {
-        trialEndsAt = metaTrial;
-      }
-    }
-
-    const nowMs = Date.now();
-    let maxKnownTime = createdAt.getTime();
-    try {
-      const saved = localStorage.getItem('direitoprime:time:max');
-      if (saved) maxKnownTime = Math.max(maxKnownTime, Number(saved));
-    } catch {}
-
-    const isClockTampered = nowMs < maxKnownTime;
-    if (!isClockTampered) {
-      try { localStorage.setItem('direitoprime:time:max', String(nowMs)); } catch {}
-    }
-
-    let isDeviceAbuse = false;
-    try {
-      const claimedUser = localStorage.getItem('direitoprime:device:trial_claimed');
-      if (claimedUser && claimedUser !== user.id) {
-        isDeviceAbuse = true;
-      }
-    } catch {}
-
-    const isTrialActive = !isClockTampered && !isDeviceAbuse && nowMs < trialEndsAt.getTime();
-
-    const cleanPath = (location.pathname || '').replace(/\/+$/, '') || '/';
-    // Item 29: Home ('/') é permitida para visualização, mas cliques serão interceptados pelo GlobalTrialGate
-    const isAllowedPath = 
-      cleanPath === '/' ||
-      cleanPath === '/assinatura' ||
-      cleanPath.startsWith('/assinatura/') ||
-      cleanPath === '/planos/ativos' ||
-      cleanPath === '/planos-ativos' ||
-      cleanPath.startsWith('/planos/') ||
-      cleanPath.startsWith('/perfil') ||
-      cleanPath.startsWith('/configuracoes') ||
-      cleanPath.startsWith('/suporte') ||
-      cleanPath.startsWith('/opiniao') ||
-      cleanPath.startsWith('/onboarding') ||
-      cleanPath.startsWith('/termos') ||
-      cleanPath.startsWith('/privacidade');
-    
-    const isUserPremium =
-      (!isSimulatingExpired(user.email) && !!profile.isPremium) ||
-      (isSubPremium && !isSubTrial) ||
-      shouldBypassAsAdmin(user.email);
-
-    if (!isUserPremium && !isTrialActive && !isAllowedPath) {
-      // Redireciona para o início disparando a exibição do painel
-      return <Navigate to="/?expired=true" replace />;
-    }
   }
 
   return <>{children}</>;
