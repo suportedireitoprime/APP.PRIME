@@ -420,11 +420,11 @@ const PremiumGate = ({
     }
   }, [open, feature]);
 
-  // Mensalidade do plano anual
+  // Mensalidade do plano anual (R$ 149,90/ano = R$ 12,49/mês, até 6x com juros)
   const isIOS = useMemo(() => Capacitor.getPlatform() === 'ios', []);
-  const [mensalidade, setMensalidade] = useState(isIOS ? '19,90' : '16,66');
-  const [totalAnual, setTotalAnual] = useState(isIOS ? 'R$ 238,80/ano' : 'R$ 119,90/ano');
-  const [economia, setEconomia] = useState(isIOS ? '33%' : '44%');
+  const [mensalidade, setMensalidade] = useState(isIOS ? '19,90' : '12,49');
+  const [totalAnual, setTotalAnual] = useState(isIOS ? 'R$ 238,80/ano' : 'R$ 149,90/ano');
+  const [economia, setEconomia] = useState(isIOS ? '33%' : '50%');
 
   useEffect(() => {
     if (!open) return;
@@ -527,30 +527,35 @@ const PremiumGate = ({
             {/* Conteúdo com rolagem suave e espaçamento refinado */}
             <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-3 pb-6 space-y-4">
               {/* Seletor Dev Minimalista (apenas para contas de desenvolvimento) */}
+              {/* Seletor Dev Minimalista (apenas para contas de desenvolvimento) */}
               {isDev && (
-                <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.03] border border-white/10 text-[11px]">
-                  <span className="font-mono text-zinc-400 font-bold">Simular modo:</span>
+                <div className="relative z-20 flex items-center justify-between p-2 rounded-xl bg-white/[0.04] border border-white/10 text-[11px]">
+                  <span className="font-mono text-zinc-400 font-bold select-none">Simular modo:</span>
                   <div className="flex gap-1.5">
                     <button
                       type="button"
-                      onPointerDown={() => setDevState('eligible')}
-                      onClick={() => setDevState('eligible')}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDevState('eligible');
+                      }}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer select-none active:scale-95 ${
                         !isTrialExpired
-                          ? 'bg-emerald-500 text-white shadow-sm'
-                          : 'bg-white/5 text-zinc-400 hover:text-white'
+                          ? 'bg-emerald-500 text-white shadow-sm ring-1 ring-emerald-400'
+                          : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
                       }`}
                     >
                       3 Dias Elegíveis
                     </button>
                     <button
                       type="button"
-                      onPointerDown={() => setDevState('expired')}
-                      onClick={() => setDevState('expired')}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDevState('expired');
+                      }}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer select-none active:scale-95 ${
                         isTrialExpired
-                          ? 'bg-amber-500 text-white shadow-sm'
-                          : 'bg-white/5 text-zinc-400 hover:text-white'
+                          ? 'bg-amber-500 text-white shadow-sm ring-1 ring-amber-400'
+                          : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
                       }`}
                     >
                       Já Testou os 3 Dias
@@ -625,8 +630,8 @@ const PremiumGate = ({
                       onClick={() => handleGoToPlanos()}
                       className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-display font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-primary/25 hover:bg-primary-light active:scale-[0.98] transition-transform cursor-pointer"
                     >
-                      <span>VER PLANOS E ASSINAR</span>
                       <Crown className="w-4 h-4 fill-current" />
+                      <span>DESBLOQUEAR TODO O CONTEÚDO</span>
                     </button>
                   </div>
                 ) : (
@@ -648,32 +653,9 @@ const PremiumGate = ({
                   </div>
                 )}
 
-                {/* Cards dos Planos: Minimalistas em Grid de 2 Colunas */}
+                {/* Cards dos Planos: Mensal na Esquerda, Anual na Direita */}
                 <div className="grid grid-cols-2 gap-2.5 pt-1">
-                  {/* Plano Anual */}
-                  <div
-                    onClick={() => handleGoToPlanos('anual')}
-                    className="p-3 rounded-xl border border-primary/60 bg-primary/10 hover:bg-primary/20 transition-all cursor-pointer flex flex-col justify-between active:scale-[0.98]"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-[11px] font-bold uppercase text-white tracking-wider">
-                          Anual
-                        </span>
-                        <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-primary text-primary-foreground">
-                          -{economia}
-                        </span>
-                      </div>
-                      <p className="text-base font-black text-white leading-tight">
-                        R$ {mensalidade}<span className="text-[10px] font-normal text-zinc-400">/mês</span>
-                      </p>
-                    </div>
-                    <span className="text-[10px] text-zinc-400 mt-2 block">
-                      12x no cartão ({totalAnual})
-                    </span>
-                  </div>
-
-                  {/* Plano Mensal */}
+                  {/* Plano Mensal (Esquerda) */}
                   <div
                     onClick={() => handleGoToPlanos('mensal')}
                     className="p-3 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all cursor-pointer flex flex-col justify-between active:scale-[0.98]"
@@ -693,6 +675,29 @@ const PremiumGate = ({
                     </div>
                     <span className="text-[10px] text-zinc-400 mt-2 block">
                       Sem fidelidade
+                    </span>
+                  </div>
+
+                  {/* Plano Anual (Direita - Destaque) */}
+                  <div
+                    onClick={() => handleGoToPlanos('anual')}
+                    className="p-3 rounded-xl border border-primary/60 bg-primary/10 hover:bg-primary/20 transition-all cursor-pointer flex flex-col justify-between active:scale-[0.98] relative overflow-hidden"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <span className="text-[11px] font-bold uppercase text-white tracking-wider">
+                          Anual
+                        </span>
+                        <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-primary text-primary-foreground">
+                          -{economia}
+                        </span>
+                      </div>
+                      <p className="text-base font-black text-white leading-tight">
+                        R$ {mensalidade}<span className="text-[10px] font-normal text-zinc-400">/mês</span>
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-zinc-400 mt-2 block leading-tight">
+                      Até 6x com juros ({totalAnual})
                     </span>
                   </div>
                 </div>
@@ -781,11 +786,11 @@ const PremiumGate = ({
 
                 <div className="shrink-0 border-t border-border px-5 pt-3 pb-[max(1rem,var(--sai-bottom))] bg-card max-w-md mx-auto w-full">
                   <button
-                    onClick={goToCheckout}
+                    onClick={() => handleGoToPlanos('anual')}
                     className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary-light transition-all active:scale-[0.98] shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                   >
                     <Crown className="w-4 h-4 fill-current" />
-                    {ctaLabel} · R$ {mensalidade}/mês
+                    {isTrialExpired ? 'Desbloquear Todo o Conteúdo' : 'Testar 3 Dias Grátis'} · R$ {mensalidade}/mês
                   </button>
                   <button
                     onClick={() => {
