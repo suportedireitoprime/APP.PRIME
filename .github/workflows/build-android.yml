@@ -102,7 +102,7 @@ jobs:
           # AGP 8.13.0 é a versão estável compatível com Gradle 8.14.3 e JDK 21.
           # ----------------------------------------------------------------
           AGP_VERSION='8.13.0'
-          GRADLE_DIST='gradle-8.14.3-all.zip'
+          GRADLE_DIST='gradle-8.14.3-bin.zip'
 
           sed -i "s|classpath 'com.android.tools.build:gradle:[^']*'|classpath 'com.android.tools.build:gradle:${AGP_VERSION}'|" android/build.gradle
           echo "AGP forçado para ${AGP_VERSION}:"
@@ -111,6 +111,22 @@ jobs:
           sed -i "s|distributionUrl=.*|distributionUrl=https\\\\://services.gradle.org/distributions/${GRADLE_DIST}|" android/gradle/wrapper/gradle-wrapper.properties
           echo "Gradle wrapper:"
           grep distributionUrl android/gradle/wrapper/gradle-wrapper.properties
+          sed -i "s|networkTimeout=.*|networkTimeout=120000|" android/gradle/wrapper/gradle-wrapper.properties
+          if ! grep -q "networkTimeout" android/gradle/wrapper/gradle-wrapper.properties; then
+            echo "networkTimeout=120000" >> android/gradle/wrapper/gradle-wrapper.properties
+          fi
+          echo "Gradle wrapper configurado:"
+          cat android/gradle/wrapper/gradle-wrapper.properties
+
+          echo "Pre-aquecendo Gradle wrapper com retentativa resiliente..."
+          for i in 1 2 3 4 5; do
+            echo "Tentativa $i de inicializar Gradle wrapper..."
+            if (cd android && ./gradlew --version --no-daemon); then
+              echo "Gradle wrapper pronto!"
+              break
+            fi
+            sleep 5
+          done
 
           # ----------------------------------------------------------------
           # Play Console recomendação #2: "O app usa APIs ou parâmetros
@@ -2220,6 +2236,8 @@ jobs:
           printf 'android.enableResourceOptimizations=true\n' >> android/gradle.properties
           printf 'android.nonTransitiveRClass=true\n' >> android/gradle.properties
           printf 'android.enableAppCompileTimeRClass=true\n' >> android/gradle.properties
+          printf 'systemProp.org.gradle.internal.http.socketTimeout=120000\n' >> android/gradle.properties
+          printf 'systemProp.org.gradle.internal.http.connectionTimeout=120000\n' >> android/gradle.properties
 
 
 
