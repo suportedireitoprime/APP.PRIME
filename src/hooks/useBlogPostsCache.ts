@@ -22,8 +22,8 @@ import reformaTributariaImg from '@/assets/blog/reforma-tributaria.webp';
 import processoLegislativoImg from '@/assets/blog/processo-legislativo.webp';
 import hartDworkinImg from '@/assets/blog/hart-dworkin.webp';
 
-const KEY = 'blog:posts:v16';
-const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8', 'blog:posts:v9', 'blog:posts:v10', 'blog:posts:v11', 'blog:posts:v12', 'blog:posts:v13', 'blog:posts:v14', 'blog:posts:v15'];
+const KEY = 'blog:posts:v17';
+const LEGACY_KEYS = ['blog:posts:v1', 'blog:posts:v2', 'blog:posts:v3', 'blog:posts:v4', 'blog:posts:v5', 'blog:posts:v6', 'blog:posts:v7', 'blog:posts:v8', 'blog:posts:v9', 'blog:posts:v10', 'blog:posts:v11', 'blog:posts:v12', 'blog:posts:v13', 'blog:posts:v14', 'blog:posts:v15', 'blog:posts:v16'];
 const TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
 const LISTA_COLS =

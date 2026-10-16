@@ -52,6 +52,7 @@ export const BlogFiltersBar: React.FC<BlogFiltersBarProps> = ({
 
         {sortedTemas.map((tema) => {
           const active = selectedFilter === tema;
+          const isAtivo = tema === 'Leis' || tema === 'Conceitos Fundamentais';
           return (
             <button
               key={tema}
@@ -59,13 +60,20 @@ export const BlogFiltersBar: React.FC<BlogFiltersBarProps> = ({
               aria-selected={active}
               aria-label={`Filtrar por ${tema}`}
               onClick={() => onSelectFilter(tema)}
-              className={`shrink-0 min-h-[38px] px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+              className={`shrink-0 min-h-[38px] inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-body font-semibold uppercase tracking-wide transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                 active
                   ? 'bg-primary text-primary-foreground shadow-md'
-                  : 'bg-secondary text-foreground hover:bg-secondary/80'
+                  : isAtivo
+                  ? 'bg-secondary text-foreground hover:bg-secondary/80'
+                  : 'bg-secondary/60 text-muted-foreground hover:bg-secondary/80 hover:text-foreground'
               }`}
             >
-              {tema}
+              <span>{tema}</span>
+              {!isAtivo && (
+                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold lowercase tracking-normal">
+                  em breve
+                </span>
+              )}
             </button>
           );
         })}

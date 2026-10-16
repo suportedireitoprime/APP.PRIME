@@ -40,7 +40,8 @@ export const BlogCategoriasView = ({ onSelectCategoria }: Props) => {
         className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 pt-4"
       >
         {sortedTemas.map((tema) => {
-          const twColor = TEMA_COLORS[tema] || 'emerald';
+          const twColor = TEMA_COLORS[tema]?.chip || 'emerald';
+          const isAtivo = tema === 'Leis' || tema === 'Conceitos Fundamentais';
           return (
             <motion.button
               key={tema}
@@ -49,12 +50,26 @@ export const BlogCategoriasView = ({ onSelectCategoria }: Props) => {
                 haptic.selection();
                 onSelectCategoria(tema);
               }}
-              className="relative flex flex-col items-center justify-center p-6 gap-3 rounded-2xl bg-card border border-border/40 shadow-sm hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group text-center overflow-hidden"
+              className={`relative flex flex-col items-center justify-center p-5 sm:p-6 gap-2.5 rounded-2xl bg-card border shadow-sm hover:shadow-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary group text-center overflow-hidden ${
+                isAtivo ? 'border-primary/40 bg-card/90 ring-1 ring-primary/20' : 'border-border/40 opacity-80 hover:opacity-100'
+              }`}
             >
-              <div className={`absolute inset-0 opacity-10 bg-${twColor}-500 transition-opacity group-hover:opacity-20`} />
+              <div
+                className="absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20"
+                style={{ background: TEMA_COLORS[tema]?.bg || 'rgba(16, 185, 129, 0.1)' }}
+              />
               <div className="relative z-10 font-display font-semibold text-[13px] sm:text-sm text-foreground/90 group-hover:text-primary transition-colors line-clamp-2">
                 {tema}
               </div>
+              {isAtivo ? (
+                <span className="relative z-10 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  50 Artigos
+                </span>
+              ) : (
+                <span className="relative z-10 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  Em breve
+                </span>
+              )}
             </motion.button>
           );
         })}

@@ -51,7 +51,11 @@ export function useBlogPostsFilter(
       byDate.forEach((p) => { if (!seen.has(p.id)) ordered.push(p); });
       base = ordered;
     } else if (selectedFilter !== 'todos') {
-      base = base.filter((p) => p.tema === selectedFilter);
+      if (selectedFilter === 'Leis' || selectedFilter === 'Conceitos Fundamentais') {
+        base = base.filter((p) => p.tema === 'Leis' || p.tema === 'Conceitos Fundamentais');
+      } else {
+        base = base.filter((p) => p.tema === selectedFilter);
+      }
     }
     
     return base;
