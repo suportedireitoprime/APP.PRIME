@@ -212,12 +212,18 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   const [tocandoIntro, setTocandoIntro] = useState(false);
   const audioAulaPendenteRef = useRef<{ aula: AulaAudio; tempoInicial?: number } | null>(null);
   const tempoInicialRef = useRef<number | null>(null);
+  const atualRef = useRef<AulaAudio | null>(null);
+
+  useEffect(() => {
+    atualRef.current = atual;
+  }, [atual]);
 
   const tocarConteudoAula = useCallback(
     async (a: AulaAudio, tempoInicial?: number) => {
       const el = audioRef.current;
       if (!el || !a.url_audio) return;
       audioAulaPendenteRef.current = null;
+      atualRef.current = a;
 
       if (typeof tempoInicial === 'number' && tempoInicial > 0) {
         // Inicia 1 segundo antes do tempo registrado para garantir contexto contínuo
@@ -234,11 +240,16 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         const streamUrl = normalizarStreamAudio(a.url_audio);
         const src = await fonteDeAudio(audioIdOf(a), streamUrl);
         if (el) {
-          el.src = src;
+          if (el.src !== src) {
+            el.src = src;
+          }
           el.playbackRate = velocidade;
           el.volume = 1.0;
+          if (tempoInicialRef.current !== null && tempoInicialRef.current > 0) {
+            el.currentTime = tempoInicialRef.current;
+          }
           notifyMediaPlay('audioaula');
-          el.play().catch((playErr: unknown) => {
+          await el.play().catch((playErr: unknown) => {
             console.warn('[AudioaulasPlayer] play() da aula pausado ou bloqueado:', playErr);
           });
         }
@@ -258,6 +269,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       const introEl = introAudioRef.current;
       if (!a.url_audio) return;
 
+      atualRef.current = a;
       if (customFila) {
         setFilaCustom(customFila);
       }
@@ -268,9 +280,6 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           notifyMediaPlay('audioaula');
           if (tocandoIntro && introEl && introEl.currentTime < (introEl.duration || 0)) {
             await introEl.play().catch(() => {});
-            if (aulaSobrepostaIniciadaRef.current && el) {
-              await el.play().catch(() => {});
-            }
           } else if (el) {
             await el.play().catch(() => {});
           }
@@ -304,7 +313,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       audioAulaPendenteRef.current = { aula: a, tempoInicial };
       aulaSobrepostaIniciadaRef.current = false;
 
-      // Pré-carrega o áudio da aula em buffer no audioRef para disparo instantâneo no momento do overlap (0ms de latência)
+      // Pré-carrega o áudio da aula em buffer no audioRef para disparo instantâneo após a vinheta (0ms de latência)
       void (async () => {
         try {
           const streamUrl = normalizarStreamAudio(a.url_audio!);
@@ -335,6 +344,8 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
             console.warn('[AudioaulasPlayer] Intro bloqueada ou cancelada, tocando aula diretamente:', err);
             void tocarConteudoAula(a, tempoInicial);
           });
+        } else {
+          void tocarConteudoAula(a, tempoInicial);
         }
         setTocando(true);
       } catch (err) {
@@ -361,27 +372,34 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     const introEl = introAudioRef.current;
     if (!atual) return;
 
-    if (tocando) {
-      if (introEl && !introEl.paused) introEl.pause();
-      if (el && !el.paused) el.pause();
-      setTocando(false);
-    } else {
-      notifyMediaPlay('audioaula');
-      if (tocandoIntro && introEl && introEl.currentTime < (introEl.duration || 0)) {
+    if (tocandoIntro && introEl) {
+      if (!introEl.paused) {
+        introEl.pause();
+        setTocando(false);
+      } else {
+        notifyMediaPlay('audioaula');
         introEl.play().catch(() => {});
-        if (aulaSobrepostaIniciadaRef.current && el) {
-          el.play().catch(() => {});
-        }
-      } else if (el) {
-        el.play().catch((err) => {
-          console.error('[AudioaulasPlayer] Erro ao alternar reprodução:', err);
-          setTocando(false);
-          toast.error('Erro ao reproduzir o áudio.');
-        });
+        setTocando(true);
       }
-      setTocando(true);
+      return;
     }
-  }, [atual, tocando, tocandoIntro]);
+
+    if (el) {
+      if (!el.paused) {
+        el.pause();
+        setTocando(false);
+      } else {
+        notifyMediaPlay('audioaula');
+        el.play()
+          .then(() => setTocando(true))
+          .catch((err) => {
+            console.error('[AudioaulasPlayer] Erro ao alternar reprodução:', err);
+            setTocando(false);
+            toast.error('Erro ao reproduzir o áudio.');
+          });
+      }
+    }
+  }, [atual, tocandoIntro]);
 
   const pular = useCallback(
     (dir: 1 | -1) => {
@@ -411,7 +429,13 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       setTocandoIntro(false);
     }
     const el = audioRef.current;
-    if (el) el.currentTime = v;
+    if (el) {
+      el.currentTime = v;
+      if (el.paused) {
+        notifyMediaPlay('audioaula');
+        el.play().catch(() => {});
+      }
+    }
     setTempo(v);
   }, []);
 
@@ -446,40 +470,19 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     setAberto(false);
   }, []);
 
-  // Eventos da Vinheta de Abertura (com início sobreposto 1s antes e fade-out suave)
+  // Fade-out suave no final da vinheta (últimos 0.5s) preparando entrada suave da aula
   const onIntroTimeUpdate = useCallback(
     (e: React.SyntheticEvent<HTMLAudioElement>) => {
       const introEl = e.currentTarget;
       const t = introEl.currentTime;
       const d = introEl.duration || 0;
 
-      // Inicia a aula simultaneamente exatamente 1.0 segundo antes do término da abertura
-      if (d > 1.2 && t >= d - 1.0) {
-        if (!aulaSobrepostaIniciadaRef.current && audioAulaPendenteRef.current) {
-          aulaSobrepostaIniciadaRef.current = true;
-          const pendente = audioAulaPendenteRef.current;
-          const el = audioRef.current;
-          if (el) {
-            // Se já possui a fonte bufferizada, dá play() direto
-            if (el.src && el.src !== window.location.href) {
-              notifyMediaPlay('audioaula');
-              el.play().catch((playErr: unknown) => {
-                console.warn('[AudioaulasPlayer] Play sobreposto bloqueado, chamando tocarConteudoAula:', playErr);
-                void tocarConteudoAula(pendente.aula, pendente.tempoInicial);
-              });
-              setTocando(true);
-            } else {
-              void tocarConteudoAula(pendente.aula, pendente.tempoInicial);
-            }
-          }
-        }
-
-        // Fade-out sutil do volume da abertura durante o 1 segundo de sobreposição
+      if (d > 0.6 && t >= d - 0.5) {
         const restante = Math.max(0, d - t);
-        introEl.volume = Math.min(1, Math.max(0, restante / 1.0));
+        introEl.volume = Math.min(1, Math.max(0, restante / 0.5));
       }
     },
-    [tocarConteudoAula],
+    [],
   );
 
   const onIntroEnded = useCallback(() => {
@@ -487,24 +490,45 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     if (introAudioRef.current) {
       introAudioRef.current.volume = 1.0;
     }
-    if (!aulaSobrepostaIniciadaRef.current && audioAulaPendenteRef.current) {
-      aulaSobrepostaIniciadaRef.current = true;
-      const pendente = audioAulaPendenteRef.current;
-      audioAulaPendenteRef.current = null;
-      void tocarConteudoAula(pendente.aula, pendente.tempoInicial);
-    } else {
-      audioAulaPendenteRef.current = null;
+    const el = audioRef.current;
+    const pendente = audioAulaPendenteRef.current;
+    const aulaAlvo = pendente?.aula ?? atualRef.current;
+    const tempoAlvo = pendente?.tempoInicial ?? tempoInicialRef.current ?? undefined;
+    audioAulaPendenteRef.current = null;
+    aulaSobrepostaIniciadaRef.current = false;
+
+    if (el && el.src && el.src !== window.location.href) {
+      notifyMediaPlay('audioaula');
+      el.playbackRate = velocidade;
+      el.volume = 1.0;
+      if (typeof tempoAlvo === 'number' && tempoAlvo > 0) {
+        el.currentTime = tempoAlvo;
+      }
+      el.play()
+        .then(() => {
+          setTocando(true);
+        })
+        .catch((err) => {
+          console.warn('[AudioaulasPlayer] Play direto após vinheta falhou, recarregando:', err);
+          if (aulaAlvo) {
+            void tocarConteudoAula(aulaAlvo, tempoAlvo);
+          }
+        });
+    } else if (aulaAlvo) {
+      void tocarConteudoAula(aulaAlvo, tempoAlvo);
     }
-  }, [tocarConteudoAula]);
+  }, [tocarConteudoAula, velocidade]);
 
   const onIntroError = useCallback(() => {
     console.warn('[AudioaulasPlayer] Erro na reprodução da intro, iniciando aula diretamente.');
     setTocandoIntro(false);
-    if (!aulaSobrepostaIniciadaRef.current && audioAulaPendenteRef.current) {
-      aulaSobrepostaIniciadaRef.current = true;
-      const pendente = audioAulaPendenteRef.current;
-      audioAulaPendenteRef.current = null;
-      void tocarConteudoAula(pendente.aula, pendente.tempoInicial);
+    const pendente = audioAulaPendenteRef.current;
+    const aulaAlvo = pendente?.aula ?? atualRef.current;
+    const tempoAlvo = pendente?.tempoInicial ?? tempoInicialRef.current ?? undefined;
+    audioAulaPendenteRef.current = null;
+    aulaSobrepostaIniciadaRef.current = false;
+    if (aulaAlvo) {
+      void tocarConteudoAula(aulaAlvo, tempoAlvo);
     }
   }, [tocarConteudoAula]);
 
