@@ -182,6 +182,7 @@ export function useFeatureLimit(
   const limit = config?.limit_value ?? 0;
   const enabled = config?.enabled ?? false;
   const remaining = Math.max(0, limit - used);
+  const scopeBypass = !!(config?.scope_key && scope && scopeAlreadyUsed);
   const canUse =
     isAdmin || isPremium || (!enabled || scopeBypass || (limit > 0 && used < limit));
   const blocked = !canUse;
