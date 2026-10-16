@@ -492,44 +492,33 @@ const PremiumGate = ({
             transition={{ type: 'spring', damping: 30, stiffness: 320 }}
             className="fixed inset-x-0 bottom-0 sm:inset-0 sm:m-auto z-[10061] w-full sm:max-w-[460px] max-h-[92dvh] sm:h-auto bg-[#0E0F12] border-t sm:border border-white/10 rounded-t-[28px] sm:rounded-[28px] shadow-[0_-16px_40px_rgba(0,0,0,0.85)] flex flex-col overflow-hidden text-foreground"
           >
-            {/* Pílula de arrasto Mobile */}
-            <div className="pt-2.5 pb-1 flex justify-center sm:hidden shrink-0">
-              <span className="w-10 h-1 rounded-full bg-white/20" />
-            </div>
-
-            {/* Topo do Cabeçalho: Minimalista & Elegante */}
-            <div className="px-5 py-3.5 flex items-center justify-between border-b border-white/[0.08] shrink-0 bg-[#0E0F12]">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary" />
-                <span className="font-display text-xs font-black tracking-[0.2em] uppercase text-white">
-                  ESTUDOS JURÍDICOS
-                </span>
+            {/* Topo do Modal: Pílula de arrasto centralizada e Botão de Fechar Grande */}
+            <div className="pt-3 px-5 pb-2 flex items-center justify-between shrink-0 relative z-30">
+              {/* Pílula de arrasto Mobile */}
+              <div className="flex-1 flex justify-start sm:justify-center">
+                <span className="w-12 h-1.5 rounded-full bg-white/20" />
               </div>
 
-              {/* Botão de Fechar */}
+              {/* Botão de Fechar Grande, Acessível e Responsivo (48x48dp) */}
               <button
                 type="button"
-                onPointerDown={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   haptic.selection();
                   onClose();
                 }}
-                onClick={() => {
-                  haptic.selection();
-                  onClose();
-                }}
-                aria-label="Fechar"
-                className="w-8 h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 text-zinc-300 hover:text-white flex items-center justify-center transition-all"
+                aria-label="Fechar modal"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/[0.08] hover:bg-white/[0.16] active:scale-90 text-zinc-300 hover:text-white flex items-center justify-center transition-all cursor-pointer select-none touch-manipulation shrink-0 shadow-sm"
               >
-                <X className="w-4 h-4" />
+                <X className="w-6 h-6" strokeWidth={2.4} />
               </button>
             </div>
 
             {/* Conteúdo com rolagem suave e espaçamento refinado */}
-            <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-3 pb-6 space-y-4">
-              {/* Seletor Dev Minimalista (apenas para contas de desenvolvimento) */}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-1 pb-6 space-y-4">
               {/* Seletor Dev Minimalista (apenas para contas de desenvolvimento) */}
               {isDev && (
-                <div className="relative z-20 flex items-center justify-between p-2 rounded-xl bg-white/[0.04] border border-white/10 text-[11px]">
+                <div className="relative z-30 flex items-center justify-between p-2 rounded-xl bg-white/[0.04] border border-white/10 text-[11px]">
                   <span className="font-mono text-zinc-400 font-bold select-none">Simular modo:</span>
                   <div className="flex gap-1.5">
                     <button
@@ -538,9 +527,9 @@ const PremiumGate = ({
                         e.stopPropagation();
                         setDevState('eligible');
                       }}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer select-none active:scale-95 ${
+                      className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none active:scale-95 text-xs ${
                         !isTrialExpired
-                          ? 'bg-emerald-500 text-white shadow-sm ring-1 ring-emerald-400'
+                          ? 'bg-emerald-500 text-white shadow-sm ring-2 ring-emerald-400/40'
                           : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
                       }`}
                     >
@@ -552,9 +541,9 @@ const PremiumGate = ({
                         e.stopPropagation();
                         setDevState('expired');
                       }}
-                      className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer select-none active:scale-95 ${
+                      className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none active:scale-95 text-xs ${
                         isTrialExpired
-                          ? 'bg-amber-500 text-white shadow-sm ring-1 ring-amber-400'
+                          ? 'bg-amber-500 text-white shadow-sm ring-2 ring-amber-400/40'
                           : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
                       }`}
                     >
