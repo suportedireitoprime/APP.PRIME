@@ -2,6 +2,7 @@ import { createStore, get, set, del, entries } from 'idb-keyval';
 import { Capacitor } from '@capacitor/core';
 import { blobParaBase64 } from '@/lib/nativo/baixarArquivo';
 import { supabase } from '@/integrations/supabase/client';
+import { safeStorageUrl } from '@/lib/cdnImg';
 
 const audioStore = createStore('prime_vademecum_audio_cache_v1', 'narracoes');
 
@@ -167,8 +168,8 @@ export async function prefetchNextArticleAudio(
 
     const row = rows?.[0];
     if (!row?.audio_url) return;
-
-    const resp = await fetch(row.audio_url);
+    const finalAudioUrl = safeStorageUrl(row.audio_url) || row.audio_url;
+    const resp = await fetch(finalAudioUrl);
     if (!resp.ok) return;
     const blob = await resp.blob();
 

@@ -3,8 +3,9 @@ import { clearMediaSession, registrarMidia } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 import { type LivroNormalizado } from '@/lib/bibliotecaColecoes';
+import { R2_MIDIAS_BASE_URL, safeStorageUrl } from '@/lib/cdnImg';
 
-const INTRO_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/audio-intro-2.mp3';
+const INTRO_URL = `${R2_MIDIAS_BASE_URL}/audios/audio-intro-2.mp3`;
 
 interface PilulasPlayerContextType {
   livro: LivroNormalizado | null;
@@ -329,7 +330,7 @@ export const PilulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
       {livro && (
         <audio
           ref={audioMainRef}
-          src={livro.audioResumoUrl || ""}
+          src={livro.audioResumoUrl ? (safeStorageUrl(livro.audioResumoUrl) || livro.audioResumoUrl) : ""}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={() => {
             if (audioMainRef.current && !isNaN(audioMainRef.current.duration)) {

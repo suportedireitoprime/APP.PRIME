@@ -22,6 +22,7 @@ import {
   obterConfigAutomacao,
   ESTILOS_TOM,
 } from '@/services/narracaoLeisService';
+import { safeStorageUrl } from '@/lib/cdnImg';
 
 export const RING_CIRCUMFERENCE = 2 * Math.PI * 26;
 
@@ -196,7 +197,8 @@ export function useArtigoNarracao({
         }
 
         // Existe narração válida no banco
-        setNarracaoUrl(row.audio_url);
+        const resolvedAudioUrl = safeStorageUrl(row.audio_url) || row.audio_url;
+        setNarracaoUrl(resolvedAudioUrl);
         const timings = Array.isArray(row.word_timings)
           ? row.word_timings
           : ((row.word_timings as any)?.partes || null);
@@ -211,7 +213,7 @@ export function useArtigoNarracao({
         const primaryCacheKey = buildAudioCacheKey(resolvedTabelaNome, artigo.numero);
         void (async () => {
           try {
-            const resp = await fetch(row.audio_url);
+            const resp = await fetch(resolvedAudioUrl);
             if (resp.ok) {
               const blob = await resp.blob();
               await saveCachedAudio(primaryCacheKey, blob, timings as any);
@@ -331,9 +333,10 @@ export function useArtigoNarracao({
       stopProgressTracking();
     }
 
+    const resolvedUrl = safeStorageUrl(audioUrl) || audioUrl;
     const audio = narracaoAudioRef.current || new Audio();
     narracaoAudioRef.current = audio;
-    audio.src = audioUrl;
+    audio.src = resolvedUrl;
     audio.preload = 'auto';
     // Item 18: Aplica a velocidade de reprodução customizada persistida no storage (0.75x a 2.0x)
     audio.playbackRate = playbackRate;
@@ -492,7 +495,7 @@ export function useArtigoNarracao({
 
         const row = rows?.[0];
         if (row?.audio_url) {
-          const foundUrl = row.audio_url;
+          const foundUrl = safeStorageUrl(row.audio_url) || row.audio_url;
           const timings = Array.isArray(row.word_timings)
             ? row.word_timings
             : ((row.word_timings as any)?.partes || null);
@@ -561,8 +564,9 @@ export function useArtigoNarracao({
       const res = data as any;
 
       if (res?.audio_url) {
+        const edgeAudioUrl = safeStorageUrl(res.audio_url) || res.audio_url;
         if (!silent) setNarracaoStepIdx(2);
-        setNarracaoUrl(res.audio_url);
+        setNarracaoUrl(edgeAudioUrl);
         if (Array.isArray(res.word_timings) && res.word_timings.length > 0) {
           setNarracaoWordTimings(res.word_timings);
         }
@@ -572,7 +576,7 @@ export function useArtigoNarracao({
           const cKey = buildAudioCacheKey(effectiveTabelaNome, artigo.numero);
           void (async () => {
             try {
-              const resp = await fetch(res.audio_url);
+              const resp = await fetch(edgeAudioUrl);
               if (resp.ok) {
                 const blob = await resp.blob();
                 await saveCachedAudio(cKey, blob, res.word_timings || []);
@@ -587,9 +591,9 @@ export function useArtigoNarracao({
 
         if (!silent) setNarracaoLoading(false);
         if (autoplay) {
-          await playNarracao(res.audio_url);
+          await playNarracao(edgeAudioUrl);
         }
-        return res;
+        return { ...res, audio_url: edgeAudioUrl };
       }
 
       throw new Error('Sem URL de áudio gerada pela IA.');

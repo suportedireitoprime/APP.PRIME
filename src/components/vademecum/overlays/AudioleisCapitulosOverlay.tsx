@@ -22,6 +22,7 @@ import { obterAliasesTabela } from '@/utils/narracaoLookup';
 import { extractLeiCapitulos, isStructuralArtigo, type LeiCapituloItem } from '@/lib/leiStructure';
 import type { ArtigoLei } from '@/data/mockData';
 import { setupMediaSession, clearMediaSession } from '@/lib/mediaSession';
+import { safeStorageUrl } from '@/lib/cdnImg';
 
 interface AudioleisCapitulosOverlayProps {
   leiId: string;
@@ -108,7 +109,8 @@ export const AudioleisCapitulosOverlay: React.FC<AudioleisCapitulosOverlayProps>
         for (const row of (data as NarracaoData[]) || []) {
           const num = cleanArtNum(row.artigo_numero);
           if (num && row.audio_url && !map.has(num)) {
-            map.set(num, row.audio_url);
+            const resolvedAudio = safeStorageUrl(row.audio_url) || row.audio_url;
+            map.set(num, resolvedAudio);
           }
         }
         setAudioMap(map);

@@ -39,7 +39,17 @@ export const isBucketPrivate = (bucketName: string): boolean => {
 };
 
 /**
- * Constrói a URL pública canônica para um bucket do Supabase Storage.
+ * Domínio público canônico do Cloudflare R2 para mídias e imagens deste app.
+ */
+export const R2_MIDIAS_BASE_URL = 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev';
+
+/**
+ * Domínio público canônico do Cloudflare R2 para o acervo de áudios e narrações (vacatio-midias).
+ */
+export const R2_VACATIO_AUDIO_BASE_URL = 'https://pub-0c1a0e4ebbdd44dfa883dd36c269f19f.r2.dev';
+
+/**
+ * Constrói a URL pública canônica roteada pelo Cloudflare R2.
  * Lança aviso se invocado para um bucket privado.
  */
 export const getPublicBucketUrl = (bucketName: string, path: string): string => {
@@ -50,7 +60,13 @@ export const getPublicBucketUrl = (bucketName: string, path: string): string => 
     console.warn(`[storageBuckets] Tentativa de gerar URL pública para bucket privado: "${cleanBucket}". Utilize createSignedUrl().`);
   }
 
-  return `https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/${cleanBucket}/${cleanPath}`;
+  // Áudios e Narrações servidos via Cloudflare R2 vacatio-midias
+  if (['audios', 'audioaulas', 'narracoes', 'aulas-audio'].includes(cleanBucket)) {
+    return `${R2_VACATIO_AUDIO_BASE_URL}/${cleanBucket}/${cleanPath}`;
+  }
+
+  // Demais mídias e imagens servidas via Cloudflare R2 estudos-juridicos-midias
+  return `${R2_MIDIAS_BASE_URL}/${cleanBucket}/${cleanPath}`;
 };
 
 /**

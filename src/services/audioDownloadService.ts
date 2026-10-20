@@ -4,6 +4,7 @@
  */
 import { db } from './offlineDb';
 import { supabase } from '@/integrations/supabase/client';
+import { safeStorageUrl } from '@/lib/cdnImg';
 
 export interface NarracaoRow {
   id: string;
@@ -24,7 +25,10 @@ export async function fetchNarracoesDisponiveis(tabelaNome: string): Promise<Nar
     .eq('tabela_nome', tabelaNome)
     .order('artigo_numero');
   if (error) return [];
-  return (data ?? []) as NarracaoRow[];
+  return (data ?? []).map(r => ({
+    ...r,
+    audio_url: safeStorageUrl(r.audio_url) || r.audio_url
+  })) as NarracaoRow[];
 }
 
 export async function isAudioDownloaded(tabelaNome: string, artigoNumero: string): Promise<boolean> {
@@ -40,7 +44,8 @@ export async function getDownloadedAudioIds(tabelaNome: string): Promise<Set<str
 export async function downloadAudio(row: NarracaoRow, onProgress?: (pct: number) => void): Promise<boolean> {
   try {
     onProgress?.(5);
-    const res = await fetch(row.audio_url);
+    const audioUrl = safeStorageUrl(row.audio_url) || row.audio_url;
+    const res = await fetch(audioUrl);
     if (!res.ok) return false;
     const blob = await res.blob();
     onProgress?.(85);

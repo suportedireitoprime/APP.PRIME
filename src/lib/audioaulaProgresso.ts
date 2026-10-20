@@ -46,7 +46,9 @@ export function limparProgressoAudioaula(): void {
   }
 }
 
-/** Converte qualquer link de áudio do Drive em link direto de streaming com CORS * */
+import { safeStorageUrl } from '@/lib/cdnImg';
+
+/** Converte qualquer link de áudio do Drive em link direto de streaming com CORS e roteia Supabase para R2 * */
 export function normalizarStreamAudio(url: string | null | undefined): string {
   if (!url) return '';
   const u = url.trim();
@@ -58,5 +60,5 @@ export function normalizarStreamAudio(url: string | null | undefined): string {
     // export=download retorna attachment e bloqueia o player no navegador
     return `https://drive.usercontent.google.com/download?id=${fileId}&export=view&authuser=0`;
   }
-  return u;
+  return safeStorageUrl(u) || u;
 }

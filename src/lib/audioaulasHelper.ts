@@ -10,7 +10,8 @@ import capaLeiPenalEspecial from '@/assets/capa-lei-penal-especial.webp';
 import capaProcessoPenal from '@/assets/capa-processo-penal.webp';
 
 export const CAPA_HUB = srcOf(capaAudioaulas);
-const SUPABASE_STORAGE_CAPAS = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_areas';
+import { R2_MIDIAS_BASE_URL } from '@/lib/storageBuckets';
+const SUPABASE_STORAGE_CAPAS = `${R2_MIDIAS_BASE_URL}/biblioteca-obras/capas_areas`;
 
 const CAPAS: { re: RegExp; url: string }[] = [
   { re: /eca|criança|adolescente|infância|juventude/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-crianca-adolescente-eca.webp` },

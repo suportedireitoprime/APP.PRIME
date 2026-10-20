@@ -1,5 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { assetUrl } from './assetUrl';
+import { R2_MIDIAS_BASE_URL, R2_VACATIO_AUDIO_BASE_URL, getPublicBucketUrl } from './storageBuckets';
 
 export * from './storageBuckets';
 
@@ -122,31 +123,42 @@ export const safeStorageUrl = (url: string | null | undefined): string | null =>
   // Corrige barras duplicadas acidentais após o protocolo (ex: https://dominio//storage//v1)
   sanitized = sanitized.replace(/([^:]\/)\/+/g, '$1');
 
-  // Remapeia projeto Supabase legado desativado para o projeto oficial ativo
+  // Remapeia URLs legadas do Supabase Storage diretamente para o Cloudflare R2
+  const supabaseStoragePrefix = 'dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/';
   if (sanitized.includes('izspjvegxdfgkgibpyst.supabase.co')) {
-    sanitized = sanitized.replace('izspjvegxdfgkgibpyst.supabase.co', 'dnjrgpldcwcpoywamorr.supabase.co');
+    sanitized = sanitized.replace('izspjvegxdfgkgibpyst.supabase.co/storage/v1/object/public/', supabaseStoragePrefix);
+  }
+
+  if (sanitized.includes(supabaseStoragePrefix)) {
+    const relativePart = sanitized.split(supabaseStoragePrefix)[1] || '';
+    if (relativePart.startsWith('audios/') || relativePart.startsWith('audioaulas/') || relativePart.startsWith('narracoes/')) {
+      return `${R2_VACATIO_AUDIO_BASE_URL}/${relativePart}`;
+    }
+    return `${R2_MIDIAS_BASE_URL}/${relativePart}`;
   }
 
   // Converte caminhos relativos conhecidos do bucket (ex: 'covers/minha-capa.webp' ou 'biblioteca-obras/...')
   if (!sanitized.startsWith('http://') && !sanitized.startsWith('https://') && !sanitized.startsWith('/') && !sanitized.startsWith('data:') && !sanitized.startsWith('blob:')) {
-    return `https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/${sanitized}`;
+    return `${R2_MIDIAS_BASE_URL}/${sanitized}`;
   }
 
   // Se for caminho absoluto sem domínio (ex: '/storage/v1/object/public/...')
-  if (sanitized.startsWith('/storage/v1/')) {
-    return `https://dnjrgpldcwcpoywamorr.supabase.co${sanitized}`;
+  if (sanitized.startsWith('/storage/v1/object/public/')) {
+    const relativePart = sanitized.replace('/storage/v1/object/public/', '');
+    if (relativePart.startsWith('audios/') || relativePart.startsWith('audioaulas/') || relativePart.startsWith('narracoes/')) {
+      return `${R2_VACATIO_AUDIO_BASE_URL}/${relativePart}`;
+    }
+    return `${R2_MIDIAS_BASE_URL}/${relativePart}`;
   }
 
   return sanitized;
 };
 
 /**
- * Fase 44: Construtor canônico de URLs de Storage públicas com sanitização estrita.
+ * Fase 44: Construtor canônico de URLs de Storage públicas com sanitização estrita roteado via R2.
  */
 export const getStoragePublicUrl = (bucket: string, path: string): string => {
-  const cleanBucket = (bucket || '').replace(/^\/+|\/+$/g, '');
-  const cleanPath = (path || '').replace(/^\/+|\/+$/g, '').replace(/\\/g, '/');
-  return `https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/${cleanBucket}/${cleanPath}`;
+  return getPublicBucketUrl(bucket, path);
 };
 
 /**

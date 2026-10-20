@@ -6,8 +6,9 @@ import { fonteDeAudio } from '@/lib/nativo/audioOffline';
 import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 import { toast } from 'sonner';
 import { salvarProgressoAudioaula, obterUltimoProgressoAudioaula, normalizarStreamAudio } from '@/lib/audioaulaProgresso';
+import { R2_VACATIO_AUDIO_BASE_URL } from '@/lib/cdnImg';
 
-export const INTRO_AUDIOAULA_URL = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/vinhetas/intro_audioaulas.mp3';
+export const INTRO_AUDIOAULA_URL = `${R2_VACATIO_AUDIO_BASE_URL}/audios/vinhetas/intro_audioaulas.mp3`;
 
 export interface AulaAudio {
   id: number;
