@@ -8,6 +8,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.100.0";
 import { geminiFetch } from "./geminiFetch.ts";
+import { uploadToR2, R2_BUCKETS } from "./r2Storage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -369,16 +370,23 @@ export async function handleNarracaoArtigo(req: Request): Promise<Response> {
       cursor += dur;
     }
 
-    const { error: upErr } = await supabase.storage.from("audios").upload(filePath, wav, {
-      contentType: "audio/wav", upsert: true, cacheControl: "31536000, immutable",
-    });
-    if (upErr) {
-      return new Response(JSON.stringify({ error: `Upload falhou: ${upErr.message}` }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    let audioUrl = "";
+    try {
+      const r2Res = await uploadToR2(R2_BUCKETS.AUDIO_VACATIO, filePath, wav, "audio/wav");
+      audioUrl = r2Res.publicUrl;
+      console.log(`✅ Narração salva no Cloudflare R2: ${audioUrl}`);
+    } catch (r2Err) {
+      console.warn("⚠️ Upload no Cloudflare R2 falhou, executando fallback no Supabase:", r2Err);
+      const { error: upErr } = await supabase.storage.from("audios").upload(filePath, wav, {
+        contentType: "audio/wav", upsert: true, cacheControl: "31536000, immutable",
       });
+      if (upErr) {
+        return new Response(JSON.stringify({ error: `Upload falhou: ${upErr.message}` }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      audioUrl = await assinar();
     }
-
-    const audioUrl = await assinar();
 
     const { error: insErr } = await supabase.from("narracoes_artigos").upsert(
       {

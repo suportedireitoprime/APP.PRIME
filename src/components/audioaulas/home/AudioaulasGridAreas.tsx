@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { capaDaArea } from '@/lib/audioaulasHelper';
-import { directImg } from '@/lib/cdnImg';
+import { directImg, R2_MIDIAS_BASE_URL } from '@/lib/cdnImg';
 import { CapaOtimizada } from './CapaOtimizada';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -34,7 +34,7 @@ export interface EstatutoItem {
   rota: string;
 }
 
-const SUPABASE_STORAGE_CAPAS = 'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_areas';
+const SUPABASE_STORAGE_CAPAS = `${R2_MIDIAS_BASE_URL}/biblioteca-obras/capas_areas`;
 
 // Catálogo dos Códigos
 const CATALOGO_CODIGOS: CodigoItem[] = [

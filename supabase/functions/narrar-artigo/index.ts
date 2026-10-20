@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.100.0";
 import { geminiFetch } from "../_shared/geminiFetch.ts";
+import { uploadToR2, R2_BUCKETS } from "../_shared/r2Storage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -691,26 +692,33 @@ Deno.serve(async (req) => {
     const pcmConcatenado = concatenarPCM(audiosPCM);
     const wavBytes = pcmToWav(pcmConcatenado, 24000);
 
-    // Upload
+    // Upload direto para o Cloudflare R2 (com fallback seguro para Supabase Storage)
     const fullUploadPath = filePath.startsWith("narracoes/") ? filePath : `narracoes/${filePath}`;
-    const { error: upErr } = await supabase.storage.from("audios").upload(fullUploadPath, wavBytes, {
-      contentType: "audio/wav", upsert: true, cacheControl: "31536000, immutable",
-    });
-    if (upErr) {
-      console.error("Upload:", upErr);
-      return new Response(JSON.stringify({ error: `Upload falhou: ${upErr.message}` }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     let audioUrl = "";
+
     try {
-      audioUrl = await criarSignedUrl(supabase, filePath);
-    } catch (e) {
-      console.error("Signed URL:", e);
-      return new Response(JSON.stringify({ error: String(e) }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      const r2Res = await uploadToR2(R2_BUCKETS.AUDIO_VACATIO, fullUploadPath, wavBytes, "audio/wav");
+      audioUrl = r2Res.publicUrl;
+      console.log(`✅ Narração salva com sucesso no Cloudflare R2: ${audioUrl}`);
+    } catch (r2Err) {
+      console.warn("⚠️ Upload no Cloudflare R2 falhou, executando fallback no Supabase:", r2Err);
+      const { error: upErr } = await supabase.storage.from("audios").upload(fullUploadPath, wavBytes, {
+        contentType: "audio/wav", upsert: true, cacheControl: "31536000, immutable",
       });
+      if (upErr) {
+        console.error("Upload Supabase:", upErr);
+        return new Response(JSON.stringify({ error: `Upload falhou: ${upErr.message}` }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      try {
+        audioUrl = await criarSignedUrl(supabase, filePath);
+      } catch (e) {
+        console.error("Signed URL:", e);
+        return new Response(JSON.stringify({ error: String(e) }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // Transcreve o áudio gerado para obter word timings (karaokê).
