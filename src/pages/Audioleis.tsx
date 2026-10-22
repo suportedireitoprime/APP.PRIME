@@ -43,6 +43,10 @@ import {
   type LeiCapituloItem,
 } from "@/lib/leiStructure";
 import type { ArtigoLei } from "@/data/mockData";
+import {
+  AudioleiPlaylistSheet,
+  type CapituloComAudiosData,
+} from "@/components/audioleis/AudioleiPlaylistSheet";
 
 interface NarracaoItem {
   artigo_numero: string;
@@ -348,7 +352,7 @@ export default function AudioleisPage() {
     setBuscaCatalogo("");
     setCategoriaFoco(null);
     setMostrarOutrasLeis(false);
-    setExpandedCapituloId(null);
+    setSelectedCapituloParaPlaylist(null);
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
   const audioleiGate = useGatedFeature("audiolei", "narracao");
@@ -448,7 +452,8 @@ export default function AudioleisPage() {
 
   // Modo de exibição: Capítulos vs Artigos (conforme Vade Mecum)
   const [modoVisualizacao, setModoVisualizacao] = useState<"capitulos" | "artigos">("capitulos");
-  const [expandedCapituloId, setExpandedCapituloId] = useState<string | null>(null);
+  const [selectedCapituloParaPlaylist, setSelectedCapituloParaPlaylist] =
+    useState<CapituloComAudiosData | null>(null);
 
   // Carrega a estrutura completa dos artigos da lei para extração de capítulos
   const { artigos: fullArtigos = [], loadingArtigos } = useLeiArtigos(
@@ -584,7 +589,7 @@ export default function AudioleisPage() {
       realArtigos.some((a) => formatArtigoNumeroOnly(a.numero).toLowerCase() === q),
     );
     if (found) {
-      setExpandedCapituloId(found.capitulo.id);
+      setSelectedCapituloParaPlaylist(found);
     }
   }, [searchQuery, displayedCapitulos]);
 
@@ -642,6 +647,12 @@ export default function AudioleisPage() {
     },
     [currentArtigo, isPlaying, playbackRate, currentLaw, selectedTabela],
   );
+
+  const togglePlay = useCallback(() => {
+    if (currentArtigo) {
+      playAudio(currentArtigo);
+    }
+  }, [currentArtigo, playAudio]);
 
   const deepLinkPlayed = useRef<string | null>(null);
   useEffect(() => {
@@ -1199,258 +1210,127 @@ export default function AudioleisPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {displayedCapitulos.map(
-                      (
-                        {
-                          capitulo,
-                          realArtigos,
-                          audiosDisponiveis,
-                          totalArts,
-                          totalAudios,
-                          pctGravado,
-                        },
-                        idx,
-                      ) => {
-                        const isExpanded = expandedCapituloId === capitulo.id;
-                        const rangeText =
-                          capitulo.primeiroArtigo && capitulo.ultimoArtigo
-                            ? capitulo.primeiroArtigo === capitulo.ultimoArtigo
-                              ? `(Art. ${capitulo.primeiroArtigo})`
-                              : `(Arts. ${capitulo.primeiroArtigo} a ${capitulo.ultimoArtigo})`
-                            : "";
+                    {displayedCapitulos.map((itemData, idx) => {
+                      const {
+                        capitulo,
+                        realArtigos,
+                        totalArts,
+                        totalAudios,
+                        pctGravado,
+                      } = itemData;
 
-                        const isPlayingInThisChapter =
-                          Boolean(currentArtigo && isPlaying) &&
-                          realArtigos.some((a) => {
-                            const numClean = formatArtigoNumeroOnly(a.numero);
-                            return (
-                              numClean.toLowerCase() === currentArtigo?.artigo_numero.toLowerCase()
-                            );
-                          });
+                      const rangeText =
+                        capitulo.primeiroArtigo && capitulo.ultimoArtigo
+                          ? capitulo.primeiroArtigo === capitulo.ultimoArtigo
+                            ? `(Art. ${capitulo.primeiroArtigo})`
+                            : `(Arts. ${capitulo.primeiroArtigo} a ${capitulo.ultimoArtigo})`
+                          : "";
 
-                        return (
-                          <div
-                            key={capitulo.id || idx}
-                            className={`rounded-2xl transition-all border overflow-hidden shadow-sm ${
-                              isPlayingInThisChapter
-                                ? "bg-card border-primary/60 ring-2 ring-primary/30 shadow-xl shadow-primary/10"
-                                : isExpanded
-                                  ? "bg-card border-primary/50 ring-1 ring-primary/25 shadow-lg shadow-black/40"
-                                  : "bg-card/90 border-border hover:border-border/80 hover:bg-card"
-                            }`}
-                          >
-                            {/* Botão de cabeçalho do capítulo */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                haptic.selection();
-                                setExpandedCapituloId(isExpanded ? null : capitulo.id);
-                              }}
-                              className="w-full text-left flex items-stretch p-0 cursor-pointer transition-transform active:scale-[0.995]"
-                            >
-                              {/* Barra lateral colorida de destaque */}
-                              <div
-                                className={`w-2.5 rounded-l-2xl shrink-0 transition-all ${
-                                  isPlayingInThisChapter
-                                    ? "bg-primary animate-pulse shadow-md shadow-primary/50"
-                                    : isExpanded
-                                      ? "bg-primary"
-                                      : "bg-primary/50"
-                                }`}
-                              />
+                      const isPlayingInThisChapter =
+                        Boolean(currentArtigo && isPlaying) &&
+                        realArtigos.some((a) => {
+                          const numClean = formatArtigoNumeroOnly(a.numero);
+                          return (
+                            numClean.toLowerCase() === currentArtigo?.artigo_numero.toLowerCase()
+                          );
+                        });
 
-                              <div className="p-4 sm:p-5 flex-1 min-w-0 flex flex-col justify-center">
-                                <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <span className="text-[10.5px] sm:text-[11px] font-black uppercase tracking-widest text-amber-400 shrink-0">
-                                      {capitulo.capituloHead || "CAPÍTULO"}
-                                    </span>
-                                    {capitulo.parentContext && (
-                                      <span className="text-[11px] text-muted-foreground font-medium truncate hidden sm:inline">
-                                        • {capitulo.parentContext}
-                                      </span>
-                                    )}
-                                  </div>
+                      return (
+                        <div
+                          key={capitulo.id || idx}
+                          onClick={() => {
+                            haptic.selection();
+                            setSelectedCapituloParaPlaylist(itemData);
+                          }}
+                          className={`group rounded-2xl transition-all border overflow-hidden shadow-sm hover:shadow-md cursor-pointer ${
+                            isPlayingInThisChapter
+                              ? "bg-card border-primary/60 ring-2 ring-primary/30 shadow-xl shadow-primary/10"
+                              : "bg-card/90 border-border hover:border-border/90 hover:bg-card"
+                          }`}
+                        >
+                          <div className="w-full text-left flex items-stretch p-0 transition-transform active:scale-[0.995]">
+                            {/* Barra lateral colorida de destaque */}
+                            <div
+                              className={`w-2.5 rounded-l-2xl shrink-0 transition-all ${
+                                isPlayingInThisChapter
+                                  ? "bg-primary animate-pulse shadow-md shadow-primary/50"
+                                  : "bg-primary/50 group-hover:bg-primary"
+                              }`}
+                            />
 
-                                  <div className="flex items-center gap-1.5 shrink-0">
-                                    {isPlayingInThisChapter && (
-                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40 text-[10px] font-bold tracking-wider uppercase animate-pulse shadow-sm shadow-primary/20">
-                                        <Volume2 className="w-3 h-3" />
-                                        <span>Tocando</span>
-                                      </span>
-                                    )}
-                                    <span
-                                      className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full border tabular-nums shrink-0 ${
-                                        totalAudios > 0
-                                          ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-                                          : "bg-muted text-muted-foreground border-border"
-                                      }`}
-                                    >
-                                      {totalAudios > 0
-                                        ? `${totalAudios} ${totalAudios === 1 ? "áudio" : "áudios"}`
-                                        : "Em breve"}
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <h3 className="font-heading text-base sm:text-lg font-bold text-foreground leading-snug">
-                                  {capitulo.capituloNome}
-                                </h3>
-
-                                <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                                  <span className="font-semibold text-foreground/80">
-                                    {totalArts} {totalArts === 1 ? "artigo" : "artigos"}
+                            <div className="p-4 sm:p-5 flex-1 min-w-0 flex flex-col justify-center">
+                              <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 shrink-0">
+                                    {capitulo.capituloHead || "CAPÍTULO"}
                                   </span>
-                                  {rangeText && <span>• {rangeText}</span>}
-                                </div>
-
-                                {/* Barra de progresso de áudios gravados */}
-                                {totalArts > 0 && (
-                                  <div className="mt-2.5 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-secondary/80">
-                                    <div
-                                      className={`h-full rounded-full transition-all duration-500 ${
-                                        totalAudios > 0
-                                          ? "bg-linear-to-r from-primary to-emerald-400"
-                                          : "bg-muted"
-                                      }`}
-                                      style={{
-                                        width: `${Math.max(totalAudios > 0 ? 8 : 0, pctGravado)}%`,
-                                      }}
-                                    />
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Chevron rotativo */}
-                              <div className="flex items-center pr-4 sm:pr-5 shrink-0">
-                                <div
-                                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all ${
-                                    isExpanded
-                                      ? "bg-primary/20 text-primary rotate-90 shadow-md shadow-primary/20"
-                                      : "bg-secondary text-muted-foreground"
-                                  }`}
-                                >
-                                  <ChevronRight className="w-5 h-5 transition-transform" />
-                                </div>
-                              </div>
-                            </button>
-
-                            {/* Conteúdo expandido: artigos do capítulo para narrar */}
-                            {isExpanded && (
-                              <div className="border-t border-border/60 bg-background/50 p-3 sm:p-5 space-y-3">
-                                <div className="flex items-center justify-between gap-3 pb-2 border-b border-border/40">
-                                  <div className="text-xs text-muted-foreground">
-                                    {totalAudios}{" "}
-                                    {totalAudios === 1 ? "artigo com áudio" : "artigos com áudio"}{" "}
-                                    para narrar
-                                  </div>
-                                  {audiosDisponiveis.length > 0 && (
-                                    <Button
-                                      variant="default"
-                                      size="sm"
-                                      onClick={() => {
-                                        haptic.impact();
-                                        playAudio(audiosDisponiveis[0].narracao);
-                                      }}
-                                      className="gap-2 text-xs font-bold shadow-md shadow-primary/20"
-                                    >
-                                      <Play className="w-3.5 h-3.5 fill-current" />
-                                      <span>Tocar Capítulo</span>
-                                    </Button>
+                                  {capitulo.parentContext && (
+                                    <span className="text-[11px] text-muted-foreground font-medium truncate hidden sm:inline">
+                                      • {capitulo.parentContext}
+                                    </span>
                                   )}
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-                                  {realArtigos.map((art) => {
-                                    const numClean = formatArtigoNumeroOnly(art.numero);
-                                    const narracao =
-                                      audioMap.get(numClean.toLowerCase()) ||
-                                      audioMap.get(String(art.numero).trim().toLowerCase());
-                                    const isSelected = currentArtigo?.artigo_numero === numClean;
-                                    const activeThis = isSelected && isPlaying;
-
-                                    return (
-                                      <div
-                                        key={art.id || numClean}
-                                        className={`group relative p-3 rounded-xl border transition-all duration-200 flex items-center justify-between gap-3 ${
-                                          isSelected
-                                            ? "bg-primary/10 border-primary/50 shadow-md shadow-primary/5 ring-1 ring-primary/30"
-                                            : "bg-card border-border/80 hover:border-border hover:bg-card"
-                                        }`}
-                                      >
-                                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                                          {narracao ? (
-                                            <Button
-                                              variant="ghost"
-                                              onClick={() => playAudio(narracao)}
-                                              className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 ${
-                                                activeThis
-                                                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/30 animate-pulse"
-                                                  : "bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30"
-                                              }`}
-                                              aria-label={
-                                                activeThis
-                                                  ? `Pausar Artigo ${numClean}`
-                                                  : `Tocar Artigo ${numClean}`
-                                              }
-                                            >
-                                              {activeThis ? (
-                                                <Pause className="w-4 h-4 fill-current" />
-                                              ) : (
-                                                <Play className="w-4 h-4 fill-current ml-0.5" />
-                                              )}
-                                            </Button>
-                                          ) : (
-                                            <div
-                                              className="w-11 h-11 rounded-xl bg-muted/50 border border-border flex items-center justify-center text-muted-foreground shrink-0"
-                                              title="Narração em gravação"
-                                            >
-                                              <Clock className="w-4 h-4" />
-                                            </div>
-                                          )}
-
-                                          <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-1.5">
-                                              <span className="font-heading font-black text-sm text-foreground tracking-wide">
-                                                Art. {numClean}
-                                              </span>
-                                              {narracao ? (
-                                                <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-card text-emerald-400 border border-emerald-500/30">
-                                                  MP3
-                                                </span>
-                                              ) : (
-                                                <span className="px-1.5 py-0.2 rounded text-[9px] text-muted-foreground border border-border">
-                                                  Em breve
-                                                </span>
-                                              )}
-                                            </div>
-                                            <p className="text-[11px] text-muted-foreground truncate mt-0.5 font-sans">
-                                              {narracao?.titulo_artigo ||
-                                                art.caput?.slice(0, 70) ||
-                                                `${currentLaw.sigla} — Narração`}
-                                            </p>
-                                          </div>
-                                        </div>
-
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() => irParaArtigoVadeMecum(numClean)}
-                                          className="w-8 h-8 p-0 rounded-lg bg-card hover:bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-foreground shrink-0 active:scale-95"
-                                          title="Ler artigo completo no Vade Mecum"
-                                        >
-                                          <BookOpen className="w-3.5 h-3.5" />
-                                        </Button>
-                                      </div>
-                                    );
-                                  })}
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  {isPlayingInThisChapter && (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40 text-[10px] font-bold tracking-wider uppercase animate-pulse shadow-sm shadow-primary/20">
+                                      <Volume2 className="w-3 h-3" />
+                                      <span>Tocando</span>
+                                    </span>
+                                  )}
+                                  <span
+                                    className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full border tabular-nums shrink-0 ${
+                                      totalAudios > 0
+                                        ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                                        : "bg-muted text-muted-foreground border-border"
+                                    }`}
+                                  >
+                                    {totalAudios > 0
+                                      ? `${totalAudios} ${totalAudios === 1 ? "áudio" : "áudios"}`
+                                      : "Em breve"}
+                                  </span>
                                 </div>
                               </div>
-                            )}
+
+                              {/* Título com tipografia nítida e elegante */}
+                              <h3 className="text-base sm:text-lg font-bold text-foreground leading-snug tracking-normal font-sans">
+                                {capitulo.capituloNome}
+                              </h3>
+
+                              <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                                <span className="font-semibold text-foreground/80">
+                                  {totalArts} {totalArts === 1 ? "artigo" : "artigos"}
+                                </span>
+                                {rangeText && <span>• {rangeText}</span>}
+                              </div>
+
+                              {/* Barra de progresso de áudios gravados */}
+                              {totalArts > 0 && (
+                                <div className="mt-2.5 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-secondary/80">
+                                  <div
+                                    className={`h-full rounded-full transition-all duration-500 ${
+                                      totalAudios > 0
+                                        ? "bg-linear-to-r from-primary to-emerald-400"
+                                        : "bg-muted"
+                                    }`}
+                                    style={{
+                                      width: `${Math.max(totalAudios > 0 ? 8 : 0, pctGravado)}%`,
+                                    }}
+                                  />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Indicador de abertura de Playlist */}
+                            <div className="flex items-center pr-4 sm:pr-5 shrink-0">
+                              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-secondary/80 group-hover:bg-primary/20 group-hover:text-primary text-muted-foreground flex items-center justify-center transition-all shadow-sm">
+                                <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
+                              </div>
+                            </div>
                           </div>
-                        );
-                      },
-                    )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </section>
@@ -1715,6 +1595,20 @@ export default function AudioleisPage() {
           </div>
         </div>
       )}
+
+      {/* Sheet deslizante de baixo para cima estilo Playlist do Capítulo */}
+      <AudioleiPlaylistSheet
+        isOpen={Boolean(selectedCapituloParaPlaylist)}
+        onClose={() => setSelectedCapituloParaPlaylist(null)}
+        capituloData={selectedCapituloParaPlaylist}
+        leiNome={currentLaw.nome}
+        leiSigla={currentLaw.sigla}
+        audioMap={audioMap}
+        currentArtigo={currentArtigo}
+        isPlaying={isPlaying}
+        onPlayAudio={playAudio}
+        onTogglePlay={togglePlay}
+      />
     </div>
   );
 }
