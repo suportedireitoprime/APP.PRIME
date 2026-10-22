@@ -85,7 +85,11 @@ jobs:
         env:
           SKIP_PRECOMPRESS: "1"
           NODE_OPTIONS: "--max-old-space-size=4096"
-        run: bun run build
+        run: |
+          bun run build
+          if [ ! -f dist/index.html ]; then
+            node scripts/prepare-dist.mjs
+          fi
 
       - name: Strip precompressed assets (safety net for native)
         run: |
