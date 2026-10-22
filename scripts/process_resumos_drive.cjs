@@ -56,26 +56,55 @@ async function downloadDriveFile(id, retries = 3) {
   throw new Error(`Falha ao baixar arquivo ${id}`);
 }
 
-// Lista arquivos de pasta do Drive
+// Lista arquivos de pasta do Drive (com suporte a _DRIVE_ivd e fallback de regex)
 async function listDriveFolder(folderId) {
-  const url = `https://drive.google.com/embeddedfolderview?id=${folderId}#list`;
-  const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } });
-  const html = await res.text();
-  
-  const entries = [];
-  const regex = /<a[^>]+href="([^"]+)"[^>]*>(.*?)<\/a>/gi;
-  let m;
-  while ((m = regex.exec(html)) !== null) {
-    const href = m[1];
-    const text = m[2].replace(/<[^>]+>/g, '').trim();
-    if (href.includes('drive.google.com') || href.includes('file')) {
-      const idMatch = href.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      if (idMatch) {
-        entries.push({ id: idMatch[1], name: text });
+  try {
+    const url = `https://drive.google.com/drive/folders/${folderId}`;
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' }
+    });
+    const html = await res.text();
+    const match = html.match(/window\['_DRIVE_ivd'\]\s*=\s*'([^']+)'/);
+    if (match) {
+      const hexDecoded = match[1].replace(/\\x([0-9A-Fa-f]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+      const data = JSON.parse(hexDecoded);
+      const items = [];
+      function findItems(arr) {
+        if (!Array.isArray(arr)) return;
+        if (arr.length >= 4 && typeof arr[0] === 'string' && arr[0].length >= 20 && typeof arr[2] === 'string') {
+          items.push({ id: arr[0], name: arr[2] });
+        }
+        for (const el of arr) {
+          if (Array.isArray(el)) findItems(el);
+        }
+      }
+      findItems(data);
+      if (items.length > 0) return items;
+    }
+  } catch {}
+
+  // Fallback para embeddedfolderview
+  try {
+    const url = `https://drive.google.com/embeddedfolderview?id=${folderId}#list`;
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' } });
+    const html = await res.text();
+    const entries = [];
+    const regex = /<a[^>]+href="([^"]+)"[^>]*>(.*?)<\/a>/gi;
+    let m;
+    while ((m = regex.exec(html)) !== null) {
+      const href = m[1];
+      const text = m[2].replace(/<[^>]+>/g, '').trim();
+      if (href.includes('drive.google.com') || href.includes('file')) {
+        const idMatch = href.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        if (idMatch) {
+          entries.push({ id: idMatch[1], name: text });
+        }
       }
     }
+    return entries;
+  } catch {
+    return [];
   }
-  return entries;
 }
 
 // Processa um .docx e extrai capítulos estruturados com imagens

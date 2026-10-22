@@ -224,7 +224,2230 @@
       "tema": "Preambulo Constitucional e Principios Fundamentais",
       "capitulos": 6,
       "timestamp": "2026-10-22T17:37:51.021Z"
+    },
+    "Direito Civil::01 - Resumo - Pessoas no Codigo Civil.docx": {
+      "area": "Direito Civil",
+      "tema": "Pessoas no Codigo Civil",
+      "capitulos": 15,
+      "timestamp": "2026-10-22T17:44:55.183Z"
+    },
+    "Direito Civil::02 - Resumo - Direitos da Personalidade.docx": {
+      "area": "Direito Civil",
+      "tema": "Direitos da Personalidade",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T17:45:24.583Z"
+    },
+    "Direito Civil::03 - Resumo - Bens no Codigo Civil.docx": {
+      "area": "Direito Civil",
+      "tema": "Bens no Codigo Civil",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T17:45:48.079Z"
+    },
+    "Direito Civil::04 - Resumo - Bem de Familia.docx": {
+      "area": "Direito Civil",
+      "tema": "Bem de Familia",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T17:45:59.096Z"
+    },
+    "Direito Civil::05 - Resumo - Negocio Juridico.docx": {
+      "area": "Direito Civil",
+      "tema": "Negocio Juridico",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T17:46:38.376Z"
+    },
+    "Direito Civil::06 - Resumo - Prescricao e Decadencia.docx": {
+      "area": "Direito Civil",
+      "tema": "Prescricao e Decadencia",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T17:47:03.652Z"
+    },
+    "Direito Civil::07 - Resumo - Direito das Obrigacoes.docx": {
+      "area": "Direito Civil",
+      "tema": "Direito das Obrigacoes",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T17:47:43.543Z"
+    },
+    "Direito Civil::08 - Resumo - Adimplemento e Extincao das Obrigacoes.docx": {
+      "area": "Direito Civil",
+      "tema": "Adimplemento e Extincao das Obrigacoes",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T17:48:24.091Z"
+    },
+    "Direito Civil::09 - Resumo - Transmissao das Obrigacoes.docx": {
+      "area": "Direito Civil",
+      "tema": "Transmissao das Obrigacoes",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T17:49:01.644Z"
+    },
+    "Direito Civil::10 - Resumo - Atos Unilaterais no Direito Civil.docx": {
+      "area": "Direito Civil",
+      "tema": "Atos Unilaterais no Direito Civil",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T17:49:16.807Z"
+    },
+    "Direito Civil::11 - Resumo - Teoria Geral dos Contratos.docx": {
+      "area": "Direito Civil",
+      "tema": "Teoria Geral dos Contratos",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T17:50:00.469Z"
+    },
+    "Direito Civil::12 - Resumo - Formacao e Extincao dos Contratos.docx": {
+      "area": "Direito Civil",
+      "tema": "Formacao e Extincao dos Contratos",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T17:50:43.780Z"
+    },
+    "Direito Civil::13 - Resumo - Contratos em Especie.docx": {
+      "area": "Direito Civil",
+      "tema": "Contratos em Especie",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T17:51:38.011Z"
+    },
+    "Direito Civil::14 - Resumo - Responsabilidade Civil.docx": {
+      "area": "Direito Civil",
+      "tema": "Responsabilidade Civil",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T17:52:13.936Z"
+    },
+    "Direito Civil::15 - Resumo - Direitos Reais.docx": {
+      "area": "Direito Civil",
+      "tema": "Direitos Reais",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T17:52:43.160Z"
+    },
+    "Direito Civil::16 - Resumo - Direitos Reais Propriedade Superficie e Habitacao.docx": {
+      "area": "Direito Civil",
+      "tema": "Direitos Reais Propriedade Superficie e Habitacao",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T17:53:17.777Z"
+    },
+    "Direito Civil::17 - Resumo - Servidoes Usufruto e Uso.docx": {
+      "area": "Direito Civil",
+      "tema": "Servidoes Usufruto e Uso",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T17:53:39.521Z"
+    },
+    "Direito Civil::18 - Resumo - Posse.docx": {
+      "area": "Direito Civil",
+      "tema": "Posse",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T17:54:09.809Z"
+    },
+    "Direito Civil::19 - Resumo - Direito de Propriedade.docx": {
+      "area": "Direito Civil",
+      "tema": "Direito de Propriedade",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T17:55:04.695Z"
+    },
+    "Direito Civil::20 - Resumo - Consolidacao da Propriedade no Regime da Lei 9514-97.docx": {
+      "area": "Direito Civil",
+      "tema": "Consolidacao da Propriedade no Regime da Lei 9514-97",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T17:55:25.533Z"
+    },
+    "Direito Civil::21 - Resumo - Casamento e Uniao Estavel.docx": {
+      "area": "Direito Civil",
+      "tema": "Casamento e Uniao Estavel",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T17:56:20.542Z"
+    },
+    "Direito Civil::22 - Resumo - Multipropriedade Imobiliaria.docx": {
+      "area": "Direito Civil",
+      "tema": "Multipropriedade Imobiliaria",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T17:56:42.819Z"
+    },
+    "Direito Civil::23 - Resumo - Regime de Bens.docx": {
+      "area": "Direito Civil",
+      "tema": "Regime de Bens",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T17:57:18.146Z"
+    },
+    "Direito Civil::24 - Resumo - Alimentos.docx": {
+      "area": "Direito Civil",
+      "tema": "Alimentos",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T17:58:10.336Z"
+    },
+    "Direito Civil::25 - Resumo - Tutela Curatela e Tomada de Decisao Apoiada.docx": {
+      "area": "Direito Civil",
+      "tema": "Tutela Curatela e Tomada de Decisao Apoiada",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T17:58:46.548Z"
+    },
+    "Direito Civil::26 - Resumo - Direito das Sucessoes.docx": {
+      "area": "Direito Civil",
+      "tema": "Direito das Sucessoes",
+      "capitulos": 15,
+      "timestamp": "2026-10-22T17:59:52.550Z"
+    },
+    "Direito Civil::27 - Resumo - Inventario e Partilha.docx": {
+      "area": "Direito Civil",
+      "tema": "Inventario e Partilha",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T18:00:26.398Z"
+    },
+    "Direito Civil::28 - Resumo - Direito Medico.docx": {
+      "area": "Direito Civil",
+      "tema": "Direito Medico",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:01:08.354Z"
+    },
+    "Direito Civil::29 - Resumo - Direito do Consumidor.docx": {
+      "area": "Direito Civil",
+      "tema": "Direito do Consumidor",
+      "capitulos": 15,
+      "timestamp": "2026-10-22T18:02:07.148Z"
+    },
+    "Direito Civil::30 - Resumo - Aspectos Materiais da Lei do Superendividamento.docx": {
+      "area": "Direito Civil",
+      "tema": "Aspectos Materiais da Lei do Superendividamento",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:02:48.046Z"
+    },
+    "Direito Civil::31 - Resumo - Vicios Contratuais.docx": {
+      "area": "Direito Civil",
+      "tema": "Vicios Contratuais",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T18:03:22.590Z"
+    },
+    "Direito Civil::32 - Resumo - Legislacao em Numeros - LINDB.docx": {
+      "area": "Direito Civil",
+      "tema": "Legislacao em Numeros - LINDB",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:03:46.517Z"
+    },
+    "Direito Civil::33 - Resumo - Legislacao em Prazos - LINDB.docx": {
+      "area": "Direito Civil",
+      "tema": "Legislacao em Prazos - LINDB",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T18:03:58.596Z"
+    },
+    "Direito Civil::34 - Resumo - Guarda.docx": {
+      "area": "Direito Civil",
+      "tema": "Guarda",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T18:04:11.566Z"
+    },
+    "Direito Civil::35 - Resumo - Planejamento Sucessorio.docx": {
+      "area": "Direito Civil",
+      "tema": "Planejamento Sucessorio",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:04:52.391Z"
+    },
+    "Direito Civil::36 - Resumo - Diretivas Antecipadas de Vontade.docx": {
+      "area": "Direito Civil",
+      "tema": "Diretivas Antecipadas de Vontade",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:05:33.534Z"
+    },
+    "Direito Civil::37 - Resumo - Reflexos do Estatuto da Pessoa com Deficiencia no Direito das Familias.docx": {
+      "area": "Direito Civil",
+      "tema": "Reflexos do Estatuto da Pessoa com Deficiencia no Direito das Familias",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:06:13.916Z"
+    },
+    "Direito Civil::38 - Resumo - Contratos no Direito das Familias.docx": {
+      "area": "Direito Civil",
+      "tema": "Contratos no Direito das Familias",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:06:56.471Z"
+    },
+    "Direito Civil::39 - Resumo - Novos Paradigmas do Direito das Familias.docx": {
+      "area": "Direito Civil",
+      "tema": "Novos Paradigmas do Direito das Familias",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:07:23.487Z"
+    },
+    "Direito Civil::40 - Resumo - Lei de Inquilinato.docx": {
+      "area": "Direito Civil",
+      "tema": "Lei de Inquilinato",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:07:47.427Z"
+    },
+    "Direito Civil::41 - Resumo - Contrato de Locacao.docx": {
+      "area": "Direito Civil",
+      "tema": "Contrato de Locacao",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:08:29.282Z"
+    },
+    "Direito Civil::42 - Resumo - Adocao.docx": {
+      "area": "Direito Civil",
+      "tema": "Adocao",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:09:09.708Z"
+    },
+    "Direito Civil::43 - Resumo - Responsabilidade Civil nas Relacoes Familiares.docx": {
+      "area": "Direito Civil",
+      "tema": "Responsabilidade Civil nas Relacoes Familiares",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:09:49.462Z"
+    },
+    "Direito Civil::44 - Resumo - Acoes de Familia na Pratica.docx": {
+      "area": "Direito Civil",
+      "tema": "Acoes de Familia na Pratica",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T18:10:39.271Z"
+    },
+    "Direito Processual Civil::01 - Resumo - Teoria Geral e Principios do Processo.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Teoria Geral e Principios do Processo",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:11:23.941Z"
+    },
+    "Direito Processual Civil::02 - Resumo - Jurisdicao.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Jurisdicao",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T18:11:57.179Z"
+    },
+    "Direito Processual Civil::03 - Resumo - Pressupostos Processuais.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Pressupostos Processuais",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:12:20.068Z"
+    },
+    "Direito Processual Civil::04 - Resumo - Competencia Processual.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Competencia Processual",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:12:48.819Z"
+    },
+    "Direito Processual Civil::05 - Resumo - Capacidade e Sujeitos Processuais.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Capacidade e Sujeitos Processuais",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:13:48.431Z"
+    },
+    "Direito Processual Civil::06 - Resumo - Partes e Procuradores.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Partes e Procuradores",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:14:10.526Z"
+    },
+    "Direito Processual Civil::07 - Resumo - Juiz e Auxiliares da Justica.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Juiz e Auxiliares da Justica",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:14:27.941Z"
+    },
+    "Direito Processual Civil::08 - Resumo - Auxiliares da Justica.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Auxiliares da Justica",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T18:15:08.650Z"
+    },
+    "Direito Processual Civil::09 - Resumo - Litisconsorcio.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Litisconsorcio",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:15:30.123Z"
+    },
+    "Direito Processual Civil::10 - Resumo - Intervencao de Terceiros.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Intervencao de Terceiros",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:15:53.712Z"
+    },
+    "Direito Processual Civil::11 - Resumo - Atos Processuais.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Atos Processuais",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T18:17:07.400Z"
+    },
+    "Direito Processual Civil::12 - Resumo - Atos e Nulidades Processuais.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Atos e Nulidades Processuais",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:17:33.594Z"
+    },
+    "Direito Processual Civil::13 - Resumo - Formacao, Suspensao e Extincao do Processo.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Formacao, Suspensao e Extincao do Processo",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T18:17:48.754Z"
+    },
+    "Direito Processual Civil::14 - Resumo - Tutela Provisoria.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Tutela Provisoria",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T18:18:02.739Z"
+    },
+    "Direito Processual Civil::15 - Resumo - Tutelas Provisorias na Pratica.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Tutelas Provisorias na Pratica",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T18:18:58.530Z"
+    },
+    "Direito Processual Civil::16 - Resumo - Procedimento Comum.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Procedimento Comum",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:19:22.535Z"
+    },
+    "Direito Processual Civil::17 - Resumo - Peticao Inicial.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Peticao Inicial",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:19:47.353Z"
+    },
+    "Direito Processual Civil::18 - Resumo - Respostas e Comportamentos do Reu.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Respostas e Comportamentos do Reu",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T18:20:18.714Z"
+    },
+    "Direito Processual Civil::19 - Resumo - Comunicacao dos Atos Processuais.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Comunicacao dos Atos Processuais",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:20:40.359Z"
+    },
+    "Direito Processual Civil::20 - Resumo - Sentenca e Coisa Julgada.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Sentenca e Coisa Julgada",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:21:04.705Z"
+    },
+    "Direito Processual Civil::21 - Resumo - Provas no Processo Civil.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Provas no Processo Civil",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:21:48.077Z"
+    },
+    "Direito Processual Civil::22 - Resumo - Teoria Geral dos Recursos.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Teoria Geral dos Recursos",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:22:07.059Z"
+    },
+    "Direito Processual Civil::23 - Resumo - Recursos no Processo Civil.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Recursos no Processo Civil",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T18:22:50.881Z"
+    },
+    "Direito Processual Civil::24 - Resumo - Processos de Competencia Originaria dos Tribunais.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Processos de Competencia Originaria dos Tribunais",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T18:23:41.815Z"
+    },
+    "Direito Processual Civil::25 - Resumo - Cumprimento de Sentenca.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Cumprimento de Sentenca",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:24:07.841Z"
+    },
+    "Direito Processual Civil::26 - Resumo - Formas Alternativas de Resolucao de Disputas.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Formas Alternativas de Resolucao de Disputas",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:24:28.157Z"
+    },
+    "Direito Processual Civil::27 - Resumo - Mediacao.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Mediacao",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T18:25:50.018Z"
+    },
+    "Direito Processual Civil::28 - Resumo - Arbitragem.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Arbitragem",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:26:58.708Z"
+    },
+    "Direito Processual Civil::29 - Resumo - Juizado Especial Civel.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Juizado Especial Civel",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T18:27:41.418Z"
+    },
+    "Direito Processual Civil::30 - Resumo - Juizado Especial Federal.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Juizado Especial Federal",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T18:29:04.417Z"
+    },
+    "Direito Processual Civil::31 - Resumo - Juizado Especial da Fazenda Publica.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Juizado Especial da Fazenda Publica",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:29:44.579Z"
+    },
+    "Direito Processual Civil::32 - Resumo - Processo de Execucao - Introducao e Principios.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Processo de Execucao - Introducao e Principios",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:30:07.181Z"
+    },
+    "Direito Processual Civil::33 - Resumo - Especies de Execucao.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Especies de Execucao",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T18:30:38.513Z"
+    },
+    "Direito Processual Civil::34 - Resumo - Embargos, Suspensao e Extincao da Execucao.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Embargos, Suspensao e Extincao da Execucao",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:31:02.351Z"
+    },
+    "Direito Processual Civil::35 - Resumo - Acoes Possessorias.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Acoes Possessorias",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T18:31:39.383Z"
+    },
+    "Direito Processual Civil::36 - Resumo - Acao de Exigir Contas.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Acao de Exigir Contas",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:31:56.949Z"
+    },
+    "Direito Processual Civil::37 - Resumo - Acao de Consignacao em Pagamento.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Acao de Consignacao em Pagamento",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T18:32:26.321Z"
+    },
+    "Direito Processual Civil::38 - Resumo - Inventario e Partilha.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Inventario e Partilha",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T18:33:00.075Z"
+    },
+    "Direito Processual Civil::39 - Resumo - Alienacao Fiduciaria em Garantia.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Alienacao Fiduciaria em Garantia",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T18:33:32.705Z"
+    },
+    "Direito Processual Civil::40 - Resumo - Acoes de Familia na Pratica.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Acoes de Familia na Pratica",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T18:35:15.233Z"
+    },
+    "Direito Processual Civil::41 - Resumo - Aspectos Processuais da Lei do Superendividamento.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Aspectos Processuais da Lei do Superendividamento",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:35:50.174Z"
+    },
+    "Direito Processual Civil::42 - Resumo - Processos Estruturais.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Processos Estruturais",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:36:14.475Z"
+    },
+    "Direito Processual Civil::43 - Resumo - Acao Monitoria.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Acao Monitoria",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:36:40.697Z"
+    },
+    "Direito Processual Civil::44 - Resumo - Direito Processual Coletivo.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Direito Processual Coletivo",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T18:37:33.761Z"
+    },
+    "Direito Processual Civil::45 - Resumo - Acoes de Despejo e Liminar.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Acoes de Despejo e Liminar",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:37:51.275Z"
+    },
+    "Direito Processual Civil::46 - Resumo - Deveres das Partes e seus Procuradores.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Deveres das Partes e seus Procuradores",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:38:09.143Z"
+    },
+    "Direito Processual Civil::47 - Resumo - Direito Processual do Consumidor.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Direito Processual do Consumidor",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:38:33.823Z"
+    },
+    "Direito Processual Civil::48 - Resumo - Lei do Direito de Resposta.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Lei do Direito de Resposta",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T18:38:49.645Z"
+    },
+    "Direito Processual Civil::49 - Resumo - Tutelas Provisorias no Processo Civil.docx": {
+      "area": "Direito Processual Civil",
+      "tema": "Tutelas Provisorias no Processo Civil",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:39:09.925Z"
+    },
+    "Direito Tributario::01 - Resumo - Reforma Tributária (Parte 2).docx": {
+      "area": "Direito Tributario",
+      "tema": "Reforma Tributária (Parte 2)",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:39:29.839Z"
+    },
+    "Direito Tributario::02 - Resumo - Competência Tributária (Revisão OAB).docx": {
+      "area": "Direito Tributario",
+      "tema": "Competência Tributária (Revisão OAB)",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T18:40:08.785Z"
+    },
+    "Direito Tributario::03 - Resumo - Reforma Tributária (Parte Geral e IVA).docx": {
+      "area": "Direito Tributario",
+      "tema": "Reforma Tributária (Parte Geral e IVA)",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T18:41:31.132Z"
+    },
+    "Direito Tributario::04 - Resumo - Fontes do Direito Tributário.docx": {
+      "area": "Direito Tributario",
+      "tema": "Fontes do Direito Tributário",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T18:42:17.589Z"
+    },
+    "Direito Tributario::05 - Resumo - Interpretação e Integração da Lei Tributária.docx": {
+      "area": "Direito Tributario",
+      "tema": "Interpretação e Integração da Lei Tributária",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T18:43:12.621Z"
+    },
+    "Direito Tributario::06 - Resumo - Princípios Tributários.docx": {
+      "area": "Direito Tributario",
+      "tema": "Princípios Tributários",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:43:51.769Z"
+    },
+    "Direito Tributario::07 - Resumo - Imunidades Tributárias.docx": {
+      "area": "Direito Tributario",
+      "tema": "Imunidades Tributárias",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:44:50.257Z"
+    },
+    "Direito Tributario::08 - Resumo - Espécies Tributárias.docx": {
+      "area": "Direito Tributario",
+      "tema": "Espécies Tributárias",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:45:15.572Z"
+    },
+    "Direito Tributario::09 - Resumo - Simples Nacional.docx": {
+      "area": "Direito Tributario",
+      "tema": "Simples Nacional",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T18:46:10.399Z"
+    },
+    "Direito Tributario::10 - Resumo - Sistema Tributário Nacional.docx": {
+      "area": "Direito Tributario",
+      "tema": "Sistema Tributário Nacional",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:46:48.183Z"
+    },
+    "Direito Tributario::11 - Resumo - Competência Tributária.docx": {
+      "area": "Direito Tributario",
+      "tema": "Competência Tributária",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T18:47:36.988Z"
+    },
+    "Direito Tributario::12 - Resumo - Obrigação Tributária.docx": {
+      "area": "Direito Tributario",
+      "tema": "Obrigação Tributária",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T18:48:06.611Z"
+    },
+    "Direito Tributario::13 - Resumo - Responsabilidade Tributária.docx": {
+      "area": "Direito Tributario",
+      "tema": "Responsabilidade Tributária",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:48:32.192Z"
+    },
+    "Direito Tributario::14 - Resumo - Crédito Tributário e Lançamento.docx": {
+      "area": "Direito Tributario",
+      "tema": "Crédito Tributário e Lançamento",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:48:54.892Z"
+    },
+    "Direito Tributario::15 - Resumo - Administração Tributária.docx": {
+      "area": "Direito Tributario",
+      "tema": "Administração Tributária",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:49:14.912Z"
+    },
+    "Direito Tributario::16 - Resumo - Suspensão da Exigibilidade do Crédito Tributário.docx": {
+      "area": "Direito Tributario",
+      "tema": "Suspensão da Exigibilidade do Crédito Tributário",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T18:50:36.865Z"
+    },
+    "Direito Tributario::17 - Resumo - Repartição de Receitas Tributárias.docx": {
+      "area": "Direito Tributario",
+      "tema": "Repartição de Receitas Tributárias",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:51:02.759Z"
+    },
+    "Direito Tributario::18 - Resumo - Execução Fiscal.docx": {
+      "area": "Direito Tributario",
+      "tema": "Execução Fiscal",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:51:25.168Z"
+    },
+    "Direito Tributario::19 - Resumo - Hipóteses de Extinção do Crédito Tributário.docx": {
+      "area": "Direito Tributario",
+      "tema": "Hipóteses de Extinção do Crédito Tributário",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T18:52:10.079Z"
+    },
+    "Direito Tributario::20 - Resumo - Processo de Execução Fiscal.docx": {
+      "area": "Direito Tributario",
+      "tema": "Processo de Execução Fiscal",
+      "capitulos": 15,
+      "timestamp": "2026-10-22T18:53:06.883Z"
+    },
+    "Direito Tributario::21 - Resumo - Ação Declaratória Tributária.docx": {
+      "area": "Direito Tributario",
+      "tema": "Ação Declaratória Tributária",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T18:54:02.254Z"
+    },
+    "Direito Tributario::22 - Resumo - Recursos Extraordinário e Especial em Matéria Tributária.docx": {
+      "area": "Direito Tributario",
+      "tema": "Recursos Extraordinário e Especial em Matéria Tributária",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:54:25.586Z"
+    },
+    "Direito Tributario::23 - Resumo - Respostas à Execução Fiscal.docx": {
+      "area": "Direito Tributario",
+      "tema": "Respostas à Execução Fiscal",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T18:55:11.029Z"
+    },
+    "Direito Tributario::24 - Resumo - Ação de Consignação em Pagamento.docx": {
+      "area": "Direito Tributario",
+      "tema": "Ação de Consignação em Pagamento",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T18:55:19.979Z"
+    },
+    "Direito Tributario::25 - Resumo - Ações do Controle de Constitucionalidade.docx": {
+      "area": "Direito Tributario",
+      "tema": "Ações do Controle de Constitucionalidade",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:55:41.914Z"
+    },
+    "Direito Tributario::26 - Resumo - Ação Anulatória em Restituição e Compensação.docx": {
+      "area": "Direito Tributario",
+      "tema": "Ação Anulatória em Restituição e Compensação",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T18:55:52.815Z"
+    },
+    "Direito Tributario::27 - Resumo - Mandado de Segurança.docx": {
+      "area": "Direito Tributario",
+      "tema": "Mandado de Segurança",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T18:56:30.023Z"
+    },
+    "Direito Tributario::28 - Resumo - Ação de Restituição Tributária.docx": {
+      "area": "Direito Tributario",
+      "tema": "Ação de Restituição Tributária",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:56:51.951Z"
+    },
+    "Direito Tributario::29 - Resumo - Exclusão do Crédito Tributário.docx": {
+      "area": "Direito Tributario",
+      "tema": "Exclusão do Crédito Tributário",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T18:57:12.699Z"
+    },
+    "Direito Tributario::30 - Resumo - Ação Anulatória Tributária.docx": {
+      "area": "Direito Tributario",
+      "tema": "Ação Anulatória Tributária",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T18:57:31.029Z"
+    },
+    "Direito Tributario::31 - Resumo - Execuções, Parecer e Habeas Corpus.docx": {
+      "area": "Direito Tributario",
+      "tema": "Execuções, Parecer e Habeas Corpus",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T18:58:01.757Z"
+    },
+    "Direito Tributario::32 - Resumo - Processo Tributário.docx": {
+      "area": "Direito Tributario",
+      "tema": "Processo Tributário",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T18:58:55.650Z"
+    },
+    "Direito Tributario::33 - Resumo - Direito Concorrencial.docx": {
+      "area": "Direito Tributario",
+      "tema": "Direito Concorrencial",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T18:59:40.084Z"
+    },
+    "Direito Constitucional::01 - Resumo - História Constitucional do Brasil.docx": {
+      "area": "Direito Constitucional",
+      "tema": "História Constitucional do Brasil",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T19:00:30.148Z"
+    },
+    "Direito Constitucional::02 - Resumo - Constitucionalismo e Classificação das Constituições.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Constitucionalismo e Classificação das Constituições",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:00:56.882Z"
+    },
+    "Direito Constitucional::03 - Resumo - Introdução à Constituição Federal de 1988.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Introdução à Constituição Federal de 1988",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T19:01:07.815Z"
+    },
+    "Direito Constitucional::04 - Resumo - Poder Constituinte.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Poder Constituinte",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T19:02:02.337Z"
+    },
+    "Direito Constitucional::05 - Resumo - Hermenêutica Constitucional.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Hermenêutica Constitucional",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:02:42.649Z"
+    },
+    "Direito Constitucional::06 - Resumo - Teoria Geral dos Direitos Fundamentais.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Teoria Geral dos Direitos Fundamentais",
+      "capitulos": 18,
+      "timestamp": "2026-10-22T19:03:53.993Z"
+    },
+    "Direito Constitucional::07 - Resumo - Direitos e Garantias Individuais.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Direitos e Garantias Individuais",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:04:23.130Z"
+    },
+    "Direito Constitucional::08 - Resumo - Direitos Sociais.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Direitos Sociais",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T19:05:08.443Z"
+    },
+    "Direito Constitucional::09 - Resumo - Direito de Nacionalidade.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Direito de Nacionalidade",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:05:49.065Z"
+    },
+    "Direito Constitucional::10 - Resumo - Direitos Políticos.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Direitos Políticos",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:06:16.582Z"
+    },
+    "Direito Constitucional::11 - Resumo - Ordem Econômica e Financeira na CF-88.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Ordem Econômica e Financeira na CF-88",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T19:07:00.709Z"
+    },
+    "Direito Constitucional::12 - Resumo - Organização do Estado.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Organização do Estado",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T19:07:23.160Z"
+    },
+    "Direito Constitucional::13 - Resumo - Intervenção Federal e Estadual.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Intervenção Federal e Estadual",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T19:07:45.519Z"
+    },
+    "Direito Constitucional::14 - Resumo - Organização dos Poderes.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Organização dos Poderes",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:07:59.911Z"
+    },
+    "Direito Constitucional::15 - Resumo - Poder Legislativo.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Poder Legislativo",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:08:27.471Z"
+    },
+    "Direito Constitucional::16 - Resumo - Processo Legislativo.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Processo Legislativo",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:08:44.765Z"
+    },
+    "Direito Constitucional::17 - Resumo - Poder Executivo.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Poder Executivo",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:09:11.774Z"
+    },
+    "Direito Constitucional::18 - Resumo - Poder Judiciário - Aspectos Gerais.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Poder Judiciário - Aspectos Gerais",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T19:09:44.873Z"
+    },
+    "Direito Constitucional::19 - Resumo - Poder Judiciário - Órgãos.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Poder Judiciário - Órgãos",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T19:10:50.692Z"
+    },
+    "Direito Constitucional::20 - Resumo - Controle de Constitucionalidade.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Controle de Constitucionalidade",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:11:25.291Z"
+    },
+    "Direito Constitucional::21 - Resumo - Remédios Constitucionais.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Remédios Constitucionais",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:11:51.455Z"
+    },
+    "Direito Constitucional::22 - Resumo - Súmulas Vinculantes.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Súmulas Vinculantes",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:12:11.765Z"
+    },
+    "Direito Constitucional::23 - Resumo - Súmulas Importantes - Direito Constitucional.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Súmulas Importantes - Direito Constitucional",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:12:50.454Z"
+    },
+    "Direito Constitucional::24 - Resumo - Funções Essenciais à Justiça.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Funções Essenciais à Justiça",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T19:13:41.990Z"
+    },
+    "Direito Constitucional::25 - Resumo - Ministério Público.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Ministério Público",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:14:26.827Z"
+    },
+    "Direito Constitucional::26 - Resumo - Defensoria Pública.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Defensoria Pública",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T19:15:01.292Z"
+    },
+    "Direito Constitucional::27 - Resumo - Defesa do Estado e das Instituições Democráticas.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Defesa do Estado e das Instituições Democráticas",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:15:29.755Z"
+    },
+    "Direito Constitucional::28 - Resumo - Legislação em Prazos - Constituição Federal - Parte 1.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Legislação em Prazos - Constituição Federal - Parte 1",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:15:51.582Z"
+    },
+    "Direito Constitucional::29 - Resumo - Direito Eleitoral - Propaganda Política.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Direito Eleitoral - Propaganda Política",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T19:16:24.892Z"
+    },
+    "Direito Constitucional::30 - Resumo - Direito Eleitoral.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Direito Eleitoral",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T19:17:14.586Z"
+    },
+    "Direito Constitucional::32 - Resumo - Habeas Corpus - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Habeas Corpus - Peça Prática",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:17:48.936Z"
+    },
+    "Direito Constitucional::33 - Resumo - Ação Civil Pública - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Ação Civil Pública - Peça Prática",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:18:03.805Z"
+    },
+    "Direito Constitucional::34 - Resumo - Habeas Data - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Habeas Data - Peça Prática",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T19:18:25.429Z"
+    },
+    "Direito Constitucional::35 - Resumo - Ação Popular - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Ação Popular - Peça Prática",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:18:44.188Z"
+    },
+    "Direito Constitucional::36 - Resumo - Mandado de Injunção Individual e Coletivo - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Mandado de Injunção Individual e Coletivo - Peça Prática",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T19:18:56.496Z"
+    },
+    "Direito Constitucional::37 - Resumo - Reclamação Constitucional - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Reclamação Constitucional - Peça Prática",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:19:11.711Z"
+    },
+    "Direito Constitucional::38 - Resumo - Ação Direta de Inconstitucionalidade - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Ação Direta de Inconstitucionalidade - Peça Prática",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:19:25.742Z"
+    },
+    "Direito Constitucional::39 - Resumo - Ação Direta de Inconstitucionalidade por Omissão - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Ação Direta de Inconstitucionalidade por Omissão - Peça Prática",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T19:19:39.478Z"
+    },
+    "Direito Constitucional::40 - Resumo - Arguição de Descumprimento de Preceito Fundamental - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Arguição de Descumprimento de Preceito Fundamental - Peça Prática",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:19:56.127Z"
+    },
+    "Direito Constitucional::41 - Resumo - Ação Declaratória de Constitucionalidade - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Ação Declaratória de Constitucionalidade - Peça Prática",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:20:11.003Z"
+    },
+    "Direito Constitucional::42 - Resumo - Recurso Especial - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Recurso Especial - Peça Prática",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:20:31.124Z"
+    },
+    "Direito Constitucional::43 - Resumo - Recurso Ordinário Constitucional - Peça Prática.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Recurso Ordinário Constitucional - Peça Prática",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:20:45.984Z"
+    },
+    "Direito Constitucional::44 - Resumo - Preâmbulo Constitucional e Princípios Fundamentais.docx": {
+      "area": "Direito Constitucional",
+      "tema": "Preâmbulo Constitucional e Princípios Fundamentais",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:21:11.897Z"
+    },
+    "Direito Do Trabalho::01 - Resumo - Introdução ao Direito do Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Introdução ao Direito do Trabalho",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T19:21:54.964Z"
+    },
+    "Direito Do Trabalho::02 - Resumo - Histórico do Direito do Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Histórico do Direito do Trabalho",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T19:22:05.737Z"
+    },
+    "Direito Do Trabalho::04 - Resumo - Trabalho Lato Sensu.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Trabalho Lato Sensu",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T19:23:02.108Z"
+    },
+    "Direito Do Trabalho::05 - Resumo - Sujeitos do Direito do Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Sujeitos do Direito do Trabalho",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T19:23:48.340Z"
+    },
+    "Direito Do Trabalho::06 - Resumo - Remuneração e Salário.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Remuneração e Salário",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:24:24.481Z"
+    },
+    "Direito Do Trabalho::07 - Resumo - Efeitos Conexos do Contrato de Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Efeitos Conexos do Contrato de Trabalho",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:24:53.058Z"
+    },
+    "Direito Do Trabalho::08 - Resumo - Acidente de Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Acidente de Trabalho",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:25:22.478Z"
+    },
+    "Direito Do Trabalho::09 - Resumo - Duração do Trabalho e Repousos.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Duração do Trabalho e Repousos",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T19:26:17.667Z"
+    },
+    "Direito Do Trabalho::10 - Resumo - FGTS.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "FGTS",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:26:49.613Z"
+    },
+    "Direito Do Trabalho::11 - Resumo - Verbas Rescisórias e Cálculos Trabalhistas.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Verbas Rescisórias e Cálculos Trabalhistas",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T19:27:00.646Z"
+    },
+    "Direito Do Trabalho::12 - Resumo - Terceirização e Trabalho Temporário.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Terceirização e Trabalho Temporário",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T19:27:12.069Z"
+    },
+    "Direito Do Trabalho::13 - Resumo - Estabilidades Trabalhistas.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Estabilidades Trabalhistas",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T19:27:46.604Z"
+    },
+    "Direito Do Trabalho::14 - Resumo - Prescrição e Decadência no Direito do Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Prescrição e Decadência no Direito do Trabalho",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:28:06.750Z"
+    },
+    "Direito Do Trabalho::15 - Resumo - Reforma Trabalhista.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Reforma Trabalhista",
+      "capitulos": 18,
+      "timestamp": "2026-10-22T19:29:12.160Z"
+    },
+    "Direito Do Trabalho::16 - Resumo - LGPD nas Relações Trabalhistas.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "LGPD nas Relações Trabalhistas",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T19:29:47.251Z"
+    },
+    "Direito Do Trabalho::17 - Resumo - Greve.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Greve",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T19:30:10.418Z"
+    },
+    "Direito Do Trabalho::18 - Resumo - Negociação Coletiva.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Negociação Coletiva",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:30:37.895Z"
+    },
+    "Direito Do Trabalho::19 - Resumo - Direito Coletivo do Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Direito Coletivo do Trabalho",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T19:31:27.693Z"
+    },
+    "Direito Do Trabalho::20 - Resumo - PIS-PASEP.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "PIS-PASEP",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T19:31:49.726Z"
+    },
+    "Direito Do Trabalho::21 - Resumo - Seguro-Desemprego.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Seguro-Desemprego",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:32:18.225Z"
+    },
+    "Direito Do Trabalho::22 - Resumo - Salário Família.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Salário Família",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:32:35.629Z"
+    },
+    "Direito Do Trabalho::23 - Resumo - Salário-Maternidade.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Salário-Maternidade",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:33:11.300Z"
+    },
+    "Direito Do Trabalho::24 - Resumo - Contrato de Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Contrato de Trabalho",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T19:34:04.367Z"
+    },
+    "Direito Do Trabalho::25 - Resumo - Suspensão, Interrupção e Cessação do Contrato de Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Suspensão, Interrupção e Cessação do Contrato de Trabalho",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:34:21.682Z"
+    },
+    "Direito Do Trabalho::26 - Resumo - Saúde e Segurança no Trabalho.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Saúde e Segurança no Trabalho",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T19:34:56.598Z"
+    },
+    "Direito Do Trabalho::27 - Resumo - Proteção do Trabalho da Criança e do Adolescente.docx": {
+      "area": "Direito Do Trabalho",
+      "tema": "Proteção do Trabalho da Criança e do Adolescente",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T19:35:48.181Z"
+    },
+    "Direito Administrativo::01 - Resumo - Origens e Definições do Direito Administrativo.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Origens e Definições do Direito Administrativo",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:36:06.628Z"
+    },
+    "Direito Administrativo::02 - Resumo - Conceitos Fundamentais de Direito Administrativo.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Conceitos Fundamentais de Direito Administrativo",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:36:30.512Z"
+    },
+    "Direito Administrativo::03 - Resumo - Fontes do Direito Administrativo.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Fontes do Direito Administrativo",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T19:37:04.869Z"
+    },
+    "Direito Administrativo::04 - Resumo - Regime Jurídico Administrativo.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Regime Jurídico Administrativo",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:37:19.266Z"
+    },
+    "Direito Administrativo::05 - Resumo - Terceiro Setor.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Terceiro Setor",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:37:58.533Z"
+    },
+    "Direito Administrativo::06 - Resumo - Poderes Administrativos.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Poderes Administrativos",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T19:38:19.788Z"
+    },
+    "Direito Administrativo::07 - Resumo - Atos Administrativos.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Atos Administrativos",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:38:48.480Z"
+    },
+    "Direito Administrativo::09 - Resumo - Controle da Administração.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Controle da Administração",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:39:55.159Z"
+    },
+    "Direito Administrativo::10 - Resumo - Serviços Públicos.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Serviços Públicos",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:40:25.133Z"
+    },
+    "Direito Administrativo::11 - Resumo - Agentes Públicos.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Agentes Públicos",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T19:40:56.690Z"
+    },
+    "Direito Administrativo::12 - Resumo - Contratos Administrativos.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Contratos Administrativos",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T19:41:34.238Z"
+    },
+    "Direito Administrativo::13 - Resumo - Processo Administrativo.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Processo Administrativo",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T19:42:19.437Z"
+    },
+    "Direito Administrativo::14 - Resumo - Lei Anticorrupção.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Lei Anticorrupção",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:42:48.469Z"
+    },
+    "Direito Administrativo::15 - Resumo - Responsabilidade Civil do Estado.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Responsabilidade Civil do Estado",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T19:43:22.535Z"
+    },
+    "Direito Administrativo::16 - Resumo - Intervenção do Estado no Domínio Econômico.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Intervenção do Estado no Domínio Econômico",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:43:43.056Z"
+    },
+    "Direito Administrativo::17 - Resumo - Improbidade Administrativa.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Improbidade Administrativa",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:44:21.617Z"
+    },
+    "Direito Administrativo::18 - Resumo - Intervenção Estatal na Propriedade.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Intervenção Estatal na Propriedade",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:44:45.392Z"
+    },
+    "Direito Administrativo::20 - Resumo - Bens Públicos.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Bens Públicos",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:45:38.900Z"
+    },
+    "Direito Administrativo::21 - Resumo - Licitações.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Licitações",
+      "capitulos": 20,
+      "timestamp": "2026-10-22T19:46:58.454Z"
+    },
+    "Direito Administrativo::22 - Resumo - Direito Sancionador na Lei de Licitações (Lei 14.133-2021).docx": {
+      "area": "Direito Administrativo",
+      "tema": "Direito Sancionador na Lei de Licitações (Lei 14.133-2021)",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T19:47:33.903Z"
+    },
+    "Direito Administrativo::23 - Resumo - Concessões.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Concessões",
+      "capitulos": 15,
+      "timestamp": "2026-10-22T19:48:36.873Z"
+    },
+    "Direito Administrativo::24 - Resumo - Tópicos em Direito Administrativo.docx": {
+      "area": "Direito Administrativo",
+      "tema": "Tópicos em Direito Administrativo",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T19:48:48.186Z"
+    },
+    "Direito Processual Penal::01 - Resumo - Princípios e Garantias do Processo Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Princípios e Garantias do Processo Penal",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T19:49:39.739Z"
+    },
+    "Direito Processual Penal::02 - Resumo - Lei Processual Penal no Tempo e no Espaço.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Lei Processual Penal no Tempo e no Espaço",
+      "capitulos": 1,
+      "timestamp": "2026-10-22T19:49:47.532Z"
+    },
+    "Direito Processual Penal::03 - Resumo - Inquérito Policial.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Inquérito Policial",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T19:50:29.651Z"
+    },
+    "Direito Processual Penal::04 - Resumo - Audiência de Custódia.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Audiência de Custódia",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T19:51:08.111Z"
+    },
+    "Direito Processual Penal::05 - Resumo - Ação Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Ação Penal",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T19:51:29.608Z"
+    },
+    "Direito Processual Penal::06 - Resumo - Interceptação Telefônica.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Interceptação Telefônica",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:51:55.734Z"
+    },
+    "Direito Processual Penal::07 - Resumo - Prisões, Medidas Cautelares e Liberdade Provisória.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Prisões, Medidas Cautelares e Liberdade Provisória",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T19:52:40.868Z"
+    },
+    "Direito Processual Penal::08 - Resumo - Ação Civil Decorrente de Sentença Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Ação Civil Decorrente de Sentença Penal",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T19:53:06.434Z"
+    },
+    "Direito Processual Penal::09 - Resumo - Competência Processual Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Competência Processual Penal",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:53:46.585Z"
+    },
+    "Direito Processual Penal::10 - Resumo - Membros da Justiça.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Membros da Justiça",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:54:06.971Z"
+    },
+    "Direito Processual Penal::11 - Resumo - Sistemas Processuais Penais.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Sistemas Processuais Penais",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T19:54:29.022Z"
+    },
+    "Direito Processual Penal::12 - Resumo - Disposições Gerais sobre Provas no Processo Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Disposições Gerais sobre Provas no Processo Penal",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T19:54:39.646Z"
+    },
+    "Direito Processual Penal::13 - Resumo - Provas no Processo Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Provas no Processo Penal",
+      "capitulos": 18,
+      "timestamp": "2026-10-22T19:55:56.200Z"
+    },
+    "Direito Processual Penal::14 - Resumo - Citações e Intimações.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Citações e Intimações",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T19:56:11.863Z"
+    },
+    "Direito Processual Penal::15 - Resumo - Procedimento Comum, Júri e Procedimento Sumário.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Procedimento Comum, Júri e Procedimento Sumário",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T19:56:30.654Z"
+    },
+    "Direito Processual Penal::16 - Resumo - Nulidades no Processo Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Nulidades no Processo Penal",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T19:56:55.275Z"
+    },
+    "Direito Processual Penal::17 - Resumo - Sentença no Processo Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Sentença no Processo Penal",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T19:57:34.205Z"
+    },
+    "Direito Processual Penal::18 - Resumo - Recursos no Processo Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Recursos no Processo Penal",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T19:58:08.981Z"
+    },
+    "Direito Processual Penal::19 - Resumo - Lei de Execução Penal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Lei de Execução Penal",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:58:38.836Z"
+    },
+    "Direito Processual Penal::20 - Resumo - Juizado Especial Criminal.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Juizado Especial Criminal",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T19:59:06.813Z"
+    },
+    "Direito Processual Penal::21 - Resumo - Questões e Processos Incidentes.docx": {
+      "area": "Direito Processual Penal",
+      "tema": "Questões e Processos Incidentes",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T19:59:49.504Z"
+    },
+    "Teoria E Filosofia Do Direito::01 - Resumo - Filosofia do Direito.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Filosofia do Direito",
+      "capitulos": 15,
+      "timestamp": "2026-10-22T20:00:48.532Z"
+    },
+    "Teoria E Filosofia Do Direito::02 - Resumo - Teoria da Norma Jurídica.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Teoria da Norma Jurídica",
+      "capitulos": 21,
+      "timestamp": "2026-10-22T20:02:04.517Z"
+    },
+    "Teoria E Filosofia Do Direito::03 - Resumo - História do Direito.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "História do Direito",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:02:29.588Z"
+    },
+    "Teoria E Filosofia Do Direito::04 - Resumo - Filosofia do Direito na Antiguidade.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Filosofia do Direito na Antiguidade",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T20:02:44.162Z"
+    },
+    "Teoria E Filosofia Do Direito::05 - Resumo - Filosofia do Direito na Modernidade.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Filosofia do Direito na Modernidade",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T20:03:28.596Z"
+    },
+    "Teoria E Filosofia Do Direito::06 - Resumo - Hans Kelsen.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Hans Kelsen",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:03:46.588Z"
+    },
+    "Teoria E Filosofia Do Direito::07 - Resumo - Introdução à Hermenêutica Jurídica.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Introdução à Hermenêutica Jurídica",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:04:04.570Z"
+    },
+    "Teoria E Filosofia Do Direito::08 - Resumo - Hermenêutica e Métodos Interpretativos.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Hermenêutica e Métodos Interpretativos",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T20:04:25.411Z"
+    },
+    "Teoria E Filosofia Do Direito::09 - Resumo - Introdução ao Estudo do Direito.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Introdução ao Estudo do Direito",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T20:05:13.203Z"
+    },
+    "Teoria E Filosofia Do Direito::10 - Resumo - LINDB.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "LINDB",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T20:05:37.094Z"
+    },
+    "Teoria E Filosofia Do Direito::11 - Resumo - Ciência Política.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Ciência Política",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T20:06:13.883Z"
+    },
+    "Teoria E Filosofia Do Direito::12 - Resumo - A Formação do Capitalismo.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "A Formação do Capitalismo",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:06:32.878Z"
+    },
+    "Teoria E Filosofia Do Direito::13 - Resumo - Pragmatismo Jurídico.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Pragmatismo Jurídico",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T20:07:08.559Z"
+    },
+    "Teoria E Filosofia Do Direito::14 - Resumo - Direito Romano.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Direito Romano",
+      "capitulos": 17,
+      "timestamp": "2026-10-22T20:08:13.184Z"
+    },
+    "Teoria E Filosofia Do Direito::15 - Resumo - Direito, Psicologia e Neurociência.docx": {
+      "area": "Teoria E Filosofia Do Direito",
+      "tema": "Direito, Psicologia e Neurociência",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T20:08:46.590Z"
+    },
+    "Direito Empresarial::01 - Resumo - Teoria Geral do Direito Empresarial.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Teoria Geral do Direito Empresarial",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T20:09:43.821Z"
+    },
+    "Direito Empresarial::02 - Resumo - Sociedades do Direito Empresarial.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Sociedades do Direito Empresarial",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T20:10:31.545Z"
+    },
+    "Direito Empresarial::03 - Resumo - Sociedade Limitada.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Sociedade Limitada",
+      "capitulos": 15,
+      "timestamp": "2026-10-22T20:11:29.944Z"
+    },
+    "Direito Empresarial::04 - Resumo - Sociedades Anônimas.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Sociedades Anônimas",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T20:12:23.290Z"
+    },
+    "Direito Empresarial::05 - Resumo - Falência.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Falência",
+      "capitulos": 15,
+      "timestamp": "2026-10-22T20:13:21.009Z"
+    },
+    "Direito Empresarial::06 - Resumo - Recuperação Judicial.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Recuperação Judicial",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T20:14:18.291Z"
+    },
+    "Direito Empresarial::07 - Resumo - Desconsideração da Personalidade Jurídica.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Desconsideração da Personalidade Jurídica",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T20:14:34.204Z"
+    },
+    "Direito Empresarial::08 - Resumo - Teoria Geral dos Contratos Empresariais.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Teoria Geral dos Contratos Empresariais",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T20:15:17.189Z"
+    },
+    "Direito Empresarial::09 - Resumo - Contratos Empresariais em Espécie.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Contratos Empresariais em Espécie",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T20:16:08.835Z"
+    },
+    "Direito Empresarial::10 - Resumo - Contrato de Distribuição.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Contrato de Distribuição",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:16:35.402Z"
+    },
+    "Direito Empresarial::12 - Resumo - Propriedade Intelectual.docx": {
+      "area": "Direito Empresarial",
+      "tema": "Propriedade Intelectual",
+      "capitulos": 15,
+      "timestamp": "2026-10-22T20:18:15.421Z"
+    },
+    "Lei Penal Especial::01 - Resumo - Organizações Criminosas.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Organizações Criminosas",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T20:18:57.844Z"
+    },
+    "Lei Penal Especial::02 - Resumo - Lei das Contravenções Penais.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Lei das Contravenções Penais",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T20:19:29.109Z"
+    },
+    "Lei Penal Especial::03 - Resumo - Crimes Contra o Estado Democrático de Direito.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Crimes Contra o Estado Democrático de Direito",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T20:20:03.487Z"
+    },
+    "Lei Penal Especial::04 - Resumo - Estatuto da Pessoa Idosa (Crimes e Penas).docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Estatuto da Pessoa Idosa (Crimes e Penas)",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:20:23.288Z"
+    },
+    "Lei Penal Especial::05 - Resumo - Lei Maria da Penha.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Lei Maria da Penha",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T20:20:59.347Z"
+    },
+    "Lei Penal Especial::06 - Resumo - Crimes no Código de Trânsito Brasileiro.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Crimes no Código de Trânsito Brasileiro",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T20:21:26.802Z"
+    },
+    "Lei Penal Especial::07 - Resumo - Lei de Abuso de Autoridade.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Lei de Abuso de Autoridade",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T20:22:23.114Z"
+    },
+    "Lei Penal Especial::08 - Resumo - Juizado Especial Criminal.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Juizado Especial Criminal",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T20:22:53.140Z"
+    },
+    "Lei Penal Especial::09 - Resumo - Lei de Tortura.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Lei de Tortura",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:23:19.040Z"
+    },
+    "Lei Penal Especial::10 - Resumo - Lei de Crimes Hediondos.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Lei de Crimes Hediondos",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T20:23:41.400Z"
+    },
+    "Lei Penal Especial::11 - Resumo - Lei de Execução Penal.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Lei de Execução Penal",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T20:24:09.033Z"
+    },
+    "Lei Penal Especial::12 - Resumo - Interceptação Telefônica.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Interceptação Telefônica",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:24:35.629Z"
+    },
+    "Lei Penal Especial::13 - Resumo - Estatuto do Desarmamento.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Estatuto do Desarmamento",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T20:25:11.378Z"
+    },
+    "Lei Penal Especial::14 - Resumo - Lei de Drogas.docx": {
+      "area": "Lei Penal Especial",
+      "tema": "Lei de Drogas",
+      "capitulos": 20,
+      "timestamp": "2026-10-22T20:26:27.331Z"
+    },
+    "Direito Financeiro::01 - Resumo - Sistema Financeiro Nacional.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Sistema Financeiro Nacional",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T20:26:45.187Z"
+    },
+    "Direito Financeiro::02 - Resumo - Responsabilidade na Ordem Econômica.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Responsabilidade na Ordem Econômica",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T20:27:27.965Z"
+    },
+    "Direito Financeiro::03 - Resumo - Direito Econômico Internacional.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Direito Econômico Internacional",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T20:28:07.833Z"
+    },
+    "Direito Financeiro::04 - Resumo - Introdução ao Direito Financeiro.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Introdução ao Direito Financeiro",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:28:26.177Z"
+    },
+    "Direito Financeiro::05 - Resumo - Receitas Públicas.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Receitas Públicas",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T20:28:42.173Z"
+    },
+    "Direito Financeiro::06 - Resumo - Direito Financeiro.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Direito Financeiro",
+      "capitulos": 29,
+      "timestamp": "2026-10-22T20:30:31.899Z"
+    },
+    "Direito Financeiro::07 - Resumo - Federalismo Fiscal.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Federalismo Fiscal",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T20:30:47.972Z"
+    },
+    "Direito Financeiro::09 - Resumo - Despesas e Gastos Públicos.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Despesas e Gastos Públicos",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:31:44.082Z"
+    },
+    "Direito Financeiro::10 - Resumo - Fontes e Normas Gerais do Direito Financeiro.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Fontes e Normas Gerais do Direito Financeiro",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:32:04.305Z"
+    },
+    "Direito Financeiro::11 - Resumo - Fundos Financeiros.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Fundos Financeiros",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T20:32:21.147Z"
+    },
+    "Direito Financeiro::12 - Resumo - Direito Financeiro e Políticas Públicas.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Direito Financeiro e Políticas Públicas",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:32:47.243Z"
+    },
+    "Direito Financeiro::13 - Resumo - Crédito e Dívida Pública no Direito Financeiro.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Crédito e Dívida Pública no Direito Financeiro",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T20:33:03.543Z"
+    },
+    "Direito Financeiro::14 - Resumo - Fiscalização Financeira e Orçamentária.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Fiscalização Financeira e Orçamentária",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:33:25.119Z"
+    },
+    "Direito Financeiro::15 - Resumo - Direito Econômico - Parte Geral.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Direito Econômico - Parte Geral",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T20:34:12.392Z"
+    },
+    "Direito Financeiro::16 - Resumo - Direito Econômico - Estrutura da Defesa da Concorrência.docx": {
+      "area": "Direito Financeiro",
+      "tema": "Direito Econômico - Estrutura da Defesa da Concorrência",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T20:34:54.559Z"
+    },
+    "DIREITO PREVIDENCIARIO::01 - Resumo - Introdução à Seguridade Social.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Introdução à Seguridade Social",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T20:35:13.128Z"
+    },
+    "DIREITO PREVIDENCIARIO::02 - Resumo - Origens Históricas da Seguridade Social.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Origens Históricas da Seguridade Social",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T20:35:24.500Z"
+    },
+    "DIREITO PREVIDENCIARIO::03 - Resumo - Princípios da Seguridade Social.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Princípios da Seguridade Social",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T20:36:07.703Z"
+    },
+    "DIREITO PREVIDENCIARIO::04 - Resumo - Assistência Social.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Assistência Social",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T20:36:46.960Z"
+    },
+    "DIREITO PREVIDENCIARIO::05 - Resumo - Saúde.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Saúde",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T20:37:16.336Z"
+    },
+    "DIREITO PREVIDENCIARIO::06 - Resumo - Previdência Social Brasileira.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Previdência Social Brasileira",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T20:37:45.195Z"
+    },
+    "DIREITO PREVIDENCIARIO::07 - Resumo - Beneficiários do RGPS - Segurados e Dependentes.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Beneficiários do RGPS - Segurados e Dependentes",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T20:38:31.471Z"
+    },
+    "DIREITO PREVIDENCIARIO::09 - Resumo - Pensão por Morte.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Pensão por Morte",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:39:20.054Z"
+    },
+    "DIREITO PREVIDENCIARIO::10 - Resumo - Auxílio Reclusão.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Auxílio Reclusão",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T20:39:41.202Z"
+    },
+    "DIREITO PREVIDENCIARIO::11 - Resumo - Auxílio-Acidente.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Auxílio-Acidente",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:39:59.465Z"
+    },
+    "DIREITO PREVIDENCIARIO::12 - Resumo - Aposentadoria da Pessoa com Deficiência.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Aposentadoria da Pessoa com Deficiência",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:40:25.523Z"
+    },
+    "DIREITO PREVIDENCIARIO::13 - Resumo - Aposentadoria Especial.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Aposentadoria Especial",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:40:44.920Z"
+    },
+    "DIREITO PREVIDENCIARIO::14 - Resumo - Aposentadoria por Incapacidade Permanente.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Aposentadoria por Incapacidade Permanente",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:41:11.331Z"
+    },
+    "DIREITO PREVIDENCIARIO::15 - Resumo - Aposentadoria Programada.docx": {
+      "area": "DIREITO PREVIDENCIARIO",
+      "tema": "Aposentadoria Programada",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:41:29.709Z"
+    },
+    "Politicas Publicas::01 - Resumo - Estatuto da Pessoa Idosa - Medidas Administrativas e Judiciais.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Estatuto da Pessoa Idosa - Medidas Administrativas e Judiciais",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T20:42:02.338Z"
+    },
+    "Politicas Publicas::02 - Resumo - Estatuto da Pessoa Idosa - Direitos Fundamentais.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Estatuto da Pessoa Idosa - Direitos Fundamentais",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T20:42:49.945Z"
+    },
+    "Politicas Publicas::03 - Resumo - Direito Urbanístico - Estatuto da Cidade.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Direito Urbanístico - Estatuto da Cidade",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:43:16.534Z"
+    },
+    "Politicas Publicas::04 - Resumo - Direito Antidiscriminatório.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Direito Antidiscriminatório",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T20:43:49.789Z"
+    },
+    "Politicas Publicas::05 - Resumo - Marco Civil da Internet.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Marco Civil da Internet",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:44:15.591Z"
+    },
+    "Politicas Publicas::06 - Resumo - Introdução ao Direito Ambiental.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Introdução ao Direito Ambiental",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T20:44:36.841Z"
+    },
+    "Politicas Publicas::07 - Resumo - Responsabilidade Ambiental.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Responsabilidade Ambiental",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:44:55.301Z"
+    },
+    "Politicas Publicas::08 - Resumo - Direito dos Desastres.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Direito dos Desastres",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T20:45:32.125Z"
+    },
+    "Politicas Publicas::09 - Resumo - Estatuto da Pessoa com Deficiência.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Estatuto da Pessoa com Deficiência",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T20:46:08.382Z"
+    },
+    "Politicas Publicas::10 - Resumo - Resolução CNJ 230.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Resolução CNJ 230",
+      "capitulos": 1,
+      "timestamp": "2026-10-22T20:46:17.497Z"
+    },
+    "Politicas Publicas::11 - Resumo - Diretivas Antecipadas de Vontade.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Diretivas Antecipadas de Vontade",
+      "capitulos": 1,
+      "timestamp": "2026-10-22T20:46:27.161Z"
+    },
+    "Politicas Publicas::12 - Resumo - Tópicos em Direito Ambiental.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Tópicos em Direito Ambiental",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:46:45.508Z"
+    },
+    "Politicas Publicas::13 - Resumo - Licenciamento Ambiental.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Licenciamento Ambiental",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:47:10.926Z"
+    },
+    "Politicas Publicas::14 - Resumo - Responsabilidade Ambiental.docx": {
+      "area": "Politicas Publicas",
+      "tema": "Responsabilidade Ambiental",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:47:29.266Z"
+    },
+    "FORMACAO COMPLEMENTAR::01 - Resumo - Direito, Psicologia e Neurociência.docx": {
+      "area": "FORMACAO COMPLEMENTAR",
+      "tema": "Direito, Psicologia e Neurociência",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T20:48:05.988Z"
+    },
+    "FORMACAO COMPLEMENTAR::02 - Resumo - Fashion Law.docx": {
+      "area": "FORMACAO COMPLEMENTAR",
+      "tema": "Fashion Law",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T20:48:40.184Z"
+    },
+    "FORMACAO COMPLEMENTAR::03 - Resumo - LGPD.docx": {
+      "area": "FORMACAO COMPLEMENTAR",
+      "tema": "LGPD",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T20:49:25.287Z"
+    },
+    "FORMACAO COMPLEMENTAR::04 - Resumo - Direito Digital.docx": {
+      "area": "FORMACAO COMPLEMENTAR",
+      "tema": "Direito Digital",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T20:49:56.139Z"
+    },
+    "FORMACAO COMPLEMENTAR::05 - Resumo - Inglês Jurídico.docx": {
+      "area": "FORMACAO COMPLEMENTAR",
+      "tema": "Inglês Jurídico",
+      "capitulos": 22,
+      "timestamp": "2026-10-22T20:51:14.426Z"
+    },
+    "Direito Processual Do Trabalho::01 - Resumo - Introdução ao Processo do Trabalho.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Introdução ao Processo do Trabalho",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T20:51:54.269Z"
+    },
+    "Direito Processual Do Trabalho::02 - Resumo - Organização da Justiça do Trabalho.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Organização da Justiça do Trabalho",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:52:22.349Z"
+    },
+    "Direito Processual Do Trabalho::03 - Resumo - Partes e Procuradores no Processo do Trabalho.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Partes e Procuradores no Processo do Trabalho",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:52:48.611Z"
+    },
+    "Direito Processual Do Trabalho::04 - Resumo - Atos e Procedimentos no Processo do Trabalho.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Atos e Procedimentos no Processo do Trabalho",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:53:14.424Z"
+    },
+    "Direito Processual Do Trabalho::05 - Resumo - Recursos no Processo do Trabalho.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Recursos no Processo do Trabalho",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T20:53:39.488Z"
+    },
+    "Direito Processual Do Trabalho::06 - Resumo - Execução e Liquidação de Sentença no Processo do Trabalho.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Execução e Liquidação de Sentença no Processo do Trabalho",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T20:54:11.342Z"
+    },
+    "Direito Processual Do Trabalho::07 - Resumo - Dissídios Coletivos e Procedimentos Especiais.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Dissídios Coletivos e Procedimentos Especiais",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:54:30.816Z"
+    },
+    "Direito Processual Do Trabalho::08 - Resumo - Honorários Advocatícios no Direito do Trabalho.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Honorários Advocatícios no Direito do Trabalho",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T20:55:02.661Z"
+    },
+    "Direito Processual Do Trabalho::09 - Resumo - Reclamação Trabalhista.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Reclamação Trabalhista",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T20:55:32.486Z"
+    },
+    "Direito Processual Do Trabalho::10 - Resumo - Verbas Rescisórias e Cálculos Trabalhistas.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Verbas Rescisórias e Cálculos Trabalhistas",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T20:55:43.497Z"
+    },
+    "Direito Processual Do Trabalho::11 - Resumo - Prescrição e Decadência no Direito do Trabalho.docx": {
+      "area": "Direito Processual Do Trabalho",
+      "tema": "Prescrição e Decadência no Direito do Trabalho",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T20:56:03.147Z"
+    },
+    "Direitos Humanos::01 - Resumo - Sistema Interamericano.docx": {
+      "area": "Direitos Humanos",
+      "tema": "Sistema Interamericano",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T20:56:53.897Z"
+    },
+    "Direitos Humanos::02 - Resumo - Direitos LGBTQIA.docx": {
+      "area": "Direitos Humanos",
+      "tema": "Direitos LGBTQIA",
+      "capitulos": 13,
+      "timestamp": "2026-10-22T20:57:44.800Z"
+    },
+    "Direitos Humanos::03 - Resumo - Estatuto da Pessoa Idosa - Direitos Fundamentais.docx": {
+      "area": "Direitos Humanos",
+      "tema": "Estatuto da Pessoa Idosa - Direitos Fundamentais",
+      "capitulos": 12,
+      "timestamp": "2026-10-22T20:58:30.026Z"
+    },
+    "Direitos Humanos::04 - Resumo - Tratados de Direitos Humanos - Sistema Universal.docx": {
+      "area": "Direitos Humanos",
+      "tema": "Tratados de Direitos Humanos - Sistema Universal",
+      "capitulos": 20,
+      "timestamp": "2026-10-22T20:59:38.315Z"
+    },
+    "Direitos Humanos::06 - Resumo - Direitos Humanos no Brasil.docx": {
+      "area": "Direitos Humanos",
+      "tema": "Direitos Humanos no Brasil",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T21:00:34.864Z"
+    },
+    "Direitos Humanos::07 - Resumo - Direito Antidiscriminatório.docx": {
+      "area": "Direitos Humanos",
+      "tema": "Direito Antidiscriminatório",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T21:01:12.675Z"
+    },
+    "Direito Urbanistico::01 - Resumo - Direito Urbanístico - Parte Geral.docx": {
+      "area": "Direito Urbanistico",
+      "tema": "Direito Urbanístico - Parte Geral",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T21:01:54.966Z"
+    },
+    "Direito Urbanistico::02 - Resumo - Legislação Básica de Direito Urbanístico.docx": {
+      "area": "Direito Urbanistico",
+      "tema": "Legislação Básica de Direito Urbanístico",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T21:02:25.757Z"
+    },
+    "Direito Urbanistico::03 - Resumo - Direito Urbanístico - Estatuto da Cidade.docx": {
+      "area": "Direito Urbanistico",
+      "tema": "Direito Urbanístico - Estatuto da Cidade",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T21:02:51.190Z"
+    },
+    "Direito Urbanistico::04 - Resumo - Direito à Cidade, Funções Sociais da Cidade e Função Social da Propriedade.docx": {
+      "area": "Direito Urbanistico",
+      "tema": "Direito à Cidade, Funções Sociais da Cidade e Função Social da Propriedade",
+      "capitulos": 8,
+      "timestamp": "2026-10-22T21:03:24.076Z"
+    },
+    "Direito Urbanistico::05 - Resumo - Direito dos Desastres.docx": {
+      "area": "Direito Urbanistico",
+      "tema": "Direito dos Desastres",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T21:04:01.716Z"
+    },
+    "Direito Urbanistico::06 - Resumo - Direito Urbanístico - Instrumentos de Política Urbana.docx": {
+      "area": "Direito Urbanistico",
+      "tema": "Direito Urbanístico - Instrumentos de Política Urbana",
+      "capitulos": 9,
+      "timestamp": "2026-10-22T21:04:40.139Z"
+    },
+    "Direito Ambiental::01 - Resumo - Introdução ao Direito Ambiental.docx": {
+      "area": "Direito Ambiental",
+      "tema": "Introdução ao Direito Ambiental",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T21:05:02.885Z"
+    },
+    "Direito Ambiental::02 - Resumo - Tópicos em Direito Ambiental.docx": {
+      "area": "Direito Ambiental",
+      "tema": "Tópicos em Direito Ambiental",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T21:05:23.813Z"
+    },
+    "Direito Ambiental::03 - Resumo - Licenciamento Ambiental.docx": {
+      "area": "Direito Ambiental",
+      "tema": "Licenciamento Ambiental",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T21:05:51.022Z"
+    },
+    "Direito Ambiental::04 - Resumo - Responsabilidade Ambiental.docx": {
+      "area": "Direito Ambiental",
+      "tema": "Responsabilidade Ambiental",
+      "capitulos": 4,
+      "timestamp": "2026-10-22T21:06:09.257Z"
+    },
+    "Direito Ambiental::05 - Resumo - Áreas de Preservação Permanente e Reserva Legal.docx": {
+      "area": "Direito Ambiental",
+      "tema": "Áreas de Preservação Permanente e Reserva Legal",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T21:06:38.419Z"
+    },
+    "Direito Ambiental::06 - Resumo - Unidades de Conservação.docx": {
+      "area": "Direito Ambiental",
+      "tema": "Unidades de Conservação",
+      "capitulos": 6,
+      "timestamp": "2026-10-22T21:07:03.949Z"
+    },
+    "Português::01 - Resumo - Pontuação.docx": {
+      "area": "Português",
+      "tema": "Pontuação",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T21:07:21.218Z"
+    },
+    "Português::02 - Resumo - Concordância Verbal e Nominal.docx": {
+      "area": "Português",
+      "tema": "Concordância Verbal e Nominal",
+      "capitulos": 2,
+      "timestamp": "2026-10-22T21:07:32.273Z"
+    },
+    "Português::03 - Resumo - Regência Verbal e Nominal.docx": {
+      "area": "Português",
+      "tema": "Regência Verbal e Nominal",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T21:07:47.868Z"
+    },
+    "Português::04 - Resumo - Classes Gramaticais e Tempos Verbais.docx": {
+      "area": "Português",
+      "tema": "Classes Gramaticais e Tempos Verbais",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T21:08:13.427Z"
+    },
+    "Português::05 - Resumo - Interpretação de Textos.docx": {
+      "area": "Português",
+      "tema": "Interpretação de Textos",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T21:08:52.575Z"
+    },
+    "Português::06 - Resumo - Acentuação e Crase.docx": {
+      "area": "Português",
+      "tema": "Acentuação e Crase",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T21:09:09.291Z"
+    },
+    "Português::07 - Resumo - Classes Gramaticais.docx": {
+      "area": "Português",
+      "tema": "Classes Gramaticais",
+      "capitulos": 10,
+      "timestamp": "2026-10-22T21:09:51.744Z"
+    },
+    "Português::08 - Resumo - Colocação Pronominal.docx": {
+      "area": "Português",
+      "tema": "Colocação Pronominal",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T21:10:14.790Z"
+    },
+    "Português::09 - Resumo - Semântica.docx": {
+      "area": "Português",
+      "tema": "Semântica",
+      "capitulos": 3,
+      "timestamp": "2026-10-22T21:10:29.455Z"
+    },
+    "Português::10 - Resumo - Orações Coordenadas e Subordinadas.docx": {
+      "area": "Português",
+      "tema": "Orações Coordenadas e Subordinadas",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T21:10:51.514Z"
+    },
+    "Português::11 - Resumo - Redação para Concursos.docx": {
+      "area": "Português",
+      "tema": "Redação para Concursos",
+      "capitulos": 5,
+      "timestamp": "2026-10-22T21:11:13.715Z"
+    },
+    "Direito Desportivo::01 - Resumo - Direito Desportivo.docx": {
+      "area": "Direito Desportivo",
+      "tema": "Direito Desportivo",
+      "capitulos": 7,
+      "timestamp": "2026-10-22T21:11:45.939Z"
+    },
+    "Direito Desportivo::02 - Resumo - Panorama Legislativo do Desporto.docx": {
+      "area": "Direito Desportivo",
+      "tema": "Panorama Legislativo do Desporto",
+      "capitulos": 14,
+      "timestamp": "2026-10-22T21:12:36.298Z"
+    },
+    "Direito Internacional Privado::01 - Resumo - Direito Internacional Privado.docx": {
+      "area": "Direito Internacional Privado",
+      "tema": "Direito Internacional Privado",
+      "capitulos": 11,
+      "timestamp": "2026-10-22T21:13:19.752Z"
     }
   },
-  "failed": {}
+  "failed": {
+    "Direito Constitucional::31 - Resumo - Mandado de Segurança - Peça Prática.docx": "UNKNOWN: unknown error, open 'C:\\Users\\ext_wpereira\\Downloads\\ESTUDOS JURIDICOS\\public\\offline-bundle\\resumos-catalog.json'",
+    "Direito Do Trabalho::03 - Resumo - Fontes e Princípios do Direito do Trabalho.docx": "UNKNOWN: unknown error, open 'C:\\Users\\ext_wpereira\\Downloads\\ESTUDOS JURIDICOS\\public\\offline-bundle\\resumos-catalog.json'",
+    "Direito Administrativo::08 - Resumo - Administração Pública.docx": "UNKNOWN: unknown error, open 'C:\\Users\\ext_wpereira\\Downloads\\ESTUDOS JURIDICOS\\public\\offline-bundle\\resumos-catalog.json'",
+    "Direito Administrativo::19 - Resumo - Desapropriação.docx": "UNKNOWN: unknown error, open 'C:\\Users\\ext_wpereira\\Downloads\\ESTUDOS JURIDICOS\\public\\offline-bundle\\resumos-catalog.json'",
+    "Direito Empresarial::11 - Resumo - Títulos de Crédito.docx": "UNKNOWN: unknown error, open 'C:\\Users\\ext_wpereira\\Downloads\\ESTUDOS JURIDICOS\\public\\offline-bundle\\resumos-catalog.json'",
+    "Direito Financeiro::08 - Resumo - Orçamento Público.docx": "UNKNOWN: unknown error, open 'C:\\Users\\ext_wpereira\\Downloads\\ESTUDOS JURIDICOS\\public\\offline-bundle\\resumos-catalog.json'",
+    "DIREITO PREVIDENCIARIO::08 - Resumo - Bolsa Família.docx": "UNKNOWN: unknown error, open 'C:\\Users\\ext_wpereira\\Downloads\\ESTUDOS JURIDICOS\\public\\offline-bundle\\resumos-catalog.json'",
+    "Direitos Humanos::05 - Resumo - Teoria Geral dos Direitos Humanos.docx": "UNKNOWN: unknown error, open 'C:\\Users\\ext_wpereira\\Downloads\\ESTUDOS JURIDICOS\\public\\offline-bundle\\resumos-catalog.json'"
+  }
 }
