@@ -11,7 +11,6 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { LegacyAppHost } from "@/components/LegacyAppHost";
 
 function NotFoundComponent() {
@@ -37,11 +36,8 @@ function NotFoundComponent() {
 }
 
 function ErrorComponent({ error, reset }: ErrorComponentProps) {
-  console.error(error);
+  console.error("[App Error]", error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   const errMessage = error instanceof Error ? error.message : String(error ?? "");
   const errStack = error instanceof Error ? error.stack : undefined;

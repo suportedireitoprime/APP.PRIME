@@ -68,6 +68,11 @@ jobs:
         env:
           SKIP_PRECOMPRESS: "1"
           NODE_OPTIONS: "--max-old-space-size=8192"
+          VITE_SUPABASE_URL: "https://dnjrgpldcwcpoywamorr.supabase.co"
+          VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_fg4Q9U47TMW7voFVPVZb0Q_--H03YrT"
+          VITE_SUPABASE_PROJECT_ID: "dnjrgpldcwcpoywamorr"
+          SUPABASE_URL: "https://dnjrgpldcwcpoywamorr.supabase.co"
+          SUPABASE_PUBLISHABLE_KEY: "sb_publishable_fg4Q9U47TMW7voFVPVZb0Q_--H03YrT"
         run: |
           bun run build
           if [ ! -f dist/index.html ]; then

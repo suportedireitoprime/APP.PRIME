@@ -112,8 +112,8 @@ const ArtigoBottomSheet = ({
     tabela_nome ||
     rest.tabela_nome ||
     rest.tabelaNome ||
-    ((rawArtigo as Record<string, unknown>)?.tabela_nome as string | undefined) ||
-    ((rawArtigo as Record<string, unknown>)?.tabela as string | undefined) ||
+    ((rawArtigo as unknown as Record<string, unknown>)?.tabela_nome as string | undefined) ||
+    ((rawArtigo as unknown as Record<string, unknown>)?.tabela as string | undefined) ||
     rest.leiInfo?.tabela_nome ||
     rest.lei_id ||
     "";
@@ -281,7 +281,7 @@ const ArtigoBottomSheet = ({
   const [commentTags, setCommentTags] = useState<string[]>([]);
   const [tagDraft, setTagDraft] = useState("");
   const [tooltipData, setTooltipData] = useState<{ id: string; rect: DOMRect } | null>(null);
-  const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const sheetContentRef = useRef<HTMLDivElement | null>(null);
   const [sheetNode, setSheetNode] = useState<HTMLDivElement | null>(null);

@@ -318,7 +318,7 @@ export const TRANSFER_GROUPS: TransferGroup[] = [
     titulo: 'Backend (Supabase)',
     desc: 'Projeto, chaves e URL pública',
     itens: [
-      { key: 'supabase_project_id', label: 'VITE_SUPABASE_PROJECT_ID', atual: 'dnjrgpldcwcpoywamorr', kind: 'arquivo', obrigatorio: true, arquivos: ['.env', 'src/integrations/supabase/client.ts', 'supabase/config.toml'], comoObter: 'Ao remixar no Lovable, um projeto Cloud novo é criado automaticamente. Se usar Supabase próprio, pegue o ref no dashboard.' },
+      { key: 'supabase_project_id', label: 'VITE_SUPABASE_PROJECT_ID', atual: 'dnjrgpldcwcpoywamorr', kind: 'arquivo', obrigatorio: true, arquivos: ['.env', 'src/integrations/supabase/client.ts', 'supabase/config.toml'], comoObter: 'Reference ID do projeto no dashboard do Supabase (Project Settings → General).' },
       { key: 'supabase_url', label: 'VITE_SUPABASE_URL / SUPABASE_URL', atual: 'https://dnjrgpldcwcpoywamorr.supabase.co', kind: 'arquivo', obrigatorio: true, arquivos: ['.env'], comoObter: 'URL do projeto novo (também vira secret no GitHub Actions).' },
       { key: 'supabase_publishable', label: 'VITE_SUPABASE_PUBLISHABLE_KEY', atual: '(anon key do projeto atual)', kind: 'arquivo', obrigatorio: true, arquivos: ['.env'], comoObter: 'Supabase → Project Settings → API. É pública, pode ficar no bundle.' },
       { key: 'supabase_service_role', label: 'SUPABASE_SERVICE_ROLE_KEY', atual: null, kind: 'secret-github', obrigatorio: true, comoObter: 'Supabase → API → service_role. Nunca no cliente.', naoSubstituivel: true },
@@ -370,7 +370,7 @@ export const TRANSFER_GROUPS: TransferGroup[] = [
     titulo: 'Desktop (Electron)',
     desc: 'Instalador Windows/macOS',
     itens: [
-      { key: 'desktop_app_id', label: 'appId do Electron', atual: 'app.lovable.vademecum.desktop', kind: 'arquivo', arquivos: ['electron-builder.yml'], comoObter: 'Você escolhe (formato reverso de domínio).' },
+      { key: 'desktop_app_id', label: 'appId do Electron', atual: 'app.direitoprime.vademecum.desktop', kind: 'arquivo', arquivos: ['electron-builder.yml'], comoObter: 'Você escolhe (formato reverso de domínio).' },
       { key: 'desktop_product_name', label: 'productName / publisherName / artifactName', atual: 'Vade Mecum Comentado / Direito Prime', kind: 'arquivo', arquivos: ['electron-builder.yml'], comoObter: 'Nome exibido no instalador e nas propriedades do .exe.' },
       { key: 'desktop_cert', label: 'CSC_LINK + CSC_KEY_PASSWORD', atual: null, kind: 'secret-github', comoObter: 'Certificado de assinatura de código da nova empresa (opcional; sem ele o SmartScreen alerta).', naoSubstituivel: true },
     ],

@@ -20,7 +20,7 @@ export function useArtigoSheetsState({ artigoNumero, tabelaNome }: UseArtigoShee
   const [showHistoricoSheet, setShowHistoricoSheet] = useState(false);
   const [showSharePanel, setShowSharePanel] = useState(false);
   
-  const [activeActionMenu, setActiveActionMenu] = useState<string | null>(null);
+  const [activeActionMenu, setActiveActionMenu] = useState<'funcoes' | 'grifar' | null>(null);
 
   useEffect(() => {
     setShowLembretesLocal(false);
