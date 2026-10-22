@@ -1,12 +1,11 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
-import type { BlogPost } from "@/data/blogPosts";
+import type { BlogPost, BlogTema } from "@/data/blogPosts";
 import BlogPostSheet from "@/components/vademecum/blog/BlogPostSheet";
 import BlogHeroHeader from "@/components/vademecum/blog/BlogHeroHeader";
 import { useBlogPostsCache } from "@/hooks/useBlogPostsCache";
 import { useFeatureLimit } from "@/hooks/useFeatureLimit";
 import PremiumGate from "@/components/PremiumGate";
-import BloggerBottomNav, { type BloggerTab } from "@/components/vademecum/blog/BloggerBottomNav";
 import BlogCategoriasView from "@/components/vademecum/blog/BlogCategoriasView";
 import { useIsDesktop } from "@/hooks/use-desktop";
 import { KeepAlive } from "@/components/ui/KeepAlive";
@@ -14,11 +13,19 @@ import { recordActivity } from "@/lib/continuity";
 import { useGoBack } from "@/hooks/useGoBack";
 import { blogThumb } from "@/lib/blogImg";
 
-// Hooks de trending e filtragem
+// Novos componentes arquiteturais do Blog
+import BlogNavTabs, { type BlogMainTab } from "@/components/vademecum/blog/BlogNavTabs";
+import BlogEmAltaCarousel from "@/components/vademecum/blog/BlogEmAltaCarousel";
+import BlogCategoriasListSection from "@/components/vademecum/blog/BlogCategoriasListSection";
+import BlogFavoritesFab from "@/components/vademecum/blog/BlogFavoritesFab";
+import BlogFavoritesSheet from "@/components/vademecum/blog/BlogFavoritesSheet";
+
+// Hooks de trending dinâmico e filtragem
+import { useBlogDynamicTrending } from "@/hooks/useBlogDynamicTrending";
 import { useBlogTrending } from "@/hooks/useBlogTrending";
 import { useBlogPostsFilter } from "@/hooks/useBlogPostsFilter";
 
-// Chunks modulares extraídos
+// Chunks modulares
 import {
   type BlogFilter,
   BlogInfoHeader,
@@ -29,6 +36,19 @@ import {
 
 export type { BlogFilter };
 
+function readFavoritesFromStorage(): string[] {
+  try {
+    const raw = localStorage.getItem("blog:favorites");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {
+    /* ignore */
+  }
+  return [];
+}
+
 const Blog = () => {
   const goBack = useGoBack();
   const location = useLocation();
@@ -38,27 +58,82 @@ const Blog = () => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [infoOpen, setInfoOpen] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
-  const [bottomTab, setBottomTab] = useState<BloggerTab>("blogger");
+
+  // Menu de alternância principal: Artigos | Categorias | Carreiras | Biografia
+  const [mainTab, setMainTab] = useState<BlogMainTab>("artigos");
   const [selectedBioCategory, setSelectedBioCategory] = useState<string | null>(null);
   const [selectedBioPerson, setSelectedBioPerson] = useState<string | null>(null);
+
+  // Favoritos (Botão Flutuante)
+  const [favoritesOpen, setFavoritesOpen] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>(() => readFavoritesFromStorage());
 
   const { canUse, register, used, config } = useFeatureLimit("blog_read");
   const { posts: dbPosts, loaded: blogLoaded } = useBlogPostsCache();
 
   // Custom hooks gerenciam o cache de trending e filtragem final de postagens
   const { trendingIds } = useBlogTrending(selectedFilter);
+
+  // Mapeia mainTab para a aba esperada pelo filtro
+  const bottomTabMapped = useMemo(() => {
+    if (mainTab === "carreiras") return "carreiras";
+    if (mainTab === "biografia") return "biografia";
+    if (mainTab === "categorias") return "categorias";
+    return "blogger";
+  }, [mainTab]);
+
   const { allPosts, posts, visiblePosts } = useBlogPostsFilter(
     dbPosts,
     selectedFilter,
-    bottomTab,
+    bottomTabMapped,
     trendingIds,
     blogLoaded,
   );
+
+  // Métrica dinâmica para os artigos em alta
+  const { topTrendingPosts, registerPostClick, getPostViewCount } = useBlogDynamicTrending(allPosts);
+
+  // Posts favoritados
+  const favoritePosts = useMemo(() => {
+    if (!favoriteIds.length || !allPosts.length) return [];
+    const favSet = new Set(favoriteIds);
+    return allPosts.filter((p) => favSet.has(p.id));
+  }, [allPosts, favoriteIds]);
+
+  // Listener para sincronizar os favoritos em tempo real
+  useEffect(() => {
+    const syncFavs = () => {
+      setFavoriteIds(readFavoritesFromStorage());
+    };
+    window.addEventListener("blog:favorites-updated", syncFavs);
+    window.addEventListener("storage", syncFavs);
+    return () => {
+      window.removeEventListener("blog:favorites-updated", syncFavs);
+      window.removeEventListener("storage", syncFavs);
+    };
+  }, []);
+
+  const handleRemoveFavorite = useCallback((postId: string) => {
+    try {
+      const current = readFavoritesFromStorage().filter((id) => id !== postId);
+      localStorage.setItem("blog:favorites", JSON.stringify(current));
+      setFavoriteIds(current);
+      window.dispatchEvent(new Event("blog:favorites-updated"));
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   // SEO
   useEffect(() => {
     if (selectedPost) {
       document.title = `${selectedPost.titulo} | Blogger Jurídico`;
+    } else if (mainTab === "carreiras") {
+      document.title = "Carreiras Jurídicas | Blogger Jurídico";
+    } else if (mainTab === "biografia") {
+      document.title = "Biografias do Direito | Blogger Jurídico";
+    } else if (mainTab === "categorias") {
+      document.title = "Categorias | Blogger Jurídico";
     } else if (selectedFilter === "trending") {
       document.title = "Blogger Jurídico - Em Alta | Vade Mecum PRIME";
     } else if (selectedFilter !== "todos") {
@@ -66,7 +141,7 @@ const Blog = () => {
     } else {
       document.title = "Blogger Jurídico | Vade Mecum PRIME";
     }
-  }, [selectedPost, selectedFilter]);
+  }, [selectedPost, selectedFilter, mainTab]);
 
   // Compartilhamento via query string
   useEffect(() => {
@@ -78,24 +153,18 @@ const Blog = () => {
     }
   }, [location.search, allPosts]);
 
-  // Preload Above-the-fold
+  // Preload Above-the-fold e capas Em Alta
   useEffect(() => {
-    if (!visiblePosts.length) return;
-    const links: HTMLLinkElement[] = [];
-    visiblePosts.slice(0, 3).forEach((p) => {
-      if (!p.imagem_url) return;
-      const link = document.createElement("link");
-      link.rel = "preload";
-      link.as = "image";
-      link.href = blogThumb(p.imagem_url);
-      (link as HTMLLinkElement & { fetchpriority?: string }).fetchpriority = "high";
-      document.head.appendChild(link);
-      links.push(link);
+    const toPreload = [
+      ...visiblePosts.slice(0, 3).map((p) => p.imagem_url),
+      ...topTrendingPosts.slice(0, 4).map((p) => p.imagem_url),
+    ].filter(Boolean);
+
+    toPreload.forEach((url) => {
+      const img = new Image();
+      img.src = blogThumb(url, 320);
     });
-    return () => {
-      links.forEach((l) => l.remove());
-    };
-  }, [visiblePosts]);
+  }, [visiblePosts, topTrendingPosts]);
 
   const handleOpenPost = useCallback(
     (post: BlogPost) => {
@@ -103,22 +172,29 @@ const Blog = () => {
         setGateOpen(true);
         return;
       }
+      registerPostClick(post.id);
       setSelectedPost(post);
       register(post.id);
       recordActivity({ path: `/blog?post=${post.id}`, label: post.titulo, kind: "blog" });
     },
-    [canUse, register],
+    [canUse, register, registerPostClick],
   );
 
+  const handleSelectCategoryFromList = useCallback((tema: BlogTema) => {
+    setSelectedFilter(tema);
+    setMainTab("artigos");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="min-h-dvh bg-background pb-16">
       <BlogInfoHeader
         infoOpen={infoOpen}
         onToggleInfo={() => setInfoOpen((v) => !v)}
         onBack={() => goBack()}
       />
 
-      {bottomTab !== "favoritos" && bottomTab !== "biografia" && bottomTab !== "categorias" && (
+      {mainTab === "artigos" && (
         <BlogHeroHeader
           selectedTema={
             selectedFilter === "trending" || selectedFilter === "todos" ? null : selectedFilter
@@ -126,14 +202,43 @@ const Blog = () => {
         />
       )}
 
-      {bottomTab !== "biografia" && bottomTab !== "categorias" && (
-        <BlogFiltersBar
-          selectedFilter={selectedFilter}
-          onSelectFilter={(filter) => setSelectedFilter(filter)}
-        />
+      {/* Menu de Alternância (Categorias, Carreiras, Biografia...) */}
+      <BlogNavTabs
+        activeTab={mainTab}
+        onChangeTab={(tab) => {
+          setMainTab(tab);
+          if (tab === "artigos") {
+            setSelectedFilter("todos");
+          } else if (tab === "carreiras") {
+            setSelectedFilter("Carreiras Jurídicas");
+          } else if (tab === "biografia") {
+            setSelectedBioCategory(null);
+            setSelectedBioPerson(null);
+          }
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }}
+      />
+
+      {mainTab === "artigos" && (
+        <>
+          {/* Seção Em Alta em Carrossel Infinito com Métrica Dinâmica */}
+          <BlogEmAltaCarousel
+            posts={topTrendingPosts}
+            onSelectPost={handleOpenPost}
+            getViewCount={getPostViewCount}
+            onRegisterClick={registerPostClick}
+          />
+
+          {/* Barra de Filtros Rápidos por Tema */}
+          <BlogFiltersBar
+            selectedFilter={selectedFilter}
+            onSelectFilter={(filter) => setSelectedFilter(filter)}
+          />
+        </>
       )}
 
-      <KeepAlive active={bottomTab === "biografia"}>
+      {/* Aba de Biografia */}
+      <KeepAlive active={mainTab === "biografia"}>
         <BlogBioTabContainer
           selectedBioPerson={selectedBioPerson}
           setSelectedBioPerson={setSelectedBioPerson}
@@ -142,18 +247,23 @@ const Blog = () => {
         />
       </KeepAlive>
 
-      <KeepAlive active={bottomTab === "categorias"}>
-        <BlogCategoriasView
-          posts={posts}
-          onSelectCategoria={(tema) => {
-            setSelectedFilter(tema as BlogFilter);
-            setBottomTab("blogger");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }}
+      {/* Aba de Categorias (Visualização em Lista) */}
+      <KeepAlive active={mainTab === "categorias"}>
+        <BlogCategoriasListSection
+          posts={allPosts}
+          selectedCategory={selectedFilter}
+          onSelectCategory={handleSelectCategoryFromList}
         />
+        <div className="border-t border-border/40 mt-4">
+          <BlogCategoriasView
+            posts={posts}
+            onSelectCategoria={handleSelectCategoryFromList}
+          />
+        </div>
       </KeepAlive>
 
-      <KeepAlive active={bottomTab !== "biografia" && bottomTab !== "categorias"}>
+      {/* Aba de Artigos e Carreiras (Feed) */}
+      <KeepAlive active={mainTab === "artigos" || mainTab === "carreiras"}>
         <BlogFeedView
           isDesktop={isDesktop}
           selectedFilter={selectedFilter}
@@ -165,6 +275,17 @@ const Blog = () => {
           onOpenPost={handleOpenPost}
           onCloseSelectedPost={() => setSelectedPost(null)}
         />
+
+        {/* Seção de Categorias em Lista abaixo do feed quando na aba Artigos */}
+        {mainTab === "artigos" && selectedFilter === "todos" && (
+          <div className="border-t border-border/30 mt-6 pt-2">
+            <BlogCategoriasListSection
+              posts={allPosts}
+              selectedCategory={selectedFilter}
+              onSelectCategory={handleSelectCategoryFromList}
+            />
+          </div>
+        )}
       </KeepAlive>
 
       {!isDesktop && <BlogPostSheet post={selectedPost} onClose={() => setSelectedPost(null)} />}
@@ -180,27 +301,23 @@ const Blog = () => {
         }
       />
 
-      <BloggerBottomNav
-        active={bottomTab}
-        onChange={(tab) => {
-          setBottomTab(tab);
-          if (tab === "blogger") {
-            setSelectedFilter("todos");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          } else if (tab === "carreiras") {
-            setSelectedFilter("Carreiras Jurídicas");
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          } else if (tab === "categorias") {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          } else if (tab === "biografia") {
-            setSelectedBioCategory(null);
-            setSelectedBioPerson(null);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          }
-        }}
+      {/* Botão Flutuante de Favoritos (FAB) */}
+      <BlogFavoritesFab
+        count={favoriteIds.length}
+        onClick={() => setFavoritesOpen(true)}
+      />
+
+      {/* Sheet de Favoritos (Abre de baixo para cima) */}
+      <BlogFavoritesSheet
+        open={favoritesOpen}
+        onClose={() => setFavoritesOpen(false)}
+        favoritePosts={favoritePosts}
+        onSelectPost={handleOpenPost}
+        onRemoveFavorite={handleRemoveFavorite}
       />
     </div>
   );
 };
 
 export default Blog;
+

@@ -1,4 +1,4 @@
-﻿import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
 import cover2Asset from '@/assets/covers/cover-2.webp.asset.json';
 import cover2Bundled from '@/assets/covers/cover-2.webp';
@@ -26,48 +26,43 @@ type HeroInfo = { titulo: string; descricao: string; bg: string; kicker: string 
 
 const INFOS: Record<string, HeroInfo> = {
   Todos: {
-    titulo: 'Blogger JurÃ­dico',
+    titulo: 'Blogger Jurídico',
     descricao: 'Artigos autorais sobre filosofia, STF, leis e curiosidades do Direito. Escolha um tema para mergulhar.',
-    kicker: 'Blogger JurÃ­dico',
-    // Ã¢mbar clÃ¡ssico (identidade OAB na Risca)
+    kicker: 'Blogger Jurídico',
     bg: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(0 95% 55%) 55%, hsl(0 90% 45%) 100%)',
   },
   Filosofia: {
     titulo: 'Filosofia do Direito',
-    descricao: 'De SÃ³crates a Rawls: as ideias que moldam o que entendemos por justiÃ§a, lei e liberdade.',
+    descricao: 'De Sócrates a Rawls: as ideias que moldam o que entendemos por justiça, lei e liberdade.',
     kicker: 'Pensadores & Ideias',
-    // roxo profundo
     bg: 'linear-gradient(135deg, hsl(265 55% 22%) 0%, hsl(270 60% 38%) 55%, hsl(280 55% 30%) 100%)',
   },
   STF: {
     titulo: 'STF em Foco',
-    descricao: 'DecisÃµes marcantes e os bastidores da Suprema Corte que mudam a vida de milhÃµes.',
+    descricao: 'Decisões marcantes e os bastidores da Suprema Corte que mudam a vida de milhões.',
     kicker: 'Suprema Corte',
-    // azul institucional
     bg: 'linear-gradient(135deg, hsl(215 65% 18%) 0%, hsl(210 70% 32%) 55%, hsl(205 65% 25%) 100%)',
   },
   Curiosidades: {
-    titulo: 'Curiosidades JurÃ­dicas',
-    descricao: 'Fatos histÃ³ricos, casos bizarros e detalhes do Direito que quase ninguÃ©m conhece.',
-    kicker: 'VocÃª sabia?',
-    // teal / verde-azulado
+    titulo: 'Curiosidades Jurídicas',
+    descricao: 'Fatos históricos, casos bizarros e detalhes do Direito que quase ninguém conhece.',
+    kicker: 'Você sabia?',
     bg: 'linear-gradient(135deg, hsl(175 60% 20%) 0%, hsl(170 65% 32%) 55%, hsl(180 55% 26%) 100%)',
   },
-  'ClÃ¡ssicos': {
-    titulo: 'ClÃ¡ssicos do Direito',
+  'Clássicos': {
+    titulo: 'Clássicos do Direito',
     descricao: 'Obras e autores que todo operador do Direito precisa conhecer ao menos uma vez.',
-    kicker: 'Leitura ObrigatÃ³ria',
-    // bordÃ´ / vinho
-    bg: 'linear-gradient(135deg, hsl(00 55% 20%) 0%, hsl(345 60% 34%) 55%, hsl(05 50% 26%) 100%)',
+    kicker: 'Leitura Obrigatória',
+    bg: 'linear-gradient(135deg, hsl(350 55% 20%) 0%, hsl(345 60% 34%) 55%, hsl(355 50% 26%) 100%)',
   },
   Leis: {
     titulo: 'Entendendo as Leis',
-    descricao: 'O que Ã© uma lei, como se estrutura, quem cria e por que ela vale. Do bÃ¡sico Ã  hierarquia normativa.',
+    descricao: 'O que é uma lei, como se estrutura, quem cria e por que ela vale. Do básico à hierarquia normativa.',
     kicker: 'Estrutura Legal',
-    // verde jurÃ­dico
     bg: 'linear-gradient(135deg, hsl(150 50% 18%) 0%, hsl(145 55% 30%) 55%, hsl(155 50% 24%) 100%)',
   },
 };
+
 
 
 export default function BlogHeroHeader({ selectedTema }: { selectedTema: BlogTema | null }) {

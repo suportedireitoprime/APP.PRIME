@@ -83,10 +83,12 @@ export const BlogPostCard = memo(function BlogPostCard({
         toast.success('Adicionado aos favoritos');
       }
       localStorage.setItem(key, JSON.stringify([...cur]));
+      window.dispatchEvent(new Event('blog:favorites-updated'));
     } catch {
       toast.error('Erro ao favoritar');
     }
   };
+
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
