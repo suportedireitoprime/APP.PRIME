@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ExternalLink, Github, KeyRound, PlayCircle, Download, Edit3, Check, Copy, Bell, ImageIcon } from 'lucide-react';

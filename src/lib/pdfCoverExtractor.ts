@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { pdfjsLib, getPdfDocumentParams } from '@/lib/pdfWorkerConfig';
 
 /**

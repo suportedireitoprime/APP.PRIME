@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';

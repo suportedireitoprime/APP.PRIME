@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, X } from 'lucide-react';
+import React from "react";
+import { Search, X } from "lucide-react";
 
 interface AudioaulasBuscaInputProps {
   busca: string;
@@ -10,7 +10,7 @@ interface AudioaulasBuscaInputProps {
 export const AudioaulasBuscaInput = React.memo(function AudioaulasBuscaInput({
   busca,
   setBusca,
-  buscaRef
+  buscaRef,
 }: AudioaulasBuscaInputProps) {
   return (
     <div className="mx-auto w-full max-w-[1400px] px-4 mt-4 lg:px-10 2xl:max-w-[1600px]">
@@ -25,7 +25,7 @@ export const AudioaulasBuscaInput = React.memo(function AudioaulasBuscaInput({
         />
         {busca && (
           <button
-            onClick={() => setBusca('')}
+            onClick={() => setBusca("")}
             aria-label="Limpar busca"
             className="absolute right-2.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-white/10"
           >

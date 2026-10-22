@@ -1,1 +1,0 @@
-GRANT ALL ON public.stf_noticias_folha TO anon, authenticated, service_role;

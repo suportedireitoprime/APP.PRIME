@@ -1,0 +1,272 @@
+{
+  "totalGeralDocx": 765,
+  "pastas": [
+    {
+      "pasta": "Blog - Artigos de Direito",
+      "id": "1M56-kQb0XuDrhX0O-cvyiycifHoWGKWT",
+      "totalDocx": 515,
+      "categorias": [
+        {
+          "categoria": "Direito Administrativo",
+          "folderId": "1DkskY46bgh7tpTxXL_G0etFdJf7QRn8e",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que é direito administrativo?.docx",
+            "02 - Princípios da administração pública (LIMPE).docx",
+            "03 - Legalidade na administração pública.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Direito Civil",
+          "folderId": "1FcoCOowzbg_pWHMLGlUIiViqH7Ai8U--",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que é um contrato?.docx",
+            "02 - Requisitos de validade do negócio jurídico.docx",
+            "03 - Boa-fé objetiva o que é.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Direito Constitucional",
+          "folderId": "15eQUPMCtk8ZqO3omtjFLhYeSKNKxdW5v",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que é a Constituição Federal.docx",
+            "02 - A história das Constituições do Brasil.docx",
+            "03 - Princípios fundamentais da República.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Direito do Trabalho",
+          "folderId": "16SOQUd1QGFYNLOShVasPCHsZy8eMhyE6",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que é a CLT? (A Consolidação das Leis do Trabalho).docx",
+            "02 - Quem é empregado pela lei? (Os requisitos do art. 3º da CLT).docx",
+            "03 - Carteira de trabalho: para que serve? (O documento do trabalhador).docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Direito Penal",
+          "folderId": "1lcPgUT13PHRhWUbipfE1mRLW19Cep79r",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que é crime?.docx",
+            "02 - Crime × contravenção penal.docx",
+            "03 - O princípio da legalidade.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Direito Processual",
+          "folderId": "1Zawqto7mCCQ0RXtba1tVHhW9hb6fM0_k",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que é processo?.docx",
+            "02 - Processo × procedimento.docx",
+            "03 - O que é jurisdição?.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Direito Tributário",
+          "folderId": "1K_YGoW8_v42MkF0DY2Huswckg93MTQyz",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que é tributo?.docx",
+            "02 - Impostos, taxas e contribuições: diferenças.docx",
+            "03 - O que é o CTN?.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Filosofia do Direito",
+          "folderId": "1dc5YcQ1S_DjOMGmD56RfmJ8lSNdQnTF2",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que é justiça?.docx",
+            "02 - O que é filosofia do direito?.docx",
+            "03 - Direito natural × direito positivo.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Leis - Conceitos Fundamentais",
+          "folderId": "1QVc90zyZQm8Mj0oBIDpCwuqR14wwsNfe",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que é uma lei.docx",
+            "02 - Artigo, caput, inciso, alínea e parágrafo.docx",
+            "03 - O que é um parágrafo (§) na lei?.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Senado Federal e Instituições",
+          "folderId": "1Oe9yZQzfCyX26J6_MGi189FNNvbitW_T",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "01 - O que faz o Senado Federal?.docx",
+            "02 - Senado × Câmara: qual a diferença?.docx",
+            "03 - Como é escolhido um senador?.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "Teste de estilos - Artigo 06",
+          "folderId": "1Hb6QNdxVaZo-jNWBA-D8GWYIPH9U1ZpE",
+          "totalDocx": 5,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "06 - Sancao presidencial (V1 - Realista).docx",
+            "06 - Sancao presidencial (V2 - Editorial Premium).docx",
+            "06 - Sancao presidencial (V3 - Flat Vetorial).docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        }
+      ]
+    },
+    {
+      "pasta": "Blog Vadimeco",
+      "id": "1Ezz2I_sz9WrnofFAZ_Em87RBDzdLKkYB",
+      "totalDocx": 250,
+      "categorias": [
+        {
+          "categoria": "01 - Leis - o que são e como funcionam",
+          "folderId": "1ywOIAU2rt3VBsmJYNGVdSgLJJsOp01DT",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "artigo-01-o-que-e-lei.docx",
+            "artigo-02-lei-norma-regra.docx",
+            "artigo-03-direito-natural-positivo.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "02 - Processo legislativo",
+          "folderId": "1_XUweMVsbNNJb3-qxHKJgcJ6z4gzJafF",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "artigo-51-como-nasce-uma-lei.docx",
+            "artigo-52-iniciativa-quem-pode-propor.docx",
+            "artigo-53-projeto-de-lei-como-ele-e-escrito.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "03 - Senado Federal",
+          "folderId": "1vGipS-6SJG653cUJEmhJPr3hSlOVpTwn",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "artigo-101-o-que-e-o-senado-federal.docx",
+            "artigo-102-senado-x-camara-diferenca.docx",
+            "artigo-103-bicameralismo-explicado.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "04 - Câmara dos Deputados",
+          "folderId": "1TTubr2ButAV1wkrXpdMW7HOxPz1oeN7m",
+          "totalDocx": 51,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "artigo-151-o-que-e-a-camara-dos-deputados-o-guia-completo.docx",
+            "artigo-152-camara-x-senado-as-diferencas-que-caem-em-prova.docx",
+            "artigo-153-por-que-a-camara-e-chamada-de-casa-do-povo.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "05 - STF",
+          "folderId": "1Pg_duDEq7KlDKD3Mz-ArCWpGMIOORcKe",
+          "totalDocx": 46,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [
+            "artigo-201-o-que-e-o-stf.docx",
+            "artigo-202-stf-stj-tst.docx",
+            "artigo-203-por-que-11-ministros.docx"
+          ],
+          "status": "PRONTO / COM ARTIGOS"
+        },
+        {
+          "categoria": "06 - Judiciário além do STF",
+          "folderId": "1mAlcpUFu1wU81sQ3yNcQgMHq8KHoRzg3",
+          "totalDocx": 0,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [],
+          "status": "PENDENTE / VAZIO"
+        },
+        {
+          "categoria": "07 - Presidência e Poder Executivo",
+          "folderId": "1gRp7AFyhjkrZUgQDUl7JZAHxSq_J5CDJ",
+          "totalDocx": 0,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [],
+          "status": "PENDENTE / VAZIO"
+        },
+        {
+          "categoria": "08 - Direitos do cidadão na prática",
+          "folderId": "1di-dHRO77zXqarozik0pctHmGv0pQM_R",
+          "totalDocx": 0,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [],
+          "status": "PENDENTE / VAZIO"
+        },
+        {
+          "categoria": "09 - História das leis",
+          "folderId": "1KgBTa1_CIeV-UIE_I-rIGMTLApCe4IG4",
+          "totalDocx": 0,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [],
+          "status": "PENDENTE / VAZIO"
+        },
+        {
+          "categoria": "10 - Bastidores do poder",
+          "folderId": "1EKByl_5plEaK6uK_KXvw4x6V5s9Ef1-D",
+          "totalDocx": 0,
+          "totalImgs": 0,
+          "outros": 0,
+          "amostraArquivos": [],
+          "status": "PENDENTE / VAZIO"
+        }
+      ]
+    }
+  ]
+}

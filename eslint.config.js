@@ -1,11 +1,12 @@
 import js from "@eslint/js";
+import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", "src/integrations/supabase/types.ts"] },
+  { ignores: ["dist", ".output", ".vinxi"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -19,24 +20,21 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "server-only",
+              message:
+                "TanStack Start does not use the Next.js `server-only` package. Rename the module to `*.server.ts` or mark it with `@tanstack/react-start/server-only`.",
+            },
+          ],
+        },
+      ],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
-      // Codebase legado usa `any` em telemetria/integrações; mantemos como aviso
-      // para não mascarar erros reais de lint.
-      "@typescript-eslint/no-explicit-any": "warn",
-      // `catch {}` é intencional em telemetria (não pode quebrar UX).
-      "no-empty": ["error", { allowEmptyCatch: true }],
-      // Regras estilísticas que geram muito ruído em parsers de texto jurídico,
-      // configs e edge functions Deno — viram aviso, não erro.
-      "no-useless-escape": "warn",
-      "no-control-regex": "off",
-      "no-irregular-whitespace": "warn",
-      "prefer-const": "warn",
-      "@typescript-eslint/ban-ts-comment": "warn",
-      "@typescript-eslint/no-unused-expressions": "warn",
-      "@typescript-eslint/no-require-imports": "off",
-      "@typescript-eslint/no-empty-object-type": "warn",
-      "no-constant-condition": ["warn", { checkLoops: false }],
     },
   },
+  eslintPluginPrettier,
 );

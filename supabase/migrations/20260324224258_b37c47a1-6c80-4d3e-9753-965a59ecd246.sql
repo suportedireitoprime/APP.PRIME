@@ -1,1 +1,0 @@
-ALTER TABLE leis_ordinarias ADD COLUMN texto_completo text;

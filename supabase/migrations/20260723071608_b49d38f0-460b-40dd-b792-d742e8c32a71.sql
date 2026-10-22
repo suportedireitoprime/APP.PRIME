@@ -1,1 +1,0 @@
-DELETE FROM public.jurisprudencia_cache;

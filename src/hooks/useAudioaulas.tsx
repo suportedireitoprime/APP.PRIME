@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { useAudioaulasPlayer, audioIdOf, type AulaAudio } from '@/contexts/AudioaulasPlayerContext';
 import { estaBaixado, assinarAudioOffline } from '@/lib/nativo/audioOffline';
 import { normalizar } from '@/lib/audioaulasHelper';
@@ -32,9 +31,6 @@ export function useAudioaulas(areaAtual: string | null) {
   const [baixadas, setBaixadas] = useState<Set<string>>(new Set());
   const [aba, setAba] = useState<AudioaulasTab>('aulas');
   const [busca, setBusca] = useState('');
-
-  const gateDia = useGatedFeature('audioaula_dia', 'audioaula', { scope: null });
-  const gateMes = useGatedFeature('audioaula_mes', 'audioaula', { scope: null });
 
   useEffect(() => {
     let vivo = true;
@@ -114,22 +110,13 @@ export function useAudioaulas(areaAtual: string | null) {
 
   const handleTocarAula = useCallback(
     async (a: AulaAudio) => {
-      if (gateMes.blocked) {
-        gateMes.openGate();
-        return;
-      }
-      if (gateDia.blocked) {
-        gateDia.openGate();
-        return;
-      }
-      void gateDia.run();
-      void gateMes.run();
-
       const filaAtual = areaAtual ? daArea : aba === 'aulas' ? aulas : listaAba;
-      await tocar(a, filaAtual);
-      setAberto(true);
+      const ok = await tocar(a, filaAtual);
+      if (ok) {
+        setAberto(true);
+      }
     },
-    [gateDia, gateMes, areaAtual, daArea, aba, aulas, listaAba, tocar, setAberto],
+    [areaAtual, daArea, aba, aulas, listaAba, tocar, setAberto],
   );
 
   return {
@@ -151,12 +138,7 @@ export function useAudioaulas(areaAtual: string | null) {
     // Actions
     handleTocarAula,
     
-    // Gating UI
-    gateNodes: (
-      <>
-        {gateDia.gateNode}
-        {gateMes.gateNode}
-      </>
-    )
+    // Gating UI gerenciada centralmente no AudioaulasPlayerContext
+    gateNodes: null,
   };
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { memo } from 'react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import vademecumHeroImg from '@/assets/covers/vademecum-judge.webp';

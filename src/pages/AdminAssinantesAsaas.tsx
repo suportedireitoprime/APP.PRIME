@@ -1,416 +1,230 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { RefreshCw, Filter, Mail, CreditCard, Copy, Info } from 'lucide-react';
+import { RefreshCw, Mail, CreditCard, Copy, Crown, CalendarDays, CalendarRange, Users, ChevronRight, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
 import { toast } from 'sonner';
+import { classificarAsaas, type AsaasRecord, type Grupo } from '@/lib/asaasClassificar';
 
+const CACHE_KEY = 'admin-asaas-cache-v1';
+type Raw = { customers: any[]; subscriptions: any[]; payments: any[]; at: number };
 
-type AsaasCustomer = {
-  id: string;
-  name: string;
-  email: string;
-  cpfCnpj: string;
-  phone: string;
-};
+function readCache(): Raw | undefined {
+  try { const s = localStorage.getItem(CACHE_KEY); return s ? JSON.parse(s) : undefined; } catch { return undefined; }
+}
 
-type AsaasSubscription = {
-  id: string;
-  customer: string;
-  value: number;
-  nextDueDate: string;
-  cycle: string;
-  status: string;
-  description?: string;
-  billingType: string;
-  dateCreated?: string;
-};
+async function fetchAsaas(): Promise<Raw> {
+  const { data: session } = await supabase.auth.getSession();
+  const accessToken = session?.session?.access_token;
+  if (!accessToken) throw new Error('Sessão expirada');
+  const fetchAll = async (endpoint: string, maxPages = 30) => {
+    let all: any[] = [];
+    for (let i = 0; i < maxPages; i++) {
+      const res = await supabase.functions.invoke('admin-asaas-proxy', {
+        body: { endpoint, params: { limit: 100, offset: i * 100 } },
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (res.error) throw new Error(res.error.message || `Erro ${endpoint}`);
+      const d = res.data?.data || [];
+      all = all.concat(d);
+      if (d.length < 100) break;
+    }
+    return all;
+  };
+  const [customers, subscriptions, payments] = await Promise.all([fetchAll('customers'), fetchAll('subscriptions'), fetchAll('payments')]);
+  const raw = { customers, subscriptions, payments, at: Date.now() };
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(raw)); } catch { /* cheio */ }
+  return raw;
+}
 
-type AsaasPayment = {
-  id: string;
-  customer: string;
-  value: number;
-  dueDate: string;
-  status: string;
-  description?: string;
-  billingType: string;
-  installment?: string;
-  dateCreated?: string;
-};
+type Plano = 'vitalicio' | 'anual' | 'mensal' | 'todos';
+const PLANOS: { key: Plano; label: string; icon: any; match: (r: AsaasRecord) => boolean; tone: string }[] = [
+  { key: 'vitalicio', label: 'Vitalícios', icon: Crown, match: (r) => r.planClass === 'Vitalício', tone: 'text-amber-400 bg-amber-500/10' },
+  { key: 'anual', label: 'Anuais', icon: CalendarRange, match: (r) => r.planClass === 'Anual' || r.planClass === 'Semestral', tone: 'text-sky-400 bg-sky-500/10' },
+  { key: 'mensal', label: 'Mensais', icon: CalendarDays, match: (r) => r.planClass === 'Mensal', tone: 'text-emerald-400 bg-emerald-500/10' },
+  { key: 'todos', label: 'Todos', icon: Users, match: () => true, tone: 'text-primary bg-primary/10' },
+];
+const ABAS: { key: Grupo | 'vencendo'; label: string }[] = [
+  { key: 'ativo', label: 'Ativos' },
+  { key: 'vencendo', label: 'Vencendo' },
+  { key: 'vencido', label: 'Vencidos' },
+  { key: 'aguardando', label: 'Aguardando' },
+  { key: 'cancelado', label: 'Cancelados' },
+];
 
-type UnifiedRecord = {
-  id: string;
-  type: 'subscription' | 'payment';
-  planClass: 'Mensal' | 'Anual' | 'Vitalício' | 'Desconhecido';
-  customerName: string;
-  customerEmail: string;
-  value: number;
-  billingType: string;
-  status: string;
-  date: string;
-  isInstallment?: boolean;
-};
+const fmtBRL = (v: number) => (v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const fmtData = (d?: string | null) => (d ? new Date(d.length === 10 ? d + 'T00:00:00' : d).toLocaleDateString('pt-BR') : '-');
+
+function Vencimento({ r }: { r: AsaasRecord }) {
+  if (r.planClass === 'Vitalício') return <span className="text-amber-400">Sem vencimento</span>;
+  if (!r.dueDate) return <span className="text-muted-foreground">-</span>;
+  const d = r.daysLeft ?? 0;
+  const tone = d < 0 ? 'text-rose-400' : d <= 7 ? 'text-amber-400' : 'text-muted-foreground';
+  const txt = d < 0 ? `vencido há ${-d}d` : d === 0 ? 'vence hoje' : `vence em ${d}d`;
+  return <span>{fmtData(r.dueDate)} <span className={tone}>· {txt}</span></span>;
+}
+
+function Metodo({ t }: { t: string }) {
+  if (t === 'PIX') return <span className="text-xs font-medium text-teal-400 bg-teal-500/10 px-2 py-0.5 rounded-md">PIX</span>;
+  if (t === 'CREDIT_CARD') return <span className="inline-flex items-center gap-1 text-xs font-medium text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded-md"><CreditCard className="w-3 h-3" />Cartão</span>;
+  return <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-md">{t}</span>;
+}
+
+const grupoLabel: Record<Grupo, string> = { ativo: 'Ativo', vencido: 'Vencido', aguardando: 'Aguardando 1º pagamento', cancelado: 'Cancelado' };
+const grupoTone: Record<Grupo, string> = { ativo: 'bg-emerald-500/15 text-emerald-400', vencido: 'bg-rose-500/15 text-rose-400', aguardando: 'bg-orange-500/15 text-orange-400', cancelado: 'bg-muted text-muted-foreground' };
 
 export default function AdminAssinantesAsaas() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const isAdmin = isAdminEmail(user?.email);
-
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  const [customers, setCustomers] = useState<AsaasCustomer[]>([]);
-  const [subscriptions, setSubscriptions] = useState<AsaasSubscription[]>([]);
-  const [payments, setPayments] = useState<AsaasPayment[]>([]);
-
-  // Filtros
+  const [params, setParams] = useSearchParams();
+  const plano = (params.get('plano') as Plano | null) || null;
   const [q, setQ] = useState('');
-  const [viewFilter, setViewFilter] = useState<'Todos' | 'Somente Vitalícios' | 'Somente Anuais' | 'Somente Mensais' | 'Mensais Cancelados'>('Todos');
+  const [aba, setAba] = useState<Grupo | 'vencendo'>('ativo');
 
-  const loadData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      const accessToken = session?.session?.access_token;
-      if (!accessToken) throw new Error('Sessão expirada');
+  const query = useQuery({
+    queryKey: ['admin-asaas'],
+    queryFn: fetchAsaas,
+    enabled: isAdmin,
+    staleTime: 2 * 60_000,
+    gcTime: 60 * 60_000,
+    initialData: readCache,
+    initialDataUpdatedAt: () => readCache()?.at,
+    refetchOnMount: 'always',
+  });
 
-      const fetchAll = async (endpoint: string, maxPages = 10) => {
-        let allData: any[] = [];
-        for (let i = 0; i < maxPages; i++) {
-          const res = await supabase.functions.invoke('admin-asaas-proxy', {
-            body: { endpoint, params: { limit: 100, offset: i * 100 } },
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-          if (res.error) throw new Error(res.error.message || `Erro fetch ${endpoint}`);
-          const data = res.data?.data || [];
-          allData = [...allData, ...data];
-          if (data.length < 100) break;
-        }
-        return allData;
-      };
+  const records = useMemo(() => (query.data ? classificarAsaas(query.data.customers, query.data.subscriptions, query.data.payments) : []), [query.data]);
 
-      const [customersData, subscriptionsData, paymentsData] = await Promise.all([
-        fetchAll('customers'),
-        fetchAll('subscriptions'),
-        fetchAll('payments')
-      ]);
+  const stats = useMemo(() => PLANOS.map((p) => {
+    const ativos = records.filter((r) => p.match(r) && r.grupo === 'ativo');
+    return { ...p, count: ativos.length, total: ativos.reduce((a, r) => a + (r.value || 0), 0) };
+  }), [records]);
 
-      setCustomers(customersData);
-      setSubscriptions(subscriptionsData);
-      setPayments(paymentsData);
+  const atual = PLANOS.find((p) => p.key === plano);
+  const lista = useMemo(() => {
+    if (!atual) return [];
+    const ql = q.toLowerCase();
+    return records.filter((r) => atual.match(r)
+      && (aba === 'vencendo' ? r.grupo === 'ativo' && r.daysLeft !== null && r.daysLeft <= 7 : r.grupo === aba)
+      && (r.customerName.toLowerCase().includes(ql) || r.customerEmail.toLowerCase().includes(ql)));
+  }, [records, atual, aba, q]);
 
-    } catch (err: any) {
-      setError(err.message);
-      toast.error('Erro ao carregar dados do Asaas');
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!isAdmin) return <div className="min-h-screen flex items-center justify-center">Acesso restrito.</div>;
 
-  useEffect(() => {
-    if (isAdmin) loadData();
-  }, [isAdmin]);
-
-  const unifiedList = useMemo(() => {
-    const list: UnifiedRecord[] = [];
-    const custMap = new Map<string, AsaasCustomer>();
-    customers.forEach(c => custMap.set(c.id, c));
-
-    // Mapear pagamentos para saber o que foi REALMENTE pago
-    const subPayments = new Map<string, AsaasPayment[]>();
-    const installmentGroups = new Map<string, AsaasPayment[]>();
-    const singlePayments: AsaasPayment[] = [];
-
-    payments.forEach(pay => {
-      const subId = (pay as any).subscription;
-      if (subId) {
-        if (!subPayments.has(subId)) subPayments.set(subId, []);
-        subPayments.get(subId)!.push(pay);
-      } else if (pay.installment) {
-        if (!installmentGroups.has(pay.installment)) installmentGroups.set(pay.installment, []);
-        installmentGroups.get(pay.installment)!.push(pay);
-      } else {
-        singlePayments.push(pay);
-      }
-    });
-
-    const isPaid = (p: AsaasPayment) => ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'].includes(p.status);
-
-    // Processar assinaturas
-    subscriptions.forEach(sub => {
-      // Verificar se a assinatura tem pelo menos um pagamento concluído (ignorar PIX abandonado)
-      const p = subPayments.get(sub.id) || [];
-      const hasPaid = p.some(isPaid);
-      if (!hasPaid) return; 
-
-      const c = custMap.get(sub.customer);
-      const desc = (sub.description || '').toLowerCase();
-      let pClass: 'Mensal' | 'Anual' | 'Vitalício' | 'Desconhecido' = 'Desconhecido';
-      
-      if (sub.cycle === 'MONTHLY' || desc.includes('mensal')) pClass = 'Mensal';
-      else if (sub.cycle === 'YEARLY' || desc.includes('anual')) pClass = 'Anual';
-      
-      list.push({
-        id: sub.id,
-        type: 'subscription',
-        planClass: pClass,
-        customerName: c?.name || 'Sem nome',
-        customerEmail: c?.email || 'Sem email',
-        value: sub.value,
-        billingType: sub.billingType,
-        status: sub.status,
-        date: sub.dateCreated || sub.nextDueDate || '',
-        isInstallment: false
-      });
-    });
-
-    // Processar pagamentos isolados (single)
-    singlePayments.forEach(pay => {
-      if (!isPaid(pay)) return; // Apenas pagamentos concluídos
-
-      const c = custMap.get(pay.customer);
-      const desc = (pay.description || '').toLowerCase();
-      let pClass: 'Mensal' | 'Anual' | 'Vitalício' | 'Desconhecido' = 'Desconhecido';
-      
-      if (desc.includes('vitalicio') || desc.includes('vitalício')) pClass = 'Vitalício';
-      else if (desc.includes('anual')) pClass = 'Anual';
-      else if (desc.includes('mensal')) pClass = 'Mensal';
-      
-      list.push({
-        id: pay.id,
-        type: 'payment',
-        planClass: pClass,
-        customerName: c?.name || 'Sem nome',
-        customerEmail: c?.email || 'Sem email',
-        value: pay.value,
-        billingType: pay.billingType,
-        status: pay.status,
-        date: pay.dateCreated || pay.dueDate || '',
-        isInstallment: false
-      });
-    });
-
-    // Processar parcelamentos (Installments)
-    installmentGroups.forEach((groupPayments, installmentId) => {
-      // Se não tem nenhum pagamento pago no parcelamento, ignora
-      const hasPaid = groupPayments.some(isPaid);
-      if (!hasPaid) return;
-
-      // Somar o valor total de todas as parcelas geradas
-      const totalValue = groupPayments.reduce((acc, curr) => acc + curr.value, 0);
-
-      // Usar a data do primeiro pagamento
-      const sortedByDate = [...groupPayments].sort((a, b) => new Date(a.dateCreated || a.dueDate).getTime() - new Date(b.dateCreated || b.dueDate).getTime());
-      const basePay = sortedByDate[0];
-      
-      const c = custMap.get(basePay.customer);
-      const desc = (basePay.description || '').toLowerCase();
-      let pClass: 'Mensal' | 'Anual' | 'Vitalício' | 'Desconhecido' = 'Desconhecido';
-      
-      if (desc.includes('vitalicio') || desc.includes('vitalício')) pClass = 'Vitalício';
-      else if (desc.includes('anual')) pClass = 'Anual';
-      else if (desc.includes('mensal')) pClass = 'Mensal';
-
-      list.push({
-        id: installmentId,
-        type: 'payment',
-        planClass: pClass,
-        customerName: c?.name || 'Sem nome',
-        customerEmail: c?.email || 'Sem email',
-        value: totalValue, // VALOR CHEIO
-        billingType: basePay.billingType,
-        status: basePay.status,
-        date: basePay.dateCreated || basePay.dueDate || '',
-        isInstallment: true
-      });
-    });
-
-    // Ordenação
-    return list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [customers, subscriptions, payments]);
-
-  const filteredList = useMemo(() => {
-    return unifiedList.filter(item => {
-      const qLower = q.toLowerCase();
-      const matchText = 
-        item.customerName.toLowerCase().includes(qLower) || 
-        item.customerEmail.toLowerCase().includes(qLower);
-        
-      let match = false;
-      const isActive = ['ACTIVE', 'RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'].includes(item.status);
-      const isCanceled = ['CANCELED', 'DELETED', 'REFUNDED'].includes(item.status);
-
-      switch (viewFilter) {
-        case 'Todos':
-          match = isActive; 
-          break;
-        case 'Somente Vitalícios':
-          match = item.planClass === 'Vitalício' && isActive;
-          break;
-        case 'Somente Anuais':
-          match = item.planClass === 'Anual' && isActive;
-          break;
-        case 'Somente Mensais':
-          match = item.planClass === 'Mensal' && isActive;
-          break;
-        case 'Mensais Cancelados':
-          match = item.planClass === 'Mensal' && isCanceled;
-          break;
-      }
-
-      return matchText && match;
-    });
-  }, [unifiedList, q, viewFilter]);
-
-  const fmtBRL = (val: number) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-  if (!isAdmin) {
-    return <div className="min-h-screen flex items-center justify-center">Acesso restrito.</div>;
-  }
-
-  const mobileHeader = (
-    <PageHeader 
-      title="Assinantes Asaas" 
-      subtitle="Dados direto da API"
-      onBack={() => navigate('/admin-funcoes')} 
-      rightAction={
-        <button onClick={loadData} disabled={loading} className="p-2 bg-muted rounded-full">
-          <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-        </button>
-      }
-    />
-  );
+  const loadingFirst = query.isFetching && !query.data;
+  const atualizado = query.dataUpdatedAt ? new Date(query.dataUpdatedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : null;
 
   return (
-    <div className="min-h-dvh bg-background pb-20">{mobileHeader}
-      <div className="space-y-6 max-w-7xl mx-auto md:py-6">
-        {error && (
-          <div className="p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20 text-sm">
-            {error}
+    <div className="min-h-dvh bg-background pb-20 overflow-x-hidden">
+      <PageHeader
+        title={atual ? `Assinantes ${atual.label}` : 'Assinantes Asaas'}
+        subtitle={query.isFetching && query.data ? 'Atualizando…' : atualizado ? `Atualizado às ${atualizado}` : 'Dados direto da API'}
+        onBack={() => (atual ? setParams({}) : navigate('/admin-funcoes'))}
+        rightAction={
+          <button onClick={() => query.refetch()} disabled={query.isFetching} className="p-2 bg-muted rounded-full" aria-label="Atualizar">
+            <RefreshCw className={`w-5 h-5 ${query.isFetching ? 'animate-spin' : ''}`} />
+          </button>
+        }
+      />
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 space-y-4 pt-2">
+        {query.isError && !query.data && (
+          <div className="p-3 bg-destructive/10 text-destructive rounded-xl text-sm">{(query.error as Error).message}</div>
+        )}
+
+        {!atual && (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {stats.map((s) => (
+              <button key={s.key} onClick={() => { setParams({ plano: s.key }); setAba('ativo'); setQ(''); }}
+                className="text-left bg-card border border-border rounded-2xl p-4 active:scale-[0.98] transition min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className={`p-2 rounded-xl ${s.tone}`}><s.icon className="w-5 h-5" /></span>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                </div>
+                <div className="mt-3 text-sm text-muted-foreground truncate">{s.label}</div>
+                <div className="text-2xl font-bold">{loadingFirst ? '…' : s.count}</div>
+                <div className="text-xs text-muted-foreground truncate">{loadingFirst ? 'carregando' : `${fmtBRL(s.total)} ativos`}</div>
+              </button>
+            ))}
           </div>
         )}
 
-        <div className="bg-card rounded-2xl border border-border p-4">
-          <div className="flex flex-col md:flex-row gap-4 justify-between md:items-center">
-            <h2 className="font-semibold flex items-center gap-2">
-              <Filter className="w-5 h-5 text-muted-foreground" /> Filtros
-            </h2>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="text"
-                placeholder="Buscar nome ou e-mail..."
-                value={q}
-                onChange={e => setQ(e.target.value)}
-                className="bg-muted px-4 py-2 rounded-xl text-sm w-full sm:w-64 border-none focus:ring-1 focus:ring-primary"
-              />
-              <select 
-                value={viewFilter}
-                onChange={e => setViewFilter(e.target.value as any)}
-                className="bg-muted px-4 py-2 rounded-xl text-sm border-none focus:ring-1 focus:ring-primary outline-none w-full sm:w-auto"
-              >
-                <option value="Todos">Todos os Ativos</option>
-                <option value="Somente Vitalícios">Somente Vitalícios</option>
-                <option value="Somente Anuais">Somente Anuais</option>
-                <option value="Somente Mensais">Somente Mensais</option>
-                <option value="Mensais Cancelados">Mensais Cancelados</option>
-              </select>
-            </div>
-          </div>
-        </div>
+        {!atual && (
+          <p className="text-xs text-muted-foreground text-center">Toque em um card para ver a lista com vencimentos.</p>
+        )}
 
-        <div className="bg-card rounded-2xl border border-border overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-muted/30 border-b border-border">
-                <tr>
-                  <th className="px-6 py-4 font-medium text-muted-foreground">Cliente</th>
-                  <th className="px-6 py-4 font-medium text-muted-foreground">Data</th>
-                  <th className="px-6 py-4 font-medium text-muted-foreground">Plano</th>
-                  <th className="px-6 py-4 font-medium text-muted-foreground">Valor</th>
-                  <th className="px-6 py-4 font-medium text-muted-foreground">Método</th>
-                  <th className="px-6 py-4 font-medium text-muted-foreground">Status Asaas</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {loading && filteredList.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
-                      Carregando dados da API do Asaas...
-                    </td>
-                  </tr>
-                ) : filteredList.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">
-                      Nenhum assinante encontrado para esses filtros.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredList.map(item => (
-                    <tr key={item.id} className="hover:bg-muted/10 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="font-semibold">{item.customerName}</div>
-                        <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                          <Mail className="w-3 h-3" /> {item.customerEmail}
+        {atual && (
+          <>
+            <button onClick={() => setParams({})} className="hidden md:inline-flex items-center gap-1 text-sm text-muted-foreground"><ArrowLeft className="w-4 h-4" />Categorias</button>
+            <input type="text" placeholder="Buscar nome ou e-mail..." value={q} onChange={(e) => setQ(e.target.value)}
+              className="w-full bg-muted px-4 py-2.5 rounded-xl text-sm outline-none focus:ring-1 focus:ring-primary" />
+            <div className="flex gap-2 overflow-x-auto pb-1 -mx-3 px-3 scrollbar-none">
+              {ABAS.map((a) => (
+                <button key={a.key} onClick={() => setAba(a.key)}
+                  className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium ${aba === a.key ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                  {a.label}
+                </button>
+              ))}
+            </div>
+            <div className="text-xs text-muted-foreground">{lista.length} assinante(s) · {fmtBRL(lista.reduce((a, r) => a + (r.value || 0), 0))}</div>
+
+            {loadingFirst ? (
+              <div className="py-10 text-center text-muted-foreground text-sm">Carregando dados do Asaas…</div>
+            ) : lista.length === 0 ? (
+              <div className="py-10 text-center text-muted-foreground text-sm">Nenhum assinante aqui.</div>
+            ) : (
+              <>
+                <div className="space-y-2 md:hidden">
+                  {lista.map((r) => (
+                    <div key={r.id} className="bg-card border border-border rounded-2xl p-3 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="font-semibold truncate">{r.customerName}</div>
+                          <button onClick={() => { navigator.clipboard?.writeText(r.customerEmail); toast.success('E-mail copiado'); }}
+                            className="text-xs text-muted-foreground flex items-center gap-1 max-w-full">
+                            <Mail className="w-3 h-3 shrink-0" /><span className="truncate">{r.customerEmail}</span><Copy className="w-3 h-3 shrink-0" />
+                          </button>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        {item.date ? new Date(item.date).toLocaleDateString('pt-BR') : '-'}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
-                          item.planClass === 'Vitalício' ? 'bg-amber-500/10 text-amber-500' :
-                          item.planClass === 'Anual' ? 'bg-blue-500/10 text-blue-500' :
-                          'bg-emerald-500/10 text-emerald-500'
-                        }`}>
-                          {item.planClass}
-                        </span>
-                        <div className="text-xs text-muted-foreground mt-1.5 opacity-60">
-                          {item.type === 'subscription' ? 'Assinatura' : item.isInstallment ? 'Parcelado no Cartão' : 'Pagto Único'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 font-semibold text-emerald-400">
-                        {fmtBRL(item.value)}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          {item.billingType === 'PIX' ? (
-                            <span className="flex items-center gap-1.5 text-xs font-medium text-teal-400 bg-teal-500/10 px-2 py-1 rounded-md">
-                              <span className="w-1.5 h-1.5 rounded-full bg-teal-400" /> PIX
-                            </span>
-                          ) : item.billingType === 'CREDIT_CARD' ? (
-                            <span className="flex items-center gap-1.5 text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-1 rounded-md">
-                              <CreditCard className="w-3.5 h-3.5" /> Cartão
-                            </span>
-                          ) : (
-                            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-md">
-                              {item.billingType}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
-                          ['ACTIVE', 'RECEIVED', 'CONFIRMED'].includes(item.status)
-                            ? 'bg-emerald-500/20 text-emerald-500'
-                            : item.status === 'OVERDUE'
-                            ? 'bg-rose-500/20 text-rose-500'
-                            : ['CANCELED', 'DELETED', 'REFUNDED'].includes(item.status)
-                            ? 'bg-zinc-500/20 text-zinc-400'
-                            : 'bg-orange-500/20 text-orange-400'
-                        }`}>
-                          {item.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                        <div className="font-bold text-emerald-400 shrink-0">{fmtBRL(r.value)}</div>
+                      </div>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-muted">{r.planClass}</span>
+                        <Metodo t={r.billingType} />
+                        <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${grupoTone[r.grupo]}`}>{grupoLabel[r.grupo]}</span>
+                      </div>
+                      <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                        <div><div className="text-muted-foreground">Compra</div>{fmtData(r.date)}</div>
+                        <div><div className="text-muted-foreground">Vencimento</div><Vencimento r={r} /></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="hidden md:block bg-card rounded-2xl border border-border overflow-hidden">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-muted/30 border-b border-border text-muted-foreground">
+                      <tr><th className="px-4 py-3">Cliente</th><th className="px-4 py-3">Compra</th><th className="px-4 py-3">Plano</th><th className="px-4 py-3">Valor</th><th className="px-4 py-3">Método</th><th className="px-4 py-3">Vencimento</th><th className="px-4 py-3">Situação</th></tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {lista.map((r) => (
+                        <tr key={r.id}>
+                          <td className="px-4 py-3 max-w-[260px]"><div className="font-semibold truncate">{r.customerName}</div><div className="text-xs text-muted-foreground truncate">{r.customerEmail}</div></td>
+                          <td className="px-4 py-3">{fmtData(r.date)}</td>
+                          <td className="px-4 py-3">{r.planClass}<div className="text-xs text-muted-foreground">{r.type === 'subscription' ? 'Assinatura' : r.isInstallment ? 'Parcelado' : 'Pagto único'}</div></td>
+                          <td className="px-4 py-3 font-semibold text-emerald-400">{fmtBRL(r.value)}</td>
+                          <td className="px-4 py-3"><Metodo t={r.billingType} /></td>
+                          <td className="px-4 py-3 text-xs"><Vencimento r={r} /></td>
+                          <td className="px-4 py-3"><span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${grupoTone[r.grupo]}`}>{grupoLabel[r.grupo]}</span></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

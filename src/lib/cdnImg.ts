@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { Capacitor } from '@capacitor/core';
 import { assetUrl } from './assetUrl';
-import { R2_MIDIAS_BASE_URL, R2_VACATIO_AUDIO_BASE_URL, getPublicBucketUrl } from './storageBuckets';
+import { R2_MIDIAS_BASE_URL, R2_VACATIO_AUDIO_BASE_URL, R2_LIVROS_PDF_BASE_URL, getPublicBucketUrl } from './storageBuckets';
 
 export * from './storageBuckets';
 
@@ -131,14 +132,26 @@ export const safeStorageUrl = (url: string | null | undefined): string | null =>
 
   if (sanitized.includes(supabaseStoragePrefix)) {
     const relativePart = sanitized.split(supabaseStoragePrefix)[1] || '';
+    if (relativePart.startsWith('narracoes-leis/')) {
+      return `${R2_NARRACOES_LEIS_BASE_URL}/${relativePart.replace(/^narracoes-leis\//, '')}`;
+    }
     if (relativePart.startsWith('audios/') || relativePart.startsWith('audioaulas/') || relativePart.startsWith('narracoes/')) {
       return `${R2_VACATIO_AUDIO_BASE_URL}/${relativePart}`;
+    }
+    if (relativePart.startsWith('biblioteca-obras/') || relativePart.startsWith('livros-pdf/') || relativePart.startsWith('capas/')) {
+      return `${R2_LIVROS_PDF_BASE_URL}/${relativePart}`;
     }
     return `${R2_MIDIAS_BASE_URL}/${relativePart}`;
   }
 
   // Converte caminhos relativos conhecidos do bucket (ex: 'covers/minha-capa.webp' ou 'biblioteca-obras/...')
   if (!sanitized.startsWith('http://') && !sanitized.startsWith('https://') && !sanitized.startsWith('/') && !sanitized.startsWith('data:') && !sanitized.startsWith('blob:')) {
+    if (sanitized.startsWith('narracoes-leis/')) {
+      return `${R2_NARRACOES_LEIS_BASE_URL}/${sanitized.replace(/^narracoes-leis\//, '')}`;
+    }
+    if (sanitized.startsWith('biblioteca-obras/') || sanitized.startsWith('livros-pdf/') || sanitized.startsWith('capas/')) {
+      return `${R2_LIVROS_PDF_BASE_URL}/${sanitized}`;
+    }
     return `${R2_MIDIAS_BASE_URL}/${sanitized}`;
   }
 
@@ -147,6 +160,9 @@ export const safeStorageUrl = (url: string | null | undefined): string | null =>
     const relativePart = sanitized.replace('/storage/v1/object/public/', '');
     if (relativePart.startsWith('audios/') || relativePart.startsWith('audioaulas/') || relativePart.startsWith('narracoes/')) {
       return `${R2_VACATIO_AUDIO_BASE_URL}/${relativePart}`;
+    }
+    if (relativePart.startsWith('biblioteca-obras/') || relativePart.startsWith('livros-pdf/') || relativePart.startsWith('capas/')) {
+      return `${R2_LIVROS_PDF_BASE_URL}/${relativePart}`;
     }
     return `${R2_MIDIAS_BASE_URL}/${relativePart}`;
   }

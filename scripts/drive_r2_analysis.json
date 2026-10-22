@@ -1,0 +1,728 @@
+{
+  "driveInfo": {
+    "allFolders": [
+      {
+        "id": "19USGTZ5rPzugKfvLnU5K34eEsr09l7V3",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "amostras-vozes-americanas",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1qokVN_paIw-lAagmMg5Zi9Xdgsj90clu",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "amostras-vozes-femininas",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1MSRI2ro2OTqSUEs0hc-uBGVSdVXdKv_t",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "CLT",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1aia5RJtW1hIa9zioQbunIkw32RqvUdCR",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código Brasileiro de Aeronáutica",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1S1Or-g-ppvo3O-ZakIweUYgDlWu5D7SA",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código Brasileiro de Telecomunicações",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1urOxD7AGXgvk92ca2zbLUf9g9Bn_ufdu",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código Civil",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1XnMO-mSFZa93AQAyOTL5HlSvPj1f_RmC",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código Comercial",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1wNgGydBC_gDFvNfgkK5-QiDZFeb96JJ1",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Águas",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1NIFhXp0mMYrw0I18qZOa1uiMUADpRllo",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Águas Minerais",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1pogUt4TehumD1Ed107MkOasgJmt5Jd1J",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Defesa do Consumidor",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1IrfXyb5p2ijUTHYWNKgZnm12z39_YMJR",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Ética do Servidor Público",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1U-Urxf8BnNET4Th1mSsH-UCtdWGsuupz",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Mineração",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "19zXHDTAIizY8PMdWqFQ-1GoEqN3zBwTO",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Pesca",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1pxwFU1S-PvY8wFv2JYD7ol_7oBofvnGJ",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Processo Civil",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1gLpv_1Lo4qMp-Uy6tYP8UgYe-phebqIo",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Processo Penal",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1SxPU32tFZv7s9u0bfXdo2NGtmcg6dns-",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Processo Penal Militar",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1uL3wxOzyZI0DQoQv3hTCQx3RtXGuauPz",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código de Trânsito Brasileiro",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1eSxYn7SCHgaNiTzSeOatXgu_LpXYYwMf",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código Eleitoral",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1esrZfa9f9zXUkPJIan2qF-Xu9XDZIfb1",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código Florestal",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1fMvL_gKD-8CWOAdPd9qAiBnlEj2Mz7tA",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código Penal",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1_BblhneL8612hUuC0tfjAJtMqzYHaUwS",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código Penal Militar",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1bMQA7ON70Q6odP5OVterZM5lCfK6Nsnv",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Código Tributário Nacional",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1GnhklC5TPcefkmZJbi2nfdeBwKOS0bXC",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO PENAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1RHqLwhOgiQM8pYHHr9HlXOfJfi_gVn2w",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_ADMINISTRATIVO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "16M12PS1UQivOEE5Zh6n3J3Ge0BPiz2lr",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_AMBIENTAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1GTH6tqarbphOUlJZmJBxhrfLX6XdaWS0",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_CIVIL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "11jp7wOR9qSodQy7zfAZx3u2yox7tKrGl",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_CIVIL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1qrhg4LBQwwO9QytaWCwyazDuslsyRWXj",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_CONSTITUCIONAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1naLwp8nFhb81vJFyVa1vcsGimjqpF_5H",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_DESPORTIVO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1NU2l9lAVaDVL49EaZc1lcCVL8KF2ReQC",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_DO_TRABALHO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1NSOBt8u96ZjjI9TTslaVS4b17yRxMCPf",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_EMPRESARIAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1-foULZkKGloeV2xTKeDT_41Qaa4hGjcz",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_FINANCEIRO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1Hwm5ycoFay4NXfMyqKoFibENvp-PZ5kS",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_INTERNACIONAL_PRIVADO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1askPjQI8_xiC0FwD89YUlXGlLbePrbkT",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_PREVIDENCIARIO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1PPO_Al3G-UW1FtzNBmn8my7Ltm32Wvap",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_PROCESSUAL_CIVIL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1J3YSY8QS2JmZibH6x-Rq_iQQ0BtkDFkE",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_PROCESSUAL_DO_TRABALHO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "11f7RbK_z9mzB5VWeaulRoTXqmKxWT3Lp",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_PROCESSUAL_PENAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1fDkHxU5TUofr_dDXY_NIDzYD8wr6Kp9g",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_TRIBUTARIO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1WhGLbjHHLaVZ7pAocjQ7d6IU5fI-6Vsg",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_URBANISTICO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1cfAnJ0YLegH7oMByymH-2grjflqTDGcq",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITOS_HUMANOS",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1PozmX6yiQVDWWIgKcQbA9GuEArExFuma",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Advocacia e da OAB",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1mAgy8Hd6Ki_73nscUxnyXC4SGpqF87Vb",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Cidade",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1Yb77CnV9qQORjkQq7w5I--RXJ6T__ly_",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Criança e do Adolescente",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1DrTj4S4sQq6pY4M8jsTqTIsU4KyINPeg",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Igualdade Racial",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1dxwTT9gKeKQE8xnr14J4It2PfH0QrPUb",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Juventude",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1_NV5m3IOX7T_DknVaVgPxix9EDAMXe1A",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Metrópole",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1d3xVZH7a50d8ZArYmYdeRyuoXo9t0TUR",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Microempresa",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "12YEz0RsUGMGtsG_6NN0Ilbh9fjWnT3OO",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Pessoa com Deficiência",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "17arqv1eE5uqarLurRthoX1_xgFKSE2Ke",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Pessoa Idosa",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1TIol57bUMjjA6BIeEo9qZRx5ej1KioYD",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Terra",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1TIol57bUMjjA6BIeEo9qZRx5ej1KioYD",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "Estatuto da Terra",
+        "mimeType": "application/vnd.google-apps.folder"
+      }
+    ],
+    "uppercaseFolders": [
+      {
+        "id": "1MSRI2ro2OTqSUEs0hc-uBGVSdVXdKv_t",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "CLT",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1GnhklC5TPcefkmZJbi2nfdeBwKOS0bXC",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO PENAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1RHqLwhOgiQM8pYHHr9HlXOfJfi_gVn2w",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_ADMINISTRATIVO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "16M12PS1UQivOEE5Zh6n3J3Ge0BPiz2lr",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_AMBIENTAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1GTH6tqarbphOUlJZmJBxhrfLX6XdaWS0",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_CIVIL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "11jp7wOR9qSodQy7zfAZx3u2yox7tKrGl",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_CIVIL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1qrhg4LBQwwO9QytaWCwyazDuslsyRWXj",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_CONSTITUCIONAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1naLwp8nFhb81vJFyVa1vcsGimjqpF_5H",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_DESPORTIVO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1NU2l9lAVaDVL49EaZc1lcCVL8KF2ReQC",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_DO_TRABALHO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1NSOBt8u96ZjjI9TTslaVS4b17yRxMCPf",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_EMPRESARIAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1-foULZkKGloeV2xTKeDT_41Qaa4hGjcz",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_FINANCEIRO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1Hwm5ycoFay4NXfMyqKoFibENvp-PZ5kS",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_INTERNACIONAL_PRIVADO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1askPjQI8_xiC0FwD89YUlXGlLbePrbkT",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_PREVIDENCIARIO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1PPO_Al3G-UW1FtzNBmn8my7Ltm32Wvap",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_PROCESSUAL_CIVIL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1J3YSY8QS2JmZibH6x-Rq_iQQ0BtkDFkE",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_PROCESSUAL_DO_TRABALHO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "11f7RbK_z9mzB5VWeaulRoTXqmKxWT3Lp",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_PROCESSUAL_PENAL",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1fDkHxU5TUofr_dDXY_NIDzYD8wr6Kp9g",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_TRIBUTARIO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1WhGLbjHHLaVZ7pAocjQ7d6IU5fI-6Vsg",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITO_URBANISTICO",
+        "mimeType": "application/vnd.google-apps.folder"
+      },
+      {
+        "id": "1cfAnJ0YLegH7oMByymH-2grjflqTDGcq",
+        "parentId": [
+          "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+        ],
+        "name": "DIREITOS_HUMANOS",
+        "mimeType": "application/vnd.google-apps.folder"
+      }
+    ]
+  },
+  "r2Sample": {
+    "audio-aulas": [],
+    "estudos-juridicos-midias": [
+      "audioaulas/capas/direito-administrativo.webp",
+      "audioaulas/capas/direito-ambiental.webp",
+      "audioaulas/capas/direito-civil.webp",
+      "audioaulas/capas/direito-constitucional.webp",
+      "audioaulas/capas/direito-desportivo.webp",
+      "audioaulas/capas/direito-do-trabalho.webp",
+      "audioaulas/capas/direito-empresarial.webp",
+      "audioaulas/capas/direito-financeiro.webp",
+      "audioaulas/capas/direito-internacional-privado.webp",
+      "audioaulas/capas/direito-penal.webp",
+      "audioaulas/capas/direito-previdenciario.webp",
+      "audioaulas/capas/direito-processual-civil.webp",
+      "audioaulas/capas/direito-processual-do-trabalho.webp",
+      "audioaulas/capas/direito-processual-penal.webp",
+      "audioaulas/capas/direito-tributario.webp",
+      "audioaulas/capas/direito-urbanistico.webp",
+      "audioaulas/capas/direitos-humanos.webp",
+      "audioaulas/capas/formacao-complementar.webp",
+      "audioaulas/capas/lei-penal-especial.webp",
+      "audioaulas/capas/politicas-publicas.webp",
+      "audioaulas/capas/portugues.webp",
+      "audioaulas/capas/teoria-e-filosofia-do-direito.webp",
+      "imagens/a_luta_pelo_direito_manual.webp",
+      "imagens/capa-direito-medico.webp",
+      "imagens/direito-adm-1.webp",
+      "imagens/direito-adm-2.webp",
+      "imagens/direito-adm-3.webp",
+      "imagens/direito-adm-4.webp",
+      "imagens/direito-adm-5.webp",
+      "imagens/direito-adm-6.webp",
+      "imagens/direito-adm-7.webp",
+      "imagens/direito-administrativo.webp",
+      "imagens/direito-ambiental.webp",
+      "imagens/direito-civil.webp",
+      "imagens/direito-concorrencial.webp",
+      "imagens/direito-constitucional.webp",
+      "imagens/direito-desportivo.webp",
+      "imagens/direito-do-trabalho.webp",
+      "imagens/direito-empresarial.webp",
+      "imagens/direito-financeiro.webp",
+      "imagens/direito-internacional-privado.webp",
+      "imagens/direito-internacional-publico.webp",
+      "imagens/direito-penal _areas_.webp",
+      "imagens/direito-penal.webp",
+      "imagens/direito-previdenciario.webp",
+      "imagens/direito-processual-civil.webp",
+      "imagens/direito-processual-do-trabalho.webp",
+      "imagens/direito-processual-penal.webp",
+      "imagens/direito-tributario.webp",
+      "imagens/direito-urbanistico.webp"
+    ],
+    "narracoes-leis": [],
+    "vacatio-midias": [
+      "assets/a_luta_pelo_direito_manual.webp",
+      "assets/o-que-e-direito.webp",
+      "audioaulas/areas/direito-administrativo/.keep",
+      "audioaulas/areas/direito-ambiental/.keep",
+      "audioaulas/areas/direito-civil/.keep",
+      "audioaulas/areas/direito-constitucional/.keep",
+      "audioaulas/areas/direito-do-trabalho/.keep",
+      "audioaulas/areas/direito-empresarial/.keep",
+      "audioaulas/areas/direito-penal/.keep",
+      "audioaulas/areas/direito-previdenciario/.keep",
+      "audioaulas/areas/direito-processual-civil/.keep",
+      "audioaulas/areas/direito-processual-penal/.keep",
+      "audioaulas/areas/direito-tributario/.keep",
+      "audioaulas/areas/direitos-humanos/.keep",
+      "audioaulas/codigos/cagua/.keep",
+      "audioaulas/codigos/cba/.keep",
+      "audioaulas/codigos/cc/.keep",
+      "audioaulas/codigos/ccom/.keep",
+      "audioaulas/codigos/cdc/.keep",
+      "audioaulas/codigos/ce/.keep",
+      "audioaulas/codigos/cflor/.keep",
+      "audioaulas/codigos/clt/.keep",
+      "audioaulas/codigos/cmin/.keep",
+      "audioaulas/codigos/codigo-aguas/.keep",
+      "audioaulas/codigos/codigo-brasileiro-aeronautica/.keep",
+      "audioaulas/codigos/codigo-brasileiro-telecomunicacoes/.keep",
+      "audioaulas/codigos/codigo-civil/.keep",
+      "audioaulas/codigos/codigo-comercial/.keep",
+      "audioaulas/codigos/codigo-defesa-consumidor/.keep",
+      "audioaulas/codigos/codigo-eleitoral/.keep",
+      "audioaulas/codigos/codigo-florestal/.keep",
+      "audioaulas/codigos/codigo-mineracao/.keep",
+      "audioaulas/codigos/codigo-penal-militar/.keep",
+      "audioaulas/codigos/codigo-penal/.keep",
+      "audioaulas/codigos/codigo-processo-civil/.keep",
+      "audioaulas/codigos/codigo-processo-penal-militar/.keep",
+      "audioaulas/codigos/codigo-processo-penal/.keep",
+      "audioaulas/codigos/codigo-transito-brasileiro/.keep",
+      "audioaulas/codigos/codigo-tributario-nacional/.keep",
+      "audioaulas/codigos/cp/.keep",
+      "audioaulas/codigos/cpc/.keep",
+      "audioaulas/codigos/cpm/.keep",
+      "audioaulas/codigos/cpp/.keep",
+      "audioaulas/codigos/cppm/.keep",
+      "audioaulas/codigos/ctb/.keep",
+      "audioaulas/codigos/ctel/.keep",
+      "audioaulas/codigos/ctn/.keep",
+      "audioaulas/constituicao/adct/.keep",
+      "audioaulas/constituicao/cf88/.keep",
+      "audioaulas/constituicao/emendas-constitucionais/.keep"
+    ],
+    "livros-pdf": [
+      "areas/direito-administrativo.jpg",
+      "areas/direito-ambiental.jpg",
+      "areas/direito-civil.jpg",
+      "areas/direito-concorrencial.jpg",
+      "areas/direito-constitucional.jpg",
+      "areas/direito-desportivo.jpg",
+      "areas/direito-do-trabalho.jpg",
+      "areas/direito-empresarial.jpg",
+      "areas/direito-financeiro.jpg",
+      "areas/direito-internacional-privado.jpg",
+      "areas/direito-internacional-publico.jpg",
+      "areas/direito-penal.png",
+      "areas/direito-processual-civil.jpg",
+      "areas/direito-processual-do-trabalho.jpg",
+      "areas/direito-processual-penal.jpg",
+      "areas/direito-tributario.jpg",
+      "areas/direito-urbanistico.jpg",
+      "areas/direitos-humanos.jpg",
+      "areas/formacao-complementar.jpg",
+      "areas/lei-penal-especial.jpg",
+      "areas/pesquisa-cientifica.jpg",
+      "areas/politicas-publicas.jpg",
+      "areas/portugues.jpg",
+      "areas/pratica-profissional.jpg",
+      "areas/revisao-oab.jpg",
+      "areas/teoria-e-filosofia-do-direito.jpg",
+      "biblioteca-obras/areas/direito-administrativo.jpg",
+      "biblioteca-obras/areas/direito-ambiental.jpg",
+      "biblioteca-obras/areas/direito-civil.jpg",
+      "biblioteca-obras/areas/direito-concorrencial.jpg",
+      "biblioteca-obras/areas/direito-constitucional.jpg",
+      "biblioteca-obras/areas/direito-desportivo.jpg",
+      "biblioteca-obras/areas/direito-do-trabalho.jpg",
+      "biblioteca-obras/areas/direito-empresarial.jpg",
+      "biblioteca-obras/areas/direito-financeiro.jpg",
+      "biblioteca-obras/areas/direito-internacional-privado.jpg",
+      "biblioteca-obras/areas/direito-internacional-publico.jpg",
+      "biblioteca-obras/areas/direito-penal.png",
+      "biblioteca-obras/areas/direito-processual-civil.jpg",
+      "biblioteca-obras/areas/direito-processual-do-trabalho.jpg",
+      "biblioteca-obras/areas/direito-processual-penal.jpg",
+      "biblioteca-obras/areas/direito-tributario.jpg",
+      "biblioteca-obras/areas/direito-urbanistico.jpg",
+      "biblioteca-obras/areas/direitos-humanos.jpg",
+      "biblioteca-obras/areas/formacao-complementar.jpg",
+      "biblioteca-obras/areas/lei-penal-especial.jpg",
+      "biblioteca-obras/areas/pesquisa-cientifica.jpg",
+      "biblioteca-obras/areas/politicas-publicas.jpg",
+      "biblioteca-obras/areas/portugues.jpg",
+      "biblioteca-obras/areas/pratica-profissional.jpg"
+    ]
+  }
+}

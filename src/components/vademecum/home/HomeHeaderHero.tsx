@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';

@@ -1,0 +1,2067 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+/* Fontes movidas para index.html (preconnect + preload async) para não bloquear render. */
+
+
+/* ==========================================================================
+   OCULTAR BARRA DE ROLAGEM UNIVERSAL (Mobile Native & Web)
+   Remove a barra de rolagem preservando o scroll fluido por toque e mouse.
+   ========================================================================== */
+@layer base {
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
+/* Item 4: Espaçamento de Tipografia em Títulos Uppercase */
+@layer base {
+  h1.uppercase, h2.uppercase, h3.uppercase, h4.uppercase, h5.uppercase, h6.uppercase, .uppercase-title {
+    @apply tracking-widest;
+  }
+}
+
+/* ============================================================
+ * Edge-to-edge (Android 15+ / iOS notch)
+ * Expõe --sai-* como alias de env(safe-area-inset-*). Componentes
+ * fixed (headers, bottom nav, sheets) já usam env(safe-area-inset-*)
+ * diretamente; o alias fica disponível para overrides via style().
+ * A MainActivity nativa liga edge-to-edge com EdgeToEdge.enable(),
+ * evitando as APIs deprecadas Window.setStatusBarColor/*.
+ * ============================================================ */
+:root {
+  background-color: #0D0F12;
+  color-scheme: dark;
+  --sai-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --sai-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+  --sai-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --sai-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden !important; /* Trava o scroll no viewport para esconder a scrollbar branca nativa do iOS/Mobile */
+  background-color: #0D0F12 !important;
+  color: #FFFFFF;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background-color: #0D0F12 !important;
+  overscroll-behavior-y: none;
+  /* Limitação de UX para Tablets/iPads (Bug 6) - impede a tela de se esticar infinitamente */
+  max-width: 1024px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* No desktop, a navegação lateral e o conteúdo devem ocupar toda a viewport.
+ * O limite de 1024px acima continua protegendo apenas tablets e iPads. */
+@media (min-width: 1025px) {
+  #root {
+    max-width: none;
+    margin: 0;
+  }
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  /* Garante calha limpa sem faixas brancas no mobile */
+  scrollbar-gutter: auto;
+
+  /* Garante margem de respiro para que o header fixo não cubra âncoras e títulos (Item 36) */
+  scroll-padding-top: calc(4.5rem + var(--sai-top, 0px));
+
+  /* Bloqueia o "esticar a tela" nos topos e rodapés (rubber-banding) */
+  overscroll-behavior-y: none;
+  
+  /* Desativa a seleção de texto nativa (copiar/colar) que pinta a tela */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  
+  /* Remove o retângulo de destaque vermelho/cinza padrão ao tocar em itens clicáveis */
+  -webkit-tap-highlight-color: transparent;
+
+  /* Desabilita delay de duplo toque e atraso de 300ms no iOS */
+  touch-action: manipulation;
+}
+
+button, a, input, select, textarea, [role="button"], [role="tab"], .cursor-pointer {
+  touch-action: manipulation;
+}
+
+/* As otimizações extremas de remoção de backdrop-blur foram removidas 
+   a pedido do usuário para preservar a estética de "vidro" (glassmorphism) 
+   nos cards de Aprender, Flashcards, etc. */
+
+/* ==========================================================================
+   ANIMAÇÃO GPU-ONLY PARA CARDS DE BUSCA
+   Usa apenas transform + opacity (propriedades compostas pela GPU).
+   Respeita prefers-reduced-motion para acessibilidade.
+   ========================================================================== */
+@keyframes lei-icon-reflexo {
+  0%, 100% { opacity: 0.22; transform: translateY(0); }
+  50% { opacity: 0.45; transform: translateY(-2px); }
+}
+
+@keyframes resultado-fade-up {
+  from, to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.resultado-card-enter {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resultado-card-enter {
+    animation: none;
+  }
+}
+
+/* Reabilita a seleção para campos de texto (para permitir a digitação normal) */
+input, textarea, [contenteditable], .ProseMirror, .aui-composer-input, [data-aui-composer-input] {
+  -webkit-touch-callout: default !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  pointer-events: auto !important; /* Garante que o input seja clicável */
+}
+
+/* Garante que a raiz do assistant-ui permita seleção em toda a árvore (iOS Safari bug) */
+.aui-root, .aui-root * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Corrige possível sobreposição e garante visibilidade do texto no chat */
+.aui-composer {
+  position: relative !important;
+  z-index: 50 !important;
+}
+.aui-composer-input, [data-aui-composer-input] {
+  color: hsl(var(--foreground)) !important;
+  caret-color: hsl(var(--primary)) !important;
+  pointer-events: auto !important;
+  z-index: 51 !important;
+}
+
+/* Glassmorphism habilitado no mobile a pedido do usuário (Sugestão #28) */
+
+/* Pausa animações CSS enquanto a página está oculta (troca de rota),
+ * evita janks quando o usuário volta pra home. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@layer utilities {
+  .bg-brand-gradient {
+    background-image: linear-gradient(135deg, hsl(var(--brand-burgundy-deep)) 0%, hsl(var(--brand-burgundy-mid)) 40%, hsl(var(--primary)) 100%);
+  }
+}
+
+/* ==========================================================================
+   FASE 17 — ALTO CONTRASTE (prefers-contrast: more) — Item 76 WCAG 2.2
+   Aumenta opacidade, bordas e contorno em imagens, capas e ícones para
+   usuários com visão subnormal que ativam alto contraste no SO.
+   ========================================================================== */
+@media (prefers-contrast: more) {
+  /* Contorno visível em todas as imagens e capas do PrimeImage */
+  img,
+  [data-prime-image] {
+    outline: 2px solid rgba(255, 255, 255, 0.85) !important;
+    outline-offset: -1px;
+  }
+
+  /* Ícones translúcidos elevados para legibilidade máxima */
+  svg,
+  [role="img"] {
+    opacity: 1 !important;
+    filter: contrast(1.3) !important;
+  }
+
+  /* Badges e selos com borda reforçada */
+  .badge,
+  [data-badge],
+  .selo-verificado {
+    outline: 2px solid rgba(212, 175, 55, 0.9) !important;
+  }
+
+  /* Skeletons com maior contraste de fundo */
+  .animate-pulse {
+    opacity: 0.85 !important;
+    background-color: rgba(63, 63, 70, 0.95) !important;
+  }
+
+  /* Textos sobre imagens com sombra para legibilidade */
+  .bg-gradient-to-t,
+  .bg-gradient-to-b,
+  .bg-gradient-to-br {
+    --tw-gradient-from: rgba(0, 0, 0, 0.95) !important;
+  }
+}
+body {
+  background-color: hsl(var(--background));
+  box-sizing: border-box;
+  min-height: 100dvh;
+  overscroll-behavior-y: none;
+}
+#root {
+  min-height: 100dvh;
+  /* Reserva a área da barra de navegação (Android edge-to-edge / iOS home indicator)
+   * como padding do container em fluxo. Não afeta elementos position:fixed,
+   * que continuam usando env(safe-area-inset-*) diretamente. */
+  padding-bottom: var(--sai-bottom, env(safe-area-inset-bottom, 0px));
+}
+
+/* Utilitários de safe-area (Android + iOS). */
+.pt-safe { padding-top: var(--sai-top, env(safe-area-inset-top, 0px)); }
+.pb-safe { padding-bottom: var(--sai-bottom, env(safe-area-inset-bottom, 0px)); }
+.pl-safe { padding-left: var(--sai-left, env(safe-area-inset-left, 0px)); }
+.pr-safe { padding-right: var(--sai-right, env(safe-area-inset-right, 0px)); }
+.px-safe {
+  padding-left: var(--sai-left, env(safe-area-inset-left, 0px));
+  padding-right: var(--sai-right, env(safe-area-inset-right, 0px));
+}
+
+/* Cabeçalho padrão de tela (mesmo padrão do PageHeader do Vade Mecum):
+ * reserva a barra de status e mantém a altura mínima do header. */
+.pt-safe-header {
+  padding-top: calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.875rem);
+  min-height: calc(5rem + var(--sai-top, env(safe-area-inset-top, 0px)));
+}
+/* Apenas o topo seguro + respiro, sem impor altura (para sheets/overlays). */
+.pt-safe-top {
+  padding-top: calc(var(--sai-top, env(safe-area-inset-top, 0px)) + 0.75rem);
+}
+/* Rodapé / barras de ação fixas: reserva a navigation bar inferior. */
+.pb-safe-nav {
+  padding-bottom: calc(var(--sai-bottom, env(safe-area-inset-bottom, 0px)) + 0.75rem);
+}
+
+/* Tablet: a navegação agora é uma barra inferior flutuante (BottomNav),
+ * portanto o body ocupa a largura total sem reservar espaço lateral. */
+
+
+
+
+@layer base {
+  :root {
+    /* Direito Prime — Cinza Escuro + Vermelho + Cinza Neutro */
+    --background: 216 19% 6%;                 /* #0D0F12 - cinza escuro (era preto absoluto) */
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 11%;                      /* #1C1C1C - card sutilmente mais claro */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 348 80% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 348 80% 60%;
+
+    /* Brand tokens — bordô (cards de livro/clássicos) */
+    --brand-burgundy-deep: 350 70% 18%;
+    --brand-burgundy-mid: 350 68% 26%;
+    --brand-burgundy-bright: 350 72% 34%;
+    --brand-burgundy-surface: 350 76% 42%;
+
+    /* Acento do módulo Aprender */
+    --aprender-accent: 348 80% 50%;
+    --aprender-accent-foreground: 0 0% 100%;
+
+
+    /* Superfícies cinza do módulo Flashcards (cinza neutro, igual à home) */
+    --flash-bg: 0 0% 10%;
+    --flash-surface: 0 0% 16%;
+    --flash-surface-2: 0 0% 22%;
+    --flash-border: 0 0% 25%;
+
+
+    --secondary: 0 0% 18%;              /* #2E2E2E */
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 62%;
+
+    --accent: 348 80% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 348 80% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Estado "ao vivo / funcionando" */
+    --success: 145 64% 38%;
+    --success-foreground: 0 0% 100%;
+
+
+    --border: 0 0% 20%;                 /* #333333 */
+    --input: 0 0% 15%;
+    --ring: 348 80% 50%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 216 19% 6%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 348 80% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 14%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 348 80% 50%;
+
+    /* Legacy aliases still referenced in code — mapped to red */
+    --copper: 348 80% 50%;
+    --copper-light: 348 80% 60%;
+    --copper-dark: 350 70% 22%;
+    --signature: 348 80% 50%;
+    --gold-accent: 348 80% 50%;
+
+
+    /* Cores reais para ícones de ferramentas (não afetadas pelo mono mapping) */
+    --tool-cyan: 180 80% 45%;
+    --tool-sky: 200 90% 60%;
+    --tool-rose: 340 75% 60%;
+    --tool-emerald: 150 70% 45%;
+    --tool-violet: 260 70% 65%;
+    --tool-yellow: 348 80% 50%;
+    --tool-pink: 330 80% 65%;
+    --tool-orange: 25 90% 55%;
+    --tool-amber: 348 80% 50%;
+    --tool-fuchsia: 300 80% 60%;
+    --tool-red: 348 80% 50%;
+
+    /* Cores dos provedores de autenticação (tags admin) */
+    --provider-google: 217 89% 60%;
+    --provider-google-foreground: 0 0% 100%;
+    --provider-email: 25 95% 53%;
+    --provider-email-foreground: 0 0% 4%;
+    --provider-apple: 0 0% 100%;
+    --provider-apple-foreground: 0 0% 4%;
+
+    /* Novos tokens de motion/superfície */
+    --shadow-hazard: 0 12px 40px -12px hsl(348 80% 50% / 0.45);
+    --stripe-tape: repeating-linear-gradient(
+      45deg,
+      hsl(348 80% 50%) 0 14px,
+      hsl(0 0% 5%) 14px 28px
+    );
+
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  *::-webkit-scrollbar,
+  *::-webkit-scrollbar-thumb,
+  *::-webkit-scrollbar-track,
+  html::-webkit-scrollbar,
+  html::-webkit-scrollbar-thumb,
+  body::-webkit-scrollbar,
+  body::-webkit-scrollbar-thumb,
+  ::-webkit-scrollbar,
+  ::-webkit-scrollbar-thumb {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    max-width: 0 !important;
+    max-height: 0 !important;
+    background: transparent !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    -webkit-appearance: none !important;
+  }
+  
+  html, body {
+    overscroll-behavior-y: none; /* Prevents scroll bounce which sometimes exposes scrollbars */
+  }
+
+  body {
+    @apply bg-background text-foreground text-base leading-relaxed;
+    font-family: 'Barlow', system-ui, sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Bebas Neue', 'Barlow Condensed', system-ui, sans-serif;
+    font-weight: 400;
+    --animation-delay: 0s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse {
+    animation: none !important;
+    opacity: 0.8 !important;
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: 'Bebas Neue', 'Barlow Condensed', system-ui, sans-serif; letter-spacing: 0.11em; }
+  .font-body    { font-family: 'Barlow', system-ui, sans-serif; }
+  .font-legal   { font-family: 'Barlow', Georgia, serif; }
+
+  .text-gradient-gold {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)), hsl(var(--primary)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Vermelho padrão do app (mesmo do painel vermelho da home) */
+  /* Painel principal Aprender — Dourado elegante */
+  .bg-hero-yellow {
+    background: linear-gradient(135deg, hsl(46 65% 22%) 0%, hsl(46 65% 34%) 50%, hsl(46 65% 46%) 100%);
+    color: #fff;
+  }
+  .bg-hero-yellow-soft {
+    background: linear-gradient(135deg, hsl(46 65% 22% / 0.9) 0%, hsl(46 65% 34% / 0.9) 50%, hsl(46 65% 46% / 0.9) 100%);
+    color: #fff;
+  }
+  .tab-hero-yellow[data-state="active"] {
+    background: linear-gradient(135deg, hsl(46 65% 32%) 0%, hsl(46 65% 44%) 50%, hsl(46 65% 52%) 100%) !important;
+    color: #1a1a1a !important;
+  }
+
+  /* Painel vermelho / tab ativa / rodapé — gradiente compartilhado (DIREITO PRIME) */
+  .bg-hero-panel {
+    background: linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 50%, hsl(348 80% 50%) 100%);
+  }
+
+  /* Painel de navegação inferior (simétrico, luz no centro) */
+  .bg-nav-panel {
+    background: linear-gradient(90deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 25%, hsl(348 80% 50%) 50%, hsl(350 74% 42%) 75%, hsl(350 68% 32%) 100%);
+  }
+
+  /* Vermelho do rodapé/painel em cor sólida — mais vivo e vibrante nos ícones do menu */
+  .text-hero-panel {
+    color: #ff2d55;
+  }
+
+  /* Mesmo painel, versão amarela/dourada (Vade Mecum) */
+ .bg-hero-panel-yellow {
+    background: linear-gradient(135deg, hsl(48 90% 30%) 0%, hsl(50 98% 44%) 50%, hsl(51 100% 50%) 100%);
+  }
+  /* Mesmo painel, versão ciano (Resumos Jurídicos — #22D3EE) */
+  .bg-hero-panel-cyan {
+    background: linear-gradient(135deg, hsl(190 80% 18%) 0%, hsl(188 82% 30%) 50%, hsl(187 86% 42%) 100%);
+  }
+  /* Mesmo painel, versão marrom elegante (Biblioteca) */
+  .bg-hero-panel-brown {
+    background: linear-gradient(135deg, hsl(28 68% 32%) 0%, hsl(28 74% 42%) 50%, hsl(26 80% 50%) 100%);
+  }
+  /* Mesmo painel, versão roxa (Questões) */
+  .bg-hero-panel-violet {
+    background: linear-gradient(135deg, hsl(263 70% 22%) 0%, hsl(262 72% 38%) 50%, hsl(258 85% 56%) 100%);
+  }
+  /* Escopo de tema do Vade Mecum — alinhado ao vermelho da paleta do app */
+  .theme-vademecum,
+  .theme-vademecum-accent {
+    --primary: 348 80% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 348 80% 60%;
+    --ring: 348 80% 50%;
+  }
+  /* Escopo de tema do módulo Questões — alinhado à cor padrão (APP PRIME) */
+  .theme-questoes {
+    --primary: 348 80% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 348 80% 60%;
+    --ring: 348 80% 50%;
+  }
+  
+  /* Escopo de tema do módulo Aprender — Fundo escuro oficial idêntico ao início do app (#0D0D0D) */
+  .theme-aprender {
+    --background: 0 0% 5.1%;
+    --foreground: 220 20% 98%;
+    --card: 0 0% 8.5%;
+    --card-foreground: 220 20% 98%;
+    --popover: 0 0% 8.5%;
+    --popover-foreground: 220 20% 98%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 220 20% 98%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 220 14% 70%;
+    --border: 0 0% 15%;
+    
+    --primary: 350 89% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 350 95% 70%;
+    --ring: 350 89% 60%;
+  }
+
+  .bg-tab-active {
+    background: linear-gradient(180deg, hsl(350 85% 45%) 0%, hsl(350 88% 55%) 50%, hsl(350 89% 60%) 100%);
+  }
+
+
+  @keyframes vade-mecum-shine {
+    0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+    35% { opacity: 1; }
+    100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+  }
+  .vade-mecum-shine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 45%;
+    background: linear-gradient(105deg, transparent 0%, rgba(255,255,255,0.38) 50%, transparent 100%);
+    animation: vade-mecum-shine 3.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+
+
+
+  .hazard-tape {
+    background: var(--stripe-tape);
+  }
+
+  .shadow-hazard { box-shadow: var(--shadow-hazard); }
+
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 96px;
+  }
+  .cv-auto-lg {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 160px;
+  }
+  .will-change-transform-opacity {
+    will-change: transform, opacity;
+  }
+
+  /* Cores reais para ícones de ferramentas (fora do mono mapping) */
+  .bg-tool-cyan    { background-color: hsl(var(--tool-cyan) / 0.25); }
+  .text-tool-cyan  { color: hsl(var(--tool-cyan)); }
+  .ring-tool-cyan  { box-shadow: inset 0 0 0 1px hsl(var(--tool-cyan) / 0.4); }
+
+  .bg-tool-sky    { background-color: hsl(var(--tool-sky) / 0.25); }
+  .text-tool-sky  { color: hsl(var(--tool-sky)); }
+  .ring-tool-sky  { box-shadow: inset 0 0 0 1px hsl(var(--tool-sky) / 0.4); }
+
+  .bg-tool-rose    { background-color: hsl(var(--tool-rose) / 0.25); }
+  .text-tool-rose  { color: hsl(var(--tool-rose)); }
+  .ring-tool-rose  { box-shadow: inset 0 0 0 1px hsl(var(--tool-rose) / 0.4); }
+
+  .bg-tool-emerald    { background-color: hsl(var(--tool-emerald) / 0.25); }
+  .text-tool-emerald  { color: hsl(var(--tool-emerald)); }
+  .ring-tool-emerald  { box-shadow: inset 0 0 0 1px hsl(var(--tool-emerald) / 0.4); }
+
+  .bg-tool-violet    { background-color: hsl(var(--tool-violet) / 0.25); }
+  .text-tool-violet  { color: hsl(var(--tool-violet)); }
+  .ring-tool-violet  { box-shadow: inset 0 0 0 1px hsl(var(--tool-violet) / 0.4); }
+
+  .bg-tool-yellow    { background-color: hsl(var(--tool-yellow) / 0.25); }
+  .text-tool-yellow  { color: hsl(var(--tool-yellow)); }
+  .ring-tool-yellow  { box-shadow: inset 0 0 0 1px hsl(var(--tool-yellow) / 0.4); }
+
+  .bg-tool-pink    { background-color: hsl(var(--tool-pink) / 0.25); }
+  .text-tool-pink  { color: hsl(var(--tool-pink)); }
+  .ring-tool-pink  { box-shadow: inset 0 0 0 1px hsl(var(--tool-pink) / 0.4); }
+
+  .bg-tool-orange    { background-color: hsl(var(--tool-orange) / 0.25); }
+  .text-tool-orange  { color: hsl(var(--tool-orange)); }
+  .ring-tool-orange  { box-shadow: inset 0 0 0 1px hsl(var(--tool-orange) / 0.4); }
+
+  .bg-tool-amber    { background-color: hsl(var(--tool-amber) / 0.25); }
+  .text-tool-amber  { color: hsl(var(--tool-amber)); }
+  .ring-tool-amber  { box-shadow: inset 0 0 0 1px hsl(var(--tool-amber) / 0.4); }
+
+  .bg-tool-fuchsia    { background-color: hsl(var(--tool-fuchsia) / 0.25); }
+  .text-tool-fuchsia  { color: hsl(var(--tool-fuchsia)); }
+  .ring-tool-fuchsia  { box-shadow: inset 0 0 0 1px hsl(var(--tool-fuchsia) / 0.4); }
+
+  .bg-tool-red    { background-color: hsl(var(--tool-red) / 0.25); }
+  .text-tool-red  { color: hsl(var(--tool-red)); }
+  .ring-tool-red  { box-shadow: inset 0 0 0 1px hsl(var(--tool-red) / 0.4); }
+
+  /* --- Scrollbar visível para blocos de código e tabelas no Markdown --- */
+  .prose pre {
+    overflow-x: auto !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: hsl(var(--primary) / 0.4) transparent !important;
+  }
+  .prose pre::-webkit-scrollbar {
+    display: block !important;
+    height: 6px !important;
+  }
+  .prose pre::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  .prose pre::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.4) !important;
+    border-radius: 3px !important;
+  }
+  .prose pre::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.6) !important;
+  }
+}
+
+/* ─── Keyframes ─── */
+@keyframes shinePratique {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: 100%; }
+}
+
+@keyframes liveSlide {
+  0% { left: -2rem; }
+  50% { left: calc(100% + 2rem); }
+  100% { left: calc(100% + 2rem); }
+}
+
+@keyframes shimmer-reflect {
+  0% { transform: translateX(-150%) skewX(-15deg); }
+  100% { transform: translateX(250%) skewX(-15deg); }
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: translateX(-150%); }
+  50% { transform: translateX(150%); }
+}
+
+@keyframes shimmerBar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+@keyframes horus-btn-shimmer {
+  0% { background-position: 200% 0; }
+  60% { background-position: -100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+
+@keyframes letter-slide {
+  0%   { opacity: 0; transform: translateY(28px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes underline-draw {
+  0%   { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+@keyframes pulse-hazard {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(348 80% 50% / 0.6); }
+  50%      { box-shadow: 0 0 0 12px hsl(348 80% 50% / 0); }
+}
+
+@keyframes waveform {
+  0%, 100% { transform: scaleY(0.35); }
+  50%      { transform: scaleY(1); }
+}
+
+/* Reflexo rápido horizontal (deitado) em cascata: um ícone por vez,
+   o brilho desliza da esquerda para a direita passando de um ícone
+   para o outro com delays curtos. */
+@keyframes icon-sweep {
+  0%   { clip-path: polygon(-30% 0%, -10% 0%, -10% 100%, -30% 100%); opacity: 0; }
+  10%  { opacity: 0.85; }
+  90%  { opacity: 0.85; }
+  100% { clip-path: polygon(110% 0%, 130% 0%, 130% 100%, 110% 100%); opacity: 0; }
+}
+.shimmer-icon-sweep {
+  animation: icon-sweep 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s 1 both;
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+/* Reflexo contínuo sobre ícones de matérias na tela Aprender */
+@keyframes aprender-icon-shine {
+  0%   { transform: translateX(-140%) skewX(-18deg); opacity: 0; }
+  15%  { opacity: 1; }
+  55%  { opacity: 1; }
+  70%  { transform: translateX(160%) skewX(-18deg); opacity: 0; }
+  100% { transform: translateX(160%) skewX(-18deg); opacity: 0; }
+}
+.aprender-icon-shine { position: relative; overflow: hidden; border-radius: 0.75rem; }
+.aprender-icon-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 35%,
+    hsla(0,0%,100%,0.28) 48%,
+    hsla(0,0%,100%,0.55) 50%,
+    hsla(0,0%,100%,0.28) 52%,
+    transparent 65%
+  );
+  transform: translateX(-140%) skewX(-18deg);
+  animation: aprender-icon-shine 3.6s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* Reflexo horizontal (esquerda -> direita) sobre os ícones do painel amarelo da home */
+@keyframes hero-icon-reflect-h {
+  0%   { transform: translateX(-120%); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+.hero-icon-reflect-h {
+  display: none;
+}
+
+/* Ícones jurídicos flutuando ao redor do painel amarelo */
+@keyframes hero-legal-float-a {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50%      { transform: translate(0, -6px) rotate(4deg); }
+}
+@keyframes hero-legal-float-b {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50%      { transform: translate(4px, 4px) rotate(-5deg); }
+}
+@keyframes hero-legal-float-c {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50%      { transform: translate(-4px, 3px) rotate(3deg); }
+}
+.hero-legal-icon {
+  transform-box: fill-box;
+  transform-origin: center;
+  will-change: transform;
+}
+.hero-legal-icon.float-a { animation: hero-legal-float-a 6s ease-in-out infinite; }
+.hero-legal-icon.float-b { animation: hero-legal-float-b 7s ease-in-out infinite; }
+.hero-legal-icon.float-c { animation: hero-legal-float-c 8s ease-in-out infinite; }
+
+
+
+
+
+.news-cover-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.news-cover-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    hsla(51, 100%, 75%, 0.12) 45%,
+    hsla(51, 100%, 90%, 0.2) 50%,
+    hsla(51, 100%, 75%, 0.12) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%) skewX(-15deg);
+  animation: shimmer-reflect 1.6s ease-out 1 forwards;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Reflexo único disparado quando o card entra no centro do carrossel */
+.card-center-shine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    hsla(0, 0%, 100%, 0.18) 45%,
+    hsla(51, 100%, 90%, 0.42) 50%,
+    hsla(0, 0%, 100%, 0.18) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%) skewX(-15deg);
+  animation: shimmer-reflect 0.9s ease-out 1 forwards;
+  pointer-events: none;
+  z-index: 3;
+  border-radius: inherit;
+}
+
+/* === Botão dourado com reflexo (upgrade Premium) === */
+.gold-cta {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #8f1230 0%, #e01f47 40%, #f2607d 55%, #e01f47 70%, #75122a 100%);
+  box-shadow:
+    0 8px 24px -8px hsla(0, 78%, 50%, 0.55),
+    inset 0 1px 0 hsla(0, 100%, 88%, 0.5),
+    inset 0 -2px 0 hsla(0, 80%, 22%, 0.35);
+}
+.gold-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    hsla(0, 100%, 96%, 0.35) 45%,
+    hsla(0, 100%, 100%, 0.55) 50%,
+    hsla(0, 100%, 96%, 0.35) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%) skewX(-18deg);
+  animation: shimmer-reflect 1.6s ease-out 1 forwards;
+  pointer-events: none;
+}
+
+/* === Reflexo passando em botões circulares (chama atenção) === */
+.btn-attention-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-attention-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    hsla(0, 0%, 100%, 0.35) 45%,
+    hsla(0, 0%, 100%, 0.75) 50%,
+    hsla(0, 0%, 100%, 0.35) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%) skewX(-18deg);
+  animation: shimmer-reflect 1.4s ease-out 1 forwards;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+/* === Reflexo passando em loop (CTA overlay boletim) === */
+.btn-attention-shine-loop {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-attention-shine-loop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    hsla(0, 0%, 100%, 0.35) 45%,
+    hsla(0, 0%, 100%, 0.75) 50%,
+    hsla(0, 0%, 100%, 0.35) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%) skewX(-18deg);
+  animation: shimmer-reflect-loop 3s ease-out infinite;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+@keyframes shimmer-reflect-loop {
+  0% { transform: translateX(-150%) skewX(-18deg); }
+  40% { transform: translateX(250%) skewX(-18deg); }
+  100% { transform: translateX(250%) skewX(-18deg); }
+}
+
+/* === Reflexo suave na barra de pesquisa do hero === */
+.search-bar-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.search-bar-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    hsla(0, 0%, 100%, 0.12) 45%,
+    hsla(0, 0%, 100%, 0.25) 50%,
+    hsla(0, 0%, 100%, 0.12) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%) skewX(-12deg);
+  animation: shimmer-reflect 1.6s ease-out 1 forwards;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+/* === Reflexo contínuo suave na barra de Lei Seca === */
+.lei-seca-sweep-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.lei-seca-sweep-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.04) 40%,
+    rgba(255, 255, 255, 0.16) 50%,
+    rgba(255, 255, 255, 0.04) 60%,
+    transparent 80%
+  );
+  transform: translateX(-150%) skewX(-15deg);
+  animation: shimmer-reflect-loop 4.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lei-seca-sweep-shine::after {
+    display: none;
+  }
+}
+
+/* === Reflexo sequencial nos botões de atalho (Aprender, Flashcards, etc) === */
+.shortcut-button-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.shortcut-button-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    hsla(0, 0%, 100%, 0.2) 45%,
+    hsla(0, 0%, 100%, 0.4) 50%,
+    hsla(0, 0%, 100%, 0.2) 55%,
+    transparent 80%
+  );
+  transform: translateX(-150%) skewX(-15deg);
+  animation: shimmer-reflect 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: var(--shimmer-delay, 0ms);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+/* === Reflexo suave no ícone do card (varredura diagonal) === */
+.icon-shine {
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    hsla(0, 0%, 100%, 0.35) 48%,
+    hsla(0, 0%, 100%, 0.7) 50%,
+    hsla(0, 0%, 100%, 0.35) 52%,
+    transparent 65%
+  );
+  transform: translateX(-150%) skewX(-15deg);
+  animation: shimmer-reflect 1.4s ease-out 0.25s 1 forwards;
+  mix-blend-mode: screen;
+  filter: blur(0.5px);
+}
+
+/* === Reflexo contínuo em ícones ativos (cascata descendente) === */
+.icon-reflect-loop {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    hsla(0, 0%, 100%, 0.45) 45%,
+    hsla(0, 0%, 100%, 0.85) 50%,
+    hsla(0, 0%, 100%, 0.45) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%) skewX(-18deg);
+  animation: shimmer-reflect 1.4s ease-out 1 forwards;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+/* === Reflexo apenas nas linhas do SVG (marca d'água) === */
+.svg-shine {
+  -webkit-mask-image: linear-gradient(60deg, transparent 35%, black 50%, transparent 65%);
+  mask-image: linear-gradient(60deg, transparent 35%, black 50%, transparent 65%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-position: 150% 0;
+  mask-position: 150% 0;
+  animation: svg-mask-shine 1.5s ease-in-out 0.3s 1 forwards;
+}
+
+@keyframes svg-mask-shine {
+  0% {
+    -webkit-mask-position: 150% 0;
+    mask-position: 150% 0;
+  }
+  100% {
+    -webkit-mask-position: -50% 0;
+    mask-position: -50% 0;
+  }
+}
+
+/* === Reflexo horizontal (esquerda → direita) percorrendo cada item da lista, em sequência descendente === */
+@keyframes list-item-reflect {
+  0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  3%   { opacity: 1; }
+  22%  { opacity: 1; }
+  25%  { transform: translateX(120%) skewX(-18deg); opacity: 0; }
+  100% { transform: translateX(120%) skewX(-18deg); opacity: 0; }
+}
+
+.list-item-reflect {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    hsla(0, 0%, 100%, 0.28) 40%,
+    hsla(51, 100%, 92%, 0.55) 50%,
+    hsla(0, 0%, 100%, 0.28) 60%,
+    transparent 100%
+  );
+  transform: translateX(-120%) skewX(-18deg);
+  animation: list-item-reflect 3.2s ease-out 1 forwards;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+
+@media (min-width: 1024px) {
+  .desktop-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.3) transparent;
+  }
+  .desktop-scrollbar::-webkit-scrollbar { height: 4px; }
+  .desktop-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .desktop-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.3);
+    border-radius: 2px;
+  }
+  .desktop-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.5);
+  }
+}
+
+.hero-shine {
+  filter: brightness(1.1) saturate(1.08) contrast(1.02);
+  transition: filter 0.6s ease;
+}
+.hero-sheen {
+  background: linear-gradient(115deg, transparent 20%, hsl(0 0% 100% / 0.10) 45%, hsl(0 86% 70% / 0.10) 55%, transparent 80%);
+  background-size: 220% 100%;
+  background-position: -50% 0;
+  animation: heroSheen 3.2s ease-out 1 forwards;
+  mix-blend-mode: screen;
+}
+@keyframes heroSheen {
+  0%   { background-position: -60% 0; opacity: 0.5; }
+  50%  { background-position: 160% 0; opacity: 0.85; }
+  100% { background-position: -60% 0; opacity: 0.5; }
+}
+
+/* ── Hero figures (imagens vazadas do primeiro slide) ────── */
+@keyframes figure-in {
+  0%   { opacity: 0; transform: translateX(60px) scale(0.96); filter: blur(8px); }
+  60%  { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+.animate-figure-in { animation: figure-in 900ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes figure-in-left {
+  0%   { opacity: 0; transform: translateX(-60px) scale(0.96); filter: blur(8px); }
+  60%  { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); }
+}
+.animate-figure-in-left { animation: figure-in-left 900ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes caption-in {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-caption-in { animation: caption-in 700ms 200ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Reflexo horizontal que varre os ornamentos SVG do hero em loop */
+@keyframes svgShimmer {
+  0%   { transform: translateX(-40%); opacity: 0; }
+  15%  { opacity: 1; }
+  60%  { opacity: 1; }
+  75%  { transform: translateX(260%); opacity: 0; }
+  100% { transform: translateX(260%); opacity: 0; }
+}
+.svg-shimmer-layer { animation: svgShimmer 3s ease-out 1 forwards; will-change: transform, opacity; }
+
+@layer base {
+  :where(button, a, [role="button"], [role="link"], [tabindex="0"]):focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+  nav button[class*="flex-col"] { min-height: 44px; min-width: 44px; }
+}
+
+/* ============================================================
+   LIGHT MODE COMPATIBILITY LAYER
+   Remaps hardcoded dark Tailwind utilities to semantic tokens
+   when .light theme is active. Avoids touching 50+ files.
+   ============================================================ */
+html.light .bg-black,
+html.light .bg-neutral-900, html.light .bg-neutral-950,
+html.light .bg-zinc-900,    html.light .bg-zinc-950,
+html.light .bg-gray-900,    html.light .bg-gray-950,
+html.light .bg-stone-900,   html.light .bg-stone-950,
+html.light .bg-\[\#0A0A0A\],
+html.light .bg-\[\#141414\],
+html.light .bg-\[\#0a0a0a\],
+html.light .bg-\[\#141414\],
+html.light .bg-\[\#111\],
+html.light .bg-\[\#1a1a1a\] {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground));
+}
+
+html.light .bg-black\/40,
+html.light .bg-black\/50,
+html.light .bg-black\/60,
+html.light .bg-black\/70,
+html.light .bg-black\/80,
+html.light .bg-black\/90 {
+  background-color: hsl(var(--card) / 0.92) !important;
+  backdrop-filter: blur(8px);
+}
+
+html.light .bg-black\/20,
+html.light .bg-black\/30 {
+  background-color: hsl(var(--muted) / 0.85) !important;
+}
+
+html.light .text-white { color: hsl(var(--foreground)) !important; }
+html.light .text-white\/50,
+html.light .text-white\/60,
+html.light .text-white\/70,
+html.light .text-white\/80,
+html.light .text-white\/90 { color: hsl(var(--muted-foreground)) !important; }
+
+html.light .text-neutral-100,
+html.light .text-neutral-200,
+html.light .text-neutral-300,
+html.light .text-zinc-100,
+html.light .text-zinc-200,
+html.light .text-zinc-300,
+html.light .text-gray-100,
+html.light .text-gray-200,
+html.light .text-gray-300 { color: hsl(var(--foreground)) !important; }
+
+html.light .text-neutral-400,
+html.light .text-neutral-500,
+html.light .text-zinc-400,
+html.light .text-zinc-500,
+html.light .text-gray-400,
+html.light .text-gray-500 { color: hsl(var(--muted-foreground)) !important; }
+
+html.light .border-white\/5,
+html.light .border-white\/10,
+html.light .border-white\/20,
+html.light .border-neutral-800,
+html.light .border-neutral-900,
+html.light .border-zinc-800,
+html.light .border-zinc-900,
+html.light .border-gray-800,
+html.light .border-gray-900 { border-color: hsl(var(--border)) !important; }
+
+html.light .bg-white\/5,
+html.light .bg-white\/10,
+html.light .bg-white\/20 { background-color: hsl(var(--muted)) !important; }
+
+html.light .bg-neutral-800,
+html.light .bg-neutral-850,
+html.light .bg-zinc-800,
+html.light .bg-gray-800,
+html.light .bg-stone-800 { background-color: hsl(var(--muted)) !important; color: hsl(var(--foreground)); }
+
+html.light .from-black,
+html.light .to-black,
+html.light .via-black,
+html.light .from-neutral-900,
+html.light .to-neutral-900,
+html.light .from-zinc-900,
+html.light .to-zinc-900 {
+  --tw-gradient-from: hsl(var(--background)) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: hsl(var(--background) / 0) var(--tw-gradient-to-position) !important;
+}
+
+html.light .from-black\/80,
+html.light .to-black\/80,
+html.light .from-black\/90,
+html.light .to-black\/90 {
+  --tw-gradient-from: hsl(var(--background) / 0.8) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: hsl(var(--background) / 0.8) var(--tw-gradient-to-position) !important;
+}
+
+/* Divides */
+html.light .divide-white\/10 > :not([hidden]) ~ :not([hidden]) { border-color: hsl(var(--border)) !important; }
+
+/* Ring / focus */
+html.light .ring-white\/10, html.light .ring-white\/20 { --tw-ring-color: hsl(var(--border)) !important; }
+
+/* Placeholder */
+html.light .placeholder-white\/40::placeholder,
+html.light .placeholder-white\/50::placeholder,
+html.light .placeholder-white\/60::placeholder { color: hsl(var(--muted-foreground)) !important; }
+
+/* Shadows on light bg feel harsh in pure black — soften */
+html.light .shadow-2xl,
+html.light .shadow-xl {
+  --tw-shadow-color: hsl(220 15% 15% / 0.12);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+/* Extra hex tones used in HomeHeader & tiles */
+html.light .bg-\[\#1c1c1c\],
+html.light .bg-\[\#1C1C1C\],
+html.light .bg-\[\#212121\],
+html.light .bg-\[\#222\],
+html.light .bg-\[\#2a2a2a\],
+html.light .bg-\[\#2A2A2A\] {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground));
+}
+html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !important; }
+
+/* === Vade Mecum: shimmer no texto ativo do checklist === */
+@keyframes text-shimmer-vm {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.text-shimmer {
+  background: linear-gradient(90deg, hsl(0 90% 75%) 0%, hsl(0 100% 92%) 50%, hsl(0 90% 75%) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-shimmer-vm 2.4s linear 1 forwards;
+}
+
+/* === Vade Mecum: reflexo âmbar percorrendo o card === */
+@keyframes card-shine-vm {
+  0%   { transform: translateX(0); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translateX(500%); opacity: 0; }
+}
+.animate-card-shine {
+  animation: card-shine-vm 2.6s ease-in-out 0.4s 1;
+}
+
+
+/* === Vade Mecum: cascata de artigos + content-visibility === */
+/* content-visibility: auto pula render de itens off-screen (virtualização nativa do browser). */
+.article-cascade-item {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 112px;
+  contain: layout paint style;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-cascade-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* === Modo grifo manual: fluido e nativo no mobile/WebView Capacitor === */
+.highlight-selectable,
+.highlight-selectable * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  -webkit-touch-callout: none !important; /* Desativa menu web nativo do Android: Copiar / Selecionar tudo / Compartilhar */
+  -webkit-tap-highlight-color: transparent !important; /* Remove flash/retângulo colorido nativo do toque */
+  touch-action: pan-y !important; /* permite scroll vertical + arrastar com o dedo para grifar */
+}
+.highlight-selectable ::selection {
+  background: var(--hl-selection, rgba(250, 204, 21, 0.42));
+  color: inherit;
+}
+.highlight-selectable ::-moz-selection {
+  background: var(--hl-selection, rgba(250, 204, 21, 0.42));
+  color: inherit;
+}
+
+/* === Hero (painel amarelo) — Ken Burns contínuo, elegante ================= */
+@keyframes ken-burns-a {
+  0%   { transform: scale(1.02) translate3d(-1.2%, 0.6%, 0); }
+  100% { transform: scale(1.09) translate3d(1.4%, -0.8%, 0); }
+}
+@keyframes ken-burns-b {
+  0%   { transform: scale(1.09) translate3d(1.2%, -0.6%, 0); }
+  100% { transform: scale(1.02) translate3d(-1.4%, 0.8%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [style*="ken-burns-a"], [style*="ken-burns-b"] { animation: none !important; }
+}
+
+/* Reflexo diagonal para a linha "Planos" no menu lateral. */
+@keyframes planos-shine {
+  0%   { transform: translateX(0) skewX(-12deg); opacity: 0; }
+  15%  { opacity: 1; }
+  60%  { transform: translateX(520%) skewX(-12deg); opacity: 1; }
+  100% { transform: translateX(520%) skewX(-12deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-\[planos-shine_3\.2s_ease-in-out_infinite\] { animation: none !important; }
+}
+
+
+/* Page transition — 0ms instant display without opacity 0 or translateY */
+@keyframes page-in {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 1; transform: none; }
+}
+.animate-page-in {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Reflexo animado no logo central do hero */
+.logo-shine {
+  isolation: isolate;
+  clip-path: circle(50% at 50% 50%);
+}
+.logo-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 18%,
+    rgba(255, 255, 255, 0.0) 35%,
+    rgba(255, 255, 255, 0.72) 47%,
+    rgba(255, 255, 255, 0.18) 54%,
+    rgba(255, 255, 255, 0.0) 66%,
+    transparent 82%
+  );
+  border-radius: 9999px;
+  clip-path: circle(50% at 50% 50%);
+  transform: translateX(-135%);
+  animation: logo-shine-sweep 1.8s ease-out 1 forwards;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+@keyframes logo-shine-sweep {
+  0%   { transform: translateX(-135%); }
+  55%  { transform: translateX(135%); }
+  100% { transform: translateX(135%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-shine::after { animation: none; display: none; }
+}
+
+/* Auth desktop: infinite cascading laws list */
+@keyframes auth-laws-scroll {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+.auth-laws-track {
+  animation: auth-laws-scroll 90s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-laws-track { animation: none; }
+}
+
+/* Landing mobile: infinite horizontal law tags marquee (right -> left) */
+@keyframes tags-marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.tags-marquee-track {
+  animation: tags-marquee-scroll 45s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tags-marquee-track { animation: none; }
+}
+
+/* Landing: brasões de cargos - carrossel lento */
+@keyframes badges-marquee-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+.badges-marquee-track {
+  animation: badges-marquee-scroll 60s linear infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .badges-marquee-track { animation: none; }
+}
+
+/* Reflexo suave nos brasões */
+.badge-shine {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+.badge-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  animation: badge-shine-sweep 4.5s ease-in-out infinite;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+@keyframes badge-shine-sweep {
+  0%, 40%   { transform: translateX(-120%); }
+  60%, 100% { transform: translateX(120%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .badge-shine::after { animation: none; display: none; }
+}
+
+/* ============================================================
+   Leitor nativo / react-pageflip (StPageFlip)
+   Mantém o modo Folhear preso à área útil do leitor no mobile.
+   ============================================================ */
+[data-reader-flip] .stf__parent,
+[data-reader-flip] .stf__wrapper,
+[data-reader-flip] .stf__block {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  box-sizing: border-box;
+}
+
+[data-reader-flip] .stf__parent {
+  overflow: hidden !important;
+}
+
+[data-reader-flip] .stf__wrapper,
+[data-reader-flip] .stf__block {
+  inset: 0 !important;
+}
+
+[data-reader-flip] .stf__item {
+  max-width: 100% !important;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+[data-reader-flip] .stf__item > div,
+[data-reader-flip] .stf__item [data-reader-article],
+[data-reader-flip] .stf__item [data-reader-article] > * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+[data-reader-flip] [data-reader-article] {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+/* Transição entre slides da apresentação narrada */
+@keyframes slide-swap-next {
+  from { opacity: 0; transform: translateX(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes slide-swap-prev {
+  from { opacity: 0; transform: translateX(-28px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* ===== Direito Prime — landing (portado) ===== */
+@keyframes neonPulseText {
+  0%, 100% { text-shadow: 0 0 4px rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
+  33% { text-shadow: 0 0 16px rgba(255,255,255,0.6), 0 0 40px rgba(212,168,75,0.4); color: #fff; }
+}
+@keyframes lineGlow {
+  0%, 100% { opacity: 0.3; }
+  33% { opacity: 1; }
+}
+@keyframes shimmerSlide {
+  0% { transform: translateX(-120%); }
+  50% { transform: translateX(120%); }
+  100% { transform: translateX(120%); }
+}
+@keyframes dpMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.dp-marquee { display: flex; width: max-content; animation: dpMarquee 28s linear infinite; }
+.shine-effect { position: relative; }
+.shine-effect::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%);
+  animation: shimmerSlide 4s ease-in-out infinite;
+}
+
+.no-scrollbar,
+.hide-scrollbar,
+.scrollbar-none,
+.scrollbar-hide,
+.custom-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+.no-scrollbar::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+.scrollbar-hide::-webkit-scrollbar,
+.custom-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  -webkit-appearance: none !important;
+}
+
+/* Ficha editorial (resumos/mapas): tema "papel" escopado, para que os
+   componentes que usam tokens semânticos fiquem legíveis sobre o creme. */
+.ficha-editorial {
+  --background: 36 44% 96%;
+  --foreground: 20 20% 14%;
+  --card: 36 44% 96%;
+  --card-foreground: 20 20% 14%;
+  --popover: 36 44% 96%;
+  --popover-foreground: 20 20% 14%;
+  --muted: 36 30% 91%;
+  --muted-foreground: 20 12% 38%;
+  --secondary: 36 30% 91%;
+  --secondary-foreground: 20 20% 14%;
+  --accent: 36 30% 91%;
+  --accent-foreground: 20 20% 14%;
+  --primary: 351 74% 27%;
+  --primary-foreground: 40 60% 97%;
+  --border: 351 30% 84%;
+  --input: 351 30% 84%;
+  --ring: 351 74% 27%;
+  color: hsl(var(--foreground));
+}
+
+/* ── Landing hero (Tribunal do Saber) ── */
+@keyframes lp-fall {
+  0% { transform: translate3d(0, -12vh, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translate3d(50px, 112vh, 0) rotate(720deg); opacity: 0; }
+}
+@keyframes lp-float {
+  0%, 100% { transform: translate(0, 0) rotate(-8deg); }
+  25% { transform: translate(24px, -18px) rotate(6deg); }
+  50% { transform: translate(46px, 8px) rotate(-4deg); }
+  75% { transform: translate(16px, 24px) rotate(8deg); }
+}
+@keyframes lp-pop {
+  0% { transform: scale(0.7) translateY(34px); opacity: 0; }
+  70% { transform: scale(1.04) translateY(-4px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes lp-title {
+  0% { transform: scale(0.55) rotate(-4deg); opacity: 0; }
+  60% { transform: scale(1.08) rotate(1deg); opacity: 1; }
+  80% { transform: scale(0.97); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes lp-glow {
+  0%, 100% { filter: drop-shadow(0 0 18px hsl(var(--primary) / 0.45)); }
+  50% { filter: drop-shadow(0 0 44px hsl(var(--primary) / 0.85)); }
+}
+.lp-fall { animation: lp-fall linear infinite; }
+.lp-float { animation: lp-float 9s ease-in-out infinite; }
+.lp-pop { animation: lp-pop 1.1s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.lp-title { animation: lp-title 1.3s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.lp-glow { animation: lp-glow 3.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .lp-fall, .lp-float, .lp-glow { animation: none; }
+}
+
+/* Fase 28: Contenção Geométrica Estrita de Cards e Flashcards (Itens 28, 29, 30) */
+.lp-fall, .lp-float {
+  contain: layout paint;
+  will-change: transform;
+}
+
+[data-flashcard="true"] {
+  contain: layout;
+  transform-style: preserve-3d;
+}
+
+/* Limita qualquer ilustração ou imagem embutida em flashcards para evitar saltos verticais */
+[data-flashcard="true"] img:not(.lp-fall):not(.lp-float),
+.flashcard-content img {
+  max-height: 12rem;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 0.75rem;
+  margin-left: auto;
+  margin-right: auto;
+  contain: paint;
+  transition: opacity 0.3s ease-out;
+}
+
+/* Fase 30: Curva Óptica Suave para Fade-In de Imagens (Item 30) */
+[data-prime-image] img,
+.prime-image-fade {
+  transition: opacity 350ms cubic-bezier(0.16, 1, 0.3, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* ── Reflexo único (landing hero): passa uma vez no título, depois no botão ── */
+@keyframes lpSheenSweep {
+  0%   { transform: translateX(-130%) skewX(-18deg); opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { transform: translateX(130%) skewX(-18deg); opacity: 0; }
+}
+.lp-sheen { position: relative; overflow: hidden; }
+.lp-sheen::after {
+  content: ''; position: absolute; top: -20%; bottom: -20%; left: 0; width: 55%;
+  pointer-events: none; border-radius: inherit;
+  background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.10) 35%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.10) 65%, transparent 100%);
+  mix-blend-mode: screen;
+  transform: translateX(-130%) skewX(-18deg);
+  animation: lpSheenSweep 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) 1 both;
+  animation-delay: var(--lp-sheen-delay, 0.9s);
+}
+.lp-sheen-loop::after {
+  animation: lpSheenSweep 2.6s cubic-bezier(0.22, 0.61, 0.36, 1) infinite both;
+  animation-delay: var(--lp-sheen-delay, 1.2s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-sheen::after { animation: none; opacity: 0; }
+}
+
+
+/* Zoom suave (ken burns) na cena de fundo da landing */
+@keyframes lpHeroZoom {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}
+.lp-hero-zoom {
+  transform-origin: center center;
+  animation: lpHeroZoom 24s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-hero-zoom { animation: none; }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(100%); opacity: 0.6; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* === Reflexo contínuo no CTA de assinatura === */
+.btn-shine-loop {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine-loop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    hsla(0, 0%, 100%, 0.28) 45%,
+    hsla(0, 0%, 100%, 0.65) 50%,
+    hsla(0, 0%, 100%, 0.28) 55%,
+    transparent 70%
+  );
+  transform: translateX(-150%) skewX(-18deg);
+  animation: shimmer-reflect 2.6s ease-out infinite;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-shine-loop::after { animation: none; opacity: 0; }
+}
+
+/* === Ícones jurídicos passeando sobre a capa do blog === */
+@keyframes cover-drift {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%  { transform: translate3d(var(--drift-x, 12px), -14px, 0) rotate(6deg); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+}
+.animate-cover-drift {
+  animation-name: cover-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-cover-drift { animation: none; }
+}
+
+/* === Reflexo interno (stroke) nos ícones usando mask === */
+@keyframes mask-shine-drift {
+  0%   { mask-position: 200% 0; -webkit-mask-position: 200% 0; }
+  100% { mask-position: -100% 0; -webkit-mask-position: -100% 0; }
+}
+.icon-shine-mask {
+  mask-image: linear-gradient(60deg, transparent 35%, rgba(0,0,0,1) 50%, transparent 65%);
+  -webkit-mask-image: linear-gradient(60deg, transparent 35%, rgba(0,0,0,1) 50%, transparent 65%);
+  mask-size: 300% 100%;
+  -webkit-mask-size: 300% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  animation: mask-shine-drift 2s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .icon-shine-mask { animation: none; opacity: 0; }
+}
+
+/* Item 52: Desativa temporariamente backdrop-filter nos 80ms de transição de rota para manter 120fps fluido */
+html[data-route-transitioning="true"] * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Animations for CustomSplashScreen (moved from inline to avoid CSS recalculations) */
+@keyframes splash-logo-anim {
+  0% { transform: scale(0.65); opacity: 0; }
+  60% { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes splash-content-anim {
+  0% { transform: translateY(16px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.anim-splash-logo-gpu {
+  animation: splash-logo-anim 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+.anim-splash-content-gpu {
+  opacity: 0;
+  animation: splash-content-anim 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: 0.25s;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+@layer utilities {
+  .bg-brand-gradient { background-image: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-mid)) 60%, hsl(var(--brand-burgundy-deep)) 100%); }
+  /* Degradê simétrico do menu de rodapé (BottomNav): claro nas extremidades (Blog e Pílulas) e escurecendo em direção ao centro (Vade Mecum) */
+  .bg-bottomnav-gradient {
+    background-image: linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-bright)) 30%, hsl(var(--brand-burgundy-bright)) 70%, hsl(var(--primary)) 100%);
+  }
+}
+
+/* ==========================================================================
+   ANIMAÇÃO CINEMATOGRÁFICA 3D RIFFLE SHUFFLE (Folheamento Realista a 120fps)
+   Simula o movimento tridimensional de um baralho sendo folheado e embaralhado
+   ========================================================================== */
+@keyframes deck-riffle-left {
+  0%, 100% {
+    transform: translate3d(-14px, 3px, -4px) rotateZ(-5deg) rotateY(2deg);
+  }
+  16% {
+    /* Puxada para fora inicial */
+    transform: translate3d(-28px, -4px, 12px) rotateZ(-11deg) rotateY(6deg);
+  }
+  28% {
+    /* Abertura máxima do leque para o corte */
+    transform: translate3d(-46px, -12px, 22px) rotateZ(-17deg) rotateY(12deg);
+  }
+  42% {
+    /* Folheamento rápido (Riffle flick 1) */
+    transform: translate3d(-34px, -2px, 15px) rotateZ(-12deg) rotateY(7deg);
+  }
+  54% {
+    /* Folheamento rápido (Riffle flick 2) */
+    transform: translate3d(-24px, 6px, 8px) rotateZ(-7deg) rotateY(3deg);
+  }
+  68% {
+    /* Encaixe e batida de volta no maço com leve impacto */
+    transform: translate3d(-6px, 1px, 2px) rotateZ(-2deg) rotateY(1deg);
+  }
+  80% {
+    /* Alinhamento de repouso no leque */
+    transform: translate3d(-14px, 3px, -4px) rotateZ(-5deg) rotateY(2deg);
+  }
+}
+
+@keyframes deck-riffle-right {
+  0%, 100% {
+    transform: translate3d(14px, 3px, -4px) rotateZ(5deg) rotateY(-2deg);
+  }
+  16% {
+    /* Puxada para fora inicial */
+    transform: translate3d(28px, -4px, 12px) rotateZ(11deg) rotateY(-6deg);
+  }
+  28% {
+    /* Abertura máxima do leque para o corte */
+    transform: translate3d(46px, -12px, 22px) rotateZ(17deg) rotateY(-12deg);
+  }
+  42% {
+    /* Folheamento rápido (Riffle flick 1) */
+    transform: translate3d(34px, -2px, 15px) rotateZ(12deg) rotateY(-7deg);
+  }
+  54% {
+    /* Folheamento rápido (Riffle flick 2) */
+    transform: translate3d(24px, 6px, 8px) rotateZ(7deg) rotateY(-3deg);
+  }
+  68% {
+    /* Encaixe e batida de volta no maço com leve impacto */
+    transform: translate3d(6px, 1px, 2px) rotateZ(2deg) rotateY(-1deg);
+  }
+  80% {
+    /* Alinhamento de repouso no leque */
+    transform: translate3d(14px, 3px, -4px) rotateZ(5deg) rotateY(-2deg);
+  }
+}
+
+@keyframes deck-riffle-front {
+  0%, 100% {
+    transform: translate3d(0, 0, 15px) scale(1);
+  }
+  16% {
+    transform: translate3d(0, -4px, 20px) scale(1.015);
+  }
+  28% {
+    /* Corte e elevação da carta de topo */
+    transform: translate3d(0, -12px, 35px) scale(1.04);
+  }
+  42% {
+    transform: translate3d(1px, -5px, 24px) scale(1.02);
+  }
+  54% {
+    transform: translate3d(-1px, -2px, 18px) scale(1.01);
+  }
+  68% {
+    /* Assentamento suave com snap elástico no maço */
+    transform: translate3d(0, 3px, 10px) scale(0.995);
+  }
+  80% {
+    transform: translate3d(0, 0, 15px) scale(1);
+  }
+}
+
+/* Brilho holográfico que varre a carta frontal após o encaixe */
+@keyframes deck-holo-glint {
+  0%, 65% {
+    opacity: 0;
+    transform: translateX(-150%) skewX(-25deg);
+  }
+  75% {
+    opacity: 0.45;
+  }
+  88%, 100% {
+    opacity: 0;
+    transform: translateX(200%) skewX(-25deg);
+  }
+}
+
+.anim-deck-shuffle-left {
+  animation: deck-riffle-left 3.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.anim-deck-shuffle-right {
+  animation: deck-riffle-right 3.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.anim-deck-shuffle-front {
+  animation: deck-riffle-front 3.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.anim-deck-glint {
+  animation: deck-holo-glint 3.8s ease-in-out infinite;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-deck-shuffle-left,
+  .anim-deck-shuffle-right,
+  .anim-deck-shuffle-front,
+  .anim-deck-glint {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   TIPOGRAFIA & ERGONOMIA DE LEITURA (Vade Mecum Itens 01 e 02)
+   ========================================================================== */
+.font-vademecum-serif {
+  font-family: 'Literata', 'Newsreader', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif !important;
+}
+
+.font-vademecum-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace !important;
+}
+
+/* Guia Óptico de Leitura (Linha de Foco) */
+.reading-guide-active .reading-line-focus {
+  transition: background-color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+}
+
+.reading-guide-active .reading-line-focus:hover,
+.reading-guide-active .reading-line-focus:focus-within {
+  background-color: rgba(245, 158, 11, 0.045);
+  border-left-color: rgb(245 158 11 / 0.8) !important;
+}
+
+/* ==========================================================================
+   GPU-COMPOSITED KEYFRAMES — Mini Players & Equalizers (120fps)
+   Replaces Framer Motion height/width infinite loops that cause layout thrashing.
+   All animations use transform (scaleY, translateX) = compositor-only, zero reflow.
+   ========================================================================== */
+
+/* Equalizer bar — bounces via scaleY (no height reflow) */
+@keyframes eq-bar {
+  0%, 100% { transform: scaleY(0.2); }
+  25%      { transform: scaleY(0.9); }
+  50%      { transform: scaleY(0.45); }
+  75%      { transform: scaleY(1); }
+}
+
+/* Shine / reflexo sweep — translateX only (compositor) */
+@keyframes mini-player-shine {
+  0%   { transform: translateX(-120%) skewX(-12deg); }
+  100% { transform: translateX(320%) skewX(-12deg); }
+}
+
+/* Arrow nudge — translateX only */
+@keyframes arrow-nudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(4px); }
+}
+
+/* Falling leaf — translateY + rotate + opacity (compositor GPU) */
+@keyframes falling-leaf {
+  0%   { transform: translateY(-60px) rotate(0deg);                opacity: 0; }
+  10%  { transform: translateY(60px) rotate(calc(var(--leaf-rotate) * 0.1));  opacity: 1; }
+  80%  { transform: translateY(600px) rotate(calc(var(--leaf-rotate) * 0.8)); opacity: 1; }
+  100% { transform: translateY(800px) rotate(var(--leaf-rotate));             opacity: 0; }
+}
+
+/* Floating SVG — translate + rotate drift (compositor GPU) */
+@keyframes floating-svg {
+  0%   { transform: translate(0, 0)       rotate(var(--float-rotate-start)); }
+  25%  { transform: translate(20px, -20px) rotate(var(--float-rotate-mid)); }
+  50%  { transform: translate(-15px, 15px) rotate(var(--float-rotate-end)); }
+  75%  { transform: translate(10px, -10px) rotate(var(--float-rotate-mid)); }
+  100% { transform: translate(0, 0)       rotate(var(--float-rotate-start)); }
+}
+
+/* Respect reduced motion globally */
+@media (prefers-reduced-motion: reduce) {
+  .css-eq-bar,
+  .mini-player-shine,
+  .arrow-nudge-anim,
+  .css-falling-leaf,
+  .css-floating-svg {
+    animation: none !important;
+  }
+}
+
+@keyframes animate-image-glow-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -100% 0; }
+}
+
+.animate-image-glow {
+  background-size: 200% auto;
+  animation: animate-image-glow-pulse 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* === Reflexo contnuo em texto === */
+.text-shine-loop {
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) 40%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 1) 60%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: textShineLoop 3s linear infinite;
+}
+
+@keyframes textShineLoop {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-shine-loop { animation: none; background: none; color: inherit; -webkit-background-clip: initial; background-clip: initial; }
+}
+
+@keyframes card-flip {
+  0%, 35% { transform: rotateY(0deg); }
+  50%, 85% { transform: rotateY(180deg); }
+  100% { transform: rotateY(360deg); }
+}
+.animate-card-flip {
+  animation: card-flip 3s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
+#root { background-color: #0D0F12; min-height: 100vh; }

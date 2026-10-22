@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';

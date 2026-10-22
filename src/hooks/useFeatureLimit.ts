@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState, useMemo } from 'react';
+import { useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import { inicioCiclo, contarUsos } from '@/lib/cotaCiclo';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -23,7 +24,7 @@ let cachedAt = 0;
 const CACHE_TTL = 5 * 60 * 1000;
 const listeners = new Set<(l: FeatureLimitConfig[]) => void>();
 
-async function loadLimits(force = false): Promise<FeatureLimitConfig[]> {
+export async function loadLimits(force = false): Promise<FeatureLimitConfig[]> {
   const now = Date.now();
   if (!force && cachedLimits && now - cachedAt < CACHE_TTL) return cachedLimits;
   const { data } = await supabase.from('feature_limits' as any).select('*');
@@ -88,49 +89,10 @@ export function useFeatureLimit(
   options: UseFeatureLimitOptions = {}
 ): UseFeatureLimitResult {
   const { user } = useAuth();
-  const { isPremium } = useSubscription();
+  const { isPremium, loading: carregandoPlano } = useSubscription();
   const isAdmin = shouldBypassAsAdmin(user?.email);
 
-  const isTrialExpired = useMemo(() => {
-    if (!user) return false;
-    if (isAdmin) return false;
-    if (isSimulatingExpired(user?.email)) return true;
-    if (isPremium) return false;
 
-    const createdAt = new Date(user.created_at);
-    const maxAllowedTrialMs = createdAt.getTime() + 3 * 24 * 60 * 60 * 1000;
-    let trialEndsAt = new Date(maxAllowedTrialMs);
-
-    if (user.user_metadata?.trial_ends_at) {
-      const metaTrial = new Date(user.user_metadata.trial_ends_at);
-      if (!isNaN(metaTrial.getTime()) && metaTrial.getTime() <= maxAllowedTrialMs) {
-        trialEndsAt = metaTrial;
-      }
-    } else if (user.user_metadata?.trial_start) {
-      const metaStart = new Date(user.user_metadata.trial_start).getTime();
-      trialEndsAt = new Date(metaStart + 3 * 24 * 60 * 60 * 1000);
-    }
-
-    const nowMs = Date.now();
-    let maxKnownTime = createdAt.getTime();
-    try {
-      const saved = localStorage.getItem('direitoprime:time:max');
-      if (saved) maxKnownTime = Math.max(maxKnownTime, Number(saved));
-    } catch {}
-
-    const isClockTampered = nowMs < maxKnownTime;
-    
-    let isDeviceAbuse = false;
-    try {
-      const claimedUser = localStorage.getItem('direitoprime:device:trial_claimed');
-      if (claimedUser && claimedUser !== user.id) {
-        isDeviceAbuse = true;
-      }
-    } catch {}
-
-    const isTrialActive = !isClockTampered && !isDeviceAbuse && trialEndsAt.getTime() > nowMs;
-    return !isTrialActive;
-  }, [user, isPremium, isAdmin]);
 
   const [config, setConfig] = useState<FeatureLimitConfig | null>(null);
   const [used, setUsed] = useState(0);
@@ -138,6 +100,7 @@ export function useFeatureLimit(
   const [loading, setLoading] = useState(true);
   const [nonce, setNonce] = useState(0);
   const scope = options.scope ?? null;
+  const usedRefs = useRef<Set<string>>(new Set());
 
   const refresh = useCallback(() => setNonce(n => n + 1), []);
 
@@ -159,15 +122,16 @@ export function useFeatureLimit(
     if (isPremium || isAdmin || !config.enabled) { setLoading(false); return; }
 
     (async () => {
-      const since = periodStart(config.period).toISOString();
+      const since = (config.period === 'monthly' ? inicioCiclo(user.created_at) : periodStart(config.period)).toISOString();
       const q = supabase.from('feature_usage' as any)
-        .select('scope_value', { count: 'exact' })
+        .select('scope_value, ref_key')
         .eq('user_id', user.id)
         .eq('feature_key', featureKey)
         .gte('used_at', since);
-      const { data, count } = await q;
+      const { data } = await q;
       if (cancelled) return;
-      setUsed(count || 0);
+      setUsed(contarUsos((data || []) as any));
+      usedRefs.current = new Set(((data || []) as any[]).map(r => r.scope_value || r.ref_key).filter(Boolean));
       if (config.scope_key && scope) {
         const already = (data || []).some((r: any) => r.scope_value === scope);
         setScopeAlreadyUsed(already);
@@ -184,12 +148,15 @@ export function useFeatureLimit(
   const remaining = Math.max(0, limit - used);
   const scopeBypass = !!(config?.scope_key && scope && scopeAlreadyUsed);
   const canUse =
-    isAdmin || isPremium || (!enabled || scopeBypass || (limit > 0 && used < limit));
+    carregandoPlano || isAdmin || isPremium || (!enabled || scopeBypass || (limit > 0 && used < limit));
   const blocked = !canUse;
 
   const register = useCallback(async (refKey?: string) => {
     if (!user || isAdmin || isPremium || !config?.enabled) return;
     if (config.scope_key && scope && scopeAlreadyUsed) return;
+    const k = scope || refKey;
+    if (k && usedRefs.current.has(k)) return;
+    if (k) usedRefs.current.add(k);
     await supabase.from('feature_usage' as any).insert({
       user_id: user.id,
       feature_key: featureKey,

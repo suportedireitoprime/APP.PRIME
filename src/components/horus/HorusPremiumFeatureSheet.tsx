@@ -82,7 +82,7 @@ export default function HorusPremiumFeatureSheet({ open, onClose, capability }: 
               </SheetTitle>
             </SheetHeader>
             <p className="font-body text-sm text-muted-foreground mt-2 max-w-[300px] mx-auto">
-              Pra {info.verb} pro Horus, vocÃª precisa ser assinante. Bora comeÃ§ar com <span className="font-semibold text-foreground">3 dias grÃ¡tis</span>?
+              Pra {info.verb} pro Horus, vocÃª precisa ser assinante. Assine para liberar <span className="font-semibold text-foreground">sem limites</span>.
             </p>
           </div>
 
@@ -133,7 +133,7 @@ export default function HorusPremiumFeatureSheet({ open, onClose, capability }: 
                 }}
               >
                 <Crown className="w-4 h-4 mr-2" />
-                ComeÃ§ar 3 dias grÃ¡tis
+                Ver planos
               </Button>
               <button
                 onClick={() => { haptic.selection(); onClose(); }}

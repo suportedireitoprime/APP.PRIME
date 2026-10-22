@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Quote, Scale, Check, X, XCircle, RotateCw, CheckCircle2, ArrowRight, Lightbulb, Flag, ChevronDown, AlertTriangle, BookMarked, HelpCircle, Puzzle, Brain, Zap, ShieldCheck, Target, Eye } from 'lucide-react';

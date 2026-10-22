@@ -10,6 +10,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { useProfileSummary } from '@/hooks/useProfileSummary';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useNavigate } from 'react-router-dom';
+import { Gauge } from 'lucide-react';
+import { useMinhaCota } from '@/hooks/useMinhaCota';
 import { isAdminEmail } from '@/lib/adminEmails';
 import { isDevSimulatorEligible } from '@/lib/devSimulation';
 import DevSubscriptionSwitcher from '@/components/menu/DevSubscriptionSwitcher';
@@ -34,6 +36,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { isPremium, isTrial, expiresAt } = useSubscription();
+  const cota = useMinhaCota();
   useBodyScrollLock(open);
 
   // Obter versão e compilação da build nativa (Android, iOS ou Web)
@@ -226,6 +229,12 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             icon={Bird}
             label="Assistente Hórus"
             onClick={() => handleItemClick('assistente-horus')}
+          />
+          <MenuRow
+            icon={Gauge}
+            label="Minha Cota"
+            hint={isPremium ? 'Ilimitado' : cota.loading ? undefined : `${cota.percentual}%`}
+            onClick={() => { navigate('/minha-cota'); onClose(); }}
           />
         </GroupCard>
 

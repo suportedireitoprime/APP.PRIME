@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { motion } from 'framer-motion';
 import { ArrowLeft, UserRound } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';

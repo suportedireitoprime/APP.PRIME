@@ -95,32 +95,43 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
     return `${min}:${seg < 10 ? '0' : ''}${seg}`;
   };
 
-  // Simulação de Visemes + Extração de Volume em Tempo Real
+  // Visemes + volume suavizados (evita engasgos e trocas bruscas de boca)
   useEffect(() => {
     if (status !== 'falando') {
-      setViseme('X');
+      setViseme('sil');
       setVolume(0);
       return;
     }
 
-    let animationFrameId: number;
-    let lastTime = 0;
+    let animationFrameId = 0;
+    let lastViseme = 0;
+    let lastVolPush = 0;
+    let smooth = 0;
+    let pushed = 0;
+    let current = 'sil';
+    const abertas = ['aa', 'O', 'E', 'aa', 'U', 'I'];
+    const medias = ['DD', 'kk', 'SS', 'nn', 'RR', 'CH', 'TH'];
+    const fechadas = ['PP', 'FF', 'sil'];
 
     const update = (time: number) => {
-      if (!sessaoRef.current) return;
-      const currentVolume = sessaoRef.current.getVolume();
-      setVolume(currentVolume);
+      const raw = sessaoRef.current ? Math.min(1, sessaoRef.current.getVolume() || 0) : 0;
+      // ataque rápido, soltura lenta
+      smooth += (raw - smooth) * (raw > smooth ? 0.45 : 0.15);
 
-      if (time - lastTime > 60) {
-        lastTime = time;
-        if (currentVolume > 0.15) {
-          const visemes = ['A', 'O', 'E', 'U', 'I'];
-          setViseme(visemes[Math.floor(Math.random() * visemes.length)]);
-        } else if (currentVolume > 0.03) {
-          const visemes = ['C', 'D', 'S', 'L', 'M', 'P', 'F'];
-          setViseme(visemes[Math.floor(Math.random() * visemes.length)]);
-        } else {
-          setViseme('X');
+      if (time - lastVolPush > 33 && Math.abs(smooth - pushed) > 0.01) {
+        lastVolPush = time;
+        pushed = smooth;
+        setVolume(Math.round(smooth * 100) / 100);
+      }
+
+      if (time - lastViseme > 90) {
+        lastViseme = time;
+        const pool = smooth > 0.18 ? abertas : smooth > 0.05 ? medias : smooth > 0.015 ? fechadas : ['sil'];
+        let next = pool[Math.floor(Math.random() * pool.length)];
+        if (next === current && pool.length > 1) next = pool[(pool.indexOf(next) + 1) % pool.length];
+        if (next !== current) {
+          current = next;
+          setViseme(next);
         }
       }
 
@@ -128,7 +139,11 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
     };
 
     animationFrameId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(animationFrameId);
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      setViseme('sil');
+      setVolume(0);
+    };
   }, [status]);
 
   // Mantém a tela acesa durante a conversa ao vivo
@@ -146,7 +161,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
 
   // Monitora cota de tempo
   useEffect(() => {
-    if (status === 'falando' || status === 'ouvindo') {
+    if ((status === 'falando' || status === 'ouvindo') && !cota.carregandoPlano) {
       cota.iniciarTimer();
     } else {
       cota.pararTimer();
@@ -155,7 +170,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
 
   // Se cota atingida, encerra a sessão
   useEffect(() => {
-    if (cota.limiteAtingido) {
+    if (!cota.carregandoPlano && cota.limiteAtingido) {
       sessaoRef.current?.encerrar();
       sessaoRef.current = null;
       setStatus('encerrado');
@@ -173,6 +188,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
 
   // Iniciar sessão Gemini Live
   const conectar = useCallback(async () => {
+    if (cota.carregandoPlano) return;
     if (cota.limiteAtingido) {
       cota.setLimiteModalAberto(true);
       return;
@@ -274,9 +290,11 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
     }
   }, [cota, modo, contexto, promptInicialPersonalizado]);
 
+  // Só conecta depois de confirmar o plano do usuário
   useEffect(() => {
+    if (cota.carregandoPlano) return;
     void conectar();
-  }, [conectar]);
+  }, [conectar, cota.carregandoPlano]);
 
   const alternarMic = () => {
     if (!sessaoRef.current) return;
@@ -397,7 +415,7 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
 
           {/* O AVATAR FACEYELLOW */}
           <div className="relative w-full h-full z-10 flex items-end justify-center overflow-visible pb-2">
-            <FaceYellow viseme={viseme} volume={volume} />
+            <FaceYellow viseme={viseme} volume={volume} status={status} />
             
             {/* Botão de Microfone Centralizado na Toga do Avatar */}
             <button
@@ -414,18 +432,6 @@ export const MeExpliqueLiveChatView: React.FC<Props> = ({
               {micAtivo ? <Mic className="w-5 h-5 animate-pulse" /> : <MicOff className="w-5 h-5 text-red-400" />}
             </button>
 
-            {/* Ícone sobreposto para status conectando/ouvindo */}
-            {status !== 'falando' && (
-              <div className="absolute top-4 left-4 bg-zinc-900/80 backdrop-blur border border-white/10 p-2 rounded-full shadow-xl">
-                {status === 'ouvindo' ? (
-                  <MessageSquare className="w-4 h-4 text-emerald-400 animate-bounce" />
-                ) : status === 'conectando' ? (
-                  <Loader2 className="w-4 h-4 text-amber-400 animate-spin" />
-                ) : (
-                  <Volume2 className="w-4 h-4 text-zinc-500" />
-                )}
-              </div>
-            )}
           </div>
         </div>
       </section>

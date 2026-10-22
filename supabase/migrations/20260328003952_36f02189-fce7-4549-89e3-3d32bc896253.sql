@@ -1,1 +1,0 @@
-DELETE FROM public.radar_pl_headlines;

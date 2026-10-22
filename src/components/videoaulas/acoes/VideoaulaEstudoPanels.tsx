@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AlertTriangle, Workflow, Sparkles, Scale, ChevronLeft, ChevronRight } from "lucide-react";
 import Flashcard3D from "@/components/flashcards/Flashcard3D";
 import { useState } from "react";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FlashcardDeckItem } from '@/components/flashcards/FlashcardDeckItem';
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';

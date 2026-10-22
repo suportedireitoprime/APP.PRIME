@@ -1,0 +1,1383 @@
+{
+  "completed": {
+    "1wLk3WrIURP_xUZRSfLZfK_kiuJuQ-vp1": {
+      "id": "legalidade-na-administracao-publica-1wLk3W",
+      "titulo": "Legalidade na administração pública",
+      "categoria": "Direito Administrativo"
+    },
+    "1l075oyr73QZOmNg_IGS7S-FTCL6bcPxd": {
+      "id": "principios-da-administracao-publica-limpe-1l075o",
+      "titulo": "Princípios da administração pública (LIMPE)",
+      "categoria": "Direito Administrativo"
+    },
+    "1gpuGFqHfdbahPuCNWAxMD6EN3ldxP_5y": {
+      "id": "impessoalidade-o-que-significa-1gpuGF",
+      "titulo": "Impessoalidade: o que significa?",
+      "categoria": "Direito Administrativo"
+    },
+    "1A2jX1x8Yy4be2_0FDKCOUt04KUoygMuB": {
+      "id": "o-que-e-direito-administrativo-1A2jX1",
+      "titulo": "O que é direito administrativo?",
+      "categoria": "Direito Administrativo"
+    },
+    "1B7zf5U27pIOefRcQYjZK5nquhlIRRJ8O": {
+      "id": "publicidade-dos-atos-publicos-1B7zf5",
+      "titulo": "Publicidade dos atos públicos",
+      "categoria": "Direito Administrativo"
+    },
+    "12pME4pYLUSYjbNvcXJdj_bvt-ZNWU4ei": {
+      "id": "moralidade-administrativa-12pME4",
+      "titulo": "Moralidade administrativa",
+      "categoria": "Direito Administrativo"
+    },
+    "1VIEf9EcNYW0MounX_XqD_q4igC0SC7qq": {
+      "id": "o-que-e-ato-administrativo-1VIEf9",
+      "titulo": "O que é ato administrativo?",
+      "categoria": "Direito Administrativo"
+    },
+    "1BcltZgRQqscxwm5a42O2oqokB02shGvx": {
+      "id": "eficiencia-no-servico-publico-1BcltZ",
+      "titulo": "Eficiência no serviço público",
+      "categoria": "Direito Administrativo"
+    },
+    "1TfY178k12un7sbmeeJHbdDeTN_BvE89p": {
+      "id": "atributos-do-ato-administrativo-1TfY17",
+      "titulo": "Atributos do ato administrativo",
+      "categoria": "Direito Administrativo"
+    },
+    "1-YXGZOl1ccVDxMGgGUYutUiqnwOCPZPj": {
+      "id": "poder-discricionario-poder-vinculado-1-YXGZ",
+      "titulo": "Poder discricionário × poder vinculado",
+      "categoria": "Direito Administrativo"
+    },
+    "1Lam5z0r11_jMAKWk0Duv9Lr6ZxPRebtd": {
+      "id": "o-que-e-licitacao-1Lam5z",
+      "titulo": "O que é licitação?",
+      "categoria": "Direito Administrativo"
+    },
+    "10ib1juUhDK__1AQmHbOPLeBwSvUqJKCj": {
+      "id": "o-que-e-poder-de-policia-10ib1j",
+      "titulo": "O que é poder de polícia?",
+      "categoria": "Direito Administrativo"
+    },
+    "1UlQgU9yZKEDLp6sZXuA9S0AWH3XDoAR0": {
+      "id": "modalidades-de-licitacao-1UlQgU",
+      "titulo": "Modalidades de licitação",
+      "categoria": "Direito Administrativo"
+    },
+    "1kKv9HNpAapxwIyntjyP8OKoDkjr84Wnf": {
+      "id": "dispensa-e-inexigibilidade-de-licitacao-1kKv9H",
+      "titulo": "Dispensa e inexigibilidade de licitação",
+      "categoria": "Direito Administrativo"
+    },
+    "1pSdercPYVC0d9bXQ9fUQ9WLdJXaU52Tf": {
+      "id": "contratos-administrativos-1pSder",
+      "titulo": "Contratos administrativos",
+      "categoria": "Direito Administrativo"
+    },
+    "1jOahyCCSoWZfvw34LdCrxLWlCzytKOCz": {
+      "id": "pregao-como-funciona-1jOahy",
+      "titulo": "Pregão: como funciona?",
+      "categoria": "Direito Administrativo"
+    },
+    "1a845nZo2jN91-cUiSDSMoOoiIyJiopvy": {
+      "id": "o-que-e-concessao-de-servico-publico-1a845n",
+      "titulo": "O que é concessão de serviço público?",
+      "categoria": "Direito Administrativo"
+    },
+    "10DRnR-fVXsVU_bK-FshT5n4bAQNIofmH": {
+      "id": "ppps-parcerias-publico-privadas-10DRnR",
+      "titulo": "PPPs: parcerias público-privadas",
+      "categoria": "Direito Administrativo"
+    },
+    "16Z7T_9yfcnspecF68pRTe9WoLT4cL147": {
+      "id": "concurso-publico-como-funciona-16Z7T_",
+      "titulo": "Concurso público: como funciona",
+      "categoria": "Direito Administrativo"
+    },
+    "1xhmk0z8UosQaTvKhrjb92p2Q7mBT3UVo": {
+      "id": "o-que-e-servidor-publico-1xhmk0",
+      "titulo": "O que é servidor público?",
+      "categoria": "Direito Administrativo"
+    },
+    "1Z7R0rv2NAzzsMHVy_cV_s5QU7HQrN8if": {
+      "id": "estabilidade-do-servidor-o-que-e-1Z7R0r",
+      "titulo": "Estabilidade do servidor: o que é?",
+      "categoria": "Direito Administrativo"
+    },
+    "1BTIoZY_L_lW4TIotJhSnwS0FKp5_X-Py": {
+      "id": "cargos-empregos-e-funcoes-publicas-1BTIoZ",
+      "titulo": "Cargos, empregos e funções públicas",
+      "categoria": "Direito Administrativo"
+    },
+    "1Ge6t3i-uL1J_CbvD9nbTgAbCEsb7T5y4": {
+      "id": "o-que-e-improbidade-administrativa-1Ge6t3",
+      "titulo": "O que é improbidade administrativa?",
+      "categoria": "Direito Administrativo"
+    },
+    "1B9hmU9lUJBNg4TywSbKAib2Cotizec36": {
+      "id": "lei-de-improbidade-o-que-mudou-1B9hmU",
+      "titulo": "Lei de Improbidade: o que mudou",
+      "categoria": "Direito Administrativo"
+    },
+    "1y5E7QsxwKyJ-N8ITR_aIZcohr3h2dxtj": {
+      "id": "o-que-e-o-processo-administrativo-1y5E7Q",
+      "titulo": "O que é o processo administrativo?",
+      "categoria": "Direito Administrativo"
+    },
+    "1b_LfZhDUh7IisITDUaAkLrnQ-CDaxHRq": {
+      "id": "sindicancia-pad-1b_LfZ",
+      "titulo": "Sindicância × PAD",
+      "categoria": "Direito Administrativo"
+    },
+    "1DixCyxZV94XXHVc0JjWY2D9Vbquj7dAg": {
+      "id": "o-que-sao-autarquias-1DixCy",
+      "titulo": "O que são autarquias?",
+      "categoria": "Direito Administrativo"
+    },
+    "1_f2GYJe03MoZAW49PVMYi6BZht1bRgXE": {
+      "id": "fundacoes-publicas-1_f2GY",
+      "titulo": "Fundações públicas",
+      "categoria": "Direito Administrativo"
+    },
+    "1OoeTIFE5yYlPU4-lFOg3f-w-euniLtv1": {
+      "id": "empresas-publicas-sociedades-de-economia-mista-1OoeTI",
+      "titulo": "Empresas públicas × sociedades de economia mista",
+      "categoria": "Direito Administrativo"
+    },
+    "1BlFqziQFyPnpJnPo9pO6zq5JAnAEWijY": {
+      "id": "agencias-reguladoras-o-que-fazem-1BlFqz",
+      "titulo": "Agências reguladoras: o que fazem?",
+      "categoria": "Direito Administrativo"
+    },
+    "1qC0mD99bsDiKLgwQQCjDYE5LAGUNlLwK": {
+      "id": "intervencao-do-estado-na-economia-1qC0mD",
+      "titulo": "Intervenção do Estado na economia",
+      "categoria": "Direito Administrativo"
+    },
+    "1uTZeL3l5Sk40JYVCmcJYxgR3yVDvGAdC": {
+      "id": "desapropriacao-o-que-e-1uTZeL",
+      "titulo": "Desapropriação: o que é?",
+      "categoria": "Direito Administrativo"
+    },
+    "1a4bJ16nUgTbda-y3cCYzOGxz_zkkzk6K": {
+      "id": "servidao-administrativa-1a4bJ1",
+      "titulo": "Servidão administrativa",
+      "categoria": "Direito Administrativo"
+    },
+    "1Z-TUTFnjyv_CXwB9jOIaeGiVmBjhL_yR": {
+      "id": "tombamento-de-bens-1Z-TUT",
+      "titulo": "Tombamento de bens",
+      "categoria": "Direito Administrativo"
+    },
+    "1usg1Aw7oebo5Ien6By-eSEENDSbS1_C6": {
+      "id": "bens-publicos-o-que-sao-1usg1A",
+      "titulo": "Bens públicos: o que são?",
+      "categoria": "Direito Administrativo"
+    },
+    "1BDZuxcJK02tXFsGZMH56ty1H_gpVurzL": {
+      "id": "requisicao-administrativa-1BDZux",
+      "titulo": "Requisição administrativa",
+      "categoria": "Direito Administrativo"
+    },
+    "1KDSeSBYI8xN41JaYm7TxhoH3ya1MVSHq": {
+      "id": "uso-de-bens-publicos-1KDSeS",
+      "titulo": "Uso de bens públicos",
+      "categoria": "Direito Administrativo"
+    },
+    "1cZpa2UMSVRMYfKgO5J2JieLGtyWW3Tcr": {
+      "id": "responsabilidade-do-estado-1cZpa2",
+      "titulo": "Responsabilidade do Estado",
+      "categoria": "Direito Administrativo"
+    },
+    "1EJVlb4HRzgfDrBmz7sy_wBGWD924gJxz": {
+      "id": "controle-da-administracao-1EJVlb",
+      "titulo": "Controle da administração",
+      "categoria": "Direito Administrativo"
+    },
+    "1Et9mUdTFsC2nk6xm03-VBpxFLTuPJrIJ": {
+      "id": "tribunais-de-contas-o-que-fazem-1Et9mU",
+      "titulo": "Tribunais de Contas: o que fazem?",
+      "categoria": "Direito Administrativo"
+    },
+    "1ILbnYdqbe2ogFeNEJbFik0tvGXhOfYxp": {
+      "id": "lei-de-acesso-a-informacao-1ILbnY",
+      "titulo": "Lei de Acesso à Informação",
+      "categoria": "Direito Administrativo"
+    },
+    "1XiYVCcc-dHCoONm2Dyc2qX948J6evmB9": {
+      "id": "transparencia-publica-1XiYVC",
+      "titulo": "Transparência pública",
+      "categoria": "Direito Administrativo"
+    },
+    "1D19LU8tZd5Uq87f4Y9Y9P8_mknpOIOWb": {
+      "id": "a-lei-anticorrupcao-1D19LU",
+      "titulo": "A Lei Anticorrupção",
+      "categoria": "Direito Administrativo"
+    },
+    "1URbwZz9I3ufxalmTbJLIPC8mnSZZekF6": {
+      "id": "acordos-de-leniencia-1URbwZ",
+      "titulo": "Acordos de leniência",
+      "categoria": "Direito Administrativo"
+    },
+    "1BHILeFVO_dCsBPYc1WjGcG1f7hejYlWJ": {
+      "id": "terceirizacao-no-servico-publico-1BHILe",
+      "titulo": "Terceirização no serviço público",
+      "categoria": "Direito Administrativo"
+    },
+    "1zY9eV2xAUdMtcuBP1GRmMXDqarHByegg": {
+      "id": "regime-juridico-unico-1zY9eV",
+      "titulo": "Regime jurídico único",
+      "categoria": "Direito Administrativo"
+    },
+    "1Z_1hVwSKqHvKfAyifo3YpRBMa56eXSF5": {
+      "id": "teto-salarial-no-servico-publico-1Z_1hV",
+      "titulo": "Teto salarial no serviço público",
+      "categoria": "Direito Administrativo"
+    },
+    "1isA0zR1i2ruORSNDV5oMT1TKO5xcZTk5": {
+      "id": "nepotismo-o-que-diz-a-lei-1isA0z",
+      "titulo": "Nepotismo: o que diz a lei",
+      "categoria": "Direito Administrativo"
+    },
+    "1Drej63rxJFeQ-hbVH0i5MkH9LHrnk63g": {
+      "id": "aposentadoria-do-servidor-publico-1Drej6",
+      "titulo": "Aposentadoria do servidor público",
+      "categoria": "Direito Administrativo"
+    },
+    "1xwANDgJoLm3bAec6NExai7wXxWajGOdJ": {
+      "id": "como-denunciar-irregularidades-1xwAND",
+      "titulo": "Como denunciar irregularidades",
+      "categoria": "Direito Administrativo"
+    },
+    "1fTIafYGwPeNWO8RY2HOk06uD2F836tqc": {
+      "id": "o-que-e-um-contrato-1fTIaf",
+      "titulo": "O que é um contrato?",
+      "categoria": "Direito Civil"
+    },
+    "1NAvBhrZ-qRQCs8B-CPyCLaqL7yLXH0xj": {
+      "id": "requisitos-de-validade-do-negocio-juridico-1NAvBh",
+      "titulo": "Requisitos de validade do negócio jurídico",
+      "categoria": "Direito Civil"
+    },
+    "18VCdch9bPD0QsANfrO9JHtkqddtxyA8P": {
+      "id": "boa-fe-objetiva-o-que-e-18VCdc",
+      "titulo": "Boa-fé objetiva: o que é?",
+      "categoria": "Direito Civil"
+    },
+    "1pjYPbpIqMC9R0M36iDN7LpCXE3kmk4FP": {
+      "id": "funcao-social-do-contrato-1pjYPb",
+      "titulo": "Função social do contrato",
+      "categoria": "Direito Civil"
+    },
+    "1pi-H_qgIrbCSfCJdI4-BpQmK2Vjawh1b": {
+      "id": "contratos-verbais-valem-1pi-H_",
+      "titulo": "Contratos verbais valem?",
+      "categoria": "Direito Civil"
+    },
+    "1GwTZfb0ect5t46J75vaN5eDsN0bqvIk0": {
+      "id": "o-que-e-distrato-1GwTZf",
+      "titulo": "O que é distrato?",
+      "categoria": "Direito Civil"
+    },
+    "1DGrnWgkfunVp4y4vxOUqywsxVUou0Cfg": {
+      "id": "o-que-e-doacao-1DGrnW",
+      "titulo": "O que é doação?",
+      "categoria": "Direito Civil"
+    },
+    "1CJ2kxb5k14Wm3Ox_WgeblMOmQaXhpP3Q": {
+      "id": "locacao-de-imoveis-direitos-e-deveres-1CJ2kx",
+      "titulo": "Locação de imóveis: direitos e deveres",
+      "categoria": "Direito Civil"
+    },
+    "1Z7Hx3V40ZrOF_8uEngon5XUPetSLnh1Q": {
+      "id": "compra-e-venda-o-contrato-mais-comum-1Z7Hx3",
+      "titulo": "Compra e venda: o contrato mais comum",
+      "categoria": "Direito Civil"
+    },
+    "1-DyUeIjuaaHUNQkYU9KuJ__WUtl753Lm": {
+      "id": "o-que-e-comodato-1-DyUe",
+      "titulo": "O que é comodato?",
+      "categoria": "Direito Civil"
+    },
+    "1UJoVUQx69uPFK-PvpKxXThweMepdqgUe": {
+      "id": "mutuo-e-emprestimo-diferencas-1UJoVU",
+      "titulo": "Mútuo e empréstimo: diferenças",
+      "categoria": "Direito Civil"
+    },
+    "1Ned_pEtL3DfDmouiEDdkxagluLWxAFsx": {
+      "id": "dano-moral-quando-cabe-indenizacao-1Ned_p",
+      "titulo": "Dano moral: quando cabe indenização?",
+      "categoria": "Direito Civil"
+    },
+    "1jKrTRWFxVVYJyo_m6wQKM28LuilvFUu1": {
+      "id": "o-que-e-responsabilidade-civil-1jKrTR",
+      "titulo": "O que é responsabilidade civil?",
+      "categoria": "Direito Civil"
+    },
+    "1_39Rs0_1qBaueByW2xCN7S70L41QVIxJ": {
+      "id": "dano-material-moral-estetico-1_39Rs",
+      "titulo": "Dano material × moral × estético",
+      "categoria": "Direito Civil"
+    },
+    "17Q2HyN36JrdpfOxZdUFWGaMFDF9bC5Gl": {
+      "id": "acidente-de-transito-quem-paga-o-prejuizo-17Q2Hy",
+      "titulo": "Acidente de trânsito: quem paga o prejuízo?",
+      "categoria": "Direito Civil"
+    },
+    "151r-fO3q5p2U7Gaq2AAIusN6y7iWDgoV": {
+      "id": "erro-medico-e-responsabilidade-civil-151r-f",
+      "titulo": "Erro médico e responsabilidade civil",
+      "categoria": "Direito Civil"
+    },
+    "1v_fUNljumvEPrkVsiUeBUPtiu4hlSX-r": {
+      "id": "o-que-e-usucapiao-1v_fUN",
+      "titulo": "O que é usucapião?",
+      "categoria": "Direito Civil"
+    },
+    "1jlogNctChW3Xm92aFsy-zhe0VeFshEoD": {
+      "id": "posse-propriedade-1jlogN",
+      "titulo": "Posse × propriedade",
+      "categoria": "Direito Civil"
+    },
+    "1vNFRmBOenjexxNL973oBISihUej5tAGq": {
+      "id": "o-que-e-condominio-1vNFRm",
+      "titulo": "O que é condomínio?",
+      "categoria": "Direito Civil"
+    },
+    "1hohowLT5U8nVAKYTUbjBwliJVsm1vA5Z": {
+      "id": "direitos-de-vizinhanca-1hohow",
+      "titulo": "Direitos de vizinhança",
+      "categoria": "Direito Civil"
+    },
+    "17_dKPKGaSGAHfN0X0IHySF4NnZy2O0HY": {
+      "id": "o-que-e-casamento-no-direito-civil-requisitos-e-efeitos-17_dKP",
+      "titulo": "O que é casamento no direito civil? (requisitos e efeitos)",
+      "categoria": "Direito Civil"
+    },
+    "1SmDRIXxStZvDHoFjs5PPckcUqjG_zYx0": {
+      "id": "uniao-estavel-o-que-e-e-quais-os-direitos-a-familia-sem-casamento-formal-1SmDRI",
+      "titulo": "União estável: o que é e quais os direitos? (a família sem casamento formal)",
+      "categoria": "Direito Civil"
+    },
+    "1Fcn_npFdykrR-3tpMLa-YM2Bl9AeVdkN": {
+      "id": "regime-de-bens-comunhao-parcial-universal-e-separacao-1Fcn_n",
+      "titulo": "Regime de bens (comunhão parcial, universal e separação)",
+      "categoria": "Direito Civil"
+    },
+    "1zfEigZB9czHVbPzIjxDtB-1UA4pH5uM3": {
+      "id": "o-que-e-divorcio-como-funciona-hoje-1zfEig",
+      "titulo": "O que é divórcio? (como funciona hoje)",
+      "categoria": "Direito Civil"
+    },
+    "1jQ_OaCoUpz1A3Jsj9jbquzKoqDMyO8jV": {
+      "id": "guarda-de-filhos-como-funciona-unilateral-e-compartilhada-1jQ_Oa",
+      "titulo": "Guarda de filhos: como funciona (unilateral e compartilhada)",
+      "categoria": "Direito Civil"
+    },
+    "1Bz2kEdqr8BvQ1G1AJkiXZuDJREXHjn7I": {
+      "id": "pensao-alimenticia-quem-tem-direito-filhos-ex-conjuges-e-pais-1Bz2kE",
+      "titulo": "Pensão alimentícia: quem tem direito? (filhos, ex-cônjuges e pais)",
+      "categoria": "Direito Civil"
+    },
+    "1b_ETjaepAdu87j7_zzyBVas5MJpuM9Dp": {
+      "id": "o-que-e-inventario-a-partilha-da-heranca-1b_ETj",
+      "titulo": "O que é inventário? (a partilha da herança)",
+      "categoria": "Direito Civil"
+    },
+    "1CyNiLIqvIYC-C-YF9BRKUppjzY-NnuXI": {
+      "id": "heranca-quem-sao-os-herdeiros-necessarios-a-legitima-e-a-parte-disponivel-1CyNiL",
+      "titulo": "Herança: quem são os herdeiros necessários? (a legítima e a parte disponível)",
+      "categoria": "Direito Civil"
+    },
+    "10Ks_Y5277nSaNL5_67mfQFCEKTeHBOmQ": {
+      "id": "o-que-e-testamento-dispor-dos-bens-para-depois-da-morte-10Ks_Y",
+      "titulo": "O que é testamento? (dispor dos bens para depois da morte)",
+      "categoria": "Direito Civil"
+    },
+    "1xbOiK9nQQAzy8vLYZLrWjLjPL6h_Q3yW": {
+      "id": "o-que-e-tutela-1xbOiK",
+      "titulo": "O que é tutela?",
+      "categoria": "Direito Civil"
+    },
+    "1CFVzqtS8xzkoIlBaUxKzN1G4TryhY38u": {
+      "id": "o-que-e-curatela-a-protecao-de-quem-nao-pode-se-reger-1CFVzq",
+      "titulo": "O que é curatela? (a proteção de quem não pode se reger)",
+      "categoria": "Direito Civil"
+    },
+    "1PmTbVVvSGUAZfuU4uVfGJGvA5BZMTlo6": {
+      "id": "capacidade-civil-quem-pode-praticar-atos-1PmTbV",
+      "titulo": "Capacidade civil: quem pode praticar atos?",
+      "categoria": "Direito Civil"
+    },
+    "1nH3c5pQOPwm4AoHkBu-DFGJWC_0kL1U9": {
+      "id": "menores-e-o-direito-civil-1nH3c5",
+      "titulo": "Menores e o direito civil",
+      "categoria": "Direito Civil"
+    },
+    "101ljAFhSLR_H-1QMFYYDzyvTe-pSJo39": {
+      "id": "direitos-da-personalidade-101ljA",
+      "titulo": "Direitos da personalidade",
+      "categoria": "Direito Civil"
+    },
+    "1p7fN4u9NRKKRr-62VSj-gGyuxrS-mGxb": {
+      "id": "o-que-e-nome-civil-e-como-mudar-1p7fN4",
+      "titulo": "O que é nome civil e como mudar?",
+      "categoria": "Direito Civil"
+    },
+    "13xEI3LBTwvlY2Ppzm73oUTkRVW0EtzOj": {
+      "id": "direito-a-imagem-o-que-diz-a-lei-13xEI3",
+      "titulo": "Direito à imagem: o que diz a lei",
+      "categoria": "Direito Civil"
+    },
+    "1StNaVtFg7lo-9Dq1D4nCWt9dQhl7JmV5": {
+      "id": "o-que-e-prescricao-no-direito-civil-1StNaV",
+      "titulo": "O que é prescrição no direito civil?",
+      "categoria": "Direito Civil"
+    },
+    "1fbOgpzh73kO1zOU_ZTfm1Hw5sALgJiqN": {
+      "id": "decadencia-prescricao-1fbOgp",
+      "titulo": "Decadência × prescrição",
+      "categoria": "Direito Civil"
+    },
+    "1OTSNAaSenmniiRWx3FVRHDIICcwtKZTJ": {
+      "id": "o-que-sao-obrigacoes-1OTSNA",
+      "titulo": "O que são obrigações?",
+      "categoria": "Direito Civil"
+    },
+    "1RE9BOlxoMvFuXO6PsFbveTs6U25gNvvz": {
+      "id": "juros-e-correcao-monetaria-1RE9BO",
+      "titulo": "Juros e correção monetária",
+      "categoria": "Direito Civil"
+    },
+    "1tvTspW0abLUbd94CIoG95F-r5ksGS-xg": {
+      "id": "o-que-e-clausula-penal-1tvTsp",
+      "titulo": "O que é cláusula penal?",
+      "categoria": "Direito Civil"
+    },
+    "1RFGSZ0DIO5UePhoTsGijVRBFvxMoFYZl": {
+      "id": "arras-o-que-sao-1RFGSZ",
+      "titulo": "Arras: o que são?",
+      "categoria": "Direito Civil"
+    },
+    "1YRZcE4bGnH3gjTSlF1PP4ywNO2bsOb27": {
+      "id": "eviccao-e-vicios-redibitorios-1YRZcE",
+      "titulo": "Evicção e vícios redibitórios",
+      "categoria": "Direito Civil"
+    },
+    "1BIe6dOiCkvIY3xDUOqyedQaM5YyzjdAw": {
+      "id": "solidariedade-nas-obrigacoes-1BIe6d",
+      "titulo": "Solidariedade nas obrigações",
+      "categoria": "Direito Civil"
+    },
+    "1ueqhgqZE0wahzkbt59tIK7O0Ab53g5EX": {
+      "id": "compensacao-novacao-e-confusao-1ueqhg",
+      "titulo": "Compensação, novação e confusão",
+      "categoria": "Direito Civil"
+    },
+    "1cVx8ZHuJxU15hiCjMLB_HsQztP8H3YkE": {
+      "id": "condominio-edilicio-1cVx8Z",
+      "titulo": "Condomínio edilício",
+      "categoria": "Direito Civil"
+    },
+    "18z8jQLs8RUFmAS0qM76kaq_GpN36ATyi": {
+      "id": "assembleias-de-condominio-como-funcionam-18z8jQ",
+      "titulo": "Assembleias de condomínio: como funcionam",
+      "categoria": "Direito Civil"
+    },
+    "11-0_yKONYuQimHmUkbxwhKKCZRHD61Eg": {
+      "id": "o-que-e-multipropriedade-11-0_y",
+      "titulo": "O que é multipropriedade?",
+      "categoria": "Direito Civil"
+    },
+    "1qGYvGRr9QE1Ug-b3NWic6jOZF8nN-bLP": {
+      "id": "direito-do-consumidor-e-direito-civil-1qGYvG",
+      "titulo": "Direito do consumidor é direito civil?",
+      "categoria": "Direito Civil"
+    },
+    "1ruTTFAPtj5P0TvQ7TK_cosrrJNscK6nG": {
+      "id": "expressoes-em-latim-no-direito-civil-1ruTTF",
+      "titulo": "expressões em latim no direito civil",
+      "categoria": "Direito Civil"
+    },
+    "1DKokvHYCOVmX0TeuYzZXNSwuLrr7T_0p": {
+      "id": "o-que-e-a-constituicao-federal-1DKokv",
+      "titulo": "O que é a Constituição Federal?",
+      "categoria": "Direito Constitucional"
+    },
+    "1CGXPms2joPRksTuI2PrippTkjQJMKy6z": {
+      "id": "a-historia-das-constituicoes-do-brasil-1CGXPm",
+      "titulo": "A história das Constituições do Brasil",
+      "categoria": "Direito Constitucional"
+    },
+    "1dZK5MxDiUzeGs7BIrFqX27QdZc3ZJ2rh": {
+      "id": "principios-fundamentais-da-republica-1dZK5M",
+      "titulo": "Princípios fundamentais da República",
+      "categoria": "Direito Constitucional"
+    },
+    "131jabka6skpIT2Okw1D_5i8UAE2-OQDE": {
+      "id": "direitos-e-garantias-fundamentais-o-art-5-131jab",
+      "titulo": "Direitos e garantias fundamentais: o art. 5º",
+      "categoria": "Direito Constitucional"
+    },
+    "12dE_f_9S_bBQB4KhjkPHyiJtc9mollPi": {
+      "id": "o-que-sao-direitos-individuais-12dE_f",
+      "titulo": "O que são direitos individuais?",
+      "categoria": "Direito Constitucional"
+    },
+    "1XPRsvLOdYKI_awYR7aJrHPgnaPBadL5T": {
+      "id": "o-que-e-o-devido-processo-legal-1XPRsv",
+      "titulo": "O que é o devido processo legal?",
+      "categoria": "Direito Constitucional"
+    },
+    "14rRA44SKEQ-14M4mPFLahD-bQ0XOynzH": {
+      "id": "direito-a-vida-a-liberdade-e-a-igualdade-14rRA4",
+      "titulo": "Direito à vida, à liberdade e à igualdade",
+      "categoria": "Direito Constitucional"
+    },
+    "1p94T-5pr65CD8i16XhS8NgeVOLRo_35A": {
+      "id": "habeas-corpus-o-que-e-e-quando-usar-1p94T-",
+      "titulo": "Habeas corpus: o que é e quando usar?",
+      "categoria": "Direito Constitucional"
+    },
+    "1NIu0EFDwiE-ms-OkAiF7VqF88aUab6K6": {
+      "id": "habeas-data-o-que-e-1NIu0E",
+      "titulo": "Habeas data: o que é?",
+      "categoria": "Direito Constitucional"
+    },
+    "1DsfmI0TbnjympSLba9lq9UpgaZeCtDdk": {
+      "id": "mandado-de-seguranca-o-que-e-1DsfmI",
+      "titulo": "Mandado de segurança: o que é?",
+      "categoria": "Direito Constitucional"
+    },
+    "1CjacwTsgzceyu0wO63WFFFNONiNIHZly": {
+      "id": "mandado-de-injuncao-o-que-e-1Cjacw",
+      "titulo": "Mandado de injunção: o que é?",
+      "categoria": "Direito Constitucional"
+    },
+    "1j6YSvkr-HOzd-8_0cPLAujVRJqHnFHmZ": {
+      "id": "acao-popular-o-que-e-1j6YSv",
+      "titulo": "Ação popular: o que é?",
+      "categoria": "Direito Constitucional"
+    },
+    "1eCiTIJQ31w88dxA5F6XWDu0aJH0EqqY3": {
+      "id": "o-que-sao-direitos-sociais-1eCiTI",
+      "titulo": "O que são direitos sociais?",
+      "categoria": "Direito Constitucional"
+    },
+    "1QUUCRRtF-UOWtb-_W6bfkLaw1GQ0KIhI": {
+      "id": "direito-a-educacao-na-constituicao-1QUUCR",
+      "titulo": "Direito à educação na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "11WCvvhLn0Zf2Y8_GITO2bKEStxDjt7dW": {
+      "id": "direito-a-saude-na-constituicao-11WCvv",
+      "titulo": "Direito à saúde na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "1h5p01n8tH3smVvh1T1Og3atXxZHCZkY6": {
+      "id": "nacionalidade-quem-e-brasileiro-1h5p01",
+      "titulo": "Nacionalidade: quem é brasileiro?",
+      "categoria": "Direito Constitucional"
+    },
+    "19fa1_GajXRcn8-s8_qKUbB81jO2KYnEX": {
+      "id": "direitos-politicos-votar-e-ser-votado-19fa1_",
+      "titulo": "Direitos políticos: votar e ser votado",
+      "categoria": "Direito Constitucional"
+    },
+    "1WQpsDvSmDjM66WYj4-B6K8pqQg4ME7Lz": {
+      "id": "partidos-politicos-na-constituicao-1WQpsD",
+      "titulo": "Partidos políticos na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "1SIM_3csTw7B80yg9tj-KHlIIfmDLnLxZ": {
+      "id": "organizacao-do-estado-1SIM_3",
+      "titulo": "Organização do Estado",
+      "categoria": "Direito Constitucional"
+    },
+    "1Tia4mKXxwX7Fe26zLTEAiUR0SXLOia8J": {
+      "id": "o-que-e-estado-de-defesa-1Tia4m",
+      "titulo": "O que é estado de defesa?",
+      "categoria": "Direito Constitucional"
+    },
+    "1-97UOhIczclV76WaCO7cfUbErQbhNkQw": {
+      "id": "intervencao-federal-quando-acontece-1-97UO",
+      "titulo": "Intervenção federal: quando acontece?",
+      "categoria": "Direito Constitucional"
+    },
+    "1a7CUAm4bPhNJiBycrLm7UQFBVqtIzUfJ": {
+      "id": "o-que-e-estado-de-sitio-1a7CUA",
+      "titulo": "O que é estado de sítio?",
+      "categoria": "Direito Constitucional"
+    },
+    "1PTmuTRB-ho3_RJhtmPJM6BjiThzHWIzf": {
+      "id": "poder-legislativo-na-constituicao-1PTmuT",
+      "titulo": "Poder Legislativo na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "1aStb4cDBIOBe9kuUysBcrGYbX7T_i8Nk": {
+      "id": "poder-executivo-na-constituicao-1aStb4",
+      "titulo": "Poder Executivo na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "1xzWws6BQgQROUfkLM_FcCBss6hqI2PF2": {
+      "id": "poder-judiciario-na-constituicao-1xzWws",
+      "titulo": "Poder Judiciário na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "1ftLS501Ilx1vA_FInkozhTS820g02sEi": {
+      "id": "funcoes-essenciais-a-justica-1ftLS5",
+      "titulo": "Funções essenciais à Justiça",
+      "categoria": "Direito Constitucional"
+    },
+    "1PycFOh9OtwyDyeSxaI8tHsGZ9x3GmSJW": {
+      "id": "adi-adc-ado-e-adpf-explicadas-1PycFO",
+      "titulo": "ADI, ADC, ADO e ADPF explicadas",
+      "categoria": "Direito Constitucional"
+    },
+    "19c__JFGtLQZvHA8rcrYgH0jCZL7ONaHu": {
+      "id": "o-que-e-controle-de-constitucionalidade-19c__J",
+      "titulo": "O que é controle de constitucionalidade?",
+      "categoria": "Direito Constitucional"
+    },
+    "1HQrWAG1w9kIr5-pNdJ52Cvo0OvSSaCZc": {
+      "id": "efeitos-das-decisoes-do-stf-1HQrWA",
+      "titulo": "Efeitos das decisões do STF",
+      "categoria": "Direito Constitucional"
+    },
+    "1q8zMLgcoTcV2_F3ZQlaEowaeyVLK12uH": {
+      "id": "sumulas-vinculantes-1q8zML",
+      "titulo": "Súmulas vinculantes",
+      "categoria": "Direito Constitucional"
+    },
+    "1Vxo98w8p4yfw5vhVBQWU5GFWa8Fb7cZY": {
+      "id": "o-que-e-o-preambulo-constitucional-1Vxo98",
+      "titulo": "O que é o preâmbulo constitucional?",
+      "categoria": "Direito Constitucional"
+    },
+    "1hicODMbkvJVbbgnP_bbRQwPTX6_9tKJ9": {
+      "id": "clausulas-petreas-o-que-sao-1hicOD",
+      "titulo": "Cláusulas pétreas: o que são?",
+      "categoria": "Direito Constitucional"
+    },
+    "1DeTQWEAhr-JCEEx0yr9obb1MJxCIemJT": {
+      "id": "emendas-constitucionais-como-sao-aprovadas-1DeTQW",
+      "titulo": "Emendas constitucionais: como são aprovadas",
+      "categoria": "Direito Constitucional"
+    },
+    "1Tpapg50llVvMHwdBeTKx3SkFg9MMq3LT": {
+      "id": "o-que-e-o-adct-1Tpapg",
+      "titulo": "O que é o ADCT?",
+      "categoria": "Direito Constitucional"
+    },
+    "1rKFK-7nKZ8zXPAptFEByV1t72Z5NizCG": {
+      "id": "ordem-social-na-constituicao-1rKFK-",
+      "titulo": "Ordem social na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "1GLf8fveA7J23LTFdIaj4R0XKjxIqTbkU": {
+      "id": "ordem-economica-na-constituicao-1GLf8f",
+      "titulo": "Ordem econômica na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "1GNfLbDEvWkjMz7m4Eqa9W9GHpPvynzVi": {
+      "id": "meio-ambiente-na-constituicao-1GNfLb",
+      "titulo": "Meio ambiente na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "1ip8JETfqPRpTR10wWlRbKWsOQl8dAJYm": {
+      "id": "povos-indigenas-na-constituicao-1ip8JE",
+      "titulo": "Povos indígenas na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "17ENvYPBxEUtrPy_F4Nj33BPxQ2_jnZcD": {
+      "id": "principio-da-isonomia-17ENvY",
+      "titulo": "Princípio da isonomia",
+      "categoria": "Direito Constitucional"
+    },
+    "1HW24GdlPnvykKCP4YvoUb8pmaGP5fGxR": {
+      "id": "a-dignidade-da-pessoa-humana-1HW24G",
+      "titulo": "A dignidade da pessoa humana",
+      "categoria": "Direito Constitucional"
+    },
+    "1a_HOgEKC5yTew5mM4NyfxBtP6RS6dUqb": {
+      "id": "liberdade-de-expressao-discurso-de-odio-1a_HOg",
+      "titulo": "Liberdade de expressão × discurso de ódio",
+      "categoria": "Direito Constitucional"
+    },
+    "1D1KPOArnXoa3RGFmn9hdl3AfjiyZIXsQ": {
+      "id": "liberdade-religiosa-no-brasil-1D1KPO",
+      "titulo": "Liberdade religiosa no Brasil",
+      "categoria": "Direito Constitucional"
+    },
+    "1pagjg-MzjksUubVVAIY2N2wnFfkLoFb3": {
+      "id": "o-que-e-laicidade-do-estado-1pagjg",
+      "titulo": "O que é laicidade do Estado?",
+      "categoria": "Direito Constitucional"
+    },
+    "1q__sg4QEI2oJaxJ5AQ1bsF54GjNVtzM1": {
+      "id": "seguranca-publica-na-constituicao-1q__sg",
+      "titulo": "Segurança pública na Constituição",
+      "categoria": "Direito Constitucional"
+    },
+    "1SWabusMkxNuP0-_ZZSy5s3lDh9vxXDvG": {
+      "id": "o-papel-das-forcas-armadas-1SWabu",
+      "titulo": "O papel das Forças Armadas",
+      "categoria": "Direito Constitucional"
+    },
+    "1QdMA3uygb59TXIpKT5-9j0Iyo0S-CGgh": {
+      "id": "plebiscito-e-referendo-1QdMA3",
+      "titulo": "Plebiscito e referendo",
+      "categoria": "Direito Constitucional"
+    },
+    "1ZO98J52ivTvI7gPhBWGKIBFA7j-Q1aoR": {
+      "id": "iniciativa-popular-de-leis-1ZO98J",
+      "titulo": "Iniciativa popular de leis",
+      "categoria": "Direito Constitucional"
+    },
+    "1WYAgl0M3YpGs6X3hef7o74RGT1L978KB": {
+      "id": "federalismo-brasileiro-como-funciona-1WYAgl",
+      "titulo": "Federalismo brasileiro: como funciona",
+      "categoria": "Direito Constitucional"
+    },
+    "15FEvJRVPrkJqnB6s8Gt8wqnqFpxuH9ND": {
+      "id": "reparticao-de-competencias-15FEvJ",
+      "titulo": "Repartição de competências",
+      "categoria": "Direito Constitucional"
+    },
+    "1P4ozqX6Y_9lOjqT3iQkdqEHaw5GRoguI": {
+      "id": "a-constituicao-cidada-1P4ozq",
+      "titulo": "A Constituição \"cidadã\"",
+      "categoria": "Direito Constitucional"
+    },
+    "1gDp2CCQjJHhz37CeNl2ReyhMIadUYkq0": {
+      "id": "o-que-e-a-clt-1gDp2C",
+      "titulo": "O que é a CLT?",
+      "categoria": "Direito do Trabalho"
+    },
+    "1OAkNrESoJbvPAaMTMrd0XtfaP1-VTsq7": {
+      "id": "quem-e-empregado-pela-lei-1OAkNr",
+      "titulo": "Quem é empregado pela lei?",
+      "categoria": "Direito do Trabalho"
+    },
+    "113EsxMy1361XDIO47Hbms5lbDHoKltQY": {
+      "id": "carteira-de-trabalho-para-que-serve-113Esx",
+      "titulo": "Carteira de trabalho: para que serve?",
+      "categoria": "Direito do Trabalho"
+    },
+    "1Gwq-f4kwgxIk4ka8vpGkYtvRYrc1P25S": {
+      "id": "contrato-de-trabalho-tipos-1Gwq-f",
+      "titulo": "Contrato de trabalho: tipos",
+      "categoria": "Direito do Trabalho"
+    },
+    "1Uq1919aEaNIyTinVkPyYB2rBLz6t5700": {
+      "id": "jornada-de-trabalho-limites-1Uq191",
+      "titulo": "Jornada de trabalho: limites",
+      "categoria": "Direito do Trabalho"
+    },
+    "1LbKI0pphDj90WGzZH7gAIuvfYUqNW6fn": {
+      "id": "horas-extras-como-calcular-1LbKI0",
+      "titulo": "Horas extras: como calcular",
+      "categoria": "Direito do Trabalho"
+    },
+    "1ZxFmy8eNVgbLr0GodEdUh8Wf1NcFSln-": {
+      "id": "trabalho-noturno-adicional-1ZxFmy",
+      "titulo": "Trabalho noturno: adicional",
+      "categoria": "Direito do Trabalho"
+    },
+    "13TuDE6LzAZBcN5Ax1IzTlBV8DrPbZybh": {
+      "id": "o-que-e-banco-de-horas-13TuDE",
+      "titulo": "O que é banco de horas?",
+      "categoria": "Direito do Trabalho"
+    },
+    "1-spF2DL7MFi3wvhXSAJkVROqHH7xagnT": {
+      "id": "descanso-semanal-remunerado-1-spF2",
+      "titulo": "Descanso semanal remunerado",
+      "categoria": "Direito do Trabalho"
+    },
+    "1JZmF8gcQsOCS7D_rrv_Lg_cQVzCS5rWh": {
+      "id": "ferias-como-funcionam-1JZmF8",
+      "titulo": "Férias: como funcionam",
+      "categoria": "Direito do Trabalho"
+    },
+    "1pKeKSCGw4U0HkhgMcUIVes0ybHo6WqEi": {
+      "id": "salario-como-calcular-1pKeKS",
+      "titulo": "º salário: como calcular",
+      "categoria": "Direito do Trabalho"
+    },
+    "1E4QKwGqmlmJl3ODEpywpFgDpqm5WYRie": {
+      "id": "fgts-o-que-e-1E4QKw",
+      "titulo": "FGTS: o que é?",
+      "categoria": "Direito do Trabalho"
+    },
+    "120V4QDQfovjAAslXTBKhnQaNmQHerKhw": {
+      "id": "aviso-previo-como-funciona-120V4Q",
+      "titulo": "Aviso prévio: como funciona",
+      "categoria": "Direito do Trabalho"
+    },
+    "1K59B9dwwojpS9h55PbW-yOl3or7FsU8x": {
+      "id": "demissao-sem-justa-causa-direitos-1K59B9",
+      "titulo": "Demissão sem justa causa: direitos",
+      "categoria": "Direito do Trabalho"
+    },
+    "1FuTNmYMcKI6KM8vPbNr4fuFdzrESWc1L": {
+      "id": "demissao-por-justa-causa-motivos-1FuTNm",
+      "titulo": "Demissão por justa causa: motivos",
+      "categoria": "Direito do Trabalho"
+    },
+    "11YNPdNMa6z9TT841uXg_t1nFm730K330": {
+      "id": "pedido-de-demissao-direitos-11YNPd",
+      "titulo": "Pedido de demissão: direitos",
+      "categoria": "Direito do Trabalho"
+    },
+    "16m4fLeKI1WX_w3dVJphf49R0QDW_ONYW": {
+      "id": "demissao-por-acordo-16m4fL",
+      "titulo": "Demissão por acordo",
+      "categoria": "Direito do Trabalho"
+    },
+    "14SUMDblm-yzZfv2Ik8ojdhEH1Q1oY6l4": {
+      "id": "o-que-e-seguro-desemprego-14SUMD",
+      "titulo": "O que é seguro-desemprego?",
+      "categoria": "Direito do Trabalho"
+    },
+    "1WgtdI3sHDcMCVzWGGPdHzyw9XR6mOiQj": {
+      "id": "salario-remuneracao-1WgtdI",
+      "titulo": "Salário × remuneração",
+      "categoria": "Direito do Trabalho"
+    },
+    "1IhpVdnPM2IA1jkD7VJNIBAV-nPwHNVZf": {
+      "id": "adicional-de-insalubridade-1IhpVd",
+      "titulo": "Adicional de insalubridade",
+      "categoria": "Direito do Trabalho"
+    },
+    "1QGMpdRhmOKQPNh306S_mdpvdLfud1xEX": {
+      "id": "adicional-de-periculosidade-1QGMpd",
+      "titulo": "Adicional de periculosidade",
+      "categoria": "Direito do Trabalho"
+    },
+    "1nBb2NCprnkKTgePCHzHS9s_QkQk6Mw0G": {
+      "id": "o-que-e-equiparacao-salarial-1nBb2N",
+      "titulo": "O que é equiparação salarial?",
+      "categoria": "Direito do Trabalho"
+    },
+    "1S53aRcNkAPQDj4ShhyqaFM9ZvZUZlLJI": {
+      "id": "trabalho-intermitente-o-que-e-1S53aR",
+      "titulo": "Trabalho intermitente: o que é?",
+      "categoria": "Direito do Trabalho"
+    },
+    "1d0EJ57f3XXSD3tUXBEgqmAAHgFsDa7Uz": {
+      "id": "terceirizacao-o-que-mudou-1d0EJ5",
+      "titulo": "Terceirização: o que mudou",
+      "categoria": "Direito do Trabalho"
+    },
+    "1fNru_TgxbJEUz1TUcNMKV6QUjZidfSJ2": {
+      "id": "teletrabalho-direitos-1fNru_",
+      "titulo": "Teletrabalho: direitos",
+      "categoria": "Direito do Trabalho"
+    },
+    "1SRm8Vp1pDdWYTBh0_UDS_TspDafQ0uRO": {
+      "id": "trabalho-temporario-1SRm8V",
+      "titulo": "Trabalho temporário",
+      "categoria": "Direito do Trabalho"
+    },
+    "16m7EPedJlWnQmyequ7APieFD9adZB1xk": {
+      "id": "estagio-direitos-do-estagiario-16m7EP",
+      "titulo": "Estágio: direitos do estagiário",
+      "categoria": "Direito do Trabalho"
+    },
+    "1zg6flO0FnyzRSWqq7-XpwvkWvZ78sRkO": {
+      "id": "menor-aprendiz-como-funciona-1zg6fl",
+      "titulo": "Menor aprendiz: como funciona",
+      "categoria": "Direito do Trabalho"
+    },
+    "1zFsCUfXTcTtc1wBywtQJqwkizWnp5M2I": {
+      "id": "trabalho-domestico-direitos-1zFsCU",
+      "titulo": "Trabalho doméstico: direitos",
+      "categoria": "Direito do Trabalho"
+    },
+    "1qTeFWXKAR2kmRpnvbNOArTn67bSjT5ij": {
+      "id": "gestante-estabilidade-e-licenca-maternidade-1qTeFW",
+      "titulo": "Gestante: estabilidade e licença-maternidade",
+      "categoria": "Direito do Trabalho"
+    },
+    "1oqRQYz_aXqnRiftPrEblm9llF83csjtk": {
+      "id": "licenca-paternidade-1oqRQY",
+      "titulo": "Licença-paternidade",
+      "categoria": "Direito do Trabalho"
+    },
+    "1we0KRsj4uL9SCMmOAuZ4zw7-YLT2-6ru": {
+      "id": "afastamento-por-doenca-quem-paga-1we0KR",
+      "titulo": "Afastamento por doença: quem paga?",
+      "categoria": "Direito do Trabalho"
+    },
+    "1jqtMntkdN6giwsydQwuGcJ-vX02VtPGu": {
+      "id": "acidente-de-trabalho-direitos-1jqtMn",
+      "titulo": "Acidente de trabalho: direitos",
+      "categoria": "Direito do Trabalho"
+    },
+    "1hNyBa6zHo8D11MmLkeUHmqkA_k9QaqZO": {
+      "id": "doenca-ocupacional-1hNyBa",
+      "titulo": "Doença ocupacional",
+      "categoria": "Direito do Trabalho"
+    },
+    "1wqeIW_mNulzSy7q8sJ8pesW8b7xHQtTN": {
+      "id": "assedio-moral-no-trabalho-1wqeIW",
+      "titulo": "Assédio moral no trabalho",
+      "categoria": "Direito do Trabalho"
+    },
+    "1vgS0rMyZ2OUvTOIIm-I52W55YTCgH40l": {
+      "id": "assedio-sexual-no-trabalho-1vgS0r",
+      "titulo": "Assédio sexual no trabalho",
+      "categoria": "Direito do Trabalho"
+    },
+    "1p4QCxeFECUoz-9r8m9SlEWnHTgy4XzoA": {
+      "id": "sindicatos-o-que-fazem-1p4QCx",
+      "titulo": "Sindicatos: o que fazem?",
+      "categoria": "Direito do Trabalho"
+    },
+    "19CccJIs2y78kMfsOlZiSdVpx2QGnUTDT": {
+      "id": "convencao-e-acordo-coletivo-19CccJ",
+      "titulo": "Convenção e acordo coletivo",
+      "categoria": "Direito do Trabalho"
+    },
+    "1OJdGU5QbhHq_3Bqnni6vZdkAt4l9rt7P": {
+      "id": "dissidio-coletivo-1OJdGU",
+      "titulo": "Dissídio coletivo",
+      "categoria": "Direito do Trabalho"
+    },
+    "1g861RTx3a49C3y0KxzexawvnzqdtOynU": {
+      "id": "greve-direito-e-limites-1g861R",
+      "titulo": "Greve: direito e limites",
+      "categoria": "Direito do Trabalho"
+    },
+    "1Re_ouHE1_SMRZBE_ludShxPLRDrPZEMI": {
+      "id": "justica-do-trabalho-como-funciona-1Re_ou",
+      "titulo": "Justiça do Trabalho: como funciona",
+      "categoria": "Direito do Trabalho"
+    },
+    "1yJf63t9eb1GT-0yYE-AMgRl415-0M0wB": {
+      "id": "reclamacao-trabalhista-passo-a-passo-1yJf63",
+      "titulo": "Reclamação trabalhista: passo a passo",
+      "categoria": "Direito do Trabalho"
+    },
+    "1fbjIlY0JND3NeKXtNfI8pWlbMInmgQFb": {
+      "id": "danos-morais-na-justica-do-trabalho-1fbjIl",
+      "titulo": "Danos morais na Justiça do Trabalho",
+      "categoria": "Direito do Trabalho"
+    },
+    "1rMY9dAmD7H2FJXz6ftK1ixW4tE1YSHSf": {
+      "id": "a-reforma-trabalhista-1rMY9d",
+      "titulo": "A reforma trabalhista",
+      "categoria": "Direito do Trabalho"
+    },
+    "1Dj_FbLk24K8cR-gDAFWsuOSzFFJ6o2GG": {
+      "id": "verbas-rescisorias-como-calcular-1Dj_Fb",
+      "titulo": "Verbas rescisórias: como calcular",
+      "categoria": "Direito do Trabalho"
+    },
+    "1d6Tere1a6D15gNx_W2HVSUFjx5OZOtx_": {
+      "id": "multa-de-40-do-fgts-1d6Ter",
+      "titulo": "Multa de 40% do FGTS",
+      "categoria": "Direito do Trabalho"
+    },
+    "1na-ngVQMGvxTAERlSH-ShO-_z5foa3op": {
+      "id": "o-que-e-vinculo-empregaticio-1na-ng",
+      "titulo": "O que é vínculo empregatício?",
+      "categoria": "Direito do Trabalho"
+    },
+    "1IbyofNdcyam_YAqHVjjMOH_lGq3OhOjc": {
+      "id": "pejotizacao-o-que-e-1Ibyof",
+      "titulo": "Pejotização: o que é?",
+      "categoria": "Direito do Trabalho"
+    },
+    "1saoB2TpP1pl8Hd9Oz9bK0i9Hl8GJ8usd": {
+      "id": "trabalhador-autonomo-empregado-1saoB2",
+      "titulo": "Trabalhador autônomo × empregado",
+      "categoria": "Direito do Trabalho"
+    },
+    "1lIzZzN-LcFzT-vccQjHcKu5wXn2hlb0j": {
+      "id": "direitos-do-trabalhador-atualizacoes-1lIzZz",
+      "titulo": "Direitos do trabalhador: atualizações",
+      "categoria": "Direito do Trabalho"
+    },
+    "1ycWE3vxzV7i0A64Xwv0KLuFjfXCbon90": {
+      "id": "o-que-e-crime-1ycWE3",
+      "titulo": "O que é crime?",
+      "categoria": "Direito Penal"
+    },
+    "1PK6nVYWHQUPtJjACO9HWW9gIL6iL7Kl2": {
+      "id": "crime-contravencao-penal-1PK6nV",
+      "titulo": "Crime × contravenção penal",
+      "categoria": "Direito Penal"
+    },
+    "10qQ5-t0n9-l8SsgUWTi_kEcSWndLY1ZA": {
+      "id": "o-principio-da-legalidade-10qQ5-",
+      "titulo": "O princípio da legalidade",
+      "categoria": "Direito Penal"
+    },
+    "1dhL9cKTa5Lx5b-uQY8rz6StLTHyjPnQ1": {
+      "id": "fato-tipico-ilicito-e-culpavel-1dhL9c",
+      "titulo": "Fato típico, ilícito e culpável",
+      "categoria": "Direito Penal"
+    },
+    "1WIS97sUS5XcD4A5zWfkzwqV32JNmvYTA": {
+      "id": "o-que-e-tipicidade-1WIS97",
+      "titulo": "O que é tipicidade?",
+      "categoria": "Direito Penal"
+    },
+    "141kivQw8xKW7Xnr4vFhxpoi1wcyyivMt": {
+      "id": "dolo-culpa-141kiv",
+      "titulo": "Dolo × culpa",
+      "categoria": "Direito Penal"
+    },
+    "10rqiZiKQknNfP9sttTYZ_THf_wYjDmSy": {
+      "id": "o-que-e-legitima-defesa-10rqiZ",
+      "titulo": "O que é legítima defesa?",
+      "categoria": "Direito Penal"
+    },
+    "1nXTr6HDkCc-urmkWEwhXW7PsDz3WPUgt": {
+      "id": "estado-de-necessidade-o-que-e-1nXTr6",
+      "titulo": "Estado de necessidade: o que é?",
+      "categoria": "Direito Penal"
+    },
+    "1qmu8S9dsamx4k-3wf6MVnwEp-ZakLy3r": {
+      "id": "o-que-e-tentativa-de-crime-1qmu8S",
+      "titulo": "O que é tentativa de crime?",
+      "categoria": "Direito Penal"
+    },
+    "11TJXfdfdrE093_OKYPhjWz7K3YfvXDq8": {
+      "id": "desistencia-voluntaria-e-arrependimento-eficaz-11TJXf",
+      "titulo": "Desistência voluntária e arrependimento eficaz",
+      "categoria": "Direito Penal"
+    },
+    "1CM16bejFMZDTRGmaGHFYDt4QoQHNFhCX": {
+      "id": "crime-consumado-crime-tentado-1CM16b",
+      "titulo": "Crime consumado × crime tentado",
+      "categoria": "Direito Penal"
+    },
+    "1nDRZo5mP8Gi95b3Y4lLVAK_oft-BV21i": {
+      "id": "o-que-e-concurso-de-crimes-1nDRZo",
+      "titulo": "O que é concurso de crimes?",
+      "categoria": "Direito Penal"
+    },
+    "1SiUfSBu9S35YicokgjBd8zW5XkDyDZ_e": {
+      "id": "autoria-e-participacao-no-crime-1SiUfS",
+      "titulo": "Autoria e participação no crime",
+      "categoria": "Direito Penal"
+    },
+    "1G8A5CjZgwBlep02_1xP_pKxtcBujyDpZ": {
+      "id": "o-que-e-prescricao-penal-1G8A5C",
+      "titulo": "O que é prescrição penal?",
+      "categoria": "Direito Penal"
+    },
+    "1c6GOvdkB_avEtSR_dKglzag4T6wY_zdo": {
+      "id": "penas-no-brasil-quais-sao-1c6GOv",
+      "titulo": "Penas no Brasil: quais são?",
+      "categoria": "Direito Penal"
+    },
+    "1v0JIhjgzm1gAvVBqqmFOSjbr18O4tfXW": {
+      "id": "reclusao-detencao-prisao-simples-1v0JIh",
+      "titulo": "Reclusão × detenção × prisão simples",
+      "categoria": "Direito Penal"
+    },
+    "1UtcnbjFjH0ngIlMPIS9adz3mBikDeSuL": {
+      "id": "regimes-de-pena-fechado-semiaberto-e-aberto-1Utcnb",
+      "titulo": "Regimes de pena: fechado, semiaberto e aberto",
+      "categoria": "Direito Penal"
+    },
+    "1SRUDxd8bQvfeH8CUhTLKUrxiUNP0F4A9": {
+      "id": "o-que-e-progressao-de-regime-1SRUDx",
+      "titulo": "O que é progressão de regime?",
+      "categoria": "Direito Penal"
+    },
+    "1LrpN1-Z3mNFqeUerI_Wsx2I08RNiou4P": {
+      "id": "livramento-condicional-como-funciona-1LrpN1",
+      "titulo": "Livramento condicional: como funciona",
+      "categoria": "Direito Penal"
+    },
+    "15Ul1fCPpGvbxPXJQDOOQlTNoYrLgrvI6": {
+      "id": "homicidio-simples-qualificado-e-privilegiado-15Ul1f",
+      "titulo": "Homicídio: simples, qualificado e privilegiado",
+      "categoria": "Direito Penal"
+    },
+    "1b8C8MpidbCm84Rqidie3P6tQAY759xg4": {
+      "id": "feminicidio-o-que-e-1b8C8M",
+      "titulo": "Feminicídio: o que é?",
+      "categoria": "Direito Penal"
+    },
+    "1QKYrJGCq_qi8k2gZOrRypAvNvOuBtdxn": {
+      "id": "o-que-e-latrocinio-1QKYrJ",
+      "titulo": "O que é latrocínio?",
+      "categoria": "Direito Penal"
+    },
+    "1Orvt5MtJfsGAOqLfEOz-5sjIsxpu-SnR": {
+      "id": "furto-roubo-a-diferenca-1Orvt5",
+      "titulo": "Furto × roubo: a diferença",
+      "categoria": "Direito Penal"
+    },
+    "16mD3F5vue8k7-8yVs9i_6k7d6afZRi6F": {
+      "id": "estelionato-o-que-e-16mD3F",
+      "titulo": "Estelionato: o que é?",
+      "categoria": "Direito Penal"
+    },
+    "1HwxGyNmhohuZFsGOXpJB5y-t9ZojmR-D": {
+      "id": "o-que-e-apropriacao-indebita-1HwxGy",
+      "titulo": "O que é apropriação indébita?",
+      "categoria": "Direito Penal"
+    },
+    "1uM8q8mpC6Ks14t8CfuzgTEW0Xj63Nt3b": {
+      "id": "crimes-contra-a-honra-calunia-difamacao-e-injuria-1uM8q8",
+      "titulo": "Crimes contra a honra: calúnia, difamação e injúria",
+      "categoria": "Direito Penal"
+    },
+    "1wvtsueWs9rRRESige6Utoo7xmEjOfFtC": {
+      "id": "o-que-e-ameaca-o-art-147-do-codigo-penal-1wvtsu",
+      "titulo": "O que é ameaça? O art. 147 do Código Penal",
+      "categoria": "Direito Penal"
+    },
+    "1Iw0h2h5SD3kvBSsYkA3BH4uIwqnoB7CC": {
+      "id": "sequestro-e-carcere-privado-a-privacao-da-liberdade-1Iw0h2",
+      "titulo": "Sequestro e cárcere privado: a privação da liberdade",
+      "categoria": "Direito Penal"
+    },
+    "1rf6SAsprxYvQDCdcjjs4HSVfziGUxfCO": {
+      "id": "crimes-sexuais-o-que-diz-a-lei-1rf6SA",
+      "titulo": "Crimes sexuais: o que diz a lei",
+      "categoria": "Direito Penal"
+    },
+    "1iReBKHgKRZo9AR1H3-w7EwklURPHIxus": {
+      "id": "o-que-e-trafico-de-drogas-a-lei-11-343-2006-1iReBK",
+      "titulo": "O que é tráfico de drogas? A Lei 11.343/2006",
+      "categoria": "Direito Penal"
+    },
+    "13LmwkN40m95CCVeN3Dakl1ddzCrwTI0U": {
+      "id": "porte-de-drogas-para-uso-pessoal-13Lmwk",
+      "titulo": "Porte de drogas para uso pessoal",
+      "categoria": "Direito Penal"
+    },
+    "1ZOuJsh7fX-Nmk3-OlLNXWmiIUUR2I-5T": {
+      "id": "corrupcao-ativa-e-passiva-1ZOuJs",
+      "titulo": "Corrupção ativa e passiva",
+      "categoria": "Direito Penal"
+    },
+    "1va8w6940RSfhn1hBMIl_M5xrXzpvEvpY": {
+      "id": "o-que-e-organizacao-criminosa-1va8w6",
+      "titulo": "O que é organização criminosa?",
+      "categoria": "Direito Penal"
+    },
+    "1yqCeg8lT4l-yElRsjoNkwLR9qzPo1Hk9": {
+      "id": "peculato-concussao-e-prevaricacao-1yqCeg",
+      "titulo": "Peculato, concussão e prevaricação",
+      "categoria": "Direito Penal"
+    },
+    "1-RsHSD8ehB_Pm2rDEUuf16lp6wVAA1WF": {
+      "id": "lavagem-de-dinheiro-1-RsHS",
+      "titulo": "Lavagem de dinheiro",
+      "categoria": "Direito Penal"
+    },
+    "12F7h4K_jvn9Y1zv1WrKQqFXRWMGS7JRo": {
+      "id": "crimes-contra-a-ordem-tributaria-12F7h4",
+      "titulo": "Crimes contra a ordem tributária",
+      "categoria": "Direito Penal"
+    },
+    "15RzKHmapDmxq6-ytJQm1zCSOBtt08vD4": {
+      "id": "crimes-ambientais-o-que-diz-a-lei-15RzKH",
+      "titulo": "Crimes ambientais: o que diz a lei",
+      "categoria": "Direito Penal"
+    },
+    "1JUxDujm2YVNVu8ZJ7zG6Sr1CW_Sqc0h_": {
+      "id": "crimes-de-transito-1JUxDu",
+      "titulo": "Crimes de trânsito",
+      "categoria": "Direito Penal"
+    },
+    "1W1_YEDX1HYV0pLVbxTe3mO18GjTjmDQ0": {
+      "id": "violencia-domestica-a-lei-maria-da-penha-1W1_YE",
+      "titulo": "Violência doméstica: a Lei Maria da Penha",
+      "categoria": "Direito Penal"
+    },
+    "16cp19mq87wgU_9OGyEvAR1qkLqleXy-d": {
+      "id": "maioridade-penal-no-brasil-16cp19",
+      "titulo": "Maioridade penal no Brasil",
+      "categoria": "Direito Penal"
+    },
+    "15GpbnOIACJylq2i1aBojUhBmKDBbJj6L": {
+      "id": "medidas-socioeducativas-o-que-sao-15Gpbn",
+      "titulo": "Medidas socioeducativas: o que são?",
+      "categoria": "Direito Penal"
+    },
+    "1TSThk27IRbM8o_ov4PfHRY0FIUCiChi9": {
+      "id": "o-que-e-inquerito-policial-1TSThk",
+      "titulo": "O que é inquérito policial?",
+      "categoria": "Direito Penal"
+    },
+    "142HmkUMSB6Uzl8OtFOEY9wkX_zQymgMj": {
+      "id": "prisao-em-flagrante-como-funciona-142Hmk",
+      "titulo": "Prisão em flagrante: como funciona",
+      "categoria": "Direito Penal"
+    },
+    "1JhPEmpCjCibz0KosnVayd_SD6ENXdLNY": {
+      "id": "prisao-preventiva-quando-pode-acontecer-1JhPEm",
+      "titulo": "Prisão preventiva: quando pode acontecer",
+      "categoria": "Direito Penal"
+    },
+    "1qUsLCVuy3PAjUiSc_Gi-uHH5Xsj0sg1Z": {
+      "id": "tribunal-do-juri-como-funciona-1qUsLC",
+      "titulo": "Tribunal do Júri: como funciona",
+      "categoria": "Direito Penal"
+    },
+    "1wNtAe0uTNNVInq_YUmpyIdz8EZtVsBpW": {
+      "id": "o-que-e-audiencia-de-custodia-1wNtAe",
+      "titulo": "O que é audiência de custódia?",
+      "categoria": "Direito Penal"
+    },
+    "1neIppwvYghjyhIZa4G3Qm18q7j47CrPp": {
+      "id": "o-que-e-delacao-premiada-1neIpp",
+      "titulo": "O que é delação premiada?",
+      "categoria": "Direito Penal"
+    },
+    "1D7vjwghNTO0-H3V1nAho1Sk1ElOhvkxD": {
+      "id": "excludentes-de-ilicitude-resumo-completo-1D7vjw",
+      "titulo": "Excludentes de ilicitude: resumo completo",
+      "categoria": "Direito Penal"
+    },
+    "13vbmEFEnStpRiRnQb5EhD84fYfmew0ZC": {
+      "id": "dosimetria-da-pena-como-o-juiz-calcula-13vbmE",
+      "titulo": "Dosimetria da pena: como o juiz calcula",
+      "categoria": "Direito Penal"
+    },
+    "154ZzsH13FYY3E7XMjR3CMiH76Xa6-nE5": {
+      "id": "as-penas-mais-curiosas-do-direito-comparado-154Zzs",
+      "titulo": "As penas mais curiosas do direito comparado",
+      "categoria": "Direito Penal"
+    },
+    "1rIJSUHfApHNlwaRABUXbOs4q6-Ushftb": {
+      "id": "o-que-e-processo-1rIJSU",
+      "titulo": "O que é processo?",
+      "categoria": "Direito Processual"
+    },
+    "18Nec26SmvEJvWaTgpvPeUiZpnZsMIsDU": {
+      "id": "processo-procedimento-18Nec2",
+      "titulo": "Processo × procedimento",
+      "categoria": "Direito Processual"
+    },
+    "1IQt61dlvjVQ7QyE8gGXOr_2tiKViEMEh": {
+      "id": "o-que-e-jurisdicao-1IQt61",
+      "titulo": "O que é jurisdição?",
+      "categoria": "Direito Processual"
+    },
+    "1gDWK04PN1usnbHiSZsYPPcVlhrufa65V": {
+      "id": "o-que-e-acao-1gDWK0",
+      "titulo": "O que é ação?",
+      "categoria": "Direito Processual"
+    },
+    "12RD4KeaK7n6LRydn9L1eyKgDIOA_Yb1d": {
+      "id": "o-que-e-peticao-inicial-12RD4K",
+      "titulo": "O que é petição inicial?",
+      "categoria": "Direito Processual"
+    },
+    "1vDxgs2JepdlYy8CMH11yNbWcCpg9WXc7": {
+      "id": "como-funciona-um-processo-civil-1vDxgs",
+      "titulo": "Como funciona um processo civil?",
+      "categoria": "Direito Processual"
+    },
+    "16s1ZRAgzXbJY5WsFsCpDVmxJHPTw5w4v": {
+      "id": "o-que-e-contestacao-16s1ZR",
+      "titulo": "O que é contestação?",
+      "categoria": "Direito Processual"
+    },
+    "1MaP5Ypn3qLbB3JfuSUwwoUnuaQgQkfEU": {
+      "id": "o-que-e-audiencia-conciliacao-instrucao-e-julgamento-1MaP5Y",
+      "titulo": "O que é audiência? (conciliação, instrução e julgamento)",
+      "categoria": "Direito Processual"
+    },
+    "14VKuMShC2OqyzTJ-WpUUw2etLZ2r1n45": {
+      "id": "onus-da-prova-quem-prova-o-que-a-regra-do-art-373-do-cpc-14VKuM",
+      "titulo": "Ônus da prova: quem prova o quê? (a regra do art. 373 do CPC)",
+      "categoria": "Direito Processual"
+    },
+    "1-E-X4Nb5DNOHPQHOy9eZsu-qnl5dujYZ": {
+      "id": "o-que-e-sentenca-a-decisao-do-juiz-1-E-X4",
+      "titulo": "O que é sentença? (a decisão do juiz)",
+      "categoria": "Direito Processual"
+    },
+    "1Wd4fHN6Xye0Nhp8V2jNNzZjlgnxdraQe": {
+      "id": "provas-no-processo-civil-documental-testemunhal-e-pericial-1Wd4fH",
+      "titulo": "Provas no processo civil (documental, testemunhal e pericial)",
+      "categoria": "Direito Processual"
+    },
+    "10PHtDbyXzWSDF1KkmZ6aNn6AxBi0DyLD": {
+      "id": "recursos-quais-sao-o-panorama-recursal-10PHtD",
+      "titulo": "Recursos: quais são? (o panorama recursal)",
+      "categoria": "Direito Processual"
+    },
+    "1-qeaRGBA_zQ8XDfop28zuMHXsrbplSPm": {
+      "id": "apelacao-como-funciona-1-qeaR",
+      "titulo": "Apelação: como funciona?",
+      "categoria": "Direito Processual"
+    },
+    "1AJ81K6DMcbKmD5dUgG7BBcNmPlR1KUI3": {
+      "id": "o-que-e-agravo-1AJ81K",
+      "titulo": "O que é agravo?",
+      "categoria": "Direito Processual"
+    },
+    "1Jm1-CYdzD5rm8ZB7bBVejAidqSkf6AQg": {
+      "id": "embargos-de-declaracao-1Jm1-C",
+      "titulo": "Embargos de declaração",
+      "categoria": "Direito Processual"
+    },
+    "1eXokNmSKrqh8SmDdjkMAIk2sofp-PL2p": {
+      "id": "recurso-especial-e-extraordinario-1eXokN",
+      "titulo": "Recurso especial e extraordinário",
+      "categoria": "Direito Processual"
+    },
+    "1-47jtx7PHmbqfFN3iLP1QZHiAgB7Wq4Z": {
+      "id": "o-que-e-transito-em-julgado-1-47jt",
+      "titulo": "O que é trânsito em julgado?",
+      "categoria": "Direito Processual"
+    },
+    "18XvVlLuYkk5eTmUz52Fd-j9ZSHuSkWTW": {
+      "id": "penhora-como-funciona-18XvVl",
+      "titulo": "Penhora: como funciona?",
+      "categoria": "Direito Processual"
+    },
+    "1AT2QWOL4faGHziMld1HBp7THqECXI7Iu": {
+      "id": "coisa-julgada-o-que-e-1AT2QW",
+      "titulo": "Coisa julgada: o que é?",
+      "categoria": "Direito Processual"
+    },
+    "148__uNxwRIBZvM1E-YfupWMw6axaWLlP": {
+      "id": "execucao-de-titulo-judicial-148__u",
+      "titulo": "Execução de título judicial",
+      "categoria": "Direito Processual"
+    },
+    "1hqvR-qTXohyh-AglRPHeUiMAxu7Els42": {
+      "id": "o-que-e-tutela-de-urgencia-1hqvR-",
+      "titulo": "O que é tutela de urgência?",
+      "categoria": "Direito Processual"
+    },
+    "1fdrfyn-hPnUr4k8hrSixMfK8JDGQrp_c": {
+      "id": "juizados-especiais-como-funcionam-1fdrfy",
+      "titulo": "Juizados Especiais: como funcionam",
+      "categoria": "Direito Processual"
+    },
+    "1NDlQwE_-FYAIssUwBO-GJTyTQ5aijwlR": {
+      "id": "revelia-o-que-acontece-1NDlQw",
+      "titulo": "Revelia: o que acontece?",
+      "categoria": "Direito Processual"
+    },
+    "1yQWJ8vv7AcFbc24j_f5L0niK2eIszwhv": {
+      "id": "fases-do-processo-conhecimento-e-execucao-1yQWJ8",
+      "titulo": "Fases do processo: conhecimento e execução",
+      "categoria": "Direito Processual"
+    },
+    "1kDso3usZaBGuwbOmQYJppIDH-NNaeusp": {
+      "id": "o-que-e-o-inquerito-policial-1kDso3",
+      "titulo": "O que é o inquérito policial?",
+      "categoria": "Direito Processual"
+    }
+  },
+  "errors": {
+    "1HoaWHDzOLSUFkGmm5TJT57LO9vVxaSaC": "Supabase Upsert: canceling statement due to statement timeout",
+    "154ZzsH13FYY3E7XMjR3CMiH76Xa6-nE5": "Supabase Upsert: canceling statement due to statement timeout"
+  }
+}

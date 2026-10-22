@@ -1,1 +1,0 @@
-GRANT INSERT ON storage.objects TO anon; CREATE POLICY "temp_anon_upload_audios" ON storage.objects FOR INSERT TO anon WITH CHECK (bucket_id = 'audios');

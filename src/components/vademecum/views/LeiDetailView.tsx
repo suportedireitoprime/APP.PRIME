@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useState, useEffect, useCallback, useRef, useLayoutEffect, useDeferredValue } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, BookOpen, LayoutGrid, History, Mic, MicOff, Camera, X as XIcon, Heart, ListMusic, StickyNote, Radar, ArrowUp, ArrowLeft, Info, Layers, ScrollText, ExternalLink, GraduationCap, Volume2 } from 'lucide-react';

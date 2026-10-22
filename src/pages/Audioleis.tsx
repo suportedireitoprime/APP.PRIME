@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   Search,
@@ -15,14 +15,34 @@ import {
   Sparkles,
   RotateCcw,
   SlidersHorizontal,
-} from 'lucide-react';
-import ShapeGrid from '@/components/ui/ShapeGrid';
-import { supabase } from '@/integrations/supabase/client';
-import { haptic } from '@/lib/nativeHaptics';
-import { toast } from 'sonner';
-import { setupMediaSession, clearMediaSession } from '@/lib/mediaSession';
-import { LEIS_CATALOG } from '@/data/leisCatalog';
-import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
+  ChevronLeft,
+  ChevronRight,
+  Headphones,
+  X,
+  Layers,
+  FileText,
+} from "lucide-react";
+import ShapeGrid from "@/components/ui/ShapeGrid";
+import { AudioaulasHero } from "@/components/audioaulas/home/AudioaulasHero";
+import { capaDaArea } from "@/lib/audioaulasHelper";
+import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { haptic } from "@/lib/nativeHaptics";
+import { toast } from "sonner";
+import { setupMediaSession, clearMediaSession } from "@/lib/mediaSession";
+import { LEIS_CATALOG } from "@/data/leisCatalog";
+import { useGatedFeature } from "@/hooks/useGatedFeature";
+import { leiToSlug, tipoToSlug } from "@/lib/legislacaoSlugs";
+import { safeStorageUrl } from "@/lib/cdnImg";
+import { useLeiArtigos } from "@/hooks/domain/useLeiArtigos";
+import {
+  extractLeiCapitulos,
+  isStructuralArtigo,
+  formatArtigoNumeroOnly,
+  type LeiCapituloItem,
+} from "@/lib/leiStructure";
+import type { ArtigoLei } from "@/data/mockData";
 
 interface NarracaoItem {
   artigo_numero: string;
@@ -39,107 +59,117 @@ interface LawOption {
   descricao: string;
   tipo: string;
   artigosCount?: number;
-  status: 'completo' | 'em_breve';
+  status: "completo" | "em_breve";
   color: string;
 }
 
-const LAWS_CONFIG: LawOption[] = [
-  {
-    id: 'cp',
-    sigla: 'CP',
-    nome: 'Código Penal',
-    tabela_nome: 'CP_CODIGO_PENAL',
-    descricao: 'Decreto-Lei nº 2.848/1940 • Todos os artigos narrados',
-    tipo: 'codigo',
-    artigosCount: 420,
-    status: 'completo',
-    color: '#ef4444',
-  },
-  {
-    id: 'cdc',
-    sigla: 'CDC',
-    nome: 'Código de Defesa do Consumidor',
-    tabela_nome: 'CDC_CODIGO_DEFESA_CONSUMIDOR',
-    descricao: 'Lei nº 8.078/1990 • Todos os artigos narrados',
-    tipo: 'codigo',
-    artigosCount: 130,
-    status: 'completo',
-    color: '#f97316',
-  },
-  {
-    id: 'cpc',
-    sigla: 'CPC',
-    nome: 'Código de Processo Civil',
-    tabela_nome: 'CPC_CODIGO_PROCESSO_CIVIL',
-    descricao: 'Lei nº 13.105/2015 • Narrações em áudio estúdio',
-    tipo: 'codigo',
-    artigosCount: 534,
-    status: 'completo',
-    color: '#3b82f6',
-  },
-  {
-    id: 'ctn',
-    sigla: 'CTN',
-    nome: 'Código Tributário Nacional',
-    tabela_nome: 'CTN_CODIGO_TRIBUTARIO_NACIONAL',
-    descricao: 'Lei nº 5.172/1966 • Todos os artigos narrados',
-    tipo: 'codigo',
-    artigosCount: 245,
-    status: 'completo',
-    color: '#10b981',
-  },
-  {
-    id: 'ce',
-    sigla: 'CE',
-    nome: 'Código Eleitoral',
-    tabela_nome: 'CE_CODIGO_ELEITORAL',
-    descricao: 'Lei nº 4.737/1965 • Todos os artigos narrados (Arts. 1 a 383)',
-    tipo: 'codigo',
-    artigosCount: 389,
-    status: 'completo',
-    color: '#6366f1',
-  },
-  {
-    id: 'cf88',
-    sigla: 'CF/88',
-    nome: 'Constituição Federal',
-    tabela_nome: 'CF88_CONSTITUICAO_FEDERAL',
-    descricao: 'Constituição da República de 1988',
-    tipo: 'constituicao',
-    status: 'em_breve',
-    color: '#fbbf24',
-  },
-  {
-    id: 'cc',
-    sigla: 'CC',
-    nome: 'Código Civil',
-    tabela_nome: 'CC_CODIGO_CIVIL',
-    descricao: 'Lei nº 10.406/2002',
-    tipo: 'codigo',
-    status: 'em_breve',
-    color: '#a855f7',
-  },
-  {
-    id: 'cpp',
-    sigla: 'CPP',
-    nome: 'Código de Processo Penal',
-    tabela_nome: 'CPP_CODIGO_PROCESSO_PENAL',
-    descricao: 'Decreto-Lei nº 3.689/1941',
-    tipo: 'codigo',
-    status: 'em_breve',
-    color: '#ec4899',
-  },
-  {
-    id: 'clt',
-    sigla: 'CLT',
-    nome: 'Consolidação das Leis do Trabalho',
-    tabela_nome: 'CLT_CONSOLIDACAO_LEIS_TRABALHO',
-    descricao: 'Decreto-Lei nº 5.452/1943',
-    tipo: 'codigo',
-    status: 'em_breve',
-    color: '#8b5cf6',
-  },
-];
+const LAWS_CONFIG: LawOption[] = LEIS_CATALOG.map((law) => ({
+  ...law,
+  status: "completo",
+  color: "",
+}));
+
+const COVER_AREAS: Record<string, string> = {
+  cf88: "Direito Constitucional",
+  cp: "Direito Penal",
+  cpp: "Processo Penal",
+  cc: "Direito Civil",
+  cpc: "Processo Civil",
+  clt: "Direito do Trabalho",
+  ctn: "Direito Tributário",
+  cdc: "Consumidor",
+  ce: "Eleitoral",
+  cpm: "Direito Penal",
+  cppm: "Processo Penal",
+  ctb: "Direito Administrativo",
+  cflor: "Direito Ambiental",
+  ccom: "Direito Empresarial",
+  cba: "Direito Administrativo",
+  cagua: "Direito Ambiental",
+  cmin: "Direito Ambiental",
+  ctel: "Direito Administrativo",
+  eca: "Direito da Criança e do Adolescente",
+  ei: "Direito Civil",
+  epd: "Direitos Humanos",
+  eir: "Direitos Humanos",
+  ec: "Direito Urbanístico",
+  ed: "Direito Penal",
+  eoab: "Deontologia e Estatuto da OAB",
+  et: "Direito Desportivo",
+  ej: "Direitos Humanos",
+  em: "Direito Administrativo",
+  eind: "Direitos Humanos",
+  eterra: "Direito Agrário",
+  emig: "Direito Internacional",
+  eref: "Direitos Humanos",
+  emet: "Direito Urbanístico",
+  emus: "Direito Administrativo",
+  eme: "Direito Empresarial",
+  epc: "Direito Médico",
+  lep: "Direito Penal",
+  lmp: "Direito Penal",
+  ld: "Direito Penal",
+  loc: "Direito Penal",
+  laa: "Direito Penal",
+  lit: "Processo Penal",
+  l8112: "Direito Administrativo",
+  lia: "Direito Administrativo",
+  nll: "Direito Administrativo",
+  lms: "Processo Civil",
+  lacp: "Processo Civil",
+  lje: "Processo Civil",
+  lgpd: "Direito Digital",
+  mci: "Direito Digital",
+  lf: "Direito Empresarial",
+  la: "Processo Civil",
+  li: "Direito Civil",
+  lrp: "Direito Civil",
+  loman: "Processo Civil",
+  lat: "Direito Penal",
+  lindb: "Direito Civil",
+  lch: "Direito Penal",
+  ltort: "Direito Penal",
+  lca: "Direito Ambiental",
+  lrac: "Direitos Humanos",
+  llav: "Direito Penal",
+  lpaf: "Direito Administrativo",
+  lrf: "Direito Financeiro",
+  lai: "Direito Administrativo",
+  lap: "Processo Civil",
+  lcp: "Direito Penal",
+  ldb: "Políticas Públicas",
+  lomp: "Processo Penal",
+  lsa: "Direito Empresarial",
+  lpi: "Direito Empresarial",
+  lda: "Direito Civil",
+  lace: "Direito Empresarial",
+  lcon: "Direito Administrativo",
+  lppp: "Direito Administrativo",
+  lhd: "Processo Civil",
+  lmi: "Processo Civil",
+  lpp: "Direito Eleitoral",
+  lele: "Direito Eleitoral",
+  lfl: "Direito Eleitoral",
+  lcsf: "Direito Penal",
+  lpt: "Processo Penal",
+  lpsu: "Direito Urbanístico",
+  lalp: "Direito Civil",
+  lalim: "Direito Civil",
+  lcade: "Direito Empresarial",
+  lsus: "Direito Médico",
+  lbio: "Direito Ambiental",
+  lci: "Direito Digital",
+  line: "Direito Eleitoral",
+  lotcu: "Direito Administrativo",
+  lle: "Direito Empresarial",
+  ces: "Direito Administrativo",
+  lmls: "Direito Empresarial",
+  lrt: "Direito Tributário",
+  lbps: "Direito Previdenciário",
+  lcss: "Direito Previdenciário",
+  lpc: "Direito Previdenciário",
+  loas: "Direito Previdenciário",
+};
 
 function sortArtigos(a: string, b: string) {
   const matchA = a.match(/^(\d+)(.*)$/);
@@ -148,21 +178,21 @@ function sortArtigos(a: string, b: string) {
   const numA = parseInt(matchA[1], 10);
   const numB = parseInt(matchB[1], 10);
   if (numA !== numB) return numA - numB;
-  return (matchA[2] || '').localeCompare(matchB[2] || '');
+  return (matchA[2] || "").localeCompare(matchB[2] || "");
 }
 
 function formatAudioTime(seconds: number): string {
-  if (isNaN(seconds) || seconds < 0) return '0:00';
+  if (isNaN(seconds) || seconds < 0) return "0:00";
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
-  return `${m}:${s < 10 ? '0' : ''}${s}`;
+  return `${m}:${s < 10 ? "0" : ""}${s}`;
 }
 
 export default function AudioleisPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const tabelaParam = searchParams.get('tabela') || searchParams.get('lei');
-  const artigoParam = searchParams.get('artigo');
+  const tabelaParam = searchParams.get("tabela") || searchParams.get("lei");
+  const artigoParam = searchParams.get("artigo");
 
   // Estados principais
   const [selectedTabela, setSelectedTabela] = useState<string>(() => {
@@ -171,17 +201,206 @@ export default function AudioleisPage() {
         (l) =>
           l.tabela_nome.toLowerCase() === tabelaParam.toLowerCase() ||
           l.id.toLowerCase() === tabelaParam.toLowerCase() ||
-          l.sigla.toLowerCase() === tabelaParam.toLowerCase()
+          l.sigla.toLowerCase() === tabelaParam.toLowerCase(),
       );
       if (match) return match.tabela_nome;
     }
-    return 'CP_CODIGO_PENAL';
+    return "CP_CODIGO_PENAL";
   });
   const [mostrarOutrasLeis, setMostrarOutrasLeis] = useState<boolean>(!tabelaParam);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [artigos, setArtigos] = useState<NarracaoItem[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
+  const {
+    data: lawCounts,
+    isLoading: loadingCatalog,
+    isError: catalogError,
+    refetch: reloadCatalog,
+  } = useQuery({
+    queryKey: ["audioleis-catalogo"],
+    staleTime: 5 * 60_000,
+    queryFn: async () => {
+      const counts: Record<string, number> = {};
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await supabase
+          .from("narracoes_artigos")
+          .select("tabela_nome")
+          .not("audio_url", "is", null)
+          .order("id")
+          .range(from, from + 999);
+        if (error) throw error;
+        for (const row of data || []) counts[row.tabela_nome] = (counts[row.tabela_nome] || 0) + 1;
+        if (!data || data.length < 1000) break;
+      }
+      return counts;
+    },
+  });
+  const availableLaws = LAWS_CONFIG.filter((law) => !lawCounts || lawCounts[law.tabela_nome] > 0);
+  const catalogTotal = Object.values(lawCounts || {}).reduce((sum, count) => sum + count, 0);
+
+  const [buscaCatalogo, setBuscaCatalogo] = useState("");
+  const [categoriaFoco, setCategoriaFoco] = useState<"codigos" | "estatutos" | "especiais" | null>(
+    null,
+  );
+
+  const refCarrosselCodigos = useRef<HTMLDivElement | null>(null);
+  const refCarrosselEstatutos = useRef<HTMLDivElement | null>(null);
+  const refCarrosselEspeciais = useRef<HTMLDivElement | null>(null);
+
+  const scrollCarrossel = useCallback(
+    (ref: React.RefObject<HTMLDivElement | null>, direction: "left" | "right") => {
+      haptic.selection();
+      if (ref.current) {
+        const scrollAmount = direction === "left" ? -380 : 380;
+        ref.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+    },
+    [],
+  );
+
+  const codigosLaws = useMemo(() => {
+    return availableLaws.filter((l) => l.tipo === "constituicao" || l.tipo === "codigo");
+  }, [availableLaws]);
+
+  const estatutosLaws = useMemo(() => {
+    return availableLaws.filter((l) => l.tipo === "estatuto");
+  }, [availableLaws]);
+
+  const especiaisLaws = useMemo(() => {
+    return availableLaws.filter(
+      (l) => l.tipo !== "constituicao" && l.tipo !== "codigo" && l.tipo !== "estatuto",
+    );
+  }, [availableLaws]);
+
+  const totalArtigosCodigos = useMemo(() => {
+    if (!lawCounts) return 0;
+    return codigosLaws.reduce((sum, l) => sum + (lawCounts[l.tabela_nome] || 0), 0);
+  }, [codigosLaws, lawCounts]);
+
+  const totalArtigosEstatutos = useMemo(() => {
+    if (!lawCounts) return 0;
+    return estatutosLaws.reduce((sum, l) => sum + (lawCounts[l.tabela_nome] || 0), 0);
+  }, [estatutosLaws, lawCounts]);
+
+  const totalArtigosEspeciais = useMemo(() => {
+    if (!lawCounts) return 0;
+    return especiaisLaws.reduce((sum, l) => sum + (lawCounts[l.tabela_nome] || 0), 0);
+  }, [especiaisLaws, lawCounts]);
+
+  const leisBuscadas = useMemo(() => {
+    const q = buscaCatalogo.toLowerCase().trim();
+    if (!q) return [];
+    return availableLaws.filter(
+      (l) =>
+        l.nome.toLowerCase().includes(q) ||
+        l.sigla.toLowerCase().includes(q) ||
+        (l.descricao && l.descricao.toLowerCase().includes(q)),
+    );
+  }, [availableLaws, buscaCatalogo]);
+
+  const { categoriaTitulo, categoriaLaws, totalArtigosCategoriaFoco } = useMemo(() => {
+    if (categoriaFoco === "codigos") {
+      return {
+        categoriaTitulo: "Constituição & Códigos",
+        categoriaLaws: codigosLaws,
+        totalArtigosCategoriaFoco: totalArtigosCodigos,
+      };
+    }
+    if (categoriaFoco === "estatutos") {
+      return {
+        categoriaTitulo: "Estatutos",
+        categoriaLaws: estatutosLaws,
+        totalArtigosCategoriaFoco: totalArtigosEstatutos,
+      };
+    }
+    if (categoriaFoco === "especiais") {
+      return {
+        categoriaTitulo: "Legislação Especial",
+        categoriaLaws: especiaisLaws,
+        totalArtigosCategoriaFoco: totalArtigosEspeciais,
+      };
+    }
+    return {
+      categoriaTitulo: "Todas as Leis",
+      categoriaLaws: availableLaws,
+      totalArtigosCategoriaFoco: catalogTotal,
+    };
+  }, [
+    categoriaFoco,
+    codigosLaws,
+    totalArtigosCodigos,
+    estatutosLaws,
+    totalArtigosEstatutos,
+    especiaisLaws,
+    totalArtigosEspeciais,
+    availableLaws,
+    catalogTotal,
+  ]);
+
+  const abrirLei = useCallback((law: LawOption) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    setIsPlaying(false);
+    setCurrentArtigo(null);
+    setCurrentTime(0);
+    setDuration(0);
+    clearMediaSession();
+    setSelectedTabela(law.tabela_nome);
+    setSearchQuery("");
+    setBuscaCatalogo("");
+    setCategoriaFoco(null);
+    setMostrarOutrasLeis(false);
+    setExpandedCapituloId(null);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
+  const audioleiGate = useGatedFeature("audiolei", "narracao");
+  const audioleiGateRef = useRef(audioleiGate);
+  audioleiGateRef.current = audioleiGate;
+  const [searchQuery, setSearchQuery] = useState("");
+  const {
+    data: artigos = [],
+    isLoading: loading,
+    isError: articleError,
+    refetch: reloadArticles,
+  } = useQuery({
+    queryKey: ["audioleis-artigos", selectedTabela],
+    enabled: !mostrarOutrasLeis,
+    staleTime: 5 * 60_000,
+    queryFn: async ({ signal }) => {
+      const rows: NarracaoItem[] = [];
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await supabase
+          .from("narracoes_artigos")
+          // Word timings are large and unused by this player. Fetch only its metadata.
+          .select("artigo_numero, audio_url, titulo_artigo")
+          .eq("tabela_nome", selectedTabela)
+          .not("audio_url", "is", null)
+          .order("id")
+          .range(from, from + 999)
+          .abortSignal(signal);
+        if (error) throw error;
+        rows.push(
+          ...(data || []).map((row) => ({
+            ...row,
+            audio_url: safeStorageUrl(row.audio_url) || row.audio_url,
+            titulo_artigo: row.titulo_artigo ?? undefined,
+          })),
+        );
+        if (!data || data.length < 1000) break;
+      }
+      const unique = new Map<string, NarracaoItem>();
+      for (const row of rows) {
+        const numero = row.artigo_numero
+          .replace(/^Art(?:igo|\.)?\s*/i, "")
+          .replace(/[º°ª]/g, "")
+          .trim();
+        if (numero && row.audio_url && !unique.has(numero))
+          unique.set(numero, { ...row, artigo_numero: numero });
+      }
+      return Array.from(unique.values()).sort((a, b) =>
+        sortArtigos(a.artigo_numero, b.artigo_numero),
+      );
+    },
+  });
+  const totalCount = artigos.length;
 
   // Player de Áudio
   const [currentArtigo, setCurrentArtigo] = useState<NarracaoItem | null>(null);
@@ -191,7 +410,7 @@ export default function AudioleisPage() {
   const [autoplayNext, setAutoplayNext] = useState(true);
   const [playbackRate, setPlaybackRate] = useState<number>(() => {
     try {
-      const saved = Number(localStorage.getItem('vademecum_audio_speed'));
+      const saved = Number(localStorage.getItem("vademecum_audio_speed"));
       return [0.75, 1, 1.25, 1.5, 2].includes(saved) ? saved : 1.0;
     } catch {
       return 1.0;
@@ -204,85 +423,22 @@ export default function AudioleisPage() {
     return LAWS_CONFIG.find((l) => l.tabela_nome === selectedTabela) || LAWS_CONFIG[0];
   }, [selectedTabela]);
 
-  // Carrega os artigos narrados da tabela selecionada
+  // A deep link must not strand the user in a law with no uploaded audio.
   useEffect(() => {
-    let isCancelled = false;
-
-    async function carregarNarracoes() {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('narracoes_artigos')
-          .select('artigo_numero, audio_url, titulo_artigo, word_timings')
-          .eq('tabela_nome', selectedTabela);
-
-        if (error) throw error;
-        if (isCancelled) return;
-
-        // Deduplica por número base do artigo
-        const map = new Map<string, NarracaoItem>();
-        for (const row of data || []) {
-          const numRaw = (row.artigo_numero || '')
-            .replace(/^Art(?:igo|\.)?\s*/i, '')
-            .replace(/º$/, '')
-            .trim();
-          if (numRaw && !map.has(numRaw)) {
-            map.set(numRaw, {
-              artigo_numero: numRaw,
-              audio_url: row.audio_url,
-              titulo_artigo: row.titulo_artigo,
-              word_timings: row.word_timings,
-            });
-          }
-        }
-
-        const sorted = Array.from(map.values()).sort((a, b) =>
-          sortArtigos(a.artigo_numero, b.artigo_numero)
-        );
-
-        setArtigos(sorted);
-        setTotalCount(sorted.length);
-      } catch (err) {
-        console.error('Erro ao buscar áudio-leis:', err);
-        if (!isCancelled) {
-          setArtigos([]);
-          setTotalCount(0);
-        }
-      } finally {
-        if (!isCancelled) setLoading(false);
-      }
+    if (!mostrarOutrasLeis && lawCounts && !lawCounts[selectedTabela]) {
+      setMostrarOutrasLeis(true);
+      toast.info("Esta lei ainda não possui áudios no acervo. Escolha uma das leis disponíveis.");
     }
-
-    carregarNarracoes();
-    return () => {
-      isCancelled = true;
-    };
-  }, [selectedTabela]);
-
-  // Se veio com parâmetro artigo, filtra e inicia reprodução automaticamente
-  useEffect(() => {
-    if (!artigoParam || artigos.length === 0) return;
-    const cleanTarget = artigoParam.replace(/^art(?:igo|\.)?\s*/i, '').replace(/[º°ª]/g, '').trim().toLowerCase();
-
-    const match = artigos.find(a => 
-      a.artigo_numero.toLowerCase() === cleanTarget ||
-      a.artigo_numero.toLowerCase().replace(/[º°ª]/g, '') === cleanTarget
-    );
-
-    if (match) {
-      setCurrentArtigo(match);
-      setIsPlaying(true);
-      setSearchQuery(`Art. ${match.artigo_numero}`);
-      toast.success(`Áudio Lei carregada: Artigo ${match.artigo_numero}`);
-    } else {
-      setSearchQuery(artigoParam);
-    }
-  }, [artigoParam, artigos]);
+  }, [lawCounts, selectedTabela, mostrarOutrasLeis]);
 
   // Filtragem com busca
   const filteredArtigos = useMemo(() => {
     if (!searchQuery.trim()) return artigos;
-    const q = searchQuery.toLowerCase().trim();
+    const q = searchQuery
+      .toLowerCase()
+      .trim()
+      .replace(/^art(?:igo|\.)?\s*/i, "")
+      .replace(/[º°ª]/g, "");
     return artigos.filter((item) => {
       const matchNum = item.artigo_numero.toLowerCase().includes(q);
       const matchTitle = item.titulo_artigo?.toLowerCase().includes(q);
@@ -290,10 +446,159 @@ export default function AudioleisPage() {
     });
   }, [artigos, searchQuery]);
 
+  // Modo de exibição: Capítulos vs Artigos (conforme Vade Mecum)
+  const [modoVisualizacao, setModoVisualizacao] = useState<"capitulos" | "artigos">("capitulos");
+  const [expandedCapituloId, setExpandedCapituloId] = useState<string | null>(null);
+
+  // Carrega a estrutura completa dos artigos da lei para extração de capítulos
+  const { artigos: fullArtigos = [], loadingArtigos } = useLeiArtigos(
+    currentLaw.id,
+    selectedTabela,
+  );
+
+  const capitulos = useMemo(() => extractLeiCapitulos(fullArtigos as ArtigoLei[]), [fullArtigos]);
+
+  // Mapeamento rápido de áudios disponíveis por número de artigo
+  const audioMap = useMemo(() => {
+    const map = new Map<string, NarracaoItem>();
+    for (const item of artigos) {
+      const clean = formatArtigoNumeroOnly(item.artigo_numero).toLowerCase();
+      if (clean) map.set(clean, item);
+      map.set(item.artigo_numero.toLowerCase(), item);
+    }
+    return map;
+  }, [artigos]);
+
+  // Estatísticas e agrupamento de áudios por capítulo
+  const capitulosComAudios = useMemo(() => {
+    if (!capitulos || capitulos.length === 0) return [];
+    return capitulos.map((cap) => {
+      const realArtigos = cap.artigos.filter((a) => !isStructuralArtigo(a));
+      const audiosDisponiveis: Array<{ artigo: ArtigoLei; narracao: NarracaoItem }> = [];
+
+      for (const art of realArtigos) {
+        const clean = formatArtigoNumeroOnly(art.numero).toLowerCase();
+        const raw = String(art.numero || "")
+          .trim()
+          .toLowerCase();
+        const narracao = audioMap.get(clean) || audioMap.get(raw);
+        if (narracao) {
+          audiosDisponiveis.push({ artigo: art, narracao });
+        }
+      }
+
+      const totalArts = realArtigos.length;
+      const totalAudios = audiosDisponiveis.length;
+      const pctGravado = totalArts > 0 ? Math.round((totalAudios / totalArts) * 100) : 0;
+
+      return {
+        capitulo: cap,
+        realArtigos,
+        audiosDisponiveis,
+        totalArts,
+        totalAudios,
+        pctGravado,
+      };
+    });
+  }, [capitulos, audioMap]);
+
+  // Fallback caso a lei não possua divisão formal de capítulos (agrupamento dinâmico em blocos)
+  const fallbackCapitulosComAudios = useMemo(() => {
+    if (capitulosComAudios.length > 0) return capitulosComAudios;
+    if (!artigos || artigos.length === 0) return [];
+
+    const chunkSize = 50;
+    const groups: typeof capitulosComAudios = [];
+    for (let i = 0; i < artigos.length; i += chunkSize) {
+      const chunk = artigos.slice(i, i + chunkSize);
+      const primeiro = chunk[0].artigo_numero;
+      const ultimo = chunk[chunk.length - 1].artigo_numero;
+      const capFake: LeiCapituloItem = {
+        id: `bloco-${i}`,
+        capituloHead: `BLOCO ${Math.floor(i / chunkSize) + 1}`,
+        capituloNome: `Artigos ${primeiro} a ${ultimo}`,
+        artigos: chunk.map(
+          (c) =>
+            ({
+              id: c.artigo_numero,
+              numero: c.artigo_numero,
+              caput: c.titulo_artigo || `Artigo ${c.artigo_numero}`,
+              tipo: "artigo",
+            }) as ArtigoLei,
+        ),
+        primeiroArtigo: primeiro,
+        ultimoArtigo: ultimo,
+      };
+
+      groups.push({
+        capitulo: capFake,
+        realArtigos: capFake.artigos,
+        audiosDisponiveis: chunk.map((c) => ({
+          artigo: capFake.artigos.find((a) => a.numero === c.artigo_numero)!,
+          narracao: c,
+        })),
+        totalArts: chunk.length,
+        totalAudios: chunk.length,
+        pctGravado: 100,
+      });
+    }
+    return groups;
+  }, [capitulosComAudios, artigos]);
+
+  // Capítulos filtrados por busca
+  const displayedCapitulos = useMemo(() => {
+    const source = capitulosComAudios.length > 0 ? capitulosComAudios : fallbackCapitulosComAudios;
+    if (!searchQuery.trim()) return source;
+    const q = searchQuery
+      .toLowerCase()
+      .trim()
+      .replace(/^art(?:igo|\.)?\s*/i, "")
+      .replace(/[º°ª]/g, "");
+
+    return source.filter(({ capitulo, realArtigos }) => {
+      const matchName =
+        (capitulo.capituloNome && capitulo.capituloNome.toLowerCase().includes(q)) ||
+        (capitulo.capituloHead && capitulo.capituloHead.toLowerCase().includes(q)) ||
+        (capitulo.parentContext && capitulo.parentContext.toLowerCase().includes(q));
+      if (matchName) return true;
+
+      return realArtigos.some((art) => {
+        const artNum = formatArtigoNumeroOnly(art.numero).toLowerCase();
+        const caput = (art.caput || "").toLowerCase();
+        return artNum.includes(q) || caput.includes(q);
+      });
+    });
+  }, [capitulosComAudios, fallbackCapitulosComAudios, searchQuery]);
+
+  // Se o usuário digitou um número de artigo específico na busca, expande automaticamente o capítulo
+  useEffect(() => {
+    if (!searchQuery.trim()) return;
+    const q = searchQuery
+      .toLowerCase()
+      .trim()
+      .replace(/^art(?:igo|\.)?\s*/i, "")
+      .replace(/[º°ª]/g, "");
+    if (!q) return;
+
+    const found = displayedCapitulos.find(({ realArtigos }) =>
+      realArtigos.some((a) => formatArtigoNumeroOnly(a.numero).toLowerCase() === q),
+    );
+    if (found) {
+      setExpandedCapituloId(found.capitulo.id);
+    }
+  }, [searchQuery, displayedCapitulos]);
+
   // Inicialização e controle do áudio nativo
   const playAudio = useCallback(
     (item: NarracaoItem) => {
       haptic.impact();
+      const g = audioleiGateRef.current;
+      const ref = `${selectedTabela}:${item.artigo_numero}`;
+      if (g.blocked) {
+        g.openGate();
+        return;
+      }
+      void g.register(ref);
       if (!audioRef.current) {
         audioRef.current = new Audio();
       }
@@ -319,21 +624,41 @@ export default function AudioleisPage() {
       audio.currentTime = 0;
       setCurrentTime(0);
 
-      audio.play().then(() => {
-        setIsPlaying(true);
-        setupMediaSession({
-          title: `Artigo ${item.artigo_numero} — ${currentLaw.nome}`,
-          artist: 'Audioleis Prime',
-          album: currentLaw.nome,
-          audio,
+      audio
+        .play()
+        .then(() => {
+          setIsPlaying(true);
+          setupMediaSession({
+            title: `Artigo ${item.artigo_numero} — ${currentLaw.nome}`,
+            artist: "Audioleis Prime",
+            album: currentLaw.nome,
+            audio,
+          });
+        })
+        .catch((e) => {
+          console.error("Erro ao iniciar áudio:", e);
+          toast.error("Não foi possível reproduzir este áudio no momento.");
         });
-      }).catch((e) => {
-        console.error('Erro ao iniciar áudio:', e);
-        toast.error('Não foi possível reproduzir este áudio no momento.');
-      });
     },
-    [currentArtigo, isPlaying, playbackRate, currentLaw]
+    [currentArtigo, isPlaying, playbackRate, currentLaw, selectedTabela],
   );
+
+  const deepLinkPlayed = useRef<string | null>(null);
+  useEffect(() => {
+    if (!artigoParam || loading || mostrarOutrasLeis || artigos.length === 0) return;
+    const key = `${selectedTabela}:${artigoParam}`;
+    if (deepLinkPlayed.current === key) return;
+    const target = artigoParam
+      .replace(/^art(?:igo|\.)?\s*/i, "")
+      .replace(/[º°ª]/g, "")
+      .trim()
+      .toLowerCase();
+    const match = artigos.find((item) => item.artigo_numero.toLowerCase() === target);
+    if (!match) return;
+    deepLinkPlayed.current = key;
+    setSearchQuery(target);
+    playAudio(match);
+  }, [artigoParam, artigos, loading, mostrarOutrasLeis, selectedTabela, playAudio]);
 
   // Ouvintes do HTMLAudioElement
   useEffect(() => {
@@ -347,7 +672,9 @@ export default function AudioleisPage() {
       setCurrentTime(0);
 
       if (autoplayNext && currentArtigo) {
-        const currentIdx = artigos.findIndex((a) => a.artigo_numero === currentArtigo.artigo_numero);
+        const currentIdx = artigos.findIndex(
+          (a) => a.artigo_numero === currentArtigo.artigo_numero,
+        );
         if (currentIdx >= 0 && currentIdx < artigos.length - 1) {
           const next = artigos[currentIdx + 1];
           playAudio(next);
@@ -356,19 +683,19 @@ export default function AudioleisPage() {
     };
     const onError = () => {
       setIsPlaying(false);
-      toast.error('Erro na reprodução do áudio.');
+      toast.error("Erro na reprodução do áudio.");
     };
 
-    audio.addEventListener('timeupdate', onTimeUpdate);
-    audio.addEventListener('loadedmetadata', onLoadedMetadata);
-    audio.addEventListener('ended', onEnded);
-    audio.addEventListener('error', onError);
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("loadedmetadata", onLoadedMetadata);
+    audio.addEventListener("ended", onEnded);
+    audio.addEventListener("error", onError);
 
     return () => {
-      audio.removeEventListener('timeupdate', onTimeUpdate);
-      audio.removeEventListener('loadedmetadata', onLoadedMetadata);
-      audio.removeEventListener('ended', onEnded);
-      audio.removeEventListener('error', onError);
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("loadedmetadata", onLoadedMetadata);
+      audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("error", onError);
     };
   }, [currentArtigo, artigos, autoplayNext, playAudio]);
 
@@ -377,24 +704,26 @@ export default function AudioleisPage() {
     haptic.selection();
     setPlaybackRate(rate);
     try {
-      localStorage.setItem('vademecum_audio_speed', String(rate));
-    } catch {}
+      localStorage.setItem("vademecum_audio_speed", String(rate));
+    } catch {
+      // Ignora erro de acesso ao localStorage
+    }
     if (audioRef.current) {
       audioRef.current.playbackRate = rate;
     }
   };
 
   // Pular para o próximo ou anterior
-  const pularArtigo = (direction: 'next' | 'prev') => {
+  const pularArtigo = (direction: "next" | "prev") => {
     if (!currentArtigo) return;
     const currentIdx = artigos.findIndex((a) => a.artigo_numero === currentArtigo.artigo_numero);
     if (currentIdx === -1) return;
 
-    const nextIdx = direction === 'next' ? currentIdx + 1 : currentIdx - 1;
+    const nextIdx = direction === "next" ? currentIdx + 1 : currentIdx - 1;
     if (nextIdx >= 0 && nextIdx < artigos.length) {
       playAudio(artigos[nextIdx]);
     } else {
-      toast.info(direction === 'next' ? 'Fim da lista de artigos.' : 'Primeiro artigo da lei.');
+      toast.info(direction === "next" ? "Fim da lista de artigos." : "Primeiro artigo da lei.");
     }
   };
 
@@ -406,7 +735,7 @@ export default function AudioleisPage() {
       const slug = leiToSlug({ id: lei.id, nome: lei.nome });
       navigate(`/legislacao/${tipoToSlug(lei.tipo)}/${slug}/${encodeURIComponent(numArtigo)}`);
     } else {
-      navigate('/vademecum');
+      navigate("/vademecum");
     }
   };
 
@@ -421,301 +750,826 @@ export default function AudioleisPage() {
     };
   }, []);
 
-  return (
-    <div className="relative min-h-screen bg-[#0D0D0D] text-white flex flex-col selection:bg-rose-500/30 overflow-x-hidden">
-      {/* Background ShapeGrid oficial */}
-      <ShapeGrid />
+  const renderCardCarrossel = (law: LawOption) => {
+    const artigosQtd = lawCounts ? lawCounts[law.tabela_nome] || 0 : 0;
+    const areaCapa = COVER_AREAS[law.id] || law.nome;
+    const capaUrl = capaDaArea(areaCapa);
 
-      {/* Header com Safe Area */}
-      <header className="relative z-20 shrink-0 border-b border-zinc-800/80 bg-zinc-900/80 backdrop-blur-xl pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-4 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                haptic.impact();
-                navigate(-1);
-              }}
-              className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-2xl bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/60 flex items-center justify-center text-zinc-200 active:scale-95 transition-all shadow-md shrink-0"
-              aria-label="Voltar"
-            >
-              <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-            </button>
+    return (
+      <button
+        key={law.id}
+        type="button"
+        onClick={() => abrirLei(law)}
+        aria-label={`Abrir ${law.nome}`}
+        className="group relative w-40 sm:w-47.5 md:w-52.5 aspect-4/5 shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98]"
+      >
+        <img
+          src={capaUrl}
+          alt={law.nome}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-black via-black/60 to-transparent" />
 
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                  <Volume2 className="w-3.5 h-3.5" />
-                  Narrações Oficiais
-                </span>
-                <span className="text-[11px] text-zinc-400 hidden sm:inline">•</span>
-                <span className="text-[11px] text-zinc-400 hidden sm:inline">Latência 0ms</span>
-              </div>
-              <h1 className="font-heading text-xl sm:text-2xl font-black uppercase tracking-widest text-white mt-0.5 flex items-center gap-2">
-                AUDIOLEIS
-              </h1>
-            </div>
+        <div className="absolute inset-0 p-3 sm:p-3.5 flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <span className="h-8 w-8 sm:h-8.5 sm:w-8.5 grid place-items-center rounded-xl bg-primary/90 text-primary-foreground shadow-md shadow-black/50">
+              <Volume2 className="h-4 w-4" />
+            </span>
+            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold tracking-wide bg-black/65 text-white border border-white/20 backdrop-blur shadow-sm">
+              {law.sigla}
+            </span>
           </div>
 
-          <div className="text-right hidden sm:block">
-            <p className="text-xs text-zinc-400 font-mono">
-              Total Narrado:{' '}
-              <span className="text-rose-400 font-bold">{totalCount} artigos</span>
+          <div className="space-y-1">
+            <p className="font-sans font-bold leading-snug text-white text-[13px] sm:text-[14px] line-clamp-2 tracking-normal normal-case drop-shadow-sm">
+              {law.nome}
+            </p>
+            <p className="font-sans text-[11px] sm:text-xs text-zinc-300 font-medium tracking-normal">
+              {artigosQtd > 0 ? `${artigosQtd.toLocaleString("pt-BR")} artigos` : "Ver artigos"}
             </p>
           </div>
         </div>
-      </header>
+      </button>
+    );
+  };
 
-      {/* Conteúdo Principal */}
-      <main className="relative z-10 flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
-        {/* Seletor de Códigos / Leis (Tabs Carrossel) */}
-        {/* Seletor de Códigos / Leis ou Banner Focado */}
-        {!mostrarOutrasLeis ? (
-          <section className="mb-6 p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5 min-w-0">
-              <span
-                className="w-11 h-11 rounded-xl flex items-center justify-center font-black text-sm font-mono shrink-0 shadow-md"
-                style={{
-                  backgroundColor: `${currentLaw.color}20`,
-                  color: currentLaw.color,
-                  border: `1px solid ${currentLaw.color}40`,
-                }}
-              >
-                {currentLaw.sigla}
-              </span>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h2 className="font-bold text-sm sm:text-base text-white truncate">{currentLaw.nome}</h2>
-                  <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 shrink-0">
-                    <CheckCircle2 className="w-3 h-3" />
-                    {totalCount} artigos
-                  </span>
-                </div>
-                <p className="text-[11.5px] text-zinc-400 truncate mt-0.5">{currentLaw.descricao}</p>
-              </div>
-            </div>
+  const renderCardGrid = (law: LawOption) => {
+    const artigosQtd = lawCounts ? lawCounts[law.tabela_nome] || 0 : 0;
+    const areaCapa = COVER_AREAS[law.id] || law.nome;
+    const capaUrl = capaDaArea(areaCapa);
 
+    return (
+      <button
+        key={law.id}
+        type="button"
+        onClick={() => abrirLei(law)}
+        aria-label={`Abrir ${law.nome}`}
+        className="group relative w-full aspect-4/5 rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98]"
+      >
+        <img
+          src={capaUrl}
+          alt={law.nome}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-linear-to-t from-black via-black/60 to-transparent" />
+
+        <div className="absolute inset-0 p-3 sm:p-3.5 flex flex-col justify-between">
+          <div className="flex items-center justify-between gap-1 w-full">
+            <span className="h-8 w-8 sm:h-8.5 sm:w-8.5 grid place-items-center rounded-xl bg-primary/90 text-primary-foreground shadow-md shadow-black/50">
+              <Volume2 className="h-4 w-4" />
+            </span>
+            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold tracking-wide bg-black/65 text-white border border-white/20 backdrop-blur shadow-sm">
+              {law.sigla}
+            </span>
+          </div>
+
+          <div className="space-y-1">
+            <p className="font-sans font-bold leading-snug text-white text-[13px] sm:text-[14px] line-clamp-2 tracking-normal normal-case drop-shadow-sm">
+              {law.nome}
+            </p>
+            <p className="font-sans text-[11px] sm:text-xs text-zinc-300 font-medium tracking-normal">
+              {artigosQtd > 0 ? `${artigosQtd.toLocaleString("pt-BR")} artigos` : "Ver artigos"}
+            </p>
+          </div>
+        </div>
+      </button>
+    );
+  };
+
+  const renderSecaoCarrossel = (
+    titulo: string,
+    subtitulo: string,
+    laws: LawOption[],
+    refRail: React.RefObject<HTMLDivElement | null>,
+    tipoCategoria: "codigos" | "estatutos" | "especiais",
+  ) => {
+    if (laws.length === 0) return null;
+
+    return (
+      <section className="space-y-3.5">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h2 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
+              <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+              <span className="truncate">{titulo}</span>
+            </h2>
+            <p className="font-sans text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
+              {subtitulo}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => {
                 haptic.selection();
-                setMostrarOutrasLeis(true);
+                setCategoriaFoco(tipoCategoria);
+                window.scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className="px-3.5 py-2 rounded-xl text-xs font-semibold text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-750 border border-zinc-700/60 transition-all shrink-0 active:scale-95 cursor-pointer shadow-sm"
+              className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-primary/20 hover:border-primary/40 transition active:scale-95"
+              aria-label={`Ver todos os ${titulo}`}
             >
-              Trocar Lei
+              <span>Ver todos</span>
+              <ChevronRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
             </button>
-          </section>
-        ) : (
-          <section className="mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
-                Escolha a Lei para Ouvir
-              </h2>
-              <div className="flex items-center gap-3">
-                {tabelaParam && (
-                  <button
-                    onClick={() => setMostrarOutrasLeis(false)}
-                    className="text-xs text-rose-400 hover:underline font-semibold"
-                  >
-                    Voltar para {currentLaw.sigla}
-                  </button>
-                )}
-                <span className="text-[11px] text-zinc-400 font-mono">
-                  {currentLaw.status === 'completo' ? '100% narrado' : 'Em produção'}
-                </span>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
-              {LAWS_CONFIG.map((law) => {
-                const isSelected = selectedTabela === law.tabela_nome;
-                return (
-                  <button
-                    key={law.id}
-                    onClick={() => {
-                      haptic.selection();
-                      if (law.status === 'em_breve') {
-                        toast.info(`A narração do ${law.nome} está sendo produzida e estará disponível em breve!`);
-                        return;
-                      }
-                      setSelectedTabela(law.tabela_nome);
-                      if (tabelaParam) setMostrarOutrasLeis(false);
-                    }}
-                    className={`group relative p-3 rounded-2xl border text-left transition-all duration-200 flex flex-col justify-between min-h-[92px] ${
-                      isSelected
-                        ? 'bg-rose-500/10 border-rose-500/50 shadow-lg shadow-rose-500/10 scale-[1.02]'
-                        : 'bg-zinc-900/60 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span
-                        className="w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs font-mono"
-                        style={{
-                          backgroundColor: `${law.color}20`,
-                          color: law.color,
-                          border: `1px solid ${law.color}40`,
-                        }}
-                      >
-                        {law.sigla}
-                      </span>
-                      {law.status === 'completo' ? (
-                        <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
-                          <CheckCircle2 className="w-3 h-3" />
-                          Pronto
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-semibold text-zinc-500 bg-zinc-800/60 px-1.5 py-0.5 rounded-full border border-zinc-700/40">
-                          Em breve
-                        </span>
-                      )}
-                    </div>
-
-                    <div>
-                      <h3 className="font-semibold text-xs text-white leading-tight mt-2 line-clamp-1">
-                        {law.nome}
-                      </h3>
-                      <p className="text-[10.5px] text-zinc-400 mt-0.5">
-                        {law.status === 'completo'
-                          ? `${law.artigosCount || totalCount} artigos`
-                          : 'Gravação em breve'}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* Barra de Busca de Artigo */}
-        <section className="mb-6">
-          <div className="relative">
-            <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Digite o número do artigo (ex: 121, 54-A) ou tema..."
-              className="w-full bg-zinc-900/80 border border-zinc-800 rounded-2xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500/60 focus:ring-2 focus:ring-rose-500/20 transition-all"
-            />
-            {searchQuery && (
+            <div className="hidden sm:flex items-center gap-1 pl-1">
               <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white px-2 py-1 rounded bg-zinc-800"
+                onClick={() => scrollCarrossel(refRail, "left")}
+                className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition active:scale-95"
+                aria-label="Rolar para esquerda"
               >
-                Limpar
+                <ChevronLeft className="w-4 h-4" />
               </button>
+              <button
+                onClick={() => scrollCarrossel(refRail, "right")}
+                className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition active:scale-95"
+                aria-label="Rolar para direita"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          ref={refRail}
+          className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-3 pt-1 snap-x scrollbar-none select-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+        >
+          {laws.map((law) => renderCardCarrossel(law))}
+        </div>
+      </section>
+    );
+  };
+
+  return (
+    <div className="relative min-h-screen bg-background text-foreground flex flex-col overflow-x-hidden">
+      {audioleiGate.gateNode}
+      {/* Background ShapeGrid oficial */}
+      <div className="absolute inset-0 pointer-events-none opacity-60">
+        <ShapeGrid />
+      </div>
+
+      <AudioaulasHero
+        areaAtual={mostrarOutrasLeis ? null : COVER_AREAS[currentLaw.id] || currentLaw.nome}
+        loading={mostrarOutrasLeis ? loadingCatalog : loading}
+        tituloCustom={
+          mostrarOutrasLeis ? (categoriaFoco ? categoriaTitulo : "Audioleis") : currentLaw.sigla
+        }
+        unidadeCustom="artigos"
+        subtituloCustom={
+          mostrarOutrasLeis
+            ? categoriaFoco
+              ? `${categoriaLaws.length} leis disponíveis para escuta artigo por artigo.`
+              : "Leis narradas, artigo por artigo."
+            : currentLaw.nome
+        }
+        onVoltar={() => {
+          haptic.impact();
+          if (!mostrarOutrasLeis) {
+            setMostrarOutrasLeis(true);
+            setSearchQuery("");
+          } else if (categoriaFoco) {
+            setCategoriaFoco(null);
+          } else if (buscaCatalogo) {
+            setBuscaCatalogo("");
+          } else {
+            navigate("/");
+          }
+        }}
+        totalAulas={
+          mostrarOutrasLeis
+            ? categoriaFoco
+              ? totalArtigosCategoriaFoco
+              : catalogTotal
+            : totalCount
+        }
+      />
+
+      {/* Conteúdo Principal */}
+      <main className="relative z-10 flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 pb-[calc(7rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+        {mostrarOutrasLeis ? (
+          <div className="space-y-6">
+            {catalogError ? (
+              <div
+                role="alert"
+                className="p-4 rounded-xl border border-destructive/30 bg-destructive/10 text-sm text-foreground flex items-center justify-between"
+              >
+                <span>Não foi possível carregar o catálogo de leis.</span>
+                <Button variant="outline" size="sm" onClick={() => void reloadCatalog()}>
+                  Tentar novamente
+                </Button>
+              </div>
+            ) : null}
+
+            {/* Barra de Pesquisa de Leis do Catálogo */}
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                value={buscaCatalogo}
+                onChange={(e) => setBuscaCatalogo(e.target.value)}
+                placeholder="Pesquisar código, estatuto ou lei (ex: Penal, ECA, CLT, 8.112)..."
+                className="w-full bg-card/80 border border-border rounded-2xl pl-10 pr-10 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+              {buscaCatalogo && (
+                <button
+                  type="button"
+                  onClick={() => setBuscaCatalogo("")}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 rounded"
+                  aria-label="Limpar busca"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+
+            {/* Visualização 1: Busca Ativa */}
+            {buscaCatalogo.trim().length > 0 ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    {leisBuscadas.length === 0
+                      ? `Nenhuma lei encontrada para "${buscaCatalogo}"`
+                      : `${leisBuscadas.length} ${leisBuscadas.length === 1 ? "lei encontrada" : "leis encontradas"}`}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setBuscaCatalogo("")}
+                    className="text-xs text-primary hover:underline font-semibold"
+                  >
+                    Limpar busca
+                  </button>
+                </div>
+                {leisBuscadas.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+                    {leisBuscadas.map((law) => renderCardGrid(law))}
+                  </div>
+                ) : (
+                  <div className="py-12 text-center text-muted-foreground space-y-2">
+                    <p className="text-sm">Nenhum resultado corresponde ao termo digitado.</p>
+                    <p className="text-xs">
+                      Tente buscar pela sigla (ex: CP, CC, ECA, LEP) ou pelo nome.
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : categoriaFoco ? (
+              /* Visualização 2: "Ver todos" de uma Categoria */
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCategoriaFoco(null)}
+                    className="gap-2 -ml-2 text-zinc-300 hover:text-white"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Voltar às categorias</span>
+                  </Button>
+                  <span className="text-xs text-muted-foreground">
+                    {categoriaLaws.length} leis ·{" "}
+                    {totalArtigosCategoriaFoco.toLocaleString("pt-BR")} artigos
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+                  {categoriaLaws.map((law) => renderCardGrid(law))}
+                </div>
+              </div>
+            ) : (
+              /* Visualização 3: Hub com 3 Carrosséis por Categoria */
+              <div className="space-y-9">
+                {renderSecaoCarrossel(
+                  "Constituição & Códigos",
+                  `${codigosLaws.length} códigos · ${totalArtigosCodigos.toLocaleString("pt-BR")} artigos narrados`,
+                  codigosLaws,
+                  refCarrosselCodigos,
+                  "codigos",
+                )}
+
+                {renderSecaoCarrossel(
+                  "Estatutos",
+                  `${estatutosLaws.length} estatutos · ${totalArtigosEstatutos.toLocaleString("pt-BR")} artigos narrados`,
+                  estatutosLaws,
+                  refCarrosselEstatutos,
+                  "estatutos",
+                )}
+
+                {renderSecaoCarrossel(
+                  "Legislação Especial",
+                  `${especiaisLaws.length} leis especiais · ${totalArtigosEspeciais.toLocaleString("pt-BR")} artigos narrados`,
+                  especiaisLaws,
+                  refCarrosselEspeciais,
+                  "especiais",
+                )}
+              </div>
             )}
           </div>
-        </section>
+        ) : (
+          /* Lei Selecionada: Alternância Por Capítulo / Por Artigo */
+          <>
+            {/* Menu de Alternância (Pill Switcher) */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+              <div className="inline-flex items-center p-1 rounded-2xl bg-card border border-border shadow-sm self-start">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    setModoVisualizacao("capitulos");
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                    modoVisualizacao === "capitulos"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Layers className="w-4 h-4" />
+                  <span>Por Capítulo</span>
+                  {displayedCapitulos.length > 0 && (
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                        modoVisualizacao === "capitulos"
+                          ? "bg-black/30 text-white"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {displayedCapitulos.length}
+                    </span>
+                  )}
+                </button>
 
-        {/* Lista de Artigos da Lei */}
-        <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-400">
-              Artigos com Narração ({filteredArtigos.length})
-            </h2>
-            <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={autoplayNext}
-                onChange={(e) => setAutoplayNext(e.target.checked)}
-                className="w-4 h-4 rounded bg-zinc-800 border-zinc-700 text-rose-500 focus:ring-rose-500/30"
-              />
-              Tocar próximo automaticamente
-            </label>
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-24 bg-zinc-900/60 border border-zinc-800/60 rounded-2xl animate-pulse"
-                />
-              ))}
-            </div>
-          ) : filteredArtigos.length === 0 ? (
-            <div className="p-12 text-center bg-zinc-900/40 border border-zinc-800/60 rounded-3xl">
-              <Volume2 className="w-12 h-12 text-zinc-600 mx-auto mb-3" />
-              <h3 className="text-base font-bold text-white mb-1">Nenhum artigo encontrado</h3>
-              <p className="text-xs text-zinc-400 max-w-sm mx-auto">
-                Tente buscar por outro número de artigo ou limpe o filtro de busca.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {filteredArtigos.map((item) => {
-                const isSelected = currentArtigo?.artigo_numero === item.artigo_numero;
-                const activeThis = isSelected && isPlaying;
-
-                return (
-                  <div
-                    key={item.artigo_numero}
-                    className={`group relative p-3.5 rounded-2xl border transition-all duration-200 flex items-center justify-between gap-3 ${
-                      isSelected
-                        ? 'bg-rose-500/10 border-rose-500/40 shadow-lg shadow-rose-500/5'
-                        : 'bg-zinc-900/50 border-zinc-800/80 hover:bg-zinc-900 hover:border-zinc-700'
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    setModoVisualizacao("artigos");
+                  }}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                    modoVisualizacao === "artigos"
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>Por Artigo</span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                      modoVisualizacao === "artigos"
+                        ? "bg-black/30 text-white"
+                        : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      {/* Botão Play/Pause Direto */}
-                      <button
-                        onClick={() => playAudio(item)}
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 ${
-                          activeThis
-                            ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/40 scale-105'
-                            : isSelected
-                            ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
-                            : 'bg-zinc-800/90 text-zinc-200 hover:bg-rose-500 hover:text-white border border-zinc-700/60'
-                        }`}
-                        aria-label={activeThis ? 'Pausar' : 'Ouvir Artigo'}
-                      >
-                        {activeThis ? (
-                          <Pause className="w-5 h-5 fill-current" />
-                        ) : (
-                          <Play className="w-5 h-5 fill-current ml-0.5" />
-                        )}
-                      </button>
+                    {filteredArtigos.length}
+                  </span>
+                </button>
+              </div>
 
-                      {/* Info do Artigo */}
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-heading font-black text-sm text-white tracking-wide">
-                            Art. {item.artigo_numero}
-                          </span>
-                          <span className="px-1.5 py-0.5 rounded text-[9.5px] font-mono bg-zinc-800 text-zinc-400 border border-zinc-700/50">
-                            MP3
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-zinc-400 truncate mt-0.5">
-                          {item.titulo_artigo || `${currentLaw.sigla} — Narração em Áudio`}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Ação de abrir texto no Vade Mecum */}
-                    <button
-                      onClick={() => irParaArtigoVadeMecum(item.artigo_numero)}
-                      className="w-9 h-9 rounded-xl bg-zinc-800/60 hover:bg-zinc-700/60 border border-zinc-700/40 flex items-center justify-center text-zinc-400 hover:text-white transition-all shrink-0 active:scale-95"
-                      title="Ler artigo completo no Vade Mecum"
-                    >
-                      <BookOpen className="w-4 h-4" />
-                    </button>
-                  </div>
-                );
-              })}
+              <span className="text-xs text-muted-foreground font-medium truncate hidden sm:inline">
+                {currentLaw.nome}
+              </span>
             </div>
-          )}
-        </section>
+
+            {/* Barra de Busca de Artigo / Capítulo */}
+            <section className="mb-6">
+              <div className="relative">
+                <Search className="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={
+                    modoVisualizacao === "capitulos"
+                      ? "Buscar por capítulo, tema ou número do artigo (ex: 121)..."
+                      : "Digite o número do artigo (ex: 121, 54-A) ou tema..."
+                  }
+                  className="w-full bg-card border border-border rounded-2xl pl-11 pr-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/20 transition-all"
+                />
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-card"
+                  >
+                    Limpar
+                  </Button>
+                )}
+              </div>
+            </section>
+
+            {/* Conteúdo Dinâmico Conforme o Menu de Alternância */}
+            {modoVisualizacao === "capitulos" ? (
+              /* Visualização Por Capítulos (Estilo Vade Mecum) */
+              <section className="space-y-3.5">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    Capítulos da Lei ({displayedCapitulos.length})
+                  </h2>
+                </div>
+
+                {loadingArtigos && displayedCapitulos.length === 0 ? (
+                  <div className="space-y-3">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-28 bg-card border border-border rounded-2xl animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : displayedCapitulos.length === 0 ? (
+                  <div className="p-12 text-center bg-card border border-border rounded-3xl">
+                    <Layers className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                    <h3 className="text-base font-bold text-foreground mb-1">
+                      Nenhum capítulo encontrado
+                    </h3>
+                    <p className="text-xs text-muted-foreground max-w-sm mx-auto mb-4">
+                      Tente outro termo ou número de artigo, ou alterne para a visualização por
+                      artigo.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setModoVisualizacao("artigos");
+                      }}
+                    >
+                      Ver todos os artigos
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {displayedCapitulos.map(
+                      (
+                        {
+                          capitulo,
+                          realArtigos,
+                          audiosDisponiveis,
+                          totalArts,
+                          totalAudios,
+                          pctGravado,
+                        },
+                        idx,
+                      ) => {
+                        const isExpanded = expandedCapituloId === capitulo.id;
+                        const rangeText =
+                          capitulo.primeiroArtigo && capitulo.ultimoArtigo
+                            ? capitulo.primeiroArtigo === capitulo.ultimoArtigo
+                              ? `(Art. ${capitulo.primeiroArtigo})`
+                              : `(Arts. ${capitulo.primeiroArtigo} a ${capitulo.ultimoArtigo})`
+                            : "";
+
+                        const isPlayingInThisChapter =
+                          Boolean(currentArtigo && isPlaying) &&
+                          realArtigos.some((a) => {
+                            const numClean = formatArtigoNumeroOnly(a.numero);
+                            return (
+                              numClean.toLowerCase() === currentArtigo?.artigo_numero.toLowerCase()
+                            );
+                          });
+
+                        return (
+                          <div
+                            key={capitulo.id || idx}
+                            className={`rounded-2xl transition-all border overflow-hidden shadow-sm ${
+                              isPlayingInThisChapter
+                                ? "bg-card border-primary/60 ring-2 ring-primary/30 shadow-xl shadow-primary/10"
+                                : isExpanded
+                                  ? "bg-card border-primary/50 ring-1 ring-primary/25 shadow-lg shadow-black/40"
+                                  : "bg-card/90 border-border hover:border-border/80 hover:bg-card"
+                            }`}
+                          >
+                            {/* Botão de cabeçalho do capítulo */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                haptic.selection();
+                                setExpandedCapituloId(isExpanded ? null : capitulo.id);
+                              }}
+                              className="w-full text-left flex items-stretch p-0 cursor-pointer transition-transform active:scale-[0.995]"
+                            >
+                              {/* Barra lateral colorida de destaque */}
+                              <div
+                                className={`w-2.5 rounded-l-2xl shrink-0 transition-all ${
+                                  isPlayingInThisChapter
+                                    ? "bg-primary animate-pulse shadow-md shadow-primary/50"
+                                    : isExpanded
+                                      ? "bg-primary"
+                                      : "bg-primary/50"
+                                }`}
+                              />
+
+                              <div className="p-4 sm:p-5 flex-1 min-w-0 flex flex-col justify-center">
+                                <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <span className="text-[10.5px] sm:text-[11px] font-black uppercase tracking-widest text-amber-400 shrink-0">
+                                      {capitulo.capituloHead || "CAPÍTULO"}
+                                    </span>
+                                    {capitulo.parentContext && (
+                                      <span className="text-[11px] text-muted-foreground font-medium truncate hidden sm:inline">
+                                        • {capitulo.parentContext}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div className="flex items-center gap-1.5 shrink-0">
+                                    {isPlayingInThisChapter && (
+                                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/40 text-[10px] font-bold tracking-wider uppercase animate-pulse shadow-sm shadow-primary/20">
+                                        <Volume2 className="w-3 h-3" />
+                                        <span>Tocando</span>
+                                      </span>
+                                    )}
+                                    <span
+                                      className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-0.5 rounded-full border tabular-nums shrink-0 ${
+                                        totalAudios > 0
+                                          ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                                          : "bg-muted text-muted-foreground border-border"
+                                      }`}
+                                    >
+                                      {totalAudios > 0
+                                        ? `${totalAudios} ${totalAudios === 1 ? "áudio" : "áudios"}`
+                                        : "Em breve"}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                <h3 className="font-heading text-base sm:text-lg font-bold text-foreground leading-snug">
+                                  {capitulo.capituloNome}
+                                </h3>
+
+                                <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                                  <span className="font-semibold text-foreground/80">
+                                    {totalArts} {totalArts === 1 ? "artigo" : "artigos"}
+                                  </span>
+                                  {rangeText && <span>• {rangeText}</span>}
+                                </div>
+
+                                {/* Barra de progresso de áudios gravados */}
+                                {totalArts > 0 && (
+                                  <div className="mt-2.5 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-secondary/80">
+                                    <div
+                                      className={`h-full rounded-full transition-all duration-500 ${
+                                        totalAudios > 0
+                                          ? "bg-linear-to-r from-primary to-emerald-400"
+                                          : "bg-muted"
+                                      }`}
+                                      style={{
+                                        width: `${Math.max(totalAudios > 0 ? 8 : 0, pctGravado)}%`,
+                                      }}
+                                    />
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Chevron rotativo */}
+                              <div className="flex items-center pr-4 sm:pr-5 shrink-0">
+                                <div
+                                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all ${
+                                    isExpanded
+                                      ? "bg-primary/20 text-primary rotate-90 shadow-md shadow-primary/20"
+                                      : "bg-secondary text-muted-foreground"
+                                  }`}
+                                >
+                                  <ChevronRight className="w-5 h-5 transition-transform" />
+                                </div>
+                              </div>
+                            </button>
+
+                            {/* Conteúdo expandido: artigos do capítulo para narrar */}
+                            {isExpanded && (
+                              <div className="border-t border-border/60 bg-background/50 p-3 sm:p-5 space-y-3">
+                                <div className="flex items-center justify-between gap-3 pb-2 border-b border-border/40">
+                                  <div className="text-xs text-muted-foreground">
+                                    {totalAudios}{" "}
+                                    {totalAudios === 1 ? "artigo com áudio" : "artigos com áudio"}{" "}
+                                    para narrar
+                                  </div>
+                                  {audiosDisponiveis.length > 0 && (
+                                    <Button
+                                      variant="default"
+                                      size="sm"
+                                      onClick={() => {
+                                        haptic.impact();
+                                        playAudio(audiosDisponiveis[0].narracao);
+                                      }}
+                                      className="gap-2 text-xs font-bold shadow-md shadow-primary/20"
+                                    >
+                                      <Play className="w-3.5 h-3.5 fill-current" />
+                                      <span>Tocar Capítulo</span>
+                                    </Button>
+                                  )}
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                                  {realArtigos.map((art) => {
+                                    const numClean = formatArtigoNumeroOnly(art.numero);
+                                    const narracao =
+                                      audioMap.get(numClean.toLowerCase()) ||
+                                      audioMap.get(String(art.numero).trim().toLowerCase());
+                                    const isSelected = currentArtigo?.artigo_numero === numClean;
+                                    const activeThis = isSelected && isPlaying;
+
+                                    return (
+                                      <div
+                                        key={art.id || numClean}
+                                        className={`group relative p-3 rounded-xl border transition-all duration-200 flex items-center justify-between gap-3 ${
+                                          isSelected
+                                            ? "bg-primary/10 border-primary/50 shadow-md shadow-primary/5 ring-1 ring-primary/30"
+                                            : "bg-card border-border/80 hover:border-border hover:bg-card"
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                          {narracao ? (
+                                            <Button
+                                              variant="ghost"
+                                              onClick={() => playAudio(narracao)}
+                                              className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 ${
+                                                activeThis
+                                                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/30 animate-pulse"
+                                                  : "bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30"
+                                              }`}
+                                              aria-label={
+                                                activeThis
+                                                  ? `Pausar Artigo ${numClean}`
+                                                  : `Tocar Artigo ${numClean}`
+                                              }
+                                            >
+                                              {activeThis ? (
+                                                <Pause className="w-4 h-4 fill-current" />
+                                              ) : (
+                                                <Play className="w-4 h-4 fill-current ml-0.5" />
+                                              )}
+                                            </Button>
+                                          ) : (
+                                            <div
+                                              className="w-11 h-11 rounded-xl bg-muted/50 border border-border flex items-center justify-center text-muted-foreground shrink-0"
+                                              title="Narração em gravação"
+                                            >
+                                              <Clock className="w-4 h-4" />
+                                            </div>
+                                          )}
+
+                                          <div className="min-w-0 flex-1">
+                                            <div className="flex items-center gap-1.5">
+                                              <span className="font-heading font-black text-sm text-foreground tracking-wide">
+                                                Art. {numClean}
+                                              </span>
+                                              {narracao ? (
+                                                <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-card text-emerald-400 border border-emerald-500/30">
+                                                  MP3
+                                                </span>
+                                              ) : (
+                                                <span className="px-1.5 py-0.2 rounded text-[9px] text-muted-foreground border border-border">
+                                                  Em breve
+                                                </span>
+                                              )}
+                                            </div>
+                                            <p className="text-[11px] text-muted-foreground truncate mt-0.5 font-sans">
+                                              {narracao?.titulo_artigo ||
+                                                art.caput?.slice(0, 70) ||
+                                                `${currentLaw.sigla} — Narração`}
+                                            </p>
+                                          </div>
+                                        </div>
+
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() => irParaArtigoVadeMecum(numClean)}
+                                          className="w-8 h-8 p-0 rounded-lg bg-card hover:bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-foreground shrink-0 active:scale-95"
+                                          title="Ler artigo completo no Vade Mecum"
+                                        >
+                                          <BookOpen className="w-3.5 h-3.5" />
+                                        </Button>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      },
+                    )}
+                  </div>
+                )}
+              </section>
+            ) : (
+              /* Visualização Por Artigo (Lista Completa, sem o checkbox Tocar Próximo) */
+              <section>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    Artigos com Narração ({filteredArtigos.length})
+                  </h2>
+                </div>
+
+                {articleError ? (
+                  <div role="alert" className="py-8 text-center space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Não foi possível carregar os áudios desta lei.
+                    </p>
+                    <Button variant="outline" onClick={() => void reloadArticles()}>
+                      Tentar novamente
+                    </Button>
+                  </div>
+                ) : loading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-24 bg-card border border-border rounded-2xl animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : filteredArtigos.length === 0 ? (
+                  <div className="p-12 text-center bg-card border border-border rounded-3xl">
+                    <Volume2 className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                    <h3 className="text-base font-bold text-foreground mb-1">
+                      Nenhum artigo encontrado
+                    </h3>
+                    <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                      Tente buscar por outro número de artigo ou limpe o filtro de busca.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {filteredArtigos.map((item) => {
+                      const isSelected = currentArtigo?.artigo_numero === item.artigo_numero;
+                      const activeThis = isSelected && isPlaying;
+
+                      return (
+                        <div
+                          key={item.artigo_numero}
+                          className={`group relative p-3.5 rounded-2xl border transition-all duration-200 flex items-center justify-between gap-3 ${
+                            isSelected
+                              ? "bg-primary/10 border-primary/40 shadow-lg shadow-primary/5"
+                              : "bg-card border-border hover:bg-card hover:border-border"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            {/* Botão Play/Pause Direto */}
+                            <Button
+                              variant="ghost"
+                              onClick={() => playAudio(item)}
+                              className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 ${
+                                activeThis
+                                  ? "bg-primary text-foreground shadow-lg shadow-primary/40 scale-105"
+                                  : isSelected
+                                    ? "bg-primary/20 text-primary border border-primary/40"
+                                    : "bg-card text-muted-foreground hover:bg-primary hover:text-foreground border border-border"
+                              }`}
+                              aria-label={activeThis ? "Pausar" : "Ouvir Artigo"}
+                            >
+                              {activeThis ? (
+                                <Pause className="w-5 h-5 fill-current" />
+                              ) : (
+                                <Play className="w-5 h-5 fill-current ml-0.5" />
+                              )}
+                            </Button>
+
+                            {/* Info do Artigo */}
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-heading font-black text-sm text-foreground tracking-wide">
+                                  Art. {item.artigo_numero}
+                                </span>
+                                <span className="px-1.5 py-0.5 rounded text-[9.5px] font-mono bg-card text-muted-foreground border border-border">
+                                  MP3
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                                {item.titulo_artigo || `${currentLaw.sigla} — Narração em Áudio`}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Ação de abrir texto no Vade Mecum */}
+                          <Button
+                            variant="ghost"
+                            onClick={() => irParaArtigoVadeMecum(item.artigo_numero)}
+                            className="w-9 h-9 rounded-xl bg-card hover:bg-card border border-border flex items-center justify-center text-muted-foreground hover:text-foreground transition-all shrink-0 active:scale-95"
+                            title="Ler artigo completo no Vade Mecum"
+                          >
+                            <BookOpen className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            )}
+          </>
+        )}
       </main>
 
       {/* Miniplayer Fixo no Rodapé */}
       {currentArtigo && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-zinc-900/95 backdrop-blur-xl border-t border-zinc-800 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))]">
-          <div className="max-w-4xl mx-auto px-4 py-3">
-            {/* Barra de Progresso com Scrub */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-2xl border-t border-border shadow-[0_-15px_45px_rgba(0,0,0,0.85)] pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-2.5">
+          <div className="max-w-4xl mx-auto px-4">
+            {/* Barra de Progresso com Scrub interativo */}
             <div
-              className="h-1.5 rounded-full bg-zinc-800 overflow-hidden cursor-pointer mb-2.5 relative group"
+              className="h-2 rounded-full bg-white/10 hover:bg-white/15 overflow-hidden cursor-pointer mb-2.5 relative group transition-colors"
               onClick={(e) => {
                 const audio = audioRef.current;
                 if (!audio || !audio.duration) return;
@@ -725,7 +1579,7 @@ export default function AudioleisPage() {
               }}
             >
               <div
-                className="h-full bg-gradient-to-r from-rose-500 to-rose-400 transition-[width] duration-100 ease-out"
+                className="h-full bg-linear-to-r from-primary via-primary to-amber-400 rounded-full transition-[width] duration-100 ease-out"
                 style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
               />
             </div>
@@ -733,69 +1587,128 @@ export default function AudioleisPage() {
             <div className="flex items-center justify-between gap-3">
               {/* Título do Artigo em Reprodução */}
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                <span className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center shrink-0">
-                  <Volume2 className="w-5 h-5" />
+                <span
+                  className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-md transition-all ${
+                    isPlaying
+                      ? "bg-primary text-primary-foreground shadow-primary/30"
+                      : "bg-primary/20 border border-primary/40 text-primary"
+                  }`}
+                >
+                  <Volume2 className={`w-5 h-5 ${isPlaying ? "animate-pulse" : ""}`} />
                 </span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-heading font-black text-sm text-white">
+                    <span className="font-heading font-black text-sm sm:text-base text-foreground truncate">
                       Art. {currentArtigo.artigo_numero}
                     </span>
-                    <span className="text-xs text-rose-400 font-semibold truncate">
+                    <span className="text-xs text-primary font-semibold shrink-0">
                       {currentLaw.sigla}
                     </span>
+                    {isPlaying && (
+                      <span className="hidden xs:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.2 rounded-full uppercase">
+                        Áudio
+                      </span>
+                    )}
                   </div>
-                  <div className="text-[11px] font-mono text-zinc-400 tabular-nums">
-                    {formatAudioTime(currentTime)} / {formatAudioTime(duration)}
+                  <div className="flex items-center gap-2 text-[11px] font-mono text-muted-foreground tabular-nums mt-0.5">
+                    <span>{formatAudioTime(currentTime)}</span>
+                    <span>/</span>
+                    <span>{formatAudioTime(duration)}</span>
                   </div>
                 </div>
               </div>
 
               {/* Controles Principais */}
-              <div className="flex items-center gap-2 shrink-0">
-                <button
-                  onClick={() => pularArtigo('prev')}
-                  className="w-9 h-9 rounded-xl bg-zinc-800/80 hover:bg-zinc-700/80 flex items-center justify-center text-zinc-300 active:scale-95"
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                {/* Botão de Velocidade no Mobile */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    haptic.selection();
+                    const speeds = [1, 1.25, 1.5, 2];
+                    const nextIdx = (speeds.indexOf(playbackRate) + 1) % speeds.length;
+                    changeSpeed(speeds[nextIdx]);
+                  }}
+                  className="sm:hidden px-2 h-9 rounded-xl text-xs font-mono font-bold bg-white/5 border border-white/10 text-primary hover:bg-white/10"
+                  title="Alterar velocidade"
+                >
+                  {playbackRate}x
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => pularArtigo("prev")}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-card hover:bg-white/10 flex items-center justify-center text-muted-foreground hover:text-foreground active:scale-95 transition"
                   aria-label="Artigo Anterior"
                 >
                   <SkipBack className="w-4 h-4 fill-current" />
-                </button>
+                </Button>
 
-                <button
+                <Button
+                  variant="default"
                   onClick={() => playAudio(currentArtigo)}
-                  className="w-11 h-11 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 active:scale-95"
-                  aria-label={isPlaying ? 'Pausar' : 'Tocar'}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/30 active:scale-95 transition"
+                  aria-label={isPlaying ? "Pausar" : "Tocar"}
                 >
                   {isPlaying ? (
                     <Pause className="w-5 h-5 fill-current" />
                   ) : (
                     <Play className="w-5 h-5 fill-current ml-0.5" />
                   )}
-                </button>
+                </Button>
 
-                <button
-                  onClick={() => pularArtigo('next')}
-                  className="w-9 h-9 rounded-xl bg-zinc-800/80 hover:bg-zinc-700/80 flex items-center justify-center text-zinc-300 active:scale-95"
+                <Button
+                  variant="ghost"
+                  onClick={() => pularArtigo("next")}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-card hover:bg-white/10 flex items-center justify-center text-muted-foreground hover:text-foreground active:scale-95 transition"
                   aria-label="Próximo Artigo"
                 >
                   <SkipForward className="w-4 h-4 fill-current" />
-                </button>
+                </Button>
+
+                {/* Atalho para ler no Vade Mecum */}
+                <Button
+                  variant="ghost"
+                  onClick={() => irParaArtigoVadeMecum(currentArtigo.artigo_numero)}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-card hover:bg-white/10 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground active:scale-95 transition"
+                  title="Ler texto completo no Vade Mecum"
+                  aria-label="Ler no Vade Mecum"
+                >
+                  <BookOpen className="w-4 h-4" />
+                </Button>
+
+                {/* Fechar miniplayer */}
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    audioRef.current?.pause();
+                    setIsPlaying(false);
+                    setCurrentArtigo(null);
+                  }}
+                  className="w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-white/10 p-0 ml-0.5"
+                  title="Fechar player"
+                  aria-label="Fechar player"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
               </div>
 
-              {/* Seletor de Velocidade */}
-              <div className="hidden sm:flex items-center gap-1 shrink-0 border-l border-zinc-800 pl-3">
+              {/* Seletor de Velocidade no Desktop */}
+              <div className="hidden sm:flex items-center gap-1 shrink-0 border-l border-border pl-3">
                 {[1, 1.25, 1.5, 2].map((speed) => (
-                  <button
+                  <Button
+                    variant="ghost"
                     key={speed}
                     onClick={() => changeSpeed(speed)}
-                    className={`px-2 py-1 rounded-lg text-xs font-mono font-bold transition-colors ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-colors ${
                       playbackRate === speed
-                        ? 'bg-rose-500 text-white'
-                        : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                     }`}
                   >
                     {speed}x
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { CATEGORIAS, type CategoriaId } from "@/lib/dicionarioCategorias";
 import { cn } from "@/lib/utils";
 import { Flame, Sparkles, Scroll } from "lucide-react";

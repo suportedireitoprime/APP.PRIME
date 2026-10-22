@@ -1,14 +1,20 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Play, Pause, X, Headphones, Sparkles } from 'lucide-react';
-import { useAudioaulasPlayer } from '@/contexts/AudioaulasPlayerContext';
-import { obterUltimoProgressoAudioaula, limparProgressoAudioaula, type ProgressoAudioaula } from '@/lib/audioaulaProgresso';
-import { capaDaArea, fmt, decomporTituloCapitulo } from '@/lib/audioaulasHelper';
-import { CapaOtimizada } from './CapaOtimizada';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useState, useCallback } from "react";
+import { Play, Pause, X, Headphones, Sparkles } from "lucide-react";
+import { useAudioaulasPlayer } from "@/contexts/AudioaulasPlayerContext";
+import {
+  obterUltimoProgressoAudioaula,
+  limparProgressoAudioaula,
+  type ProgressoAudioaula,
+} from "@/lib/audioaulaProgresso";
+import { capaDaArea, fmt, decomporTituloCapitulo } from "@/lib/audioaulasHelper";
+import { CapaOtimizada } from "./CapaOtimizada";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const AudioaulasContinuarOuvindo: React.FC = () => {
   const { aulas, atualId, tocando, tocar, togglePlay } = useAudioaulasPlayer();
-  const [progresso, setProgresso] = useState<ProgressoAudioaula | null>(() => obterUltimoProgressoAudioaula());
+  const [progresso, setProgresso] = useState<ProgressoAudioaula | null>(() =>
+    obterUltimoProgressoAudioaula(),
+  );
   const [fechado, setFechado] = useState(false);
 
   useEffect(() => {
@@ -16,8 +22,8 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
       const custom = e as CustomEvent<ProgressoAudioaula | null>;
       setProgresso(custom.detail ?? obterUltimoProgressoAudioaula());
     };
-    window.addEventListener('audioaula:progresso-mudou', handler);
-    return () => window.removeEventListener('audioaula:progresso-mudou', handler);
+    window.addEventListener("audioaula:progresso-mudou", handler);
+    return () => window.removeEventListener("audioaula:progresso-mudou", handler);
   }, []);
 
   const handleRetomar = useCallback(() => {
@@ -41,8 +47,11 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
   if (fechado || !progresso || progresso.tempo <= 2) return null;
 
   const estaTocandoEsta = atualId === progresso.id && tocando;
-  const pct = progresso.duracao > 0 ? Math.min(100, Math.round((progresso.tempo / progresso.duracao) * 100)) : 0;
-  const capaUrl = capaDaArea(progresso.area || '');
+  const pct =
+    progresso.duracao > 0
+      ? Math.min(100, Math.round((progresso.tempo / progresso.duracao) * 100))
+      : 0;
+  const capaUrl = capaDaArea(progresso.area || "");
 
   return (
     <AnimatePresence>
@@ -53,12 +62,9 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
         transition={{ duration: 0.25 }}
         className="mx-auto w-full max-w-[1400px] px-4 mb-4 lg:px-10 2xl:max-w-[1600px]"
       >
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/15 via-zinc-900/90 to-zinc-900 border border-primary/30 p-3 sm:p-4 shadow-xl shadow-primary/5">
-          {/* Luz de fundo decorativa */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
-
+        <div className="relative overflow-hidden rounded-2xl bg-card border border-border p-3 sm:p-4">
           <div className="flex items-center justify-between gap-3 mb-2.5">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/20 text-primary text-[11px] font-bold uppercase tracking-wider border border-primary/30">
+            <span className="inline-flex items-center gap-1.5 text-primary text-[11px] font-bold uppercase tracking-normal">
               <Sparkles className="w-3 h-3 text-primary" /> Continue de onde parou
             </span>
 
@@ -96,7 +102,8 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
             {/* Informações da Aula */}
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-primary uppercase tracking-wider line-clamp-1">
-                {progresso.area} {progresso.tema ? `• ${decomporTituloCapitulo(progresso.tema).tituloLimpo}` : ''}
+                {progresso.area}{" "}
+                {progresso.tema ? `• ${decomporTituloCapitulo(progresso.tema).tituloLimpo}` : ""}
               </p>
               <h4 className="text-sm sm:text-base !font-sans font-bold text-white leading-tight line-clamp-1 group-hover:text-primary transition-colors mt-0.5 tracking-normal normal-case">
                 {progresso.titulo}
@@ -111,7 +118,8 @@ export const AudioaulasContinuarOuvindo: React.FC = () => {
                   />
                 </div>
                 <span className="text-[11px] font-medium text-zinc-400 shrink-0 font-mono">
-                  {fmt(progresso.tempo)} {progresso.duracao > 0 ? `/ ${fmt(progresso.duracao)}` : ''}
+                  {fmt(progresso.tempo)}{" "}
+                  {progresso.duracao > 0 ? `/ ${fmt(progresso.duracao)}` : ""}
                 </span>
               </div>
             </div>

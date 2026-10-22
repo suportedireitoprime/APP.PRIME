@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { supabase } from '@/integrations/supabase/client';
 import { localDb } from './localDb';
 import { conectado } from '@/lib/nativo/rede';

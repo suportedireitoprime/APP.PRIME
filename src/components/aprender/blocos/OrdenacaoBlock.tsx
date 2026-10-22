@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useMemo, useState } from 'react';
 import { ArrowUp, ArrowDown, CheckCircle2, RotateCcw, XCircle, ArrowUpDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

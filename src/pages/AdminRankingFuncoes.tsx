@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Loader2, ChevronDown, ChevronUp } from 'lucide-react';

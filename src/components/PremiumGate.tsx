@@ -6,6 +6,7 @@ import {
   Network, Bell, Download, StickyNote, Highlighter, FileText, Layers,
   HelpCircle, Map, Radar, Newspaper, Library, GraduationCap, Bot, ChevronLeft,
   Gavel, Check, ShieldCheck, NotebookPen, Heart, Play, Pause, Headphones,
+  BarChart3,
   type LucideIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,7 +18,10 @@ import { haptic } from '@/lib/nativeHaptics';
 import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
 import { shouldBypassAsAdmin, isSimulatingExpired, isDevSimulatorEligible } from '@/lib/devSimulation';
+import { useSubscription } from '@/hooks/useSubscription';
 import { TrialExpiredModal } from '@/components/TrialExpiredModal';
+import { PRECO_MENSAL, PRECO_ANUAL, brl } from '@/lib/precos';
+import logoCoruja from '@/assets/logo-coruja.png';
 import horusOwlBundled from '@/assets/horus/horus-owl.webp';
 import horusOwlAsset from '@/assets/horus/horus-owl.webp.asset.json';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
@@ -272,7 +276,7 @@ const FEATURES: Record<PremiumFeatureKey, FeatureInfo> = {
     title: 'Funcionalidade Exclusiva Prime',
     description: 'Esta função faz parte do plano Prime.',
     pitch: 'Libere o Direito Prime completo e estude sem nenhum limite.',
-    horusQuote: 'Desbloqueie o potencial completo do Vade Mecum Prime com 3 dias grátis!',
+    horusQuote: 'Desbloqueie o potencial completo do Vade Mecum Prime assinando o Prime!',
     icon: Crown,
   },
 };
@@ -293,7 +297,7 @@ interface PremiumGateProps {
 const SAMPLE_NARRACAO_URL =
   'https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/audios/narracoes/CP_CODIGO_PENAL/fatiado/2__completo.wav';
 
-const PremiumGate = ({
+const PremiumGateInner = ({
   open,
   onClose,
   feature = 'default',
@@ -356,7 +360,8 @@ const PremiumGate = ({
     return false;
   }, [user]);
 
-  const isTrialExpired = isDev ? (devTrialMode === 'expired') : calculatedTrialExpired;
+  // Sem teste grátis: o card sempre mostra a mensagem de cota + assinatura.
+  const isTrialExpired = true; void calculatedTrialExpired;
 
   // Player de demonstração de narração
   const [isPlayingDemo, setIsPlayingDemo] = useState(false);
@@ -420,11 +425,11 @@ const PremiumGate = ({
     }
   }, [open, feature]);
 
-  // Mensalidade do plano anual (R$ 149,90/ano = R$ 12,49/mês, até 6x com juros)
+  // Mensalidade do plano anual (R$ 199,90/ano = R$ 16,66/mês, até 6x com juros)
   const isIOS = useMemo(() => Capacitor.getPlatform() === 'ios', []);
-  const [mensalidade, setMensalidade] = useState(isIOS ? '19,90' : '12,49');
-  const [totalAnual, setTotalAnual] = useState(isIOS ? 'R$ 238,80/ano' : 'R$ 149,90/ano');
-  const [economia, setEconomia] = useState(isIOS ? '33%' : '50%');
+  const [mensalidade, setMensalidade] = useState('16,66');
+  const [totalAnual, setTotalAnual] = useState('R$ 199,90/ano');
+  const [economia, setEconomia] = useState('44%');
 
   useEffect(() => {
     if (!open) return;
@@ -525,71 +530,55 @@ const PremiumGate = ({
 
             {/* Conteúdo com rolagem suave e espaçamento refinado */}
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 pt-1 pb-6 space-y-4">
-              {/* Seletor Dev Minimalista (apenas para contas de desenvolvimento) */}
-              {isDev && (
-                <div className="relative z-30 flex items-center justify-between p-2 rounded-xl bg-white/[0.04] border border-white/10 text-[11px]">
-                  <span className="font-mono text-zinc-400 font-bold select-none">Simular modo:</span>
-                  <div className="flex gap-1.5">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDevState('eligible');
-                      }}
-                      className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none active:scale-95 text-xs ${
-                        !isTrialExpired
-                          ? 'bg-emerald-500 text-white shadow-sm ring-2 ring-emerald-400/40'
-                          : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
-                      }`}
-                    >
-                      3 Dias Elegíveis
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDevState('expired');
-                      }}
-                      className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer select-none active:scale-95 text-xs ${
-                        isTrialExpired
-                          ? 'bg-amber-500 text-white shadow-sm ring-2 ring-amber-400/40'
-                          : 'bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10'
-                      }`}
-                    >
-                      Já Testou os 3 Dias
-                    </button>
+              {/* CAPA ELEGANTE E EXPLICATIVA */}
+              {feature === 'audioaula' ? (
+                <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-b from-[#2a080e] via-[#1a080c] to-[#0E0F12] p-5 shadow-2xl text-center">
+                  <div className="pointer-events-none absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-48 bg-primary/25 rounded-full blur-3xl" />
+                  
+                  {/* Logo da Coruja com pena e capelo em destaque */}
+                  <div className="relative z-10 mx-auto w-20 h-20 sm:w-24 sm:h-24 mb-3 flex items-center justify-center">
+                    <img
+                      src={logoCoruja}
+                      alt="Direito Prime"
+                      className="w-full h-full object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,0.7)]"
+                    />
                   </div>
+
+                  {/* Badge informativa de cota */}
+                  <div className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 border border-primary/40 text-primary-foreground text-[11px] font-black uppercase tracking-wider mb-2">
+                    <Headphones className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Cota Mensal Atingida · 10 de 10 Áudios</span>
+                  </div>
+
+                  {/* Título e Explicação clara */}
+                  <h2 className="relative z-10 text-xl sm:text-2xl font-serif italic font-bold text-white tracking-tight leading-snug">
+                    Você atingiu sua cota de 10 áudio-aulas
+                  </h2>
+                  <p className="relative z-10 text-xs sm:text-[13px] text-zinc-300/90 mt-2 max-w-sm mx-auto leading-relaxed font-sans">
+                    Seu plano gratuito deste mês foi totalmente aproveitado. Para continuar ouvindo agora sem restrições e liberar todo o acervo de áudio e leis, assine o Prime.
+                  </p>
+                </div>
+              ) : (
+                <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.04] to-transparent p-5 text-center">
+                  <div className="mx-auto w-14 h-14 rounded-2xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shadow-lg shadow-primary/10 mb-2.5">
+                    <Icon className="w-7 h-7 text-primary" strokeWidth={2.2} />
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-display font-black text-white tracking-wide leading-tight">
+                    {shownTitle}
+                  </h2>
+                  <p className="text-xs sm:text-[13px] text-zinc-400 mt-1.5 max-w-sm mx-auto leading-relaxed">
+                    {shownDesc}
+                  </p>
+                  {usageLabel && (
+                    <p className="text-[11.5px] font-semibold text-amber-400/90 mt-2">
+                      {usageLabel}
+                    </p>
+                  )}
                 </div>
               )}
 
-              {/* Ícone Minimalista e Título da Função Requisitada */}
-              <div className="flex flex-col items-center text-center pt-1">
-                <div className="w-14 h-14 rounded-2xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary shadow-lg shadow-primary/10 mb-2.5">
-                  <Icon className="w-7 h-7 text-primary" strokeWidth={2.2} />
-                </div>
-
-                <h2 className="text-xl sm:text-2xl font-display font-black text-white tracking-wide leading-tight">
-                  {shownTitle}
-                </h2>
-                <p className="text-xs sm:text-[13px] text-zinc-400 mt-1 max-w-sm leading-relaxed">
-                  {shownDesc}
-                </p>
-              </div>
-
-              {/* Fala minimalista do Horus Assistente */}
-              <div className="flex items-center gap-2.5 bg-white/[0.02] border border-white/[0.06] rounded-xl px-3 py-2 text-left">
-                <img
-                  src={horusOwl}
-                  alt="Horus"
-                  className="w-7 h-7 object-contain shrink-0 filter drop-shadow"
-                />
-                <p className="text-[11.5px] text-zinc-300 italic leading-snug line-clamp-2">
-                  "{info.horusQuote}"
-                </p>
-              </div>
-
-              {/* Demonstrador de Áudio (somente quando for narração ou áudio) */}
-              {(feature === 'narracao' || feature === 'audioaula') && (
+              {/* Demonstrador de Áudio (apenas quando não for cota esgotada e for narração) */}
+              {feature === 'narracao' && (
                 <div className="rounded-xl border border-primary/20 bg-primary/10 p-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs font-bold text-white truncate">Demonstração com Voz Humana</p>
@@ -613,53 +602,41 @@ const PremiumGate = ({
                 </div>
               )}
 
-              {/* PARTE DE BAIXO MINIMALISTA: Bloco de Ação Principal e Planos */}
+              {/* BLOCO DE AÇÃO PRINCIPAL E PLANOS */}
               <div className="space-y-3 pt-1">
-                {isTrialExpired ? (
-                  /* CASO 1: A pessoa JÁ testou os 3 dias gratuitos */
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center gap-1.5 text-[11.5px] text-amber-400/90 font-medium text-center">
-                      <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                      <span>Período de teste concluído · Escolha seu plano</span>
-                    </div>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => handleGoToPlanos('anual')}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-primary via-rose-600 to-primary text-primary-foreground font-display font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition-all cursor-pointer"
+                  >
+                    <Crown className="w-4 h-4 fill-current" />
+                    <span>DESBLOQUEAR TODO O CONTEÚDO</span>
+                  </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleGoToPlanos()}
-                      className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-display font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-primary/25 hover:bg-primary-light active:scale-[0.98] transition-transform cursor-pointer"
-                    >
-                      <Crown className="w-4 h-4 fill-current" />
-                      <span>DESBLOQUEAR TODO O CONTEÚDO</span>
-                    </button>
-                  </div>
-                ) : (
-                  /* CASO 2: A pessoa AINDA NÃO testou os 3 dias gratuitos */
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-center gap-1.5 text-[11.5px] text-emerald-400/90 font-medium text-center">
-                      <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                      <span>3 dias de degustação grátis · Cancele quando quiser</span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleStartTrial}
-                      className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-display font-black text-sm tracking-wider uppercase flex items-center justify-center gap-2 shadow-lg shadow-primary/25 hover:bg-primary-light active:scale-[0.98] transition-transform cursor-pointer"
-                    >
-                      <Crown className="w-4 h-4 fill-current" />
-                      <span>TESTAR 3 DIAS GRATUITOS</span>
-                    </button>
-                  </div>
-                )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      onClose();
+                      navigate('/minha-cota');
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] active:scale-[0.98] border border-white/10 text-zinc-200 font-sans font-bold text-xs tracking-wide flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <BarChart3 className="w-3.5 h-3.5 text-zinc-400" />
+                    <span>VER MINHA COTA</span>
+                  </button>
+                </div>
 
                 {/* Cards dos Planos: Mensal na Esquerda, Anual na Direita */}
                 <div className="grid grid-cols-2 gap-2.5 pt-1">
                   {/* Plano Mensal (Esquerda) */}
                   <div
                     onClick={() => handleGoToPlanos('mensal')}
-                    className="p-3 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all cursor-pointer flex flex-col justify-between active:scale-[0.98]"
+                    className="p-3.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06] transition-all cursor-pointer flex flex-col justify-between active:scale-[0.98]"
                   >
                     <div>
-                      <div className="flex items-center justify-between gap-1 mb-1">
+                      <div className="flex items-center justify-between gap-1 mb-1.5">
                         <span className="text-[11px] font-bold uppercase text-white tracking-wider">
                           Mensal
                         </span>
@@ -667,35 +644,35 @@ const PremiumGate = ({
                           Flexível
                         </span>
                       </div>
-                      <p className="text-base font-black text-white leading-tight">
-                        R$ 24,90<span className="text-[10px] font-normal text-zinc-400">/mês</span>
+                      <p className="text-base sm:text-lg font-black text-white leading-tight">
+                        {brl(PRECO_MENSAL)}<span className="text-[11px] font-normal text-zinc-400">/mês</span>
                       </p>
                     </div>
-                    <span className="text-[10px] text-zinc-400 mt-2 block">
-                      Sem fidelidade
+                    <span className="text-[10px] text-zinc-400 mt-2.5 block leading-tight">
+                      Sem fidelidade · Cancele quando quiser
                     </span>
                   </div>
 
-                  {/* Plano Anual (Direita - Destaque) */}
+                  {/* Plano Anual (Direita - Destaque com preço cheio invertido) */}
                   <div
                     onClick={() => handleGoToPlanos('anual')}
-                    className="p-3 rounded-xl border border-primary/60 bg-primary/10 hover:bg-primary/20 transition-all cursor-pointer flex flex-col justify-between active:scale-[0.98] relative overflow-hidden"
+                    className="p-3.5 rounded-xl border border-primary/60 bg-primary/10 hover:bg-primary/20 transition-all cursor-pointer flex flex-col justify-between active:scale-[0.98] relative overflow-hidden shadow-lg shadow-primary/10"
                   >
                     <div>
-                      <div className="flex items-center justify-between gap-1 mb-1">
+                      <div className="flex items-center justify-between gap-1 mb-1.5">
                         <span className="text-[11px] font-bold uppercase text-white tracking-wider">
                           Anual
                         </span>
                         <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-primary text-primary-foreground">
-                          -{economia}
+                          -44% OFF
                         </span>
                       </div>
-                      <p className="text-base font-black text-white leading-tight">
-                        R$ {mensalidade}<span className="text-[10px] font-normal text-zinc-400">/mês</span>
+                      <p className="text-base sm:text-lg font-black text-white leading-tight">
+                        {brl(PRECO_ANUAL)}<span className="text-[11px] font-normal text-zinc-400">/ano</span>
                       </p>
                     </div>
-                    <span className="text-[10px] text-zinc-400 mt-2 block leading-tight">
-                      Até 6x com juros ({totalAnual})
+                    <span className="text-[10px] text-amber-300 font-medium mt-2.5 block leading-tight">
+                      Parcela em até 6x
                     </span>
                   </div>
                 </div>
@@ -817,6 +794,17 @@ const PremiumGate = ({
   return createPortal(content, document.body);
 };
 
+/**
+ * Nunca mostra o bloqueio/"teste acabou" enquanto a assinatura ainda está sendo
+ * confirmada, nem para quem já é assinante.
+ */
+const PremiumGate = (props: PremiumGateProps) => {
+  const { isPremium, loading } = useSubscription();
+  if (props.open && (loading || isPremium)) return null;
+  return <PremiumGateInner {...props} />;
+};
+
+export { PremiumGate };
 export default PremiumGate;
 
 

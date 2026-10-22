@@ -1,4 +1,6 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
+import typography from "@tailwindcss/typography";
 
 // Escala vermelha pivotando em hsl(348 78% 38%) — painel DIREITO PRIME
 const RED_PRIME = {
@@ -269,5 +271,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [animate, typography],
 } satisfies Config;

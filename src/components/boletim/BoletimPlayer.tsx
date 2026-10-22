@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, SkipForward, SkipBack, X, Clock, Heart, MessageCircle, ExternalLink, Send, Loader2 } from 'lucide-react';

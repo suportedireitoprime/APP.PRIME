@@ -1,45 +1,52 @@
-import { useState, useCallback, useRef, useEffect, useMemo, Suspense, Fragment } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo, Suspense, Fragment } from "react";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
-import { AnimatePresence } from 'framer-motion';
-import { Loader2, Compass, Layers, ChevronDown, ChevronUp, Mic } from 'lucide-react';
-import { extractArtigoDispositivos, type ArtigoDispositivoLandmark } from './artigoTextUtils';
-const QuizView = lazyWithRetry(() => import('@/components/estudar/QuizView'));
-const JurisprudenciaArtigoView = lazyWithRetry(() => import('@/pages/JurisprudenciaArtigo'));
-import ArtigoSidePanel from '@/components/vademecum/artigo/ArtigoSidePanel';
-import GrifoVoicePanel, { type GrifoVoicePanelHandle, type VoicePhase } from '@/components/vademecum/grifos_ocr/GrifoVoicePanel';
-import { useNavigate } from 'react-router-dom';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
-import useBodyScrollLock from '@/hooks/useBodyScrollLock';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
-import brasaoImgAsset from '@/assets/brasao-republica.webp';
+import { AnimatePresence } from "framer-motion";
+import { Loader2, Compass, Layers, ChevronDown, ChevronUp, Mic } from "lucide-react";
+import { extractArtigoDispositivos, type ArtigoDispositivoLandmark } from "./artigoTextUtils";
+const QuizView = lazyWithRetry(() => import("@/components/estudar/QuizView"));
+const JurisprudenciaArtigoView = lazyWithRetry(() => import("@/pages/JurisprudenciaArtigo"));
+import ArtigoSidePanel from "@/components/vademecum/artigo/ArtigoSidePanel";
+import GrifoVoicePanel, {
+  type GrifoVoicePanelHandle,
+  type VoicePhase,
+} from "@/components/vademecum/grifos_ocr/GrifoVoicePanel";
+import { useNavigate } from "react-router-dom";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import useBodyScrollLock from "@/hooks/useBodyScrollLock";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import brasaoImgAsset from "@/assets/brasao-republica.webp";
 const brasaoImg = brasaoImgAsset;
 
-import { useIsDesktop } from '@/hooks/use-desktop';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useHighlights } from '@/hooks/useHighlights';
-import { supabase } from '@/integrations/supabase/client';
-import { buildPlanaltoArticleUrl } from '@/services/legislacaoService';
-import { LEIS_CATALOG } from '@/data/leisCatalog';
+import { useIsDesktop } from "@/hooks/use-desktop";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useHighlights } from "@/hooks/useHighlights";
+import { supabase } from "@/integrations/supabase/client";
+import { buildPlanaltoArticleUrl } from "@/services/legislacaoService";
+import { LEIS_CATALOG } from "@/data/leisCatalog";
 
-import { useSubscription } from '@/hooks/useSubscription';
-import { type PremiumFeatureKey } from '@/components/PremiumGate';
+import { useSubscription } from "@/hooks/useSubscription";
+import { type PremiumFeatureKey } from "@/components/PremiumGate";
 
-import { toast } from 'sonner';
-import { requireOnline } from '@/lib/offlineFeatures';
-import { useArtigoGrifoMagico } from './useArtigoGrifoMagico';
-import { parseAiSections, type AiSection } from '@/lib/artigoSegments';
-import ArtigoIAFullscreen from '@/components/vademecum/artigo/ArtigoIAFullscreen';
+import { toast } from "sonner";
+import { requireOnline } from "@/lib/offlineFeatures";
+import { useArtigoGrifoMagico } from "./useArtigoGrifoMagico";
+import { parseAiSections, type AiSection } from "@/lib/artigoSegments";
+import ArtigoIAFullscreen from "@/components/vademecum/artigo/ArtigoIAFullscreen";
 
-import GrifoMagicoLoader from '@/components/vademecum/grifos_ocr/GrifoMagicoLoader';
+import GrifoMagicoLoader from "@/components/vademecum/grifos_ocr/GrifoMagicoLoader";
 import {
   prefetchArtigoFuncoesChunks,
   prefetchArtigoFuncoesDados,
-} from '@/lib/artigoFuncoesPrefetch';
+} from "@/lib/artigoFuncoesPrefetch";
 
-import { copiarTexto } from '@/lib/nativo/copiar';
-import { useArtigoNarracao } from './useArtigoNarracao';
-import { toggleArtigoFavorito, listNumerosFavoritosByTabela, ARTIGOS_FAV_EVENT } from '@/lib/artigosFavoritos';
-import { haptic } from '@/lib/nativeHaptics';
+import { copiarTexto } from "@/lib/nativo/copiar";
+import { useArtigoNarracao } from "./useArtigoNarracao";
+import {
+  toggleArtigoFavorito,
+  listNumerosFavoritosByTabela,
+  ARTIGOS_FAV_EVENT,
+} from "@/lib/artigosFavoritos";
+import { haptic } from "@/lib/nativeHaptics";
 
 import {
   type ArtigoBottomSheetProps,
@@ -53,8 +60,8 @@ import {
   VADEMECUM_READING_GUIDE_KEY,
   FONT_FAMILY_CLASSES,
   LINE_HEIGHT_CLASSES,
-} from './artigoConstants';
-export type { ModificationInfo } from './artigoConstants';
+} from "./artigoConstants";
+export type { ModificationInfo } from "./artigoConstants";
 import {
   ArtigoTabsNavigation,
   ArtigoTabHistorico,
@@ -77,15 +84,15 @@ import {
   useArtigoTextProcessing,
   useArtigoCommentsAndAi,
   NarracaoMenuDrawer,
-} from './chunks';
+} from "./chunks";
 
-import { highlightTermos, stripRedacao } from './artigoTextUtils';
-import { fixMojibake, sanitizeArtigo } from '@/lib/mojibake';
+import { highlightTermos, stripRedacao } from "./artigoTextUtils";
+import { fixMojibake, sanitizeArtigo } from "@/lib/mojibake";
 
-import { useArtigoTypography } from './useArtigoTypography';
-import { useArtigoFavorito } from './useArtigoFavorito';
-import { useArtigoSheetsState } from './useArtigoSheetsState';
-import { useArtigoIncisosCollapse } from './useArtigoIncisosCollapse';
+import { useArtigoTypography } from "./useArtigoTypography";
+import { useArtigoFavorito } from "./useArtigoFavorito";
+import { useArtigoSheetsState } from "./useArtigoSheetsState";
+import { useArtigoIncisosCollapse } from "./useArtigoIncisosCollapse";
 
 const ArtigoBottomSheet = ({
   artigo: rawArtigo,
@@ -105,11 +112,11 @@ const ArtigoBottomSheet = ({
     tabela_nome ||
     rest.tabela_nome ||
     rest.tabelaNome ||
-    (rawArtigo as any)?.tabela_nome ||
-    (rawArtigo as any)?.tabela ||
+    ((rawArtigo as Record<string, unknown>)?.tabela_nome as string | undefined) ||
+    ((rawArtigo as Record<string, unknown>)?.tabela as string | undefined) ||
     rest.leiInfo?.tabela_nome ||
     rest.lei_id ||
-    '';
+    "";
   // Estabiliza a referência de onClose para evitar re-execução de effects
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -130,7 +137,9 @@ const ArtigoBottomSheet = ({
       titulo: rawBreadcrumb.titulo ? fixMojibake(rawBreadcrumb.titulo) : undefined,
       tituloDesc: rawBreadcrumb.tituloDesc ? fixMojibake(rawBreadcrumb.tituloDesc) : undefined,
       capitulo: rawBreadcrumb.capitulo ? fixMojibake(rawBreadcrumb.capitulo) : undefined,
-      capituloDesc: rawBreadcrumb.capituloDesc ? fixMojibake(rawBreadcrumb.capituloDesc) : undefined,
+      capituloDesc: rawBreadcrumb.capituloDesc
+        ? fixMojibake(rawBreadcrumb.capituloDesc)
+        : undefined,
       secao: rawBreadcrumb.secao ? fixMojibake(rawBreadcrumb.secao) : undefined,
       subsecao: rawBreadcrumb.subsecao ? fixMojibake(rawBreadcrumb.subsecao) : undefined,
     };
@@ -142,7 +151,7 @@ const ArtigoBottomSheet = ({
   }, [forceShowRedacao, artigo?.id]);
 
   // Item 2: Scroll lock resiliente para modais aninhados e proteção do fundo
-  useBodyScrollLock(Boolean(artigo), 'artigo-bottom-sheet');
+  useBodyScrollLock(Boolean(artigo), "artigo-bottom-sheet");
 
   // GA4 - Item 1: Protegido contra disparos rápidos e race conditions
   useEffect(() => {
@@ -150,7 +159,7 @@ const ArtigoBottomSheet = ({
     let cancelado = false;
     const t = setTimeout(() => {
       if (cancelado) return;
-      import('@/lib/appEvents')
+      import("@/lib/appEvents")
         .then(({ appEvents }) => {
           if (!cancelado) {
             appEvents.viewArtigo({ tabela: tabelaNome, numero: artigo.numero });
@@ -168,9 +177,9 @@ const ArtigoBottomSheet = ({
   useEffect(() => {
     if (!artigo?.numero || !tabelaNome) return;
     const t = setTimeout(() => {
-      import('@/lib/jurisprudenciaCache')
+      import("@/lib/jurisprudenciaCache")
         .then(({ prefetchJurisprudenciaArtigo }) =>
-          prefetchJurisprudenciaArtigo(tabelaNome, artigo.numero)
+          prefetchJurisprudenciaArtigo(tabelaNome, artigo.numero),
         )
         .catch(() => {});
     }, 600);
@@ -200,28 +209,47 @@ const ArtigoBottomSheet = ({
 
   // Itens 01 e 02: Preferências de Tipografia e Leitura persistidas no localStorage
   const {
-    fontSize, setFontSize,
-    fontFamily, setFontFamily,
-    lineHeight, setLineHeight,
-    bionicReading, setBionicReading,
-    readingGuide, setReadingGuide,
+    fontSize,
+    setFontSize,
+    fontFamily,
+    setFontFamily,
+    lineHeight,
+    setLineHeight,
+    bionicReading,
+    setBionicReading,
+    readingGuide,
+    setReadingGuide,
   } = useArtigoTypography();
 
   const {
-    showLembretesLocal, setShowLembretesLocal,
-    showGrafo, setShowGrafo,
-    showQuestoesPanel, setShowQuestoesPanel,
-    showJurisPanel, setShowJurisPanel,
-    showBaixarSheet, setShowBaixarSheet,
-    showAnotacoesSheet, setShowAnotacoesSheet,
-    showPerguntarSheet, setShowPerguntarSheet,
-    showPraticarSheet, setShowPraticarSheet,
-    showVideoaulasListSheet, setShowVideoaulasListSheet,
-    showVideoaulaSheet, setShowVideoaulaSheet,
-    showTermosSheet, setShowTermosSheet,
-    showHistoricoSheet, setShowHistoricoSheet,
-    showSharePanel, setShowSharePanel,
-    activeActionMenu, setActiveActionMenu,
+    showLembretesLocal,
+    setShowLembretesLocal,
+    showGrafo,
+    setShowGrafo,
+    showQuestoesPanel,
+    setShowQuestoesPanel,
+    showJurisPanel,
+    setShowJurisPanel,
+    showBaixarSheet,
+    setShowBaixarSheet,
+    showAnotacoesSheet,
+    setShowAnotacoesSheet,
+    showPerguntarSheet,
+    setShowPerguntarSheet,
+    showPraticarSheet,
+    setShowPraticarSheet,
+    showVideoaulasListSheet,
+    setShowVideoaulasListSheet,
+    showVideoaulaSheet,
+    setShowVideoaulaSheet,
+    showTermosSheet,
+    setShowTermosSheet,
+    showHistoricoSheet,
+    setShowHistoricoSheet,
+    showSharePanel,
+    setShowSharePanel,
+    activeActionMenu,
+    setActiveActionMenu,
   } = useArtigoSheetsState({
     artigoNumero: artigo?.numero,
     tabelaNome,
@@ -237,14 +265,21 @@ const ArtigoBottomSheet = ({
     transcricao?: string;
   } | null>(null);
 
-  const [activeTab, setActiveTab] = useState('artigo');
-  const [iaFull, setIaFull] = useState<{ mode: 'explicacao' | 'exemplo'; sectionId: string | null } | null>(null);
+  const [activeTab, setActiveTab] = useState("artigo");
+  const [iaFull, setIaFull] = useState<{
+    mode: "explicacao" | "exemplo";
+    sectionId: string | null;
+  } | null>(null);
   const [focusedSegment, setFocusedSegment] = useState<string | null>(null);
 
-  const [commentPrompt, setCommentPrompt] = useState<{ id: string; show: boolean; mode: 'create' | 'view' } | null>(null);
-  const [commentText, setCommentText] = useState('');
+  const [commentPrompt, setCommentPrompt] = useState<{
+    id: string;
+    show: boolean;
+    mode: "create" | "view";
+  } | null>(null);
+  const [commentText, setCommentText] = useState("");
   const [commentTags, setCommentTags] = useState<string[]>([]);
-  const [tagDraft, setTagDraft] = useState('');
+  const [tagDraft, setTagDraft] = useState("");
   const [tooltipData, setTooltipData] = useState<{ id: string; rect: DOMRect } | null>(null);
   const tooltipTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -259,11 +294,11 @@ const ArtigoBottomSheet = ({
   const narracaoActiveIdxRef = useRef(-1);
   const [showPremiumGate, setShowPremiumGate] = useState(false);
   const [premiumGateDesc, setPremiumGateDesc] = useState<string | undefined>(undefined);
-  const [premiumGateFeature, setPremiumGateFeature] = useState<PremiumFeatureKey>('default');
+  const [premiumGateFeature, setPremiumGateFeature] = useState<PremiumFeatureKey>("default");
 
   // Desktop text selection
   useEffect(() => {
-    if (!isDesktop || !artigo || activeTab !== 'artigo') {
+    if (!isDesktop || !artigo || activeTab !== "artigo") {
       setSelectionPill(null);
       return;
     }
@@ -290,17 +325,16 @@ const ArtigoBottomSheet = ({
         setSelectionPill({ x: rect.left + rect.width / 2, y: rect.top });
       });
     };
-    document.addEventListener('selectionchange', handler);
+    document.addEventListener("selectionchange", handler);
     return () => {
       if (rafId !== null) cancelAnimationFrame(rafId);
-      document.removeEventListener('selectionchange', handler);
+      document.removeEventListener("selectionchange", handler);
     };
-  }, [isDesktop, artigo?.id, activeTab]);
-
+  }, [isDesktop, artigo, activeTab]);
 
   useEffect(() => {
-    if (activeActionMenu === 'funcoes') {
-      import('@/components/vademecum/sheets/LembretesArtigoSheet');
+    if (activeActionMenu === "funcoes") {
+      import("@/components/vademecum/sheets/LembretesArtigoSheet");
     }
   }, [activeActionMenu]);
 
@@ -316,7 +350,7 @@ const ArtigoBottomSheet = ({
     _featureKey: string,
     gateKey: PremiumFeatureKey,
     _label: string,
-    action: () => void
+    action: () => void,
   ) => {
     if (isPremium) {
       action();
@@ -336,12 +370,12 @@ const ArtigoBottomSheet = ({
     const channelName = `artigo:${tabelaNome}:${artigo.numero}`;
     const channel = supabase.channel(channelName);
     channel
-      .on('presence', { event: 'sync' }, () => {
+      .on("presence", { event: "sync" }, () => {
         const state = channel.presenceState();
         setOnlineCount(Object.keys(state).length);
       })
       .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
+        if (status === "SUBSCRIBED") {
           await channel.track({ online_at: new Date().toISOString() });
         }
       });
@@ -434,7 +468,7 @@ const ArtigoBottomSheet = ({
 
   // Item 8: Dessincronização de Grifos Táteis ao Alternar Abas (executado após declaração de setMagicTooltip)
   useEffect(() => {
-    if (activeTab !== 'artigo') {
+    if (activeTab !== "artigo") {
       setMagicTooltip(null);
       setTooltipData(null);
       setSelectionPill(null);
@@ -459,11 +493,11 @@ const ArtigoBottomSheet = ({
   const [showEraseSheet, setShowEraseSheet] = useState(false);
   const [showVoiceSheet, setShowVoiceSheet] = useState(false);
   const [voiceGrifoActive, setVoiceGrifoActive] = useState(false);
-  const [voicePhase, setVoicePhase] = useState<VoicePhase>('idle');
+  const [voicePhase, setVoicePhase] = useState<VoicePhase>("idle");
   const voicePanelRef = useRef<GrifoVoicePanelHandle | null>(null);
 
   useEffect(() => {
-    if (voiceGrifoActive && voicePhase === 'idle') {
+    if (voiceGrifoActive && voicePhase === "idle") {
       const t = setTimeout(() => {
         voicePanelRef.current?.start();
       }, 150);
@@ -480,26 +514,26 @@ const ArtigoBottomSheet = ({
     if (nativeTransferredRef.current === artigoKey) return;
     let cancel = false;
 
-    import('@capacitor/core')
+    import("@capacitor/core")
       .then(async ({ Capacitor }) => {
         if (cancel) return;
         if (Capacitor.isNativePlatform()) {
           try {
-            const { NativeVadeMecumPlugin } = await import('@/plugins/NativeVadeMecumPlugin');
+            const { NativeVadeMecumPlugin } = await import("@/plugins/NativeVadeMecumPlugin");
             await NativeVadeMecumPlugin.openArtigo({
               id: artigo.id,
               numero: String(artigo.numero),
-              caput: artigo.caput || '',
-              titulo: artigo.titulo || '',
-              tabelaNome: tabelaNome || '',
+              caput: artigo.caput || "",
+              titulo: artigo.titulo || "",
+              tabelaNome: tabelaNome || "",
               paragrafos: artigo.paragrafos || [],
               incisos: artigo.incisos || [],
               highlights: [],
-              audioUrl: narracaoUrl || '',
+              audioUrl: narracaoUrl || "",
             });
             onCloseRef.current();
           } catch (e) {
-            console.warn('Falha no plugin nativo, executando leitor web de fallback:', e);
+            console.warn("Falha no plugin nativo, executando leitor web de fallback:", e);
             nativeTransferredRef.current = null;
             // ATENÇÃO: NÃO fechamos a sheet aqui para que o usuário possa usar o leitor web
           }
@@ -510,7 +544,7 @@ const ArtigoBottomSheet = ({
     return () => {
       cancel = true;
     };
-  }, [artigo?.id, artigo?.numero, tabelaNome]);
+  }, [artigo, narracaoUrl, tabelaNome]);
 
   useEffect(() => {
     setFocusedSegment(null);
@@ -535,17 +569,17 @@ const ArtigoBottomSheet = ({
         }
         const [notesResult, highlightsResult] = await Promise.all([
           supabase
-            .from('artigos_anotacoes')
-            .select('anotacao, audio_url')
-            .eq('user_id', user.id)
-            .eq('tabela_codigo', tabelaNome)
-            .eq('numero_artigo', artigo.numero),
+            .from("artigos_anotacoes")
+            .select("anotacao, audio_url")
+            .eq("user_id", user.id)
+            .eq("tabela_codigo", tabelaNome)
+            .eq("numero_artigo", artigo.numero),
           supabase
-            .from('artigos_grifos')
-            .select('highlights')
-            .eq('user_id', user.id)
-            .eq('tabela_codigo', tabelaNome)
-            .eq('numero_artigo', artigo.numero)
+            .from("artigos_grifos")
+            .select("highlights")
+            .eq("user_id", user.id)
+            .eq("tabela_codigo", tabelaNome)
+            .eq("numero_artigo", artigo.numero)
             .maybeSingle(),
         ]);
         if (notesResult.error) throw notesResult.error;
@@ -554,15 +588,17 @@ const ArtigoBottomSheet = ({
         for (const note of notesResult.data || []) {
           const key = note.audio_url
             ? `audio:${note.audio_url}`
-            : String(note.anotacao || '').trim().toLocaleLowerCase('pt-BR');
+            : String(note.anotacao || "")
+                .trim()
+                .toLocaleLowerCase("pt-BR");
           if (key) uniqueNotes.add(key);
         }
         if (Array.isArray(highlightsResult.data?.highlights)) {
-          for (const item of highlightsResult.data.highlights as any[]) {
-            if (item?.origem !== 'ia') continue;
-            const comment = String(item.comment || item.comentario || '')
+          for (const item of highlightsResult.data.highlights as Array<Record<string, unknown>>) {
+            if (item?.origem !== "ia") continue;
+            const comment = String(item.comment || item.comentario || "")
               .trim()
-              .toLocaleLowerCase('pt-BR');
+              .toLocaleLowerCase("pt-BR");
             if (comment) uniqueNotes.add(comment);
           }
         }
@@ -574,35 +610,42 @@ const ArtigoBottomSheet = ({
     return () => {
       cancelled = true;
     };
-  }, [artigo?.id, tabelaNome, showAnotacoesSheet, magicHighlights.length, anotacoesRefreshTick]);
+  }, [
+    artigo?.id,
+    artigo?.numero,
+    tabelaNome,
+    showAnotacoesSheet,
+    magicHighlights.length,
+    anotacoesRefreshTick,
+  ]);
 
   const handleCopy = async () => {
     if (!artigo) return;
-    const text = `Art. ${artigo.numero}${tabelaNome ? ` — ${tabelaNome}` : ''}\n\n${artigo.caput}`;
+    const text = `Art. ${artigo.numero}${tabelaNome ? ` — ${tabelaNome}` : ""}\n\n${artigo.caput}`;
     try {
-      const { Capacitor } = await import('@capacitor/core');
+      const { Capacitor } = await import("@capacitor/core");
       if (Capacitor.isNativePlatform()) {
-        const { Clipboard } = await import('@capacitor/clipboard');
+        const { Clipboard } = await import("@capacitor/clipboard");
         await Clipboard.write({ string: text });
       } else {
         await copiarTexto(text);
       }
-      toast.success('Artigo copiado', { position: 'top-center' });
+      toast.success("Artigo copiado", { position: "top-center" });
     } catch {
       try {
         await copiarTexto(text);
-        toast.success('Artigo copiado', { position: 'top-center' });
+        toast.success("Artigo copiado", { position: "top-center" });
       } catch {
-        toast.error('Não foi possível copiar', { position: 'top-center' });
+        toast.error("Não foi possível copiar", { position: "top-center" });
       }
     }
   };
 
   const openCreatePrompt = useCallback((newId: string) => {
-    setCommentPrompt({ id: newId, show: true, mode: 'create' });
-    setCommentText('');
+    setCommentPrompt({ id: newId, show: true, mode: "create" });
+    setCommentText("");
     setCommentTags([]);
-    setTagDraft('');
+    setTagDraft("");
   }, []);
 
   const handleTextSelection = useCallback(() => {
@@ -630,12 +673,19 @@ const ArtigoBottomSheet = ({
     let isDragging = false;
 
     const getCaret = (x: number, y: number): { node: Node; offset: number } | null => {
-      if (typeof (document as any).caretRangeFromPoint === 'function') {
-        const r = (document as any).caretRangeFromPoint(x, y);
+      const doc = document as unknown as {
+        caretRangeFromPoint?: (x: number, y: number) => Range | null;
+        caretPositionFromPoint?: (
+          x: number,
+          y: number,
+        ) => { offsetNode: Node; offset: number } | null;
+      };
+      if (typeof doc.caretRangeFromPoint === "function") {
+        const r = doc.caretRangeFromPoint(x, y);
         return r ? { node: r.startContainer, offset: r.startOffset } : null;
       }
-      if (typeof (document as any).caretPositionFromPoint === 'function') {
-        const pos = (document as any).caretPositionFromPoint(x, y);
+      if (typeof doc.caretPositionFromPoint === "function") {
+        const pos = doc.caretPositionFromPoint(x, y);
         return pos ? { node: pos.offsetNode, offset: pos.offset } : null;
       }
       return null;
@@ -696,7 +746,9 @@ const ArtigoBottomSheet = ({
               sel.removeAllRanges();
               sel.addRange(liveRange);
             }
-          } catch {}
+          } catch {
+            // Ignora falhas pontuais ao tentar definir range de seleção no DOM
+          }
         }
       }
     };
@@ -713,16 +765,16 @@ const ArtigoBottomSheet = ({
       e.preventDefault();
     };
 
-    container.addEventListener('touchstart', onTouchStart, { passive: true });
-    container.addEventListener('touchmove', onTouchMove, { passive: false });
-    container.addEventListener('touchend', onTouchEnd, { passive: true });
-    container.addEventListener('contextmenu', onContextMenu);
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    container.addEventListener("touchmove", onTouchMove, { passive: false });
+    container.addEventListener("touchend", onTouchEnd, { passive: true });
+    container.addEventListener("contextmenu", onContextMenu);
 
     return () => {
-      container.removeEventListener('touchstart', onTouchStart);
-      container.removeEventListener('touchmove', onTouchMove);
-      container.removeEventListener('touchend', onTouchEnd);
-      container.removeEventListener('contextmenu', onContextMenu);
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove", onTouchMove);
+      container.removeEventListener("touchend", onTouchEnd);
+      container.removeEventListener("contextmenu", onContextMenu);
     };
   }, [highlightMode, showEraseSheet, addHighlight, containerRef, openCreatePrompt]);
 
@@ -753,16 +805,16 @@ const ArtigoBottomSheet = ({
 
   const handleDismissComment = useCallback(() => {
     setCommentPrompt(null);
-    setCommentText('');
+    setCommentText("");
     setCommentTags([]);
-    setTagDraft('');
+    setTagDraft("");
   }, []);
 
   const addTagFromDraft = useCallback(() => {
-    const t = tagDraft.trim().replace(/^#+/, '');
+    const t = tagDraft.trim().replace(/^#+/, "");
     if (!t) return;
     setCommentTags((prev) => (prev.includes(t) ? prev : [...prev, t]));
-    setTagDraft('');
+    setTagDraft("");
   }, [tagDraft]);
 
   const handleHoverHighlight = useCallback((id: string | null, rect?: DOMRect) => {
@@ -778,12 +830,12 @@ const ArtigoBottomSheet = ({
     (id: string, _rect: DOMRect) => {
       const h = highlights.find((x) => x.id === id);
       if (!h) return;
-      setCommentPrompt({ id, show: true, mode: 'view' });
-      setCommentText(h.comment || '');
+      setCommentPrompt({ id, show: true, mode: "view" });
+      setCommentText(h.comment || "");
       setCommentTags(h.tags || []);
-      setTagDraft('');
+      setTagDraft("");
     },
-    [highlights]
+    [highlights],
   );
 
   const tooltipHighlight = tooltipData ? highlights.find((h) => h.id === tooltipData.id) : null;
@@ -799,11 +851,11 @@ const ArtigoBottomSheet = ({
       if (!container) return;
       const el = container.querySelector(`[data-line-index="${targetLine}"]`);
       if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     }, 400);
     return () => clearTimeout(timer);
-  }, [artigo?.id, modificationInfo]);
+  }, [artigo, modificationInfo]);
 
   // Hook isolado de processamento do texto legal
   const {
@@ -840,11 +892,13 @@ const ArtigoBottomSheet = ({
   }, [displayLines]);
 
   const totalIncisosCount = useMemo(() => {
-    return dispositivosLandmarks.filter((d) => d.type === 'inciso').length;
+    return dispositivosLandmarks.filter((d) => d.type === "inciso").length;
   }, [dispositivosLandmarks]);
 
   const incisoLineIndices = useMemo(() => {
-    return new Set(dispositivosLandmarks.filter((d) => d.type === 'inciso').map((d) => d.lineIndex));
+    return new Set(
+      dispositivosLandmarks.filter((d) => d.type === "inciso").map((d) => d.lineIndex),
+    );
   }, [dispositivosLandmarks]);
 
   const visibleLineIndices = useMemo(() => {
@@ -862,6 +916,43 @@ const ArtigoBottomSheet = ({
     return allowed;
   }, [collapsedIncisos, totalIncisosCount, displayLines, incisoLineIndices]);
 
+  // Determina qual linha (Caput, Parágrafo Único, Inciso, Alínea) está sendo narrada ativamente
+  const activeNarracaoLineIndex = useMemo(() => {
+    if (activeRenderedWordIndex < 0 || !lineWordStartIndexes?.length) {
+      return -1;
+    }
+    for (let i = 0; i < displayLines.length; i++) {
+      const start = lineWordStartIndexes[i] ?? 0;
+      const end = lineWordStartIndexes[i + 1] ?? Infinity;
+      if (activeRenderedWordIndex >= start && activeRenderedWordIndex < end) {
+        return i;
+      }
+    }
+    return -1;
+  }, [activeRenderedWordIndex, lineWordStartIndexes, displayLines.length]);
+
+  // Auto-scroll suave para o dispositivo ativo durante a reprodução da narração
+  useEffect(() => {
+    if (activeNarracaoLineIndex < 0 || !narracaoPlaying) return;
+    const el = containerRef.current?.querySelector(
+      `[data-line-index="${activeNarracaoLineIndex}"]`,
+    ) as HTMLElement | null;
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [activeNarracaoLineIndex, narracaoPlaying, containerRef]);
+
+  // Se a narração alcançar um inciso recolhido, expande automaticamente para o usuário acompanhar
+  useEffect(() => {
+    if (
+      activeNarracaoLineIndex >= 0 &&
+      collapsedIncisos &&
+      incisoLineIndices.has(activeNarracaoLineIndex)
+    ) {
+      setCollapsedIncisos(false);
+    }
+  }, [activeNarracaoLineIndex, collapsedIncisos, incisoLineIndices]);
+
   const handleJumpToDispositivo = useCallback(
     (targetLineIndex: number) => {
       if (collapsedIncisos) {
@@ -869,48 +960,58 @@ const ArtigoBottomSheet = ({
       }
       requestAnimationFrame(() => {
         const el = containerRef.current?.querySelector(
-          `[data-line-index="${targetLineIndex}"]`
+          `[data-line-index="${targetLineIndex}"]`,
         ) as HTMLElement | null;
         if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          el.classList.add('ring-2', 'ring-primary', 'bg-primary/20', 'rounded-md', 'transition-all', 'duration-500');
-          import('@/lib/nativeHaptics').then(({ haptic }) => haptic.selection()).catch(() => {});
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.classList.add(
+            "ring-2",
+            "ring-primary",
+            "bg-primary/20",
+            "rounded-md",
+            "transition-all",
+            "duration-500",
+          );
+          import("@/lib/nativeHaptics").then(({ haptic }) => haptic.selection()).catch(() => {});
           setTimeout(() => {
-            el.classList.remove('ring-2', 'ring-primary', 'bg-primary/20');
+            el.classList.remove("ring-2", "ring-primary", "bg-primary/20");
           }, 1400);
         }
       });
     },
-    [collapsedIncisos, containerRef]
+    [collapsedIncisos, containerRef],
   );
 
   const iaFullSections: AiSection[] = useMemo(() => {
     if (!iaFull) return [];
     const parsed = parseAiSections(
-      aiContent[iaFull.mode] || '',
-      iaFull.mode === 'exemplo' ? '---EXEMPLO---' : '---SECAO---'
+      aiContent[iaFull.mode] || "",
+      iaFull.mode === "exemplo" ? "---EXEMPLO---" : "---SECAO---",
     );
-    
-    if (iaFull.mode !== 'explicacao' || !artigo?.caput) return parsed;
-    
+
+    if (iaFull.mode !== "explicacao" || !artigo?.caput) return parsed;
+
     // Identifica quais blocos realmente existem no texto do artigo
     const textLower = artigo.caput.toLowerCase();
-    const hasParUnico = textLower.includes('parágrafo único');
-    const hasIncisos = /(?:^|\n)[ivxlcdm]+\s*-/i.test(artigo.caput) || /(?:^|\n)[ivxlcdm]+\s*\)/i.test(artigo.caput) || /(?:^|\n)[ivxlcdm]+\s*\./i.test(artigo.caput);
+    const hasParUnico = textLower.includes("parágrafo único");
+    const hasIncisos =
+      /(?:^|\n)[ivxlcdm]+\s*-/i.test(artigo.caput) ||
+      /(?:^|\n)[ivxlcdm]+\s*\)/i.test(artigo.caput) ||
+      /(?:^|\n)[ivxlcdm]+\s*\./i.test(artigo.caput);
     const hasParagrafos = /(?:^|\n)§/i.test(artigo.caput);
-    
-    return parsed.filter(sec => {
-      if (sec.id === 'caput') return true;
-      if (sec.id.startsWith('sec-')) return true;
-      if (sec.id === 'par-unico' && !hasParUnico) return false;
-      if (sec.id.startsWith('inciso-') && !hasIncisos) return false;
-      if (sec.id.startsWith('par-') && sec.id !== 'par-unico' && !hasParagrafos) return false;
+
+    return parsed.filter((sec) => {
+      if (sec.id === "caput") return true;
+      if (sec.id.startsWith("sec-")) return true;
+      if (sec.id === "par-unico" && !hasParUnico) return false;
+      if (sec.id.startsWith("inciso-") && !hasIncisos) return false;
+      if (sec.id.startsWith("par-") && sec.id !== "par-unico" && !hasParagrafos) return false;
       return true;
     });
   }, [iaFull, aiContent, artigo?.caput]);
 
   const handleSheetClose = () => {
-    import('@/lib/nativeHaptics').then((m) => m.haptic.selection());
+    import("@/lib/nativeHaptics").then((m) => m.haptic.selection());
     const currentAudio = narracaoAudioRef.current;
     if (narracaoPlaying && currentAudio && artigo) {
       narracaoAdoptedRef.current = true;
@@ -978,8 +1079,8 @@ const ArtigoBottomSheet = ({
       const target = e.target as HTMLElement | null;
       if (
         target &&
-        (target.tagName === 'INPUT' ||
-          target.tagName === 'TEXTAREA' ||
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
           target.isContentEditable ||
           target.closest('input, textarea, [contenteditable="true"]'))
       ) {
@@ -988,12 +1089,12 @@ const ArtigoBottomSheet = ({
 
       const state = desktopKeyHandlerRef.current;
 
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault();
         e.stopPropagation();
         if (state.iaFull) {
           state.setIaFull(null);
-          state.setActiveTab('artigo');
+          state.setActiveTab("artigo");
         } else if (state.activeActionMenu) {
           state.setActiveActionMenu(null);
         } else if (state.showFontControls) {
@@ -1006,11 +1107,11 @@ const ArtigoBottomSheet = ({
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isDesktop, artigo?.id]);
+  }, [isDesktop, artigo]);
 
   if (!artigo) return null;
 
@@ -1027,7 +1128,7 @@ const ArtigoBottomSheet = ({
         modal={!showPremiumGate && !anyPanelOpen}
       >
         <SheetContent
-          data-artigo-sheet={artigo ? 'open' : undefined}
+          data-artigo-sheet={artigo ? "open" : undefined}
           ref={(node: HTMLDivElement | null) => {
             sheetContentRef.current = node;
             setSheetNode(node);
@@ -1035,8 +1136,8 @@ const ArtigoBottomSheet = ({
           side="bottom"
           className={
             isDesktop
-              ? 'theme-vademecum-accent z-[9999] flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-2xl border border-white/5 bg-[#0f0f0f] p-0 shadow-2xl [&>button:last-child]:hidden inset-0 top-0 bottom-0 mx-auto max-w-[920px] h-[100dvh] max-h-[100dvh]'
-              : 'theme-vademecum-accent z-[9999] flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-none border-none bg-[#0f0f0f] p-0 !pb-0 [&>button:last-child]:hidden inset-0 top-0 bottom-0 h-[100dvh] max-h-[100dvh] w-full pt-[var(--sai-top,env(safe-area-inset-top,0px))]'
+              ? "theme-vademecum-accent z-9999 flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-2xl border border-white/5 bg-[#0f0f0f] p-0 shadow-2xl [&>button:last-child]:hidden inset-0 top-0 bottom-0 mx-auto max-w-230 h-dvh max-h-dvh"
+              : "theme-vademecum-accent z-9999 flex min-h-0 flex-col gap-0 overflow-hidden overscroll-contain rounded-none border-none bg-[#0f0f0f] p-0 pb-0! [&>button:last-child]:hidden inset-0 top-0 bottom-0 h-dvh max-h-dvh w-full pt-(--sai-top,env(safe-area-inset-top,0px))"
           }
           onInteractOutside={(e) => {
             const t = e.target as HTMLElement | null;
@@ -1045,11 +1146,11 @@ const ArtigoBottomSheet = ({
               anyPanelOpen ||
               iaFull ||
               (t &&
-                (t.closest('[data-premium-gate]') ||
-                  t.closest('[data-radix-portal]') ||
-                  t.closest('[data-artigo-rail]') ||
-                  t.closest('[data-artigo-menu]') ||
-                  t.closest('[data-artigo-ia-fullscreen]') ||
+                (t.closest("[data-premium-gate]") ||
+                  t.closest("[data-radix-portal]") ||
+                  t.closest("[data-artigo-rail]") ||
+                  t.closest("[data-artigo-menu]") ||
+                  t.closest("[data-artigo-ia-fullscreen]") ||
                   t.closest('[role="dialog"]')))
             ) {
               e.preventDefault();
@@ -1062,11 +1163,11 @@ const ArtigoBottomSheet = ({
               anyPanelOpen ||
               iaFull ||
               (t &&
-                (t.closest('[data-premium-gate]') ||
-                  t.closest('[data-radix-portal]') ||
-                  t.closest('[data-artigo-rail]') ||
-                  t.closest('[data-artigo-menu]') ||
-                  t.closest('[data-artigo-ia-fullscreen]') ||
+                (t.closest("[data-premium-gate]") ||
+                  t.closest("[data-radix-portal]") ||
+                  t.closest("[data-artigo-rail]") ||
+                  t.closest("[data-artigo-menu]") ||
+                  t.closest("[data-artigo-ia-fullscreen]") ||
                   t.closest('[role="dialog"]')))
             ) {
               e.preventDefault();
@@ -1078,7 +1179,7 @@ const ArtigoBottomSheet = ({
           </div>
 
           <div
-            ref={scrollContainerRef as any}
+            ref={scrollContainerRef}
             className="flex-1 overflow-y-auto min-h-0 relative overscroll-contain"
           >
             <ArtigoSheetHeader
@@ -1120,11 +1221,11 @@ const ArtigoBottomSheet = ({
               value={activeTab}
               onValueChange={(v) => {
                 if (showAnotacoesSheet || showPerguntarSheet || showPraticarSheet) return;
-                const openIA = (mode: 'explicacao' | 'exemplo') => {
+                const openIA = (mode: "explicacao" | "exemplo") => {
                   setActiveTab(mode);
                   setIaFull({ mode, sectionId: focusedSegment });
                 };
-                if (v === 'explicacao' || v === 'exemplo') {
+                if (v === "explicacao" || v === "exemplo") {
                   if (!isPremium) {
                     openPremiumGate(v as PremiumFeatureKey);
                     return;
@@ -1132,9 +1233,9 @@ const ArtigoBottomSheet = ({
                   openIA(v);
                   return;
                 }
-                if (v === 'termos') {
+                if (v === "termos") {
                   if (!isPremium) {
-                    openPremiumGate('termos');
+                    openPremiumGate("termos");
                     return;
                   }
                 }
@@ -1168,7 +1269,7 @@ const ArtigoBottomSheet = ({
                     aria-hidden="true"
                     loading="lazy"
                     decoding="async"
-                    style={{ contain: 'paint layout', willChange: 'transform' }}
+                    style={{ contain: "paint layout", willChange: "transform" }}
                     className="w-48 h-48 opacity-[0.06] object-contain pointer-events-none select-none"
                   />
                 </div>
@@ -1188,7 +1289,6 @@ const ArtigoBottomSheet = ({
                     </div>
                   )}
 
-
                   {/* Item 04: Barra de Saltos Diretos por Dispositivos (Landmarks) e Colapso de Incisos */}
                   {dispositivosLandmarks.length > 1 && (
                     <div className="mb-4 flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-thin scrollbar-thumb-white/10 select-none">
@@ -1196,16 +1296,23 @@ const ArtigoBottomSheet = ({
                         <Compass className="w-3.5 h-3.5 text-primary" />
                         <span>Saltar:</span>
                       </div>
-                      {dispositivosLandmarks.map((dm) => (
-                        <button
-                          key={`dm-${dm.type}-${dm.label}-${dm.lineIndex}`}
-                          type="button"
-                          onClick={() => handleJumpToDispositivo(dm.lineIndex)}
-                          className="shrink-0 px-2.5 py-1 rounded-full text-xs font-medium bg-muted/50 hover:bg-primary/20 text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/40 transition-colors"
-                        >
-                          {dm.label}
-                        </button>
-                      ))}
+                      {dispositivosLandmarks.map((dm) => {
+                        const isLandmarkActive = activeNarracaoLineIndex === dm.lineIndex;
+                        return (
+                          <button
+                            key={`dm-${dm.type}-${dm.label}-${dm.lineIndex}`}
+                            type="button"
+                            onClick={() => handleJumpToDispositivo(dm.lineIndex)}
+                            className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
+                              isLandmarkActive
+                                ? "bg-primary/20 text-primary border border-primary/60 ring-1 ring-primary/40 font-semibold shadow-sm"
+                                : "bg-muted/50 hover:bg-primary/20 text-muted-foreground hover:text-primary border border-border/50 hover:border-primary/40"
+                            }`}
+                          >
+                            {dm.label}
+                          </button>
+                        );
+                      })}
 
                       {totalIncisosCount > 3 && (
                         <button
@@ -1213,13 +1320,21 @@ const ArtigoBottomSheet = ({
                           onClick={() => setCollapsedIncisos((prev) => !prev)}
                           className={`shrink-0 ml-auto flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all border ${
                             collapsedIncisos
-                              ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                              : 'bg-muted/40 text-muted-foreground hover:text-foreground border-border/50'
+                              ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                              : "bg-muted/40 text-muted-foreground hover:text-foreground border-border/50"
                           }`}
-                          title={collapsedIncisos ? 'Expandir todos os incisos' : 'Recolher incisos longos'}
+                          title={
+                            collapsedIncisos
+                              ? "Expandir todos os incisos"
+                              : "Recolher incisos longos"
+                          }
                         >
                           <Layers className="w-3 h-3" />
-                          <span>{collapsedIncisos ? `Expandir (${totalIncisosCount})` : 'Recolher incisos'}</span>
+                          <span>
+                            {collapsedIncisos
+                              ? `Expandir (${totalIncisosCount})`
+                              : "Recolher incisos"}
+                          </span>
                         </button>
                       )}
                     </div>
@@ -1227,17 +1342,17 @@ const ArtigoBottomSheet = ({
 
                   <div
                     ref={containerRef}
-                    className={`space-y-4 text-base ${FONT_FAMILY_CLASSES[fontFamily] || 'font-sans'} ${LINE_HEIGHT_CLASSES[lineHeight] || 'leading-[1.8]'} ${readingGuide ? 'reading-guide-active' : ''} ${
-                      highlightMode ? 'select-text cursor-text highlight-selectable' : ''
+                    className={`space-y-4 text-base ${FONT_FAMILY_CLASSES[fontFamily] || "font-sans"} ${LINE_HEIGHT_CLASSES[lineHeight] || "leading-[1.8]"} ${readingGuide ? "reading-guide-active" : ""} ${
+                      highlightMode ? "select-text cursor-text highlight-selectable" : ""
                     }`}
                     style={
                       highlightMode
                         ? ({
-                            WebkitUserSelect: 'text',
-                            userSelect: 'text',
-                            WebkitTouchCallout: 'none',
-                            WebkitTapHighlightColor: 'transparent',
-                            '--hl-selection': selectedColor,
+                            WebkitUserSelect: "text",
+                            userSelect: "text",
+                            WebkitTouchCallout: "none",
+                            WebkitTapHighlightColor: "transparent",
+                            "--hl-selection": selectedColor,
                           } as React.CSSProperties)
                         : undefined
                     }
@@ -1259,7 +1374,11 @@ const ArtigoBottomSheet = ({
                         collapsedIncisos &&
                         totalIncisosCount > 3 &&
                         incisoLineIndices.has(i) &&
-                        Array.from(visibleLineIndices || []).filter((idx) => incisoLineIndices.has(idx)).indexOf(i) === 2;
+                        Array.from(visibleLineIndices || [])
+                          .filter((idx) => incisoLineIndices.has(idx))
+                          .indexOf(i) === 2;
+
+                      const isLineActive = activeNarracaoLineIndex === i;
 
                       return (
                         <Fragment key={`line-frag-${i}`}>
@@ -1286,6 +1405,7 @@ const ArtigoBottomSheet = ({
                             handleRemoveSingleMagicHighlight={handleRemoveSingleMagicHighlight}
                             setMagicTooltip={setMagicTooltip}
                             narracaoPlaying={narracaoPlaying}
+                            isLineActive={isLineActive}
                             activeRenderedWordIndex={activeRenderedWordIndex}
                             lineWordStartIndex={lineWordStartIndexes[i] || 0}
                             lineHighlights={getLineHighlights(i)}
@@ -1303,7 +1423,9 @@ const ArtigoBottomSheet = ({
                             >
                               <span className="flex items-center gap-2">
                                 <ChevronDown className="w-4 h-4 text-primary group-hover:translate-y-0.5 transition-transform" />
-                                <span>+{totalIncisosCount - 3} incisos recolhidos para leitura rápida</span>
+                                <span>
+                                  +{totalIncisosCount - 3} incisos recolhidos para leitura rápida
+                                </span>
                               </span>
                               <span className="px-2 py-0.5 rounded bg-primary/20 text-[11px] font-bold uppercase tracking-wider text-primary border border-primary/30">
                                 Expandir todos
@@ -1327,9 +1449,7 @@ const ArtigoBottomSheet = ({
                   tagDraft={tagDraft}
                   setTagDraft={setTagDraft}
                   isGeneratingAiNote={isGeneratingAiNote}
-                  handleGerarAnotacaoIa={() =>
-                    handleGerarAnotacaoIa(commentPrompt, setCommentText)
-                  }
+                  handleGerarAnotacaoIa={() => handleGerarAnotacaoIa(commentPrompt, setCommentText)}
                   handleDismissComment={handleDismissComment}
                   handleSaveComment={() =>
                     handleSaveComment(commentPrompt, commentText, commentTags, handleDismissComment)
@@ -1344,19 +1464,22 @@ const ArtigoBottomSheet = ({
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 5 }}
-                      className="fixed z-[80] w-[min(20rem,calc(100vw-2rem))] bg-popover border border-border rounded-xl shadow-xl px-4 py-3"
+                      className="fixed z-80 w-[min(20rem,calc(100vw-2rem))] bg-popover border border-border rounded-xl shadow-xl px-4 py-3"
                       style={{
                         top: tooltipData.rect.top - 8,
-                        left: Math.max(16, Math.min(tooltipData.rect.left, window.innerWidth - 336)),
-                        transform: 'translateY(-100%)',
+                        left: Math.max(
+                          16,
+                          Math.min(tooltipData.rect.left, window.innerWidth - 336),
+                        ),
+                        transform: "translateY(-100%)",
                       }}
                       onMouseEnter={() => {
                         if (tooltipTimeoutRef.current) clearTimeout(tooltipTimeoutRef.current);
                       }}
                       onMouseLeave={() => setTooltipData(null)}
                     >
-                      <p className="text-[clamp(1rem,4.2vw,1.125rem)] text-foreground leading-[1.5]">
-                        {tooltipHighlight.tags?.includes('voz') && (
+                      <p className="text-[clamp(1rem,4.2vw,1.125rem)] text-foreground leading-normal">
+                        {tooltipHighlight.tags?.includes("voz") && (
                           <span className="inline-flex items-center gap-1 px-1.5 py-0.5 mr-2 rounded bg-emerald-500/20 text-emerald-400 text-[11px] font-bold uppercase tracking-wider">
                             <Mic className="w-3 h-3" /> Voz
                           </span>
@@ -1409,7 +1532,7 @@ const ArtigoBottomSheet = ({
             </Tabs>
           </div>
 
-          {(activeTab ?? 'artigo') === 'artigo' && (
+          {(activeTab ?? "artigo") === "artigo" && (
             <ArtigoActionMenuSheet
               activeActionMenu={activeActionMenu}
               setActiveActionMenu={setActiveActionMenu}
@@ -1442,7 +1565,7 @@ const ArtigoBottomSheet = ({
             />
           )}
 
-          {(activeTab ?? 'artigo') === 'artigo' && !isDesktop && (
+          {(activeTab ?? "artigo") === "artigo" && !isDesktop && (
             <ArtigoBottomBar
               highlightMode={highlightMode}
               voiceGrifoActive={voiceGrifoActive}
@@ -1473,13 +1596,15 @@ const ArtigoBottomSheet = ({
           <GrifoMagicoLoader open={magicLoading} />
 
           <ArtigoGrifoTopBar
-            isVisible={(highlightMode || voiceGrifoActive) && (activeTab ?? 'artigo') === 'artigo'}
+            isVisible={(highlightMode || voiceGrifoActive) && (activeTab ?? "artigo") === "artigo"}
             voiceGrifoActive={voiceGrifoActive}
             onCloseGrifo={() => {
               if (voiceGrifoActive) {
                 try {
                   voicePanelRef.current?.stop();
-                } catch {}
+                } catch {
+                  // Ignora erro ao interromper painel de voz
+                }
                 setVoiceGrifoActive(false);
               } else {
                 toggleMode();
@@ -1586,9 +1711,9 @@ const ArtigoBottomSheet = ({
             >
               {showQuestoesPanel && (
                 <QuizView
-                  tabelaNome={tabelaNome || ''}
+                  tabelaNome={tabelaNome || ""}
                   artigoNumero={String(artigo.numero)}
-                  leiNome={tabelaNome || ''}
+                  leiNome={tabelaNome || ""}
                   onBack={() => setShowQuestoesPanel(false)}
                 />
               )}
@@ -1610,7 +1735,7 @@ const ArtigoBottomSheet = ({
               {showJurisPanel && (
                 <JurisprudenciaArtigoView
                   embedded
-                  slugLeiProp={tabelaNome || ''}
+                  slugLeiProp={tabelaNome || ""}
                   numeroArtigoProp={encodeURIComponent(String(artigo.numero))}
                   onBack={() => setShowJurisPanel(false)}
                 />
@@ -1660,13 +1785,13 @@ const ArtigoBottomSheet = ({
 
       <ArtigoIAFullscreen
         open={Boolean(iaFull && artigo)}
-        mode={iaFull?.mode || 'explicacao'}
+        mode={iaFull?.mode || "explicacao"}
         artigoNumero={
           artigo
-            ? /^\d/.test((artigo.numero || '').trim())
+            ? /^\d/.test((artigo.numero || "").trim())
               ? `Art. ${artigo.numero}`
               : artigo.numero
-            : ''
+            : ""
         }
         leiNome={LEIS_CATALOG.find((l) => l.tabela_nome === tabelaNome)?.nome || tabelaNome}
         sections={iaFullSections}
@@ -1676,7 +1801,7 @@ const ArtigoBottomSheet = ({
         portalContainer={sheetNode}
         onClose={() => {
           setIaFull(null);
-          setActiveTab('artigo');
+          setActiveTab("artigo");
         }}
       />
     </>

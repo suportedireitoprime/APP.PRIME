@@ -346,7 +346,7 @@ export default function JurisprudenciaArtigo({
               className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/30 active:opacity-70 transition-all flex items-center justify-center gap-2"
             >
               <Crown className="w-4 h-4 fill-current" />
-              Começar 3 dias grátis
+              Ver planos
             </Button>
             <PremiumGate open={showPremiumGate} onClose={() => setShowPremiumGate(false)} feature="jurisprudencia" />
           </div>

@@ -15,21 +15,6 @@ const PUBLIC_FALLBACK_ART = 'https://direitoprime.com.br/icon-512.png';
 
 type Handler = (() => void) | undefined;
 
-export type RegistrarMidiaArgs = {
-  /** Linha principal da notificação. */
-  titulo: string;
-  /** Linha secundária (lei, matéria, área…). */
-  subtitulo?: string;
-  /** Agrupador opcional (ex.: "Leis Cantadas", "Audioaulas"). */
-  album?: string;
-  /** URL da capa/thumb. Relativa ou absoluta. */
-  capaUrl?: string;
-  audio: HTMLAudioElement;
-  onNext?: Handler;
-  onPrev?: Handler;
-  onStop?: Handler;
-  onSeek?: (timeSec: number) => void;
-};
 
 const ACOES: MediaSessionAction[] = [
   'play',

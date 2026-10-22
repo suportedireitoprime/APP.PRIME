@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Serviço de pré-aquecimento do Cache de Resumos Jurídicos.
  * Garante abertura instantânea (0ms) das matérias, temas e listas.

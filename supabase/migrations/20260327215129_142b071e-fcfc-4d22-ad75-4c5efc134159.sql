@@ -1,1 +1,0 @@
-DELETE FROM artigo_ai_cache;

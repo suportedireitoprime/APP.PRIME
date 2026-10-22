@@ -1,1 +1,0 @@
-ALTER TABLE public.location_reminders ADD COLUMN IF NOT EXISTS channel TEXT NOT NULL DEFAULT 'push' CHECK (channel IN ('push','horus','both'));

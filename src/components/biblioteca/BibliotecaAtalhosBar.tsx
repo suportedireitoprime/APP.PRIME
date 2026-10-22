@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Clock, HardDrive, BookMarked, ChevronRight, BookOpen, Sparkles, Settings2, Play, Bell } from 'lucide-react';

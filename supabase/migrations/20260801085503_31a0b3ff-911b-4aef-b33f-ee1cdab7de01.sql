@@ -1,1 +1,0 @@
-ALTER TABLE public.questoes_planilhas ADD COLUMN IF NOT EXISTS linhas_lidas integer NOT NULL DEFAULT 0;

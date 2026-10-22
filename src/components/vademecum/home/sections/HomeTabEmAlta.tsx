@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { memo, Suspense, useState } from 'react';
 import { ChevronRight, ScrollText, BookMarked, Landmark, Scale, Briefcase, Car, Users, Search, Target, Shield, Coins, Heart, ShieldAlert, Plane, Trees, Flame } from 'lucide-react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";

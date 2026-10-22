@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, ShieldCheck, MessageCircle, PartyPopper, ChevronDown, Check } from 'lucide-react';

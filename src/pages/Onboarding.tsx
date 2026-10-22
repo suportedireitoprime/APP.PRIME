@@ -126,8 +126,9 @@ const Onboarding = () => {
 
   const finalizar = useCallback(() => {
     setOnboardingFinished(true);
-    setPedirTrial(true);
-  }, []);
+    toast.success('Seja bem-vindo(a)! Sua cota grátis mensal já está ativa.');
+    startTransition(() => { navigate('/', { replace: true }); });
+  }, [navigate]);
 
   const concluirTrial = useCallback(() => {
     setPedirTrial(false);

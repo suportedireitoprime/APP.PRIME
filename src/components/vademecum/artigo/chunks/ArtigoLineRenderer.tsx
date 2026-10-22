@@ -1,13 +1,13 @@
-import React, { memo } from 'react';
-import { motion } from 'framer-motion';
+import React, { memo } from "react";
+import { motion } from "framer-motion";
 import {
   stripRedacao,
   isLineRevogado,
   highlightTermos,
   classifyLine,
   applyHighlightsToText,
-} from '../artigoTextUtils';
-import type { ArtigoLei } from '@/data/mockData';
+} from "../artigoTextUtils";
+import type { ArtigoLei } from "@/data/mockData";
 import {
   MAGIC_COLORS,
   FONT_FAMILY_CLASSES,
@@ -16,8 +16,8 @@ import {
   type MagicGrifo,
   type VadeMecumFontFamily,
   type VadeMecumLineHeight,
-} from '../artigoConstants';
-import type { Highlight } from '@/hooks/useHighlights';
+} from "../artigoConstants";
+import type { Highlight } from "@/hooks/useHighlights";
 
 export interface ArtigoLineRendererProps {
   line: string;
@@ -39,10 +39,13 @@ export interface ArtigoLineRendererProps {
   magicMode: boolean;
   magicHighlights: MagicGrifo[];
   handleRemoveSingleMagicHighlight: (grifo: MagicGrifo) => void;
-  setMagicTooltip: React.Dispatch<React.SetStateAction<{ grifo: MagicGrifo; rect: DOMRect } | null>>;
-  narracaoPlaying: boolean;
-  activeRenderedWordIndex: number;
-  lineWordStartIndex: number;
+  setMagicTooltip: React.Dispatch<
+    React.SetStateAction<{ grifo: MagicGrifo; rect: DOMRect } | null>
+  >;
+  narracaoPlaying?: boolean;
+  isLineActive?: boolean;
+  activeRenderedWordIndex?: number;
+  lineWordStartIndex?: number;
   lineHighlights: Highlight[];
   removeHighlight: (id: string) => void;
   handleHoverHighlight: (id: string | null, rect?: DOMRect) => void;
@@ -54,7 +57,9 @@ export interface ArtigoLineRendererProps {
 function renderBionicWord(word: string, key: string): React.ReactNode {
   if (!word || !/[\p{L}\p{N}]/u.test(word)) return word;
 
-  const match = word.match(/^([^\p{L}\p{N}]*)([\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*)([^\p{L}\p{N}]*)$/u);
+  const match = word.match(
+    /^([^\p{L}\p{N}]*)([\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*)([^\p{L}\p{N}]*)$/u,
+  );
   if (!match) return word;
 
   const [, leadingPunct, coreWord, trailingPunct] = match;
@@ -62,7 +67,9 @@ function renderBionicWord(word: string, key: string): React.ReactNode {
   if (len <= 1) {
     return (
       <span key={key}>
-        {leadingPunct}<b className="font-bold text-foreground">{coreWord}</b>{trailingPunct}
+        {leadingPunct}
+        <b className="font-bold text-foreground">{coreWord}</b>
+        {trailingPunct}
       </span>
     );
   }
@@ -74,7 +81,9 @@ function renderBionicWord(word: string, key: string): React.ReactNode {
   return (
     <span key={key}>
       {leadingPunct}
-      <b className="font-bold text-foreground drop-shadow-[0_0_1px_rgba(255,255,255,0.15)]">{boldPart}</b>
+      <b className="font-bold text-foreground drop-shadow-[0_0_1px_rgba(255,255,255,0.15)]">
+        {boldPart}
+      </b>
       <span className="opacity-90">{restPart}</span>
       {trailingPunct}
     </span>
@@ -90,31 +99,33 @@ function processBionicText(text: string, keyPrefix: string): React.ReactNode[] {
 }
 
 function applyBionicReading(nodes: React.ReactNode[], keyPrefix: string): React.ReactNode[] {
-  return nodes.map((node, index) => {
-    if (typeof node === 'string') {
-      const parts = processBionicText(node, `${keyPrefix}-${index}`);
-      return parts.length === 1 ? parts[0] : parts;
-    }
-    if (React.isValidElement(node)) {
-      const children = (node.props as any)?.children;
-      if (typeof children === 'string') {
-        const parts = processBionicText(children, `${keyPrefix}-${index}`);
-        return React.cloneElement(
-          node as React.ReactElement<any>,
-          { key: node.key || `${keyPrefix}-${index}` },
-          parts.length === 1 ? parts[0] : parts
-        );
+  return nodes
+    .map((node, index) => {
+      if (typeof node === "string") {
+        const parts = processBionicText(node, `${keyPrefix}-${index}`);
+        return parts.length === 1 ? parts[0] : parts;
       }
-      if (Array.isArray(children)) {
-        return React.cloneElement(
-          node as React.ReactElement<any>,
-          { key: node.key || `${keyPrefix}-${index}` },
-          applyBionicReading(children, `${keyPrefix}-${index}`)
-        );
+      if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+        const children = node.props?.children;
+        if (typeof children === "string") {
+          const parts = processBionicText(children, `${keyPrefix}-${index}`);
+          return React.cloneElement(
+            node,
+            { key: node.key || `${keyPrefix}-${index}` },
+            parts.length === 1 ? parts[0] : parts,
+          );
+        }
+        if (Array.isArray(children)) {
+          return React.cloneElement(
+            node,
+            { key: node.key || `${keyPrefix}-${index}` },
+            applyBionicReading(children, `${keyPrefix}-${index}`),
+          );
+        }
       }
-    }
-    return node;
-  }).flat();
+      return node;
+    })
+    .flat();
 }
 
 const ArtigoLineRendererComponent = ({
@@ -125,8 +136,8 @@ const ArtigoLineRendererComponent = ({
   showRedacao,
   isRevogado,
   fontSize,
-  fontFamily = 'sans',
-  lineHeight = '1.8',
+  fontFamily = "sans",
+  lineHeight = "1.8",
   bionicReading = false,
   readingGuide = false,
   highlightMode,
@@ -138,9 +149,10 @@ const ArtigoLineRendererComponent = ({
   magicHighlights,
   handleRemoveSingleMagicHighlight,
   setMagicTooltip,
-  narracaoPlaying,
-  activeRenderedWordIndex,
-  lineWordStartIndex,
+  narracaoPlaying = false,
+  isLineActive = false,
+  activeRenderedWordIndex = -1,
+  lineWordStartIndex = 0,
   lineHighlights,
   removeHighlight,
   handleHoverHighlight,
@@ -150,13 +162,17 @@ const ArtigoLineRendererComponent = ({
   const classified = classifyLine(line);
   const lineIsRevogado = isLineRevogado(line);
 
-  const leadingClass = LINE_HEIGHT_CLASSES[lineHeight] || 'leading-[1.8]';
-  const fontClass = FONT_FAMILY_CLASSES[fontFamily] || 'font-sans';
+  const leadingClass = LINE_HEIGHT_CLASSES[lineHeight] || "leading-[1.8]";
+  const fontClass = FONT_FAMILY_CLASSES[fontFamily] || "font-sans";
 
   const isModifiedLine = modificationInfo && modificationInfo.linhasModificadas.includes(lineIndex);
   const displayText = modificationInfo
-    ? (isModifiedLine && showRedacao ? line : stripRedacao(line))
-    : (showRedacao ? line : stripRedacao(line));
+    ? isModifiedLine && showRedacao
+      ? line
+      : stripRedacao(line)
+    : showRedacao
+      ? line
+      : stripRedacao(line);
 
   if (lineIsRevogado && !isRevogado) {
     const revogadoDisplay = showRedacao ? line : line;
@@ -164,17 +180,19 @@ const ArtigoLineRendererComponent = ({
       <p
         data-line-index={lineIndex}
         className={`italic ${fontClass} ${leadingClass} ${
-          classified.type === 'inciso'
-            ? 'pl-4 border-l-2 border-purple-400/30'
-            : classified.type === 'alinea'
-            ? 'pl-8'
-            : classified.type === 'paragrafo'
-            ? 'mt-2'
-            : ''
+          classified.type === "inciso"
+            ? "pl-4 border-l-2 border-purple-400/30"
+            : classified.type === "alinea"
+              ? "pl-8"
+              : classified.type === "paragrafo"
+                ? "mt-2"
+                : ""
         }`}
         style={{ fontSize: `${Math.max(fontSize - 1, 10)}px` }}
       >
-        <span className="bg-purple-500/20 text-purple-300 rounded px-1 py-0.5">{revogadoDisplay}</span>
+        <span className="bg-purple-500/20 text-purple-300 rounded px-1 py-0.5">
+          {revogadoDisplay}
+        </span>
       </p>
     );
   }
@@ -182,48 +200,64 @@ const ArtigoLineRendererComponent = ({
   let baseNodes: React.ReactNode[];
   let offsetShift = 0;
   if (isFirst && !isRevogado) {
-    const cleanedText = displayText.replace(/^Art\s*\.\s*\d+[ºº]?(?:-[A-Z])?\s*[–-]?\s*/i, '');
+    const cleanedText = displayText.replace(/^Art\s*\.\s*\d+[ºº]?(?:-[A-Z])?\s*[–-]?\s*/i, "");
     offsetShift = displayText.length - cleanedText.length;
-    baseNodes = highlightTermos(cleanedText, modificationInfo ? (!!isModifiedLine && showRedacao) : showRedacao);
+    baseNodes = highlightTermos(
+      cleanedText,
+      modificationInfo ? !!isModifiedLine && showRedacao : showRedacao,
+    );
   } else {
-    baseNodes = highlightTermos(displayText, modificationInfo ? (!!isModifiedLine && showRedacao) : showRedacao);
+    baseNodes = highlightTermos(
+      displayText,
+      modificationInfo ? !!isModifiedLine && showRedacao : showRedacao,
+    );
   }
 
-  const adjustedHighlights = offsetShift > 0
-    ? lineHighlights
-        .map(h => ({
-          ...h,
-          startOffset: Math.max(0, h.startOffset - offsetShift),
-          endOffset: h.endOffset - offsetShift,
-        }))
-        .filter(h => h.endOffset > 0 && h.endOffset > h.startOffset)
-    : lineHighlights;
+  const adjustedHighlights =
+    offsetShift > 0
+      ? lineHighlights
+          .map((h) => ({
+            ...h,
+            startOffset: Math.max(0, h.startOffset - offsetShift),
+            endOffset: h.endOffset - offsetShift,
+          }))
+          .filter((h) => h.endOffset > 0 && h.endOffset > h.startOffset)
+      : lineHighlights;
 
-  let finalNodes = applyHighlightsToText(baseNodes, adjustedHighlights, removeHighlight, highlightMode, handleHoverHighlight, handleTapHighlight);
+  let finalNodes = applyHighlightsToText(
+    baseNodes,
+    adjustedHighlights,
+    removeHighlight,
+    highlightMode,
+    handleHoverHighlight,
+    handleTapHighlight,
+  );
 
   if (magicMode && magicHighlights.length > 0) {
     const extractText = (nodes: React.ReactNode[]): string => {
-      return nodes.map(n => {
-        if (typeof n === 'string') return n;
-        if (n && typeof n === 'object' && 'props' in (n as any)) {
-          const props = (n as any).props;
-          if (typeof props?.children === 'string') return props.children;
-          if (Array.isArray(props?.children)) return extractText(props.children);
-        }
-        return '';
-      }).join('');
+      return nodes
+        .map((n) => {
+          if (typeof n === "string") return n;
+          if (React.isValidElement<{ children?: React.ReactNode }>(n)) {
+            const children = n.props?.children;
+            if (typeof children === "string") return children;
+            if (Array.isArray(children)) return extractText(children);
+          }
+          return "";
+        })
+        .join("");
     };
-    
+
     const fullLineText = extractText(finalNodes);
-    
-    const magicMatches: { start: number; end: number; grifo: typeof magicHighlights[0] }[] = [];
+
+    const magicMatches: { start: number; end: number; grifo: (typeof magicHighlights)[0] }[] = [];
     for (const grifo of magicHighlights) {
       const idx = fullLineText.indexOf(grifo.trechoExato);
       if (idx !== -1) {
         magicMatches.push({ start: idx, end: idx + grifo.trechoExato.length, grifo });
       }
     }
-    
+
     if (magicMatches.length > 0) {
       magicMatches.sort((a, b) => a.start - b.start);
       const filtered: typeof magicMatches = [];
@@ -232,10 +266,14 @@ const ArtigoLineRendererComponent = ({
           filtered.push(m);
         }
       }
-      
+
       let charPos = 0;
-      
-      const wrapWithMagic = (text: string, offsetInLine: number, nodeKey: string): React.ReactNode[] => {
+
+      const wrapWithMagic = (
+        text: string,
+        offsetInLine: number,
+        nodeKey: string,
+      ): React.ReactNode[] => {
         const parts: React.ReactNode[] = [];
         let localPos = 0;
         for (const m of filtered) {
@@ -248,7 +286,13 @@ const ArtigoLineRendererComponent = ({
           parts.push(
             <mark
               key={`magic-${nodeKey}-${m.start}`}
-              style={{ backgroundColor: MAGIC_COLORS[m.grifo.cor] || MAGIC_COLORS.amarelo, color: 'white', borderRadius: '3px', padding: '1px 3px', cursor: 'pointer' }}
+              style={{
+                backgroundColor: MAGIC_COLORS[m.grifo.cor] || MAGIC_COLORS.amarelo,
+                color: "white",
+                borderRadius: "3px",
+                padding: "1px 3px",
+                cursor: "pointer",
+              }}
               onClick={(e) => {
                 e.stopPropagation();
                 if (highlightMode) {
@@ -258,112 +302,53 @@ const ArtigoLineRendererComponent = ({
                   requestAnimationFrame(() => {
                     if (!targetEl.isConnected) return;
                     const rect = targetEl.getBoundingClientRect();
-                    setMagicTooltip(prev => prev?.grifo.trechoExato === m.grifo.trechoExato ? null : { grifo: m.grifo, rect });
+                    setMagicTooltip((prev) =>
+                      prev?.grifo.trechoExato === m.grifo.trechoExato
+                        ? null
+                        : { grifo: m.grifo, rect },
+                    );
                   });
                 }
               }}
             >
               {text.slice(clampStart, clampEnd)}
-            </mark>
+            </mark>,
           );
           localPos = clampEnd;
         }
         if (localPos < text.length) parts.push(text.slice(localPos));
         return parts.length > 0 ? parts : [text];
       };
-      
+
       const processNode = (node: React.ReactNode, idx: number): React.ReactNode => {
-        if (typeof node === 'string') {
+        if (typeof node === "string") {
           const result = wrapWithMagic(node, charPos, `s${idx}`);
           charPos += node.length;
           return result.length === 1 ? result[0] : result;
         }
-        if (node && typeof node === 'object' && 'props' in (node as any)) {
-          const el = node as React.ReactElement;
+        if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+          const el = node;
           const children = el.props?.children;
-          if (typeof children === 'string') {
+          if (typeof children === "string") {
             const result = wrapWithMagic(children, charPos, `e${idx}`);
             charPos += children.length;
-            if (result.length === 1 && typeof result[0] === 'string') return node;
-            const { children: _, ...restProps } = el.props;
-            return <el.type {...restProps} key={el.key || `mn${idx}`}>{result}</el.type>;
+            if (result.length === 1 && typeof result[0] === "string") return node;
+            const { children: _, ...restProps } = (el.props || {}) as Record<string, unknown>;
+            return React.cloneElement(el, { ...restProps, key: el.key || `mn${idx}` }, result);
           }
           if (Array.isArray(children)) {
-            const newChildren = children.map((c: React.ReactNode, ci: number) => processNode(c, idx * 100 + ci));
-            const { children: _, ...restProps } = el.props;
-            return <el.type {...restProps} key={el.key || `mn${idx}`}>{newChildren}</el.type>;
+            const newChildren = children.map((c: React.ReactNode, ci: number) =>
+              processNode(c, idx * 100 + ci),
+            );
+            const { children: _, ...restProps } = (el.props || {}) as Record<string, unknown>;
+            return React.cloneElement(el, { ...restProps, key: el.key || `mn${idx}` }, newChildren);
           }
         }
         return node;
       };
-      
+
       finalNodes = finalNodes.map((n, i) => processNode(n, i)).flat();
     }
-  }
-
-  if (narracaoPlaying && activeRenderedWordIndex >= 0) {
-    let wordIndex = lineWordStartIndex || 0;
-    const highlightTextNode = (text: string, keyPrefix: string): React.ReactNode[] => {
-      const parts: React.ReactNode[] = [];
-      let lastIndex = 0;
-      const matches = Array.from(text.matchAll(/[\p{L}\p{N}]+(?:[-–][\p{L}\p{N}]+)*/gu));
-
-      matches.forEach((match, matchIndex) => {
-        const start = match.index ?? 0;
-        const end = start + match[0].length;
-        const currentWordIndex = wordIndex++;
-        if (currentWordIndex !== activeRenderedWordIndex) return;
-
-        if (start > lastIndex) parts.push(text.slice(lastIndex, start));
-        parts.push(
-          <motion.mark
-            key={`narracao-${keyPrefix}-${matchIndex}`}
-            initial={{ backgroundSize: '0% 108%' }}
-            animate={{ backgroundSize: '100% 108%' }}
-            transition={{ duration: 0.28, ease: [0.22, 0.61, 0.36, 1] }}
-            className="rounded-[4px] bg-transparent text-inherit"
-            style={{
-              backgroundImage: 'linear-gradient(hsl(var(--primary) / 0.62), hsl(var(--primary) / 0.62))',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'left 50%',
-              padding: '0 1px',
-              boxDecorationBreak: 'clone',
-              WebkitBoxDecorationBreak: 'clone',
-            }}
-          >
-            {match[0]}
-          </motion.mark>
-        );
-        lastIndex = end;
-      });
-
-      if (lastIndex < text.length) parts.push(text.slice(lastIndex));
-      return parts.length ? parts : [text];
-    };
-
-    const processNarracaoNode = (node: React.ReactNode, keyPrefix: string): React.ReactNode => {
-      if (typeof node === 'string') {
-        const parts = highlightTextNode(node, keyPrefix);
-        return parts.length === 1 ? parts[0] : parts;
-      }
-      if (React.isValidElement(node)) {
-        const children = (node.props as any)?.children;
-        if (typeof children === 'string') {
-          const parts = highlightTextNode(children, keyPrefix);
-          return React.cloneElement(node as React.ReactElement<any>, { key: node.key || keyPrefix }, parts.length === 1 ? parts[0] : parts);
-        }
-        if (Array.isArray(children)) {
-          return React.cloneElement(
-            node as React.ReactElement<any>,
-            { key: node.key || keyPrefix },
-            children.map((child, index) => processNarracaoNode(child, `${keyPrefix}-${index}`))
-          );
-        }
-      }
-      return node;
-    };
-
-    finalNodes = finalNodes.map((node, index) => processNarracaoNode(node, `l${lineIndex}-${index}`)).flat();
   }
 
   // Item 01: Aplicação do Motor Bionic Reading nos nós de texto resultantes
@@ -383,9 +368,9 @@ const ArtigoLineRendererComponent = ({
     );
   }
 
-  const currentSegmentId = lineSegmentMap[lineIndex] || 'caput';
+  const currentSegmentId = lineSegmentMap[lineIndex] || "caput";
 
-  if (classified.type === 'epigrafe') {
+  if (classified.type === "epigrafe") {
     return (
       <p
         data-line-index={lineIndex}
@@ -393,7 +378,11 @@ const ArtigoLineRendererComponent = ({
         onClick={() => {
           if (!highlightMode) setFocusedSegment(currentSegmentId);
         }}
-        className={`font-bold text-red-400 tracking-wide pt-3.5 pb-1 select-text ${fontClass}`}
+        className={`font-bold text-red-400 tracking-wide pt-3.5 pb-1 select-text ${fontClass} ${
+          isLineActive
+            ? "bg-primary/20 border-l-4 border-primary rounded-r-xl px-3 -mx-3 py-1.5 ring-1 ring-primary/35 shadow-[0_0_20px_rgba(225,29,72,0.18)] transition-all duration-300"
+            : "transition-all duration-300"
+        }`}
         style={{ fontSize: `${Math.max(fontSize - 1, 14)}px` }}
       >
         {finalNodes}
@@ -401,27 +390,45 @@ const ArtigoLineRendererComponent = ({
     );
   }
 
-  const extra =
-    classified.type === 'inciso' ? 'pl-4 border-l-2 border-primary/30' :
-    classified.type === 'alinea' ? 'pl-8' :
-    classified.type === 'paragrafo' ? 'mt-2' : '';
+  const isInciso = classified.type === "inciso";
+  const isAlinea = classified.type === "alinea";
+  const isParagrafo = classified.type === "paragrafo";
+
+  const extra = isInciso
+    ? isLineActive
+      ? "ml-0.5 pl-4 pr-3 border-l-4 border-primary"
+      : "pl-4 border-l-2 border-primary/30"
+    : isAlinea
+      ? isLineActive
+        ? "ml-3.5 pl-4 pr-3 border-l-4 border-primary"
+        : "pl-8"
+      : isParagrafo
+        ? "mt-2"
+        : "";
 
   const highlightBg = isModifiedLine
-    ? 'bg-violet-500/20 border-l-3 border-violet-400 pl-3 rounded-r-lg'
-    : !modificationInfo && showRedacao && /\((?:Redação|Incluído|Acrescido|Alterado|Revogado|Vetado|Vigência)[^)]*\)/i.test(line)
-      ? 'bg-primary/5 border-l-2 border-primary/40 pl-2 rounded-r'
-      : '';
+    ? "bg-violet-500/20 border-l-3 border-violet-400 pl-3 rounded-r-lg"
+    : !modificationInfo &&
+        showRedacao &&
+        /\((?:Redação|Incluído|Acrescido|Alterado|Revogado|Vetado|Vigência)[^)]*\)/i.test(line)
+      ? "bg-primary/5 border-l-2 border-primary/40 pl-2 rounded-r"
+      : "";
 
   const artLabel = (() => {
-    const num = String(artigoNumero || '').trim();
+    const num = String(artigoNumero || "").trim();
     if (/^\d/.test(num)) return `Art. ${num}`;
     return num;
   })();
 
   // Item 01: Guia Óptico (foco suave na linha ativa e leitura confortável)
   const readingGuideClass = readingGuide
-    ? 'reading-line-focus hover:bg-amber-400/[0.045] hover:border-l-2 hover:border-amber-400/80 hover:pl-2.5 transition-all duration-150 cursor-pointer rounded-r-md'
-    : '';
+    ? "reading-line-focus hover:bg-amber-400/[0.045] hover:border-l-2 hover:border-amber-400/80 hover:pl-2.5 transition-all duration-150 cursor-pointer rounded-r-md"
+    : "";
+
+  // Grifo estrutural contínuo da narração por dispositivo completo (Caput, Parágrafo Único, Inciso, Alínea)
+  const activeNarracaoClass = isLineActive
+    ? `bg-primary/20 ${isInciso || isAlinea ? "" : "border-l-4 border-primary px-3 -mx-3"} rounded-r-xl py-2 ring-1 ring-primary/35 shadow-[0_0_20px_rgba(225,29,72,0.18)] transition-all duration-300`
+    : "transition-all duration-300";
 
   return (
     <p
@@ -430,10 +437,10 @@ const ArtigoLineRendererComponent = ({
       onClick={() => {
         if (!highlightMode) setFocusedSegment(currentSegmentId);
       }}
-      className={`text-foreground ${fontClass} ${leadingClass} ${extra} ${highlightBg} ${readingGuideClass} ${
+      className={`text-foreground ${fontClass} ${leadingClass} ${extra} ${highlightBg} ${readingGuideClass} ${activeNarracaoClass} ${
         !highlightMode && focusedSegment && focusedSegment === currentSegmentId
-          ? 'rounded-md ring-1 ring-primary/25 bg-primary/[0.03]'
-          : ''
+          ? "rounded-md ring-1 ring-primary/25 bg-primary/3"
+          : ""
       }`}
       style={{ fontSize: `${fontSize}px` }}
     >
@@ -468,14 +475,13 @@ export const ArtigoLineRenderer = memo(ArtigoLineRendererComponent, (prev, next)
     prev.artigoNumero !== next.artigoNumero ||
     prev.magicMode !== next.magicMode ||
     prev.narracaoPlaying !== next.narracaoPlaying ||
-    prev.activeRenderedWordIndex !== next.activeRenderedWordIndex ||
-    prev.lineWordStartIndex !== next.lineWordStartIndex
+    prev.isLineActive !== next.isLineActive
   ) {
     return false;
   }
-  
+
   if (prev.modificationInfo !== next.modificationInfo) return false;
-  
+
   // Shallow array comparison for highlights (they are usually referentially stable if unchanged, but just in case)
   if (prev.lineHighlights !== next.lineHighlights) return false;
   if (prev.magicHighlights !== next.magicHighlights) return false;

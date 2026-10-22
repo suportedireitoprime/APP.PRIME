@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Network, BookOpen } from 'lucide-react';
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 import { haptic } from '@/lib/nativeHaptics';

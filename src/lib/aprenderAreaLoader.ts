@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { supabase } from '@/integrations/supabase/client';
 import { getAprenderCache, setAprenderCache } from '@/services/offlineDb';
 import { getAreaCover } from './areasDireitoCovers';

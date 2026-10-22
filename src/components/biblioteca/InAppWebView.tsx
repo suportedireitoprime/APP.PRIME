@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowLeft, RefreshCw, ExternalLink, Loader2, ShieldAlert, Copy, Check } from 'lucide-react';

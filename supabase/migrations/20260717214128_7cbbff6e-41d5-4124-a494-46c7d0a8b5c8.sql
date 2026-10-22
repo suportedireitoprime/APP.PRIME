@@ -1,1 +1,0 @@
-ALTER TABLE public.horus_funcoes ADD COLUMN IF NOT EXISTS usar_busca_web boolean NOT NULL DEFAULT true;

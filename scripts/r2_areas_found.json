@@ -1,0 +1,40 @@
+{
+  "r2NarracoesAreas": [
+    "direito-administrativo",
+    "direito-ambiental",
+    "direito-civil",
+    "direito-constitucional",
+    "direito-desportivo",
+    "direito-do-trabalho",
+    "direito-empresarial",
+    "direito-financeiro",
+    "direito-internacional-privado",
+    "direito-penal",
+    "direito-previdenciario",
+    "direito-processual-civil",
+    "direito-processual-do-trabalho",
+    "direito-processual-penal",
+    "direito-tributario",
+    "direito-urbanistico",
+    "direitos-humanos",
+    "filosofia-do-direito",
+    "formacao-complementar",
+    "lei-penal-especial",
+    "politicas-publicas",
+    "portugues"
+  ],
+  "r2AudioaulasAreas": [
+    "direito-administrativo",
+    "direito-ambiental",
+    "direito-civil",
+    "direito-constitucional",
+    "direito-do-trabalho",
+    "direito-empresarial",
+    "direito-penal",
+    "direito-previdenciario",
+    "direito-processual-civil",
+    "direito-processual-penal",
+    "direito-tributario",
+    "direitos-humanos"
+  ]
+}

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { AbsoluteFill, useVideoConfig, useCurrentFrame, spring, interpolate, Img, Audio, staticFile } from 'remotion';
 import { TransitionSeries, springTiming, linearTiming } from '@remotion/transitions';

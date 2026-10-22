@@ -134,7 +134,7 @@ export default function PremiumFeaturesFullSheet({ open, onClose }: Props) {
               Tudo o que o Premium libera
             </h2>
             <p className="font-body text-xs text-muted-foreground text-center mt-1">
-              3 dias grátis pra explorar sem compromisso
+              Use sua cota grátis todo mês ou assine e libere tudo
             </p>
           </div>
 

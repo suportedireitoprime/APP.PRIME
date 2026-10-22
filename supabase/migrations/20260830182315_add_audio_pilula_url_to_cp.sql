@@ -1,1 +1,0 @@
-ALTER TABLE public."CP_CODIGO_PENAL" ADD COLUMN IF NOT EXISTS audio_pilula_url text;

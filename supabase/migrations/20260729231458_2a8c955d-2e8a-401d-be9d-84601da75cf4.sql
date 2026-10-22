@@ -1,1 +1,0 @@
-ALTER TABLE public.aprender_aulas ADD COLUMN IF NOT EXISTS previa jsonb;

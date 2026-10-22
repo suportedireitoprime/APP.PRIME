@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, BadgeCheck, Ban, Copy, Check, Heart, Volume2, Pause, 

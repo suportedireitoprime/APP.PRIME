@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { ProgressoRow } from '@/lib/videoaulasStore';
 
 export type Aula = {

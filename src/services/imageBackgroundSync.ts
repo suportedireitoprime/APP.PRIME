@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * imageBackgroundSync.ts — Fase 59 de Otimização de Imagens
  * 

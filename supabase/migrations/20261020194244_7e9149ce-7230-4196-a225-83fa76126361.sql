@@ -1,0 +1,1 @@
+revoke execute on function public.admin_deploy_boletim_crons(text, text) from public, anon, authenticated;

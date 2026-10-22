@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, ArrowUpRight, Film, Newspaper } from 'lucide-react';

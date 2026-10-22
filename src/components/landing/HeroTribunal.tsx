@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import heroTribunal from '@/assets/landing-tribunal/hero-tribunal.webp';

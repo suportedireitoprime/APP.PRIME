@@ -1,1 +1,0 @@
-delete from public.boletins_juridicos where data_ref = '2026-08-02' and tipo = 'noticias' and status = 'gerando';

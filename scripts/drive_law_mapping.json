@@ -1,0 +1,1106 @@
+{
+  "mappings": [
+    {
+      "drive": {
+        "id": "1WE7AgmZ_vb52upQliqG308n1kBkFYQbs",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CC - Código Civil",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CC_CODIGO_CIVIL",
+      "lei": "Código Civil",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1gaOxkt5eBs1rqeF0BnPy6zEL3D7pBdrd",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CDC - Código de Defesa do Consumidor",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CC_CODIGO_CIVIL",
+      "lei": "Código Civil",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1wvAiA3mxzGiGEmwqWrR9H3UFKgD3WKu9",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CE - Código Eleitoral",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CE_CODIGO_ELEITORAL",
+      "lei": "Código Eleitoral",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1qFeGsY1ywzNn393--tncVC3xBf623Gzk",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CLT - Consolidação das Leis do Trabalho",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CLT_CONSOLIDACAO_LEIS_TRABALHO",
+      "lei": "Consolidação das Leis do Trabalho",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1IaijWz37zjZPkvUIzjbBKduJSYSVy5yr",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CP - Código Penal",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CP_CODIGO_PENAL",
+      "lei": "Código Penal",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1RQ_k-8bCLb-1Nt-YqphW4y-QUcsu9onr",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CPC - Código de Processo Civil",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CP_CODIGO_PENAL",
+      "lei": "Código Penal",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1LbiPOOm-JxUvOo4R0G73VpnhiahH3MH_",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CPM - Código Penal Militar",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CP_CODIGO_PENAL",
+      "lei": "Código Penal",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "19CPhnncoerh_s-FG05eisSkWDjuWw5IK",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CPP - Código de Processo Penal",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CP_CODIGO_PENAL",
+      "lei": "Código Penal",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1MZQezvRoHrtT1Tk_84ts6MPuHYq4Qpuq",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CPPM - Código de Processo Penal Militar",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CP_CODIGO_PENAL",
+      "lei": "Código Penal",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1al-ttiygeEUAJULh7h84tlSckTbOCM6h",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CTB - Código de Trânsito Brasileiro",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CTB_CODIGO_TRANSITO_BRASILEIRO",
+      "lei": "Código de Trânsito Brasileiro",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1f-HRVj3yTZNqTBQ2KEnmmYEgvoQas7Yb",
+        "parentId": [
+          "1d6aCiiGhFjFi6IIBRn-R77MXhZYSmrKy"
+        ],
+        "name": "CTN - Código Tributário Nacional",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "código"
+      },
+      "match": "CTN_CODIGO_TRIBUTARIO_NACIONAL",
+      "lei": "Código Tributário Nacional",
+      "cat": "código"
+    },
+    {
+      "drive": {
+        "id": "1s_dYNW_GPOdzHkkHhMThbqSofzs6dfxU",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EC - Estatuto da Cidade",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "CE_CODIGO_ELEITORAL",
+      "lei": "Código Eleitoral",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1qz_mMdz4LnIVXNkh-GMIh-ULnZlcrT34",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "ECA - Estatuto da Criança e do Adolescente",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "CE_CODIGO_ELEITORAL",
+      "lei": "Código Eleitoral",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1vnMxLOM0rT55JkjGHAL76jWQFnudY4-1",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "ED - Estatuto do Desarmamento",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "ED_ESTATUTO_DESARMAMENTO",
+      "lei": "Estatuto do Desarmamento",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1EXt_w2cGotMBiQyp1X5KgjFdtiqPYe6o",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EGGM - Estatuto Geral das Guardas Municipais",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "LD_LEI_DROGAS",
+      "lei": "Lei de Drogas",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1ng1TWmSug1PYC721Tdw74qmSqXC7x8x6",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EI - Estatuto do Índio",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1zvtjryWKIOG82GkJx3Lo0LB3KM2R0XWW",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EIR - Estatuto da Igualdade Racial",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1wJB_vZhWe7LaKLbBmlG0GN5KFRodCJj_",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EJ - Estatuto da Juventude",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "EJ_ESTATUTO_JUVENTUDE",
+      "lei": "Estatuto da Juventude",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1mR3i62Zvo7wtx1YCQ4HfWtMRcgT2OKkq",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EM - Estatuto dos Militares",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "EM_ESTATUTO_MILITARES",
+      "lei": "Estatuto dos Militares",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1CH8K9CDWvq-jXzdDHr0nTfQFp77gJfUT",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EMET - Estatuto da Metrópole",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "ET_ESTATUTO_TORCEDOR",
+      "lei": "Estatuto do Torcedor",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1pWGEfUIcXQNUFHDUZ6c6kHtLssUpefNd",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EMOT - Estatuto do Motorista",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "EM_ESTATUTO_MILITARES",
+      "lei": "Estatuto dos Militares",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1osS12-9p1NaYuprDZtBZYei5Zp-uWFq5",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EOAB - Estatuto da Advocacia e da OAB",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "ED_ESTATUTO_DESARMAMENTO",
+      "lei": "Estatuto do Desarmamento",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1iCqh5loIJj8v4jHC2Ku9nXVcghVOXHpQ",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EPC - Estatuto da Pessoa com Câncer",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "CE_CODIGO_ELEITORAL",
+      "lei": "Código Eleitoral",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "12vyWJ03Uklvigmkme2Lwd-E7zns5TmW0",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EPD - Estatuto da Pessoa com Deficiência",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "EPD_ESTATUTO_PESSOA_DEFICIENCIA",
+      "lei": "Estatuto da Pessoa com Deficiência",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1G_NMHatyDtoraLicAMQwwkQo2UsEbbI1",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "ESPF - Estatuto dos Servidores Públicos Federais",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "ED_ESTATUTO_DESARMAMENTO",
+      "lei": "Estatuto do Desarmamento",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1hLb-7V0ThDbpME1L81kt4uZmiaCX4kDS",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "ET - Estatuto do Torcedor",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "CE_CODIGO_ELEITORAL",
+      "lei": "Código Eleitoral",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1hqa_99iQ4-CTzwm9AJx8xoD9GdkvI_e5",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "ETERRA - Estatuto da Terra",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "ET_ESTATUTO_TORCEDOR",
+      "lei": "Estatuto do Torcedor",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1auXnjyNxkiSUQ9QQMH3iU6G0gOOxPpDS",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "ME-EPP - Estatuto da Microempresa e da Empresa de Pequeno Porte",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "match": "ED_ESTATUTO_DESARMAMENTO",
+      "lei": "Estatuto do Desarmamento",
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "18Q0LUbIumXwUFhuPC5vlgadBxuKMyY4H",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Código Florestal (12.651/2012)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "CFLOR_CODIGO_FLORESTAL",
+      "lei": "Código Florestal",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1ksUn4DF4AOfc9ynsUrXq_Tz8LpnAxyIQ",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "LDB (9.394/1996)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "LD_LEI_DROGAS",
+      "lei": "Lei de Drogas",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "15L567f67bDeQDIG6CTqb3hva-bTQpeAn",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei Anticorrupção (12.846/2013)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1WjoQdcMgZsKUSC2t5GIrCEUKhTrBDj9e",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei Antiterrorismo (13.260/2016)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "16WGV-B5FDVbX9P6d55j9xAwBi4MrAfTi",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei Carolina Dieckmann (12.737/2012)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1TQOz7F_X6BR3xGgvNMMbkjVoeIDaKJFI",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei da Ação Civil Pública (7.347/1985)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1WicfrcFcC0v3rmxxA1KlCufhZs4JmU_-",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei da Ação Popular (4.717/1965)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1sxswLNiiwh4UKMeu10bARnyN6R0vurQu",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei das Organizações Criminosas (12.850/2013)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1BrPakAGYNIplaDuXq7gG2WV0yDL-gIb1",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Abuso de Autoridade (13.869/2019)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1NJFWTnPBXkMeHZLxGy_ASLzbtsWw_kYe",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Acesso à Informação (12.527/2011)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "CE_CODIGO_ELEITORAL",
+      "lei": "Código Eleitoral",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "13H60fKdY-Zn4bcttb9WXoUxFxPGmod4G",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Alienação Parental (12.318/2010)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1_dUsbgXzxpxIb8JchtYmyMYjfM4hx2bu",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Alimentos (5.478/1968)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "18D4lwO6UVmj0P-UdWfiHl9_4cmXY_J-x",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Arbitragem (9.307/1996)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1Zc8l9uO_DNgNSeGq6nI54OIlSBikAhh8",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Contravenções Penais (3.688/1941)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1PGoDVtx_lHVLH5UZKH4A4DypmmExCtLr",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Crimes Ambientais (9.605/1998)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1UjHFnRWB9yco33idqyIIVd7idI_L7l5q",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Crimes contra a Ordem Tributária (8.137/1990)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1RSo8JXv1TGLgGJusyoKwygnIl4GRO9Mv",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Crimes contra o Sistema Financeiro (7.492/1986)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "CE_CODIGO_ELEITORAL",
+      "lei": "Código Eleitoral",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "19NiHtIobVQgTp2N_voQColLXb2u5gIxn",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Crimes Hediondos (8.072/1990)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1c5L-cI6xVzy_ickwj-rpL22FJnDT3xO7",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Defesa do Estado Democrático (14.197/2021)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1NvPgLMPh_lwTyxBRi24AxjhgX90oh2aa",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Drogas (11.343/2006)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1ZpXlLA5GoNqNCe6AId-mItbfdjKYYTbF",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Execução Fiscal (6.830/1980)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1IyMbVkcPsednvjJDblQ_I-AM8UmCW4ZQ",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Execução Penal (7.210/1984)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "12bfiUcZbMQJN3Yvn5jaAcbVgIp2Xx39q",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Falências e Recuperação de Empresas (11.101/2005)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1oijJjvqMV15I7PgMz9qtZmK8sy7CSHCp",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Importunação Sexual (13.718/2018)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1FUQWxuOFTgZvZG1bIQNe_PuLPJNVsVHM",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Improbidade Administrativa (8.429/1992)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "14JVBeUjIIMVBXrFFWHPizxj9FTy8jEpC",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Interceptação Telefônica (9.296/1996)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "CE_CODIGO_ELEITORAL",
+      "lei": "Código Eleitoral",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1hlVR1MKbefB4zW1kv8_3YV8sTBqARx52",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Lavagem de Dinheiro (9.613/1998)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1SZF73-cOzlN4HzjFO_OT7opY4BhnmwpW",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Licitações (14.133/2021)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1rbAVm3SJ_GzVe5tg6C9qcP4DzU6-0nU9",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Locações (8.245/1991)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1xkAXcAEtMvT9WfYHiC1yMtbNdKYwZzHv",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Mediação (13.140/2015)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1yglwJQ6B9RrLBiwgA8YoeHmZWme6hqeg",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Migração (13.445/2017)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "16z4gzG-fMNFibBM0JKd5oOBzRknKix7l",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Prisão Temporária (7.960/1989)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1O4pkqeNOkMAseozoKeYeUIE5DascE9jA",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Racismo - Lei Caó (7.716/1989)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1K2K__kJx1SkyF32S5slP1fO72ypLuv_0",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Registros Públicos (6.015/1973)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1wKzl-JsDWkaYnMw6F8eiLWT7l7IsHpfw",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Responsabilidade Fiscal (LC 101/2000)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1PGHpQ8VJPkjMXQq62u-fzlwqcQJhenen",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Stalking (14.132/2021)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1GB1gyhPsIVjpIFtGZpbpeLvGLLhyt-2_",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei de Tortura (9.455/1997)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "136RR4E9LeK0WiITgKQVMq1Rw6jgpmP0W",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei do Feminicídio (13.104/2015)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1R5ILEAfV4-dv6vPJwgEXkZfd_6M_mDCS",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei do Mandado de Segurança (12.016/2009)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1FTgkFI359c3MNmPNKUAHsRTt0Ct1iNjR",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei do Pacote Anticrime (13.964/2019)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1LaqNgeditjI4j4bAdupqvUtWCLo9Kznu",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei do Processo Administrativo Federal (9.784/1999)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "CE_CODIGO_ELEITORAL",
+      "lei": "Código Eleitoral",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1CPMm1NM7MZmrmFEeARLV_IqhUbZLlRQS",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei do SUS (8.080/1990)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1zX4q-wXf7RnR6xy03MqKXY1lFCdjsgoZ",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei dos Juizados Especiais (9.099/1995)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1dpximdQ7aeUkaKh0w9AJ-qAdo6WECw8L",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei dos Juizados Especiais Federais (10.259/2001)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1O8-kHClnrhZ8THHUBV6N4CXkLfI0QAM8",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Lei Maria da Penha (11.340/2006)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "EI_ESTATUTO_IDOSO",
+      "lei": "Estatuto do Idoso",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1j5GizaP0NREFRHk_Ir351Cy-dQmEgIJu",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "LGPD (13.709/2018)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "LGPD_PROTECAO_DADOS",
+      "lei": "Lei Geral de Proteção de Dados",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "13QgqHk9Q4Auaf-JqafKMBEME2UlCWEH0",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "LINDB (4.657/1942)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "LI_INQUILINATO",
+      "lei": "Lei do Inquilinato",
+      "cat": "leis especiais"
+    },
+    {
+      "drive": {
+        "id": "1Ljs9_W8SgFVwq6EBTyzknHAFHFVxfHYo",
+        "parentId": [
+          "1nIc6SStUZW-A51lVK4R2K9q_-U0xT4p2"
+        ],
+        "name": "Marco Civil da Internet (12.965/2014)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "leis especiais"
+      },
+      "match": "ET_ESTATUTO_TORCEDOR",
+      "lei": "Estatuto do Torcedor",
+      "cat": "leis especiais"
+    }
+  ],
+  "unmapped": [
+    {
+      "drive": {
+        "id": "1EJwdrOVpBnbzusqgnwtBX2XV7zyjRzqn",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "EPI - Estatuto da Pessoa Idosa",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1NQH_jJSBQNK59gP1rnOXaF8yMKKiyVsN",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "ER - Estatuto dos Refugiados",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "cat": "estatutos"
+    },
+    {
+      "drive": {
+        "id": "1ZvyJ8T27zQdZ79R3r492q_LqLHl1q9Vt",
+        "parentId": [
+          "1k6TKqrGxGwbHb8Ym0b-V3iWLI3IEC8KQ"
+        ],
+        "name": "ESP - Estatuto da Segurança Privada",
+        "mimeType": "application/vnd.google-apps.folder",
+        "category": "estatutos"
+      },
+      "cat": "estatutos"
+    }
+  ]
+}

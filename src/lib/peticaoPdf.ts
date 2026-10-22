@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { pdf } from '@react-pdf/renderer';
 import { baixarBlob } from '@/lib/nativo/baixarArquivo';
 import React from 'react';

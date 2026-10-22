@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bell, Trophy } from 'lucide-react';

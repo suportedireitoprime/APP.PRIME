@@ -106,7 +106,7 @@ export default function Assinatura() {
   
   const [devSheetOpen, setDevSheetOpen] = useState(false);
   const [paymentMethodSheetOpen, setPaymentMethodSheetOpen] = useState(false);
-  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'mensal_pix' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_regular_pix' | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'mensal_pix' | 'anual' | 'anual_regular_pix' | null>(null);
 
   const handleBack = () => {
     if (showWelcome) return closeWelcome();
@@ -136,7 +136,7 @@ export default function Assinatura() {
     setDevSheetOpen(false);
   };
 
-  const startPurchase = async (plano: 'mensal' | 'mensal_pix' | 'vitalicio' | 'vitalicio_pix' | 'anual' | 'anual_regular_pix') => {
+  const startPurchase = async (plano: 'mensal' | 'mensal_pix' | 'anual' | 'anual_regular_pix') => {
     track('subscription_started', { plano, metodo: 'asaas', source: 'planos_page' });
     import('@/lib/appEvents')
       .then(({ appEvents }) => {
@@ -150,6 +150,11 @@ export default function Assinatura() {
       navigate('/login', { state: { returnTo: '/assinatura' } });
       return; 
     }
+    if (isPremium && !isTrial) {
+      toast.info('Você já é assinante — sua assinatura está ativa.');
+      navigate('/planos/ativos', { replace: true });
+      return;
+    }
     startTransition(() => {
       setCheckoutPlan(plano);
     });
@@ -159,6 +164,11 @@ export default function Assinatura() {
 
   if (!subLoading && (isPremium && !isTrial) && !showWelcome && !previewPlans) {
     return <Navigate to="/planos/ativos" replace />;
+  }
+
+  // Enquanto confirma a assinatura de quem está logado, não mostra planos/checkout.
+  if (session && subLoading && !showWelcome && !previewPlans) {
+    return <div className="min-h-dvh bg-background flex items-center justify-center"><div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>;
   }
 
   return (
@@ -246,7 +256,7 @@ export default function Assinatura() {
                       </span>
                     </div>
                     <span className="text-sm font-black text-emerald-400 mt-0.5">
-                      {tab === 'anual' ? 'R$ 149,90 à vista' : 'R$ 29,90 à vista'}
+                      {tab === 'anual' ? 'R$ 199,90 à vista' : 'R$ 29,90 à vista'}
                     </span>
                     <span className="text-[11px] text-muted-foreground mt-0.5 truncate">
                       Aprovação imediata • Sem necessidade de CEP
@@ -269,7 +279,7 @@ export default function Assinatura() {
                   <div className="flex flex-col items-start flex-1 min-w-0">
                     <span className="font-display font-black text-lg text-white">Cartão de Crédito</span>
                     <span className="text-sm font-black text-foreground mt-0.5">
-                      {tab === 'anual' ? 'R$ 149,90 em até 6x' : 'R$ 29,90 / mês'}
+                      {tab === 'anual' ? 'R$ 199,90 em até 6x' : 'R$ 29,90 / mês'}
                     </span>
                     <span className="text-[11px] text-muted-foreground mt-0.5 truncate">
                       {tab === 'anual' ? 'Parcelamento em até 6x com juros' : 'Assinatura mensal sem fidelidade'}

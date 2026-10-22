@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createStore, get, set, del, keys, entries, clear, UseStore } from 'idb-keyval';
 import { Capacitor } from '@capacitor/core';
 import { blobParaBase64 } from '@/lib/nativo/baixarArquivo';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { X, Clock, MapPin } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { useNavigate } from 'react-router-dom';

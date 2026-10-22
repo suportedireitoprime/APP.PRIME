@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS public.audioaulas_acervo_backup AS SELECT * FROM public.audioaulas_acervo;
+CREATE TABLE IF NOT EXISTS public.narracoes_artigos_backup AS SELECT * FROM public.narracoes_artigos;
+GRANT ALL ON public.audioaulas_acervo_backup TO service_role;
+GRANT ALL ON public.narracoes_artigos_backup TO service_role;
+ALTER TABLE public.audioaulas_acervo_backup ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.narracoes_artigos_backup ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audioaulas_acervo ADD COLUMN IF NOT EXISTS r2_key text;
+CREATE UNIQUE INDEX IF NOT EXISTS audioaulas_acervo_r2_key_uidx ON public.audioaulas_acervo(r2_key);
+ALTER TABLE public.narracoes_artigos ADD COLUMN IF NOT EXISTS r2_key text;
+CREATE UNIQUE INDEX IF NOT EXISTS narracoes_artigos_r2_key_uidx ON public.narracoes_artigos(r2_key);
+DELETE FROM public.audioaulas_acervo WHERE r2_key IS NULL;
+DELETE FROM public.narracoes_artigos WHERE r2_key IS NULL;

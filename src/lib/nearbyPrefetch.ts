@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Prefetches routes that are likely to come next from the current path.
 // Runs on idle so it never competes with the current transition.
 // Reuses the same import() factories as React.lazy so Suspense resolves

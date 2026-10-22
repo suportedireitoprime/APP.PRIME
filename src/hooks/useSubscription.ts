@@ -151,6 +151,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
     let cancelled = false;
     let pollTimer: ReturnType<typeof setTimeout> | null = null;
     let attempts = 0;
+    let errorRetries = 0;
 
     const fetchOnce = async (skipStoreSync = false): Promise<boolean> => {
       try {
@@ -171,6 +172,11 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         console.log(`[useSubscription] queries paralelas: ${(performance.now() - _t0).toFixed(0)}ms`);
 
         if (cancelled) return true;
+
+        // Falha de rede/consulta nas fontes principais: nunca rebaixar para gratuito por erro.
+        if ((legadoRes as any).error || (profileRes as any).error) {
+          throw (legadoRes as any).error || (profileRes as any).error;
+        }
 
         // 2. Atalho incondicional para administradores / Modo Dev
         const email = (user.email || '').toLowerCase();
@@ -222,53 +228,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           return true;
         }
 
-        // 4. Se não há assinatura de loja ativa, verifica período de teste (Trial de 3 dias)
-        // com proteção anti-fraude contra manipulação do relógio local (Item 26),
-        // capping estrito contra manipulação de user_metadata.trial_ends_at (Item 27)
-        // e prevenção contra criação de múltiplas contas no mesmo dispositivo (Item 31).
-        const createdAt = new Date(user.created_at);
-        const maxAllowedTrialMs = createdAt.getTime() + 3 * 24 * 60 * 60 * 1000;
-        let trialEndsAt = new Date(maxAllowedTrialMs);
-
-        if (user.user_metadata?.trial_ends_at) {
-          const metaTrial = new Date(user.user_metadata.trial_ends_at);
-          if (!isNaN(metaTrial.getTime()) && metaTrial.getTime() <= maxAllowedTrialMs) {
-            trialEndsAt = metaTrial;
-          }
-        }
-
-        const nowMs = Date.now();
-        let maxKnownTime = createdAt.getTime();
-        try {
-          const saved = localStorage.getItem('direitoprime:time:max');
-          if (saved) maxKnownTime = Math.max(maxKnownTime, Number(saved));
-        } catch {}
-
-        const isClockTampered = nowMs < maxKnownTime;
-        if (!isClockTampered) {
-          try { localStorage.setItem('direitoprime:time:max', String(nowMs)); } catch {}
-        }
-
-        let isDeviceAbuse = false;
-        try {
-          const claimedUser = localStorage.getItem('direitoprime:device:trial_claimed');
-          if (claimedUser && claimedUser !== user.id) {
-            isDeviceAbuse = true;
-          }
-        } catch {}
-
-        if (!isClockTampered && !isDeviceAbuse && trialEndsAt.getTime() > nowMs) {
-          try {
-            localStorage.setItem('direitoprime:device:trial_claimed', user.id);
-            import('idb-keyval').then(({ set }) => set('direitoprime:device:trial_claimed', user.id)).catch(() => {});
-          } catch {}
-
-          persist({
-            isPremium: true, loading: false, plano: 'Teste de 3 Dias', startedAt: createdAt.toISOString(), expiresAt: trialEndsAt.toISOString(), source: null, status: 'SUBSCRIPTION_STATE_ACTIVE', isAdminOverride: false, isTrial: true,
-          });
-          return true;
-        }
-
+        // Sem teste grátis: usuários gratuitos usam a cota mensal (Minha Cota).
         if (cancelRes.data) {
           persist({
             isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
@@ -308,8 +268,15 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         return false;
 
       } catch (err) {
-        // Se a rede falhar, persista o estado atual com loading: false para destravar os componentes
-        persist(state);
+        // Erro: mantém o último estado conhecido. Se ainda não sabemos se é assinante,
+        // continua "carregando" e tenta de novo, para não mandar assinantes ao checkout.
+        errorRetries += 1;
+        if (errorRetries <= 3 && !cancelled) {
+          setState(prev => (prev.isPremium ? { ...prev, loading: false } : { ...prev, loading: true }));
+          await new Promise(r => setTimeout(r, 1500 * errorRetries));
+          if (!cancelled) return fetchOnce(skipStoreSync);
+        }
+        setState(prev => ({ ...prev, loading: false }));
         return true;
       }
     };

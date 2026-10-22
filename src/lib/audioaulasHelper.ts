@@ -10,10 +10,36 @@ import capaLeiPenalEspecial from '@/assets/capa-lei-penal-especial.webp';
 import capaProcessoPenal from '@/assets/capa-processo-penal.webp';
 
 export const CAPA_HUB = srcOf(capaAudioaulas);
-import { R2_MIDIAS_BASE_URL } from '@/lib/storageBuckets';
-const SUPABASE_STORAGE_CAPAS = `${R2_MIDIAS_BASE_URL}/biblioteca-obras/capas_areas`;
+import { R2_MIDIAS_BASE_URL, R2_LIVROS_PDF_BASE_URL } from '@/lib/storageBuckets';
+const SUPABASE_STORAGE_CAPAS = `${R2_LIVROS_PDF_BASE_URL}/biblioteca-obras/capas_areas`;
+
+// Capas oficiais das matérias das audioaulas (R2 estudos-juridicos-midias/audioaulas/capas)
+const R2_CAPAS_AUDIO = `${R2_MIDIAS_BASE_URL}/audioaulas/capas`;
+const c = (slug: string) => `${R2_CAPAS_AUDIO}/${slug}.webp`;
 
 const CAPAS: { re: RegExp; url: string }[] = [
+  { re: /lei penal especial|penal especial|organiza[çc][õo]es criminosas/i, url: c('lei-penal-especial') },
+  { re: /process(o|ual) penal/i, url: c('direito-processual-penal') },
+  { re: /process(o|ual) civil/i, url: c('direito-processual-civil') },
+  { re: /process(o|ual) do trabalho/i, url: c('direito-processual-do-trabalho') },
+  { re: /filosofia|teoria/i, url: c('teoria-e-filosofia-do-direito') },
+  { re: /urban/i, url: c('direito-urbanistico') },
+  { re: /desport/i, url: c('direito-desportivo') },
+  { re: /financeir/i, url: c('direito-financeiro') },
+  { re: /portugu/i, url: c('portugues') },
+  { re: /pol[íi]ticas p[úu]blicas/i, url: c('politicas-publicas') },
+  { re: /forma[çc][ãa]o complementar|complementar/i, url: c('formacao-complementar') },
+  { re: /internacional/i, url: c('direito-internacional-privado') },
+  { re: /direitos humanos/i, url: c('direitos-humanos') },
+  { re: /penal/i, url: c('direito-penal') },
+  { re: /civil/i, url: c('direito-civil') },
+  { re: /constitu/i, url: c('direito-constitucional') },
+  { re: /trabalh|clt/i, url: c('direito-do-trabalho') },
+  { re: /tribut/i, url: c('direito-tributario') },
+  { re: /empresarial|comercial/i, url: c('direito-empresarial') },
+  { re: /administrativ/i, url: c('direito-administrativo') },
+  { re: /ambiental/i, url: c('direito-ambiental') },
+  { re: /previdenci/i, url: c('direito-previdenciario') },
   { re: /eca|criança|adolescente|infância|juventude/i, url: `${SUPABASE_STORAGE_CAPAS}/direito-crianca-adolescente-eca.webp` },
   { re: /médico|medico/i, url: capaMedico },
   { re: /filosofia/i, url: capaFilosofia },

@@ -179,7 +179,8 @@ export async function buscarStatusNarracoes(tabelaNome: string): Promise<Record<
     const { data, error } = await supabase
       .from('narracoes_artigos')
       .select('artigo_numero, audio_url, word_timings, created_at')
-      .in('tabela_nome', aliases);
+      .in('tabela_nome', aliases)
+      .limit(10000);
 
     if (error) {
       console.warn('[narracaoLeisService] Erro ao buscar narracoes_artigos:', error);

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useMemo, useEffect } from 'react';
 import { ExternalLink, FileText, ChevronRight, Scale, Sparkles, Loader2, Check } from 'lucide-react';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';

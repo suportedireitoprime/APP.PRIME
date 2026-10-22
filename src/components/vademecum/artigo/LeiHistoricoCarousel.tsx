@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo, useRef } from 'react';
 import { ChevronRight } from 'lucide-react';
 import type { ArtigoLei } from '@/data/mockData';

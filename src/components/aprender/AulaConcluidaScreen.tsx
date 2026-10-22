@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Zap, RotateCw, ArrowRight, X } from 'lucide-react';

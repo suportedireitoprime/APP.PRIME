@@ -100,7 +100,8 @@ export const AudioleisCapitulosOverlay: React.FC<AudioleisCapitulosOverlayProps>
         const { data, error } = await supabase
           .from('narracoes_artigos')
           .select('artigo_numero, audio_url')
-          .in('tabela_nome', aliases);
+          .in('tabela_nome', aliases)
+          .limit(10000);
 
         if (error) throw error;
         if (!active) return;
@@ -313,7 +314,7 @@ export const AudioleisCapitulosOverlay: React.FC<AudioleisCapitulosOverlayProps>
       animate={{ y: 0 }}
       exit={{ y: '100%' }}
       transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-      className="fixed inset-0 z-[120] flex flex-col overflow-hidden select-none"
+      className="fixed inset-0 z-120 flex flex-col overflow-hidden select-none"
       style={{
         background: 'linear-gradient(180deg, hsl(270 70% 30%) 0%, hsl(275 75% 35%) 40%, hsl(265 72% 28%) 100%)',
       }}
@@ -427,7 +428,7 @@ export const AudioleisCapitulosOverlay: React.FC<AudioleisCapitulosOverlayProps>
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Pesquisar capítulo ou número do artigo..."
-                className="w-full min-h-[52px] bg-black/35 backdrop-blur-md border border-white/20 rounded-2xl pl-12 pr-11 py-3.5 text-sm sm:text-base text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:bg-black/50 transition-all shadow-md"
+                className="w-full min-h-13 bg-black/35 backdrop-blur-md border border-white/20 rounded-2xl pl-12 pr-11 py-3.5 text-sm sm:text-base text-white placeholder-white/50 focus:outline-none focus:border-white/50 focus:bg-black/50 transition-all shadow-md"
               />
               {searchQuery && (
                 <button
@@ -521,7 +522,7 @@ export const AudioleisCapitulosOverlay: React.FC<AudioleisCapitulosOverlayProps>
                       <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/40">
                         <div
                           className={`h-full rounded-full transition-all duration-500 ${
-                            hasAnyAudio ? 'bg-gradient-to-r from-purple-400 to-emerald-400' : 'bg-white/10'
+                            hasAnyAudio ? 'bg-linear-to-r from-purple-400 to-emerald-400' : 'bg-white/10'
                           }`}
                           style={{ width: `${Math.max(hasAnyAudio ? 12 : 0, capPct)}%` }}
                         />
@@ -648,7 +649,7 @@ export const AudioleisCapitulosOverlay: React.FC<AudioleisCapitulosOverlayProps>
             initial={{ y: 80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 80, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 z-[130] bg-black/80 border-t border-purple-400/30 backdrop-blur-xl p-3 sm:p-4 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl"
+            className="fixed bottom-0 left-0 right-0 z-130 bg-black/80 border-t border-purple-400/30 backdrop-blur-xl p-3 sm:p-4 pb-[calc(0.75rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] shadow-2xl"
           >
             <div className="max-w-4xl mx-auto flex flex-col gap-2">
               <div className="flex items-center justify-between gap-3">

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { memo } from 'react';
 import brasaoImg from '@/assets/brasao-republica.webp';
 

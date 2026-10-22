@@ -1,0 +1,8 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+// Rendered by the Direito Prime app mounted in __root; this file only registers the URL.
+export const Route = createFileRoute("/bibliotecas/$colecaoId/$areaSlug")({
+  ssr: false,
+  head: () => ({ meta: [{ title: "Bibliotecas — Direito Prime" }] }),
+  component: () => null,
+});

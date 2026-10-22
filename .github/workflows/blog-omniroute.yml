@@ -1,0 +1,42 @@
+name: Blog OmniRoute Automation
+
+on:
+  workflow_dispatch:
+    inputs:
+      script:
+        description: 'Script para executar'
+        required: true
+        default: 'blog:omniroute'
+        type: choice
+        options:
+          - 'blog:omniroute'
+          - 'blog:adapt'
+
+jobs:
+  run-articles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci || npm install
+
+      - name: Executar Workflow de Artigos
+        env:
+          OMNIROUTE_KEY: ${{ secrets.OMNIROUTE_KEY }}
+          OMNIROUTE_URL: ${{ secrets.OMNIROUTE_URL || 'https://omniroute-production-fb57.up.railway.app/v1' }}
+          OMNIROUTE_MODEL: ${{ secrets.OMNIROUTE_MODEL || 'antigravity/gemini-3.8-flash-tiered' }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: npm run ${{ inputs.script }}

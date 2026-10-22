@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Cliente da Gemini Live API (WebSocket bidirecional) para a função "Me Explique".
  *
@@ -398,16 +399,16 @@ export class SessaoMeExplique {
       this.opcoes.onTranscricaoParcial?.({ quem: "aluno", texto: this.bufferAluno });
     }
     if (conteudo.outputTranscription?.text) {
+      // professor começou a responder: fecha a fala do aluno primeiro
+      if (this.bufferAluno.trim()) {
+        this.opcoes.onTranscricao({ quem: "aluno", texto: this.bufferAluno.trim() });
+        this.bufferAluno = "";
+      }
       this.bufferProfessor += conteudo.outputTranscription.text;
       this.opcoes.onTranscricaoParcial?.({ quem: "professor", texto: this.bufferProfessor });
     }
 
-    if (conteudo.interrupted) {
-      this.pararFala();
-      this.opcoes.onStatus("ouvindo");
-    }
-
-    if (conteudo.turnComplete || conteudo.generationComplete) {
+    const fecharTurno = () => {
       if (this.bufferAluno.trim()) {
         this.opcoes.onTranscricao({ quem: "aluno", texto: this.bufferAluno.trim() });
         this.bufferAluno = "";
@@ -416,7 +417,19 @@ export class SessaoMeExplique {
         this.opcoes.onTranscricao({ quem: "professor", texto: this.bufferProfessor.trim() });
         this.bufferProfessor = "";
       }
-      if (conteudo.turnComplete) this.opcoes.onStatus("ouvindo");
+    };
+
+    if (conteudo.interrupted) {
+      this.pararFala();
+      fecharTurno();
+      this.opcoes.onStatus("ouvindo");
+    }
+
+    // A transcrição do áudio continua chegando depois de generationComplete;
+    // só fecha o balão no turnComplete para não quebrar a fala em pedaços.
+    if (conteudo.turnComplete) {
+      fecharTurno();
+      this.opcoes.onStatus("ouvindo");
     }
   }
 

@@ -1,6 +1,7 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { WifiOff } from 'lucide-react';
 import { recordException } from '@/lib/nativeCrashlytics';
+import { isChunkLoadError, recoverChunkLoad } from '@/utils/lazyWithRetry';
 
 interface Props {
   children: ReactNode;
@@ -19,40 +20,13 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private isChunkError(message: string): boolean {
-    return /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|Loading chunk \d+ failed|Failed to load module script/i.test(message);
+    return isChunkLoadError(new Error(message));
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     const isChunkLoadFailed = this.isChunkError(error?.message || '');
 
-    if (isChunkLoadFailed) {
-      const reloadCount = parseInt(sessionStorage.getItem('chunk_reload') || '0', 10);
-      if (reloadCount < 2) {
-        sessionStorage.setItem('chunk_reload', String(reloadCount + 1));
-        
-        // Remove Service Workers para forçar atualização do index.html
-        if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then((regs) => {
-            for (const reg of regs) {
-              reg.unregister();
-            }
-            // Força cache bust na URL
-            const url = new URL(window.location.href);
-            url.searchParams.set('v', Date.now().toString());
-            window.location.href = url.toString();
-          }).catch(() => {
-            window.location.reload();
-          });
-        } else {
-          const url = new URL(window.location.href);
-          url.searchParams.set('v', Date.now().toString());
-          window.location.href = url.toString();
-        }
-        return;
-      }
-    } else {
-      sessionStorage.removeItem('chunk_reload');
-    }
+    if (isChunkLoadFailed && recoverChunkLoad()) return;
 
     void recordException(error, {
       source: 'react.ErrorBoundary',

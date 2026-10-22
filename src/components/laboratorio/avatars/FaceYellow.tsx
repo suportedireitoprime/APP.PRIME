@@ -1,168 +1,192 @@
-import React from 'react';
+import React, { useId, useMemo } from 'react';
 import { getMouthShape } from './VisemeDictionary';
 
-export const FaceYellow = ({ viseme, volume }: { viseme: string; volume: number }) => {
+type Status = 'conectando' | 'ouvindo' | 'falando' | string;
+
+interface Props {
+  viseme: string;
+  volume: number;
+  status?: Status;
+}
+
+/**
+ * Professor Prime — avatar SVG animado.
+ * A peruca é uma peça sólida desenhada sobre a cabeça (sem recortes),
+ * então nunca aparece fundo entre o cabelo e o rosto.
+ */
+export const FaceYellow = ({ viseme, volume, status = 'falando' }: Props) => {
+  const uid = useId().replace(/:/g, '');
+  const id = (n: string) => `${n}-${uid}`;
   const mouth = getMouthShape(viseme);
-  
-  const eyeScale = 1 + volume * 1.5;
-  const browOffset = mouth.openAmount * -5;
-  const bounce = volume * 3;
+  const v = Math.max(0, Math.min(1, volume || 0));
+
+  const falando = status === 'falando';
+  const conectando = status === 'conectando';
+  const ouvindo = status === 'ouvindo';
+
+  // olhar: ouvindo = olha para frente; conectando = pensativo (para cima)
+  const eyeY = conectando ? -3 : 0;
+  const browY = (falando ? mouth.openAmount * -4 - v * 2 : 0) + (conectando ? -2 : 0) + (ouvindo ? -1 : 0);
+  const headTilt = falando ? Math.sin(v * 6) * 2.5 : ouvindo ? 3 : 0;
+  const bounce = falando ? v * 2.5 : 0;
+  // martelo só bate em picos
+  const malho = falando && v > 0.45 ? -28 : 0;
+
+  // atrasos aleatórios por instância para piscadas não robóticas
+  const blinkDelay = useMemo(() => `${(Math.random() * 3).toFixed(2)}s`, []);
+
+  const outline = '#3a2a12';
+  const sw = 1.4;
 
   return (
-    <svg viewBox="-10 -40 120 170" preserveAspectRatio="xMidYMax slice" className="w-full h-full drop-shadow-2xl overflow-visible">
+    <svg
+      viewBox="-10 -40 120 170"
+      preserveAspectRatio="xMidYMax slice"
+      className="w-full h-full drop-shadow-2xl overflow-visible"
+      role="img"
+      aria-label="Professor Prime"
+    >
       <defs>
-        <radialGradient id="skinYellow" cx="50%" cy="50%" r="50%">
-          <stop offset="70%" stopColor="#ffeb3b" />
-          <stop offset="100%" stopColor="#fbc02d" />
+        <radialGradient id={id('skin')} cx="40%" cy="35%" r="70%">
+          <stop offset="0%" stopColor="#fff59d" />
+          <stop offset="55%" stopColor="#ffe03a" />
+          <stop offset="100%" stopColor="#f2a91c" />
         </radialGradient>
+        <linearGradient id={id('wig')} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#dcdcdc" />
+        </linearGradient>
+        <radialGradient id={id('curl')} cx="35%" cy="35%" r="70%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#cfcfcf" />
+        </radialGradient>
+        <linearGradient id={id('robe')} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#111" />
+          <stop offset="50%" stopColor="#2b2b2b" />
+          <stop offset="100%" stopColor="#111" />
+        </linearGradient>
         <style>{`
-          .idle-blink {
-            animation: blink 4s infinite;
-          }
-          .idle-look {
-            animation: lookAround 8s infinite;
-          }
-          @keyframes blink {
-            0%, 96% { transform: scale(1, 1); }
-            98% { transform: scale(1, 0.1); }
-            100% { transform: scale(1, 1); }
-          }
-          @keyframes lookAround {
-            0%, 20% { transform: translateX(0px); }
-            25%, 45% { transform: translateX(-3px); }
-            50%, 70% { transform: translateX(3px); }
-            75%, 100% { transform: translateX(0px); }
+          .pp-breathe-${uid} { animation: ppBreathe 4.2s ease-in-out infinite; transform-origin: 50px 180px; }
+          .pp-blink-${uid} { animation: ppBlink 5.3s infinite; animation-delay: ${blinkDelay}; transform-box: fill-box; transform-origin: center; }
+          .pp-look-${uid} { animation: ppLook 9s ease-in-out infinite; }
+          .pp-smooth { transition: transform 140ms ease-out; }
+          @keyframes ppBreathe { 0%,100% { transform: translateY(0) scale(1,1); } 50% { transform: translateY(-1px) scale(1,1.012); } }
+          @keyframes ppBlink { 0%,93%,100% { transform: scaleY(1); } 95% { transform: scaleY(0.08); } 97% { transform: scaleY(1); } }
+          @keyframes ppLook { 0%,30% { transform: translateX(0); } 38%,52% { transform: translateX(-2px); } 60%,78% { transform: translateX(2px); } 86%,100% { transform: translateX(0); } }
+          @media (prefers-reduced-motion: reduce) {
+            .pp-breathe-${uid}, .pp-blink-${uid}, .pp-look-${uid} { animation: none; }
+            .pp-smooth { transition: none; }
           }
         `}</style>
       </defs>
-      
-      {/* Ondas Sonoras no Fundo (movidas levemente para cobrir o corpo todo se precisar, ou só a cabeça) */}
-      <circle cx="50" cy="50" r="45" fill="none" stroke="#fbc02d" strokeWidth="2" className="transition-all duration-100" style={{ transform: `scale(${1 + volume * 0.8})`, opacity: Math.max(0, 0.8 - volume), transformOrigin: '50px 50px' }} />
-      <circle cx="50" cy="50" r="45" fill="none" stroke="#ffeb3b" strokeWidth="4" className="transition-all duration-100" style={{ transform: `scale(${1 + volume * 0.4})`, opacity: Math.max(0, 0.6 - volume), transformOrigin: '50px 50px' }} />
 
-      {/* Braço Esquerdo (Descansando) */}
-      <g className="transition-transform duration-100" style={{ transform: `rotate(${volume * 5}deg)`, transformOrigin: '35px 100px' }}>
-        {/* Manga */}
-        <path d="M 35 90 Q 15 110 20 135" fill="none" stroke="#212121" strokeWidth="16" strokeLinecap="round" />
-        
-        {/* Luva Esquerda */}
-        <g transform="translate(20, 138) rotate(-15)">
-          {/* Punho gordinho */}
-          <ellipse cx="0" cy="-6" rx="13" ry="5" fill="#e0e0e0" />
-          <ellipse cx="0" cy="-8" rx="13" ry="5" fill="#ffffff" />
-          
-          {/* Palma */}
-          <circle cx="0" cy="2" r="10" fill="#ffffff" />
-          
-          {/* Dedos relaxados */}
-          <rect x="-9" y="6" width="6.5" height="13" rx="3.25" fill="#ffffff" transform="rotate(15 -9 6)" />
-          <rect x="-3.5" y="8" width="7" height="15" rx="3.5" fill="#ffffff" />
-          <rect x="2.5" y="6" width="6.5" height="13" rx="3.25" fill="#ffffff" transform="rotate(-15 2.5 6)" />
-          
-          {/* Polegar */}
-          <ellipse cx="8" cy="2" rx="4.5" ry="8" fill="#ffffff" transform="rotate(-45 8 2)" />
-          
-          {/* Linhas de contorno suaves */}
-          <path d="M -3.5 12 L -3.5 20" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-          <path d="M 3.5 10 L 3.5 17" stroke="#bdbdbd" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+      {/* Ondas de voz */}
+      {falando && (
+        <>
+          <circle cx="50" cy="50" r="47" fill="none" stroke="#fbc02d" strokeWidth="1.5"
+            style={{ transform: `scale(${1 + v * 0.5})`, opacity: Math.max(0, 0.6 - v * 0.5), transformOrigin: '50px 50px', transition: 'transform 120ms, opacity 120ms' }} />
+          <circle cx="50" cy="50" r="47" fill="none" stroke="#ffeb3b" strokeWidth="3"
+            style={{ transform: `scale(${1 + v * 0.25})`, opacity: Math.max(0, 0.45 - v * 0.3), transformOrigin: '50px 50px', transition: 'transform 120ms, opacity 120ms' }} />
+        </>
+      )}
+
+      <g className={`pp-breathe-${uid}`}>
+        {/* Braço esquerdo */}
+        <g className="pp-smooth" style={{ transform: `rotate(${v * 4}deg)`, transformOrigin: '35px 100px' }}>
+          <path d="M 35 92 Q 16 110 20 133" fill="none" stroke="#1a1a1a" strokeWidth="16" strokeLinecap="round" />
+          <g transform="translate(20, 138) rotate(-15)">
+            <ellipse cx="0" cy="-7" rx="12" ry="5" fill="#e6e6e6" stroke={outline} strokeWidth={0.8} />
+            <circle cx="0" cy="3" r="10" fill="#fff" stroke={outline} strokeWidth={0.8} />
+            <rect x="-8.5" y="7" width="6" height="12" rx="3" fill="#fff" stroke={outline} strokeWidth={0.6} transform="rotate(12 -8.5 7)" />
+            <rect x="-3" y="9" width="6.5" height="13" rx="3.2" fill="#fff" stroke={outline} strokeWidth={0.6} />
+            <rect x="3" y="7" width="6" height="12" rx="3" fill="#fff" stroke={outline} strokeWidth={0.6} transform="rotate(-12 3 7)" />
+          </g>
         </g>
-      </g>
 
-      {/* Braço Direito (Segurando Martelo da Justiça de forma frontal) */}
-      <g className="transition-transform duration-100" style={{ transform: `rotate(${-volume * 15}deg)`, transformOrigin: '65px 100px' }}>
-        {/* Manga (Dobrada para frente) */}
-        <path d="M 65 95 Q 100 95 90 125" fill="none" stroke="#212121" strokeWidth="18" strokeLinecap="round" />
-        
-        {/* Mão Direita e Martelo */}
-        <g style={{ transform: `translateY(${-volume * 5}px) rotate(${volume * 30}deg)`, transition: 'transform 0.1s', transformOrigin: '90px 125px' }}>
-          
-          {/* Cabo do Martelo (em um ângulo mais natural) */}
-          <rect x="85" y="90" width="8" height="45" rx="3" fill="#795548" transform="rotate(15 89 112)" />
-          {/* Cabeça do Martelo */}
-          <g transform="rotate(15 89 112)">
-            <rect x="75" y="85" width="28" height="14" rx="3" fill="#5D4037" />
-            <rect x="73" y="88" width="32" height="8" rx="2" fill="#4E342E" />
+        {/* Braço direito com martelo */}
+        <g className="pp-smooth" style={{ transform: `rotate(${-v * 6}deg)`, transformOrigin: '65px 100px' }}>
+          <path d="M 65 96 Q 98 96 90 124" fill="none" stroke="#1a1a1a" strokeWidth="17" strokeLinecap="round" />
+          <g style={{ transform: `rotate(${malho}deg)`, transformOrigin: '90px 126px', transition: 'transform 160ms cubic-bezier(.3,1.6,.5,1)' }}>
+            <g transform="rotate(15 89 112)">
+              <rect x="86" y="88" width="6" height="44" rx="3" fill="#8d5a3b" stroke={outline} strokeWidth={0.8} />
+              <rect x="74" y="82" width="30" height="14" rx="3" fill="#6d4330" stroke={outline} strokeWidth={0.9} />
+              <rect x="74" y="86" width="30" height="3" fill="#a06b48" opacity="0.7" />
+            </g>
+            <circle cx="90" cy="126" r="9.5" fill="#fff" stroke={outline} strokeWidth={0.8} />
+            <path d="M 82 121 Q 90 118 98 123 M 82 126 Q 90 123 98 128 M 83 131 Q 90 128 97 133" fill="none" stroke="#c9c9c9" strokeWidth="1" strokeLinecap="round" />
+            <ellipse cx="90" cy="137" rx="12" ry="5" fill="#e6e6e6" stroke={outline} strokeWidth={0.8} transform="rotate(15 90 137)" />
+          </g>
+        </g>
+
+        {/* Toga */}
+        <path d="M 34 88 Q 19 130 14 180 L 86 180 Q 81 130 66 88 Z" fill={`url(#${id('robe')})`} stroke="#000" strokeWidth={sw} />
+        <path d="M 30 120 Q 28 150 26 180 M 70 120 Q 72 150 74 180" stroke="#3a3a3a" strokeWidth="1" fill="none" />
+        {/* Jabot */}
+        <path d="M 40 88 L 60 88 L 56 106 L 50 114 L 44 106 Z" fill="#fff" stroke={outline} strokeWidth={0.9} strokeLinejoin="round" />
+        <path d="M 43 96 Q 50 100 57 96 M 44 103 Q 50 107 56 103" fill="none" stroke="#d6d6d6" strokeWidth="1" />
+        <path d="M 50 114 L 50 180" stroke="#000" strokeWidth="2.5" />
+
+        {/* Cabeça */}
+        <g className="pp-smooth" style={{ transform: `translateY(${bounce}px) rotate(${headTilt}deg) scale(${1 + v * 0.04}, ${1 - v * 0.04})`, transformOrigin: '50px 92px' }}>
+          {/* Peruca de magistrado: cachos em fileiras horizontais atrás das orelhas */}
+          {[44, 54, 64, 74, 84].map((cy, i) => (
+            <g key={cy}>
+              <rect x={-1 - i * 0.6} y={cy - 5} width="16" height="10" rx="5" fill={`url(#${id('curl')})`} stroke="#a8a8a8" strokeWidth="0.8" />
+              <rect x={85 + i * 0.6} y={cy - 5} width="16" height="10" rx="5" fill={`url(#${id('curl')})`} stroke="#a8a8a8" strokeWidth="0.8" />
+              <path d={`M ${2 - i * 0.6} ${cy} q 5 -3 10 0`} fill="none" stroke="#bdbdbd" strokeWidth="0.8" />
+              <path d={`M ${88 + i * 0.6} ${cy} q 5 -3 10 0`} fill="none" stroke="#bdbdbd" strokeWidth="0.8" />
+            </g>
+          ))}
+
+          <circle cx="50" cy="50" r="45" fill={`url(#${id('skin')})`} stroke={outline} strokeWidth={sw} />
+          {/* brilho */}
+          <ellipse cx="34" cy="22" rx="12" ry="6" fill="#fff" opacity="0.35" transform="rotate(-25 34 22)" />
+          {/* bochechas */}
+          <ellipse cx="24" cy="60" rx="7" ry="4" fill="#ff8a65" opacity="0.35" />
+          <ellipse cx="76" cy="60" rx="7" ry="4" fill="#ff8a65" opacity="0.35" />
+
+          {/* Peruca: topo liso e sólido, colado à cabeça, com rolos horizontais elegantes */}
+          <path
+            d="M 6 50 C 2 16 24 -4 50 -4 C 76 -4 98 16 94 50 C 92 40 88 33 82 29 C 72 24 62 23 50 23 C 38 23 28 24 18 29 C 12 33 8 40 6 50 Z"
+            fill={`url(#${id('wig')})`}
+            stroke="#a8a8a8"
+            strokeWidth="1"
+          />
+          {/* rolos horizontais do topo */}
+          {[[6, 26, 74], [13, 18, 82], [20, 14, 86]].map(([y, x1, x2], i) => (
+            <path key={i} d={`M ${x1} ${y} Q 50 ${y - 7} ${x2} ${y}`} fill="none" stroke="#c4c4c4" strokeWidth="1.3" strokeLinecap="round" />
+          ))}
+          {/* rolo frontal que arremata a testa */}
+          <path d="M 16 31 C 28 24 40 22 50 22 C 60 22 72 24 84 31" fill="none" stroke="#ffffff" strokeWidth="5" strokeLinecap="round" />
+          <path d="M 16 31 C 28 24 40 22 50 22 C 60 22 72 24 84 31" fill="none" stroke="#b0b0b0" strokeWidth="0.8" transform="translate(0 2.6)" />
+          {/* sombra suave sobre a testa */}
+          <path d="M 20 36 C 32 30 68 30 80 36" fill="none" stroke="#c99a1a" strokeWidth="2" opacity="0.25" />
+
+          {/* Sobrancelhas */}
+          <g className="pp-smooth" style={{ transform: `translateY(${browY}px)` }}>
+            <path d="M 27 34 Q 35 29 43 33" fill="none" stroke="#a05a00" strokeWidth="3" strokeLinecap="round" />
+            <path d="M 57 33 Q 65 29 73 34" fill="none" stroke="#a05a00" strokeWidth="3" strokeLinecap="round" />
           </g>
 
-          {/* Mão (Luva Branca) segurando o cabo pela frente */}
-          <circle cx="90" cy="125" r="10" fill="#ffffff" />
-          
-          {/* Dedos dobrados na frente do cabo */}
-          <rect x="82" y="118" width="14" height="6" rx="3" fill="#ffffff" transform="rotate(15 82 118)" />
-          <rect x="83" y="124" width="14" height="6" rx="3" fill="#ffffff" transform="rotate(15 83 124)" />
-          <rect x="85" y="130" width="14" height="6" rx="3" fill="#ffffff" transform="rotate(15 85 130)" />
-          
-          {/* Polegar fechando a pegada, cruzando o cabo */}
-          <ellipse cx="96" cy="118" rx="4" ry="8" fill="#ffffff" transform="rotate(-30 96 118)" />
-          
-          {/* Punho */}
-          <ellipse cx="90" cy="138" rx="13" ry="5.5" fill="#e0e0e0" transform="rotate(15 90 138)" />
-          <ellipse cx="90" cy="135" rx="13" ry="5.5" fill="#ffffff" transform="rotate(15 90 135)" />
-        </g>
-      </g>
-
-      {/* Corpo (Toga de Juiz) */}
-      <g className="transition-transform duration-100" style={{ transform: `scale(1, ${1 + volume * 0.02})`, transformOrigin: '50px 180px' }}>
-        <path d="M 35 90 Q 20 130 15 180 L 85 180 Q 80 130 65 90 Z" fill="#212121" />
-        {/* Colarinho branco (jabot) típico de magistrados */}
-        <path d="M 40 90 L 60 90 L 55 110 L 50 115 L 45 110 Z" fill="#ffffff" />
-        {/* Linhas do jabot */}
-        <path d="M 45 90 L 45 110" stroke="#eeeeee" strokeWidth="1" />
-        <path d="M 50 90 L 50 115" stroke="#e0e0e0" strokeWidth="1.5" />
-        <path d="M 55 90 L 55 110" stroke="#eeeeee" strokeWidth="1" />
-        <path d="M 50 115 L 50 180" stroke="#111111" strokeWidth="4" />
-      </g>
-
-      {/* Cabeça e Efeito de amassar (squash & stretch) */}
-      <g style={{ transform: `translateY(${bounce}px) scale(${1 + volume * 0.08}, ${1 - volume * 0.08})`, transformOrigin: '50px 95px', transition: 'transform 0.1s' }}>
-        <circle cx="50" cy="50" r="45" fill="url(#skinYellow)" />
-        
-        {/* Peruca de Juiz (Magistrate Wig) */}
-        <g className="transition-transform duration-100" style={{ transform: `translateY(${-34 + volume * 4}px) scale(1.45) rotate(${volume * 3}deg)`, transformOrigin: '50px 30px' }}>
-          {/* Base da peruca */}
-          <path d="M 15 50 Q 10 20 50 10 Q 90 20 85 50 Q 80 65 75 60 L 75 40 Q 50 25 25 40 L 25 60 Q 20 65 15 50 Z" fill="#f5f5f5" />
-          {/* Rolos laterais esquerdos */}
-          <circle cx="20" cy="45" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
-          <circle cx="22" cy="55" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
-          <circle cx="25" cy="65" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
-          {/* Rolos laterais direitos */}
-          <circle cx="80" cy="45" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
-          <circle cx="78" cy="55" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
-          <circle cx="75" cy="65" r="7" fill="#eeeeee" stroke="#e0e0e0" strokeWidth="1" />
-          {/* Linhas da peruca no topo */}
-          <path d="M 30 20 Q 50 15 70 20" fill="none" stroke="#e0e0e0" strokeWidth="2" />
-          <path d="M 35 25 Q 50 20 65 25" fill="none" stroke="#e0e0e0" strokeWidth="2" />
-          <path d="M 40 30 Q 50 25 60 30" fill="none" stroke="#e0e0e0" strokeWidth="2" />
-        </g>
-
-        {/* Sobrancelhas */}
-        <path d="M 28 33 Q 35 28 42 33" fill="none" stroke="#f57f17" strokeWidth="3" strokeLinecap="round" className="transition-all duration-100" style={{ transform: `translateY(${browOffset}px)` }} />
-        <path d="M 58 33 Q 65 28 72 33" fill="none" stroke="#f57f17" strokeWidth="3" strokeLinecap="round" className="transition-all duration-100" style={{ transform: `translateY(${browOffset}px)` }} />
-
-        {/* Olhos com animações Idle (piscar e olhar para os lados) misturadas com o scale do áudio */}
-        <g className="idle-blink" style={{ transformOrigin: '35px 40px' }}>
-          <g className="transition-all duration-75" style={{ transform: `scale(1, ${Math.max(0.1, eyeScale)})`, transformOrigin: '35px 40px' }}>
-            <g className="idle-look">
-              <ellipse cx="35" cy="40" rx="4.5" ry="8.5" fill="#3e2723" />
-              <circle cx="34" cy="36" r="2" fill="#fff" />
+          {/* Olhos */}
+          <g className="pp-smooth" style={{ transform: `translateY(${eyeY}px)` }}>
+            <g className={ouvindo ? '' : `pp-look-${uid}`}>
+              {[35, 65].map((cx) => (
+                <g key={cx} className={`pp-blink-${uid}`}>
+                  <ellipse cx={cx} cy="45" rx="4.6" ry="7.6" fill="#2b1a10" />
+                  <circle cx={cx - 1.4} cy="41.8" r="1.7" fill="#fff" />
+                  <circle cx={cx + 1.3} cy="48" r="0.7" fill="#fff" opacity="0.7" />
+                </g>
+              ))}
             </g>
           </g>
-        </g>
-        
-        <g className="idle-blink" style={{ transformOrigin: '65px 40px' }}>
-          <g className="transition-all duration-75" style={{ transform: `scale(1, ${Math.max(0.1, eyeScale)})`, transformOrigin: '65px 40px' }}>
-            <g className="idle-look">
-              <ellipse cx="65" cy="40" rx="4.5" ry="8.5" fill="#3e2723" />
-              <circle cx="64" cy="36" r="2" fill="#fff" />
-            </g>
+
+          {/* Boca */}
+          <g style={{ transition: 'opacity 80ms' }}>
+            <path d={mouth.lips} fill="#5a2e14" stroke={outline} strokeWidth="0.6" />
+            <path d={mouth.opening} fill="#2a0505" />
+            <path d={mouth.tongue} fill="#e57373" />
           </g>
-        </g>
-        
-        {/* Boca 3 Camadas */}
-        <g>
-          <path d={mouth.lips} fill="#3e2723" />
-          <path d={mouth.opening} fill="#1a0000" />
-          <path d={mouth.tongue} fill="#e57373" />
         </g>
       </g>
     </svg>

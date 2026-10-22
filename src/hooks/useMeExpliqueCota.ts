@@ -43,7 +43,8 @@ export function useMeExpliqueCota() {
 
   const limiteSegundos = isPremium ? LIMITE_PREMIUM_SEG : LIMITE_FREE_SEG;
   const tempoRestante = Math.max(0, limiteSegundos - tempoUsado);
-  const limiteAtingido = tempoRestante <= 0;
+  // Enquanto o plano não foi confirmado, nunca bloqueia (evita tratar assinante como grátis)
+  const limiteAtingido = !carregandoPlano && tempoRestante <= 0;
 
   // Sincroniza com outros componentes
   useEffect(() => {
@@ -64,17 +65,18 @@ export function useMeExpliqueCota() {
       const novo = atual + qtd;
       salvarTempoUsado(isPremium, novo);
       window.dispatchEvent(new CustomEvent('me-explique-cota-updated'));
-      if (novo >= limiteSegundos) {
+      if (!carregandoPlano && novo >= limiteSegundos) {
         setLimiteModalAberto(true);
         void haptic.heavy();
       }
       return novo;
     });
-  }, [isPremium, limiteSegundos]);
+  }, [isPremium, limiteSegundos, carregandoPlano]);
 
   const iniciarTimer = useCallback(() => {
+    if (carregandoPlano) return;
     setTimerAtivo(true);
-  }, []);
+  }, [carregandoPlano]);
 
   const pararTimer = useCallback(() => {
     setTimerAtivo(false);
@@ -83,7 +85,7 @@ export function useMeExpliqueCota() {
   // Timer quando está em áudio/câmera/interação contínua
   const timerRef = useRef<number | null>(null);
   useEffect(() => {
-    if (!timerAtivo || limiteAtingido) {
+    if (!timerAtivo || limiteAtingido || carregandoPlano) {
       if (timerRef.current) clearInterval(timerRef.current);
       return;
     }
@@ -107,7 +109,7 @@ export function useMeExpliqueCota() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [timerAtivo, limiteAtingido, limiteSegundos, isPremium]);
+  }, [timerAtivo, limiteAtingido, limiteSegundos, isPremium, carregandoPlano]);
 
   const minutosRestantes = Math.floor(tempoRestante / 60);
   const segundosRestantes = tempoRestante % 60;

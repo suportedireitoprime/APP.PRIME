@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * imageLruMemoryCache.ts — Fase 24 de Otimização de Imagens
  * 

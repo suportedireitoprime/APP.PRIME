@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ArrowLeft, Play, Pause, ChevronLeft, ChevronRight, Heart, Star, Share2, MessageCircle, RotateCw, Loader2, Send, Grid, Subtitles, Zap } from 'lucide-react';

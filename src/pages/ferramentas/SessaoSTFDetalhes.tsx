@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';

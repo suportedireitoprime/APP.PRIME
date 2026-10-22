@@ -1,1 +1,0 @@
-ALTER TABLE public.location_reminders ADD COLUMN IF NOT EXISTS artigo_ref TEXT; CREATE INDEX IF NOT EXISTS idx_location_reminders_user_artigo ON public.location_reminders(user_id, artigo_ref) WHERE artigo_ref IS NOT NULL;

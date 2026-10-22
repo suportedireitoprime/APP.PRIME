@@ -2,7 +2,7 @@ import { getOmniRouteApiKey } from './aiGatewayService';
 import type { AcaoTipo } from '../hooks/useQuestaoAcao';
 
 const GATEWAY = "https://omniroute-production-fb57.up.railway.app/v1/chat/completions";
-const MODEL = "antigravity/gemini-3.7-flash-high";
+const MODEL = "antigravity/gemini-3.8-flash-tiered";
 
 type Tipo = AcaoTipo | 'me-explique';
 
@@ -88,7 +88,7 @@ function hashChave(texto: string) {
   return `h:${h}`;
 }
 
-const FALLBACK_MODEL = "antigravity/gemini-3.6-flash";
+const FALLBACK_MODEL = "antigravity/gemini-3.8-flash-tiered";
 const MAX_RETRIES = 1; // 1 tentativa por modelo → máx ~24s total
 const TIMEOUT_MS = 12_000; // 12s por chamada
 

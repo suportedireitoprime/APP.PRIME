@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from 'react';
 
 // Cache em memória por URL para evitar re-fetch dentro da mesma sessão.

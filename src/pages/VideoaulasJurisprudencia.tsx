@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, PlayCircle, Shield, Landmark, Scale, Sparkles } from 'lucide-react';

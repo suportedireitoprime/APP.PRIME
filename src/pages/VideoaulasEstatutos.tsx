@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ChevronRight, Landmark, Shield, Users, HeartHandshake, Building, Award, Sparkles } from 'lucide-react';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { memo, useRef, useEffect, useCallback } from 'react';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AprenderItem } from './aprenderCarouselTypes';

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw, Timer } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';

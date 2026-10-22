@@ -95,7 +95,7 @@ const COPIES = [
   },
   {
     title: "FIM DOS 3 DIAS GRATUITOS",
-    message: "{name}, o seu período de teste expirou. Mantenha seu ritmo acelerado e garanta acesso irrestrito a todas as leis comentadas, resumos esquematizados e simulados exclusivos.",
+    message: "{name}, sua cota grátis deste mês acabou. Mantenha seu ritmo acelerado e garanta acesso irrestrito a todas as leis comentadas, resumos esquematizados e simulados exclusivos.",
   },
   {
     title: "OS SEUS 3 DIAS TERMINARAM",
@@ -107,9 +107,9 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   const navigate = useNavigate();
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { refresh: refreshSubscription } = useSubscription();
+  const { refresh: refreshSubscription, isPremium, loading: subLoading } = useSubscription();
   const [ativo, setAtivo] = useState(0);
-  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | 'anual_pix' | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'anual' | null>(null);
 
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -119,7 +119,8 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   const isAdmin = shouldBypassAsAdmin(user?.email);
   const isDev = isDevSimulatorEligible(user?.email);
 
-  useBodyScrollLock(Boolean(open && !isAdmin && user && !devDismissed));
+  const ocultarParaAssinante = isPremium || subLoading;
+  useBodyScrollLock(Boolean(open && !isAdmin && user && !devDismissed && !ocultarParaAssinante));
 
   useEffect(() => {
     // Pré-carregamento instantâneo em background da página de assinatura e checkout (Padrão 0ms)
@@ -163,6 +164,9 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
   if (isAdmin || !open || !user || devDismissed) {
     return null;
   }
+
+  // Assinantes (ou enquanto confere) nunca veem este aviso de compra.
+  if (ocultarParaAssinante) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-y-auto bg-black/85 p-4 py-8">

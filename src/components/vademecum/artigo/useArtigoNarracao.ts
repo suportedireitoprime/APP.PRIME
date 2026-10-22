@@ -527,91 +527,15 @@ export function useArtigoNarracao({
       }
     }
 
-    isGeneratingAudioRef.current = true;
-
+    // Narrações oficiais pré-gravadas são o padrão definitivo (Cloudflare R2).
+    // Geração automática on-the-fly via TTS desativada conforme diretriz de produto.
     if (!silent) {
-      setNarracaoLoading(true);
-      setNarracaoStepIdx(0);
-    }
-
-    let toastId: string | number | undefined;
-    if (!silent) {
-      toastId = toast.loading(`Carregando narração do Artigo ${artigo.numero}...`);
-    }
-
-    try {
-      const { LEIS_CATALOG } = await import('@/services/legislacaoService');
-      const lei = LEIS_CATALOG.find((l: any) => l.tabela_nome === effectiveTabelaNome);
-      const leiNome = lei?.nome || effectiveTabelaNome;
-
-      const { data, error } = await supabase.functions.invoke('narrar-artigo', {
-        body: {
-          tabela_nome: effectiveTabelaNome,
-          artigo_numero: artigo.numero,
-          artigo_texto: (artigo as any).texto || artigo.caput || '',
-          lei_nome: leiNome,
-          hierarquia: breadcrumb
-            ? (Array.isArray(breadcrumb)
-                ? (breadcrumb as any[]).map((b) => b?.nome || b).filter(Boolean).join(' > ')
-                : Object.values(breadcrumb).filter((v) => typeof v === 'string' && v.trim().length > 0).join(' > '))
-            : undefined,
-          epigrafe: (artigo as any).epigrafe || artigo.titulo || undefined,
-          force_regenerate: forceRegenerate,
-        },
-      });
-
-      if (error) throw error;
-      const res = data as any;
-
-      if (res?.audio_url) {
-        const edgeAudioUrl = safeStorageUrl(res.audio_url) || res.audio_url;
-        if (!silent) setNarracaoStepIdx(2);
-        setNarracaoUrl(edgeAudioUrl);
-        if (Array.isArray(res.word_timings) && res.word_timings.length > 0) {
-          setNarracaoWordTimings(res.word_timings);
-        }
-
-        // Salva novo áudio gerado no cache IndexedDB
-        if (artigo?.numero && effectiveTabelaNome) {
-          const cKey = buildAudioCacheKey(effectiveTabelaNome, artigo.numero);
-          void (async () => {
-            try {
-              const resp = await fetch(edgeAudioUrl);
-              if (resp.ok) {
-                const blob = await resp.blob();
-                await saveCachedAudio(cKey, blob, res.word_timings || []);
-              }
-            } catch {}
-          })();
-        }
-
-        if (!silent && toastId) {
-          toast.success(`Artigo ${artigo.numero} pronto para reprodução!`, { id: toastId });
-        }
-
-        if (!silent) setNarracaoLoading(false);
-        if (autoplay) {
-          await playNarracao(edgeAudioUrl);
-        }
-        return { ...res, audio_url: edgeAudioUrl };
-      }
-
-      throw new Error('Sem URL de áudio gerada pela IA.');
-    } catch (e: any) {
-      console.error('Erro ao gerar narração Gemini TTS:', e);
-      if (!silent && toastId) {
-        toast.dismiss(toastId);
-      }
+      toast.info(`Narração em áudio não disponível para o Artigo ${artigo.numero}.`);
       setNarracaoLoading(false);
       setNarracaoStepIdx(0);
       setNarracaoPlaying(false);
-      if (!silent) {
-        toast.error(e?.message || 'Não consegui carregar a narração no momento. Toque para tentar novamente.');
-      }
-    } finally {
-      isGeneratingAudioRef.current = false;
-      if (!silent) setNarracaoLoading(false);
     }
+    isGeneratingAudioRef.current = false;
   }, [artigo, resolvedTabelaNome, breadcrumb, narracaoUrl, playNarracao]);
 
   // ─── handleNarrar ───
@@ -653,7 +577,10 @@ export function useArtigoNarracao({
     toast.info('A narração deste artigo estará disponível em breve.');
   }, [artigo, narracaoPlaying, narracaoUrl, playNarracao, stopProgressTracking]);
 
-  const activeNarracaoWordIndex = narracaoPlaying ? narracaoActiveWordIndex : -1;
+  const activeNarracaoWordIndex =
+    narracaoPlaying || (narracaoAudioRef.current && !narracaoAudioRef.current.ended && narracaoActiveWordIndex >= 0)
+      ? narracaoActiveWordIndex
+      : -1;
 
   const handleNarrarButtonPress = useCallback(async (event?: React.SyntheticEvent<HTMLButtonElement>) => {
     event?.preventDefault();

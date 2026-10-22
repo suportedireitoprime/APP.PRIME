@@ -49,6 +49,16 @@ export const R2_MIDIAS_BASE_URL = 'https://pub-571d075cadcb4d2196a6545456271ce4.
 export const R2_VACATIO_AUDIO_BASE_URL = 'https://pub-0c1a0e4ebbdd44dfa883dd36c269f19f.r2.dev';
 
 /**
+ * Domínio público canônico do Cloudflare R2 para livros, capas e PDFs (livros-pdf).
+ */
+export const R2_LIVROS_PDF_BASE_URL = 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev';
+
+/**
+ * Domínio público canônico do Cloudflare R2 para narrações de leis (narracoes-leis).
+ */
+export const R2_NARRACOES_LEIS_BASE_URL = 'https://pub-3e6045d435904ae1916a15ad03bd222b.r2.dev';
+
+/**
  * Constrói a URL pública canônica roteada pelo Cloudflare R2.
  * Lança aviso se invocado para um bucket privado.
  */
@@ -60,7 +70,17 @@ export const getPublicBucketUrl = (bucketName: string, path: string): string => 
     console.warn(`[storageBuckets] Tentativa de gerar URL pública para bucket privado: "${cleanBucket}". Utilize createSignedUrl().`);
   }
 
-  // Áudios e Narrações servidos via Cloudflare R2 vacatio-midias
+  // Narrações completas de artigos de leis (bucket narracoes-leis)
+  if (['narracoes-leis'].includes(cleanBucket)) {
+    return `${R2_NARRACOES_LEIS_BASE_URL}/${cleanPath}`;
+  }
+
+  // Livros, PDFs e capas da biblioteca servidos via Cloudflare R2 livros-pdf
+  if (['livros-pdf', 'biblioteca-obras', 'livros'].includes(cleanBucket)) {
+    return `${R2_LIVROS_PDF_BASE_URL}/${cleanBucket}/${cleanPath}`;
+  }
+
+  // Áudios e Narrações legadas servidos via Cloudflare R2 vacatio-midias
   if (['audios', 'audioaulas', 'narracoes', 'aulas-audio'].includes(cleanBucket)) {
     return `${R2_VACATIO_AUDIO_BASE_URL}/${cleanBucket}/${cleanPath}`;
   }

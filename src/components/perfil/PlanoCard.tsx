@@ -15,7 +15,7 @@ export function PlanoCard({ isPremium, loading, titulo, desc, tag, expira }: Pro
   const navigate = useNavigate();
   return (
     <button
-      onClick={() => navigate(isPremium ? '/assinatura' : '/assinatura')}
+      onClick={() => navigate(isPremium ? '/planos/ativos' : '/assinatura')}
       className={`w-full text-left p-5 rounded-2xl border transition-all active:scale-[0.98] ${
         isPremium
           ? 'bg-gradient-to-br from-amber-500/15 via-amber-500/5 to-transparent border-amber-500/40'

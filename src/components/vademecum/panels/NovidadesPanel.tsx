@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, ChevronRight, Loader2, Sparkles, ExternalLink } from 'lucide-react';

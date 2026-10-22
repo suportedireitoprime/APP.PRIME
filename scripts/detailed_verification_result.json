@@ -1,0 +1,622 @@
+{
+  "driveFolders": [
+    {
+      "id": "19USGTZ5rPzugKfvLnU5K34eEsr09l7V3",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "amostras-vozes-americanas",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1qokVN_paIw-lAagmMg5Zi9Xdgsj90clu",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "amostras-vozes-femininas",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1MSRI2ro2OTqSUEs0hc-uBGVSdVXdKv_t",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "CLT",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1aia5RJtW1hIa9zioQbunIkw32RqvUdCR",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código Brasileiro de Aeronáutica",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1S1Or-g-ppvo3O-ZakIweUYgDlWu5D7SA",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código Brasileiro de Telecomunicações",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1urOxD7AGXgvk92ca2zbLUf9g9Bn_ufdu",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código Civil",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1XnMO-mSFZa93AQAyOTL5HlSvPj1f_RmC",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código Comercial",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1wNgGydBC_gDFvNfgkK5-QiDZFeb96JJ1",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Águas",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1NIFhXp0mMYrw0I18qZOa1uiMUADpRllo",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Águas Minerais",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1pogUt4TehumD1Ed107MkOasgJmt5Jd1J",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Defesa do Consumidor",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1IrfXyb5p2ijUTHYWNKgZnm12z39_YMJR",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Ética do Servidor Público",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1U-Urxf8BnNET4Th1mSsH-UCtdWGsuupz",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Mineração",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "19zXHDTAIizY8PMdWqFQ-1GoEqN3zBwTO",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Pesca",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1pxwFU1S-PvY8wFv2JYD7ol_7oBofvnGJ",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Processo Civil",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1gLpv_1Lo4qMp-Uy6tYP8UgYe-phebqIo",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Processo Penal",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1SxPU32tFZv7s9u0bfXdo2NGtmcg6dns-",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Processo Penal Militar",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1uL3wxOzyZI0DQoQv3hTCQx3RtXGuauPz",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código de Trânsito Brasileiro",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1eSxYn7SCHgaNiTzSeOatXgu_LpXYYwMf",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código Eleitoral",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1esrZfa9f9zXUkPJIan2qF-Xu9XDZIfb1",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código Florestal",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1fMvL_gKD-8CWOAdPd9qAiBnlEj2Mz7tA",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código Penal",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1_BblhneL8612hUuC0tfjAJtMqzYHaUwS",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código Penal Militar",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1bMQA7ON70Q6odP5OVterZM5lCfK6Nsnv",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Código Tributário Nacional",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1GnhklC5TPcefkmZJbi2nfdeBwKOS0bXC",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO PENAL",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1RHqLwhOgiQM8pYHHr9HlXOfJfi_gVn2w",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_ADMINISTRATIVO",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "16M12PS1UQivOEE5Zh6n3J3Ge0BPiz2lr",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_AMBIENTAL",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1GTH6tqarbphOUlJZmJBxhrfLX6XdaWS0",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_CIVIL",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "11jp7wOR9qSodQy7zfAZx3u2yox7tKrGl",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_CIVIL",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1qrhg4LBQwwO9QytaWCwyazDuslsyRWXj",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_CONSTITUCIONAL",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1naLwp8nFhb81vJFyVa1vcsGimjqpF_5H",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_DESPORTIVO",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1NU2l9lAVaDVL49EaZc1lcCVL8KF2ReQC",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_DO_TRABALHO",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1NSOBt8u96ZjjI9TTslaVS4b17yRxMCPf",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_EMPRESARIAL",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1-foULZkKGloeV2xTKeDT_41Qaa4hGjcz",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_FINANCEIRO",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1Hwm5ycoFay4NXfMyqKoFibENvp-PZ5kS",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_INTERNACIONAL_PRIVADO",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1askPjQI8_xiC0FwD89YUlXGlLbePrbkT",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_PREVIDENCIARIO",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1PPO_Al3G-UW1FtzNBmn8my7Ltm32Wvap",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_PROCESSUAL_CIVIL",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1J3YSY8QS2JmZibH6x-Rq_iQQ0BtkDFkE",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_PROCESSUAL_DO_TRABALHO",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "11f7RbK_z9mzB5VWeaulRoTXqmKxWT3Lp",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_PROCESSUAL_PENAL",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1fDkHxU5TUofr_dDXY_NIDzYD8wr6Kp9g",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_TRIBUTARIO",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1WhGLbjHHLaVZ7pAocjQ7d6IU5fI-6Vsg",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITO_URBANISTICO",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1cfAnJ0YLegH7oMByymH-2grjflqTDGcq",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "DIREITOS_HUMANOS",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1PozmX6yiQVDWWIgKcQbA9GuEArExFuma",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Advocacia e da OAB",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1mAgy8Hd6Ki_73nscUxnyXC4SGpqF87Vb",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Cidade",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1Yb77CnV9qQORjkQq7w5I--RXJ6T__ly_",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Criança e do Adolescente",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1DrTj4S4sQq6pY4M8jsTqTIsU4KyINPeg",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Igualdade Racial",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1dxwTT9gKeKQE8xnr14J4It2PfH0QrPUb",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Juventude",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1_NV5m3IOX7T_DknVaVgPxix9EDAMXe1A",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Metrópole",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1d3xVZH7a50d8ZArYmYdeRyuoXo9t0TUR",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Microempresa",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "12YEz0RsUGMGtsG_6NN0Ilbh9fjWnT3OO",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Pessoa com Deficiência",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "17arqv1eE5uqarLurRthoX1_xgFKSE2Ke",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Pessoa Idosa",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1TIol57bUMjjA6BIeEo9qZRx5ej1KioYD",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Terra",
+      "mimeType": "application/vnd.google-apps.folder"
+    },
+    {
+      "id": "1TIol57bUMjjA6BIeEo9qZRx5ej1KioYD",
+      "parentId": [
+        "1ANgcRvjguTzD8I-Xy5_DgtiYHB_r_rTg"
+      ],
+      "name": "Estatuto da Terra",
+      "mimeType": "application/vnd.google-apps.folder"
+    }
+  ],
+  "r2Stats": {
+    "direito-administrativo": {
+      "mp3Count": 178,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-administrativo/01. Origens e Definições do Direito Administrativo/01. Origens.mp3",
+        "narracoes/areas/direito-administrativo/01. Origens e Definições do Direito Administrativo/02. Definições.mp3",
+        "narracoes/areas/direito-administrativo/01. Origens e Definições do Direito Administrativo/03. Constitucionalização do Direito Administrativo.mp3"
+      ]
+    },
+    "direito-ambiental": {
+      "mp3Count": 42,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-ambiental/01. Introdução ao Direito Ambiental/01. Conceitos Preliminares.mp3",
+        "narracoes/areas/direito-ambiental/01. Introdução ao Direito Ambiental/02. Direito Ambiental na Constituição Federal.mp3",
+        "narracoes/areas/direito-ambiental/01. Introdução ao Direito Ambiental/03. Princípios do Direito Ambiental.mp3"
+      ]
+    },
+    "direito-civil": {
+      "mp3Count": 0,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": []
+    },
+    "direito-constitucional": {
+      "mp3Count": 265,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-constitucional/01. História Constitucional do Brasil/01. Da Independência à Constituição de 1824.mp3",
+        "narracoes/areas/direito-constitucional/01. História Constitucional do Brasil/02. Constituição de 1824.mp3",
+        "narracoes/areas/direito-constitucional/01. História Constitucional do Brasil/03. Do Império à Proclamação da República e a Constituição de 1891.mp3"
+      ]
+    },
+    "direito-desportivo": {
+      "mp3Count": 21,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-desportivo/01. Direito Desportivo/01. Paradigma Constitucional da Justiça Desportiva.mp3",
+        "narracoes/areas/direito-desportivo/01. Direito Desportivo/02. Organização e Funcionamento.mp3",
+        "narracoes/areas/direito-desportivo/01. Direito Desportivo/03. Código Brasileiro de Justiça Desportiva.mp3"
+      ]
+    },
+    "direito-do-trabalho": {
+      "mp3Count": 218,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-do-trabalho/01. Introdução ao Direito do Trabalho/01. O que É Direito do Trabalho?.mp3",
+        "narracoes/areas/direito-do-trabalho/01. Introdução ao Direito do Trabalho/02. Fontes Materiais e Formais.mp3",
+        "narracoes/areas/direito-do-trabalho/01. Introdução ao Direito do Trabalho/03. Fontes Autônomas em Espécie.mp3"
+      ]
+    },
+    "direito-empresarial": {
+      "mp3Count": 132,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-empresarial/01. Teoria Geral do Direito Empresarial/01. Evolução Histórica do Direito Empresarial.mp3",
+        "narracoes/areas/direito-empresarial/01. Teoria Geral do Direito Empresarial/02. Fontes do Direito Empresarial.mp3",
+        "narracoes/areas/direito-empresarial/01. Teoria Geral do Direito Empresarial/03. Princípios do Direito Empresarial.mp3"
+      ]
+    },
+    "direito-financeiro": {
+      "mp3Count": 116,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-financeiro/01. Sistema Financeiro Nacional/01. Noções Gerais sobre o Sistema Financeiro Nacional.mp3",
+        "narracoes/areas/direito-financeiro/01. Sistema Financeiro Nacional/02. Estrutura do Sistema Financeiro Nacional.mp3",
+        "narracoes/areas/direito-financeiro/01. Sistema Financeiro Nacional/03. Responsabilidade Penal.mp3"
+      ]
+    },
+    "direito-internacional-privado": {
+      "mp3Count": 20,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-internacional-privado/01. Direito Internacional Privado/01. Definição.mp3",
+        "narracoes/areas/direito-internacional-privado/01. Direito Internacional Privado/02. Competência Internacional.mp3",
+        "narracoes/areas/direito-internacional-privado/01. Direito Internacional Privado/03. Cooperação Jurídica Internacional - Carta Rogatória.mp3"
+      ]
+    },
+    "direito-penal": {
+      "mp3Count": 438,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-penal/01. Crimes contra a Família/01. Crimes Contra a Família.mp3",
+        "narracoes/areas/direito-penal/01. Crimes contra a Família/02. Induzimento a Erro Essencial e Ocultação de Impedimento.mp3",
+        "narracoes/areas/direito-penal/01. Crimes contra a Família/03. Conhecimento Prévio de Impedimento.mp3"
+      ]
+    },
+    "direito-previdenciario": {
+      "mp3Count": 86,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-previdenciario/01. Introdução à Seguridade Social/01. Definição e Elementos.mp3",
+        "narracoes/areas/direito-previdenciario/01. Introdução à Seguridade Social/02. Organização e Gestão da Seguridade.mp3",
+        "narracoes/areas/direito-previdenciario/01. Introdução à Seguridade Social/03. Financiamento da Seguridade Social.mp3"
+      ]
+    },
+    "direito-processual-civil": {
+      "mp3Count": 0,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": []
+    },
+    "direito-processual-do-trabalho": {
+      "mp3Count": 65,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-processual-do-trabalho/01. Introdução ao Processo do Trabalho/01. Princípios do Processo do Trabalho.mp3",
+        "narracoes/areas/direito-processual-do-trabalho/01. Introdução ao Processo do Trabalho/02. Organização e Competência na Justiça do Trabalho.mp3",
+        "narracoes/areas/direito-processual-do-trabalho/01. Introdução ao Processo do Trabalho/03. Competência Material e em Razão da Pessoa.mp3"
+      ]
+    },
+    "direito-processual-penal": {
+      "mp3Count": 118,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-processual-penal/01. Princípios e Garantias do Processo Penal/01. Dignidade da Pessoa Humana.mp3",
+        "narracoes/areas/direito-processual-penal/01. Princípios e Garantias do Processo Penal/02. Devido Processo Legal - Art. 5º, LV.mp3",
+        "narracoes/areas/direito-processual-penal/01. Princípios e Garantias do Processo Penal/03. Contraditório - Art.5º, LV.mp3"
+      ]
+    },
+    "direito-tributario": {
+      "mp3Count": 0,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": []
+    },
+    "direito-urbanistico": {
+      "mp3Count": 46,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direito-urbanistico/01. Direito Urbanístico - Parte Geral/01. O que é Município?.mp3",
+        "narracoes/areas/direito-urbanistico/01. Direito Urbanístico - Parte Geral/02. Criação, Fusão, Incorporação e Desmembramento de Municípios.mp3",
+        "narracoes/areas/direito-urbanistico/01. Direito Urbanístico - Parte Geral/03. Zona Rural, Zona Urbana e Perímetro.mp3"
+      ]
+    },
+    "direitos-humanos": {
+      "mp3Count": 72,
+      "keepCount": 1,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/direitos-humanos/01. Sistema Interamericano de Direitos Humanos/01. Sistema Interamericano de Direitos Humanos - Considerações Iniciais.mp3",
+        "narracoes/areas/direitos-humanos/01. Sistema Interamericano de Direitos Humanos/02. Noções Gerais.mp3",
+        "narracoes/areas/direitos-humanos/01. Sistema Interamericano de Direitos Humanos/03. Carta OEA e Declaração Americana de Direitos Humanos.mp3"
+      ]
+    },
+    "filosofia-do-direito": {
+      "mp3Count": 133,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/filosofia-do-direito/01. Filosofia do Direito/01. Começando pelo Começo.mp3",
+        "narracoes/areas/filosofia-do-direito/01. Filosofia do Direito/02. Escolas da Filosofia e a História.mp3",
+        "narracoes/areas/filosofia-do-direito/01. Filosofia do Direito/03. Escolas da Filosofia e seus Pensadores.mp3"
+      ]
+    },
+    "formacao-complementar": {
+      "mp3Count": 58,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/formacao-complementar/01. Direito, Psicologia e Neurociência/01. Introdução.mp3",
+        "narracoes/areas/formacao-complementar/01. Direito, Psicologia e Neurociência/02. Por que Estudar Direito, Psicologia e Neurociência-.mp3",
+        "narracoes/areas/formacao-complementar/01. Direito, Psicologia e Neurociência/03. Vieses e Heurísticas.mp3"
+      ]
+    },
+    "lei-penal-especial": {
+      "mp3Count": 96,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/lei-penal-especial/02. Estatuto do Desarmamento/01. Generalidades.mp3",
+        "narracoes/areas/lei-penal-especial/02. Estatuto do Desarmamento/02. Como Comprar e Registrar Uma Arma.mp3",
+        "narracoes/areas/lei-penal-especial/02. Estatuto do Desarmamento/03. Estatuto do Desarmamento no Tempo e Princípio da Insignificância.mp3"
+      ]
+    },
+    "politicas-publicas": {
+      "mp3Count": 82,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/politicas-publicas/01. 14. Responsabilidade Ambiental/01. Aspectos Gerais da Responsabilidade Ambiental.mp3",
+        "narracoes/areas/politicas-publicas/01. 14. Responsabilidade Ambiental/02. Responsabilidade Civil Ambiental.mp3",
+        "narracoes/areas/politicas-publicas/01. 14. Responsabilidade Ambiental/03. Responsabilidade Penal Ambiental.mp3"
+      ]
+    },
+    "portugues": {
+      "mp3Count": 35,
+      "keepCount": 0,
+      "otherCount": 0,
+      "sample": [
+        "narracoes/areas/portugues/01. Pontuação/01. Uso da Vírgula.mp3",
+        "narracoes/areas/portugues/01. Pontuação/02. Dois Pontos.mp3",
+        "narracoes/areas/portugues/01. Pontuação/03. Ponto e Vírgula.mp3"
+      ]
+    }
+  }
+}

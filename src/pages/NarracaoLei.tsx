@@ -80,7 +80,7 @@ export default function NarracaoLei() {
       // Load existing narrations from cache table
       try {
         const res = await fetch(
-          `${LEIS_SUPABASE_URL}/rest/v1/narracoes_artigos?tabela_nome=eq.${selectedLei.tabela_nome}&select=artigo_numero,audio_url`,
+          `${LEIS_SUPABASE_URL}/rest/v1/narracoes_artigos?tabela_nome=eq.${selectedLei.tabela_nome}&select=artigo_numero,audio_url&limit=10000`,
           {
             headers: {
               apikey: LEIS_SUPABASE_ANON_KEY,
@@ -200,7 +200,7 @@ export default function NarracaoLei() {
                       onClick={() => setSelectedLei(lei)}
                       className="w-full flex items-center gap-3 px-4 py-3 hover:bg-muted/30 transition-colors"
                     >
-                      <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: lei.iconColor || 'hsl(var(--primary))' }} />
+                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: lei.iconColor || 'hsl(var(--primary))' }} />
                       <div className="flex-1 text-left min-w-0">
                         <span className="text-sm text-foreground block truncate">{lei.nome}</span>
                       </div>

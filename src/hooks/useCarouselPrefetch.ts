@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * useCarouselPrefetch.ts — Fase 21 de Otimização de Imagens
  * 

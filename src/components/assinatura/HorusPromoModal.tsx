@@ -111,8 +111,8 @@ export function HorusPromoModal({ open, timeLeft, onClose, onRedeem }: HorusProm
                  <div className="bg-emerald-500 text-white font-black text-[9px] px-2 py-0.5 rounded-full tracking-wider mb-2">
                    PROMOÇÃO ANUAL 24H
                  </div>
-                 <div className="text-sm font-bold text-emerald-500/80 line-through">De R$ 199,90</div>
-                 <div className="font-display text-5xl font-black text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)] my-1">R$ 149,90</div>
+                 
+                 <div className="font-display text-5xl font-black text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)] my-1">R$ 199,90</div>
                  <div className="text-xs font-semibold text-emerald-500/80">pagamento anual · acesso completo</div>
               </div>
 

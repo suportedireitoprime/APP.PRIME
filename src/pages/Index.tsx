@@ -1,11 +1,12 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { useIsDesktop } from '@/hooks/use-desktop';
+import { lazyWithRetry } from '@/utils/lazyWithRetry';
 
-const IndexDesktop = lazy(() => import('./IndexDesktop'));
-const IndexMobile = lazy(() => import('./IndexMobile'));
+const IndexDesktop = lazyWithRetry(() => import('./IndexDesktop'));
+const IndexMobile = lazyWithRetry(() => import('./IndexMobile'));
 
 const IndexFallback = () => (
-  <div className="min-h-dvh flex items-center justify-center bg-[#0D0D0D]" />
+  <div className="min-h-dvh flex items-center justify-center bg-background" />
 );
 
 const Index = () => {

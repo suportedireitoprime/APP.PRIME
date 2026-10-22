@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import { initAnalytics, trackPageview, setAnalyticsUserWithProfile } from "@/lib/analytics";

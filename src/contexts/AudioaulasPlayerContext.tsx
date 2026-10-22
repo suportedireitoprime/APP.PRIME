@@ -1,12 +1,19 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
 import { supabase } from '@/integrations/supabase/client';
 import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
 import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { fonteDeAudio } from '@/lib/nativo/audioOffline';
 import { notifyMediaPlay, subscribeMediaPlay } from '@/lib/mediaCoordinator';
 import { toast } from 'sonner';
-import { salvarProgressoAudioaula, obterUltimoProgressoAudioaula, normalizarStreamAudio } from '@/lib/audioaulaProgresso';
-import { R2_VACATIO_AUDIO_BASE_URL } from '@/lib/cdnImg';
+import {
+  salvarProgressoAudioaula,
+  obterUltimoProgressoAudioaula,
+  normalizarStreamAudio,
+  marcarAulaConcluida,
+} from '@/lib/audioaulaProgresso';
+import { R2_VACATIO_AUDIO_BASE_URL, safeStorageUrl } from '@/lib/cdnImg';
+import { NOVAS_AUDIOAULAS_CATALOG } from '@/data/novasAudioaulasCatalog';
 
 export const INTRO_AUDIOAULA_URL = `${R2_VACATIO_AUDIO_BASE_URL}/audios/vinhetas/intro_audioaulas.mp3`;
 
@@ -18,6 +25,7 @@ export interface AulaAudio {
   titulo: string;
   descricao: string | null;
   url_audio: string | null;
+  r2_key?: string | null;
 }
 
 interface AudioaulasPlayerContextType {
@@ -35,7 +43,7 @@ interface AudioaulasPlayerContextType {
   favoritos: Set<string>;
   alternarFavorito: (a: AulaAudio) => void;
   setAberto: (v: boolean) => void;
-  tocar: (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number, pularIntro?: boolean) => Promise<void>;
+  tocar: (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number, pularIntro?: boolean) => Promise<boolean>;
   retomarUltimoProgresso: () => void;
   togglePlay: () => void;
   pular: (dir: 1 | -1) => void;
@@ -44,6 +52,8 @@ interface AudioaulasPlayerContextType {
   fechar: () => void;
   audioRef: React.RefObject<HTMLAudioElement>;
   tocandoIntro: boolean;
+  openGate: () => void;
+  gateBlocked: boolean;
 }
 
 const FAV_KEY = 'aa_favoritos';
@@ -74,7 +84,7 @@ const fallbackAudioaulasContext: AudioaulasPlayerContextType = {
   favoritos: new Set(),
   alternarFavorito: () => {},
   setAberto: () => {},
-  tocar: async () => {},
+  tocar: async () => false,
   retomarUltimoProgresso: () => {},
   togglePlay: () => {},
   pular: () => {},
@@ -83,6 +93,8 @@ const fallbackAudioaulasContext: AudioaulasPlayerContextType = {
   fechar: () => {},
   audioRef: fallbackAudioRef,
   tocandoIntro: false,
+  openGate: () => {},
+  gateBlocked: false,
 };
 
 const Ctx = createContext<AudioaulasPlayerContextType | undefined>(undefined);
@@ -108,19 +120,50 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   const introAudioRef = useRef<HTMLAudioElement>(null);
   const aulaSobrepostaIniciadaRef = useRef(false);
   const pularRef = useRef<(dir: 1 | -1) => void>(() => {});
+  const gateMes = useGatedFeature('audioaula_mes', 'audioaula', { scope: null });
 
   // Carregamento e cache aquecido das aulas
   useEffect(() => {
     let cancelado = false;
     const carregar = async () => {
       try {
-        const { data } = await supabase
-          .from('audioaulas_acervo')
-          .select('id, area, tema, sequencia, titulo, descricao, url_audio')
-          .order('area', { ascending: true })
-          .order('sequencia', { ascending: true });
+        const todasAulas: AulaAudio[] = [];
+        const batchSize = 1000;
+        for (let from = 0; ; from += batchSize) {
+          const { data, error } = await supabase
+            .from('audioaulas_acervo')
+            .select('id, area, tema, sequencia, titulo, descricao, url_audio')
+            .order('area', { ascending: true })
+            .order('sequencia', { ascending: true })
+            .range(from, from + batchSize - 1);
+          if (cancelado) return;
+          if (error) {
+            console.error('Erro ao carregar acervo de audioaulas:', error);
+            break;
+          }
+          if (data && data.length > 0) {
+            const sanitized = (data as AulaAudio[]).map((aula) => ({
+              ...aula,
+              url_audio: aula.url_audio ? (safeStorageUrl(aula.url_audio) || aula.url_audio) : null
+            }));
+            todasAulas.push(...sanitized);
+          }
+          if (!data || data.length < batchSize) break;
+        }
         if (cancelado) return;
-        if (data) setAulas(data as AulaAudio[]);
+
+        // Mesclar catálogo R2 de Direito Civil, Processo Civil e Direito Tributário
+        const chavesExistentes = new Set(
+          todasAulas.map((a) => `${(a.area || '').toLowerCase()}:::${(a.tema || '').toLowerCase()}:::${(a.titulo || '').toLowerCase()}`)
+        );
+        for (const nova of NOVAS_AUDIOAULAS_CATALOG) {
+          const chave = `${(nova.area || '').toLowerCase()}:::${(nova.tema || '').toLowerCase()}:::${(nova.titulo || '').toLowerCase()}`;
+          if (!chavesExistentes.has(chave)) {
+            todasAulas.push(nova);
+          }
+        }
+
+        setAulas(todasAulas);
       } catch (err) {
         console.error('Erro ao carregar acervo de audioaulas:', err);
       } finally {
@@ -265,10 +308,10 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   );
 
   const tocar = useCallback(
-    async (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number, pularIntro = false) => {
+    async (a: AulaAudio, customFila?: AulaAudio[], tempoInicial?: number, pularIntro = false): Promise<boolean> => {
       const el = audioRef.current;
       const introEl = introAudioRef.current;
-      if (!a.url_audio) return;
+      if (!a.url_audio) return false;
 
       atualRef.current = a;
       if (customFila) {
@@ -290,7 +333,22 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           introEl?.pause();
           setTocando(false);
         }
-        return;
+        return true;
+      }
+
+      // Se for uma aula nova e o usuário estiver bloqueado pela cota mensal
+      if (gateMes.blocked) {
+        el?.pause();
+        introEl?.pause();
+        setTocando(false);
+        setTocandoIntro(false);
+        gateMes.openGate();
+        return false;
+      }
+
+      // Registra imediatamente o consumo na cota mensal assim que entra na nova áudio-aula
+      if (a?.id || a?.titulo) {
+        void gateMes.register(String(a.id ?? a.titulo));
       }
 
       // Se deve pular intro (ex: retomando progresso do meio da aula ou se tempoInicial for informado)
@@ -303,7 +361,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         setTocandoIntro(false);
         aulaSobrepostaIniciadaRef.current = false;
         await tocarConteudoAula(a, tempoInicial);
-        return;
+        return true;
       }
 
       // Inicia com a intro exclusiva de audioaulas
@@ -353,18 +411,21 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         console.warn('[AudioaulasPlayer] Falha na intro, tocando aula diretamente:', err);
         void tocarConteudoAula(a, tempoInicial);
       }
+      return true;
     },
-    [atualId, tocarConteudoAula, tocandoIntro, velocidade],
+    [atualId, tocarConteudoAula, tocandoIntro, velocidade, gateMes],
   );
 
-  const retomarUltimoProgresso = useCallback(() => {
+  const retomarUltimoProgresso = useCallback(async () => {
     const ultimo = obterUltimoProgressoAudioaula();
     if (!ultimo) return;
     const aulaEncontrada = aulas.find((x) => x.id === ultimo.id);
     if (aulaEncontrada) {
       const tempoRecuado = Math.max(0, (ultimo.tempo || 0) - 1.0);
-      void tocar(aulaEncontrada, undefined, tempoRecuado, true);
-      setAberto(true);
+      const ok = await tocar(aulaEncontrada, undefined, tempoRecuado, true);
+      if (ok) {
+        setAberto(true);
+      }
     }
   }, [aulas, tocar]);
 
@@ -407,6 +468,14 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       if (atualIdx < 0) return;
       const prox = fila[atualIdx + dir];
       if (prox) {
+        if (gateMes.blocked && atualId !== prox.id) {
+          audioRef.current?.pause();
+          introAudioRef.current?.pause();
+          setTocando(false);
+          setTocandoIntro(false);
+          gateMes.openGate();
+          return;
+        }
         if (introAudioRef.current) {
           introAudioRef.current.pause();
           introAudioRef.current.currentTime = 0;
@@ -417,7 +486,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         void tocar(prox);
       }
     },
-    [atualIdx, fila, tocar],
+    [atualIdx, fila, tocar, gateMes, atualId],
   );
 
   pularRef.current = pular;
@@ -557,6 +626,8 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
     fechar,
     audioRef,
     tocandoIntro,
+    openGate: gateMes.openGate,
+    gateBlocked: gateMes.blocked,
   };
 
   return (
@@ -613,8 +684,16 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         }}
         onEnded={() => {
           setTocando(false);
+          if (atual) {
+            marcarAulaConcluida(atual.id, dur || 0);
+          }
           if (atualIdx >= 0 && fila[atualIdx + 1]) {
-            void tocar(fila[atualIdx + 1]);
+            const prox = fila[atualIdx + 1];
+            if (gateMes.blocked && atualId !== prox.id) {
+              gateMes.openGate();
+            } else {
+              void tocar(prox);
+            }
           } else {
             clearMediaSession(audioRef.current);
           }
@@ -630,6 +709,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         onEnded={onIntroEnded}
         onError={onIntroError}
       />
+      {gateMes.gateNode}
     </Ctx.Provider>
   );
 };

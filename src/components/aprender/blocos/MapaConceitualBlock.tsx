@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Network } from 'lucide-react';

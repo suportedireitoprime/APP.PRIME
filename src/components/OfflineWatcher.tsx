@@ -9,6 +9,7 @@ import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 const OfflineWatcher = () => {
   const online = useOnlineStatus();
   const first = useRef(true);
+  const wasOffline = useRef(!online);
 
   useEffect(() => {
     if (first.current) {
@@ -22,8 +23,10 @@ const OfflineWatcher = () => {
       return;
     }
     if (online) {
-      toast.success('Conexão restabelecida', { duration: 3000 });
+      if (wasOffline.current) toast.success('Conexão restabelecida', { duration: 3000 });
+      wasOffline.current = false;
     } else {
+      wasOffline.current = true;
       toast.warning('Você está sem internet', {
         description: 'Funções com IA, vídeo e conteúdo novo ficam indisponíveis até reconectar.',
         duration: 6000,

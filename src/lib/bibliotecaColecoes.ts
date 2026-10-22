@@ -1,6 +1,6 @@
-import { directImg, R2_MIDIAS_BASE_URL } from '@/lib/cdnImg';
+import { directImg, R2_LIVROS_PDF_BASE_URL } from '@/lib/cdnImg';
 
-const SUPABASE_STORAGE_URL = `${R2_MIDIAS_BASE_URL}/biblioteca-obras/capas_fixas`;
+const SUPABASE_STORAGE_URL = `${R2_LIVROS_PDF_BASE_URL}/biblioteca-obras/capas_fixas`;
 const getCapaFixa = (filename: string) => directImg(`${SUPABASE_STORAGE_URL}/${filename}`);
 
 const capaAreas = getCapaFixa('capa-areas.webp');

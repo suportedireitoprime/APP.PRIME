@@ -121,7 +121,7 @@ export const ArtigoTabExplicacao: React.FC<ArtigoTabExplicacaoProps> = ({
             onClick={() => openPremiumGate('explicacao')}
             className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-lg shadow-primary/30 active:opacity-70 transition-all flex items-center gap-2"
           >
-            <Crown className="w-4 h-4 fill-current" /> Começar 3 dias grátis
+            <Crown className="w-4 h-4 fill-current" /> Ver planos
           </button>
         </div>
       ) : (

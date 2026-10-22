@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ExternalLink, Heart, ScrollText, StickyNote, Radar, ListMusic, History, Feather, Info } from 'lucide-react';

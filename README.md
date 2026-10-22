@@ -1,64 +1,26 @@
-# Direito Prime (APP.PRIME) ⚖️
+# JURIDICO APP
 
-Um aplicativo multiplataforma premium de Estudos Jurídicos e Vade Mecum, projetado para oferecer a melhor experiência de leitura, consulta e aprendizado ativo para profissionais e estudantes de Direito.
+https://github.com/suportedireitoprime/APP.PRIME.git
 
-## 🚀 Tecnologias e Stack
+This project was built with [Lovable](https://lovable.dev).
 
-O projeto utiliza uma stack moderna e híbrida, garantindo alta performance tanto na Web quanto em dispositivos móveis e desktop:
+**Live app**: https://prime-legal-companion.lovable.app
 
-- **Frontend:** React 18, TypeScript, Vite
-- **Estilização:** Tailwind CSS, Shadcn UI, Framer Motion, Radix UI
-- **Backend/BaaS:** Supabase (PostgreSQL, Edge Functions, Storage, Realtime)
-- **Mobile (iOS/Android):** Capacitor 8 (com suporte total a modos offline, notificações nativas e integrações com o SO)
-- **Desktop:** Electron (via Vite)
-- **IA Integrada:** Gemini Live API (Recurso "Me Explique" interativo e por voz)
-- **Armazenamento e Offline:** IndexedDB (idb-keyval), SQLite, Dexie e React Query Persister
-- **Visualização:** Three.js, React PDF, Lottie e Remotion (para animações cinematográficas e biográficas)
+## Build with Lovable
 
-## 📦 Funcionalidades Principais
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/bd8cb2f8-351d-4e4c-8274-f821a97f6472).
 
-1. **Leitor Jurídico Avançado (Vade Mecum):** Visualização de leis, códigos e constituição com formatação de alto contraste, modo noturno e ferramentas nativas de busca.
-2. **"Me Explique" (Tutor IA):** Um overlay interativo turbinado pelo Gemini Live, que tira dúvidas do usuário através de voz ou texto de forma conversacional e com baixa latência utilizando WebSockets e tokens efêmeros.
-3. **Sincronização Offline First:** Utilizando a API do SQLite nativo e persistência via React Query, a maior parte do conteúdo pode ser baixada e consumida sem internet.
-4. **Layout Híbrido Responsivo:** Totalmente adaptado para Mobile (com áreas de toque ampliadas), Tablet (layouts list-detail) e Desktop (sidebars).
-5. **Gamificação:** Controle de XP, sequências (streaks) e progresso de leitura inspirados em apps como Duolingo.
+- **Ship faster**: describe what you want to build and Lovable handles the code.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
-## 🛠️ Como executar o projeto localmente
+## Development
 
-### Pré-requisitos
-- Node.js (v24 recomendado) ou Bun
-- Gerenciador de pacotes Bun ou npm
-- Supabase CLI (caso queira manipular funções locais ou o banco de dados)
+Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
-### Passos para inicialização
-
-1. Instale as dependências:
-```bash
-bun install
-# ou
-npm install
-```
-
-2. Inicialize o servidor de desenvolvimento:
-```bash
-bun run dev
-# ou
+```sh
+git clone <this-repository-url>
+cd <repository-name>
+npm i
 npm run dev
 ```
-
-3. (Opcional) Executar ambiente Electron (Desktop):
-```bash
-bun run electron:dev
-```
-
-## 📱 Build e Deploy (Mobile / iOS)
-
-O projeto possui uma esteira CI/CD madura rodando via **GitHub Actions** (`build-ios.yml`).
-Sempre que precisar gerar uma nova build para o **TestFlight**, basta disparar o workflow no GitHub ou via API. 
-
-As assinaturas do iOS (certificados e perfis) são geridas automaticamente pelo App Store Connect API (`scripts/asc-create-profile.py`) e armazenadas de forma segura nos `Secrets` do repositório.
-
-## 🛡️ Regras de Qualidade
-- **Verificação Contínua:** `tsc --noEmit` deve ser rodado para garantir que não existam erros de tipagem.
-- **Acessibilidade (WCAG):** Elementos interativos devem ter suporte total para navegação e bom contraste.
-- **Microinterações:** Feedback tátil (Haptics) acoplado aos cliques e navegação (Framer Motion).
