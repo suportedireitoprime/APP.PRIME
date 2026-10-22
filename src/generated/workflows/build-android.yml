@@ -289,7 +289,7 @@ jobs:
           # não cobre 100% dos pixels acima da status bar em todos os aparelhos.
           # Ícone do launcher segue amarelo (é o ícone na home, não afeta a UI).
           if [ -d assets ] && ls assets/*.png >/dev/null 2>&1; then
-            bunx capacitor-assets generate --android --assetPath assets --iconBackgroundColor '#8C1220' --iconBackgroundColorDark '#8C1220' --splashBackgroundColor '#8C1220' --splashBackgroundColorDark '#8C1220'
+            bunx @capacitor/assets generate --android --assetPath assets --iconBackgroundColor '#8C1220' --iconBackgroundColorDark '#8C1220' --splashBackgroundColor '#8C1220' --splashBackgroundColorDark '#8C1220'
           else
             echo "No native image assets found; skipping capacitor-assets."
           fi
@@ -679,7 +679,7 @@ jobs:
           rm -rf android/app/src/main/assets/public || true
 
       - name: Sync Capacitor
-        run: bunx cap sync android
+        run: bunx @capacitor/cli sync android
 
       - name: Purge precompressed assets from Android bundle (hard safety)
         run: |

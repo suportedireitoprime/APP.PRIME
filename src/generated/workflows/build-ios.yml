@@ -96,7 +96,7 @@ jobs:
 
       - name: Sync iOS platform
         run: |
-          bunx cap sync ios
+          bunx @capacitor/cli sync ios
 
       - name: Set version + build number + app name
         run: |

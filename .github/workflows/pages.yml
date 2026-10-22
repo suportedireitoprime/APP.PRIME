@@ -39,7 +39,11 @@ jobs:
       - name: Build
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
-        run: bun run build
+        run: |
+          bun run build
+          if [ -d .output/public ] && [ ! -d dist ]; then
+            cp -r .output/public dist
+          fi
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
