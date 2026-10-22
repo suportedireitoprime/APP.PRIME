@@ -127,9 +127,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p assets
-          cp build-assets/ios-app-icon.png assets/icon.png
-          cp build-assets/ios-splash.png assets/splash.png
-          bunx @capacitor/assets generate --ios
+          if [ -f "build-assets/ios-app-icon.png" ]; then
+            cp build-assets/ios-app-icon.png assets/icon.png
+          elif [ -f "resources/icon.png" ]; then
+            cp resources/icon.png assets/icon.png
+          fi
+          if [ -f "build-assets/ios-splash.png" ]; then
+            cp build-assets/ios-splash.png assets/splash.png
+          elif [ -f "resources/splash.png" ]; then
+            cp resources/splash.png assets/splash.png
+          fi
+          if [ -f "assets/icon.png" ]; then
+            bunx @capacitor/assets generate --ios --assetPath assets
+          else
+            echo "No iOS assets found; skipping capacitor-assets."
+          fi
 
 
 
