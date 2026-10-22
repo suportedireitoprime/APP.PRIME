@@ -51,6 +51,31 @@ function normalize(s) {
     .trim();
 }
 
+const stopWords = new Set(['contra', 'para', 'com', 'sem', 'sob', 'sobre', 'dos', 'das', 'uma', 'uns', 'umas', 'resumo', 'de', 'do', 'da', 'e', 'o', 'a', 'em', 'no', 'na', 'nos', 'nas', 'ao', 'aos']);
+
+function findBestMatch(rName, narracoes) {
+  const rClean = normalize(rName.replace(/^[\d\s\-]+resumo\s*[-–]\s*/i, '').replace(/\.docx$/i, ''));
+  const rWords = rClean.split(' ').filter(w => w.length > 1 && !stopWords.has(w));
+  let best = null;
+  let bestScore = 0;
+
+  for (const n of narracoes) {
+    const nClean = normalize(n.name);
+    const nWords = nClean.split(' ').filter(w => w.length > 1 && !stopWords.has(w));
+    
+    // Contagem de palavras coincidentes significativas
+    const common = rWords.filter(w => nWords.includes(w)).length;
+    const score = common / Math.max(rWords.length, nWords.length);
+    
+    if (rClean === nClean) return n;
+    if (score > bestScore && common >= 1) {
+      bestScore = score;
+      best = n;
+    }
+  }
+  return bestScore >= 0.3 ? best : null;
+}
+
 async function run() {
   const areaName = 'Direito Penal';
   const resumos = JSON.parse(fs.readFileSync('scratch/penal_resumos.json', 'utf8'));
@@ -80,14 +105,7 @@ async function run() {
       continue;
     }
 
-    const rClean = normalize(r.name.replace(/^[\d\s\-]+resumo\s*[-–]\s*/i, '').replace(/\.docx$/i, ''));
-    
-    // Procura pasta de narração
-    const matchFolder = narracoes.find(n => {
-      const nClean = normalize(n.name);
-      return rClean.includes(nClean) || nClean.includes(rClean) ||
-        (rClean.split(' ').filter(w => w.length > 3).every(w => nClean.includes(w)));
-    });
+    const matchFolder = findBestMatch(r.name, narracoes);
 
     try {
       console.log(`\n⏳ [${i+1}/${resumos.length}] Processando: ${r.name}`);

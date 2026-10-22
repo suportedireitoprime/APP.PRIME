@@ -133,14 +133,36 @@ async function processDocxBuffer(docxBuffer, areaSlug, temaSlug) {
   const chapters = [];
   const chapterStarts = [];
 
+  const isSectionHeader = (txt) => [
+    'em linguagem simples', 'para entender melhor', 'de olho na prova', 
+    'exemplo pratico', 'exemplo prático', 'ficha do crime', 'ficha do tema', 
+    'ficha do conceito', 'para guardar', 'antes de comecar', 'antes de começar'
+  ].includes((txt || '').toLowerCase().trim());
+
   for (let i = 0; i < rawParagraphs.length; i++) {
     const p = rawParagraphs[i];
-    const match = p.text.match(/^CAPÍTULO\s+(\d+)\s+[•\-–]\s+(.*)$/i);
+    const match = p.text.match(/^CAPÍTULO\s+(\d+)(?:\s+[•\-–]\s*(.*))?$/i);
     if (match) {
       const num = parseInt(match[1], 10);
-      const subheader = match[2].trim();
-      const titulo = rawParagraphs[i + 1]?.text || `Capítulo ${num}`;
-      const subtitulo = rawParagraphs[i + 2]?.text || '';
+      const subheader = match[2] ? match[2].trim() : '';
+      let titulo = '';
+      let subtitulo = '';
+
+      const p1 = rawParagraphs[i + 1]?.text || '';
+      const p2 = rawParagraphs[i + 2]?.text || '';
+
+      if (subheader) {
+        titulo = subheader;
+        if (p1 && !isSectionHeader(p1)) {
+          subtitulo = p1;
+        }
+      } else {
+        titulo = p1 || `Capítulo ${num}`;
+        if (p2 && !isSectionHeader(p2)) {
+          subtitulo = p2;
+        }
+      }
+
       chapterStarts.push({
         pIndex: i,
         numero: num,
@@ -158,7 +180,7 @@ async function processDocxBuffer(docxBuffer, areaSlug, temaSlug) {
     const startP = curr.pIndex;
     const endP = next ? next.pIndex : rawParagraphs.length;
 
-    // Encontra imagem do capítulo (geralmente nos primeiros 4 parágrafos do capítulo)
+    // Encontra imagem do capítulo (geralmente nos primeiros 8 parágrafos do capítulo)
     let chapterImgUrl = null;
     for (let j = startP; j < Math.min(startP + 8, endP); j++) {
       if (rawParagraphs[j].image && imageR2Urls[rawParagraphs[j].image]) {
@@ -180,8 +202,9 @@ async function processDocxBuffer(docxBuffer, areaSlug, temaSlug) {
     }
 
     let currentSection = '';
+    const contentStartOffset = curr.subheader ? (curr.subtitulo ? 2 : 1) : (curr.subtitulo ? 3 : 2);
 
-    for (let pIdx = startP + 3; pIdx < endP; pIdx++) {
+    for (let pIdx = startP + contentStartOffset; pIdx < endP; pIdx++) {
       const p = rawParagraphs[pIdx];
       if (!p.text && !p.image) continue;
 
@@ -195,13 +218,18 @@ async function processDocxBuffer(docxBuffer, areaSlug, temaSlug) {
       const t = p.text;
       if (!t) continue;
 
-      if (['Em linguagem simples', 'Para entender melhor', 'De olho na prova', 'Exemplo prático', 'Ficha do crime', 'Para guardar'].includes(t)) {
+      const isKnownSection = [
+        'Em linguagem simples', 'Para entender melhor', 'De olho na prova',
+        'Exemplo prático', 'Ficha do crime', 'Ficha do tema', 'Ficha do conceito', 'Para guardar'
+      ].some(s => t.toLowerCase() === s.toLowerCase());
+
+      if (isKnownSection) {
         currentSection = t;
         lines.push('');
-        if (t === 'De olho na prova') lines.push(`### 🎯 ${t}`);
-        else if (t === 'Exemplo prático') lines.push(`### 💡 ${t}`);
-        else if (t === 'Ficha do crime') lines.push(`### 📋 ${t}`);
-        else if (t === 'Para guardar') lines.push(`### 📌 ${t}`);
+        if (t.toLowerCase().includes('olho na prova')) lines.push(`### 🎯 ${t}`);
+        else if (t.toLowerCase().includes('exemplo')) lines.push(`### 💡 ${t}`);
+        else if (t.toLowerCase().startsWith('ficha')) lines.push(`### 📋 ${t}`);
+        else if (t.toLowerCase().includes('guardar')) lines.push(`### 📌 ${t}`);
         else lines.push(`### ${t}`);
         lines.push('');
         continue;
@@ -258,29 +286,43 @@ async function processTheme(areaName, docxItem, audioFolderItem) {
 
   // 3. Baixa e sobe os áudios correspondentes
   const audioMap = {};
+  let audioFiles = [];
   if (audioFolderItem && audioFolderItem.id) {
     console.log(`Listando arquivos de áudio na pasta [${audioFolderItem.name}]...`);
-    const audioFiles = await listDriveFolder(audioFolderItem.id);
+    audioFiles = await listDriveFolder(audioFolderItem.id);
     console.log(`Encontrados ${audioFiles.length} arquivos de áudio`);
+  }
 
-    for (const af of audioFiles) {
-      if (!af.name.endsWith('.mp3')) continue;
-      // Extrai número do capítulo do nome do arquivo (ex: cap01-..., cap12-...)
-      const numMatch = af.name.match(/cap0?(\d+)/i);
-      const capNum = numMatch ? parseInt(numMatch[1], 10) : null;
-
-      console.log(`Baixando áudio: ${af.name} (Capítulo ${capNum})...`);
-      try {
-        const audioBuf = await downloadDriveFile(af.id);
-        const r2Key = `resumos/audio/${areaSlug}/${temaSlug}/${af.name}`;
-        const audioUrl = await uploadToR2(r2Key, audioBuf, 'audio/mpeg');
-        console.log(`  -> Áudio enviado para R2: ${audioUrl}`);
-        if (capNum != null) {
-          audioMap[capNum] = audioUrl;
-        }
-      } catch (e) {
-        console.error(`Erro ao processar áudio ${af.name}:`, e.message);
+  // Se a subpasta estava vazia ou não existia, tenta buscar áudios na pasta raiz de narrações da área
+  if (audioFiles.length === 0) {
+    try {
+      const parentNarracoes = JSON.parse(fs.readFileSync('scratch/penal_narracoes.json', 'utf8'));
+      // Arquivos que são .mp3 diretamente na pasta raiz
+      const rootMp3s = parentNarracoes.filter(n => n.name && n.name.endsWith('.mp3'));
+      if (rootMp3s.length > 0 && cleanTemaName.toLowerCase().includes('familia')) {
+        audioFiles = rootMp3s;
+        console.log(`Encontrados ${audioFiles.length} arquivos de áudio na pasta raiz para este tema`);
       }
+    } catch {}
+  }
+
+  for (const af of audioFiles) {
+    if (!af.name.endsWith('.mp3')) continue;
+    // Extrai número do capítulo do nome do arquivo (ex: cap01-..., cap12-...)
+    const numMatch = af.name.match(/cap0?(\d+)/i);
+    const capNum = numMatch ? parseInt(numMatch[1], 10) : null;
+
+    console.log(`Baixando áudio: ${af.name} (Capítulo ${capNum})...`);
+    try {
+      const audioBuf = await downloadDriveFile(af.id);
+      const r2Key = `resumos/audio/${areaSlug}/${temaSlug}/${af.name}`;
+      const audioUrl = await uploadToR2(r2Key, audioBuf, 'audio/mpeg');
+      console.log(`  -> Áudio enviado para R2: ${audioUrl}`);
+      if (capNum != null) {
+        audioMap[capNum] = audioUrl;
+      }
+    } catch (e) {
+      console.error(`Erro ao processar áudio ${af.name}:`, e.message);
     }
   }
 
@@ -313,5 +355,7 @@ async function processTheme(areaName, docxItem, audioFolderItem) {
 module.exports = {
   processTheme,
   slugify,
-  uploadToR2
+  uploadToR2,
+  listDriveFolder,
+  downloadDriveFile
 };

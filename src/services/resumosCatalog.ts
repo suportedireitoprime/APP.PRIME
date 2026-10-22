@@ -7,6 +7,8 @@ export interface SubtemaItem {
   markdown?: string;
   exemplos?: string;
   termos?: string;
+  audio_url?: string | null;
+  imageUrl?: string | null;
 }
 
 export interface TemaItem {
