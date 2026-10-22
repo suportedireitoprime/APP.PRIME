@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, FileText, Heart, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain, Crown } from "lucide-react";
+import { ArrowLeft, FileText, Heart, Loader2, Search, ChevronRight, NotebookText, BookOpen, Mic, X, Brain, Crown, Headphones } from "lucide-react";
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Input } from "@/components/ui/input";
 import ResumoJuridicoReaderSheet, { ResumoRow } from "@/components/resumos-juridicos/ResumoJuridicoReaderSheet";
@@ -418,7 +418,7 @@ export default function ResumosJuridicosSubtemas() {
                       </div>
                       
                       <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-1 pr-2">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="text-sm sm:text-base font-medium font-sans text-foreground break-words leading-snug line-clamp-3 transition-colors">
                             {r.subtema || r.tema}
                           </h3>
@@ -426,6 +426,12 @@ export default function ResumosJuridicosSubtemas() {
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-mono font-bold tracking-wider uppercase text-amber-300 bg-amber-500/20 border border-amber-400/40 shrink-0">
                               <Crown className="w-2.5 h-2.5 text-amber-400" />
                               PREMIUM
+                            </span>
+                          )}
+                          {(r.audio_url || (r.markdown && r.markdown.includes("audio:"))) && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase text-rose-400 bg-rose-500/15 border border-rose-500/30 shrink-0">
+                              <Headphones className="w-2.5 h-2.5 text-rose-400" />
+                              ÁUDIO
                             </span>
                           )}
                         </div>

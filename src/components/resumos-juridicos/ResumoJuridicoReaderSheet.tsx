@@ -42,6 +42,7 @@ import {
 import { abrirLink } from '@/lib/nativo';
 import { cn } from "@/lib/utils";
 import { haptic } from "@/lib/nativeHaptics";
+import { ResumoAudioPlayer } from "./ResumoAudioPlayer";
 
 export interface ResumoRow {
   id: string;
@@ -52,6 +53,7 @@ export interface ResumoRow {
   markdown: string | null;
   exemplos: string | null;
   termos: string | null;
+  audio_url?: string | null;
 }
 
 interface Props {
@@ -164,6 +166,23 @@ const markdownComponents = {
     ),
   hr: ({ node, ...props }: any) => (
     <hr className="my-6 border-border/60" {...props} />
+  ),
+  img: ({ node, src, alt, ...props }: any) => (
+    <div className="my-6 rounded-2xl overflow-hidden border border-border/60 bg-zinc-950/40 shadow-xl max-w-full not-prose">
+      <img
+        src={src}
+        alt={alt || "Ilustração do resumo jurídico"}
+        loading="lazy"
+        decoding="async"
+        className="w-full h-auto object-contain max-h-[520px] mx-auto rounded-xl"
+        {...props}
+      />
+      {alt && (
+        <p className="text-center text-xs text-muted-foreground/80 py-2.5 px-3 border-t border-border/30 italic font-body">
+          {alt}
+        </p>
+      )}
+    </div>
   ),
 };
 
@@ -324,8 +343,9 @@ export default function ResumoJuridicoReaderSheet({
         if (row.metodo === "conceitos") setConceitosData(row.conteudo as any);
       }
 
-      // Se o método inicial for conceitos e ainda NÃO tiver sido aprofundado, gera AUTOMATICAMENTE!
-      if (targetMetodo === "conceitos" && !existentes.has("conceitos")) {
+      // Se o método inicial for conceitos e ainda NÃO tiver sido aprofundado e NÃO tiver markdown pronto, gera
+      const jaTemMarkdown = Boolean(resumo.markdown || basicData?.markdown);
+      if (targetMetodo === "conceitos" && !existentes.has("conceitos") && !jaTemMarkdown) {
         void gerarMetodologia("conceitos", false);
       } else if (targetMetodo === "cornell" && !existentes.has("cornell")) {
         void gerarMetodologia("cornell", false);
@@ -368,9 +388,21 @@ export default function ResumoJuridicoReaderSheet({
   const incFont = () => setFontSize((s) => Math.min(26, s + 1));
   const decFont = () => setFontSize((s) => Math.max(13, s - 1));
 
-  const currentMarkdown = conceitosData?.markdown ?? (erroGerar ? basicData?.markdown : null);
-  const currentExemplos = conceitosData?.exemplos ?? (erroGerar ? basicData?.exemplos : null);
-  const currentTermos = conceitosData?.termos ?? (erroGerar ? basicData?.termos : null);
+  const currentMarkdown =
+    conceitosData?.markdown ?? (basicData?.markdown || resumo?.markdown || null);
+  const currentExemplos =
+    conceitosData?.exemplos ?? (basicData?.exemplos || resumo?.exemplos || null);
+  const currentTermos =
+    conceitosData?.termos ?? (basicData?.termos || resumo?.termos || null);
+
+  const audioUrl = useMemo(() => {
+    if (resumo?.audio_url) return resumo.audio_url;
+    const md = currentMarkdown || resumo?.markdown || "";
+    const match =
+      md.match(/<!--\s*audio:\s*([^\s>]+)\s*-->/i) ||
+      md.match(/\[audio:\s*([^\s\]]+)\]/i);
+    return match ? match[1] : null;
+  }, [resumo?.audio_url, currentMarkdown, resumo?.markdown]);
 
   const rawContent =
     tab === "resumo" ? currentMarkdown : tab === "exemplos" ? currentExemplos : currentTermos;
@@ -584,6 +616,16 @@ export default function ResumoJuridicoReaderSheet({
               </div>
 
               <div className="space-y-4 px-4 pt-4 md:px-6 md:pt-6 max-w-4xl mx-auto w-full">
+                {audioUrl && (
+                  <div className="mb-3">
+                    <ResumoAudioPlayer
+                      audioUrl={audioUrl}
+                      titulo={resumo.subtema || resumo.tema}
+                      subtitulo={resumo.area}
+                    />
+                  </div>
+                )}
+
                 {metodo === "conceitos" && abas.length > 1 && (
                   <div className="flex w-full mt-2 border-b border-border">
                     {abas.map((t) => {
