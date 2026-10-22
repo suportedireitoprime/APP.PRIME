@@ -38,6 +38,16 @@ async function main() {
     console.log("[prepare-dist] Sanitized pending route matches to success");
   }
 
+  // Prevenção absoluta de Tela Branca:
+  // 1. Injetar style inline escuro no <body>
+  if (html && html.includes("<body") && !html.includes('style="background-color')) {
+    html = html.replace(/<body([^>]*)>/, '<body$1 style="background-color: #0D0F12; color: #FFFFFF; margin: 0; padding: 0;" class="dark bg-[#0D0F12] text-white">');
+  }
+  // 2. Substituir qualquer fallback bg-background por fundo escuro inline
+  if (html && html.includes("bg-background")) {
+    html = html.replace(/class="([^"]*)\bbg-background\b([^"]*)"/g, 'class="$1bg-[#0D0F12]$2" style="background-color: #0D0F12;"');
+  }
+
   // 3. Fallback shell if no HTML was rendered
   if (!html || !html.includes("<html")) {
     html = `<!DOCTYPE html>

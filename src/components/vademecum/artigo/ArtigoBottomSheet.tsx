@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect, useMemo, Suspense, Fragment } from "react";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Compass, Layers, ChevronDown, ChevronUp, Mic } from "lucide-react";
 import { extractArtigoDispositivos, type ArtigoDispositivoLandmark } from "./artigoTextUtils";
 const QuizView = lazyWithRetry(() => import("@/components/estudar/QuizView"));

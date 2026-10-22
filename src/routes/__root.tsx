@@ -47,7 +47,10 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   const errStack = error instanceof Error ? error.stack : undefined;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div
+      className="flex min-h-screen items-center justify-center bg-[#0D0F12] px-4 text-white"
+      style={{ backgroundColor: "#0D0F12", color: "#FFFFFF" }}
+    >
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           This page didn't load
@@ -117,11 +120,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR" className="dark">
+    <html lang="pt-BR" className="dark" style={{ backgroundColor: "#0D0F12", color: "#FFFFFF" }}>
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body
+        style={{ backgroundColor: "#0D0F12", color: "#FFFFFF", margin: 0, padding: 0 }}
+        className="dark bg-[#0D0F12] text-white"
+      >
         {children}
         <Scripts />
       </body>

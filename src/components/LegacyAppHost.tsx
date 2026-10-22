@@ -21,9 +21,11 @@ const LegacyApp = lazy(async () => {
 export function LegacyAppHost() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  if (!mounted) return <div className="min-h-screen bg-background" />;
+  if (!mounted) {
+    return <div className="min-h-screen bg-[#0D0F12]" style={{ backgroundColor: "#0D0F12" }} />;
+  }
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#0D0F12]" style={{ backgroundColor: "#0D0F12" }} />}>
       <div id="root">
         <LegacyApp />
       </div>

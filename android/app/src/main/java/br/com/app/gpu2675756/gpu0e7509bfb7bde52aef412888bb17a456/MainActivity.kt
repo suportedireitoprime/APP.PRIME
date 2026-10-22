@@ -127,6 +127,7 @@ class MainActivity : BridgeActivity() {
     private fun disableWebviewScrollbars() {
         val wv = bridge?.webView ?: return
         val applyScrollDisable: () -> Unit = {
+            wv.setBackgroundColor(android.graphics.Color.parseColor("#0D0F12"))
             wv.isVerticalScrollBarEnabled = false
             wv.isHorizontalScrollBarEnabled = false
             wv.overScrollMode = View.OVER_SCROLL_NEVER

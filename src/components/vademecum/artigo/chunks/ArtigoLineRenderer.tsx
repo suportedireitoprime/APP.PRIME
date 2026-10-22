@@ -34,7 +34,7 @@ export interface ArtigoLineRendererProps {
   highlightMode: boolean;
   focusedSegment: string | null;
   selectedColor: string;
-  lineSegmentMap: Record<number, string>;
+  lineSegmentMap: Record<number, string> | string[] | Map<number, string>;
   artigoNumero: number | string | undefined;
   magicMode: boolean;
   magicHighlights: MagicGrifo[];
