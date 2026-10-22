@@ -3,7 +3,6 @@ import { createFileRoute } from "@tanstack/react-router";
 
 // Every other URL is handled by the imported Direito Prime app's own route table.
 export const Route = createFileRoute("/$")({
-  ssr: false,
   head: () => ({
     meta: [
       { title: "Direito Prime" },

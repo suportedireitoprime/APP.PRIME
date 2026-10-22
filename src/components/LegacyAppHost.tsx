@@ -3,17 +3,17 @@ import { lazy, Suspense, useEffect, useState } from "react";
 // The imported Direito Prime app touches window/localStorage at import time,
 // so it is loaded only in the browser.
 const LegacyApp = lazy(async () => {
-  await import("@/lib/domGuard");
+  await import("@/lib/domGuard").catch(() => {});
   await Promise.all([
-    import("@fontsource/bebas-neue/400.css"),
-    import("@fontsource/barlow/400.css"),
-    import("@fontsource/barlow/500.css"),
-    import("@fontsource/barlow/600.css"),
-    import("@fontsource/barlow/700.css"),
-    import("@fontsource/barlow-condensed/600.css"),
-    import("@fontsource/barlow-condensed/700.css"),
-    import("@fontsource/literata/400.css"),
-    import("@fontsource/plus-jakarta-sans/700.css"),
+    import("@fontsource/bebas-neue/400.css").catch(() => {}),
+    import("@fontsource/barlow/400.css").catch(() => {}),
+    import("@fontsource/barlow/500.css").catch(() => {}),
+    import("@fontsource/barlow/600.css").catch(() => {}),
+    import("@fontsource/barlow/700.css").catch(() => {}),
+    import("@fontsource/barlow-condensed/600.css").catch(() => {}),
+    import("@fontsource/barlow-condensed/700.css").catch(() => {}),
+    import("@fontsource/literata/400.css").catch(() => {}),
+    import("@fontsource/plus-jakarta-sans/700.css").catch(() => {}),
   ]);
   return import("@/App");
 });

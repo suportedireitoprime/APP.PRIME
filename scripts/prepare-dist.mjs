@@ -11,11 +11,9 @@ async function main() {
     console.log("[prepare-dist] Mirrored .output/public -> dist");
   }
 
-  // 2. Obtain or render index.html
+  // 2. Obtain or render index.html (always prioritize rendering fresh via SSR worker if available)
   let html = "";
-  if (fs.existsSync("dist/index.html")) {
-    html = fs.readFileSync("dist/index.html", "utf8");
-  } else if (fs.existsSync(".output/server/index.mjs")) {
+  if (fs.existsSync(".output/server/index.mjs")) {
     try {
       const serverPath = path.resolve(process.cwd(), ".output/server/index.mjs");
       const serverUrl = new URL(`file://${serverPath.replace(/\\/g, "/")}`).href;
@@ -28,6 +26,16 @@ async function main() {
     } catch (err) {
       console.warn("[prepare-dist] SSR render notice:", err.message);
     }
+  }
+
+  if (!html && fs.existsSync("dist/index.html")) {
+    html = fs.readFileSync("dist/index.html", "utf8");
+  }
+
+  // Safety net: ensure any pending route matches are marked as success so TanStack Router never aborts hydration
+  if (html && html.includes('s:"pending"')) {
+    html = html.replace(/s:"pending"/g, 's:"success"');
+    console.log("[prepare-dist] Sanitized pending route matches to success");
   }
 
   // 3. Fallback shell if no HTML was rendered
