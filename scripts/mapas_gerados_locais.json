@@ -1,0 +1,111 @@
+{
+  "materia:direito-administrativo#tema-principios-do-direito-administrativo-principio-da-moralidade::infografico": {
+    "categoria": "materias",
+    "tipo": "infografico",
+    "item_key": "materia:direito-administrativo#tema-principios-do-direito-administrativo-principio-da-moralidade",
+    "item_label": "Direito Administrativo — Princípios do Direito Administrativo · Princípio da Moralidade",
+    "titulo": "Princípio da Moralidade Administrativa",
+    "conteudo": {
+      "tipo": "infografico",
+      "titulo": "Princípio da Moralidade Administrativa",
+      "subtitulo": "Dever de probidade, boa-fé e lealdade na conduta pública, distinguindo-se da legalidade estrita e da moral comum.",
+      "fonte": "Art. 37, caput, da CF/88; Lei 8.429/92; Súmula Vinculante 13/STF",
+      "cards": [
+        {
+          "titulo": "Conceito Jurídico e Autonomia",
+          "texto": "Exige conduta ética, lealdade e honestidade. Possui autonomia jurídica: um ato formalmente legal pode ser nulo por vício de imoralidade administrativa (moralidade objetiva)."
+        },
+        {
+          "titulo": "Moral Comum vs. Moralidade Pública",
+          "texto": "Não se confunde com a moral comum subjetiva. Trata-se de moral institucional ou objetiva, vinculada ao interesse coletivo e aos padrões éticos esperados da Administração."
+        },
+        {
+          "titulo": "Controle e Meios de Tutela",
+          "texto": "Atos imorais são nulos e passíveis de invalidação judicial via Ação Popular (art. 5º, LXXIII, CF) ou Ação Civil Pública, além de sujeitar o agente à Lei de Improbidade."
+        },
+        {
+          "titulo": "Vedação ao Nepotismo (SV 13/STF)",
+          "texto": "A proibição de nomear cônjuge ou parentes até o 3º grau para cargos comissionados decorre diretamente da moralidade e impessoalidade, sem necessidade de lei formal específica."
+        },
+        {
+          "titulo": "Improbidade Administrativa (Art. 11)",
+          "texto": "Atentar contra princípios constitucionais configura improbidade (art. 11, LIA), exigindo dolo específico e tipificação estrita após a Lei 14.230/21 para punição pessoal."
+        }
+      ],
+      "rodape": "Dica de prova: A imoralidade anula o ato mesmo que aparente legalidade formal e dispensa lei prévia definidora de cada conduta para ser sindicável pelo Judiciário."
+    },
+    "fonte": "Art. 37, caput, da CF/88; Lei 8.429/92; Súmula Vinculante 13/STF",
+    "modelo": "antigravity/gemini-3.8-flash-tiered",
+    "gerado_por": "omniroute-robot",
+    "views": 0,
+    "gerado_em": "2026-10-23T15:20:24.255Z",
+    "motivo_fallback": "permission denied for table visuais_juridicos"
+  },
+  "materia:direito-administrativo#tema-principios-do-direito-administrativo-principio-da-moralidade::mapa_mental": {
+    "categoria": "materias",
+    "tipo": "mapa_mental",
+    "item_key": "materia:direito-administrativo#tema-principios-do-direito-administrativo-principio-da-moralidade",
+    "item_label": "Direito Administrativo — Princípios do Direito Administrativo · Princípio da Moralidade",
+    "titulo": "Princípio da Moralidade Administrativa",
+    "conteudo": {
+      "tipo": "mapa_mental",
+      "titulo": "Princípio da Moralidade Administrativa",
+      "subtitulo": "Diretriz constitucional que impõe atuação ética, leal, com probidade e boa-fé a todos os agentes públicos",
+      "fonte": "Art. 37, caput e § 4º, CF/88; Lei 8.429/92; Súmula Vinculante 13 do STF",
+      "central": "Moralidade Administrativa",
+      "ramos": [
+        {
+          "titulo": "Conceito e Distinções",
+          "itens": [
+            "Não se confunde com moral comum, subjetiva ou religiosa",
+            "Trata-se de moral jurídica ligada à probidade e honestidade",
+            "Exige observância de padrões éticos e boa-fé objetiva",
+            "Possui autonomia própria frente à legalidade formal"
+          ]
+        },
+        {
+          "titulo": "Instrumentos de Tutela",
+          "itens": [
+            "Ação Popular ajuizada por qualquer cidadão (art. 5º, LXXIII)",
+            "Ação Civil Pública e Ação de Improbidade Administrativa",
+            "Controle interno pelos órgãos da própria Administração Pública",
+            "Anulação judicial de atos administrativos imorais"
+          ]
+        },
+        {
+          "titulo": "Vedação ao Nepotismo (SV 13)",
+          "itens": [
+            "Veda nomeação de cônjuge ou parentes até 3º grau para comissão",
+            "Aplica-se aos poderes Executivo, Legislativo e Judiciário",
+            "Alcança o nepotismo cruzado por designações recíprocas",
+            "Regra geral mitigada para cargos de natureza estritamente política"
+          ]
+        },
+        {
+          "titulo": "Improbidade Administrativa",
+          "itens": [
+            "Prevista no art. 11 da Lei 8.429/92 reformada pela Lei 14.230/21",
+            "Exige dolo específico com demonstração de lesividade real",
+            "Revogação da modalidade culposa na nova redação legal",
+            "Sanções de multa civil e suspensão temporária de direitos políticos"
+          ]
+        },
+        {
+          "titulo": "Efeitos da Violação",
+          "itens": [
+            "Nulidade plena e insanável do ato administrativo praticado",
+            "Dever de ressarcimento do dano patrimonial causado ao erário",
+            "Responsabilização disciplinar do servidor envolvido no ilícito",
+            "Inviabilidade de convalidação de vícios materiais de moralidade"
+          ]
+        }
+      ]
+    },
+    "fonte": "Art. 37, caput e § 4º, CF/88; Lei 8.429/92; Súmula Vinculante 13 do STF",
+    "modelo": "antigravity/gemini-3.8-flash-tiered",
+    "gerado_por": "omniroute-robot",
+    "views": 0,
+    "gerado_em": "2026-10-23T15:20:24.426Z",
+    "motivo_fallback": "permission denied for table visuais_juridicos"
+  }
+}

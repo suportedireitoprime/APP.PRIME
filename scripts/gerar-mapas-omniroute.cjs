@@ -476,46 +476,62 @@ async function main() {
         const conteudo = await callOmniRouteWithRetry(task.tipo, task.area, task.tema, task.subtema);
         const itemDurSec = ((Date.now() - itemStart) / 1000).toFixed(1);
 
-        if (!DRY_RUN) {
-          // Checagem prévia para evitar falha de constraint ON CONFLICT
-          const { data: existingRec } = await supabase
-            .from('visuais_juridicos')
-            .select('id')
-            .eq('item_key', task.chave)
-            .eq('tipo', task.tipo)
-            .maybeSingle();
+        const registroVisual = {
+          categoria: 'materias',
+          tipo: task.tipo,
+          item_key: task.chave,
+          item_label: task.rotulo,
+          titulo: conteudo.titulo,
+          conteudo,
+          fonte: conteudo.fonte || null,
+          modelo: MODEL,
+          gerado_por: 'omniroute-robot',
+          views: 0
+        };
 
-          if (existingRec?.id) {
-            const { error: updErr } = await supabase
+        let salvoNoBanco = false;
+
+        if (!DRY_RUN) {
+          try {
+            const { data: existingRec } = await supabase
               .from('visuais_juridicos')
-              .update({
-                categoria: 'materias',
-                item_label: task.rotulo,
-                titulo: conteudo.titulo,
-                conteudo,
-                fonte: conteudo.fonte || null,
-                modelo: MODEL,
-                gerado_por: 'omniroute-robot',
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', existingRec.id);
-            if (updErr) throw updErr;
-          } else {
-            const { error: insErr } = await supabase
-              .from('visuais_juridicos')
-              .insert({
-                categoria: 'materias',
-                tipo: task.tipo,
-                item_key: task.chave,
-                item_label: task.rotulo,
-                titulo: conteudo.titulo,
-                conteudo,
-                fonte: conteudo.fonte || null,
-                modelo: MODEL,
-                gerado_por: 'omniroute-robot',
-                views: 0
-              });
-            if (insErr) throw insErr;
+              .select('id')
+              .eq('item_key', task.chave)
+              .eq('tipo', task.tipo)
+              .maybeSingle();
+
+            if (existingRec?.id) {
+              const { error: updErr } = await supabase
+                .from('visuais_juridicos')
+                .update({
+                  ...registroVisual,
+                  updated_at: new Date().toISOString()
+                })
+                .eq('id', existingRec.id);
+              if (updErr) throw updErr;
+            } else {
+              const { error: insErr } = await supabase
+                .from('visuais_juridicos')
+                .insert(registroVisual);
+              if (insErr) throw insErr;
+            }
+            salvoNoBanco = true;
+          } catch (dbErr) {
+            // Backup local automático para nunca perder o visual gerado
+            try {
+              const backupFile = path.resolve('scripts/mapas_gerados_locais.json');
+              let backupData = {};
+              if (fs.existsSync(backupFile)) {
+                backupData = JSON.parse(fs.readFileSync(backupFile, 'utf8') || '{}');
+              }
+              backupData[task.taskKey] = {
+                ...registroVisual,
+                gerado_em: new Date().toISOString(),
+                motivo_fallback: dbErr.message
+              };
+              fs.writeFileSync(backupFile, JSON.stringify(backupData, null, 2), 'utf8');
+            } catch {}
+            log(`     \x1b[33m⚠ Supabase (${dbErr.message}) -> Salvo com segurança no backup local!\x1b[0m`);
           }
         }
 
@@ -523,10 +539,11 @@ async function main() {
         localCheckpoint.add(task.taskKey);
         if (successCount % 5 === 0) saveCheckpoint();
 
-        log(`     \x1b[32m✔ Sucesso em ${itemDurSec}s — "${conteudo.titulo}" salvo no Supabase!\x1b[0m\n`);
+        const destMsg = salvoNoBanco ? 'salvo no Supabase' : (DRY_RUN ? 'modo teste' : 'salvo no backup local');
+        log(`     \x1b[32m✔ Sucesso em ${itemDurSec}s — "${conteudo.titulo}" (${destMsg})!\x1b[0m\n`);
       } catch (err) {
         errorCount++;
-        log(`     \x1b[31m✖ Erro: ${err.message}\x1b[0m\n`);
+        log(`     \x1b[31m✖ Erro ao gerar: ${err.message}\x1b[0m\n`);
       }
     }
   }
