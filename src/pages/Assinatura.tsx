@@ -136,6 +136,17 @@ export default function Assinatura() {
     setDevSheetOpen(false);
   };
 
+  const handleAssinarAgoraClick = () => {
+    track('subscription_started', { plano: tab, metodo: 'sheet', source: 'botao_assinar_agora' });
+    import('@/lib/appEvents')
+      .then(({ appEvents }) => {
+        appEvents.verPlano({ plano: tab as any });
+        appEvents.assinaturaIniciada({ plano: tab as any, metodo: 'sheet' });
+      })
+      .catch(() => {});
+    setPaymentMethodSheetOpen(true);
+  };
+
   const startPurchase = async (plano: 'mensal' | 'mensal_pix' | 'anual' | 'anual_regular_pix') => {
     track('subscription_started', { plano, metodo: 'asaas', source: 'planos_page' });
     import('@/lib/appEvents')
@@ -146,6 +157,9 @@ export default function Assinatura() {
       .catch(() => {});
       
     if (!session) { 
+      try {
+        sessionStorage.setItem('pending_checkout', plano);
+      } catch {}
       toast.info('Faça login ou cadastre-se para assinar'); 
       navigate('/login', { state: { returnTo: '/assinatura' } });
       return; 
@@ -159,6 +173,21 @@ export default function Assinatura() {
       setCheckoutPlan(plano);
     });
   };
+
+  // Restaura checkout se voltou autenticado do login
+  useEffect(() => {
+    if (session && !isPremium) {
+      try {
+        const pending = sessionStorage.getItem('pending_checkout');
+        if (pending) {
+          sessionStorage.removeItem('pending_checkout');
+          startTransition(() => {
+            setCheckoutPlan(pending as any);
+          });
+        }
+      } catch {}
+    }
+  }, [session, isPremium]);
 
   const previewPlans = searchParams.get('preview') === 'plans' || searchParams.get('planos') === '1' || (location.state as { previewPlans?: boolean } | null)?.previewPlans;
 
@@ -382,7 +411,7 @@ export default function Assinatura() {
 
             <div className="px-4 flex flex-col gap-3 -mt-1">
               <Button
-                onClick={() => setPaymentMethodSheetOpen(true)}
+                onClick={handleAssinarAgoraClick}
                 className="btn-shine-loop relative overflow-hidden w-full h-[62px] rounded-[22px] font-display text-[20px] font-black uppercase tracking-wider transition-all active:scale-[0.98] group bg-primary hover:bg-primary/95 text-white shadow-[0_12px_35px_rgba(224,31,71,0.45)] border border-white/15"
               >
                 <span className="flex items-center justify-center gap-2.5">

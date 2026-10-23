@@ -6,7 +6,8 @@ import {
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill, UserCheck, Bird, FileSpreadsheet
+  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill, UserCheck, Bird, FileSpreadsheet,
+  Gauge
 } from 'lucide-react';
 
 import { toast } from 'sonner';
@@ -16,6 +17,7 @@ import { AdminHojeCards } from '@/components/admin/AdminHojeCards';
 
 // Prefetch map
 const PREFETCH: Record<string, () => Promise<unknown>> = {
+  '/admin-cotas-analise': () => import('./AdminCotasAnalise'),
   '/admin-monitor': () => import('./AdminMonitor'),
   '/admin-monitor-usuarios': () => import('./AdminMonitorUsuarios'),
   '/admin-monitoramento': () => import('./AdminMonitoramento'),
@@ -149,6 +151,16 @@ const CATEGORIES: Category[] = [
     route: '/admin-instagram-posts',
     items: [
       { id: 'instagram-posts', label: 'Instagram Posts', icon: ImageIcon, desc: 'Gerar carrosséis com IA no padrão Vade Mecum', route: '/admin-instagram-posts' },
+    ],
+  },
+  {
+    id: 'cotas-analise-cat',
+    title: 'Cotas Análise',
+    desc: 'Ranking de consumo de cotas gratuitas e bloqueios (ciclo de 30 dias)',
+    icon: Gauge,
+    route: '/admin-cotas-analise',
+    items: [
+      { id: 'cotas-analise', label: 'Cotas Análise', icon: Gauge, desc: 'Quem usou todas as cotas, ranking e bloqueios por função', route: '/admin-cotas-analise' },
     ],
   },
   {

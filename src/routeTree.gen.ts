@@ -25,6 +25,7 @@ import { Route as AdminBlogEdicaoRouteImport } from './routes/admin-blog-edicao'
 import { Route as AdminBoletinsRouteImport } from './routes/admin-boletins'
 import { Route as AdminBuscadorLeisRouteImport } from './routes/admin-buscador-leis'
 import { Route as AdminConteudoFilaRouteImport } from './routes/admin-conteudo-fila'
+import { Route as AdminCotasAnaliseRouteImport } from './routes/admin-cotas-analise'
 import { Route as AdminDesignImagensRouteImport } from './routes/admin-design-imagens'
 import { Route as AdminErrosQuestoesRouteImport } from './routes/admin-erros-questoes'
 import { Route as AdminFlashcardsEditarRouteImport } from './routes/admin-flashcards-editar'
@@ -416,6 +417,11 @@ const AdminBuscadorLeisRoute = AdminBuscadorLeisRouteImport.update({
 const AdminConteudoFilaRoute = AdminConteudoFilaRouteImport.update({
   id: '/admin-conteudo-fila',
   path: '/admin-conteudo-fila',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCotasAnaliseRoute = AdminCotasAnaliseRouteImport.update({
+  id: '/admin-cotas-analise',
+  path: '/admin-cotas-analise',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminDesignImagensRoute = AdminDesignImagensRouteImport.update({
@@ -2040,6 +2046,7 @@ export interface FileRoutesByFullPath {
   '/admin-boletins': typeof AdminBoletinsRoute
   '/admin-buscador-leis': typeof AdminBuscadorLeisRoute
   '/admin-conteudo-fila': typeof AdminConteudoFilaRoute
+  '/admin-cotas-analise': typeof AdminCotasAnaliseRoute
   '/admin-design-imagens': typeof AdminDesignImagensRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
@@ -2370,6 +2377,7 @@ export interface FileRoutesByTo {
   '/admin-boletins': typeof AdminBoletinsRoute
   '/admin-buscador-leis': typeof AdminBuscadorLeisRoute
   '/admin-conteudo-fila': typeof AdminConteudoFilaRoute
+  '/admin-cotas-analise': typeof AdminCotasAnaliseRoute
   '/admin-design-imagens': typeof AdminDesignImagensRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
@@ -2701,6 +2709,7 @@ export interface FileRoutesById {
   '/admin-boletins': typeof AdminBoletinsRoute
   '/admin-buscador-leis': typeof AdminBuscadorLeisRoute
   '/admin-conteudo-fila': typeof AdminConteudoFilaRoute
+  '/admin-cotas-analise': typeof AdminCotasAnaliseRoute
   '/admin-design-imagens': typeof AdminDesignImagensRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
@@ -3033,6 +3042,7 @@ export interface FileRouteTypes {
     | '/admin-boletins'
     | '/admin-buscador-leis'
     | '/admin-conteudo-fila'
+    | '/admin-cotas-analise'
     | '/admin-design-imagens'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
@@ -3363,6 +3373,7 @@ export interface FileRouteTypes {
     | '/admin-boletins'
     | '/admin-buscador-leis'
     | '/admin-conteudo-fila'
+    | '/admin-cotas-analise'
     | '/admin-design-imagens'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
@@ -3693,6 +3704,7 @@ export interface FileRouteTypes {
     | '/admin-boletins'
     | '/admin-buscador-leis'
     | '/admin-conteudo-fila'
+    | '/admin-cotas-analise'
     | '/admin-design-imagens'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
@@ -4024,6 +4036,7 @@ export interface RootRouteChildren {
   AdminBoletinsRoute: typeof AdminBoletinsRoute
   AdminBuscadorLeisRoute: typeof AdminBuscadorLeisRoute
   AdminConteudoFilaRoute: typeof AdminConteudoFilaRoute
+  AdminCotasAnaliseRoute: typeof AdminCotasAnaliseRoute
   AdminDesignImagensRoute: typeof AdminDesignImagensRoute
   AdminErrosQuestoesRoute: typeof AdminErrosQuestoesRoute
   AdminFlashcardsEditarRoute: typeof AdminFlashcardsEditarRoute
@@ -4296,6 +4309,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-conteudo-fila'
       fullPath: '/admin-conteudo-fila'
       preLoaderRoute: typeof AdminConteudoFilaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-cotas-analise': {
+      id: '/admin-cotas-analise'
+      path: '/admin-cotas-analise'
+      fullPath: '/admin-cotas-analise'
+      preLoaderRoute: typeof AdminCotasAnaliseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-design-imagens': {
@@ -7304,6 +7324,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminBoletinsRoute: AdminBoletinsRoute,
   AdminBuscadorLeisRoute: AdminBuscadorLeisRoute,
   AdminConteudoFilaRoute: AdminConteudoFilaRoute,
+  AdminCotasAnaliseRoute: AdminCotasAnaliseRoute,
   AdminDesignImagensRoute: AdminDesignImagensRoute,
   AdminErrosQuestoesRoute: AdminErrosQuestoesRoute,
   AdminFlashcardsEditarRoute: AdminFlashcardsEditarRoute,

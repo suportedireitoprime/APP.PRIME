@@ -375,6 +375,7 @@ const CompressaoImagens = lazy(() => import("./pages/CompressaoImagens.tsx"));
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
 const AdminRankingFuncoes = lazy(() => import("./pages/AdminRankingFuncoes.tsx"));
 const AdminInstagramPosts = lazy(() => import("./pages/AdminInstagramPosts.tsx"));
+const AdminCotasAnalise = lazy(() => import("./pages/AdminCotasAnalise.tsx"));
 const AdminVadeMecum = lazy(() => import("./pages/AdminVadeMecum.tsx"));
 const AdminLembretes = lazy(() => import("./pages/AdminLembretes.tsx"));
 const AdminLembretesBiblioteca = lazy(() => import("./pages/AdminLembretesBiblioteca.tsx"));
@@ -1195,6 +1196,7 @@ function AnimatedRoutes() {
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-metricas-ads" element={<ProtectedRoute><PageTransition><AdminMetricasAds /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-instagram-posts" element={<ProtectedRoute><PageTransition><AdminInstagramPosts /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-cotas-analise" element={<ProtectedRoute><PageTransition><AdminCotasAnalise /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-avaliacao-loja" element={<ProtectedRoute><PageTransition><AdminAvaliacaoLoja /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-ranking-funcoes" element={<ProtectedRoute><PageTransition><AdminRankingFuncoes /></PageTransition></ProtectedRoute>} />
