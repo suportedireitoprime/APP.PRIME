@@ -180,55 +180,84 @@ export function ResumoAudioPlayer({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-white/10 bg-[#121316]/95 backdrop-blur-md p-3.5 sm:p-4 text-white shadow-2xl transition-all select-none not-prose",
+        "relative overflow-hidden rounded-2xl border border-white/10 bg-[#121316]/95 backdrop-blur-md px-3.5 py-3 sm:px-4 sm:py-3.5 text-white shadow-xl transition-all select-none not-prose",
         className
       )}
     >
-      {/* Luz ambiente de fundo */}
+      {/* Luz ambiente de fundo sutil */}
       <div
-        className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-2xl"
+        className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-20 blur-xl"
         style={{
           background: "radial-gradient(circle, #E11D48 0%, transparent 70%)",
         }}
       />
 
-      <div className="flex items-center justify-between gap-3 mb-2.5">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="relative flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl bg-[#E11D48]/15 border border-[#E11D48]/30 text-[#E11D48]">
-            <Headphones className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
+      {/* Linha 1: Botão Play/Pause + Título + Ações Rápidas */}
+      <div className="flex items-center gap-3">
+        {/* Botão Play / Pause Compacto & Tátil */}
+        <button
+          type="button"
+          onClick={togglePlay}
+          aria-label={isPlaying ? "Pausar narração" : "Reproduzir narração"}
+          className="relative w-11 h-11 rounded-full flex items-center justify-center bg-gradient-to-tr from-[#E11D48] to-[#F43F5E] text-white shadow-md shadow-[#E11D48]/30 hover:scale-105 active:scale-95 transition-all shrink-0"
+        >
+          {isPlaying ? (
+            <Pause className="w-5 h-5 fill-white text-white" />
+          ) : (
+            <Play className="w-5 h-5 fill-white text-white translate-x-0.5" />
+          )}
+          {isPlaying && (
+            <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E11D48] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E11D48]" />
+            </span>
+          )}
+        </button>
+
+        {/* Informações Centrais: Título + Badge */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#E11D48] shrink-0">
+              Narração do Resumo
+            </span>
             {isPlaying && (
-              <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E11D48] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E11D48]" />
-              </span>
+              <div className="flex items-end gap-0.5 h-2.5 shrink-0">
+                <span className="w-0.5 h-2 bg-[#E11D48] animate-pulse rounded-full" />
+                <span className="w-0.5 h-3 bg-[#E11D48] animate-pulse delay-75 rounded-full" />
+                <span className="w-0.5 h-1.5 bg-[#E11D48] animate-pulse delay-150 rounded-full" />
+              </div>
             )}
           </div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#E11D48]">
-                Narração do Resumo
-              </span>
-              {isPlaying && (
-                <div className="flex items-end gap-0.5 h-3">
-                  <span className="w-0.5 h-2.5 bg-[#E11D48] animate-pulse rounded-full" />
-                  <span className="w-0.5 h-3.5 bg-[#E11D48] animate-pulse delay-75 rounded-full" />
-                  <span className="w-0.5 h-2 bg-[#E11D48] animate-pulse delay-150 rounded-full" />
-                </div>
-              )}
-            </div>
-            <p className="text-xs sm:text-[13px] font-medium text-foreground truncate mt-0.5">
-              {titulo}
-            </p>
-          </div>
+          <p className="text-xs sm:text-[13px] font-semibold text-foreground truncate mt-0.5">
+            {titulo}
+          </p>
         </div>
 
-        {/* Velocidade e Mute */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {/* Controles rápidos alinhados à direita */}
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={() => skipSeconds(-10)}
+            aria-label="Voltar 10 segundos"
+            className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-95 text-white/70 hover:text-white transition-all text-[10px] font-mono"
+            title="Voltar 10 segundos"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => skipSeconds(10)}
+            aria-label="Avançar 10 segundos"
+            className="w-7 h-7 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 active:scale-95 text-white/70 hover:text-white transition-all text-[10px] font-mono"
+            title="Avançar 10 segundos"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+          </button>
           <button
             type="button"
             onClick={cycleSpeed}
             aria-label="Velocidade de reprodução"
-            className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 active:opacity-70 text-[11px] font-mono font-bold text-white/90 border border-white/10 transition-all"
+            className="px-1.5 py-0.5 rounded-lg bg-white/5 hover:bg-white/10 active:opacity-70 text-[10.5px] font-mono font-bold text-white/90 border border-white/10 transition-all"
           >
             {playbackRate}x
           </button>
@@ -236,66 +265,32 @@ export function ResumoAudioPlayer({
             type="button"
             onClick={toggleMute}
             aria-label={isMuted ? "Desmutar áudio" : "Mutar áudio"}
-            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 active:opacity-70 text-white/70 hover:text-white transition-all"
+            className="p-1 rounded-lg bg-white/5 hover:bg-white/10 active:opacity-70 text-white/70 hover:text-white transition-all"
           >
-            {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
+            {isMuted ? <VolumeX className="w-3.5 h-3.5 text-rose-400" /> : <Volume2 className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>
 
-      {/* Barra de Progresso Interativa */}
-      <div className="space-y-1.5">
+      {/* Linha 2: Barra de Progresso e Tempos */}
+      <div className="flex items-center gap-2 mt-2 pt-1 border-t border-white/5">
+        <span className="text-[10px] font-mono text-muted-foreground shrink-0 w-8 text-right">
+          {formatTime(currentTime)}
+        </span>
         <div
           ref={progressBarRef}
           onMouseDown={onMouseDown}
           onTouchStart={onTouchStart}
-          className="relative h-2 w-full rounded-full bg-white/10 cursor-pointer overflow-hidden group py-0.5"
+          className="relative h-1.5 sm:h-2 flex-1 rounded-full bg-white/10 cursor-pointer overflow-hidden group py-0.5"
         >
           <div
             className="absolute left-0 top-0 bottom-0 rounded-full bg-gradient-to-r from-[#E11D48] to-[#FB7185] transition-all"
             style={{ width: `${progressoPct}%` }}
           />
         </div>
-        <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
-          <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
-        </div>
-      </div>
-
-      {/* Controles Centrais */}
-      <div className="flex items-center justify-center gap-4 sm:gap-6 mt-1">
-        <button
-          type="button"
-          onClick={() => skipSeconds(-10)}
-          aria-label="Voltar 10 segundos"
-          className="flex flex-col items-center justify-center w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 text-white/80 hover:text-white transition-all"
-        >
-          <RotateCcw className="w-4 h-4" />
-          <span className="text-[8px] font-mono font-bold -mt-0.5">10</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={togglePlay}
-          aria-label={isPlaying ? "Pausar narração" : "Reproduzir narração"}
-          className="w-12 h-12 sm:w-13 sm:h-13 rounded-full flex items-center justify-center bg-gradient-to-tr from-[#E11D48] to-[#F43F5E] text-white shadow-lg shadow-[#E11D48]/35 hover:scale-105 active:scale-95 transition-all"
-        >
-          {isPlaying ? (
-            <Pause className="w-5 h-5 fill-white text-white" />
-          ) : (
-            <Play className="w-5 h-5 fill-white text-white translate-x-0.5" />
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => skipSeconds(10)}
-          aria-label="Avançar 10 segundos"
-          className="flex flex-col items-center justify-center w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 text-white/80 hover:text-white transition-all"
-        >
-          <RotateCw className="w-4 h-4" />
-          <span className="text-[8px] font-mono font-bold -mt-0.5">10</span>
-        </button>
+        <span className="text-[10px] font-mono text-muted-foreground shrink-0 w-8">
+          {formatTime(duration)}
+        </span>
       </div>
     </div>
   );

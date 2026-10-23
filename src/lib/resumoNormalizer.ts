@@ -142,6 +142,10 @@ export function normalizarResumo(rawText: string | null | undefined): string {
 
   let text = rawText;
 
+  // 0. Remove comentários HTML e tags internas de áudio para não vazar na leitura
+  text = text.replace(/<!--[\s\S]*?-->/g, '');
+  text = text.replace(/\[audio:\s*[^\s\]]+\s*\]/gi, '');
+
   // 1. Desfaz escape literal de quebras de linha
   text = text.replace(/\\n/g, '\n');
 
@@ -181,9 +185,9 @@ export function normalizarResumo(rawText: string | null | undefined): string {
     return match;
   });
 
-  // 9. Garante que títulos existentes fiquem isolados com quebras duplas
-  text = text.replace(/([^\n])\n*(#{1,4}\s+[^\n]+)/g, '$1\n\n$2');
-  text = text.replace(/(#{1,4}\s+[^\n]+)\n*([^\n#])/g, '$1\n\n$2');
+  // 9. Garante que títulos existentes fiquem isolados com quebras duplas de forma segura (sem cortar letras finais)
+  text = text.replace(/([^\n])\n(#{1,6}\s+[^\n]+)/g, '$1\n\n$2');
+  text = text.replace(/(#{1,6}\s+[^\n]+)\n([^\n])/g, '$1\n\n$2');
 
   // 10. Processa cada bloco preservando markdown e quebrando parágrafos longos
   const blocosAtuais = text.split(/\n\s*\n+/);
@@ -264,9 +268,9 @@ export function normalizarResumo(rawText: string | null | undefined): string {
   // Limpa espaços duplos
   resultado = resultado.replace(/[ \t]{2,}/g, ' ');
 
-  // Garante espaçamento limpo em volta de títulos
-  resultado = resultado.replace(/([^\n])\n*(#{1,4}\s+[^\n]+)/g, '$1\n\n$2');
-  resultado = resultado.replace(/(#{1,4}\s+[^\n]+)\n*([^\n#])/g, '$1\n\n$2');
+  // Garante espaçamento limpo em volta de títulos de forma segura
+  resultado = resultado.replace(/([^\n])\n(#{1,6}\s+[^\n]+)/g, '$1\n\n$2');
+  resultado = resultado.replace(/(#{1,6}\s+[^\n]+)\n([^\n])/g, '$1\n\n$2');
 
   return resultado.trim();
 }

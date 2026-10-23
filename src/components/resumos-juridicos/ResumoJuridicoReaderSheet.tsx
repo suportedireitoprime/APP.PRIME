@@ -88,6 +88,10 @@ function normalizarMarkdownWord(raw?: string | null): string {
   if (!raw) return "";
   let md = raw;
 
+  // 0. Remove comentários HTML e tags de áudio para não vazar no texto renderizado
+  md = md.replace(/<!--[\s\S]*?-->/g, "");
+  md = md.replace(/\[audio:\s*[^\s\]]+\s*\]/gi, "");
+
   // 1. Converte headers legacy de seções para ##
   md = md.replace(
     /^###\s*(?:[🎯💡📋📌]\s*)?(Em linguagem simples|Para entender melhor|De olho na prova|Ficha do tema|Ficha do crime|Ficha do conceito|Para guardar|Antes de começar|Como usar este material|Sumário)/gim,
@@ -188,7 +192,7 @@ const markdownComponents = {
   ),
   h2: ({ node, ...props }: any) => (
     <h2
-      className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-8 mb-4 font-display leading-snug border-b-2 border-amber-500/80 dark:border-amber-500 pb-2 flex items-center gap-2"
+      className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-8 mb-4 font-display leading-snug border-b-2 border-amber-500/80 dark:border-amber-500 pb-2"
       {...props}
     />
   ),
