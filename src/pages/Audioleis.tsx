@@ -21,6 +21,35 @@ import {
   X,
   Layers,
   FileText,
+  Scale,
+  Landmark,
+  Sword,
+  Home,
+  Gavel,
+  ShoppingCart,
+  Briefcase,
+  Car,
+  Vote,
+  Shield,
+  Trees,
+  Ship,
+  Plane,
+  Droplets,
+  Pickaxe,
+  Radio,
+  Baby,
+  HeartPulse,
+  Accessibility,
+  Handshake,
+  Building2,
+  Trophy,
+  Tent,
+  Mountain,
+  Globe2,
+  Store,
+  Ribbon,
+  Palette,
+  BookMarked,
 } from "lucide-react";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { AudioaulasHero } from "@/components/audioaulas/home/AudioaulasHero";
@@ -176,6 +205,123 @@ const COVER_AREAS: Record<string, string> = {
   lpc: "Direito Previdenciário",
   loas: "Direito Previdenciário",
 };
+
+const LAW_ICONS_MAP: Record<string, React.ElementType> = {
+  // Constituição
+  cf88: Landmark,
+  // Códigos — ícone representativo do tema
+  cp: Sword,
+  cc: Home,
+  cpc: FileText,
+  cpp: Gavel,
+  ctn: Landmark,
+  cdc: ShoppingCart,
+  clt: Briefcase,
+  ctb: Car,
+  ce: Vote,
+  cpm: Shield,
+  cppm: Shield,
+  cflor: Trees,
+  ccom: Ship,
+  cba: Plane,
+  cagua: Droplets,
+  cmin: Pickaxe,
+  ctel: Radio,
+  // Estatutos
+  eca: Baby,
+  ei: HeartPulse,
+  epd: Accessibility,
+  eir: Handshake,
+  ec: Building2,
+  ed: Sword,
+  eoab: Scale,
+  et: Trophy,
+  ej: Sparkles,
+  em: Shield,
+  eind: Tent,
+  eterra: Mountain,
+  emig: Globe2,
+  eref: Globe2,
+  emet: Building2,
+  emus: Palette,
+  eme: Store,
+  epc: Ribbon,
+  // Legislação Especial
+  lep: Gavel,
+  lmp: Shield,
+  ld: Shield,
+  loc: Shield,
+  laa: Sword,
+  lit: Scale,
+  l8112: Landmark,
+  lia: Scale,
+  nll: FileText,
+  lms: Scale,
+  lacp: Scale,
+  lje: Scale,
+  lgpd: Shield,
+  mci: Radio,
+  lf: Building2,
+  la: Scale,
+  li: Home,
+  lrp: FileText,
+  loman: Scale,
+  lat: Shield,
+  lindb: BookMarked,
+  lch: Sword,
+  ltort: Shield,
+  lca: Trees,
+  lrac: Handshake,
+  llav: Scale,
+  lpaf: FileText,
+  lrf: Landmark,
+  lai: Search,
+  lap: Scale,
+  lcp: Shield,
+  ldb: BookMarked,
+  lomp: Scale,
+  lsa: Building2,
+  lpi: Sparkles,
+  lda: BookMarked,
+  lace: Building2,
+  lcon: Building2,
+  lppp: Handshake,
+  lhd: FileText,
+  lmi: FileText,
+  lpp: Vote,
+  lele: Vote,
+  lfl: Vote,
+  lcsf: Scale,
+  lpt: Scale,
+  lpsu: Building2,
+  lalp: Home,
+  lalim: HeartPulse,
+  lcade: Scale,
+  lsus: HeartPulse,
+  lbio: Trees,
+  lci: Radio,
+  line: Vote,
+  lotcu: Landmark,
+  lle: Building2,
+  ces: Landmark,
+  lmls: Building2,
+  lrt: Landmark,
+  lbps: Handshake,
+  lcss: Handshake,
+  lpc: Handshake,
+  loas: Handshake,
+  // Fallbacks
+  constituicao: Landmark,
+  codigo: Scale,
+  estatuto: BookMarked,
+};
+
+function getLawVisuals(law: LawOption) {
+  const IconComponent = LAW_ICONS_MAP[law.id] || LAW_ICONS_MAP[law.tipo] || Scale;
+  const catalogItem = LEIS_CATALOG.find((item) => item.id === law.id);
+  const iconColor = catalogItem?.iconColor || "#e11d48";
+  return { IconComponent, iconColor };
+}
 
 function sortArtigos(a: string, b: string) {
   const matchA = a.match(/^(\d+)(.*)$/);
@@ -814,8 +960,7 @@ export default function AudioleisPage() {
 
   const renderCardCarrossel = (law: LawOption) => {
     const artigosQtd = lawCounts ? lawCounts[law.tabela_nome] || 0 : 0;
-    const areaCapa = COVER_AREAS[law.id] || law.nome;
-    const capaUrl = capaDaArea(areaCapa);
+    const { IconComponent: LawIcon, iconColor } = getLawVisuals(law);
 
     return (
       <button
@@ -823,33 +968,46 @@ export default function AudioleisPage() {
         type="button"
         onClick={() => abrirLei(law)}
         aria-label={`Abrir ${law.nome}`}
-        className="group relative w-40 sm:w-48 md:w-52 aspect-square shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98]"
+        className="group relative w-40 sm:w-48 md:w-52 aspect-square shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-border/80 bg-zinc-800/80 hover:bg-zinc-700/80 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] flex flex-col justify-between p-3.5 sm:p-4 select-none cursor-pointer"
       >
-        <img
-          src={capaUrl}
-          alt={law.nome}
-          loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-black via-black/60 to-transparent" />
+        {/* Ícone de áudio translúcido no lado direito (marca d'água SVG de áudio) */}
+        <div className="absolute -right-3 -bottom-3 sm:-right-2 sm:-bottom-2 w-20 h-20 sm:w-24 sm:h-24 pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6 z-0">
+          <Headphones
+            className="w-full h-full text-white/[0.08] group-hover:text-primary/25 transition-colors duration-300"
+            strokeWidth={1.35}
+          />
+        </div>
 
-        <div className="absolute inset-0 p-3 sm:p-3.5 flex flex-col justify-between">
-          <div className="flex items-center justify-between gap-1 w-full">
-            <span className="h-8 w-8 sm:h-8.5 sm:w-8.5 grid place-items-center rounded-xl bg-primary/90 text-primary-foreground shadow-md shadow-black/50">
-              <Volume2 className="h-4 w-4" />
-            </span>
-            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold tracking-wide bg-black/65 text-white border border-white/20 backdrop-blur shadow-sm">
-              {law.sigla}
-            </span>
+        {/* Topo: Ícone temático da Lei à esquerda e Sigla à direita */}
+        <div className="flex items-center justify-between gap-2 w-full z-10">
+          <div
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 border border-white/10 shadow-sm transition-transform duration-300 group-hover:scale-105"
+            style={{
+              backgroundColor: `${iconColor}18`,
+              borderColor: `${iconColor}35`,
+            }}
+          >
+            <LawIcon
+              className="w-5 h-5 sm:w-5.5 sm:h-5.5 transition-transform duration-300"
+              style={{ color: iconColor }}
+              strokeWidth={1.8}
+            />
           </div>
+          <span className="px-2 py-0.5 rounded-full text-[10.5px] font-bold tracking-wide bg-black/40 text-zinc-300 border border-white/10 backdrop-blur shadow-xs">
+            {law.sigla}
+          </span>
+        </div>
 
-          <div className="space-y-1">
-            <p className="font-sans font-bold leading-snug text-white text-[13px] sm:text-[14px] line-clamp-2 tracking-normal normal-case drop-shadow-sm">
-              {law.nome}
-            </p>
-            <p className="font-sans text-[11px] sm:text-xs text-zinc-300 font-medium tracking-normal">
-              {artigosQtd > 0 ? `${artigosQtd.toLocaleString("pt-BR")} artigos` : "Ver artigos"}
-            </p>
+        {/* Rodapé: Nome da Lei e Quantidade de Artigos Narrados */}
+        <div className="space-y-1 z-10 w-full min-w-0 pr-1">
+          <p className="font-display font-bold leading-tight text-white text-[13px] sm:text-[14px] line-clamp-2">
+            {law.nome}
+          </p>
+          <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-zinc-400 font-medium">
+            <Volume2 className="w-3 h-3 text-primary shrink-0" />
+            <span className="truncate">
+              {artigosQtd > 0 ? `${artigosQtd.toLocaleString("pt-BR")} artigos narrados` : "Ver artigos"}
+            </span>
           </div>
         </div>
       </button>
@@ -858,8 +1016,7 @@ export default function AudioleisPage() {
 
   const renderCardGrid = (law: LawOption) => {
     const artigosQtd = lawCounts ? lawCounts[law.tabela_nome] || 0 : 0;
-    const areaCapa = COVER_AREAS[law.id] || law.nome;
-    const capaUrl = capaDaArea(areaCapa);
+    const { IconComponent: LawIcon, iconColor } = getLawVisuals(law);
 
     return (
       <button
@@ -867,33 +1024,46 @@ export default function AudioleisPage() {
         type="button"
         onClick={() => abrirLei(law)}
         aria-label={`Abrir ${law.nome}`}
-        className="group relative w-full aspect-square rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98]"
+        className="group relative w-full aspect-square rounded-2xl overflow-hidden text-left border border-border/80 bg-zinc-800/80 hover:bg-zinc-700/80 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] flex flex-col justify-between p-3.5 sm:p-4 select-none cursor-pointer"
       >
-        <img
-          src={capaUrl}
-          alt={law.nome}
-          loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <div className="absolute inset-0 bg-linear-to-t from-black via-black/60 to-transparent" />
+        {/* Ícone de áudio translúcido no lado direito (marca d'água SVG de áudio) */}
+        <div className="absolute -right-3 -bottom-3 sm:-right-2 sm:-bottom-2 w-20 h-20 sm:w-24 sm:h-24 pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6 z-0">
+          <Headphones
+            className="w-full h-full text-white/[0.08] group-hover:text-primary/25 transition-colors duration-300"
+            strokeWidth={1.35}
+          />
+        </div>
 
-        <div className="absolute inset-0 p-3 sm:p-3.5 flex flex-col justify-between">
-          <div className="flex items-center justify-between gap-1 w-full">
-            <span className="h-8 w-8 sm:h-8.5 sm:w-8.5 grid place-items-center rounded-xl bg-primary/90 text-primary-foreground shadow-md shadow-black/50">
-              <Volume2 className="h-4 w-4" />
-            </span>
-            <span className="px-2 py-0.5 rounded-full text-[11px] font-bold tracking-wide bg-black/65 text-white border border-white/20 backdrop-blur shadow-sm">
-              {law.sigla}
-            </span>
+        {/* Topo: Ícone temático da Lei à esquerda e Sigla à direita */}
+        <div className="flex items-center justify-between gap-2 w-full z-10">
+          <div
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 border border-white/10 shadow-sm transition-transform duration-300 group-hover:scale-105"
+            style={{
+              backgroundColor: `${iconColor}18`,
+              borderColor: `${iconColor}35`,
+            }}
+          >
+            <LawIcon
+              className="w-5 h-5 sm:w-5.5 sm:h-5.5 transition-transform duration-300"
+              style={{ color: iconColor }}
+              strokeWidth={1.8}
+            />
           </div>
+          <span className="px-2 py-0.5 rounded-full text-[10.5px] font-bold tracking-wide bg-black/40 text-zinc-300 border border-white/10 backdrop-blur shadow-xs">
+            {law.sigla}
+          </span>
+        </div>
 
-          <div className="space-y-1">
-            <p className="font-sans font-bold leading-snug text-white text-[13px] sm:text-[14px] line-clamp-2 tracking-normal normal-case drop-shadow-sm">
-              {law.nome}
-            </p>
-            <p className="font-sans text-[11px] sm:text-xs text-zinc-300 font-medium tracking-normal">
-              {artigosQtd > 0 ? `${artigosQtd.toLocaleString("pt-BR")} artigos` : "Ver artigos"}
-            </p>
+        {/* Rodapé: Nome da Lei e Quantidade de Artigos Narrados */}
+        <div className="space-y-1 z-10 w-full min-w-0 pr-1">
+          <p className="font-display font-bold leading-tight text-white text-[13px] sm:text-[14px] line-clamp-2">
+            {law.nome}
+          </p>
+          <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-zinc-400 font-medium">
+            <Volume2 className="w-3 h-3 text-primary shrink-0" />
+            <span className="truncate">
+              {artigosQtd > 0 ? `${artigosQtd.toLocaleString("pt-BR")} artigos narrados` : "Ver artigos"}
+            </span>
           </div>
         </div>
       </button>
