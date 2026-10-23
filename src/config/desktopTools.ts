@@ -59,7 +59,7 @@ export const DESKTOP_TOOL_GROUPS: DesktopToolGroup[] = [
     label: 'Inteligência Artificial',
     hint: 'Tutores jurídicos e ferramentas com inteligência artificial',
     tools: [
-      { id: 'assistente', label: 'Assistente (IA)', desc: 'Tire dúvidas jurídicas com o tutor inteligente Hórus', icon: Bird, route: '/assistente-horus', color: '#A855F7' },
+      { id: 'assistente', label: 'Hórus', desc: 'Assistente WhatsApp', icon: Bird, route: '/assistente-horus', color: '#A855F7' },
       { id: 'me-explique', label: 'Me Explique (IA)', desc: 'Explicações jurídicas com voz, câmera e avatar interativo', icon: Speech, route: '/me-explique', color: '#F97316' },
     ],
   },
