@@ -4,7 +4,7 @@ import { TypewriterText } from "@/components/ui/TypewriterText";
 import { haptic } from '@/lib/nativeHaptics';
 
 interface PricingCardsProps {
-  selectedPlan: 'mensal' | 'anual' | 'vitalicio';
+  selectedPlan: 'mensal' | 'anual';
   isNewUser: boolean;
   onSelectPlan: (plan: 'mensal' | 'anual') => void;
 }

@@ -6,7 +6,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import HorusOnboardingOverlay from '@/components/horus/onboarding/HorusOnboardingOverlay';
 import CadastroOnboardingOverlay from '@/components/onboarding/CadastroOnboardingOverlay';
 import { HorusPromoModal } from '@/components/assinatura/HorusPromoModal';
-import TrialWelcomeModal from '@/components/onboarding/TrialWelcomeModal';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
@@ -16,7 +15,6 @@ export default function AdminTriagem() {
   const [previewCadastro, setPreviewCadastro] = useState(false);
   const [previewHorus, setPreviewHorus] = useState(false);
   const [previewPromo, setPreviewPromo] = useState(false);
-  const [previewTrial, setPreviewTrial] = useState(false);
 
   // Respostas State
   const [respostas, setRespostas] = useState<any[]>([]);
@@ -110,12 +108,6 @@ export default function AdminTriagem() {
                   className="h-12 px-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold flex items-center gap-2 hover:bg-emerald-500/25 active:opacity-70 cursor-pointer transition-colors"
                 >
                   <Sparkles className="w-4 h-4" /> Ver Oferta PIX
-                </button>
-                <button
-                  onClick={() => setPreviewTrial(true)}
-                  className="h-12 px-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 font-semibold flex items-center gap-2 hover:bg-rose-500/25 active:opacity-70 cursor-pointer transition-colors"
-                >
-                  <Sparkles className="w-4 h-4" /> Ver 3 Dias Grátis
                 </button>
               </div>
             </div>
@@ -230,24 +222,12 @@ export default function AdminTriagem() {
         timeLeft={86400}
         onClose={() => {
           setPreviewPromo(false);
-          setPreviewTrial(true);
         }}
         onRedeem={() => {
           setPreviewPromo(false);
           toast.success('Simulação de resgate de desconto com sucesso!');
-          setPreviewTrial(true);
         }}
       />
-
-      {/* Modal de 3 Dias Gratuitos (Painel Completo) no Preview */}
-      {previewTrial && (
-        <TrialWelcomeModal
-          onDone={() => {
-            setPreviewTrial(false);
-            toast.success('Fluxo completo de triagem e degustação concluído com sucesso!');
-          }}
-        />
-      )}
 
       {previewHorus && (
         <HorusOnboardingOverlay

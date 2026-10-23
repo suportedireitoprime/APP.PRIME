@@ -99,7 +99,7 @@ export default function MinhaAssinaturaView({ plano, expiresAt, startedAt, sourc
   const imgCapa = isVitalicio ? '/vitalicio_premium_v2.webp' : (isAnual ? '/anual_premium.webp' : '/mensal_premium.webp');
 
   const preco = isAnual ? 'R$ 199,90/ano' : 'R$ 29,90/mês';
-  const equivalente = isAnual ? (isApple ? 'Equivalente a R$ 19,90/mês' : 'Equivalente a R$ 12,49/mês') : null;
+  const equivalente = isAnual ? 'Equivalente a R$ 16,66/mês' : null;
 
   const diasRestantes = useMemo(() => {
     if (!expiresAt) return null;

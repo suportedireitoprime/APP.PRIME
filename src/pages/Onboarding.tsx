@@ -7,14 +7,12 @@ import { useHideSplashScreen } from '@/hooks/useHideSplashScreen';
 import CadastroOnboardingOverlay from '@/components/onboarding/CadastroOnboardingOverlay';
 import type { CadastroResult } from '@/components/onboarding/TriagemModerna';
 import NotificacoesPermissaoStep from '@/components/onboarding/NotificacoesPermissaoStep';
-import TrialWelcomeModal from '@/components/onboarding/TrialWelcomeModal';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Onboarding = () => {
   useHideSplashScreen(100);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [pedirTrial, setPedirTrial] = useState(false);
   const [onboardingFinished, setOnboardingFinished] = useState(false);
 
   // SEO & Título dinâmico da Triagem
@@ -130,21 +128,13 @@ const Onboarding = () => {
     startTransition(() => { navigate('/', { replace: true }); });
   }, [navigate]);
 
-  const concluirTrial = useCallback(() => {
-    setPedirTrial(false);
-    toast.success('Seja bem-vindo(a)!');
-    startTransition(() => {
-      navigate('/', { replace: true });
-    });
-  }, [navigate]);
-
   const userEmail = user?.email || '';
   const initialName = user?.user_metadata?.full_name || user?.user_metadata?.name || userEmail.split('@')[0] || '';
 
   return (
     <main className="min-h-dvh bg-black">
       <AnimatePresence mode="wait">
-        {!onboardingFinished ? (
+        {!onboardingFinished && (
           <motion.div key="onboarding-flow" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
             <CadastroOnboardingOverlay 
               open 
@@ -153,11 +143,7 @@ const Onboarding = () => {
               initialName={initialName} 
             />
           </motion.div>
-        ) : pedirTrial ? (
-          <motion.div key="trial-step" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
-            <TrialWelcomeModal onDone={concluirTrial} />
-          </motion.div>
-        ) : null}
+        )}
       </AnimatePresence>
     </main>
   );

@@ -10,6 +10,7 @@ import { PlayCircle, Search, FileText, FileSignature, GraduationCap, Scale, Chev
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
+import { useGatedFeature } from '@/hooks/useGatedFeature';
 
 interface SimuladoItem {
   id: string;
@@ -42,6 +43,7 @@ export default function FerramentasSimulados() {
   const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
   const [previewPdfTitle, setPreviewPdfTitle] = useState<string>('');
   const [showSobre, setShowSobre] = useState(false);
+  const gateSimulado = useGatedFeature('simulado', 'simulados');
 
   const { data: simuladosList, isLoading } = useQuery({
     queryKey: ['simulados_list'],
@@ -144,8 +146,14 @@ export default function FerramentasSimulados() {
   const handleStartSimulado = () => {
     if (!selectedSimulado) return;
     try { haptic.selection(); } catch {}
-    
+
+    if (gateSimulado.blocked) {
+      gateSimulado.openGate();
+      return;
+    }
+
     setIsStarting(true);
+    void gateSimulado.register(selectedSimulado.id);
     setTimeout(() => {
       navigate(`/simulados/resolver/${selectedSimulado.id}`);
       setTimeout(() => setIsStarting(false), 500);
@@ -700,6 +708,7 @@ export default function FerramentasSimulados() {
         </SheetContent>
       </Sheet>
 
+      {gateSimulado.gateNode}
     </DesktopPageLayout>
   );
 }

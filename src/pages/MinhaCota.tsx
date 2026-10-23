@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Crown, Infinity as InfinityIcon, BookOpen, Newspaper, Scale, Headphones, Volume2, GraduationCap, ListChecks, PlayCircle, Network, Layers, HelpCircle, FileText, Library, MessageCircle, Highlighter, StickyNote, Heart, Gavel, Sparkles, Radar, Bell, Download, Pill, Presentation, Globe, Gamepad2, LockOpen, type LucideIcon } from 'lucide-react';
+import { Crown, Infinity as InfinityIcon, BookOpen, Newspaper, Scale, Headphones, Volume2, GraduationCap, ListChecks, PlayCircle, Network, Layers, HelpCircle, FileText, Library, MessageCircle, Highlighter, StickyNote, Heart, Gavel, Sparkles, Radar, Bell, Download, Pill, Presentation, Globe, Gamepad2, LockOpen, MicVocal, type LucideIcon } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -10,6 +10,7 @@ const ICONES: Record<string, LucideIcon> = {
   grifo: Highlighter, lei_anotacao: StickyNote, lei_favorito: Heart, jurisprudencia: Gavel, explicacao: Sparkles, exemplo: Sparkles, termos: BookOpen,
   radar_analise: Radar, lembretes: Bell, documentos_download: Download, resumo_ver: FileText, resumo_download: Download, resumo_ia: FileText,
   pilulas: Pill, apresentacao_ver: Presentation, blog_read: Newspaper, gamificacao_fase: Gamepad2, grafo: Network, praticar: ListChecks, peticao_inicial: FileText,
+  boletins: MicVocal,
 };
 
 /** Tabela com o acervo disponível de cada função (para mostrar "X disponíveis"). */

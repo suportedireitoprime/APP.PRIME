@@ -27,9 +27,8 @@ export const PLAN_VALUE: Record<string, number> = {
   anual_parcelado: 199.9,
 };
 
-/** Na App Store o plano anual é 12x R$ 19,90 (R$ 238,80/ano). */
-const PLAN_VALUE_IOS: Record<string, number> = {
-};
+/** Planos oficiais padronizados: Mensal (R$ 29,90) e Anual (R$ 199,90). */
+const PLAN_VALUE_IOS: Record<string, number> = {};
 
 export function planValue(plano?: string | null): number {
   if (!plano) return 0;

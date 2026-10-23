@@ -769,7 +769,7 @@ const PremiumGateInner = ({
                     className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary-light transition-all active:scale-[0.98] shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
                   >
                     <Crown className="w-4 h-4 fill-current" />
-                    {isTrialExpired ? 'Desbloquear Todo o Conteúdo' : 'Testar 3 Dias Grátis'} · R$ {mensalidade}/mês
+                    Desbloquear Todo o Conteúdo · R$ {mensalidade}/mês
                   </button>
                   <button
                     onClick={() => {
