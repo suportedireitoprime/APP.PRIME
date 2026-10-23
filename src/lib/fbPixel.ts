@@ -16,7 +16,7 @@ declare global {
 }
 
 export const PLAY_STORE_URL =
-  'https://play.google.com/store/apps/details?id=br.com.direito.app';
+  'https://play.google.com/store/apps/details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
 
 export type FbStandardEvent =
   | 'PageView'

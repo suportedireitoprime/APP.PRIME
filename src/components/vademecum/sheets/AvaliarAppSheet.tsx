@@ -15,11 +15,33 @@ import { requestReviewNow } from '@/lib/inAppReview';
 import { openExternal } from '@/lib/nativeBrowser';
 
 const PLAY_STORE_URL =
-  'https://play.google.com/store/apps/details?id=br.com.direito.app';
+  'https://play.google.com/store/apps/details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
+const PLAY_MARKET_URL =
+  'market://details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
 const APP_STORE_URL = 'https://apps.apple.com/br/app/vacatio/id6793608690';
-const PLAY_MARKET_URL = 'market://details?id=br.com.direito.app';
 const APP_STORE_REVIEW_URL =
   'https://apps.apple.com/br/app/vacatio/id6793608690?action=write-review';
+const APP_STORE_NATIVE_URL =
+  'itms-apps://itunes.apple.com/app/id6793608690?action=write-review';
+
+/**
+ * Detecta se o usuário está em ambiente Apple (iOS nativo ou Safari/navegador no iPhone/iPad).
+ */
+function isIosPlatform(): boolean {
+  if (Capacitor.getPlatform() === 'ios') return true;
+  if (typeof navigator !== 'undefined') {
+    const ua = navigator.userAgent || '';
+    if (/iphone|ipad|ipod/i.test(ua)) return true;
+    if (
+      /macintosh/i.test(ua) &&
+      typeof navigator.maxTouchPoints === 'number' &&
+      navigator.maxTouchPoints > 1
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
 
 interface Props {
   open: boolean;
@@ -27,43 +49,56 @@ interface Props {
   onFeedback?: () => void; // abre suporte quando "não estou gostando"
 }
 
+/**
+ * Redireciona o usuário para o aplicativo da loja fora do app.
+ */
 async function openStoreFallback() {
-  const isIos = Capacitor.getPlatform() === 'ios';
+  const isIos = isIosPlatform();
+  const webUrl = isIos ? APP_STORE_REVIEW_URL : PLAY_STORE_URL;
+  const nativeAppUrl = isIos ? APP_STORE_NATIVE_URL : PLAY_MARKET_URL;
+
+  // 1. Se estiver no app nativo (Capacitor Android / iOS), tenta abrir o app da loja diretamente
   if (Capacitor.isNativePlatform()) {
-    const primary = isIos ? APP_STORE_REVIEW_URL : PLAY_MARKET_URL;
     try {
       const { AppLauncher } = await import('@capacitor/app-launcher');
-      await AppLauncher.openUrl({ url: primary });
+      await AppLauncher.openUrl({ url: nativeAppUrl });
+      return;
+    } catch {
+      /* segue para tentar via webUrl */
+    }
+
+    try {
+      const { AppLauncher } = await import('@capacitor/app-launcher');
+      await AppLauncher.openUrl({ url: webUrl });
       return;
     } catch {
       /* segue para browser */
     }
   }
-  await openExternal(isIos ? APP_STORE_REVIEW_URL : PLAY_STORE_URL);
+
+  // 2. No navegador Web, PWA ou fallback geral: abre fora do app
+  try {
+    const win = window.open(webUrl, '_blank', 'noopener,noreferrer');
+    if (!win || win.closed || typeof win.closed === 'undefined') {
+      window.location.href = webUrl;
+    }
+  } catch {
+    window.location.href = webUrl;
+  }
 }
 
 const AvaliarAppSheet = ({ open, onClose, onFeedback }: Props) => {
   const handleGostei = async () => {
-    // Fecha o sheet primeiro para o prompt nativo aparecer sem sobreposição.
+    // Fecha o sheet primeiro
     onClose();
     
     // Loga o clique intencional do usuário no botão de avaliar
-    import('@/lib/appEvents').then(({ logDb }) => {
+    void import('@/lib/appEvents').then(({ logDb }) => {
       logDb('avaliacao_loja_click');
     });
 
-    // Se estiver no navegador (Dev), mostra uma simulação clara do que aconteceria
-    if (!Capacitor.isNativePlatform()) {
-      toast.success('📱 [SIMULAÇÃO NATIVA]: O aplicativo da Play Store / App Store abriria aqui.', {
-        duration: 4000,
-      });
-      return;
-    }
-
-    // Para cliques manuais, a API nativa requestReviewNow() é muito agressiva com cotas
-    // e frequentemente falha silenciosamente. A melhor UX é abrir a loja diretamente.
+    toast.success('Redirecionando para a loja para você avaliar. Obrigado!');
     await openStoreFallback();
-    toast.success('Obrigado! Abrimos a loja para você avaliar.');
   };
 
   const handleNaoGostei = () => {
@@ -107,8 +142,8 @@ const AvaliarAppSheet = ({ open, onClose, onFeedback }: Props) => {
             </button>
 
             <div className="px-6 pt-4 pb-2 text-center space-y-4">
-              <div className="mx-auto w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center">
-                <Star className="w-8 h-8 text-primary fill-primary" strokeWidth={1.5} />
+              <div className="mx-auto w-16 h-16 rounded-full bg-amber-500/15 flex items-center justify-center">
+                <Star className="w-8 h-8 text-amber-400 fill-amber-400" strokeWidth={1.5} />
               </div>
               <div className="space-y-1.5">
                 <h2 className="font-display text-xl text-foreground font-bold">
@@ -121,11 +156,18 @@ const AvaliarAppSheet = ({ open, onClose, onFeedback }: Props) => {
 
               <div className="flex flex-wrap justify-center gap-1.5 py-1">
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <Star
+                  <button
                     key={n}
-                    className="w-6 h-6 text-primary fill-primary drop-shadow-sm"
-                    strokeWidth={1.5}
-                  />
+                    type="button"
+                    onClick={handleGostei}
+                    className="p-1 rounded-full hover:scale-125 transition-transform active:scale-95 focus:outline-none"
+                    aria-label={`Avaliar com ${n} estrelas na loja`}
+                  >
+                    <Star
+                      className="w-7 h-7 text-amber-400 fill-amber-400 drop-shadow-sm"
+                      strokeWidth={1.5}
+                    />
+                  </button>
                 ))}
               </div>
             </div>

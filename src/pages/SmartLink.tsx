@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { parseSmartPath } from '@/lib/nativeDeepLinks';
 import icon from '@/assets/bundled/logo-direitoprime-v2.webp';
 
-const PLAY_STORE = 'https://play.google.com/store/apps/details?id=br.com.direito.app';
+const PLAY_STORE = 'https://play.google.com/store/apps/details?id=br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456';
 const APP_STORE = 'https://apps.apple.com/br/app/vacatio/id6793608690';
 
 type Platform = 'android' | 'ios' | 'desktop';
