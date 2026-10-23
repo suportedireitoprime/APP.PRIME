@@ -62,19 +62,11 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
-  if (!capituloData) return null;
-
-  const {
-    capitulo,
-    realArtigos,
-    audiosDisponiveis,
-    totalArts,
-    totalAudios,
-  } = capituloData;
+  const realArtigos = capituloData?.realArtigos ?? [];
 
   // Verifica se o artigo que está tocando pertence a este capítulo
   const isPlayingInThisChapter = useMemo(() => {
-    if (!currentArtigo || !isPlaying) return false;
+    if (!currentArtigo || !isPlaying || !realArtigos.length) return false;
     return realArtigos.some((a) => {
       const numClean = formatArtigoNumeroOnly(a.numero).toLowerCase();
       return numClean === currentArtigo.artigo_numero.toLowerCase();
@@ -83,6 +75,7 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
 
   // Filtra artigos dentro do capítulo pela busca interna
   const filteredArtigos = useMemo(() => {
+    if (!realArtigos.length) return [];
     if (!searchQuery.trim()) return realArtigos;
     const q = searchQuery.toLowerCase().trim().replace(/^art(?:igo|\.)?\s*/i, "");
     return realArtigos.filter((art) => {
@@ -91,6 +84,15 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
       return numClean.includes(q) || caput.includes(q);
     });
   }, [realArtigos, searchQuery]);
+
+  if (!capituloData) return null;
+
+  const {
+    capitulo,
+    audiosDisponiveis,
+    totalArts,
+    totalAudios,
+  } = capituloData;
 
   const rangeText =
     capitulo.primeiroArtigo && capitulo.ultimoArtigo
