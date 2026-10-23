@@ -74,7 +74,6 @@ import {
   ArtigoTermosSheet,
   ArtigoOverlays,
   GrifoCommentPrompt,
-  NarracaoProgressBar,
   ArtigoLineRenderer,
   ArtigoMagicTooltipModal,
   ArtigoGrifoTopBar,
@@ -1249,15 +1248,6 @@ const ArtigoBottomSheet = ({
                 value="artigo"
                 className="px-5 pb-[calc(9rem+var(--sai-bottom,0px))] pt-4 relative"
               >
-                <NarracaoProgressBar
-                  narracaoPlaying={narracaoPlaying}
-                  handleNarrarButtonPress={handleNarrarButtonPress}
-                  narracaoAudioRef={narracaoAudioRef}
-                  narracaoProgressFillRef={narracaoProgressFillRef}
-                  narracaoTimeRef={narracaoTimeRef}
-                  narracaoTotalTimeRef={narracaoTotalTimeRef}
-                  narracaoActiveIdxRef={narracaoActiveIdxRef}
-                />
 
                 <div
                   className="sticky top-1/2 -translate-y-1/2 left-0 right-0 flex items-center justify-center pointer-events-none z-0"

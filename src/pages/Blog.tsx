@@ -14,7 +14,7 @@ import { useGoBack } from "@/hooks/useGoBack";
 import { blogThumb } from "@/lib/blogImg";
 
 // Novos componentes arquiteturais do Blog
-import BlogNavTabs, { type BlogMainTab } from "@/components/vademecum/blog/BlogNavTabs";
+import type { BlogMainTab } from "@/components/vademecum/blog/BlogNavTabs";
 import BlogEmAltaCarousel from "@/components/vademecum/blog/BlogEmAltaCarousel";
 import BlogCategoriasListSection from "@/components/vademecum/blog/BlogCategoriasListSection";
 import BlogFavoritesFab from "@/components/vademecum/blog/BlogFavoritesFab";
@@ -92,6 +92,18 @@ const Blog = () => {
 
   // Métrica dinâmica para os artigos em alta
   const { topTrendingPosts, registerPostClick, getPostViewCount } = useBlogDynamicTrending(allPosts);
+
+  // Categorias criadas disponíveis com contagem de artigos
+  const { categoriasDisponiveis, countsByTema } = useMemo(() => {
+    const counts: Record<string, number> = {};
+    allPosts.forEach((p) => {
+      if (p.tema) {
+        counts[p.tema] = (counts[p.tema] || 0) + 1;
+      }
+    });
+    const sorted = Object.keys(counts).sort((a, b) => a.localeCompare(b, "pt-BR"));
+    return { categoriasDisponiveis: sorted, countsByTema: counts };
+  }, [allPosts]);
 
   // Posts favoritados
   const favoritePosts = useMemo(() => {
@@ -202,23 +214,6 @@ const Blog = () => {
         />
       )}
 
-      {/* Menu de Alternância (Categorias, Carreiras, Biografia...) */}
-      <BlogNavTabs
-        activeTab={mainTab}
-        onChangeTab={(tab) => {
-          setMainTab(tab);
-          if (tab === "artigos") {
-            setSelectedFilter("todos");
-          } else if (tab === "carreiras") {
-            setSelectedFilter("Carreiras Jurídicas");
-          } else if (tab === "biografia") {
-            setSelectedBioCategory(null);
-            setSelectedBioPerson(null);
-          }
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }}
-      />
-
       {mainTab === "artigos" && (
         <>
           {/* Seção Em Alta em Carrossel Infinito com Métrica Dinâmica */}
@@ -229,10 +224,14 @@ const Blog = () => {
             onRegisterClick={registerPostClick}
           />
 
-          {/* Barra de Filtros Rápidos por Tema */}
+          {/* Menu de Alternância por Categoria logo abaixo de Em Alta */}
           <BlogFiltersBar
             selectedFilter={selectedFilter}
-            onSelectFilter={(filter) => setSelectedFilter(filter)}
+            onSelectFilter={(filter) => {
+              setSelectedFilter(filter);
+            }}
+            categorias={categoriasDisponiveis}
+            countsByTema={countsByTema}
           />
         </>
       )}
