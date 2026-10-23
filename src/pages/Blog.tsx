@@ -17,6 +17,7 @@ import { blogThumb } from "@/lib/blogImg";
 import type { BlogMainTab } from "@/components/vademecum/blog/BlogNavTabs";
 import BlogEmAltaCarousel from "@/components/vademecum/blog/BlogEmAltaCarousel";
 import BlogCategoriasListSection from "@/components/vademecum/blog/BlogCategoriasListSection";
+import BlogCategoriaSheet from "@/components/vademecum/blog/BlogCategoriaSheet";
 import BlogFavoritesFab from "@/components/vademecum/blog/BlogFavoritesFab";
 import BlogFavoritesSheet from "@/components/vademecum/blog/BlogFavoritesSheet";
 
@@ -64,6 +65,9 @@ const Blog = () => {
   const [selectedBioCategory, setSelectedBioCategory] = useState<string | null>(null);
   const [selectedBioPerson, setSelectedBioPerson] = useState<string | null>(null);
 
+  // Categoria selecionada para visualização de artigos em tela dedicada
+  const [selectedCategorySheet, setSelectedCategorySheet] = useState<BlogTema | string | null>(null);
+
   // Favoritos (Botão Flutuante)
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => readFavoritesFromStorage());
@@ -104,6 +108,15 @@ const Blog = () => {
     const sorted = Object.keys(counts).sort((a, b) => a.localeCompare(b, "pt-BR"));
     return { categoriasDisponiveis: sorted, countsByTema: counts };
   }, [allPosts]);
+
+  // Posts filtrados da categoria aberta no sheet
+  const categorySheetPosts = useMemo(() => {
+    if (!selectedCategorySheet) return [];
+    if (selectedCategorySheet === "Leis" || selectedCategorySheet === "Conceitos Fundamentais") {
+      return allPosts.filter((p) => p.tema === "Leis" || p.tema === "Conceitos Fundamentais");
+    }
+    return allPosts.filter((p) => p.tema === selectedCategorySheet);
+  }, [allPosts, selectedCategorySheet]);
 
   // Posts favoritados
   const favoritePosts = useMemo(() => {
@@ -192,11 +205,24 @@ const Blog = () => {
     [canUse, register, registerPostClick],
   );
 
-  const handleSelectCategoryFromList = useCallback((tema: BlogTema) => {
-    setSelectedFilter(tema);
-    setMainTab("artigos");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleOpenCategory = useCallback((tema: BlogTema | string) => {
+    if (tema === "todos") {
+      setSelectedFilter("todos");
+      setSelectedCategorySheet(null);
+      return;
+    }
+    setSelectedFilter(tema as BlogFilter);
+    setSelectedCategorySheet(tema);
   }, []);
+
+  const handleCloseCategorySheet = useCallback(() => {
+    setSelectedCategorySheet(null);
+    setSelectedFilter("todos");
+  }, []);
+
+  const handleSelectCategoryFromList = useCallback((tema: BlogTema) => {
+    handleOpenCategory(tema);
+  }, [handleOpenCategory]);
 
   return (
     <div className="min-h-dvh bg-background pb-16">
@@ -226,15 +252,34 @@ const Blog = () => {
 
           {/* Menu de Alternância por Categoria logo abaixo de Em Alta */}
           <BlogFiltersBar
-            selectedFilter={selectedFilter}
+            selectedFilter={selectedCategorySheet ? (selectedCategorySheet as BlogFilter) : "todos"}
             onSelectFilter={(filter) => {
-              setSelectedFilter(filter);
+              handleOpenCategory(filter);
             }}
             categorias={categoriasDisponiveis}
             countsByTema={countsByTema}
           />
+
+          {/* Exibição das Categorias quando em Todas (não exibe todos os artigos de uma vez) */}
+          <BlogCategoriasListSection
+            posts={allPosts}
+            selectedCategory={selectedCategorySheet}
+            onSelectCategory={handleOpenCategory}
+            temas={categoriasDisponiveis}
+          />
         </>
       )}
+
+      {/* Sheet de Artigos da Categoria Selecionada (sobe de baixo para cima com voltar à esquerda) */}
+      <BlogCategoriaSheet
+        open={Boolean(selectedCategorySheet)}
+        onClose={handleCloseCategorySheet}
+        categoria={selectedCategorySheet}
+        posts={categorySheetPosts}
+        onSelectPost={handleOpenPost}
+        canUse={canUse}
+        isDesktop={isDesktop}
+      />
 
       {/* Aba de Biografia */}
       <KeepAlive active={mainTab === "biografia"}>
@@ -246,45 +291,12 @@ const Blog = () => {
         />
       </KeepAlive>
 
-      {/* Aba de Categorias (Visualização em Lista) */}
+      {/* Aba de Categorias (Visualização em Grade) */}
       <KeepAlive active={mainTab === "categorias"}>
-        <BlogCategoriasListSection
-          posts={allPosts}
-          selectedCategory={selectedFilter}
-          onSelectCategory={handleSelectCategoryFromList}
-        />
-        <div className="border-t border-border/40 mt-4">
-          <BlogCategoriasView
-            posts={posts}
-            onSelectCategoria={handleSelectCategoryFromList}
-          />
-        </div>
-      </KeepAlive>
-
-      {/* Aba de Artigos e Carreiras (Feed) */}
-      <KeepAlive active={mainTab === "artigos" || mainTab === "carreiras"}>
-        <BlogFeedView
-          isDesktop={isDesktop}
-          selectedFilter={selectedFilter}
-          visiblePosts={visiblePosts}
+        <BlogCategoriasView
           posts={posts}
-          blogLoaded={blogLoaded}
-          selectedPost={selectedPost}
-          canUse={canUse}
-          onOpenPost={handleOpenPost}
-          onCloseSelectedPost={() => setSelectedPost(null)}
+          onSelectCategoria={handleSelectCategoryFromList}
         />
-
-        {/* Seção de Categorias em Lista abaixo do feed quando na aba Artigos */}
-        {mainTab === "artigos" && selectedFilter === "todos" && (
-          <div className="border-t border-border/30 mt-6 pt-2">
-            <BlogCategoriasListSection
-              posts={allPosts}
-              selectedCategory={selectedFilter}
-              onSelectCategory={handleSelectCategoryFromList}
-            />
-          </div>
-        )}
       </KeepAlive>
 
       {!isDesktop && <BlogPostSheet post={selectedPost} onClose={() => setSelectedPost(null)} />}

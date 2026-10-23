@@ -1,5 +1,4 @@
 import React from 'react';
-import { Flame, Layers } from 'lucide-react';
 import { TEMAS } from '@/data/blogPosts';
 import { haptic } from '@/lib/nativeHaptics';
 import type { BlogFilter } from './blogTypes';
@@ -49,7 +48,6 @@ export const BlogFiltersBar: React.FC<BlogFiltersBarProps> = ({
               : 'bg-secondary/70 hover:bg-secondary text-foreground/80 hover:text-foreground'
           }`}
         >
-          <Layers className="w-3.5 h-3.5" strokeWidth={2.4} />
           <span>Todas</span>
           {countsByTema && Object.values(countsByTema).length > 0 && (
             <span
@@ -59,28 +57,12 @@ export const BlogFiltersBar: React.FC<BlogFiltersBarProps> = ({
                   : 'bg-background/60 text-muted-foreground'
               }`}
             >
-              {Object.values(countsByTema).reduce((acc, curr) => acc + curr, 0)}
+              {Object.values(countsByTema).length}
             </span>
           )}
         </button>
 
-        {/* Opção Em Alta */}
-        <button
-          role="tab"
-          aria-selected={selectedFilter === 'trending'}
-          aria-label="Exibir artigos em alta"
-          onClick={() => handleSelect('trending')}
-          className={`shrink-0 min-h-[42px] inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-body font-bold uppercase tracking-wider transition-all select-none touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
-            selectedFilter === 'trending'
-              ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-[1.02]'
-              : 'bg-secondary/70 hover:bg-secondary text-amber-400 hover:text-amber-300'
-          }`}
-        >
-          <Flame className="w-3.5 h-3.5" strokeWidth={2.5} />
-          <span>Em Alta</span>
-        </button>
-
-        {/* Categorias Abertas Criadas */}
+        {/* Categorias Abertas Criadas (Sem ícones) */}
         {temasList.map((tema) => {
           const active = selectedFilter === tema;
           const count = countsByTema ? countsByTema[tema] : undefined;

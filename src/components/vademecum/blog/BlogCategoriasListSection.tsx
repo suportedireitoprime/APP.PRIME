@@ -17,7 +17,8 @@ import { haptic } from '@/lib/nativeHaptics';
 interface BlogCategoriasListSectionProps {
   posts: BlogPost[];
   selectedCategory: string | null;
-  onSelectCategory: (tema: BlogTema) => void;
+  onSelectCategory: (tema: BlogTema | string) => void;
+  temas?: string[];
 }
 
 // Mapeamento de ícones por categoria temática
@@ -37,8 +38,9 @@ export const BlogCategoriasListSection: React.FC<BlogCategoriasListSectionProps>
   posts,
   selectedCategory,
   onSelectCategory,
+  temas,
 }) => {
-  const sortedTemas = [...TEMAS].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  const sortedTemas = temas && temas.length > 0 ? temas : [...TEMAS].sort((a, b) => a.localeCompare(b, 'pt-BR'));
 
   return (
     <section className="w-full py-4 max-w-7xl mx-auto px-4">
