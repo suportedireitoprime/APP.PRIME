@@ -4,9 +4,27 @@ import AudioOfflinePage from '@/components/offline/AudioOfflinePage';
 import type { ItemAudio } from '@/components/offline/ItemDownloadRow';
 import { supabase } from '@/integrations/supabase/client';
 import { safeStorageUrl } from '@/lib/cdnImg';
+import { get as idbGet } from 'idb-keyval';
+import { AUDIOAULAS_CACHE_KEY } from '@/contexts/AudioaulasPlayerContext';
 
 export default function ModoOfflineAudioaulas() {
   const carregar = useCallback(async (): Promise<ItemAudio[]> => {
+    try {
+      const cached = await idbGet<any[]>(AUDIOAULAS_CACHE_KEY);
+      if (cached && Array.isArray(cached) && cached.length > 0) {
+        return cached
+          .filter((a: any) => a.url_audio)
+          .map((a: any) => ({
+            id: `audioaula-${a.id}`,
+            titulo: a.titulo,
+            subtitulo: a.tema || a.area,
+            url: (safeStorageUrl(a.url_audio) || a.url_audio) as string,
+          }));
+      }
+    } catch {
+      /* ignore idb error */
+    }
+
     const todasAulas: any[] = [];
     const batchSize = 1000;
     for (let from = 0; ; from += batchSize) {

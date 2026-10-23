@@ -14,6 +14,10 @@ import {
 } from '@/lib/audioaulaProgresso';
 import { R2_VACATIO_AUDIO_BASE_URL, safeStorageUrl } from '@/lib/cdnImg';
 import { NOVAS_AUDIOAULAS_CATALOG } from '@/data/novasAudioaulasCatalog';
+import { get as idbGet, set as idbSet } from 'idb-keyval';
+
+export const AUDIOAULAS_CACHE_KEY = 'audioaulas_acervo_cache_v2';
+let memoryAulasCache: AulaAudio[] | null = null;
 
 export const INTRO_AUDIOAULA_URL = `${R2_VACATIO_AUDIO_BASE_URL}/audios/vinhetas/intro_audioaulas.mp3`;
 
@@ -105,8 +109,8 @@ export function useAudioaulasPlayer() {
 }
 
 export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [aulas, setAulas] = useState<AulaAudio[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [aulas, setAulas] = useState<AulaAudio[]>(() => memoryAulasCache ?? []);
+  const [loading, setLoading] = useState(() => !memoryAulasCache || memoryAulasCache.length === 0);
   const [atualId, setAtualId] = useState<number | null>(null);
   const [tocando, setTocando] = useState(false);
   const [tempo, setTempo] = useState(0);
@@ -122,13 +126,31 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   const pularRef = useRef<(dir: 1 | -1) => void>(() => {});
   const gateMes = useGatedFeature('audioaula_mes', 'audioaula', { scope: null });
 
-  // Carregamento e cache aquecido das aulas
+  // Carregamento e cache aquecido das aulas (Offline-First / Stale-While-Revalidate a 0ms)
   useEffect(() => {
     let cancelado = false;
+
     const carregar = async () => {
+      // 1. Hidratação instantânea do IndexedDB caso o cache em memória ainda esteja vazio
+      if (!memoryAulasCache || memoryAulasCache.length === 0) {
+        try {
+          const cached = await idbGet<AulaAudio[]>(AUDIOAULAS_CACHE_KEY);
+          if (cached && Array.isArray(cached) && cached.length > 0 && !cancelado) {
+            memoryAulasCache = cached;
+            setAulas(cached);
+            setLoading(false);
+          }
+        } catch {
+          /* ignore idb error */
+        }
+      }
+
+      // 2. Revalidação em segundo plano no Supabase
       try {
         const todasAulas: AulaAudio[] = [];
         const batchSize = 1000;
+        let teveErro = false;
+
         for (let from = 0; ; from += batchSize) {
           const { data, error } = await supabase
             .from('audioaulas_acervo')
@@ -137,7 +159,8 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
             .range(from, from + batchSize - 1);
           if (cancelado) return;
           if (error) {
-            console.error('Erro ao carregar acervo de audioaulas:', error);
+            console.error('Erro ao revalidar acervo de audioaulas:', error);
+            teveErro = true;
             break;
           }
           if (data && data.length > 0) {
@@ -151,27 +174,31 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
         }
         if (cancelado) return;
 
-        // Mesclar catálogo R2 de Direito Civil, Processo Civil e Direito Tributário
-        const chavesExistentes = new Set(
-          todasAulas.map((a) => `${(a.area || '').toLowerCase()}:::${(a.tema || '').toLowerCase()}:::${(a.titulo || '').toLowerCase()}`)
-        );
-        for (const nova of NOVAS_AUDIOAULAS_CATALOG) {
-          const chave = `${(nova.area || '').toLowerCase()}:::${(nova.tema || '').toLowerCase()}:::${(nova.titulo || '').toLowerCase()}`;
-          if (!chavesExistentes.has(chave)) {
-            todasAulas.push(nova);
+        // Se revalidou com sucesso, mescla com o catálogo complementar e atualiza caches
+        if (!teveErro && todasAulas.length > 0) {
+          const chavesExistentes = new Set(
+            todasAulas.map((a) => `${(a.area || '').toLowerCase()}:::${(a.tema || '').toLowerCase()}:::${(a.titulo || '').toLowerCase()}`)
+          );
+          for (const nova of NOVAS_AUDIOAULAS_CATALOG) {
+            const chave = `${(nova.area || '').toLowerCase()}:::${(nova.tema || '').toLowerCase()}:::${(nova.titulo || '').toLowerCase()}`;
+            if (!chavesExistentes.has(chave)) {
+              todasAulas.push(nova);
+            }
           }
+
+          // Ordenação alfabética por Área e Sequência realizada em memória (instantânea a 0ms)
+          todasAulas.sort((a, b) => {
+            const comp = (a.area || '').localeCompare(b.area || '', 'pt-BR');
+            if (comp !== 0) return comp;
+            return (a.sequencia ?? 0) - (b.sequencia ?? 0);
+          });
+
+          memoryAulasCache = todasAulas;
+          setAulas(todasAulas);
+          void idbSet(AUDIOAULAS_CACHE_KEY, todasAulas).catch(() => {});
         }
-
-        // Ordenação alfabética por Área e Sequência realizada em memória (instantânea a 0ms)
-        todasAulas.sort((a, b) => {
-          const comp = (a.area || '').localeCompare(b.area || '', 'pt-BR');
-          if (comp !== 0) return comp;
-          return (a.sequencia ?? 0) - (b.sequencia ?? 0);
-        });
-
-        setAulas(todasAulas);
       } catch (err) {
-        console.error('Erro ao carregar acervo de audioaulas:', err);
+        console.error('Erro ao revalidar acervo de audioaulas:', err);
       } finally {
         if (!cancelado) setLoading(false);
       }
