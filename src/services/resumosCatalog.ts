@@ -90,8 +90,8 @@ export function findSubtemaInCatalog(
 ): SubtemaItem | undefined {
   if (!catalog || !Array.isArray(catalog)) return undefined;
 
-  // 1. Procura direta por ID único (ex: direito-administrativo_administracao-publica_cap1)
-  if (subtemaOrId) {
+  // 1. Procura direta por ID único oficial (ex: direito-administrativo_administracao-publica_cap1)
+  if (subtemaOrId && String(subtemaOrId).includes('_cap')) {
     for (const a of catalog) {
       for (const t of a.temas) {
         for (const s of t.subtemas) {
@@ -102,19 +102,32 @@ export function findSubtemaInCatalog(
   }
 
   // 2. Procura pela área e tema correspondentes
-  if (area && tema && subtemaOrId) {
+  if (area && tema) {
     const areaObj = matchAreaInCatalog(catalog, area);
     if (areaObj) {
       const temaObj = matchTemaInArea(areaObj.temas, tema);
-      if (temaObj) {
+      if (temaObj && temaObj.subtemas && temaObj.subtemas.length > 0) {
+        // Se subtemaOrId não foi informado, for igual ao tema ou for um UUID legado do Supabase
+        const isLegacyOrEqual =
+          !subtemaOrId ||
+          !String(subtemaOrId).includes('_cap') && (
+            cleanResumoString(subtemaOrId) === cleanResumoString(tema) ||
+            cleanResumoString(subtemaOrId).length > 25
+          );
+
+        if (isLegacyOrEqual) {
+          return temaObj.subtemas[0];
+        }
+
         const cleanSub = cleanResumoString(subtemaOrId);
-        return (
+        const match =
           temaObj.subtemas.find((s) => cleanResumoString(s.subtema) === cleanSub) ||
           temaObj.subtemas.find((s) => {
             const sn = cleanResumoString(s.subtema);
             return sn.includes(cleanSub) || cleanSub.includes(sn);
-          })
-        );
+          });
+
+        return match || temaObj.subtemas[0];
       }
     }
   }

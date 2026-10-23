@@ -230,6 +230,17 @@ export default function ResumoJuridicoReaderSheet({
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Item oficial carregado do catálogo offline (Word/R2)
+  const [catalogSubtema, setCatalogSubtema] = useState<{
+    id: string;
+    subtema: string;
+    markdown: string;
+    audio_url?: string | null;
+    imageUrl?: string | null;
+    exemplos?: string | null;
+    termos?: string | null;
+  } | null>(null);
+
   // Dados de Conceitos Aprofundados gerados pela IA (persistidos em resumo_metodologias)
   const [conceitosData, setConceitosData] = useState<{
     markdown: string | null;
@@ -310,6 +321,7 @@ export default function ResumoJuridicoReaderSheet({
     setTab(initialTab || "resumo");
     const targetMetodo = autoStartMetodo || defaultMetodo || initialMetodo || "conceitos";
     setMetodo(targetMetodo);
+    setCatalogSubtema(null);
     setConceitosData(null);
     setBasicData(null);
     setCornell(null);
@@ -318,28 +330,27 @@ export default function ResumoJuridicoReaderSheet({
     setFontOpen(false);
     setFav(resumosLocal.isFavorito(resumo.id));
 
-    // Busca fallback básico no catálogo oficial ou em resumos_juridicos se necessário
+    // 1. Sempre priorizar catálogo oficial dos resumos Word / Cloudflare R2
     let ativo = true;
-    if (!resumo.markdown) {
-      (async () => {
-        try {
-          const { getResumosCatalog, findSubtemaInCatalog } = await import("@/services/resumosCatalog");
-          const catalog = await getResumosCatalog();
-          const found = findSubtemaInCatalog(catalog, resumo.area, resumo.tema, resumo.id || resumo.subtema);
-          if (found && found.markdown && ativo) {
-            setBasicData({
-              markdown: found.markdown,
-              exemplos: found.exemplos || null,
-              termos: found.termos || null,
-            });
-            if (found.audio_url && !resumo.audio_url) {
-              resumo.audio_url = found.audio_url;
-            }
-            return;
+    (async () => {
+      try {
+        const { getResumosCatalog, findSubtemaInCatalog } = await import("@/services/resumosCatalog");
+        const catalog = await getResumosCatalog();
+        const found = findSubtemaInCatalog(catalog, resumo.area, resumo.tema, resumo.id || resumo.subtema);
+        if (found && found.markdown && ativo) {
+          setCatalogSubtema(found);
+          if (found.audio_url && !resumo.audio_url) {
+            resumo.audio_url = found.audio_url;
           }
-        } catch {}
+          return;
+        }
+      } catch (err) {
+        console.warn("[ResumoReader] Falha ao consultar catálogo:", err);
+      }
 
-        if (!ativo) return;
+      // Fallback para Supabase apenas se não encontrado no catálogo
+      if (!ativo) return;
+      if (!resumo.markdown) {
         supabase
           .from("resumos_juridicos")
           .select("markdown, exemplos, termos")
@@ -348,14 +359,14 @@ export default function ResumoJuridicoReaderSheet({
           .then(({ data }) => {
             if (data && ativo) setBasicData(data);
           });
-      })();
-    } else {
-      setBasicData({
-        markdown: resumo.markdown,
-        exemplos: resumo.exemplos,
-        termos: resumo.termos,
-      });
-    }
+      } else {
+        setBasicData({
+          markdown: resumo.markdown,
+          exemplos: resumo.exemplos,
+          termos: resumo.termos,
+        });
+      }
+    })();
 
     // Carrega metodologias existentes no Supabase
     (async () => {
@@ -375,7 +386,7 @@ export default function ResumoJuridicoReaderSheet({
       }
 
       // Se o método inicial for conceitos e ainda NÃO tiver sido aprofundado e NÃO tiver markdown pronto, gera
-      const jaTemMarkdown = Boolean(resumo.markdown || basicData?.markdown);
+      const jaTemMarkdown = Boolean(resumo.markdown || basicData?.markdown || catalogSubtema?.markdown);
       if (targetMetodo === "conceitos" && !existentes.has("conceitos") && !jaTemMarkdown) {
         void gerarMetodologia("conceitos", false);
       } else if (targetMetodo === "cornell" && !existentes.has("cornell")) {
@@ -419,21 +430,53 @@ export default function ResumoJuridicoReaderSheet({
   const incFont = () => setFontSize((s) => Math.min(26, s + 1));
   const decFont = () => setFontSize((s) => Math.max(13, s - 1));
 
+  const isLegacyAiText = (txt?: string | null) => {
+    if (!txt) return false;
+    return (
+      txt.includes("ARQUITETURA DO PODER") ||
+      txt.includes("Olá! Seja muito bem-vindo a este mergulho") ||
+      txt.includes("INTRODUÇÃO E CONTEXTUALIZAÇÃO")
+    );
+  };
+
+  const currentTitle =
+    catalogSubtema?.subtema ||
+    (resumo?.subtema && resumo.subtema !== resumo.tema ? resumo.subtema : null) ||
+    catalogSubtema?.subtema ||
+    resumo?.subtema ||
+    resumo?.tema ||
+    "Resumo Jurídico";
+
   const currentMarkdown =
-    resumo?.markdown || basicData?.markdown || conceitosData?.markdown || null;
+    catalogSubtema?.markdown ||
+    (!isLegacyAiText(resumo?.markdown) ? resumo?.markdown : null) ||
+    (!isLegacyAiText(basicData?.markdown) ? basicData?.markdown : null) ||
+    (!isLegacyAiText(conceitosData?.markdown) ? conceitosData?.markdown : null) ||
+    resumo?.markdown ||
+    basicData?.markdown ||
+    null;
+
   const currentExemplos =
-    resumo?.exemplos || basicData?.exemplos || conceitosData?.exemplos || null;
+    catalogSubtema?.exemplos ||
+    (!isLegacyAiText(conceitosData?.markdown) ? conceitosData?.exemplos : null) ||
+    (!isLegacyAiText(resumo?.markdown) ? resumo?.exemplos : null) ||
+    null;
+
   const currentTermos =
-    resumo?.termos || basicData?.termos || conceitosData?.termos || null;
+    catalogSubtema?.termos ||
+    (!isLegacyAiText(conceitosData?.markdown) ? conceitosData?.termos : null) ||
+    (!isLegacyAiText(resumo?.markdown) ? resumo?.termos : null) ||
+    null;
 
   const audioUrl = useMemo(() => {
+    if (catalogSubtema?.audio_url) return catalogSubtema.audio_url;
     if (resumo?.audio_url) return resumo.audio_url;
     const md = currentMarkdown || resumo?.markdown || "";
     const match =
       md.match(/<!--\s*audio:\s*([^\s>]+)\s*-->/i) ||
       md.match(/\[audio:\s*([^\s\]]+)\]/i);
     return match ? match[1] : null;
-  }, [resumo?.audio_url, currentMarkdown, resumo?.markdown]);
+  }, [catalogSubtema?.audio_url, resumo?.audio_url, currentMarkdown, resumo?.markdown]);
 
   const rawContent =
     tab === "resumo" ? currentMarkdown : tab === "exemplos" ? currentExemplos : currentTermos;
@@ -626,7 +669,7 @@ export default function ResumoJuridicoReaderSheet({
                   </button>
                   <div className="flex-1 min-w-0 text-center">
                     <h1 className="font-display text-[17px] md:text-[19px] font-semibold text-foreground tracking-wide truncate">
-                      {resumo.subtema || resumo.tema}
+                      {currentTitle}
                     </h1>
                     <p className="text-xs md:text-[11px] font-body text-muted-foreground truncate mt-0.5">
                       {resumo.area} · {resumo.tema}
@@ -651,7 +694,7 @@ export default function ResumoJuridicoReaderSheet({
                   <div className="mb-3">
                     <ResumoAudioPlayer
                       audioUrl={audioUrl}
-                      titulo={resumo.subtema || resumo.tema}
+                      titulo={currentTitle}
                       subtitulo={resumo.area}
                     />
                   </div>

@@ -38,8 +38,14 @@ export default function ResumosJuridicosSubtemas() {
   const [gateOpen, setGateOpen] = useState(false);
   
   const cacheKey = useMemo(() => `${decodedArea}:${decodedTema}`, [decodedArea, decodedTema]);
-  const [rows, setRows] = useState<ResumoRow[]>(() => subtemasCache.get(cacheKey) || []);
-  const [loading, setLoading] = useState(() => !subtemasCache.has(cacheKey));
+  const [rows, setRows] = useState<ResumoRow[]>(() => {
+    const cached = subtemasCache.get(cacheKey);
+    if (cached && Array.isArray(cached) && cached.length > 0 && cached.every((c) => c.id && String(c.id).includes('_cap'))) {
+      return cached;
+    }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => rows.length === 0);
   const [q, setQ] = useState("");
   
   const [selected, setSelected] = useState<ResumoRow | null>(null);
@@ -75,17 +81,23 @@ export default function ResumosJuridicosSubtemas() {
 
   useEffect(() => {
     let cancelled = false;
-    const localKey = `resumos_subtemas:${cacheKey}`;
+    const localKey = `resumos_subtemas_v7_cap:${cacheKey}`;
+
+    // Purga imediata de caches legados
+    try {
+      localStorage.removeItem(`resumos_subtemas:${cacheKey}`);
+      localStorage.removeItem(`resumos_subtemas_v5:${cacheKey}`);
+    } catch {}
 
     // 1. Checar cache local se ainda não estiver em memória
-    if (!subtemasCache.has(cacheKey)) {
+    if (!subtemasCache.has(cacheKey) || !subtemasCache.get(cacheKey)?.every((c) => c.id && String(c.id).includes('_cap'))) {
       try {
         const stored = localStorage.getItem(localKey);
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            const hasNewData = parsed.some((p: any) => p.audio_url || p.markdown);
-            if (hasNewData) {
+            const isOfficial = parsed.every((p: any) => p.id && String(p.id).includes('_cap'));
+            if (isOfficial) {
               subtemasCache.set(cacheKey, parsed);
               setRows(parsed);
               setLoading(false);

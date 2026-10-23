@@ -6,6 +6,7 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import path from "node:path";
+import fs from "node:fs";
 
 export default defineConfig({
   tanstackStart: {
@@ -18,6 +19,24 @@ export default defineConfig({
     },
   },
   vite: {
+    plugins: [
+      {
+        name: "serve-offline-bundle",
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url && req.url.startsWith("/offline-bundle/")) {
+              const cleanUrl = req.url.split("?")[0];
+              const filePath = path.join(__dirname, "public", cleanUrl);
+              if (fs.existsSync(filePath)) {
+                res.setHeader("Content-Type", "application/json");
+                return fs.createReadStream(filePath).pipe(res);
+              }
+            }
+            next();
+          });
+        },
+      },
+    ],
     resolve: {
       alias: {
         // Imported Direito Prime code uses the react-router API; serve it from a TanStack-backed shim.

@@ -65,7 +65,11 @@ export default function ResumosJuridicosTemas() {
   // 1. Carregar Temas Instantaneamente
   useEffect(() => {
     let cancelled = false;
-    const cacheKey = `resumos_temas_cache:${decodedArea}`;
+    const cacheKey = `resumos_temas_cache_v7:${decodedArea}`;
+
+    try {
+      localStorage.removeItem(`resumos_temas_cache:${decodedArea}`);
+    } catch {}
 
     if (!temasCache.has(decodedArea)) {
       try {
