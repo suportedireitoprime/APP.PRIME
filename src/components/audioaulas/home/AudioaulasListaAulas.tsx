@@ -2065,7 +2065,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                   )}
                                 </div>
 
-                                {/* Card da Aula */}
+                                {/* Card da Aula — Altura padronizada única para todos os itens */}
                                 <button
                                   type="button"
                                   onClick={() => {
@@ -2073,7 +2073,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                     handleTocarAula(a);
                                   }}
                                   className={cn(
-                                    "relative min-h-[72px] sm:min-h-[88px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none",
+                                    "relative h-[82px] sm:h-[88px] overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 px-3 py-2.5 sm:px-3.5 sm:py-3 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none",
                                     isTocando
                                       ? "border-primary/60 bg-primary/[0.08] shadow-md shadow-primary/10"
                                       : isFav
@@ -2096,20 +2096,20 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                   />
 
                                   {/* Círculo do Ícone */}
-                                  <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[52px] sm:w-[60px] pl-0.5">
+                                  <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[48px] sm:w-[56px] pl-0.5">
                                     <div
                                       className={cn(
-                                        "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border overflow-hidden shadow-inner shrink-0 transition-colors",
+                                        "w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border overflow-hidden shadow-inner shrink-0 transition-colors",
                                         isTocando
                                           ? "bg-primary/20 border-primary text-primary"
                                           : "bg-white/5 border-white/10 text-white/80 group-hover:text-white",
                                       )}
                                     >
                                       {isTocando ? (
-                                        <Headphones className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
+                                        <Headphones className="w-5 h-5 text-primary animate-pulse" />
                                       ) : (
                                         <FileText
-                                          className="w-5 h-5 sm:w-6 sm:h-6 transition-colors select-none"
+                                          className="w-5 h-5 transition-colors select-none"
                                           strokeWidth={1.8}
                                           aria-hidden="true"
                                         />
@@ -2118,23 +2118,16 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                   </div>
 
                                   {/* Informações da Aula */}
-                                  <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-1 pr-1 sm:pr-2">
+                                  <div className="min-w-0 flex-1 flex flex-col justify-center h-full pr-1 sm:pr-2">
                                     <div className="flex items-center gap-2 flex-wrap">
                                       <h3
                                         className={cn(
-                                          "text-sm sm:text-base font-medium font-sans break-words leading-snug line-clamp-3 transition-colors",
+                                          "text-sm sm:text-base font-medium font-sans break-words leading-snug line-clamp-2 transition-colors",
                                           isTocando ? "text-primary font-semibold" : "text-foreground",
                                         )}
                                       >
                                         {formatarTituloAula(a.titulo) || a.titulo}
                                       </h3>
-
-                                      {/* Badge ÁUDIO */}
-                                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase text-rose-400 bg-rose-500/15 border border-rose-500/30 shrink-0">
-                                        <Headphones className="w-2.5 h-2.5 text-rose-400" />
-                                        ÁUDIO
-                                      </span>
-
 
                                       {/* Badge Concluída / Em Andamento */}
                                       {concluida && (
