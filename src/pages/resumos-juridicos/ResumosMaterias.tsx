@@ -120,48 +120,50 @@ export default function ResumosMaterias() {
       if (!areasCache) setLoading(true);
       let list: AreaRow[] = [];
 
+      // 1. Catálogo oficial (0ms, offline)
       try {
-        const { data: rpcData, error: rpcErr } = await (supabase as any).rpc("get_resumos_areas_counts");
-        if (!rpcErr && Array.isArray(rpcData) && rpcData.length > 0) {
-          list = rpcData.map((r: any) => ({ area: r.area, total: Number(r.total) || 0 }));
+        const { getResumosCatalog } = await import("@/services/resumosCatalog");
+        const catalog = await getResumosCatalog();
+        if (catalog && catalog.length > 0) {
+          list = catalog.map((c) => ({
+            area: c.area,
+            total: c.total || c.temas?.reduce((acc, t) => acc + (t.subtemas?.length || t.total || 0), 0) || 0,
+          })).sort((a, b) => a.area.localeCompare(b.area));
         }
       } catch {}
 
+      // 2. Se catálogo offline não carregar, fallback para RPC ou Supabase
       if (list.length === 0) {
-        const map = new Map<string, number>();
-        let from = 0;
-        const step = 1000;
-        let gotAny = false;
-        while (true) {
-          const { data, error } = await (supabase as any)
-            .from("resumos_juridicos")
-            .select("area")
-            .not("area", "is", null)
-            .range(from, from + step - 1);
-          if (error) break;
-          if (!data || data.length === 0) break;
-          gotAny = true;
-          for (const r of data as { area: string }[]) {
-            map.set(r.area, (map.get(r.area) || 0) + 1);
+        try {
+          const { data: rpcData, error: rpcErr } = await (supabase as any).rpc("get_resumos_areas_counts");
+          if (!rpcErr && Array.isArray(rpcData) && rpcData.length > 0) {
+            list = rpcData.map((r: any) => ({ area: r.area, total: Number(r.total) || 0 }));
           }
-          if (data.length < step) break;
-          from += step;
-        }
+        } catch {}
 
-        if (!gotAny) {
-          try {
-            const { getResumosCatalog } = await import("@/services/resumosCatalog");
-            const catalog = await getResumosCatalog();
-            for (const c of catalog) {
-              if (!c.area) continue;
-              map.set(c.area, (map.get(c.area) || 0) + (c.total || 0));
+        if (list.length === 0) {
+          const map = new Map<string, number>();
+          let from = 0;
+          const step = 1000;
+          while (true) {
+            const { data, error } = await (supabase as any)
+              .from("resumos_juridicos")
+              .select("area")
+              .not("area", "is", null)
+              .range(from, from + step - 1);
+            if (error) break;
+            if (!data || data.length === 0) break;
+            for (const r of data as { area: string }[]) {
+              map.set(r.area, (map.get(r.area) || 0) + 1);
             }
-          } catch {}
-        }
+            if (data.length < step) break;
+            from += step;
+          }
 
-        list = Array.from(map.entries())
-          .map(([area, total]) => ({ area, total }))
-          .sort((a, b) => a.area.localeCompare(b.area));
+          list = Array.from(map.entries())
+            .map(([area, total]) => ({ area, total }))
+            .sort((a, b) => a.area.localeCompare(b.area));
+        }
       }
 
       if (list.length > 0) {

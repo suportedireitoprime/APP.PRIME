@@ -46,44 +46,41 @@ export function useResumosDesktopData() {
 
       const map = new Map<string, Set<string>>();
       const totalMap = new Map<string, number>();
-      let from = 0;
-      const step = 1000;
-      let gotAny = false;
-
-      while (true) {
-        const { data, error } = await (supabase as any)
-          .from("resumos_juridicos")
-          .select("area, tema")
-          .not("area", "is", null)
-          .range(from, from + step - 1);
-
-        if (error) break;
-        if (!data || data.length === 0) break;
-
-        gotAny = true;
-        for (const r of data as { area: string; tema: string }) {
-          if (!map.has(r.area)) map.set(r.area, new Set());
-          if (r.tema) map.get(r.area)!.add(r.tema);
-          totalMap.set(r.area, (totalMap.get(r.area) || 0) + 1);
-        }
-
-        if (data.length < step) break;
-        from += step;
-      }
-
-      if (!gotAny) {
-        try {
-          const { getResumosCatalog } = await import("@/services/resumosCatalog");
-          const catalog = await getResumosCatalog();
-          for (const c of catalog) {
-            if (!c.area) continue;
-            if (!map.has(c.area)) map.set(c.area, new Set());
-            for (const t of c.temas) {
-              if (t.tema) map.get(c.area)!.add(t.tema);
-            }
-            totalMap.set(c.area, (totalMap.get(c.area) || 0) + (c.total || 0));
+      try {
+        const { getResumosCatalog } = await import("@/services/resumosCatalog");
+        const catalog = await getResumosCatalog();
+        for (const c of catalog) {
+          if (!c.area) continue;
+          if (!map.has(c.area)) map.set(c.area, new Set());
+          for (const t of c.temas) {
+            if (t.tema) map.get(c.area)!.add(t.tema);
           }
-        } catch {}
+          totalMap.set(c.area, (totalMap.get(c.area) || 0) + (c.total || 0));
+        }
+      } catch {}
+
+      if (map.size === 0) {
+        let from = 0;
+        const step = 1000;
+        while (true) {
+          const { data, error } = await (supabase as any)
+            .from("resumos_juridicos")
+            .select("area, tema")
+            .not("area", "is", null)
+            .range(from, from + step - 1);
+
+          if (error) break;
+          if (!data || data.length === 0) break;
+
+          for (const r of data as { area: string; tema: string }) {
+            if (!map.has(r.area)) map.set(r.area, new Set());
+            if (r.tema) map.get(r.area)!.add(r.tema);
+            totalMap.set(r.area, (totalMap.get(r.area) || 0) + 1);
+          }
+
+          if (data.length < step) break;
+          from += step;
+        }
       }
 
       const list = Array.from(map.entries())
@@ -156,11 +153,23 @@ export function useResumosDesktopData() {
         }
       } catch {}
 
+      try {
+        const { getResumosCatalog, matchAreaInCatalog } = await import("@/services/resumosCatalog");
+        const catalog = await getResumosCatalog();
+        const areaObj = matchAreaInCatalog(catalog, decodedArea);
+        if (areaObj && areaObj.temas && areaObj.temas.length > 0) {
+          list = areaObj.temas.map((t, idx) => ({
+            tema: t.tema,
+            ordem_tema: idx + 1,
+            total: t.total || (t.subtemas?.length || 1),
+          }));
+        }
+      } catch {}
+
       if (list.length === 0) {
         const map = new Map<string, { ordem: number | null; total: number }>();
         let from = 0;
         const step = 1000;
-        let gotAny = false;
         while (true) {
           const { data, error } = await (supabase as any)
             .from("resumos_juridicos")
@@ -169,7 +178,6 @@ export function useResumosDesktopData() {
             .range(from, from + step - 1);
           if (error) break;
           if (!data || data.length === 0) break;
-          gotAny = true;
           for (const r of data as { tema: string; ordem_tema: number | null }[]) {
             const prev = map.get(r.tema);
             map.set(r.tema, {
@@ -180,21 +188,7 @@ export function useResumosDesktopData() {
           if (data.length < step) break;
           from += step;
         }
-        if (!gotAny) {
-          try {
-            const { getResumosCatalog } = await import("@/services/resumosCatalog");
-            const catalog = await getResumosCatalog();
-            const areaObj = catalog.find((c) => c.area === decodedArea);
-            if (areaObj) {
-              for (const t of areaObj.temas) {
-                map.set(t.tema, {
-                  ordem: null,
-                  total: t.total || (t.subtemas?.length || 1),
-                });
-              }
-            }
-          } catch {}
-        }
+
         list = Array.from(map.entries())
           .map(([t, v]) => ({ tema: t, ordem_tema: v.ordem, total: v.total }))
           .sort((a, b) => {
@@ -261,15 +255,41 @@ export function useResumosDesktopData() {
     let cancelled = false;
     (async () => {
       setLoadingSubtemas(true);
-      const { data } = await (supabase as any)
-        .from("resumos_juridicos")
-        .select("id, area, tema, subtema, ordem_subtema, markdown, exemplos, termos")
-        .eq("area", decodedArea)
-        .eq("tema", decodedTema)
-        .order("ordem_subtema", { ascending: true, nullsFirst: false })
-        .order("subtema", { ascending: true })
-        .limit(5000);
-      let list = (data || []) as ResumoRow[];
+      let list: ResumoRow[] = [];
+
+      try {
+        const { getResumosCatalog, matchAreaInCatalog, matchTemaInArea } = await import("@/services/resumosCatalog");
+        const catalog = await getResumosCatalog();
+        const areaObj = matchAreaInCatalog(catalog, decodedArea);
+        const temaObj = areaObj ? matchTemaInArea(areaObj.temas, decodedTema) : undefined;
+        if (temaObj?.subtemas && temaObj.subtemas.length > 0) {
+          list = temaObj.subtemas.map((s, idx) => ({
+            id: s.id,
+            area: areaObj?.area || decodedArea,
+            tema: temaObj.tema || decodedTema,
+            subtema: s.subtema,
+            ordem_subtema: s.ordem ?? idx + 1,
+            markdown: s.markdown || null,
+            exemplos: s.exemplos || null,
+            termos: s.termos || null,
+            audio_url: s.audio_url || null,
+            imageUrl: s.imageUrl || null,
+          }));
+        }
+      } catch {}
+
+      if (list.length === 0) {
+        const { data } = await (supabase as any)
+          .from("resumos_juridicos")
+          .select("id, area, tema, subtema, ordem_subtema, markdown, exemplos, termos")
+          .eq("area", decodedArea)
+          .eq("tema", decodedTema)
+          .order("ordem_subtema", { ascending: true, nullsFirst: false })
+          .order("subtema", { ascending: true })
+          .limit(5000);
+        list = (data || []) as ResumoRow[];
+      }
+
       if (list.length === 0) {
         const { bundle } = await import("@/services/offlineBundle");
         const all = await bundle.resumos<ResumoRow>();

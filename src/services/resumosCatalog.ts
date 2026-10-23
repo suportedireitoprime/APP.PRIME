@@ -40,24 +40,85 @@ export async function getResumosCatalog(): Promise<AreaItem[]> {
     }
   } catch {}
 
-  // Fallback: localStorage
-  try {
-    const stored = localStorage.getItem('resumos_areas_temas_cache');
-    if (stored) {
-      const parsed = JSON.parse(stored) as Array<{ area: string; total?: number; temas?: Array<string | TemaItem> }>;
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const fallback: AreaItem[] = parsed.map((p) => ({
-          area: p.area,
-          total: p.total || (p.temas?.length || 0),
-          coverUrl: coverCpArtigos,
-          temas: (p.temas || []).map((t) => typeof t === 'string' ? { tema: t, total: 1, subtemas: [] } : t)
-        }));
-        memoryCatalog = fallback;
-        return fallback;
+  return [];
+}
+
+export function cleanResumoString(s: string): string {
+  return (s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/^direito\s+/i, '')
+    .replace(/^processo\s+/i, 'processual ')
+    .replace(/[^a-z0-9]/g, '')
+    .trim();
+}
+
+export function matchAreaInCatalog(catalog: AreaItem[], targetArea: string): AreaItem | undefined {
+  if (!targetArea) return undefined;
+  const t = cleanResumoString(targetArea);
+  if (!t) return undefined;
+
+  return (
+    catalog.find((c) => cleanResumoString(c.area) === t) ||
+    catalog.find((c) => {
+      const cNorm = cleanResumoString(c.area);
+      return cNorm.includes(t) || t.includes(cNorm);
+    })
+  );
+}
+
+export function matchTemaInArea(temas: TemaItem[], targetTema: string): TemaItem | undefined {
+  if (!targetTema || !Array.isArray(temas)) return undefined;
+  const t = cleanResumoString(targetTema);
+  if (!t) return undefined;
+
+  return (
+    temas.find((item) => cleanResumoString(item.tema) === t) ||
+    temas.find((item) => {
+      const itemNorm = cleanResumoString(item.tema);
+      return itemNorm.includes(t) || t.includes(itemNorm);
+    })
+  );
+}
+
+export function findSubtemaInCatalog(
+  catalog: AreaItem[],
+  area?: string | null,
+  tema?: string | null,
+  subtemaOrId?: string | null
+): SubtemaItem | undefined {
+  if (!catalog || !Array.isArray(catalog)) return undefined;
+
+  // 1. Procura direta por ID único (ex: direito-administrativo_administracao-publica_cap1)
+  if (subtemaOrId) {
+    for (const a of catalog) {
+      for (const t of a.temas) {
+        for (const s of t.subtemas) {
+          if (s.id === subtemaOrId) return s;
+        }
       }
     }
-  } catch {}
+  }
 
-  return [];
+  // 2. Procura pela área e tema correspondentes
+  if (area && tema && subtemaOrId) {
+    const areaObj = matchAreaInCatalog(catalog, area);
+    if (areaObj) {
+      const temaObj = matchTemaInArea(areaObj.temas, tema);
+      if (temaObj) {
+        const cleanSub = cleanResumoString(subtemaOrId);
+        return (
+          temaObj.subtemas.find((s) => cleanResumoString(s.subtema) === cleanSub) ||
+          temaObj.subtemas.find((s) => {
+            const sn = cleanResumoString(s.subtema);
+            return sn.includes(cleanSub) || cleanSub.includes(sn);
+          })
+        );
+      }
+    }
+  }
+
+  return undefined;
 }
 

@@ -87,10 +87,9 @@ export default function ResumosJuridicosTemas() {
     (async () => {
       // 1. Tentar catálogo offline imediatamente (0ms)
       try {
-        const { getResumosCatalog } = await import("@/services/resumosCatalog");
+        const { getResumosCatalog, matchAreaInCatalog } = await import("@/services/resumosCatalog");
         const catalog = await getResumosCatalog();
-        const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        const areaObj = catalog.find((c) => norm(c.area) === norm(decodedArea));
+        const areaObj = matchAreaInCatalog(catalog, decodedArea);
         if (areaObj && areaObj.temas && areaObj.temas.length > 0) {
           const list: Row[] = areaObj.temas.map((t, idx) => ({
             tema: t.tema,

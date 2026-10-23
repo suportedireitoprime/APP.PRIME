@@ -84,9 +84,12 @@ export default function ResumosJuridicosSubtemas() {
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            subtemasCache.set(cacheKey, parsed);
-            setRows(parsed);
-            setLoading(false);
+            const hasNewData = parsed.some((p: any) => p.audio_url || p.markdown);
+            if (hasNewData) {
+              subtemasCache.set(cacheKey, parsed);
+              setRows(parsed);
+              setLoading(false);
+            }
           }
         }
       } catch {}
@@ -95,21 +98,22 @@ export default function ResumosJuridicosSubtemas() {
     (async () => {
       // 2. Carregar instantaneamente (0ms) do catálogo offline
       try {
-        const { getResumosCatalog } = await import("@/services/resumosCatalog");
+        const { getResumosCatalog, matchAreaInCatalog, matchTemaInArea } = await import("@/services/resumosCatalog");
         const catalog = await getResumosCatalog();
-        const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-        const areaObj = catalog.find((c) => norm(c.area) === norm(decodedArea));
-        const temaObj = areaObj?.temas.find((t) => norm(t.tema) === norm(decodedTema));
+        const areaObj = matchAreaInCatalog(catalog, decodedArea);
+        const temaObj = areaObj ? matchTemaInArea(areaObj.temas, decodedTema) : undefined;
         if (temaObj?.subtemas && temaObj.subtemas.length > 0) {
           const list: ResumoRow[] = temaObj.subtemas.map((s, idx) => ({
             id: s.id,
-            area: decodedArea,
-            tema: decodedTema,
+            area: areaObj?.area || decodedArea,
+            tema: temaObj.tema || decodedTema,
             subtema: s.subtema,
             ordem_subtema: s.ordem ?? idx + 1,
             markdown: s.markdown || null,
             exemplos: s.exemplos || null,
             termos: s.termos || null,
+            audio_url: s.audio_url || null,
+            imageUrl: s.imageUrl || null,
           }));
           if (!cancelled) {
             subtemasCache.set(cacheKey, list);

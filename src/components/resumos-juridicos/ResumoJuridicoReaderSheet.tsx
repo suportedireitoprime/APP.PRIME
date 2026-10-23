@@ -54,6 +54,7 @@ export interface ResumoRow {
   exemplos: string | null;
   termos: string | null;
   audio_url?: string | null;
+  imageUrl?: string | null;
 }
 
 interface Props {
@@ -97,6 +98,16 @@ const markdownComponents = {
   ),
   p: ({ node, ...props }: any) => (
     <p className="my-3.5 text-foreground/90 leading-[1.8] text-[15px] sm:text-[16px]" {...props} />
+  ),
+  img: ({ node, ...props }: any) => (
+    <span className="my-6 block w-full text-center">
+      <img
+        className="rounded-2xl border border-white/10 max-h-[500px] w-auto max-w-full mx-auto object-contain shadow-2xl bg-zinc-950/60 p-1"
+        loading="lazy"
+        decoding="async"
+        {...props}
+      />
+    </span>
   ),
   table: ({ node, ...props }: any) => (
     <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
@@ -307,16 +318,37 @@ export default function ResumoJuridicoReaderSheet({
     setFontOpen(false);
     setFav(resumosLocal.isFavorito(resumo.id));
 
-    // Busca fallback básico em resumos_juridicos se necessário
+    // Busca fallback básico no catálogo oficial ou em resumos_juridicos se necessário
+    let ativo = true;
     if (!resumo.markdown) {
-      supabase
-        .from("resumos_juridicos")
-        .select("markdown, exemplos, termos")
-        .eq("id", resumo.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          if (data) setBasicData(data);
-        });
+      (async () => {
+        try {
+          const { getResumosCatalog, findSubtemaInCatalog } = await import("@/services/resumosCatalog");
+          const catalog = await getResumosCatalog();
+          const found = findSubtemaInCatalog(catalog, resumo.area, resumo.tema, resumo.id || resumo.subtema);
+          if (found && found.markdown && ativo) {
+            setBasicData({
+              markdown: found.markdown,
+              exemplos: found.exemplos || null,
+              termos: found.termos || null,
+            });
+            if (found.audio_url && !resumo.audio_url) {
+              resumo.audio_url = found.audio_url;
+            }
+            return;
+          }
+        } catch {}
+
+        if (!ativo) return;
+        supabase
+          .from("resumos_juridicos")
+          .select("markdown, exemplos, termos")
+          .eq("id", resumo.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            if (data && ativo) setBasicData(data);
+          });
+      })();
     } else {
       setBasicData({
         markdown: resumo.markdown,
@@ -326,7 +358,6 @@ export default function ResumoJuridicoReaderSheet({
     }
 
     // Carrega metodologias existentes no Supabase
-    let ativo = true;
     (async () => {
       const { data } = await supabase
         .from("resumo_metodologias")
@@ -389,11 +420,11 @@ export default function ResumoJuridicoReaderSheet({
   const decFont = () => setFontSize((s) => Math.max(13, s - 1));
 
   const currentMarkdown =
-    conceitosData?.markdown ?? (basicData?.markdown || resumo?.markdown || null);
+    resumo?.markdown || basicData?.markdown || conceitosData?.markdown || null;
   const currentExemplos =
-    conceitosData?.exemplos ?? (basicData?.exemplos || resumo?.exemplos || null);
+    resumo?.exemplos || basicData?.exemplos || conceitosData?.exemplos || null;
   const currentTermos =
-    conceitosData?.termos ?? (basicData?.termos || resumo?.termos || null);
+    resumo?.termos || basicData?.termos || conceitosData?.termos || null;
 
   const audioUrl = useMemo(() => {
     if (resumo?.audio_url) return resumo.audio_url;
@@ -674,7 +705,7 @@ export default function ResumoJuridicoReaderSheet({
                           prose-ul:my-3 prose-li:my-1
                         "
                       >
-                        {gerando === "conceitos" || (!conceitosData && !erroGerar) ? (
+                        {gerando === "conceitos" || (!content && !erroGerar) ? (
                           <div className="w-full flex items-center justify-center py-10 not-prose">
                             <GeracaoAnimacaoOverlay
                               open={true}
