@@ -42,7 +42,7 @@ interface UserCotaStats {
   ultimoUso?: string | null;
 }
 
-type TabType = 'esgotadas' | 'ranking' | 'por_funcao' | 'bloqueados';
+type TabType = 'todos' | 'esgotadas' | 'por_funcao' | 'bloqueados';
 type FilterUserType = 'todos' | 'gratuitos' | 'assinantes';
 
 const USERS_CACHE_KEY = 'admin_usuarios_list_v2';
@@ -69,8 +69,8 @@ export default function AdminCotasAnalise() {
     memoryCotasTimestamp ? new Date(memoryCotasTimestamp) : null
   );
 
-  // Filtros
-  const [tab, setTab] = useState<TabType>('esgotadas');
+  // Filtros: "todos" é a aba padrão solicitada pelo usuário
+  const [tab, setTab] = useState<TabType>('todos');
   const [filtroUser, setFiltroUser] = useState<FilterUserType>('todos');
   const [search, setSearch] = useState('');
   const [selectedFeature, setSelectedFeature] = useState<string>('todas');
@@ -84,71 +84,82 @@ export default function AdminCotasAnalise() {
     }
 
     try {
-      // 1. Carregar configuração de limites de cotas (garante fallback seguro aos padrões)
+      // 1. Carregar configuração de limites de cotas
       const loadedLimits = await loadLimits(true);
       const activeMonthlyLimits = loadedLimits.filter(
         (l) => l.enabled && l.period === 'monthly' && l.limit_value > 0
       );
       setLimits(activeMonthlyLimits);
 
-      // 2. Carregar perfis de usuários: tenta IDB, edge function admin-list-users e fallback para profiles
-      let allProfiles: UserProfile[] = [];
+      // 2. Coletar e mesclar usuários de todas as fontes disponíveis
+      const usersMap = new Map<string, UserProfile>();
 
+      // A) Carrega cache IDB (admin_usuarios_list_v2)
       try {
         const cachedUsers = await idbGet<any[]>(USERS_CACHE_KEY);
-        if (cachedUsers && Array.isArray(cachedUsers) && cachedUsers.length > 0) {
-          allProfiles = cachedUsers.map((u) => ({
-            id: u.id,
-            email: u.email || null,
-            display_name: u.display_name || null,
-            is_premium: !!u.is_premium,
-            created_at: u.created_at || new Date().toISOString(),
-          }));
+        if (cachedUsers && Array.isArray(cachedUsers)) {
+          cachedUsers.forEach((u) => {
+            if (u && u.id) {
+              usersMap.set(u.id, {
+                id: u.id,
+                email: u.email || null,
+                display_name: u.display_name || null,
+                is_premium: !!u.is_premium,
+                created_at: u.created_at || new Date().toISOString(),
+              });
+            }
+          });
         }
       } catch (e) {
-        console.warn('Aviso ao carregar cache de usuários:', e);
+        console.warn('Aviso ao carregar cache de usuários IDB:', e);
       }
 
-      // Sincroniza via Edge Function com Auth
+      // B) Carrega tabela profiles
+      try {
+        const { data: usersData } = await supabase
+          .from('profiles' as any)
+          .select('*')
+          .limit(2000);
+        if (usersData && Array.isArray(usersData)) {
+          usersData.forEach((p: any) => {
+            if (p && p.id) {
+              const prev = usersMap.get(p.id);
+              usersMap.set(p.id, {
+                id: p.id,
+                email: p.email || prev?.email || null,
+                display_name: p.display_name || p.nome || prev?.display_name || null,
+                is_premium: typeof p.is_premium === 'boolean' ? p.is_premium : !!prev?.is_premium,
+                created_at: p.created_at || prev?.created_at || new Date().toISOString(),
+              });
+            }
+          });
+        }
+      } catch (pErr) {
+        console.warn('Aviso ao ler profiles:', pErr);
+      }
+
+      // C) Sincroniza via Edge Function com Auth
       try {
         const { data: authUsers, error: authErr } = await supabase.functions.invoke('admin-list-users', {
           body: {},
         });
         if (!authErr && Array.isArray(authUsers) && authUsers.length > 0) {
-          allProfiles = authUsers.map((u: any) => ({
-            id: u.id,
-            email: u.email || null,
-            display_name: u.profile_display_name || u.user_metadata?.full_name || u.user_metadata?.name || null,
-            is_premium: !!u.is_premium,
-            created_at: u.created_at || new Date().toISOString(),
-          }));
+          authUsers.forEach((u: any) => {
+            if (u && u.id) {
+              const prev = usersMap.get(u.id);
+              usersMap.set(u.id, {
+                id: u.id,
+                email: u.email || prev?.email || null,
+                display_name: u.profile_display_name || u.user_metadata?.full_name || u.user_metadata?.name || prev?.display_name || null,
+                is_premium: typeof u.is_premium === 'boolean' ? u.is_premium : !!prev?.is_premium,
+                created_at: u.created_at || prev?.created_at || new Date().toISOString(),
+              });
+            }
+          });
         }
       } catch (errAuth) {
-        console.warn('Aviso: admin-list-users em segundo plano:', errAuth);
+        console.warn('Aviso: admin-list-users:', errAuth);
       }
-
-      // Fallback para profiles caso a edge function não retorne
-      if (allProfiles.length === 0) {
-        try {
-          const { data: usersData } = await supabase
-            .from('profiles' as any)
-            .select('*')
-            .limit(2000);
-          if (usersData && usersData.length > 0) {
-            allProfiles = (usersData as any[]).map((p) => ({
-              id: p.id,
-              email: p.email || null,
-              display_name: p.display_name || p.nome || null,
-              is_premium: !!p.is_premium,
-              created_at: p.created_at || new Date().toISOString(),
-            }));
-          }
-        } catch (pErr) {
-          console.warn('Aviso ao ler profiles:', pErr);
-        }
-      }
-
-      setProfiles(allProfiles);
 
       // 3. Buscar usos de features dos últimos 40 dias
       const dataCorte = new Date();
@@ -182,11 +193,32 @@ export default function AdminCotasAnalise() {
           const uid = ev.user_id;
           if (uid) {
             eventsByUser.set(uid, (eventsByUser.get(uid) || 0) + 1);
+            // Enriquecer e-mail faltante
+            const u = usersMap.get(uid);
+            if (u && !u.email && ev.email) {
+              u.email = ev.email;
+            }
           }
         });
       } catch (evErr) {
         console.warn('Aviso app_events:', evErr);
       }
+
+      // D) Agrega user_ids de feature_usage se algum não estiver em usersMap
+      usagesData.forEach((u: any) => {
+        if (u.user_id && !usersMap.has(u.user_id)) {
+          usersMap.set(u.user_id, {
+            id: u.user_id,
+            email: null,
+            display_name: 'Usuário Ativo',
+            is_premium: false,
+            created_at: u.used_at || new Date().toISOString(),
+          });
+        }
+      });
+
+      const allProfiles = Array.from(usersMap.values());
+      setProfiles(allProfiles);
 
       // Mapear usos por usuário
       const usagesByUser = new Map<string, any[]>();
@@ -276,7 +308,7 @@ export default function AdminCotasAnalise() {
       setUltimoSync(new Date(nowTs));
 
       if (!isBackground) {
-        toast.success(`Cotas sincronizadas (${statsList.length} usuários)!`);
+        toast.success(`Cotas sincronizadas (${statsList.length} usuários carregados)`);
       }
     } catch (err: any) {
       console.error('Erro ao carregar dados de cotas:', err);
@@ -369,7 +401,7 @@ export default function AdminCotasAnalise() {
       if (filtroUser === 'gratuitos' && s.user.is_premium) return false;
       if (filtroUser === 'assinantes' && !s.user.is_premium) return false;
 
-      // Filtro por Tab
+      // Filtro por Tab: 'todos' mostra todos os cadastrados!
       if (tab === 'esgotadas' && !s.temCotaEsgotada) return false;
       if (tab === 'bloqueados' && s.bloqueioEventosCount === 0) return false;
       if (tab === 'por_funcao' && selectedFeature !== 'todas') {
@@ -508,11 +540,24 @@ export default function AdminCotasAnalise() {
             </div>
           </div>
 
-          {/* Barra de Filtros & Menu de Alternância */}
+          {/* Barra de Filtros & Menu de Alternância (Menu Solicitado: Todos, aí os que já esgotaram) */}
           <div className="flex flex-col gap-3 bg-zinc-900/70 border border-white/10 rounded-2xl p-3 sm:p-4 shadow-sm">
             
             {/* Tabs Principais */}
             <div className="flex flex-wrap items-center gap-2 pb-2 border-b border-white/5">
+              <button
+                onClick={() => setTab('todos')}
+                className={cn(
+                  "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer",
+                  tab === 'todos'
+                    ? "bg-primary text-white shadow-lg shadow-primary/30"
+                    : "bg-white/5 text-muted-foreground hover:text-white hover:bg-white/10"
+                )}
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>Todos ({usageStats.length})</span>
+              </button>
+
               <button
                 onClick={() => setTab('esgotadas')}
                 className={cn(
@@ -524,19 +569,6 @@ export default function AdminCotasAnalise() {
               >
                 <Flame className="w-3.5 h-3.5" />
                 <span>Esgotaram Cotas ({usageStats.filter((s) => s.temCotaEsgotada).length})</span>
-              </button>
-
-              <button
-                onClick={() => setTab('ranking')}
-                className={cn(
-                  "px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer",
-                  tab === 'ranking'
-                    ? "bg-primary text-white shadow-lg shadow-primary/30"
-                    : "bg-white/5 text-muted-foreground hover:text-white hover:bg-white/10"
-                )}
-              >
-                <ArrowUpDown className="w-3.5 h-3.5" />
-                <span>Ranking Geral ({usageStats.length})</span>
               </button>
 
               <button
@@ -625,7 +657,7 @@ export default function AdminCotasAnalise() {
                 <select
                   value={ordem}
                   onChange={(e: any) => setOrdem(e.target.value)}
-                  className="bg-black/50 border border-white/15 rounded-xl px-2.5 py-1.5 text-[11px] text-foreground font-medium focus:outline-none"
+                  className="bg-black/50 border border-white/15 rounded-xl px-2.5 py-1.5 text-[11px] text-foreground font-medium focus:outline-none cursor-pointer"
                 >
                   <option value="maior_uso">Maior Consumo</option>
                   <option value="mais_recente">Mais Recente</option>
@@ -655,16 +687,29 @@ export default function AdminCotasAnalise() {
           ) : (
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-                <span>Mostrando <strong>{filteredUsers.length}</strong> usuários</span>
+                <span>
+                  Mostrando <strong>{filteredUsers.length}</strong> de <strong>{usageStats.length}</strong> usuários cadastrados
+                </span>
                 <span>Ciclo: 30 dias contados da criação</span>
               </div>
 
               <div className="grid grid-cols-1 gap-3">
                 {filteredUsers.map((stat, idx) => {
                   const nome = stat.user.nome_completo || stat.user.display_name || 'Usuário';
-                  const email = stat.user.email || 'Sem e-mail';
+                  const email = stat.user.email || 'Sem e-mail cadastrado';
                   const dataCadFormat = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }).format(new Date(stat.user.created_at));
                   const dataRenovFormat = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(stat.dataFimCiclo);
+
+                  // Descobre a função mais consumida por este usuário específico
+                  let topUserFunc = '-';
+                  let topUserFuncCount = 0;
+                  Object.entries(stat.funcoesUsadas).forEach(([k, v]) => {
+                    if (v > topUserFuncCount) {
+                      topUserFuncCount = v;
+                      const l = limits.find((lim) => lim.feature_key === k);
+                      topUserFunc = l ? l.label : k;
+                    }
+                  });
 
                   return (
                     <div
@@ -719,20 +764,14 @@ export default function AdminCotasAnalise() {
                         </button>
                       </div>
 
-                      {/* TAGS DE STATUS DE ESGOTAMENTO (Solicitado pelo usuário) */}
+                      {/* TODAS AS TAGS DISPONÍVEIS DE STATUS E CONSUMO (Solicitado pelo usuário) */}
                       <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                        {/* Tag Principal de Status da Cota */}
                         {stat.temCotaEsgotada ? (
-                          <>
-                            {stat.funcoesEsgotadas.map((fe) => (
-                              <span
-                                key={fe.feature_key}
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-950/30"
-                              >
-                                <Flame className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
-                                <span>{fe.label}: {fe.used}/{fe.limit} (ESGOTADA)</span>
-                              </span>
-                            ))}
-                          </>
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-950/30">
+                            <Flame className="w-3.5 h-3.5 text-rose-400 animate-pulse" />
+                            <span>{stat.funcoesEsgotadas.length} COTA(S) ESGOTADA(S)</span>
+                          </span>
                         ) : stat.totalUsos > 0 ? (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
                             <Gauge className="w-3.5 h-3.5 text-amber-400" />
@@ -745,12 +784,38 @@ export default function AdminCotasAnalise() {
                           </span>
                         )}
 
+                        {/* Tag da Função Mais Usada por Este Usuário */}
+                        {topUserFuncCount > 0 && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-primary/15 text-primary border border-primary/25">
+                            <Sparkles className="w-3 h-3 text-primary" />
+                            <span>Mais usada: {topUserFunc} ({topUserFuncCount}x)</span>
+                          </span>
+                        )}
+
+                        {/* Tags Individuais de Cada Função Esgotada */}
+                        {stat.funcoesEsgotadas.map((fe) => (
+                          <span
+                            key={fe.feature_key}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-950/30"
+                          >
+                            <Flame className="w-3 h-3 text-rose-400 animate-pulse" />
+                            <span>{fe.label}: {fe.used}/{fe.limit} (ESGOTADA)</span>
+                          </span>
+                        ))}
+
+                        {/* Tag de Paywall Exibido */}
                         {stat.bloqueioEventosCount > 0 && (
                           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold bg-purple-500/15 text-purple-300 border border-purple-500/25">
                             <ShieldAlert className="w-3 h-3 text-purple-400" />
                             <span>{stat.bloqueioEventosCount}x paywall visto</span>
                           </span>
                         )}
+
+                        {/* Tag de Dias Restantes */}
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-medium bg-white/5 text-zinc-400 border border-white/5">
+                          <Clock className="w-3 h-3 text-zinc-400" />
+                          <span>Renova em {stat.diasRestantes} dias</span>
+                        </span>
                       </div>
 
                       {/* Informações do Ciclo de 30 Dias */}
@@ -783,7 +848,6 @@ export default function AdminCotasAnalise() {
                           {limits.map((l) => {
                             const used = stat.funcoesUsadas[l.feature_key] || 0;
                             const isMax = used >= l.limit_value;
-                            if (used === 0 && tab === 'esgotadas') return null;
 
                             return (
                               <div
