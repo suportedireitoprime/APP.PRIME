@@ -92,6 +92,22 @@ function normalizarMarkdownWord(raw?: string | null): string {
   md = md.replace(/<!--[\s\S]*?-->/g, "");
   md = md.replace(/\[audio:\s*[^\s\]]+\s*\]/gi, "");
 
+  // 0.1 Normaliza callouts de Curiosidade e Exemplo Prático para não vazar títulos em inglês nem repetir cabeçalhos
+  md = md.replace(
+    />\s*\[!(?:WARNING|IMPORTANT|TIP|NOTE)\]\s*(?:\*\*)?(?:Atenção\s*[—\-–]?\s*Curiosidade|Curiosidade)(?:\*\*)?/gi,
+    "> [!CURIOSIDADE]"
+  );
+  md = md.replace(/(>\s*\[!CURIOSIDADE\]\s*\r?\n>\s*(?:\*|_)?)\s*Curiosidade:\s*/gi, "$1");
+  md = md.replace(
+    />\s*\[!(?:TIP|NOTE|WARNING|IMPORTANT)\]\s*(?:\*\*)?Exemplo\s*pr[aá]tico(?:\*\*)?/gi,
+    "> [!EXEMPLO]"
+  );
+  md = md.replace(/(>\s*\[!EXEMPLO\]\s*\r?\n>\s*(?:\*|_)?)\s*Exemplo(?:\s*pr[aá]tico)?:\s*/gi, "$1");
+
+  // 0.2 Remove negrito artificial que envolve o tópico/bullet inteiro (já que o marcador já identifica o item)
+  md = md.replace(/^(\s*[-*]\s*(?:[✓⚠]\s*)?)\*\*(.*?)\*\*\s*$/gm, "$1$2");
+  md = md.replace(/^(\s*\d{1,2}[.)]\s*)\*\*(.*?)\*\*\s*$/gm, "$1$2");
+
   // 1. Converte headers legacy de seções para ##
   md = md.replace(
     /^###\s*(?:[🎯💡📋📌]\s*)?(Em linguagem simples|Para entender melhor|De olho na prova|Ficha do tema|Ficha do crime|Ficha do conceito|Para guardar|Antes de começar|Como usar este material|Sumário)/gim,
@@ -229,36 +245,49 @@ const markdownComponents = {
     const text = extractText(children);
 
     if (text.includes("⚠")) {
+      const cleanChildren = (ch: any): any => {
+        if (typeof ch === "string") return ch.replace(/^\s*⚠\s*/, "");
+        if (Array.isArray(ch)) return ch.map(cleanChildren);
+        if (ch?.props?.children) return { ...ch, props: { ...ch.props, children: cleanChildren(ch.props.children) } };
+        return ch;
+      };
       return (
-        <li className="my-2.5 pl-0 leading-relaxed text-foreground/95 flex items-start gap-2.5 list-none">
+        <li className="my-2.5 pl-0 leading-relaxed text-foreground/95 flex items-start gap-2.5 list-none font-normal">
           <span
             className="shrink-0 mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/15 text-amber-500 dark:text-amber-400 text-xs font-bold"
             aria-hidden="true"
           >
             ⚠
           </span>
-          <div className="flex-1 text-[15px] sm:text-[16px] leading-relaxed">{children}</div>
+          <div className="flex-1 text-[15px] sm:text-[16px] leading-relaxed font-normal text-foreground/90">{cleanChildren(children)}</div>
         </li>
       );
     }
 
     if (text.includes("✓")) {
+      const cleanChildren = (ch: any): any => {
+        if (typeof ch === "string") return ch.replace(/^\s*✓\s*/, "");
+        if (Array.isArray(ch)) return ch.map(cleanChildren);
+        if (ch?.props?.children) return { ...ch, props: { ...ch.props, children: cleanChildren(ch.props.children) } };
+        return ch;
+      };
       return (
-        <li className="my-2 pl-0 leading-relaxed text-foreground/95 flex items-start gap-2.5 list-none">
+        <li className="my-2 pl-0 leading-relaxed text-foreground/95 flex items-start gap-2.5 list-none font-normal">
           <span
             className="shrink-0 mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 text-xs font-bold"
             aria-hidden="true"
           >
             ✓
           </span>
-          <div className="flex-1 text-[15px] sm:text-[16px] leading-relaxed">{children}</div>
+          <div className="flex-1 text-[15px] sm:text-[16px] leading-relaxed font-normal text-foreground/90">{cleanChildren(children)}</div>
         </li>
       );
     }
 
     return (
-      <li className="my-1.5 pl-1 leading-relaxed text-foreground/90 text-[15px] sm:text-[16px] list-disc list-inside" {...props}>
-        {children}
+      <li className="my-2 pl-0 leading-relaxed text-foreground/90 text-[15px] sm:text-[16px] flex items-start gap-2.5 list-none font-normal" {...props}>
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-500/80 dark:bg-amber-400 mt-2.5 shrink-0" aria-hidden="true" />
+        <div className="flex-1 font-normal text-foreground/90 leading-relaxed">{children}</div>
       </li>
     );
   },
@@ -283,13 +312,33 @@ const markdownComponents = {
     const text = extractText(children);
 
     // Callout de Exemplo Prático (Word styling: fundo quente, borda âmbar espessa na esquerda e itálico)
-    if (/exemplo\s*pr[aá]tico/i.test(text)) {
+    const isExemplo =
+      /\[!EXEMPLO\]/i.test(text) ||
+      /exemplo\s*pr[aá]tico/i.test(text);
+
+    if (isExemplo) {
       const cleanChildren = (ch: any): any => {
         if (typeof ch === "string") {
-          return ch.replace(/^\s*\[!(?:TIP|NOTE|WARNING|IMPORTANT)\]\s*(?:\*\*)?Exemplo\s*pr[aá]tico(?:\*\*)?\s*/i, "");
+          return ch
+            .replace(/^\s*\[!(?:EXEMPLO|TIP|NOTE|WARNING|IMPORTANT)\]\s*/gi, "")
+            .replace(/^\s*Exemplo\s*pr[aá]tico\s*:?\s*/gi, "")
+            .trimStart();
         }
-        if (Array.isArray(ch)) return ch.map(cleanChildren);
-        if (ch?.props?.children) return { ...ch, props: { ...ch.props, children: cleanChildren(ch.props.children) } };
+        if (Array.isArray(ch)) {
+          return ch
+            .map(cleanChildren)
+            .filter((item) => item !== null && item !== undefined && item !== "");
+        }
+        if (ch?.type === "strong" || ch?.props?.node?.tagName === "strong") {
+          const inner = extractText(ch).trim();
+          if (/^(?:\[!(?:TIP|NOTE|WARNING|IMPORTANT)\]\s*)?Exemplo\s*pr[aá]tico$/i.test(inner)) {
+            return null;
+          }
+        }
+        if (ch?.props?.children) {
+          const cleaned = cleanChildren(ch.props.children);
+          return { ...ch, props: { ...ch.props, children: cleaned } };
+        }
         return ch;
       };
       return (
@@ -306,13 +355,35 @@ const markdownComponents = {
     }
 
     // Callout de Atenção / Curiosidade
-    if (/aten[cç][aã]o\s*[—\-–]?\s*curiosidade/i.test(text) || /curiosidade:/i.test(text)) {
+    const isCuriosidade =
+      /\[!CURIOSIDADE\]/i.test(text) ||
+      (/aten[cç][aã]o\s*[—\-–]?\s*curiosidade/i.test(text) && !/exemplo\s*pr[aá]tico/i.test(text)) ||
+      (/^\s*(?:>|\s)*\[!(?:WARNING|IMPORTANT)\]\s*(?:\*\*)?Atenção/i.test(text));
+
+    if (isCuriosidade) {
       const cleanChildren = (ch: any): any => {
         if (typeof ch === "string") {
-          return ch.replace(/^\s*\[!(?:WARNING|IMPORTANT|TIP|NOTE)\]\s*(?:\*\*)?Atenção\s*[—\-–]?\s*Curiosidade(?:\*\*)?\s*/i, "");
+          return ch
+            .replace(/^\s*\[!(?:CURIOSIDADE|WARNING|IMPORTANT|TIP|NOTE)\]\s*/gi, "")
+            .replace(/^\s*Atenção\s*[—\-–]?\s*Curiosidade\s*:?\s*/gi, "")
+            .replace(/^\s*Curiosidade:\s*/gi, "")
+            .trimStart();
         }
-        if (Array.isArray(ch)) return ch.map(cleanChildren);
-        if (ch?.props?.children) return { ...ch, props: { ...ch.props, children: cleanChildren(ch.props.children) } };
+        if (Array.isArray(ch)) {
+          return ch
+            .map(cleanChildren)
+            .filter((item) => item !== null && item !== undefined && item !== "");
+        }
+        if (ch?.type === "strong" || ch?.props?.node?.tagName === "strong") {
+          const inner = extractText(ch).trim();
+          if (/^(?:\[!(?:WARNING|IMPORTANT|TIP|NOTE)\]\s*)?(?:Atenção\s*[—\-–]?\s*Curiosidade|Curiosidade)$/i.test(inner)) {
+            return null;
+          }
+        }
+        if (ch?.props?.children) {
+          const cleaned = cleanChildren(ch.props.children);
+          return { ...ch, props: { ...ch.props, children: cleaned } };
+        }
         return ch;
       };
       return (
@@ -340,8 +411,18 @@ const markdownComponents = {
       }[type] || { label: "Nota", icon: Info, bg: "bg-sky-500/10", border: "border-sky-500/40", text: "text-sky-400" };
       const Icon = alertConfig.icon;
       const cleanChildren = (ch: any): any => {
-        if (typeof ch === "string") return ch.replace(/^\s*\[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\s*/i, "");
-        if (Array.isArray(ch)) return ch.map(cleanChildren);
+        if (typeof ch === "string") return ch.replace(/^\s*\[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\s*/i, "").trimStart();
+        if (Array.isArray(ch)) {
+          return ch
+            .map(cleanChildren)
+            .filter((item) => item !== null && item !== undefined && item !== "");
+        }
+        if (ch?.type === "strong" || ch?.props?.node?.tagName === "strong") {
+          const inner = extractText(ch).trim().replace(/:$/, "");
+          if (/^(?:Importante|Atenção|Cuidado|Dica de Fixação|Dica|Nota Explicativa|Nota)$/i.test(inner)) {
+            return null;
+          }
+        }
         if (ch?.props?.children) return { ...ch, props: { ...ch.props, children: cleanChildren(ch.props.children) } };
         return ch;
       };

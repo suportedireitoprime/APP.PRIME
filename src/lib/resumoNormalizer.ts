@@ -146,6 +146,22 @@ export function normalizarResumo(rawText: string | null | undefined): string {
   text = text.replace(/<!--[\s\S]*?-->/g, '');
   text = text.replace(/\[audio:\s*[^\s\]]+\s*\]/gi, '');
 
+  // 0.1 Normaliza callouts de Curiosidade e Exemplo Prático para não vazar títulos em inglês nem repetir cabeçalhos
+  text = text.replace(
+    />\s*\[!(?:WARNING|IMPORTANT|TIP|NOTE)\]\s*(?:\*\*)?(?:Atenção\s*[—\-–]?\s*Curiosidade|Curiosidade)(?:\*\*)?/gi,
+    '> [!CURIOSIDADE]'
+  );
+  text = text.replace(/(>\s*\[!CURIOSIDADE\]\s*\r?\n>\s*(?:\*|_)?)\s*Curiosidade:\s*/gi, '$1');
+  text = text.replace(
+    />\s*\[!(?:TIP|NOTE|WARNING|IMPORTANT)\]\s*(?:\*\*)?Exemplo\s*pr[aá]tico(?:\*\*)?/gi,
+    '> [!EXEMPLO]'
+  );
+  text = text.replace(/(>\s*\[!EXEMPLO\]\s*\r?\n>\s*(?:\*|_)?)\s*Exemplo(?:\s*pr[aá]tico)?:\s*/gi, '$1');
+
+  // 0.2 Remove negrito que envolve tópicos inteiros (o marcador já demarca o item)
+  text = text.replace(/^(\s*[-*]\s*(?:[✓⚠]\s*)?)\*\*(.*?)\*\*\s*$/gm, '$1$2');
+  text = text.replace(/^(\s*\d{1,2}[.)]\s*)\*\*(.*?)\*\*\s*$/gm, '$1$2');
+
   // 1. Desfaz escape literal de quebras de linha
   text = text.replace(/\\n/g, '\n');
 
