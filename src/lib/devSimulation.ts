@@ -17,7 +17,7 @@ export function isDevSimulatorEligible(email?: string | null): boolean {
 /**
  * Obtém o modo de simulação atual.
  * - 'premium': Assinante Premium (Acesso total irrestrito)
- * - 'free': Não Assinante (Plano gratuito com degustação de 2 itens e travas ativas)
+ * - 'free': Não Assinante (Plano gratuito com cota de 10 itens por mês e travas ativas)
  */
 export function getDevSimulationMode(): DevSimulationMode {
   if (typeof localStorage === 'undefined') return 'premium';
@@ -137,7 +137,7 @@ export const DEV_SIMULATION_INFO = {
     name: 'Não Assinante',
     badge: 'NÃO ASSINANTE',
     badgeClass: 'text-rose-400 bg-rose-500/10 border-rose-500/30',
-    description: 'Acesso limitado: 2 degustações por lei/tema e paywalls ativos.',
+    description: "Acesso limitado por cota: 10 acessos por mês e travas ativas.",
     tag: 'Modo Gratuito',
   },
 } as const;

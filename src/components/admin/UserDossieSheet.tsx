@@ -1,15 +1,19 @@
 // @ts-nocheck
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Loader2, Clock, Activity, Flame, Star, Calendar, Crown, Phone, Mail,
-  GraduationCap, LayoutGrid, MessageCircle, MapPin, Trash2, X, Ban, ShieldAlert, User, ArrowDown
+  GraduationCap, LayoutGrid, MessageCircle, MapPin, Trash2, X, Ban, ShieldAlert, User, ArrowDown,
+  Target, AlertTriangle, CheckCircle2
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import { rotaParaFuncao, FEATURE_LABELS, formatarDuracao } from '@/lib/rotaFuncoes';
 import { PushStatusUsuario } from '@/components/admin/PushStatusUsuario';
+import { inicioCiclo, diasParaRenovar, contarUsos } from '@/lib/cotaCiclo';
+import { loadLimits, type FeatureLimitConfig } from '@/hooks/useFeatureLimit';
 
 interface Props {
   userId: string | null;
@@ -18,6 +22,19 @@ interface Props {
   provider?: string | null;
   avatarUrl?: string | null;
   onClose: () => void;
+}
+
+export interface UserCotaItem {
+  key: string;
+  label: string;
+  description: string | null;
+  category: string;
+  period: 'daily' | 'monthly' | 'lifetime';
+  limit: number;
+  used: number;
+  remaining: number;
+  percent: number;
+  status: 'terminou' | 'em_uso' | 'disponivel' | 'assinantes';
 }
 
 interface FuncaoStat {
@@ -39,6 +56,15 @@ interface Dossie {
   primeiraHoje?: string | null;
   ultimaHoje?: string | null;
   features: { label: string; count: number }[];
+  cotas: UserCotaItem[];
+  cotasResumo: {
+    total: number;
+    terminadas: number;
+    emUso: number;
+    disponiveis: number;
+    assinantes: number;
+    diasParaRenovar: number;
+  };
   eventos: { label: string; count: number }[];
   contadores: { favoritos: number; grifos: number; anotacoes: number };
   assinatura: any;
@@ -65,6 +91,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
   const [confirmar, setConfirmar] = useState<null | 'menu' | 'ban' | 'delete' | 'downgrade'>(null);
   const [executando, setExecutando] = useState(false);
   const [fotoFull, setFotoFull] = useState(false);
+  const [filtroCota, setFiltroCota] = useState<'todas' | 'terminou' | 'em_uso' | 'disponivel'>('todas');
 
   const executarAcao = async (acao: 'ban' | 'delete' | 'downgrade') => {
     if (!userId) return;
@@ -116,7 +143,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
           .eq('user_id', userId).gte('started_at', desde30)
           .order('started_at', { ascending: false }).limit(500),
         supabase.from('feature_usage' as any)
-          .select('feature_key, used_at').eq('user_id', userId).gte('used_at', desde30).limit(2000),
+          .select('feature_key, scope_value, ref_key, used_at').eq('user_id', userId).limit(3000),
         supabase.from('app_events' as any)
           .select('event_name').eq('user_id', userId).gte('created_at', desde30).limit(2000),
         supabase.from('artigos_favoritos' as any).select('id', { count: 'exact', head: true }).eq('user_id', userId),
@@ -133,8 +160,66 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
         supabase.from('horus_user_stats' as any)
           .select('telefone, ultima_atividade_em, dias_streak_estudo')
           .eq('user_id', userId).maybeSingle(),
+        loadLimits(),
       ]);
       if (cancel) return;
+
+      const allLimits = (limitsR as FeatureLimitConfig[]) || [];
+      const usageRows = ((featR.data as any[]) || []);
+      const createdAt = perfilR.data?.created_at;
+      const inicioMes = inicioCiclo(createdAt);
+      const hoje00 = new Date();
+      hoje00.setHours(0, 0, 0, 0);
+
+      const cotas: UserCotaItem[] = allLimits
+        .filter((l) => l.enabled)
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map((l) => {
+          const rowsDoRecurso = usageRows.filter((r) => r.feature_key === l.feature_key);
+          let rowsNoPeriodo = rowsDoRecurso;
+
+          if (l.period === 'monthly') {
+            rowsNoPeriodo = rowsDoRecurso.filter((r) => new Date(r.used_at) >= inicioMes);
+          } else if (l.period === 'daily') {
+            rowsNoPeriodo = rowsDoRecurso.filter((r) => new Date(r.used_at) >= hoje00);
+          }
+
+          const used = contarUsos(rowsNoPeriodo);
+          const limit = l.limit_value;
+          const remaining = Math.max(0, limit - used);
+          const percent = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 100;
+
+          let status: UserCotaItem['status'] = 'disponivel';
+          if (limit === 0) {
+            status = 'assinantes';
+          } else if (used >= limit) {
+            status = 'terminou';
+          } else if (used > 0) {
+            status = 'em_uso';
+          }
+
+          return {
+            key: l.feature_key,
+            label: l.label,
+            description: l.description,
+            category: l.category,
+            period: l.period,
+            limit,
+            used,
+            remaining,
+            percent,
+            status,
+          };
+        });
+
+      const cotasResumo = {
+        total: cotas.length,
+        terminadas: cotas.filter((c) => c.status === 'terminou').length,
+        emUso: cotas.filter((c) => c.status === 'em_uso').length,
+        disponiveis: cotas.filter((c) => c.status === 'disponivel').length,
+        assinantes: cotas.filter((c) => c.status === 'assinantes').length,
+        diasParaRenovar: diasParaRenovar(createdAt),
+      };
 
       const logs = ((logR.data as any[]) || []);
       const byFunc = new Map<string, FuncaoStat>();
@@ -188,6 +273,8 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
         ultimaHoje,
         features: countBy((featR.data as any[]) || [], 'feature_key')
           .map(([k, count]) => ({ label: FEATURE_LABELS[k] || k, count })),
+        cotas,
+        cotasResumo,
         eventos: countBy((evR.data as any[]) || [], 'event_name')
           .map(([k, count]) => ({ label: k, count })).slice(0, 12),
         contadores: { favoritos: favR.count || 0, grifos: grifR.count || 0, anotacoes: anotR.count || 0 },
@@ -384,6 +471,224 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
                 </div>
               )}
             </div>
+
+            {/* SEÇÃO: COTAS DE USO DO USUÁRIO */}
+            {d.cotas && d.cotas.length > 0 && (
+              <div className="rounded-2xl border border-purple-500/30 bg-purple-950/15 p-4 space-y-3.5 shadow-sm">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 font-body text-[14px] font-semibold text-foreground">
+                    <Target className="w-5 h-5 text-purple-400" />
+                    <span>Cotas de Uso</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium">
+                      {d.perfil?.is_premium ? 'Assinante (Ilimitado)' : 'Plano Gratuito'}
+                    </span>
+                  </div>
+                  {d.cotasResumo?.diasParaRenovar != null && (
+                    <span className="text-[11px] text-muted-foreground bg-background/60 border border-border/50 px-2.5 py-0.5 rounded-full">
+                      Renova em {d.cotasResumo.diasParaRenovar}d
+                    </span>
+                  )}
+                </div>
+
+                {/* 4 Cards de Resumo */}
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setFiltroCota(filtroCota === 'terminou' ? 'todas' : 'terminou')}
+                    className={cn(
+                      'p-2.5 rounded-xl border text-left transition-all',
+                      d.cotasResumo.terminadas > 0
+                        ? 'bg-rose-500/15 border-rose-500/40 text-rose-300'
+                        : 'bg-secondary/40 border-border/40 text-muted-foreground',
+                      filtroCota === 'terminou' && 'ring-2 ring-rose-400'
+                    )}
+                  >
+                    <div className="text-[10px] font-semibold uppercase tracking-wider opacity-80">Terminadas</div>
+                    <div className="text-lg font-bold font-display leading-tight">{d.cotasResumo.terminadas}</div>
+                    <div className="text-[9.5px] opacity-70">100% atingidas</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFiltroCota(filtroCota === 'em_uso' ? 'todas' : 'em_uso')}
+                    className={cn(
+                      'p-2.5 rounded-xl border text-left transition-all',
+                      d.cotasResumo.emUso > 0
+                        ? 'bg-amber-500/15 border-amber-500/40 text-amber-300'
+                        : 'bg-secondary/40 border-border/40 text-muted-foreground',
+                      filtroCota === 'em_uso' && 'ring-2 ring-amber-400'
+                    )}
+                  >
+                    <div className="text-[10px] font-semibold uppercase tracking-wider opacity-80">Em Uso</div>
+                    <div className="text-lg font-bold font-display leading-tight">{d.cotasResumo.emUso}</div>
+                    <div className="text-[9.5px] opacity-70">Parcialmente usadas</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFiltroCota(filtroCota === 'disponivel' ? 'todas' : 'disponivel')}
+                    className={cn(
+                      'p-2.5 rounded-xl border text-left transition-all',
+                      'bg-emerald-500/10 border-emerald-500/30 text-emerald-300',
+                      filtroCota === 'disponivel' && 'ring-2 ring-emerald-400'
+                    )}
+                  >
+                    <div className="text-[10px] font-semibold uppercase tracking-wider opacity-80">Disponíveis</div>
+                    <div className="text-lg font-bold font-display leading-tight">{d.cotasResumo.disponiveis}</div>
+                    <div className="text-[9.5px] opacity-70">Ainda intactas</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setFiltroCota('todas')}
+                    className={cn(
+                      'hidden sm:block p-2.5 rounded-xl border text-left transition-all bg-secondary/40 border-border/40 text-muted-foreground',
+                      filtroCota === 'todas' && 'ring-2 ring-primary'
+                    )}
+                  >
+                    <div className="text-[10px] font-semibold uppercase tracking-wider opacity-80">Total</div>
+                    <div className="text-lg font-bold font-display text-foreground leading-tight">{d.cotasResumo.total}</div>
+                    <div className="text-[9.5px] opacity-70">Funções com cota</div>
+                  </button>
+                </div>
+
+                {/* Filtros em Pílulas */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setFiltroCota('todas')}
+                    className={cn(
+                      'px-2.5 py-1 rounded-lg border text-xs font-medium transition-all shrink-0',
+                      filtroCota === 'todas' ? 'bg-primary text-primary-foreground border-primary' : 'bg-background/60 border-border/60 text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    Todas ({d.cotas.length})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFiltroCota('terminou')}
+                    className={cn(
+                      'px-2.5 py-1 rounded-lg border text-xs font-medium transition-all shrink-0 flex items-center gap-1',
+                      filtroCota === 'terminou' ? 'bg-rose-500 text-white border-rose-600' : 'bg-rose-500/10 border-rose-500/30 text-rose-300 hover:bg-rose-500/20'
+                    )}
+                  >
+                    🛑 Terminadas ({d.cotasResumo.terminadas})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFiltroCota('em_uso')}
+                    className={cn(
+                      'px-2.5 py-1 rounded-lg border text-xs font-medium transition-all shrink-0 flex items-center gap-1',
+                      filtroCota === 'em_uso' ? 'bg-amber-500 text-black font-semibold border-amber-600' : 'bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20'
+                    )}
+                  >
+                    ⚠️ Em Uso ({d.cotasResumo.emUso})
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFiltroCota('disponivel')}
+                    className={cn(
+                      'px-2.5 py-1 rounded-lg border text-xs font-medium transition-all shrink-0 flex items-center gap-1',
+                      filtroCota === 'disponivel' ? 'bg-emerald-600 text-white border-emerald-700' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20'
+                    )}
+                  >
+                    🟢 Disponíveis ({d.cotasResumo.disponiveis})
+                  </button>
+                </div>
+
+                {/* Lista de Cotas Filtrada */}
+                <div className="space-y-2">
+                  {d.cotas
+                    .filter((c) => {
+                      if (filtroCota === 'terminou') return c.status === 'terminou';
+                      if (filtroCota === 'em_uso') return c.status === 'em_uso';
+                      if (filtroCota === 'disponivel') return c.status === 'disponivel';
+                      return true;
+                    })
+                    .map((c) => {
+                      const isTerminou = c.status === 'terminou';
+                      const isEmUso = c.status === 'em_uso';
+                      const isAssinantes = c.status === 'assinantes';
+
+                      return (
+                        <div
+                          key={c.key}
+                          className={cn(
+                            'rounded-xl border p-3 transition-all',
+                            isTerminou
+                              ? 'bg-rose-500/10 border-rose-500/40 shadow-sm shadow-rose-950/30'
+                              : isEmUso
+                              ? 'bg-amber-500/5 border-amber-500/30'
+                              : isAssinantes
+                              ? 'bg-purple-500/5 border-purple-500/20 opacity-80'
+                              : 'bg-background/50 border-border/50'
+                          )}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="font-body text-sm font-semibold text-foreground">
+                                  {c.label}
+                                </span>
+                                <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-secondary text-muted-foreground border border-border/40">
+                                  {c.period === 'monthly' ? 'Mensal' : c.period === 'daily' ? 'Diário' : 'Vitalício'}
+                                </span>
+                              </div>
+                              {c.description && (
+                                <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
+                                  {c.description}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="text-right shrink-0">
+                              {isAssinantes ? (
+                                <span className="text-xs font-bold text-purple-400 bg-purple-500/10 border border-purple-500/30 px-2 py-0.5 rounded-full">
+                                  Só Assinantes
+                                </span>
+                              ) : isTerminou ? (
+                                <span className="text-xs font-bold text-rose-400 bg-rose-500/20 border border-rose-500/40 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                                  🛑 Terminou ({c.used}/{c.limit})
+                                </span>
+                              ) : isEmUso ? (
+                                <span className="text-xs font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full">
+                                  {c.used}/{c.limit} usados ({c.remaining} restantes)
+                                </span>
+                              ) : (
+                                <span className="text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                                  0/{c.limit} (Intacta)
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {!isAssinantes && c.limit > 0 && (
+                            <div className="mt-2.5 space-y-1">
+                              <div className="h-1.5 w-full rounded-full bg-background/80 overflow-hidden border border-border/30">
+                                <div
+                                  className={cn(
+                                    'h-full transition-all duration-300 rounded-full',
+                                    isTerminou
+                                      ? 'bg-rose-500'
+                                      : isEmUso
+                                      ? 'bg-amber-400'
+                                      : 'bg-emerald-500/40'
+                                  )}
+                                  style={{ width: `${c.percent}%` }}
+                                />
+                              </div>
+                              <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
+                                <span>{c.percent}% consumido</span>
+                                <span>{isTerminou ? 'Limite atingido' : `${c.remaining} disponível(is)`}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
 
             <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4 space-y-3">
               <div className="flex items-center gap-2 font-body text-[14px] font-medium text-muted-foreground">

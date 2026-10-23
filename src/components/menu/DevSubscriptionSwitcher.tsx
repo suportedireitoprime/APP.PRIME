@@ -60,7 +60,7 @@ export const DevSubscriptionSwitcher: React.FC<DevSubscriptionSwitcherProps> = (
     {
       id: 'free',
       title: 'Não Assinante',
-      description: 'Acesso com degustação de 2 itens e travas ativas.',
+      description: 'Acesso limitado por cota de 10 itens por mês e travas ativas.',
       badge: 'NÃO ASSINANTE',
       icon: LockKeyhole,
       activeBorder: 'border-rose-500/80 shadow-[0_0_15px_rgba(244,63,94,0.25)]',

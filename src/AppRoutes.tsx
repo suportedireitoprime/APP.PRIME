@@ -848,7 +848,7 @@ function DeepLinkBootstrap() {
 
 function GlobalTrialGate() {
   // Conforme diretriz do usuário: quem não for assinante ou tiver os 3 dias encerrados
-  // tem acesso livre a todo o aplicativo, com as travas de degustação (limite de 2 por lei/módulo)
+  // tem acesso ao aplicativo, com travas e cotas gratuitas mensais (ex: 10 por mês)
   // aplicadas pontualmente dentro de cada recurso, sem modal de bloqueio global de tela.
   return null;
 }

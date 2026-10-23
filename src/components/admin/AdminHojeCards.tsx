@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw, Timer } from 'lucide-react';
+import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw, Timer, Target } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -1534,6 +1534,17 @@ export function AdminHojeCards() {
                         {(open === 'online' || open === 'online5m') && r.subtitle && r.subtitle !== 'Desconhecida' && r.subtitle !== 'App aberto' && (
                           <div className="font-body text-[10.5px] text-emerald-400 font-medium truncate mt-0.5">
                             Em {r.subtitle}
+                          </div>
+                        )}
+                        {(open === 'online' || open === 'online5m') && (
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <span
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-purple-500/15 border border-purple-500/30 text-[9.5px] font-semibold text-purple-300 hover:bg-purple-500/25 transition-colors"
+                              title="Clique para ver o dossiê e o status detalhado das cotas"
+                            >
+                              <Target className="w-2.5 h-2.5 text-purple-400" />
+                              Cotas de Uso
+                            </span>
                           </div>
                         )}
                         {r.planTag && (

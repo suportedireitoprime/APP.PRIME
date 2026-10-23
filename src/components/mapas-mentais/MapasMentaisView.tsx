@@ -360,10 +360,10 @@ export default function MapasMentaisView({
     const chave = chaveDe(alvo, temaPai ? `${temaPai} ${valor}` : valor, kind);
     const isAdmin = isAdminEmail(user?.email);
 
-    // Regra de Degustação: Não assinante tem direito a até 2 mapas mentais. A partir do 3º, trava e abre o PremiumGate.
+    // Regra de Cota Mensal: Não assinante tem direito a até 10 mapas mentais por mês. Atingida a cota, abre o PremiumGate.
     if (!isPremium && !isAdmin) {
       const vistos = getMapasAcessadosMes();
-      if (!vistos.includes(chave) && vistos.length >= 2) {
+      if (!vistos.includes(chave) && vistos.length >= 10) {
         setGateOpen(true);
         return;
       }
@@ -428,6 +428,9 @@ export default function MapasMentaisView({
       registrarVisual(registro);
       setProntos((prev) => ({ ...prev, [registro.item_key]: registro }));
       marcarRecente(registro.item_key);
+      if (!isPremium && !isAdmin) {
+        registrarMapaAcessado(registro.item_key);
+      }
       setAberto(registro);
       toast.success('Visual gerado com sucesso!');
     } catch (err: unknown) {

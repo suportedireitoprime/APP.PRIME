@@ -65,9 +65,9 @@ export const DEFAULT_FEATURE_LIMITS: FeatureLimitConfig[] = [
   {
     feature_key: 'mapa_mental',
     label: 'Mapas Mentais',
-    description: '2 mapas mentais por mês no plano gratuito',
+    description: '10 mapas mentais por mês no plano gratuito',
     category: 'estudo',
-    limit_value: 2,
+    limit_value: 10,
     period: 'monthly',
     scope_key: 'mapa',
     enabled: true,
