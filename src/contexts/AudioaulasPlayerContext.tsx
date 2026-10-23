@@ -133,8 +133,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           const { data, error } = await supabase
             .from('audioaulas_acervo')
             .select('id, area, tema, sequencia, titulo, descricao, url_audio')
-            .order('area', { ascending: true })
-            .order('sequencia', { ascending: true })
+            .order('id', { ascending: true })
             .range(from, from + batchSize - 1);
           if (cancelado) return;
           if (error) {
@@ -162,6 +161,13 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
             todasAulas.push(nova);
           }
         }
+
+        // Ordenação alfabética por Área e Sequência realizada em memória (instantânea a 0ms)
+        todasAulas.sort((a, b) => {
+          const comp = (a.area || '').localeCompare(b.area || '', 'pt-BR');
+          if (comp !== 0) return comp;
+          return (a.sequencia ?? 0) - (b.sequencia ?? 0);
+        });
 
         setAulas(todasAulas);
       } catch (err) {

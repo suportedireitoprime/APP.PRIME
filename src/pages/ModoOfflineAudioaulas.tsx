@@ -13,8 +13,7 @@ export default function ModoOfflineAudioaulas() {
       const { data, error } = await supabase
         .from('audioaulas_acervo')
         .select('id, area, tema, titulo, url_audio, sequencia')
-        .order('area', { ascending: true })
-        .order('sequencia', { ascending: true })
+        .order('id', { ascending: true })
         .range(from, from + batchSize - 1);
       if (error) break;
       if (data && data.length > 0) {
@@ -22,6 +21,11 @@ export default function ModoOfflineAudioaulas() {
       }
       if (!data || data.length < batchSize) break;
     }
+    todasAulas.sort((a, b) => {
+      const comp = (a.area || '').localeCompare(b.area || '', 'pt-BR');
+      if (comp !== 0) return comp;
+      return (a.sequencia ?? 0) - (b.sequencia ?? 0);
+    });
     return todasAulas
       .filter((a: any) => a.url_audio)
       .map((a: any) => ({
