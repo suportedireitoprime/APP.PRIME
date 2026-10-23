@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { safeStorageUrl } from "@/lib/cdnImg";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface ProgressoAudioaula {
   id: number;
@@ -27,6 +28,54 @@ const CHAVE_MAPA_PROGRESSO = "audioaula_progresso_map_v1";
 
 let memoriaCache: ProgressoAudioaula | null = null;
 let memoriaMapaCache: Record<number, ProgressoAulaItem> | null = null;
+const timersSync = new Map<number, ReturnType<typeof setTimeout>>();
+
+/** Sincroniza o progresso no Supabase com debouncing para evitar excesso de requisições durante a reprodução */
+function sincronizarSupabase(
+  id: number,
+  tempo: number,
+  duracao: number,
+  pct: number,
+  concluida: boolean,
+  imediato = false,
+) {
+  const existingTimer = timersSync.get(id);
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+    timersSync.delete(id);
+  }
+
+  const executarUpsert = async () => {
+    timersSync.delete(id);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.id) return;
+
+      await supabase.from("videoaulas_progresso").upsert(
+        {
+          user_id: user.id,
+          tabela: "audioaulas_acervo",
+          registro_id: String(id),
+          video_id: String(id),
+          tempo_atual: Math.round(tempo),
+          duracao: Math.round(duracao),
+          percentual: pct,
+          concluida,
+        },
+        { onConflict: "user_id,tabela,registro_id" },
+      );
+    } catch {
+      /* Silenciosamente ignora falhas de conexão/offline */
+    }
+  };
+
+  if (imediato || concluida) {
+    void executarUpsert();
+  } else {
+    const timer = setTimeout(executarUpsert, 3500);
+    timersSync.set(id, timer);
+  }
+}
 
 export function obterMapaProgressoAudioaulas(): Record<number, ProgressoAulaItem> {
   if (memoriaMapaCache) return memoriaMapaCache;
@@ -57,18 +106,22 @@ export function salvarProgressoAudioaula(progresso: ProgressoAudioaula): void {
     const tempo = Math.round(progresso.tempo || 0);
     const pctCalculada = dur > 0 ? Math.min(100, Math.round((tempo / dur) * 100)) : 0;
     const jaConcluida = mapa[progresso.id]?.concluida || pctCalculada >= 85;
+    const pctFinal = jaConcluida ? 100 : pctCalculada;
 
     mapa[progresso.id] = {
       id: progresso.id,
       tempo,
       duracao: dur > 0 ? dur : mapa[progresso.id]?.duracao || 0,
-      pct: jaConcluida ? 100 : pctCalculada,
+      pct: pctFinal,
       concluida: jaConcluida,
       timestamp: Date.now(),
     };
     memoriaMapaCache = mapa;
     localStorage.setItem(CHAVE_MAPA_PROGRESSO, JSON.stringify(mapa));
     window.dispatchEvent(new CustomEvent("audioaula:mapa-progresso-mudou", { detail: mapa }));
+
+    // Sincroniza com o Supabase em segundo plano
+    sincronizarSupabase(progresso.id, tempo, dur, pctFinal, jaConcluida, jaConcluida);
   } catch {
     /* ignore storage quota errors */
   }
@@ -90,6 +143,9 @@ export function marcarAulaConcluida(id: number, duracao = 0): void {
     memoriaMapaCache = mapa;
     localStorage.setItem(CHAVE_MAPA_PROGRESSO, JSON.stringify(mapa));
     window.dispatchEvent(new CustomEvent("audioaula:mapa-progresso-mudou", { detail: mapa }));
+
+    // Sincroniza imediatamente com o Supabase
+    sincronizarSupabase(id, dur, dur, 100, true, true);
   } catch {
     /* ignore */
   }
@@ -101,18 +157,23 @@ export function alternarAulaConcluida(id: number, duracao = 0): boolean {
     const anterior = mapa[id];
     const novoStatus = !anterior?.concluida;
     const dur = Math.round(duracao || anterior?.duracao || 600);
+    const novoTempo = novoStatus ? dur : 0;
+    const novoPct = novoStatus ? 100 : 0;
 
     mapa[id] = {
       id,
-      tempo: novoStatus ? dur : 0,
+      tempo: novoTempo,
       duracao: dur,
-      pct: novoStatus ? 100 : 0,
+      pct: novoPct,
       concluida: novoStatus,
       timestamp: Date.now(),
     };
     memoriaMapaCache = mapa;
     localStorage.setItem(CHAVE_MAPA_PROGRESSO, JSON.stringify(mapa));
     window.dispatchEvent(new CustomEvent("audioaula:mapa-progresso-mudou", { detail: mapa }));
+
+    // Sincroniza imediatamente com o Supabase
+    sincronizarSupabase(id, novoTempo, dur, novoPct, novoStatus, true);
     return novoStatus;
   } catch {
     return false;
@@ -147,6 +208,55 @@ export function limparProgressoAudioaula(): void {
   }
 }
 
+/** Carrega os progressos remotos salvos no Supabase e mescla com o cache local */
+export async function carregarProgressoSupabase(): Promise<Record<number, ProgressoAulaItem>> {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.id) return obterMapaProgressoAudioaulas();
+
+    const { data, error } = await supabase
+      .from("videoaulas_progresso")
+      .select("registro_id, tempo_atual, duracao, percentual, concluida, updated_at")
+      .eq("tabela", "audioaulas_acervo");
+
+    if (error || !data || data.length === 0) {
+      return obterMapaProgressoAudioaulas();
+    }
+
+    const mapaAtual = { ...obterMapaProgressoAudioaulas() };
+    let mudou = false;
+
+    for (const row of data) {
+      const idNum = Number(row.registro_id);
+      if (idNum) {
+        const itemLocal = mapaAtual[idNum];
+        const tsRemoto = row.updated_at ? new Date(row.updated_at).getTime() : Date.now();
+        if (!itemLocal || tsRemoto >= (itemLocal.timestamp || 0) || row.concluida) {
+          mapaAtual[idNum] = {
+            id: idNum,
+            tempo: row.tempo_atual ?? 0,
+            duracao: row.duracao ?? 0,
+            pct: row.percentual ?? 0,
+            concluida: row.concluida ?? false,
+            timestamp: tsRemoto,
+          };
+          mudou = true;
+        }
+      }
+    }
+
+    if (mudou) {
+      memoriaMapaCache = mapaAtual;
+      localStorage.setItem(CHAVE_MAPA_PROGRESSO, JSON.stringify(mapaAtual));
+      window.dispatchEvent(new CustomEvent("audioaula:mapa-progresso-mudou", { detail: mapaAtual }));
+    }
+
+    return mapaAtual;
+  } catch {
+    return obterMapaProgressoAudioaulas();
+  }
+}
+
 /** Hook reativo para acompanhar métricas e progresso de escuta das audioaulas */
 export function useAudioaulasProgresso() {
   const [mapa, setMapa] = useState<Record<number, ProgressoAulaItem>>(() =>
@@ -154,13 +264,25 @@ export function useAudioaulasProgresso() {
   );
 
   useEffect(() => {
+    // Sincroniza do Supabase ao montar o hook
+    void carregarProgressoSupabase();
+
     const handleMudanca = () => {
       setMapa({ ...obterMapaProgressoAudioaulas() });
     };
 
     window.addEventListener("audioaula:mapa-progresso-mudou", handleMudanca);
+
+    // Escuta mudanças de autenticação (ex: login/logout)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") {
+        void carregarProgressoSupabase();
+      }
+    });
+
     return () => {
       window.removeEventListener("audioaula:mapa-progresso-mudou", handleMudanca);
+      subscription.unsubscribe();
     };
   }, []);
 
@@ -169,6 +291,7 @@ export function useAudioaulasProgresso() {
     obterProgresso: (aulaId: number) => mapa[aulaId] || null,
     marcarConcluida: marcarAulaConcluida,
     alternarConcluida: alternarAulaConcluida,
+    recarregarDoServidor: carregarProgressoSupabase,
   };
 }
 

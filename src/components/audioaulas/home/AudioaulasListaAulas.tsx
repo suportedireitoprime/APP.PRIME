@@ -215,6 +215,21 @@ const LinhaAula = React.memo(function LinhaAula({
               </span>
             )}
           </div>
+
+          {/* Barra de progresso da aula */}
+          <div className="w-full h-1 rounded-full bg-white/10 overflow-hidden mt-1.5 relative">
+            <div
+              className={cn(
+                "h-full rounded-full transition-all duration-300",
+                concluida
+                  ? "bg-linear-to-r from-emerald-500 to-teal-400"
+                  : pct > 0
+                  ? "bg-linear-to-r from-primary to-amber-400"
+                  : "bg-transparent",
+              )}
+              style={{ width: `${concluida ? 100 : Math.max(pct > 0 ? 5 : 0, pct)}%` }}
+            />
+          </div>
         </div>
       </motion.button>
 
@@ -1335,6 +1350,21 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   const aulasProcessadas = useMemo(() => {
     let lista = [...aulasDoCapitulo];
 
+    // Filtro por status de escuta
+    if (filtroStatus === "concluidas") {
+      lista = lista.filter((a) => mapaProgresso[a.id]?.concluida);
+    } else if (filtroStatus === "andamento") {
+      lista = lista.filter((a) => {
+        const prog = mapaProgresso[a.id];
+        return !prog?.concluida && (prog?.pct ?? 0) > 0;
+      });
+    } else if (filtroStatus === "pendentes") {
+      lista = lista.filter((a) => {
+        const prog = mapaProgresso[a.id];
+        return !prog?.concluida && (prog?.pct ?? 0) === 0;
+      });
+    }
+
     if (buscaAula.trim()) {
       const termo = buscaAula.toLowerCase().trim();
       lista = lista.filter((a) => {
@@ -1355,7 +1385,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
     }
 
     return lista;
-  }, [aulasDoCapitulo, buscaAula, ordemAulas, favoritos]);
+  }, [aulasDoCapitulo, filtroStatus, mapaProgresso, buscaAula, ordemAulas, favoritos]);
 
   const todasAulasDaArea = useMemo(() => {
     return temasDaArea.flatMap(([, lista]) => lista);
@@ -1727,66 +1757,106 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                     mapaProgresso={mapaProgresso}
                   />
                 ) : modoVisualizacao === "lista" ? (
-                  /* Grid de Capítulos Tradicional */
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  /* Grid de Capítulos Tradicional com Métricas e Barras de Progresso */
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {listaCapitulosAtiva.map(([tema, lista], i) => {
                       const contemAulaTocando = lista.some((a) => a.id === atualId);
                       const { tituloLimpo, faixaArtigos } = decomporTituloCapitulo(tema);
+                      const aulasConcluidas = lista.filter((a) => mapaProgresso[a.id]?.concluida).length;
+                      const totalCapAulas = lista.length;
+                      const pctCapitulo =
+                        totalCapAulas > 0 ? Math.round((aulasConcluidas / totalCapAulas) * 100) : 0;
+
                       return (
                         <motion.button
                           key={tema}
                           whileHover={{ scale: 1.015 }}
                           whileTap={{ scale: 0.985 }}
                           onClick={() => handleSelecionarCapitulo(tema)}
-                          className={`group relative flex items-center justify-between gap-3 p-4 rounded-2xl text-left border transition-all duration-200 ${
+                          className={`group relative flex flex-col justify-between gap-3 p-4 sm:p-4.5 rounded-2xl text-left border transition-all duration-200 ${
                             contemAulaTocando
                               ? "bg-primary/15 border-primary/40 shadow-lg shadow-primary/15"
                               : "bg-white/3 hover:bg-white/6 border-white/10 hover:border-primary/40"
                           }`}
                         >
-                          <div className="flex items-start gap-3.5 min-w-0">
-                            <span
-                              className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-sm font-bold shadow-md ${
-                                contemAulaTocando
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-white/5 text-zinc-300 border border-white/10 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
-                              }`}
-                            >
-                              {i + 1}
-                            </span>
+                          <div className="flex items-start justify-between gap-3 w-full">
+                            <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                              <span
+                                className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-sm font-bold shadow-md ${
+                                  contemAulaTocando
+                                    ? "bg-primary text-primary-foreground"
+                                    : pctCapitulo === 100
+                                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
+                                    : "bg-white/5 text-zinc-300 border border-white/10 group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                                }`}
+                              >
+                                {pctCapitulo === 100 ? (
+                                  <Check className="w-5 h-5 text-emerald-400" strokeWidth={2.5} />
+                                ) : (
+                                  i + 1
+                                )}
+                              </span>
 
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm sm:text-[15px] font-sans! font-normal text-white leading-snug break-words group-hover:text-primary transition-colors tracking-normal normal-case">
-                                {tituloLimpo}
-                              </p>
-                              <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                                {subAbaEfetiva === "pecas" && (
-                                  <span className="inline-flex items-center text-[10px] font-bold text-rose-300 bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 rounded-md">
-                                    Peça Prática
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm sm:text-[15px] font-sans! font-medium text-white leading-snug wrap-break-word group-hover:text-primary transition-colors tracking-normal normal-case">
+                                  {tituloLimpo}
+                                </p>
+                                <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                                  {subAbaEfetiva === "pecas" && (
+                                    <span className="inline-flex items-center text-[10px] font-bold text-rose-300 bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 rounded-md">
+                                      Peça Prática
+                                    </span>
+                                  )}
+                                  {faixaArtigos && (
+                                    <span className="inline-flex items-center text-[11px] font-semibold text-zinc-300 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
+                                      {faixaArtigos}
+                                    </span>
+                                  )}
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-400">
+                                    <Headphones className="w-3 h-3 text-primary" />
+                                    {lista.length} {lista.length === 1 ? "aula" : "aulas"}
                                   </span>
-                                )}
-                                {faixaArtigos && (
-                                  <span className="inline-flex items-center text-[11px] font-semibold text-zinc-300 bg-white/5 px-2 py-0.5 rounded-md border border-white/10">
-                                    {faixaArtigos}
-                                  </span>
-                                )}
-                                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-zinc-400">
-                                  <Headphones className="w-3 h-3 text-primary" />
-                                  {lista.length} {lista.length === 1 ? "aula" : "aulas"}
-                                </span>
 
-                                {contemAulaTocando && (
-                                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary px-2 py-0.5 rounded-full bg-primary/20 border border-primary/30 animate-pulse">
-                                    <Sparkles className="w-2.5 h-2.5" /> Tocando agora
+                                  {/* Métrica de Progresso */}
+                                  <span
+                                    className={cn(
+                                      "inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border",
+                                      pctCapitulo === 100
+                                        ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+                                        : pctCapitulo > 0
+                                        ? "bg-amber-500/15 text-amber-300 border-amber-400/30"
+                                        : "bg-white/5 text-zinc-400 border-white/10",
+                                    )}
+                                  >
+                                    {aulasConcluidas}/{totalCapAulas} ouvidas ({pctCapitulo}%)
                                   </span>
-                                )}
+
+                                  {contemAulaTocando && (
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary px-2 py-0.5 rounded-full bg-primary/20 border border-primary/30 animate-pulse">
+                                      <Sparkles className="w-2.5 h-2.5" /> Tocando agora
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
+
+                            <span className="w-8 h-8 shrink-0 rounded-full bg-white/5 group-hover:bg-primary group-hover:text-primary-foreground flex items-center justify-center text-zinc-400 transition-colors">
+                              <ChevronRight className="w-4 h-4" />
+                            </span>
                           </div>
 
-                          <span className="w-8 h-8 shrink-0 rounded-full bg-white/5 group-hover:bg-primary group-hover:text-primary-foreground flex items-center justify-center text-zinc-400 transition-colors">
-                            <ChevronRight className="w-4 h-4" />
-                          </span>
+                          {/* Barra de Progresso do Capítulo */}
+                          <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-1 relative">
+                            <div
+                              className={cn(
+                                "h-full rounded-full transition-all duration-500",
+                                pctCapitulo === 100
+                                  ? "bg-linear-to-r from-emerald-500 to-teal-400"
+                                  : "bg-linear-to-r from-primary to-amber-400",
+                              )}
+                              style={{ width: `${Math.max(pctCapitulo > 0 ? 6 : 0, pctCapitulo)}%` }}
+                            />
+                          </div>
                         </motion.button>
                       );
                     })}
@@ -1975,6 +2045,113 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
 
                 {/* Conteúdo: Lista de Aulas estilo Resumos com Nós Numerados */}
                 <div className="max-w-5xl mx-auto px-1 sm:px-4 pt-2">
+                  {/* Card Resumo de Métricas e Progresso do Capítulo */}
+                  {!isShimmering && contagemStatus.todas > 0 && (
+                    <div className="mb-4 sm:mb-5 p-3.5 sm:p-4.5 rounded-2xl bg-white/4 border border-white/10 backdrop-blur-md shadow-md space-y-3">
+                      <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-white/15 shadow-inner"
+                            style={{ backgroundColor: `${palette.primary}20` }}
+                          >
+                            <Headphones className="w-5 h-5" style={{ color: palette.primary }} />
+                          </div>
+                          <div className="min-w-0">
+                            <h4 className="text-sm sm:text-base font-bold text-white leading-tight truncate">
+                              Progresso do Capítulo
+                            </h4>
+                            <p className="text-xs text-zinc-400 mt-0.5">
+                              {contagemStatus.concluidas} de {contagemStatus.todas}{" "}
+                              {contagemStatus.todas === 1 ? "aula ouvida" : "aulas ouvidas"}
+                              {contagemStatus.andamento > 0 && ` • ${contagemStatus.andamento} em andamento`}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Badge de Porcentagem do Capítulo */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          {(() => {
+                            const pctCap =
+                              contagemStatus.todas > 0
+                                ? Math.round((contagemStatus.concluidas / contagemStatus.todas) * 100)
+                                : 0;
+                            return (
+                              <span
+                                className={cn(
+                                  "px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-black font-mono border",
+                                  pctCap === 100
+                                    ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
+                                    : pctCap > 0
+                                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                    : "bg-white/5 text-zinc-400 border-white/10",
+                                )}
+                              >
+                                {pctCap}% CONCLUÍDO
+                              </span>
+                            );
+                          })()}
+                        </div>
+                      </div>
+
+                      {/* Barra de Progresso do Capítulo */}
+                      {(() => {
+                        const pctCap =
+                          contagemStatus.todas > 0
+                            ? Math.round((contagemStatus.concluidas / contagemStatus.todas) * 100)
+                            : 0;
+                        return (
+                          <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden relative">
+                            <div
+                              className={cn(
+                                "h-full rounded-full transition-all duration-500",
+                                pctCap === 100
+                                  ? "bg-linear-to-r from-emerald-500 to-teal-400"
+                                  : "bg-linear-to-r from-primary to-amber-400",
+                              )}
+                              style={{
+                                width: `${Math.max(pctCap > 0 ? 5 : 0, pctCap)}%`,
+                                boxShadow: pctCap > 0 ? `0 0 10px ${palette.primary}80` : undefined,
+                              }}
+                            />
+                          </div>
+                        );
+                      })()}
+
+                      {/* Chips de Filtro Rápido por Status de Escuta */}
+                      <div className="flex items-center gap-1.5 sm:gap-2 pt-0.5 flex-wrap">
+                        <span className="text-[11px] font-semibold text-zinc-400 mr-1 hidden xs:inline">
+                          Filtrar:
+                        </span>
+                        {([
+                          { id: "todas", label: `Todas (${contagemStatus.todas})` },
+                          { id: "concluidas", label: `Ouvidas (${contagemStatus.concluidas})` },
+                          { id: "andamento", label: `Em andamento (${contagemStatus.andamento})` },
+                          { id: "pendentes", label: `Pendentes (${contagemStatus.pendentes})` },
+                        ] as const).map((chip) => {
+                          const ativo = filtroStatus === chip.id;
+                          return (
+                            <button
+                              key={chip.id}
+                              type="button"
+                              onClick={() => {
+                                haptic.selection();
+                                setFiltroStatus(chip.id);
+                              }}
+                              className={cn(
+                                "px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border active:scale-95",
+                                ativo
+                                  ? "bg-primary text-white border-primary shadow-sm shadow-primary/20"
+                                  : "bg-white/5 text-zinc-400 border-white/5 hover:bg-white/10 hover:text-white",
+                              )}
+                            >
+                              {chip.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   {isShimmering ? (
                     <div className="space-y-3">
                       {[1, 2, 3, 4, 5].map((idx) => (
@@ -2030,7 +2207,13 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                             const isTocando = atualId === a.id && tocando;
                             const prog = mapaProgresso[a.id];
                             const concluida = prog?.concluida ?? false;
-                            const pct = prog?.pct ?? 0;
+                            const duracaoTotal =
+                              isTocando && durPlayer > 0 ? durPlayer : (prog?.duracao ?? 0);
+                            const tempoOuvido = isTocando ? tempoPlayer : (prog?.tempo ?? 0);
+                            const pct =
+                              isTocando && duracaoTotal > 0
+                                ? Math.min(100, Math.round((tempoOuvido / duracaoTotal) * 100))
+                                : (prog?.pct ?? 0);
 
                             return (
                               <motion.div
@@ -2042,7 +2225,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                 transition={{ duration: 0.2 }}
                                 className="flex items-center gap-2.5 sm:gap-4"
                               >
-                                {/* Nó da Linha do Tempo */}
+                                {/* Nó da Linha do Tempo com Estado de Conclusão */}
                                 <div
                                   className={cn(
                                     "w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-all shadow-md",
@@ -2057,24 +2240,23 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                 >
                                   {isTocando ? (
                                     <EqualizadorAnimado cor={palette.primary} />
+                                  ) : concluida ? (
+                                    <Check className="w-4 h-4 text-emerald-400" strokeWidth={3} />
                                   ) : (
                                     <span>{numero}</span>
                                   )}
                                 </div>
 
-                                {/* Card da Aula — Altura padronizada única para todos os itens */}
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    haptic.selection();
-                                    handleTocarAula(a);
-                                  }}
+                                {/* Card da Aula com Barra de Progresso e Métricas Completas */}
+                                <div
                                   className={cn(
-                                    "relative h-[82px] sm:h-[88px] overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 px-3 py-2.5 sm:px-3.5 sm:py-3 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none",
+                                    "relative min-h-[92px] sm:min-h-[98px] overflow-hidden flex-1 min-w-0 flex flex-col justify-between p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm select-none",
                                     isTocando
                                       ? "border-primary/60 bg-primary/[0.08] shadow-md shadow-primary/10"
                                       : isFav
                                       ? "bg-card shadow-sm border-rose-500/30"
+                                      : concluida
+                                      ? "border-emerald-500/30 bg-emerald-500/[0.04] hover:bg-emerald-500/[0.08]"
                                       : "border-border/50 bg-card/40 hover:bg-card/60",
                                   )}
                                   style={{
@@ -2092,79 +2274,167 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                     }}
                                   />
 
-                                  {/* Círculo do Ícone */}
-                                  <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[48px] sm:w-[56px] pl-0.5">
-                                    <div
-                                      className={cn(
-                                        "w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border overflow-hidden shadow-inner shrink-0 transition-colors",
-                                        isTocando
-                                          ? "bg-primary/20 border-primary text-primary"
-                                          : "bg-white/5 border-white/10 text-white/80 group-hover:text-white",
-                                      )}
-                                    >
-                                      {isTocando ? (
-                                        <Headphones className="w-5 h-5 text-primary animate-pulse" />
-                                      ) : (
-                                        <FileText
-                                          className="w-5 h-5 transition-colors select-none"
-                                          strokeWidth={1.8}
-                                          aria-hidden="true"
-                                        />
-                                      )}
+                                  {/* Linha Principal de Conteúdo */}
+                                  <div
+                                    className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0 cursor-pointer active:scale-[0.99] transition-transform"
+                                    onClick={() => {
+                                      haptic.selection();
+                                      handleTocarAula(a);
+                                    }}
+                                  >
+                                    {/* Círculo do Ícone */}
+                                    <div className="flex flex-col items-center justify-center shrink-0 w-10 sm:w-11">
+                                      <div
+                                        className={cn(
+                                          "w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border overflow-hidden shadow-inner shrink-0 transition-colors",
+                                          isTocando
+                                            ? "bg-primary/20 border-primary text-primary"
+                                            : concluida
+                                            ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400"
+                                            : "bg-white/5 border-white/10 text-white/80 group-hover:text-white",
+                                        )}
+                                      >
+                                        {isTocando ? (
+                                          <Headphones className="w-5 h-5 text-primary animate-pulse" />
+                                        ) : concluida ? (
+                                          <Check className="w-5 h-5 text-emerald-400" strokeWidth={2.5} />
+                                        ) : (
+                                          <FileText
+                                            className="w-5 h-5 transition-colors select-none"
+                                            strokeWidth={1.8}
+                                            aria-hidden="true"
+                                          />
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
 
-                                  {/* Informações da Aula */}
-                                  <div className="min-w-0 flex-1 flex flex-col justify-center h-full pr-1 sm:pr-2">
-                                    <div className="flex items-center gap-2 flex-wrap">
+                                    {/* Informações da Aula */}
+                                    <div className="min-w-0 flex-1 flex flex-col justify-center">
                                       <h3
                                         className={cn(
-                                          "text-sm sm:text-base font-medium font-sans break-words leading-snug line-clamp-2 transition-colors",
+                                          "text-sm sm:text-base font-medium font-sans wrap-break-word leading-snug line-clamp-2 transition-colors",
                                           isTocando ? "text-primary font-semibold" : "text-foreground",
                                         )}
                                       >
                                         {formatarTituloAula(a.titulo) || a.titulo}
                                       </h3>
 
-                                      {/* Badge Concluída / Em Andamento */}
-                                      {concluida && (
-                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 shrink-0">
-                                          <Check className="w-2.5 h-2.5" />
-                                          OUVIDA
+                                      {/* Linha de Métricas da Aula */}
+                                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                                        {concluida ? (
+                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 shrink-0">
+                                            <Check className="w-2.5 h-2.5" strokeWidth={3} />
+                                            OUVIDA
+                                          </span>
+                                        ) : isTocando ? (
+                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold text-primary bg-primary/20 border border-primary/40 shrink-0 animate-pulse">
+                                            <Sparkles className="w-2.5 h-2.5" />
+                                            TOCANDO • {pct}%
+                                          </span>
+                                        ) : pct > 0 ? (
+                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold text-amber-300 bg-amber-500/15 border border-amber-400/30 shrink-0">
+                                            EM ANDAMENTO • {pct}%
+                                          </span>
+                                        ) : (
+                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium text-zinc-400 bg-white/5 border border-white/10 shrink-0">
+                                            NÃO OUVIDA
+                                          </span>
+                                        )}
+
+                                        {/* Tempo Ouvido / Duração Total */}
+                                        <span className="text-[11px] font-mono text-zinc-400 flex items-center gap-1">
+                                          <Clock className="w-3 h-3 text-zinc-500" />
+                                          {duracaoTotal > 0 ? (
+                                            concluida ? (
+                                              formatarTempoSegundos(duracaoTotal)
+                                            ) : (
+                                              `${formatarTempoSegundos(tempoOuvido)} / ${formatarTempoSegundos(duracaoTotal)}`
+                                            )
+                                          ) : (
+                                            "Áudio disponível"
+                                          )}
                                         </span>
-                                      )}
-                                      {!concluida && pct > 0 && (
-                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold text-amber-300 bg-amber-500/15 border border-amber-400/30 shrink-0">
-                                          {pct}%
-                                        </span>
-                                      )}
+                                      </div>
+                                    </div>
+
+                                    {/* Ações: Marcar Concluída + Favorito + Chevron */}
+                                    <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                                      {/* Botão de Marcar/Desmarcar como Concluída */}
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          haptic.selection();
+                                          alternarConcluida(a.id);
+                                          if (!concluida) {
+                                            toast.success("Aula marcada como ouvida! 🎉");
+                                          } else {
+                                            toast.info("Progresso da aula reiniciado.");
+                                          }
+                                        }}
+                                        className={cn(
+                                          "p-1.5 rounded-xl border transition-all active:scale-90",
+                                          concluida
+                                            ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/30"
+                                            : "bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10",
+                                        )}
+                                        title={concluida ? "Marcar como não ouvida" : "Marcar como ouvida"}
+                                        aria-label={concluida ? "Marcar como não ouvida" : "Marcar como ouvida"}
+                                      >
+                                        <CheckCircle2 className="w-4 h-4" />
+                                      </button>
+
+                                      {/* Favorito */}
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          haptic.selection();
+                                          alternarFavorito(a);
+                                        }}
+                                        className="p-1.5 rounded-xl hover:bg-white/10 active:scale-90 transition-all"
+                                        title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                                        aria-label={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                                      >
+                                        {isFav ? (
+                                          <Heart className="w-4 h-4 fill-rose-500 text-rose-500" />
+                                        ) : (
+                                          <Heart className="w-4 h-4 text-zinc-400 hover:text-white" />
+                                        )}
+                                      </button>
+
+                                      <ChevronRight
+                                        className="w-4 h-4 text-zinc-500 transition-transform duration-300 group-hover:translate-x-0.5"
+                                        style={{ color: palette.primary }}
+                                      />
                                     </div>
                                   </div>
 
-                                  {/* Ações: Favorito + Chevron */}
-                                  <div className="flex flex-col items-end gap-2 shrink-0 pr-1">
+                                  {/* Barra de Progresso Individual da Aula (Integrada na base do Card) */}
+                                  <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden mt-2.5 relative">
                                     <div
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        haptic.selection();
-                                        alternarFavorito(a);
-                                      }}
-                                      className="p-1 -mr-1 rounded-full hover:bg-secondary/50 active:opacity-70 transition-transform"
-                                      title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-                                    >
-                                      {isFav ? (
-                                        <Heart className="w-5 h-5 fill-rose-500 text-rose-500" />
-                                      ) : (
-                                        <Heart className="w-5 h-5 text-muted-foreground/50 hover:text-white" />
+                                      className={cn(
+                                        "h-full rounded-full transition-all duration-300",
+                                        concluida
+                                          ? "bg-linear-to-r from-emerald-500 to-teal-400"
+                                          : isTocando
+                                          ? "bg-linear-to-r from-primary via-amber-400 to-primary animate-pulse"
+                                          : pct > 0
+                                          ? "bg-linear-to-r from-primary to-amber-400"
+                                          : "bg-transparent",
                                       )}
-                                    </div>
-
-                                    <ChevronRight
-                                      className="w-4 h-4 text-muted-foreground/40 transition-transform duration-300 group-hover:translate-x-0.5"
-                                      style={{ color: palette.primary }}
+                                      style={{
+                                        width: `${concluida ? 100 : Math.max(pct > 0 ? 5 : 0, pct)}%`,
+                                        boxShadow:
+                                          concluida
+                                            ? "0 0 8px rgba(16, 185, 129, 0.5)"
+                                            : isTocando || pct > 0
+                                            ? `0 0 8px ${palette.primary}80`
+                                            : undefined,
+                                      }}
                                     />
                                   </div>
-                                </button>
+                                </div>
                               </motion.div>
                             );
                           })}
