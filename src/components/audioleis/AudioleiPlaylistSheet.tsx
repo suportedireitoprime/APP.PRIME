@@ -3,13 +3,10 @@ import {
   Play,
   Pause,
   Volume2,
-  Headphones,
   Search,
   X,
   ListMusic,
   Clock,
-  Sparkles,
-  CheckCircle2,
 } from "lucide-react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -124,7 +121,7 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
         </div>
 
         {/* Cabeçalho da Playlist */}
-        <div className="px-5 sm:px-6 pt-2 pb-4 border-b border-border/60 shrink-0 bg-background/40">
+        <div className="px-5 sm:px-6 pt-2 pb-4 border-b border-border/60 shrink-0 bg-background/40 pr-14 sm:pr-16">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3.5 min-w-0 flex-1">
               {/* Badge/Miniatura da Lei */}
@@ -138,7 +135,7 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
               {/* Informações do Capítulo */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-[10.5px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md">
+                  <span className="text-[10.5px] font-bold uppercase tracking-widest text-primary bg-primary/10 border border-primary/25 px-2.5 py-0.5 rounded-md">
                     {capitulo.capituloHead || "CAPÍTULO"}
                   </span>
                   {rangeText && (
@@ -153,23 +150,19 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
                   )}
                 </div>
 
-                <h2 className="text-base sm:text-xl font-bold text-foreground leading-snug tracking-normal line-clamp-2">
+                <h2 className="text-sm sm:text-base font-heading font-black text-foreground leading-snug tracking-wider uppercase line-clamp-2">
                   {capitulo.capituloNome}
                 </h2>
 
-                <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground/80">
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground flex-wrap">
+                  <span className="font-semibold text-foreground/80">
                     {leiNome}
-                  </span>
-                  <span>•</span>
-                  <span>
-                    {totalArts} {totalArts === 1 ? "artigo" : "artigos"}
                   </span>
                   <span>•</span>
                   <span
                     className={
                       totalAudios > 0
-                        ? "text-emerald-400 font-semibold"
+                        ? "text-emerald-400 font-bold"
                         : "text-muted-foreground"
                     }
                   >
@@ -179,19 +172,6 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
                 </div>
               </div>
             </div>
-
-            {/* Botão Fechar com estilo padrão do app */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                onClose();
-              }}
-              className="w-10 h-10 rounded-full bg-secondary/80 hover:bg-secondary text-muted-foreground hover:text-foreground flex items-center justify-center shrink-0 transition-transform active:scale-95 border border-border/40"
-              aria-label="Fechar playlist"
-            >
-              <X className="w-5 h-5" />
-            </button>
           </div>
 
           {/* Barra de Ações Rápidas: Tocar Tudo & Busca */}
@@ -264,14 +244,14 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
               return (
                 <div
                   key={art.id || numClean || idx}
-                  className={`pt-2.5 first:pt-0 group relative p-3 sm:p-3.5 rounded-2xl border transition-all duration-200 flex items-start gap-3.5 ${
+                  className={`group relative p-3 sm:p-3.5 rounded-2xl border transition-all duration-200 min-h-[84px] sm:min-h-[88px] flex items-center gap-3.5 ${
                     isSelected
                       ? "bg-primary/10 border-primary/50 shadow-md shadow-primary/10 ring-1 ring-primary/30"
                       : "bg-card/70 border-border/70 hover:border-border hover:bg-card"
                   }`}
                 >
-                  {/* Botão Play / Indicador Numérico */}
-                  <div className="shrink-0 pt-0.5">
+                  {/* Botão Play / Indicador Numérico Estilizado */}
+                  <div className="shrink-0">
                     {hasAudio ? (
                       <Button
                         variant="ghost"
@@ -284,10 +264,10 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
                             onPlayAudio(narracao);
                           }
                         }}
-                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform active:scale-95 ${
+                        className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-200 active:scale-95 shadow-sm ${
                           activeThis
-                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
-                            : "bg-primary/15 hover:bg-primary/25 text-primary border border-primary/30"
+                            ? "bg-gradient-to-br from-primary via-primary to-rose-600 text-white shadow-lg shadow-primary/35 ring-2 ring-primary/40"
+                            : "bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 hover:from-primary/30 hover:to-primary/15 text-primary border border-primary/30 hover:border-primary/50 hover:scale-105"
                         }`}
                         aria-label={
                           activeThis
@@ -308,12 +288,12 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
                             />
                           </div>
                         ) : (
-                          <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5" />
+                          <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5 drop-shadow-sm" />
                         )}
                       </Button>
                     ) : (
                       <div
-                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-secondary/50 border border-border/60 flex items-center justify-center text-muted-foreground/60 shrink-0"
+                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-secondary/50 border border-border/60 flex items-center justify-center text-muted-foreground/50 shrink-0"
                         title="Narração em gravação"
                       >
                         <Clock className="w-4 h-4" />
@@ -338,7 +318,7 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
                     <div className="flex items-center justify-between gap-2 mb-1 flex-wrap">
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-sm sm:text-base font-bold tracking-tight ${
+                          className={`text-sm sm:text-base font-heading font-black tracking-wide ${
                             isSelected ? "text-primary" : "text-foreground"
                           }`}
                         >
@@ -352,25 +332,20 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
                         )}
                       </div>
 
-                      {hasAudio ? (
-                        <span className="text-[10.5px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1">
-                          <Headphones className="w-3 h-3" />
-                          <span>Áudio pronto</span>
-                        </span>
-                      ) : (
-                        <span className="text-[10px] font-medium text-muted-foreground bg-muted/40 border border-border px-2 py-0.5 rounded-full shrink-0">
+                      {!hasAudio && (
+                        <span className="text-[10px] font-medium text-muted-foreground/70 bg-muted/40 border border-border/60 px-2 py-0.5 rounded-full shrink-0">
                           Em gravação
                         </span>
                       )}
                     </div>
 
-                    {/* Texto Caput do Artigo */}
+                    {/* Texto Caput do Artigo com Altura Uniforme */}
                     {art.caput ? (
-                      <p className="text-xs sm:text-[13px] text-muted-foreground/90 font-normal leading-relaxed line-clamp-2 select-text">
+                      <p className="text-xs sm:text-[13px] text-muted-foreground/80 font-normal leading-relaxed line-clamp-2 select-text">
                         {art.caput}
                       </p>
                     ) : (
-                      <p className="text-xs text-muted-foreground/60 italic">
+                      <p className="text-xs text-muted-foreground/50 italic line-clamp-2">
                         {narracao?.titulo_artigo || "Dispositivo legal"}
                       </p>
                     )}

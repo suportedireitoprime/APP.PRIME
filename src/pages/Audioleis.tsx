@@ -47,6 +47,7 @@ import {
   AudioleiPlaylistSheet,
   type CapituloComAudiosData,
 } from "@/components/audioleis/AudioleiPlaylistSheet";
+import { AudioleiPlayerModal } from "@/components/audioleis/AudioleiPlayerModal";
 
 interface NarracaoItem {
   artigo_numero: string;
@@ -420,6 +421,7 @@ export default function AudioleisPage() {
       return 1.0;
     }
   });
+  const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -619,6 +621,7 @@ export default function AudioleisPage() {
       if (currentArtigo?.artigo_numero === item.artigo_numero && !isPlaying) {
         audio.play().catch(console.error);
         setIsPlaying(true);
+        setIsPlayerModalOpen(true);
         return;
       }
 
@@ -628,6 +631,7 @@ export default function AudioleisPage() {
       audio.playbackRate = playbackRate;
       audio.currentTime = 0;
       setCurrentTime(0);
+      setIsPlayerModalOpen(true);
 
       audio
         .play()
@@ -724,17 +728,56 @@ export default function AudioleisPage() {
     }
   };
 
-  // Pular para o próximo ou anterior
+  // Fila atual de artigos para o modal do player
+  const playlistModalArtigos = useMemo(() => {
+    if (selectedCapituloParaPlaylist && selectedCapituloParaPlaylist.audiosDisponiveis.length > 0) {
+      return selectedCapituloParaPlaylist.audiosDisponiveis.map((a) => a.narracao);
+    }
+    return artigos;
+  }, [selectedCapituloParaPlaylist, artigos]);
+
+  // Detalhes textuais (caput) do artigo em reprodução
+  const artigoDetalhe = useMemo(() => {
+    if (!currentArtigo || !fullArtigos) return null;
+    const clean = formatArtigoNumeroOnly(currentArtigo.artigo_numero).toLowerCase();
+    return (
+      (fullArtigos as ArtigoLei[]).find(
+        (a) => formatArtigoNumeroOnly(a.numero).toLowerCase() === clean,
+      ) || null
+    );
+  }, [currentArtigo, fullArtigos]);
+
+  // Nome do capítulo ativo
+  const currentCapituloNome = useMemo(() => {
+    if (selectedCapituloParaPlaylist?.capitulo?.capituloNome) {
+      return selectedCapituloParaPlaylist.capitulo.capituloNome;
+    }
+    if (currentArtigo && capitulosComAudios.length > 0) {
+      const clean = formatArtigoNumeroOnly(currentArtigo.artigo_numero).toLowerCase();
+      const found = capitulosComAudios.find((c) =>
+        c.realArtigos.some((a) => formatArtigoNumeroOnly(a.numero).toLowerCase() === clean),
+      );
+      if (found) return found.capitulo.capituloNome;
+    }
+    return undefined;
+  }, [selectedCapituloParaPlaylist, currentArtigo, capitulosComAudios]);
+
+  // Pular para o próximo ou anterior considerando a playlist ativa
   const pularArtigo = (direction: "next" | "prev") => {
     if (!currentArtigo) return;
-    const currentIdx = artigos.findIndex((a) => a.artigo_numero === currentArtigo.artigo_numero);
+    const listaAtual = playlistModalArtigos.length > 0 ? playlistModalArtigos : artigos;
+    const currentIdx = listaAtual.findIndex(
+      (a) =>
+        a.artigo_numero.toLowerCase() ===
+        currentArtigo.artigo_numero.toLowerCase(),
+    );
     if (currentIdx === -1) return;
 
     const nextIdx = direction === "next" ? currentIdx + 1 : currentIdx - 1;
-    if (nextIdx >= 0 && nextIdx < artigos.length) {
-      playAudio(artigos[nextIdx]);
+    if (nextIdx >= 0 && nextIdx < listaAtual.length) {
+      playAudio(listaAtual[nextIdx]);
     } else {
-      toast.info(direction === "next" ? "Fim da lista de artigos." : "Primeiro artigo da lei.");
+      toast.info(direction === "next" ? "Fim da lista de artigos." : "Primeiro artigo da lista.");
     }
   };
 
@@ -1249,19 +1292,10 @@ export default function AudioleisPage() {
                           }`}
                         >
                           <div className="w-full text-left flex items-stretch p-0 transition-transform active:scale-[0.995]">
-                            {/* Barra lateral colorida de destaque */}
-                            <div
-                              className={`w-2.5 rounded-l-2xl shrink-0 transition-all ${
-                                isPlayingInThisChapter
-                                  ? "bg-primary animate-pulse shadow-md shadow-primary/50"
-                                  : "bg-primary/50 group-hover:bg-primary"
-                              }`}
-                            />
-
                             <div className="p-4 sm:p-5 flex-1 min-w-0 flex flex-col justify-center">
                               <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
                                 <div className="flex items-center gap-2 min-w-0">
-                                  <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 shrink-0">
+                                  <span className="text-[11px] font-black uppercase tracking-wider text-primary shrink-0">
                                     {capitulo.capituloHead || "CAPÍTULO"}
                                   </span>
                                   {capitulo.parentContext && (
@@ -1297,12 +1331,11 @@ export default function AudioleisPage() {
                                 {capitulo.capituloNome}
                               </h3>
 
-                              <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                                <span className="font-semibold text-foreground/80">
-                                  {totalArts} {totalArts === 1 ? "artigo" : "artigos"}
-                                </span>
-                                {rangeText && <span>• {rangeText}</span>}
-                              </div>
+                              {rangeText && (
+                                <p className="mt-1.5 text-xs text-muted-foreground font-medium">
+                                  {rangeText}
+                                </p>
+                              )}
 
                               {/* Barra de progresso de áudios gravados */}
                               {totalArts > 0 && (
@@ -1465,8 +1498,15 @@ export default function AudioleisPage() {
             </div>
 
             <div className="flex items-center justify-between gap-3">
-              {/* Título do Artigo em Reprodução */}
-              <div className="flex items-center gap-3 min-w-0 flex-1">
+              {/* Título do Artigo em Reprodução (Toque para expandir player) */}
+              <div
+                className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer hover:opacity-90 active:scale-[0.99] transition-all group"
+                onClick={() => {
+                  haptic.selection();
+                  setIsPlayerModalOpen(true);
+                }}
+                title="Toque para expandir player"
+              >
                 <span
                   className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-md transition-all ${
                     isPlaying
@@ -1478,7 +1518,7 @@ export default function AudioleisPage() {
                 </span>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-heading font-black text-sm sm:text-base text-foreground truncate">
+                    <span className="font-heading font-black text-sm sm:text-base text-foreground truncate group-hover:text-primary transition-colors">
                       Art. {currentArtigo.artigo_numero}
                     </span>
                     <span className="text-xs text-primary font-semibold shrink-0">
@@ -1608,6 +1648,34 @@ export default function AudioleisPage() {
         isPlaying={isPlaying}
         onPlayAudio={playAudio}
         onTogglePlay={togglePlay}
+      />
+
+      {/* Player Modal Completo Deslizante de Baixo para Cima (Estilo Audioaulas) */}
+      <AudioleiPlayerModal
+        isOpen={isPlayerModalOpen && Boolean(currentArtigo)}
+        onClose={() => setIsPlayerModalOpen(false)}
+        currentArtigo={currentArtigo}
+        currentLaw={currentLaw}
+        capituloNome={currentCapituloNome}
+        artigoDetalhe={artigoDetalhe}
+        playlistArtigos={playlistModalArtigos}
+        isPlaying={isPlaying}
+        currentTime={currentTime}
+        duration={duration}
+        playbackRate={playbackRate}
+        onTogglePlay={togglePlay}
+        onPlayAudio={(item) => {
+          playAudio(item);
+        }}
+        onSeek={(seconds) => {
+          if (audioRef.current) {
+            audioRef.current.currentTime = seconds;
+            setCurrentTime(seconds);
+          }
+        }}
+        onSkip={pularArtigo}
+        onChangeSpeed={changeSpeed}
+        onIrParaVadeMecum={irParaArtigoVadeMecum}
       />
     </div>
   );

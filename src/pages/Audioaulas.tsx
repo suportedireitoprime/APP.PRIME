@@ -13,6 +13,7 @@ import { AudioaulasHero } from '@/components/audioaulas/home/AudioaulasHero';
 import { AudioaulasGridAreas, type ModoVisualizacao } from '@/components/audioaulas/home/AudioaulasGridAreas';
 import { AudioaulasListaAulas } from '@/components/audioaulas/home/AudioaulasListaAulas';
 import { AudioaulasBuscaInput } from '@/components/audioaulas/home/AudioaulasBuscaInput';
+import { AudioaulasBuscaGlobal } from '@/components/audioaulas/home/AudioaulasBuscaGlobal';
 import { AudioaulasPlayerModal } from '@/components/audioaulas/home/AudioaulasPlayerModal';
 import { AudioaulasContinuarOuvindo } from '@/components/audioaulas/home/AudioaulasContinuarOuvindo';
 
@@ -151,12 +152,23 @@ const Audioaulas = () => {
           setCapituloSelecionado={setCapituloSelecionado}
         />
       ) : state.aba === 'aulas' ? (
-        /* ───────── HUB DE ÁREAS / MODO VER TODOS EM LISTA ───────── */
-        <AudioaulasGridAreas
-          areas={state.areas}
-          modo={modoVerTodos}
-          onModoChange={setModoVerTodos}
-        />
+        /* ───────── HUB DE ÁREAS COM BUSCA INSTANTÂNEA FUZZY ───────── */
+        <AudioaulasBuscaGlobal
+          aulas={state.aulas}
+          atualId={state.atualId}
+          tocando={state.tocando}
+          handleTocarAula={state.handleTocarAula}
+          favoritos={state.favoritos}
+          alternarFavorito={state.alternarFavorito}
+          busca={state.busca}
+          setBusca={state.setBusca}
+        >
+          <AudioaulasGridAreas
+            areas={state.areas}
+            modo={modoVerTodos}
+            onModoChange={setModoVerTodos}
+          />
+        </AudioaulasBuscaGlobal>
       ) : (
         /* ───────── ABAS: favoritas / baixadas / buscar ───────── */
         <>
