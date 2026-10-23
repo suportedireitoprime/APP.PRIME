@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { createPortal } from "react-dom";
 import {
   ChevronDown,
   Play,
@@ -133,27 +134,27 @@ export const AudioleiPlayerModal: React.FC<AudioleiPlayerModalProps> = ({
     );
   }, [currentArtigo, playlistArtigos]);
 
-  if (!currentArtigo) return null;
+  if (!currentArtigo || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <>
-      {/* Backdrop com fade */}
+      {/* Backdrop com fade — z-[200] para ficar SEMPRE na frente de qualquer Sheet (z-[100]) */}
       <div
         onClick={() => {
           haptic.selection();
           onClose();
         }}
         aria-hidden
-        className={`fixed inset-0 z-50 bg-black/85 transition-opacity duration-300 ${
+        className={`fixed inset-0 z-[200] bg-black/85 transition-opacity duration-300 ${
           isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       />
 
-      {/* Conteúdo do Player deslizante de baixo para cima */}
+      {/* Conteúdo do Player deslizante de baixo para cima — z-[210] na frente de qualquer Sheet e overlay */}
       <div
-        className={`fixed inset-0 z-[55] flex flex-col transition-all duration-300 ease-out lg:inset-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-xl lg:h-[88vh] lg:max-h-[720px] lg:rounded-3xl lg:border lg:border-white/15 lg:shadow-2xl lg:shadow-black/90 lg:overflow-hidden ${
+        className={`fixed inset-0 z-[210] flex flex-col transition-all duration-300 ease-out lg:inset-auto lg:top-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:w-full lg:max-w-xl lg:h-[88vh] lg:max-h-[720px] lg:rounded-3xl lg:border lg:border-white/15 lg:shadow-2xl lg:shadow-black/90 lg:overflow-hidden ${
           isOpen
-            ? "translate-y-0 opacity-100 scale-100"
+            ? "translate-y-0 opacity-100 scale-100 pointer-events-auto"
             : "translate-y-full lg:translate-y-[-40%] lg:scale-95 opacity-0 pointer-events-none"
         }`}
       >
@@ -404,6 +405,7 @@ export const AudioleiPlayerModal: React.FC<AudioleiPlayerModalProps> = ({
           )}
         </div>
       </div>
-    </>
+    </>,
+    document.body,
   );
 };

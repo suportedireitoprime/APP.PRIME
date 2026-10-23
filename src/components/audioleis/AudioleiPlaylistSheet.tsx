@@ -43,6 +43,7 @@ interface AudioleiPlaylistSheetProps {
   isPlaying: boolean;
   onPlayAudio: (narracao: NarracaoItem) => void;
   onTogglePlay: () => void;
+  onOpenPlayer?: () => void;
 }
 
 export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
@@ -56,6 +57,7 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
   isPlaying,
   onPlayAudio,
   onTogglePlay,
+  onOpenPlayer,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const listContainerRef = useRef<HTMLDivElement>(null);
@@ -122,6 +124,7 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
     }
     if (audiosDisponiveis.length > 0) {
       onPlayAudio(audiosDisponiveis[0].narracao);
+      onOpenPlayer?.();
     }
   };
 
@@ -278,6 +281,7 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
                             onTogglePlay();
                           } else if (narracao) {
                             onPlayAudio(narracao);
+                            onOpenPlayer?.();
                           }
                         }}
                         className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-200 active:scale-95 shadow-sm ${
@@ -324,9 +328,14 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
                       if (hasAudio && narracao) {
                         haptic.selection();
                         if (isSelected) {
-                          onTogglePlay();
+                          if (onOpenPlayer) {
+                            onOpenPlayer();
+                          } else {
+                            onTogglePlay();
+                          }
                         } else {
                           onPlayAudio(narracao);
+                          onOpenPlayer?.();
                         }
                       }
                     }}

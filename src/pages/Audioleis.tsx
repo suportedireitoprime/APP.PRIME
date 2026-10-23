@@ -1603,8 +1603,18 @@ export default function AudioleisPage() {
                               )}
                             </Button>
 
-                            {/* Info do Artigo */}
-                            <div className="min-w-0">
+                            {/* Info do Artigo (Toque para abrir reprodutor na frente) */}
+                            <div
+                              className="min-w-0 cursor-pointer flex-1 hover:opacity-90 transition-opacity"
+                              onClick={() => {
+                                haptic.selection();
+                                if (isSelected) {
+                                  setIsPlayerModalOpen(true);
+                                } else {
+                                  playAudio(item);
+                                }
+                              }}
+                            >
                               <div className="flex items-center gap-1.5">
                                 <span className="font-heading font-black text-sm text-foreground tracking-wide">
                                   Art. {item.artigo_numero}
@@ -1823,6 +1833,7 @@ export default function AudioleisPage() {
         isPlaying={isPlaying}
         onPlayAudio={playAudio}
         onTogglePlay={togglePlay}
+        onOpenPlayer={() => setIsPlayerModalOpen(true)}
       />
 
       {/* Player Modal Completo Deslizante de Baixo para Cima (Estilo Audioaulas) */}
