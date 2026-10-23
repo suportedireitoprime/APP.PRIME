@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   ChevronDown,
@@ -17,6 +17,7 @@ import { capaDaArea } from "@/lib/audioaulasHelper";
 import { haptic } from "@/lib/nativeHaptics";
 import type { ArtigoLei } from "@/data/mockData";
 import type { NarracaoItem } from "./AudioleiPlaylistSheet";
+import { AudioleiArtigoVadeMecumSheet } from "./AudioleiArtigoVadeMecumSheet";
 
 interface LawOption {
   id: string;
@@ -124,6 +125,8 @@ export const AudioleiPlayerModal: React.FC<AudioleiPlayerModalProps> = ({
     COVER_AREAS[currentLaw.sigla.toLowerCase()] || "Direito Geral";
   const capaUrl = capaDaArea(currentArea);
 
+  const [isVerArtigoOpen, setIsVerArtigoOpen] = useState(false);
+
   // Índice atual na playlist para controle de avançar/voltar
   const currentIndex = useMemo(() => {
     if (!currentArtigo) return -1;
@@ -194,25 +197,21 @@ export const AudioleiPlayerModal: React.FC<AudioleiPlayerModalProps> = ({
             </p>
           </div>
 
-          {/* Atalho para ler no Vade Mecum */}
-          {onIrParaVadeMecum ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                haptic.selection();
-                onIrParaVadeMecum(currentArtigo.artigo_numero);
-              }}
-              aria-label="Ler no Vade Mecum"
-              title="Ler no Vade Mecum"
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md border border-white/20 text-white shadow-lg grid place-items-center transition active:scale-95 cursor-pointer z-30 shrink-0"
-            >
-              <BookOpen className="w-5 h-5 text-white" />
-            </button>
-          ) : (
-            <div className="w-11 h-11 sm:w-12 sm:h-12" />
-          )}
+          {/* Atalho para ver artigo completo (Vade Mecum) */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              haptic.selection();
+              setIsVerArtigoOpen(true);
+            }}
+            aria-label="Ver artigo completo"
+            title="Ver artigo completo"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 backdrop-blur-md border border-white/20 text-white shadow-lg grid place-items-center transition active:scale-95 cursor-pointer z-30 shrink-0"
+          >
+            <BookOpen className="w-5 h-5 text-white" />
+          </button>
         </div>
 
         {/* Conteúdo Principal do Player */}
@@ -229,7 +228,7 @@ export const AudioleiPlayerModal: React.FC<AudioleiPlayerModalProps> = ({
           </div>
 
           {/* Título e Metadados do Artigo */}
-          <div className="text-center shrink-0 space-y-1.5 max-w-lg mx-auto">
+          <div className="text-center shrink-0 space-y-2 max-w-lg mx-auto">
             {/* Tag da Lei e Capítulo */}
             <div className="flex items-center justify-center gap-1.5 flex-wrap">
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-semibold text-zinc-300 shadow-sm">
@@ -247,6 +246,21 @@ export const AudioleiPlayerModal: React.FC<AudioleiPlayerModalProps> = ({
             <h2 className="text-xl sm:text-2xl md:text-[26px] font-heading font-black text-white tracking-wide leading-snug px-2">
               Artigo {currentArtigo.artigo_numero}
             </h2>
+
+            {/* Botão Ver artigo — estilo Vade Mecum limpo (sem menus de alternância) */}
+            <div className="flex justify-center pt-0.5 pb-0.5">
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setIsVerArtigoOpen(true);
+                }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 border border-white/20 text-xs sm:text-[13px] font-bold text-white shadow-md shadow-black/40 transition active:scale-95 cursor-pointer backdrop-blur-md"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-primary" />
+                <span>Ver artigo</span>
+              </button>
+            </div>
 
             {/* Texto do Caput com Scroll se necessário */}
             <div className="max-h-20 sm:max-h-24 overflow-y-auto px-2">
@@ -405,6 +419,18 @@ export const AudioleiPlayerModal: React.FC<AudioleiPlayerModalProps> = ({
           )}
         </div>
       </div>
+
+      {/* Sheet deslizante do Artigo Completo no padrão visual Vade Mecum (sem abas de alternância) */}
+      <AudioleiArtigoVadeMecumSheet
+        isOpen={isVerArtigoOpen}
+        onClose={() => setIsVerArtigoOpen(false)}
+        artigo={artigoDetalhe || null}
+        artigoNumero={currentArtigo.artigo_numero}
+        leiNome={currentLaw.nome}
+        leiSigla={currentLaw.sigla}
+        capituloNome={capituloNome}
+        fallbackText={artigoDetalhe?.caput || currentArtigo.titulo_artigo}
+      />
     </>,
     document.body,
   );
