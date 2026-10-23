@@ -1,5 +1,4 @@
-// @ts-nocheck
-import { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronDown,
@@ -39,12 +38,12 @@ import {
   cornellParaMarkdown,
   feynmanParaMarkdown,
 } from "./metodologias";
-import { abrirLink } from '@/lib/nativo';
 import { cn } from "@/lib/utils";
 import { haptic } from "@/lib/nativeHaptics";
 import { ResumoAudioPlayer } from "./ResumoAudioPlayer";
 import { ResumoBottomBar } from "./ResumoBottomBar";
 import { useResumoAudio } from "./useResumoAudio";
+import { useResumoParagraphHighlighter } from "./useResumoParagraphHighlighter";
 
 export interface ResumoRow {
   id: string;
@@ -228,9 +227,24 @@ const markdownComponents = {
       {...props}
     />
   ),
-  p: ({ node, ...props }: any) => (
-    <p className="my-3.5 text-foreground/90 leading-[1.8] text-[15px] sm:text-[16px]" {...props} />
-  ),
+  p: ({ node, children, ...props }: any) => {
+    const hasImageChild = Array.isArray(children)
+      ? children.some((c: any) => c?.type === "img" || c?.props?.node?.tagName === "img" || c?.props?.src)
+      : (children as any)?.type === "img" || (children as any)?.props?.src;
+
+    if (hasImageChild) {
+      return <div className="my-3.5 not-prose" {...props}>{children}</div>;
+    }
+
+    return (
+      <p
+        className="resumo-narracao-p my-3.5 text-foreground/90 leading-[1.8] text-[15px] sm:text-[16px]"
+        {...props}
+      >
+        {children}
+      </p>
+    );
+  },
   ul: ({ node, ...props }: any) => (
     <ul className="my-4 space-y-2 pl-0 list-none" {...props} />
   ),
@@ -514,15 +528,7 @@ export default function ResumoJuridicoReaderSheet({
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Item oficial carregado do catálogo offline (Word/R2)
-  const [catalogSubtema, setCatalogSubtema] = useState<{
-    id: string;
-    subtema: string;
-    markdown: string;
-    audio_url?: string | null;
-    imageUrl?: string | null;
-    exemplos?: string | null;
-    termos?: string | null;
-  } | null>(null);
+  const [catalogSubtema, setCatalogSubtema] = useState<import("@/services/resumosCatalog").SubtemaItem | null>(null);
 
   // Dados de Conceitos Aprofundados gerados pela IA (persistidos em resumo_metodologias)
   const [conceitosData, setConceitosData] = useState<{
@@ -767,6 +773,17 @@ export default function ResumoJuridicoReaderSheet({
     subtitulo: resumo?.area,
   });
 
+  const articleContentRef = useRef<HTMLElement | null>(null);
+
+  useResumoParagraphHighlighter({
+    containerRef: articleContentRef,
+    currentTime: audioCtrl.currentTime,
+    duration: audioCtrl.duration,
+    isPlaying: audioCtrl.isPlaying,
+    onSeek: audioCtrl.seekTo,
+    isScrolling,
+  });
+
   const rawContent =
     tab === "resumo" ? currentMarkdown : tab === "exemplos" ? currentExemplos : currentTermos;
 
@@ -836,20 +853,6 @@ export default function ResumoJuridicoReaderSheet({
       toast.error("Falha ao gerar PDF.", { id: "baixar-pdf" });
     } finally {
       setSalvandoDrive(false);
-    }
-  };
-
-  const share = async () => {
-    if (!resumo) return;
-    const text = textoAtivo();
-    try {
-      if (podeCompartilhar()) {
-        await compartilharNativo({ title: resumo.subtema || resumo.tema, text });
-      } else {
-        void abrirLink(`https://wa.me/?text=${encodeURIComponent(text.slice(0, 1500))}`);
-      }
-    } catch {
-      /* noop */
     }
   };
 
@@ -1028,6 +1031,7 @@ export default function ResumoJuridicoReaderSheet({
                   >
                     {metodo === "conceitos" ? (
                       <article
+                        ref={articleContentRef as any}
                         style={{ fontSize: `${fontSize}px` }}
                         className="
                           prose prose-sm md:prose-base max-w-none dark:prose-invert font-body
