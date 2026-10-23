@@ -1,11 +1,44 @@
-import React, { useState, useRef, useMemo, useCallback } from "react";
-import { Headphones, ChevronRight, ChevronLeft, ArrowLeft, Search, X } from "lucide-react";
+import React, { useState, useRef, useMemo, useCallback, useEffect } from "react";
+import { Headphones, ChevronRight, ChevronLeft, ArrowLeft, Search, X, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { capaDaArea } from "@/lib/audioaulasHelper";
 import { directImg, R2_LIVROS_PDF_BASE_URL } from "@/lib/cdnImg";
 import { CapaOtimizada } from "./CapaOtimizada";
 import { motion, AnimatePresence } from "framer-motion";
 import { resetGlobalScroll } from "@/lib/scrollUtils";
+import { useAudioaulasPlayer, type AulaAudio } from "@/contexts/AudioaulasPlayerContext";
+import { areaIconFor } from "@/lib/areasDireitoIcons";
+import { cn } from "@/lib/utils";
+
+function MiniEqualizador({ cor = "#ffffff" }: { cor?: string }) {
+  return (
+    <span className="inline-flex items-end gap-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true">
+      <motion.span
+        className="w-0.5 rounded-full"
+        style={{ backgroundColor: cor }}
+        animate={{ height: ["25%", "95%", "40%", "80%", "30%"] }}
+        transition={{ duration: 0.7, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.span
+        className="w-0.5 rounded-full"
+        style={{ backgroundColor: cor }}
+        animate={{ height: ["60%", "30%", "100%", "45%", "70%"] }}
+        transition={{ duration: 0.85, repeat: Infinity, ease: "easeInOut", delay: 0.15 }}
+      />
+      <motion.span
+        className="w-0.5 rounded-full"
+        style={{ backgroundColor: cor }}
+        animate={{ height: ["35%", "85%", "25%", "90%", "40%"] }}
+        transition={{ duration: 0.65, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+      />
+    </span>
+  );
+}
+
+function labelFormatadaAba(nome: string): string {
+  if (/constitui|constitu/i.test(nome)) return "Constituição";
+  return nome.replace(/^Direitos?\s+(do\s+|da\s+|de\s+)?/i, "").trim();
+}
 
 export interface CodigoItem {
   id: string;
@@ -272,9 +305,11 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
   const modo = modoProp !== undefined ? modoProp : modoInterno;
   const [busca, setBusca] = useState("");
 
+  const { aulas, tocar, setAberto, atualId, tocando } = useAudioaulasPlayer();
+
   const refCarrosselAreas = useRef<HTMLDivElement>(null);
-  const refCarrosselCodigos = useRef<HTMLDivElement>(null);
-  const refCarrosselEstatutos = useRef<HTMLDivElement>(null);
+  const refCarrosselAbas = useRef<HTMLDivElement>(null);
+  const refCarrosselMaterias = useRef<HTMLDivElement>(null);
 
   const scrollCarrossel = useCallback(
     (ref: React.RefObject<HTMLDivElement | null>, direcao: "left" | "right") => {
@@ -289,6 +324,82 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
   const areasTradicionais = useMemo(() => {
     return areas.filter(([nome]) => !/eca|estatuto/i.test(nome));
   }, [areas]);
+
+  // Lista ordenada de abas para o menu de alternância
+  // Começando obrigatoriamente por Constituição Federal, depois Direito Administrativo, e depois os demais ramos
+  const listaAbasAreas = useMemo(() => {
+    const mapaQtd = new Map<string, number>();
+    for (const a of aulas) {
+      if (!a.area) continue;
+      mapaQtd.set(a.area, (mapaQtd.get(a.area) || 0) + 1);
+    }
+    if (mapaQtd.size === 0 && areas.length > 0) {
+      for (const [nome, qtd] of areas) {
+        mapaQtd.set(nome, qtd);
+      }
+    }
+
+    const nomes = Array.from(mapaQtd.keys()).filter((n) => !/eca|estatuto/i.test(n));
+
+    return nomes.sort((a, b) => {
+      const isConstA = /constitui|constitu/i.test(a);
+      const isConstB = /constitui|constitu/i.test(b);
+      if (isConstA) return -1;
+      if (isConstB) return 1;
+
+      const isAdmA = /administrativ/i.test(a);
+      const isAdmB = /administrativ/i.test(b);
+      if (isAdmA) return -1;
+      if (isAdmB) return 1;
+
+      const isPenalA = /^direito penal/i.test(a);
+      const isPenalB = /^direito penal/i.test(b);
+      if (isPenalA) return -1;
+      if (isPenalB) return 1;
+
+      const isCivilA = /^direito civil/i.test(a);
+      const isCivilB = /^direito civil/i.test(b);
+      if (isCivilA) return -1;
+      if (isCivilB) return 1;
+
+      return a.localeCompare(b, "pt-BR");
+    });
+  }, [aulas, areas]);
+
+  // Área selecionada no menu de alternância (começa em Constituição Federal)
+  const [areaSelecionadaAlternancia, setAreaSelecionadaAlternancia] = useState<string>("Direito Constitucional");
+
+  // Garante seleção correta assim que listaAbasAreas estiver carregada
+  useEffect(() => {
+    if (listaAbasAreas.length > 0 && !listaAbasAreas.includes(areaSelecionadaAlternancia)) {
+      const constArea = listaAbasAreas.find((a) => /constitui|constitu/i.test(a)) || listaAbasAreas[0];
+      setAreaSelecionadaAlternancia(constArea);
+    }
+  }, [listaAbasAreas, areaSelecionadaAlternancia]);
+
+  // Agrupamento de matérias (temas) e seus títulos dentro da área selecionada
+  const materiasDaAreaSelecionada = useMemo(() => {
+    if (!areaSelecionadaAlternancia) return [];
+    const aulasDaArea = aulas.filter((a) => a.area === areaSelecionadaAlternancia);
+    const mapTemas = new Map<string, AulaAudio[]>();
+
+    for (const a of aulasDaArea) {
+      const temaNome = a.tema?.trim() || "Aulas Fundamentais";
+      const lista = mapTemas.get(temaNome) || [];
+      lista.push(a);
+      mapTemas.set(temaNome, lista);
+    }
+
+    return Array.from(mapTemas.entries()).map(([tema, listaAulas]) => {
+      listaAulas.sort((a, b) => (a.sequencia ?? 0) - (b.sequencia ?? 0));
+      return {
+        tema,
+        aulas: listaAulas,
+        totalAulas: listaAulas.length,
+        primeiraAula: listaAulas[0],
+      };
+    });
+  }, [aulas, areaSelecionadaAlternancia]);
 
   // Mapeamento dinâmico de aulas por área
   const areaAulasMap = useMemo(() => {
@@ -529,185 +640,221 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
               </div>
             </section>
 
-            {/* ═════════════ SEÇÃO 2: LEGISLAÇÃO (CÓDIGOS E ESTATUTOS) ═════════════ */}
-            <div className="pt-4 border-t border-white/5 space-y-10">
-              {/* ──────────────── CÓDIGOS (CARROSSEL) ──────────────── */}
-              <section className="space-y-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-                      <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
-                      <span className="wrap-break-word">CÓDIGOS</span>
-                    </h3>
-                    <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 wrap-break-word">
-                      {totalAulasCodigos > 0
-                        ? `${totalAulasCodigos} aulas narradas artigo por artigo em ${CATALOGO_CODIGOS.length} códigos`
-                        : `Estude ${CATALOGO_CODIGOS.length} códigos principais com aulas narradas artigo por artigo`}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => alterarModo("codigos")}
-                      className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-primary/20 hover:border-primary/40 transition active:scale-95"
-                      aria-label="Ver todos os códigos"
-                    >
-                      <span>Ver todos</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-                    </button>
-
-                    <div className="hidden sm:flex items-center gap-1 pl-1">
-                      <button
-                        onClick={() => scrollCarrossel(refCarrosselCodigos, "left")}
-                        className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition active:scale-95"
-                        aria-label="Rolar para esquerda"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => scrollCarrossel(refCarrosselCodigos, "right")}
-                        className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition active:scale-95"
-                        aria-label="Rolar para direita"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
+            {/* ═════════════ SEÇÃO 2: MATÉRIAS & TEMAS (MENU DE ALTERNÂNCIA POR ÁREA) ═════════════ */}
+            <div className="pt-4 border-t border-white/5 space-y-6">
+              {/* Header da Seção */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
+                    <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+                    <span className="wrap-break-word">Matérias por Área</span>
+                  </h3>
+                  <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 wrap-break-word">
+                    Navegue pelas matérias e títulos completos em cada ramo do direito
+                  </p>
                 </div>
 
-                {/* Trilho Carrossel Códigos */}
-                <div
-                  ref={refCarrosselCodigos}
-                  className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-3 pt-1 snap-x scrollbar-none select-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
-                >
-                  {CATALOGO_CODIGOS.map((cod) => {
-                    const infoAula = getAulasInfoDinamica(cod.rota, cod.aulasInfo);
+                <div className="hidden sm:flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => scrollCarrossel(refCarrosselMaterias, "left")}
+                    className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition active:scale-95"
+                    aria-label="Rolar matérias para esquerda"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => scrollCarrossel(refCarrosselMaterias, "right")}
+                    className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition active:scale-95"
+                    aria-label="Rolar matérias para direita"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Menu de Alternância (Pills de Áreas com Constituição Federal primeiro) */}
+              <div
+                ref={refCarrosselAbas}
+                className="flex items-center gap-2 overflow-x-auto pb-2 pt-1 snap-x scrollbar-none select-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+              >
+                {listaAbasAreas.map((areaNome) => {
+                  const isAtivo = areaSelecionadaAlternancia === areaNome;
+                  const { Icon, color } = areaIconFor(areaNome);
+                  const label = labelFormatadaAba(areaNome);
+                  const countAulas = areaAulasMap.get(areaNome.toLowerCase().trim()) || 0;
+
+                  return (
+                    <button
+                      key={areaNome}
+                      onClick={() => {
+                        setAreaSelecionadaAlternancia(areaNome);
+                        if (refCarrosselMaterias.current) {
+                          refCarrosselMaterias.current.scrollTo({ left: 0, behavior: "smooth" });
+                        }
+                      }}
+                      className={cn(
+                        "shrink-0 inline-flex items-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 snap-start active:scale-95 border min-h-[44px]",
+                        isAtivo
+                          ? "bg-primary text-white border-primary shadow-lg shadow-primary/30"
+                          : "bg-white/5 text-zinc-300 border-white/10 hover:bg-white/10 hover:text-white"
+                      )}
+                    >
+                      <Icon className={cn("w-4 h-4 shrink-0", isAtivo ? "text-white" : "")} style={{ color: isAtivo ? undefined : color }} />
+                      <span className="whitespace-nowrap">{label}</span>
+                      {countAulas > 0 && (
+                        <span
+                          className={cn(
+                            "text-[10px] px-1.5 py-0.5 rounded-full font-black shrink-0",
+                            isAtivo ? "bg-white/20 text-white" : "bg-white/10 text-zinc-400"
+                          )}
+                        >
+                          {countAulas}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Trilho Carrossel de Matérias da Área Selecionada */}
+              <div
+                ref={refCarrosselMaterias}
+                className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-4 pt-1 snap-x scrollbar-none select-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
+              >
+                {materiasDaAreaSelecionada.length > 0 ? (
+                  materiasDaAreaSelecionada.map((materia, idxMat) => {
+                    const { Icon, color } = areaIconFor(areaSelecionadaAlternancia);
+                    const isTocandoEstaMateria = tocando && materia.aulas.some((a) => a.id === atualId);
+
                     return (
-                      <button
-                        key={cod.id}
-                        onClick={() => irParaRota(cod.rota)}
-                        className="group relative w-36.25 sm:w-43.75 md:w-48.75 aspect-3/4 shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
+                      <div
+                        key={`${materia.tema}-${idxMat}`}
+                        onClick={() =>
+                          irParaRota(
+                            `/audioaulas/${encodeURIComponent(areaSelecionadaAlternancia)}?capitulo=${encodeURIComponent(materia.tema)}`
+                          )
+                        }
+                        className="group relative w-72 sm:w-80 md:w-88 aspect-auto shrink-0 snap-start rounded-2xl bg-gradient-to-b from-zinc-900/90 via-zinc-900/70 to-zinc-950/90 border border-white/10 hover:border-primary/50 transition-all duration-300 p-4 sm:p-5 flex flex-col justify-between shadow-xl shadow-black/40 cursor-pointer active:scale-[0.99]"
                       >
-                        <CapaOtimizada
-                          src={cod.capa}
-                          alt={cod.nome}
-                          animacaoEntrada
-                          className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-linear-to-t from-black via-black/50 to-transparent" />
+                        {/* Topo do Card */}
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border border-white/10 shadow-sm"
+                                style={{ backgroundColor: `${color}18` }}
+                              >
+                                <Icon className="w-4 h-4" style={{ color }} />
+                              </span>
+                              <span className="text-[11px] font-bold tracking-wider uppercase text-zinc-400">
+                                Matéria {idxMat + 1}
+                              </span>
+                            </div>
 
-                        <div className="absolute inset-0 p-3 flex flex-col justify-between">
-                          <span className="self-start px-2 py-0.5 rounded-md bg-black/60 text-white font-black text-[11px] tracking-wider border border-white/20 backdrop-blur">
-                            {cod.sigla}
-                          </span>
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-zinc-300">
+                                <Headphones className="w-3 h-3 text-primary" />
+                                <span>
+                                  {materia.totalAulas} {materia.totalAulas === 1 ? "aula" : "aulas"}
+                                </span>
+                              </span>
 
-                          <div className="min-w-0">
-                            <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
-                              {cod.nome}
-                            </p>
-                            {infoAula && (
-                              <p className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 flex items-center gap-1">
-                                <Headphones className="w-3 h-3 text-zinc-400" />
-                                {infoAula}
-                              </p>
-                            )}
+                              {/* Botão de Play Rápido */}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (materia.primeiraAula) {
+                                    void tocar(materia.primeiraAula, materia.aulas);
+                                    setAberto(true);
+                                  }
+                                }}
+                                aria-label={`Tocar aulas de ${materia.tema}`}
+                                className="w-9 h-9 rounded-full bg-primary/20 text-primary border border-primary/40 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition shadow-md shadow-primary/20 active:scale-95 shrink-0"
+                              >
+                                {isTocandoEstaMateria ? (
+                                  <MiniEqualizador cor="#ffffff" />
+                                ) : (
+                                  <Play className="w-4 h-4 fill-current ml-0.5" />
+                                )}
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </section>
 
-              {/* ──────────────── ESTATUTOS (CARROSSEL) ──────────────── */}
-              <section className="space-y-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-                      <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
-                      <span className="wrap-break-word">ESTATUTOS</span>
-                    </h3>
-                    <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 wrap-break-word">
-                      {totalAulasEstatutos > 0
-                        ? `${totalAulasEstatutos} aulas especializadas em ${CATALOGO_ESTATUTOS.length} estatutos fundamentais`
-                        : `Estude ${CATALOGO_ESTATUTOS.length} estatutos disponíveis com legislação em áudio`}
-                    </p>
-                  </div>
+                          {/* Título da Matéria */}
+                          <h4 className="font-bold text-white text-[15px] sm:text-base leading-snug line-clamp-2 mt-3 group-hover:text-primary transition-colors">
+                            {materia.tema}
+                          </h4>
 
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => alterarModo("estatutos")}
-                      className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-primary/20 hover:border-primary/40 transition active:scale-95"
-                      aria-label="Ver todos os estatutos"
-                    >
-                      <span>Ver todos</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-                    </button>
-
-                    <div className="hidden sm:flex items-center gap-1 pl-1">
-                      <button
-                        onClick={() => scrollCarrossel(refCarrosselEstatutos, "left")}
-                        className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition active:scale-95"
-                        aria-label="Rolar para esquerda"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => scrollCarrossel(refCarrosselEstatutos, "right")}
-                        className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition active:scale-95"
-                        aria-label="Rolar para direita"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Trilho Carrossel Estatutos */}
-                <div
-                  ref={refCarrosselEstatutos}
-                  className="flex gap-3.5 sm:gap-4 overflow-x-auto pb-3 pt-1 snap-x scrollbar-none select-none scroll-smooth -mx-4 px-4 sm:mx-0 sm:px-0"
-                >
-                  {CATALOGO_ESTATUTOS.map((est) => {
-                    const infoAula = getAulasInfoDinamica(est.rota, est.aulasInfo);
-                    return (
-                      <button
-                        key={est.id}
-                        onClick={() => irParaRota(est.rota)}
-                        className="group relative w-36.25 sm:w-43.75 md:w-48.75 aspect-3/4 shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
-                      >
-                        <CapaOtimizada
-                          src={est.capa}
-                          alt={est.nome}
-                          animacaoEntrada
-                          className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-linear-to-t from-black via-black/55 to-transparent" />
-
-                        <div className="absolute inset-0 p-3 flex flex-col justify-between">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="px-2 py-0.5 rounded-md font-black text-[11px] tracking-wider border backdrop-blur bg-black/60 text-white border-white/20">
-                              {est.sigla}
+                          {/* Lista dos Títulos em Carrossel */}
+                          <div className="mt-3.5 pt-3 border-t border-white/5 space-y-1.5">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-1">
+                              Títulos das aulas:
                             </span>
-                          </div>
+                            {materia.aulas.slice(0, 3).map((aula, idxAula) => {
+                              const isEstaAulaTocando = atualId === aula.id && tocando;
+                              return (
+                                <div
+                                  key={aula.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    void tocar(aula, materia.aulas);
+                                    setAberto(true);
+                                  }}
+                                  className={cn(
+                                    "flex items-center gap-2 p-1.5 rounded-lg text-[11.5px] sm:text-[12px] transition group/item cursor-pointer",
+                                    isEstaAulaTocando
+                                      ? "bg-primary/20 text-white font-semibold"
+                                      : "hover:bg-white/5 text-zinc-300 hover:text-white font-medium"
+                                  )}
+                                >
+                                  <span
+                                    className={cn(
+                                      "w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 transition",
+                                      isEstaAulaTocando
+                                        ? "bg-primary text-white"
+                                        : "bg-white/5 text-zinc-400 group-hover/item:text-primary group-hover/item:bg-primary/10"
+                                    )}
+                                  >
+                                    {idxAula + 1}
+                                  </span>
+                                  <span className="truncate flex-1">{aula.titulo}</span>
+                                  {isEstaAulaTocando && (
+                                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-ping shrink-0" />
+                                  )}
+                                </div>
+                              );
+                            })}
 
-                          <div className="min-w-0">
-                            <p className="font-bold leading-tight text-white text-xs sm:text-sm line-clamp-2">
-                              {est.nome}
-                            </p>
-                            {infoAula && (
-                              <p className="text-[10px] sm:text-[11px] text-zinc-400 font-semibold mt-1 flex items-center gap-1">
-                                <Headphones className="w-3 h-3 text-zinc-400" />
-                                {infoAula}
-                              </p>
+                            {materia.totalAulas > 3 && (
+                              <div className="pt-1 flex items-center justify-between text-[11px] text-zinc-400 font-medium px-1">
+                                <span>+ {materia.totalAulas - 3} outras aulas</span>
+                                <span className="text-primary font-bold group-hover:underline flex items-center gap-0.5">
+                                  Ver todas <ChevronRight className="w-3 h-3" />
+                                </span>
+                              </div>
                             )}
                           </div>
                         </div>
-                      </button>
+
+                        {/* Rodapé do Card */}
+                        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-xs text-zinc-400">
+                          <span className="font-semibold text-zinc-300">Explorar matéria</span>
+                          <span className="w-7 h-7 rounded-full bg-white/5 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition">
+                            <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+                          </span>
+                        </div>
+                      </div>
                     );
-                  })}
-                </div>
-              </section>
+                  })
+                ) : (
+                  <div className="w-full py-12 px-6 rounded-2xl bg-white/5 border border-white/10 text-center space-y-2">
+                    <Headphones className="w-8 h-8 text-primary mx-auto animate-pulse" />
+                    <p className="text-sm font-semibold text-white">Carregando matérias de {areaSelecionadaAlternancia}...</p>
+                    <p className="text-xs text-muted-foreground">Sincronizando títulos e aulas completas</p>
+                  </div>
+                )}
+              </div>
             </div>
           </motion.div>
         ) : (

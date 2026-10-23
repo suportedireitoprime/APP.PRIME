@@ -77,12 +77,23 @@ const Audioaulas = () => {
     }
   }, [searchParams, aulas, loadingAulas, handleTocarAula, setAba, setBusca, setSearchParams]);
 
-  const [capituloSelecionado, setCapituloSelecionado] = useState<string | null>(null);
+  const [capituloSelecionado, setCapituloSelecionado] = useState<string | null>(() => {
+    return searchParams.get('capitulo') || searchParams.get('tema') || null;
+  });
   const [modoVerTodos, setModoVerTodos] = useState<ModoVisualizacao>('hub');
+
+  // Sincroniza capítulo vindo por deep-link ou query string
+  useEffect(() => {
+    const capParam = searchParams.get('capitulo') || searchParams.get('tema');
+    if (capParam) {
+      setCapituloSelecionado(capParam);
+    }
+  }, [searchParams]);
 
   // Reset capítulo e modo ao trocar de área (Lei Global de Scroll)
   useEffect(() => {
-    setCapituloSelecionado(null);
+    const capParam = searchParams.get('capitulo') || searchParams.get('tema');
+    setCapituloSelecionado(capParam || null);
     setModoVerTodos('hub');
     resetGlobalScroll();
     requestAnimationFrame(() => resetGlobalScroll());
