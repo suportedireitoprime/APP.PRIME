@@ -1464,10 +1464,10 @@ export default function AudioleisPage() {
                             setSelectedCapituloParaPlaylist(itemData);
                             requestAnimationFrame(() => resetGlobalScroll());
                           }}
-                          className={`group rounded-2xl transition-all border overflow-hidden shadow-sm hover:shadow-md cursor-pointer ${
+                          className={`group rounded-2xl transition-all border overflow-hidden cursor-pointer ${
                             isPlayingInThisChapter
-                              ? "bg-card border-primary/60 ring-2 ring-primary/30 shadow-xl shadow-primary/10"
-                              : "bg-card/90 border-border hover:border-border/90 hover:bg-card"
+                              ? "bg-card border-primary/50 ring-1 ring-primary/25 shadow-lg shadow-primary/8"
+                              : "bg-card/80 border-border/60 hover:border-border hover:bg-card"
                           }`}
                         >
                           <div className="w-full text-left flex items-stretch p-0 transition-transform active:scale-[0.995]">
@@ -1511,32 +1511,16 @@ export default function AudioleisPage() {
                               </h3>
 
                               {rangeText && (
-                                <p className="mt-1.5 text-xs text-muted-foreground font-medium">
+                                <p className="mt-1 text-[11px] text-muted-foreground/70 font-medium">
                                   {rangeText}
                                 </p>
-                              )}
-
-                              {/* Barra de progresso de áudios gravados */}
-                              {totalArts > 0 && (
-                                <div className="mt-2.5 h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-secondary/80">
-                                  <div
-                                    className={`h-full rounded-full transition-all duration-500 ${
-                                      totalAudios > 0
-                                        ? "bg-linear-to-r from-primary to-emerald-400"
-                                        : "bg-muted"
-                                    }`}
-                                    style={{
-                                      width: `${Math.max(totalAudios > 0 ? 8 : 0, pctGravado)}%`,
-                                    }}
-                                  />
-                                </div>
                               )}
                             </div>
 
                             {/* Indicador de abertura de Playlist */}
                             <div className="flex items-center pr-4 sm:pr-5 shrink-0">
-                              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-secondary/80 group-hover:bg-primary/20 group-hover:text-primary text-muted-foreground flex items-center justify-center transition-all shadow-sm">
-                                <ChevronRight className="w-5 h-5 transition-transform group-hover:translate-x-0.5" />
+                              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 group-hover:bg-primary/15 group-hover:text-primary text-muted-foreground/60 flex items-center justify-center transition-all">
+                                <ChevronRight className="w-4.5 h-4.5 transition-transform group-hover:translate-x-0.5" />
                               </div>
                             </div>
                           </div>
