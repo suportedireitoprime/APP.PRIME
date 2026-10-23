@@ -36,6 +36,7 @@ import PremiumGate from "@/components/PremiumGate";
 import { haptic } from "@/lib/nativeHaptics";
 import { cn } from "@/lib/utils";
 import { getAreaThemePalette } from "@/lib/areasDireitoIcons";
+import { resetGlobalScroll } from "@/lib/scrollUtils";
 
 function EqualizadorAnimado({ cor = "currentColor" }: { cor?: string }) {
   return (
@@ -1192,6 +1193,10 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
 
   const handleSelecionarCapitulo = useCallback(
     (tema: string | null) => {
+      resetGlobalScroll();
+      requestAnimationFrame(() => {
+        resetGlobalScroll();
+      });
       setIsShimmering(true);
       setCapituloSelecionado(tema);
       if (modoVisualizacao === "recentes") {
@@ -1199,6 +1204,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
       }
       const timer = setTimeout(() => {
         setIsShimmering(false);
+        resetGlobalScroll();
       }, 120);
       return () => clearTimeout(timer);
     },
@@ -1208,10 +1214,15 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   useEffect(() => {
     if (capituloSelecionado !== prevCapituloRef.current) {
       prevCapituloRef.current = capituloSelecionado;
+      resetGlobalScroll();
+      requestAnimationFrame(() => {
+        resetGlobalScroll();
+      });
       if (capituloSelecionado !== null) {
         setIsShimmering(true);
         const timer = setTimeout(() => {
           setIsShimmering(false);
+          resetGlobalScroll();
         }, 120);
         return () => clearTimeout(timer);
       }
@@ -1221,10 +1232,15 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   useEffect(() => {
     if (aba !== prevAbaRef.current) {
       prevAbaRef.current = aba;
+      resetGlobalScroll();
+      requestAnimationFrame(() => {
+        resetGlobalScroll();
+      });
       if (aba !== "aulas") {
         setIsAbaShimmering(true);
         const timer = setTimeout(() => {
           setIsAbaShimmering(false);
+          resetGlobalScroll();
         }, 120);
         return () => clearTimeout(timer);
       }
@@ -1432,7 +1448,10 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
       const novoIdx = capituloIdx + dir;
       if (novoIdx >= 0 && novoIdx < listaCapitulosAtiva.length) {
         handleSelecionarCapitulo(listaCapitulosAtiva[novoIdx][0]);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        resetGlobalScroll();
+        requestAnimationFrame(() => {
+          resetGlobalScroll();
+        });
       }
     },
     [capituloIdx, handleSelecionarCapitulo, listaCapitulosAtiva],
@@ -1857,7 +1876,11 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                     subtitle={areaAtual?.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, "") || "Audioaulas"}
                     onBack={() => {
                       haptic.light();
+                      resetGlobalScroll();
                       setCapituloSelecionado(null);
+                      requestAnimationFrame(() => {
+                        resetGlobalScroll();
+                      });
                     }}
                     className="border-b-0 pb-1"
                   />

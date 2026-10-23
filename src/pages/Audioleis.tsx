@@ -25,6 +25,7 @@ import {
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { AudioaulasHero } from "@/components/audioaulas/home/AudioaulasHero";
 import { capaDaArea } from "@/lib/audioaulasHelper";
+import { resetGlobalScroll } from "@/lib/scrollUtils";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -354,8 +355,15 @@ export default function AudioleisPage() {
     setCategoriaFoco(null);
     setMostrarOutrasLeis(false);
     setSelectedCapituloParaPlaylist(null);
-    window.scrollTo({ top: 0, behavior: "instant" });
+    resetGlobalScroll();
+    requestAnimationFrame(() => resetGlobalScroll());
   }, []);
+
+  // Garante scroll top a 0 ao trocar de lei, catálogo ou foco de categoria (Lei Global de Scroll)
+  useEffect(() => {
+    resetGlobalScroll();
+    requestAnimationFrame(() => resetGlobalScroll());
+  }, [selectedTabela, mostrarOutrasLeis, categoriaFoco]);
   const audioleiGate = useGatedFeature("audiolei", "narracao");
   const audioleiGateRef = useRef(audioleiGate);
   audioleiGateRef.current = audioleiGate;
@@ -919,7 +927,8 @@ export default function AudioleisPage() {
               onClick={() => {
                 haptic.selection();
                 setCategoriaFoco(tipoCategoria);
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                resetGlobalScroll();
+                requestAnimationFrame(() => resetGlobalScroll());
               }}
               className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-primary/20 hover:border-primary/40 transition active:scale-95"
               aria-label={`Ver todos os ${titulo}`}
@@ -981,6 +990,7 @@ export default function AudioleisPage() {
         }
         onVoltar={() => {
           haptic.impact();
+          resetGlobalScroll();
           if (!mostrarOutrasLeis) {
             setMostrarOutrasLeis(true);
             setSearchQuery("");
@@ -991,6 +1001,7 @@ export default function AudioleisPage() {
           } else {
             navigate("/");
           }
+          requestAnimationFrame(() => resetGlobalScroll());
         }}
         totalAulas={
           mostrarOutrasLeis
@@ -1283,7 +1294,9 @@ export default function AudioleisPage() {
                           key={capitulo.id || idx}
                           onClick={() => {
                             haptic.selection();
+                            resetGlobalScroll();
                             setSelectedCapituloParaPlaylist(itemData);
+                            requestAnimationFrame(() => resetGlobalScroll());
                           }}
                           className={`group rounded-2xl transition-all border overflow-hidden shadow-sm hover:shadow-md cursor-pointer ${
                             isPlayingInThisChapter

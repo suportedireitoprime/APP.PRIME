@@ -2,6 +2,7 @@ import React from "react";
 import { ArrowLeft, Headphones } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { CAPA_HUB, capaDaArea } from "@/lib/audioaulasHelper";
+import { resetGlobalScroll } from "@/lib/scrollUtils";
 import { CapaOtimizada } from "./CapaOtimizada";
 import CassetteAnimation from "./CassetteAnimation";
 
@@ -45,6 +46,7 @@ export const AudioaulasHero = React.memo(function AudioaulasHero({
   const capaImg = areaAtual ? capaDaArea(areaAtual) : CAPA_HUB;
 
   const handleVoltar = () => {
+    resetGlobalScroll();
     if (onVoltar) {
       onVoltar();
     } else if (areaAtual) {
@@ -52,6 +54,7 @@ export const AudioaulasHero = React.memo(function AudioaulasHero({
     } else {
       navigate("/");
     }
+    requestAnimationFrame(() => resetGlobalScroll());
   };
 
   return (

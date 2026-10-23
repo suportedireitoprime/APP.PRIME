@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { normalizar } from '@/lib/audioaulasHelper';
+import { resetGlobalScroll } from '@/lib/scrollUtils';
 import AudioaulasBottomNav from '@/components/audioaulas/AudioaulasBottomNav';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
 import { useIsDesktop } from '@/hooks/use-desktop';
@@ -79,11 +80,19 @@ const Audioaulas = () => {
   const [capituloSelecionado, setCapituloSelecionado] = useState<string | null>(null);
   const [modoVerTodos, setModoVerTodos] = useState<ModoVisualizacao>('hub');
 
-  // Reset capítulo e modo ao trocar de área
+  // Reset capítulo e modo ao trocar de área (Lei Global de Scroll)
   useEffect(() => {
     setCapituloSelecionado(null);
     setModoVerTodos('hub');
+    resetGlobalScroll();
+    requestAnimationFrame(() => resetGlobalScroll());
   }, [areaAtual]);
+
+  // Sempre que capituloSelecionado mudar, garante scroll top a 0
+  useEffect(() => {
+    resetGlobalScroll();
+    requestAnimationFrame(() => resetGlobalScroll());
+  }, [capituloSelecionado]);
 
   const isBottomNavVisivel = !state.aberto && !areaAtual && modoVerTodos === 'hub' && state.aba === 'aulas';
 
@@ -118,8 +127,14 @@ const Audioaulas = () => {
           totalAulas={areaAtual ? state.daArea.length : state.aulas.length}
           onVoltar={
             areaAtual
-              ? () => navigate('/audioaulas')
-              : () => navigate('/')
+              ? () => {
+                  resetGlobalScroll();
+                  navigate('/audioaulas');
+                }
+              : () => {
+                  resetGlobalScroll();
+                  navigate('/');
+                }
           }
         />
       )}
@@ -218,10 +233,12 @@ const Audioaulas = () => {
         ativo={areaAtual ? null : state.aba}
         hidden={!isBottomNavVisivel}
         onSelect={(t) => {
+          resetGlobalScroll();
           if (areaAtual) navigate('/audioaulas');
           state.setAba(t);
           state.setAberto(false);
           if (t === 'buscar') window.setTimeout(() => buscaRef.current?.focus(), 150);
+          requestAnimationFrame(() => resetGlobalScroll());
         }}
       />
       </div>

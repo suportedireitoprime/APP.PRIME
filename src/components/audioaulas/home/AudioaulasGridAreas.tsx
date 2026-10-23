@@ -5,6 +5,7 @@ import { capaDaArea } from "@/lib/audioaulasHelper";
 import { directImg, R2_LIVROS_PDF_BASE_URL } from "@/lib/cdnImg";
 import { CapaOtimizada } from "./CapaOtimizada";
 import { motion, AnimatePresence } from "framer-motion";
+import { resetGlobalScroll } from "@/lib/scrollUtils";
 
 export interface CodigoItem {
   id: string;
@@ -396,9 +397,19 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
       setModoInterno(novoModo);
       onModoChange?.(novoModo);
       setBusca("");
-      window.scrollTo({ top: 0, behavior: "instant" });
+      resetGlobalScroll();
+      requestAnimationFrame(() => resetGlobalScroll());
     },
     [onModoChange],
+  );
+
+  const irParaRota = useCallback(
+    (rota: string) => {
+      resetGlobalScroll();
+      navigate(rota);
+      requestAnimationFrame(() => resetGlobalScroll());
+    },
+    [navigate],
   );
 
   const voltarParaHub = useCallback(() => {
@@ -482,7 +493,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                   return (
                     <button
                       key={nome}
-                      onClick={() => navigate(`/audioaulas/${encodeURIComponent(nome)}`)}
+                      onClick={() => irParaRota(`/audioaulas/${encodeURIComponent(nome)}`)}
                       className="group relative w-40 sm:w-47.5 md:w-52.5 aspect-4/5 shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
                     >
                       <CapaOtimizada
@@ -574,7 +585,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                     return (
                       <button
                         key={cod.id}
-                        onClick={() => navigate(cod.rota)}
+                        onClick={() => irParaRota(cod.rota)}
                         className="group relative w-36.25 sm:w-43.75 md:w-48.75 aspect-3/4 shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
                       >
                         <CapaOtimizada
@@ -662,7 +673,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                     return (
                       <button
                         key={est.id}
-                        onClick={() => navigate(est.rota)}
+                        onClick={() => irParaRota(est.rota)}
                         className="group relative w-36.25 sm:w-43.75 md:w-48.75 aspect-3/4 shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
                       >
                         <CapaOtimizada
@@ -766,7 +777,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                   return (
                     <button
                       key={nome}
-                      onClick={() => navigate(`/audioaulas/${encodeURIComponent(nome)}`)}
+                      onClick={() => irParaRota(`/audioaulas/${encodeURIComponent(nome)}`)}
                       className="group flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/4 border border-white/5 hover:border-primary/40 hover:bg-white/[0.07] transition-all duration-200 active:scale-[0.99] text-left"
                     >
                       <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
@@ -817,7 +828,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                 {codigosFiltrados.map((cod) => (
                   <button
                     key={cod.id}
-                    onClick={() => navigate(cod.rota)}
+                    onClick={() => irParaRota(cod.rota)}
                     className="group flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/4 border border-white/5 hover:border-primary/40 hover:bg-white/[0.07] transition-all duration-200 active:scale-[0.99] text-left"
                   >
                     <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
@@ -870,7 +881,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                 {estatutosFiltrados.map((est) => (
                   <button
                     key={est.id}
-                    onClick={() => navigate(est.rota)}
+                    onClick={() => irParaRota(est.rota)}
                     className="group flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/4 border border-white/5 hover:border-primary/40 hover:bg-white/[0.07] transition-all duration-200 active:scale-[0.99] text-left"
                   >
                     <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   Play,
   Pause,
@@ -58,6 +58,22 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
   onTogglePlay,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const listContainerRef = useRef<HTMLDivElement>(null);
+
+  // Garante scroll no topo absoluto ao abrir a playlist ou trocar de capítulo
+  useEffect(() => {
+    if (isOpen) {
+      if (listContainerRef.current) {
+        listContainerRef.current.scrollTop = 0;
+      }
+      setSearchQuery("");
+      requestAnimationFrame(() => {
+        if (listContainerRef.current) {
+          listContainerRef.current.scrollTop = 0;
+        }
+      });
+    }
+  }, [isOpen, capituloData]);
 
   const realArtigos = capituloData?.realArtigos ?? [];
 
@@ -220,7 +236,7 @@ export const AudioleiPlaylistSheet: React.FC<AudioleiPlaylistSheetProps> = ({
         </div>
 
         {/* Lista de Artigos Estilo Playlist (Spotify / Apple Music) */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-2.5 divide-y divide-border/20">
+        <div ref={listContainerRef} className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-2.5 divide-y divide-border/20">
           {filteredArtigos.length === 0 ? (
             <div className="py-16 text-center text-muted-foreground">
               <Search className="w-10 h-10 mx-auto mb-2 opacity-40" />
