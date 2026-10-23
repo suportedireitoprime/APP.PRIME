@@ -72,11 +72,11 @@ export default function AdminCotasAnalise() {
       setLimits(activeMonthlyLimits);
 
       // 2. Carregar perfis de usuários
-      const { data: usersData, error: usersErr } = await supabase
-        .from('profiles')
-        .select('id, email, display_name, nome_completo, is_premium, created_at, avatar_url')
+      const { data: usersData, error: usersErr } = await (supabase
+        .from('profiles' as any)
+        .select('*')
         .order('created_at', { ascending: false })
-        .limit(2000);
+        .limit(2000) as any);
 
       if (usersErr) throw usersErr;
       const allProfiles: UserProfile[] = usersData || [];
@@ -649,10 +649,9 @@ export default function AdminCotasAnalise() {
       {selectedUserDossie && (
         <UserDossieSheet
           userId={selectedUserDossie.id}
-          userEmail={selectedUserDossie.email}
-          userName={selectedUserDossie.nome_completo || selectedUserDossie.display_name}
-          open={!!selectedUserDossie}
-          onOpenChange={(v) => { if (!v) setSelectedUserDossie(null); }}
+          email={selectedUserDossie.email}
+          nome={selectedUserDossie.nome_completo || selectedUserDossie.display_name}
+          onClose={() => setSelectedUserDossie(null)}
         />
       )}
     </div>

@@ -78,6 +78,7 @@ import {
   type CapituloComAudiosData,
 } from "@/components/audioleis/AudioleiPlaylistSheet";
 import { AudioleiPlayerModal } from "@/components/audioleis/AudioleiPlayerModal";
+import { AudioleisCategoriaSheet } from "@/components/audioleis/AudioleisCategoriaSheet";
 
 interface NarracaoItem {
   artigo_numero: string;
@@ -1178,9 +1179,7 @@ export default function AudioleisPage() {
         unidadeCustom="artigos"
         subtituloCustom={
           mostrarOutrasLeis
-            ? categoriaFoco
-              ? `${categoriaLaws.length} leis disponíveis para escuta artigo por artigo.`
-              : "Leis narradas, artigo por artigo."
+            ? "Leis narradas, artigo por artigo."
             : currentLaw.nome
         }
         onVoltar={() => {
@@ -1198,13 +1197,7 @@ export default function AudioleisPage() {
           }
           requestAnimationFrame(() => resetGlobalScroll());
         }}
-        totalAulas={
-          mostrarOutrasLeis
-            ? categoriaFoco
-              ? totalArtigosCategoriaFoco
-              : catalogTotal
-            : totalCount
-        }
+        totalAulas={mostrarOutrasLeis ? catalogTotal : totalCount}
       />
 
       {/* Conteúdo Principal */}
@@ -1275,30 +1268,8 @@ export default function AudioleisPage() {
                   </div>
                 )}
               </div>
-            ) : categoriaFoco ? (
-              /* Visualização 2: "Ver todos" de uma Categoria */
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setCategoriaFoco(null)}
-                    className="gap-2 -ml-2 text-zinc-300 hover:text-white"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>Voltar às categorias</span>
-                  </Button>
-                  <span className="text-xs text-muted-foreground">
-                    {categoriaLaws.length} leis ·{" "}
-                    {totalArtigosCategoriaFoco.toLocaleString("pt-BR")} artigos
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
-                  {categoriaLaws.map((law) => renderCardGrid(law))}
-                </div>
-              </div>
             ) : (
-              /* Visualização 3: Hub com 3 Carrosséis por Categoria */
+              /* Visualização 2: Hub com 3 Carrosséis por Categoria */
               <div className="space-y-9">
                 {renderSecaoCarrossel(
                   "Constituição & Códigos",
@@ -1843,6 +1814,18 @@ export default function AudioleisPage() {
           </div>
         </div>
       )}
+
+      {/* Sheet deslizante de baixo para cima com a lista de leis no estilo Vade Mecum */}
+      <AudioleisCategoriaSheet
+        open={Boolean(categoriaFoco)}
+        onClose={() => setCategoriaFoco(null)}
+        titulo={categoriaTitulo}
+        subtitulo={`${categoriaLaws.length} leis · ${totalArtigosCategoriaFoco.toLocaleString("pt-BR")} artigos narrados`}
+        laws={categoriaLaws}
+        lawCounts={lawCounts}
+        onSelectLaw={(law) => abrirLei(law as LawOption)}
+        getLawVisuals={getLawVisuals as any}
+      />
 
       {/* Sheet deslizante de baixo para cima estilo Playlist do Capítulo */}
       <AudioleiPlaylistSheet
