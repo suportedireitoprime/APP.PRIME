@@ -144,76 +144,188 @@ async function processDocxBuffer(docxBuffer, areaSlug, temaSlug) {
     relsMap[rm[1]] = rm[2];
   }
 
-  // Extrai parágrafos
-  const pRegex = /<w:p\b[^>]*>([\s\S]*?)<\/w:p>/g;
-  let pm;
-  const rawParagraphs = [];
-
-  while ((pm = pRegex.exec(docXml)) !== null) {
-    const pContent = pm[1];
-    const blipMatch = pContent.match(/r:embed="([^"]+)"/);
-    const imageFile = blipMatch ? relsMap[blipMatch[1]] : null;
-    const textMatches = pContent.match(/<w:t\b[^>]*>(.*?)<\/w:t>/g) || [];
-    const text = textMatches.map(t => t.replace(/<[^>]+>/g, '')).join('').trim();
-    rawParagraphs.push({ text, image: imageFile });
+  // Limpeza de entidades XML
+  function cleanXmlText(xmlStr) {
+    return (xmlStr || '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&apos;/g, "'")
+      .trim();
   }
 
-  // Identifica capítulos
-  const chapters = [];
-  const chapterStarts = [];
+  function isKnownSectionHeader(text) {
+    const norm = (text || '').toLowerCase().trim();
+    return [
+      'em linguagem simples', 'para entender melhor', 'de olho na prova',
+      'exemplo pratico', 'exemplo prático', 'ficha do crime', 'ficha do tema',
+      'ficha do conceito', 'para guardar', 'antes de comecar', 'antes de começar',
+      'como usar este material', 'sumario', 'sumário'
+    ].includes(norm);
+  }
 
-  const isSectionHeader = (txt) => [
-    'em linguagem simples', 'para entender melhor', 'de olho na prova', 
-    'exemplo pratico', 'exemplo prático', 'ficha do crime', 'ficha do tema', 
-    'ficha do conceito', 'para guardar', 'antes de comecar', 'antes de começar'
-  ].includes((txt || '').toLowerCase().trim());
+  function isTerracotta(color) {
+    if (!color) return false;
+    const c = color.toUpperCase();
+    return ['C0563F', 'C00000', 'B22222', 'D97706', 'D04A2A', '9C3420'].includes(c);
+  }
 
-  for (let i = 0; i < rawParagraphs.length; i++) {
-    const p = rawParagraphs[i];
-    const match = p.text.match(/^CAPÍTULO\s+(\d+)(?:\s+[•\-–]\s*(.*))?$/i);
-    if (match) {
-      const num = parseInt(match[1], 10);
-      const subheader = match[2] ? match[2].trim() : '';
-      let titulo = '';
-      let subtitulo = '';
+  const bodyMatch = docXml.match(/<w:body>([\s\S]*?)<\/w:body>/);
+  if (!bodyMatch) return [];
+  const body = bodyMatch[1];
 
-      const p1 = rawParagraphs[i + 1]?.text || '';
-      const p2 = rawParagraphs[i + 2]?.text || '';
+  const elRegex = /<w:(p|tbl)\b[\s\S]*?<\/w:\1>/g;
+  const elements = [];
+  let m;
+  while ((m = elRegex.exec(body)) !== null) {
+    elements.push({ type: m[1], raw: m[0] });
+  }
 
-      if (subheader) {
-        titulo = subheader;
-        if (p1 && !isSectionHeader(p1)) {
-          subtitulo = p1;
-        }
-      } else {
-        titulo = p1 || `Capítulo ${num}`;
-        if (p2 && !isSectionHeader(p2)) {
-          subtitulo = p2;
-        }
+  const parsedItems = [];
+
+  for (const el of elements) {
+    if (el.type === 'p') {
+      const blipMatch = el.raw.match(/r:embed="([^"]+)"/);
+      const imageFile = blipMatch ? relsMap[blipMatch[1]] : null;
+
+      const rRegex = /<w:r\b[\s\S]*?<\/w:r>/g;
+      let rMatch;
+      const textSpans = [];
+      let pFullText = '';
+
+      while ((rMatch = rRegex.exec(el.raw)) !== null) {
+        const rRaw = rMatch[0];
+        const tMatches = rRaw.match(/<w:t\b[^>]*>(.*?)<\/w:t>/g) || [];
+        const t = tMatches.map(cleanXmlText).join('');
+        if (!t) continue;
+
+        const isBold = rRaw.includes('<w:b/>') || rRaw.includes('<w:b ');
+        const isItalic = rRaw.includes('<w:i/>') || rRaw.includes('<w:i ');
+        const colorMatch = rRaw.match(/<w:color\s+[^>]*w:val="([^"]+)"/);
+        const color = colorMatch ? colorMatch[1].toUpperCase() : null;
+
+        textSpans.push({ text: t, bold: isBold, italic: isItalic, color });
+        pFullText += t;
       }
 
-      chapterStarts.push({
-        pIndex: i,
-        numero: num,
-        subheader,
-        titulo,
-        subtitulo
+      pFullText = pFullText.trim();
+      const pColorMatch = el.raw.match(/<w:color\s+[^>]*w:val="([^"]+)"/);
+      const pColor = pColorMatch ? pColorMatch[1].toUpperCase() : null;
+      const hasBorderBottom = el.raw.includes('w:bottom') || el.raw.includes('w:pBdr');
+      const isBullet = el.raw.includes('ListBullet') || el.raw.includes('w:numPr');
+      const hasTerracottaSpan = textSpans.some(s => isTerracotta(s.color));
+      const capMatch = pFullText.match(/^CAPÍTULO\s+(\d+)(?:\s+[•\-–]\s*(.*))?$/i);
+
+      parsedItems.push({
+        type: 'p',
+        text: pFullText,
+        spans: textSpans,
+        color: pColor,
+        hasTerracottaSpan,
+        hasBorderBottom,
+        isBullet,
+        isChapter: !!capMatch,
+        chapterNum: capMatch ? parseInt(capMatch[1], 10) : null,
+        chapterSub: capMatch ? (capMatch[2] || '').trim() : null,
+        imageFile
+      });
+    } else if (el.type === 'tbl') {
+      const trRegex = /<w:tr\b[\s\S]*?<\/w:tr>/g;
+      let trM;
+      const rows = [];
+      while ((trM = trRegex.exec(el.raw)) !== null) {
+        const tcRegex = /<w:tc\b[\s\S]*?<\/w:tc>/g;
+        let tcM;
+        const cells = [];
+        while ((tcM = tcRegex.exec(trM[0])) !== null) {
+          const pRegex = /<w:p\b[\s\S]*?<\/w:p>/g;
+          let pM;
+          const cellParagraphs = [];
+          while ((pM = pRegex.exec(tcM[0])) !== null) {
+            const tMatches = pM[0].match(/<w:t\b[^>]*>(.*?)<\/w:t>/g) || [];
+            const t = tMatches.map(cleanXmlText).join('').trim();
+            const isBold = pM[0].includes('<w:b/>') || pM[0].includes('<w:b ');
+            const isItalic = pM[0].includes('<w:i/>') || pM[0].includes('<w:i ');
+            if (t) {
+              cellParagraphs.push({ text: t, bold: isBold, italic: isItalic });
+            }
+          }
+          cells.push(cellParagraphs);
+        }
+        rows.push(cells);
+      }
+
+      const firstText = rows[0]?.[0]?.[0]?.text || '';
+      const capMatch = firstText.match(/^CAPÍTULO\s+(\d+)(?:\s+[•\-–]\s*(.*))?$/i);
+
+      parsedItems.push({
+        type: 'tbl',
+        rows,
+        isChapter: !!capMatch,
+        chapterNum: capMatch ? parseInt(capMatch[1], 10) : null,
+        chapterSub: capMatch ? (capMatch[2] || '').trim() : null
       });
     }
   }
 
-  // Monta Markdown de cada capítulo
+  // Identifica capítulos
+  const chapterStarts = [];
+  for (let i = 0; i < parsedItems.length; i++) {
+    const item = parsedItems[i];
+    if (item.isChapter) {
+      let titulo = '';
+      let subtitulo = '';
+
+      let offset = 1;
+      while (i + offset < parsedItems.length) {
+        const next = parsedItems[i + offset];
+        if (next.type === 'p' && next.text) {
+          if (!titulo) {
+            titulo = next.text;
+          } else if (!subtitulo && !isKnownSectionHeader(next.text)) {
+            subtitulo = next.text;
+            break;
+          } else {
+            break;
+          }
+        } else if (next.type === 'tbl') {
+          break;
+        }
+        offset++;
+      }
+
+      if (item.chapterSub) {
+        if (!titulo || isKnownSectionHeader(titulo)) {
+          titulo = item.chapterSub;
+        }
+      }
+
+      chapterStarts.push({
+        index: i,
+        numero: item.chapterNum,
+        titulo: titulo || `Capítulo ${item.chapterNum}`,
+        subtitulo: subtitulo || '',
+        contentStartIndex: i + offset
+      });
+    }
+  }
+
+  // Constrói Markdown de cada capítulo
+  const chapters = [];
   for (let cIdx = 0; cIdx < chapterStarts.length; cIdx++) {
     const curr = chapterStarts[cIdx];
     const next = chapterStarts[cIdx + 1];
-    const startP = curr.pIndex;
-    const endP = next ? next.pIndex : rawParagraphs.length;
+    const startIndex = curr.index;
+    const endIndex = next ? next.index : parsedItems.length;
 
-    // Encontra imagem do capítulo (geralmente nos primeiros 8 parágrafos do capítulo)
+    // Encontra imagem principal
     let chapterImgUrl = null;
-    for (let j = startP; j < Math.min(startP + 8, endP); j++) {
-      if (rawParagraphs[j].image && imageR2Urls[rawParagraphs[j].image]) {
-        chapterImgUrl = imageR2Urls[rawParagraphs[j].image];
+    for (let j = startIndex; j < Math.min(startIndex + 12, endIndex); j++) {
+      const it = parsedItems[j];
+      if (it.type === 'p' && it.imageFile && imageR2Urls[it.imageFile]) {
+        chapterImgUrl = imageR2Urls[it.imageFile];
         break;
       }
     }
@@ -230,54 +342,137 @@ async function processDocxBuffer(docxBuffer, areaSlug, temaSlug) {
       lines.push('');
     }
 
-    let currentSection = '';
-    const contentStartOffset = curr.subheader ? (curr.subtitulo ? 2 : 1) : (curr.subtitulo ? 3 : 2);
+    for (let j = curr.contentStartIndex; j < endIndex; j++) {
+      const it = parsedItems[j];
 
-    for (let pIdx = startP + contentStartOffset; pIdx < endP; pIdx++) {
-      const p = rawParagraphs[pIdx];
-      if (!p.text && !p.image) continue;
+      if (it.type === 'p') {
+        // Se for outra imagem no meio do texto
+        if (it.imageFile && imageR2Urls[it.imageFile] && imageR2Urls[it.imageFile] !== chapterImgUrl) {
+          lines.push(`![Ilustração explicativa](${imageR2Urls[it.imageFile]})`);
+          lines.push('');
+          continue;
+        }
 
-      // Se for outra imagem no meio do texto
-      if (p.image && imageR2Urls[p.image] && imageR2Urls[p.image] !== chapterImgUrl) {
-        lines.push(`![Ilustração explicativa](${imageR2Urls[p.image]})`);
+        const t = it.text;
+        if (!t) continue;
+
+        // Seção principal
+        if (isKnownSectionHeader(t) || (it.hasBorderBottom && (it.color === '1B2A4A' || !it.color))) {
+          lines.push('');
+          lines.push(`## ${t}`);
+          lines.push('');
+          continue;
+        }
+
+        // Subtítulo terracota
+        if ((isTerracotta(it.color) || it.hasTerracottaSpan) && !it.isBullet && !t.startsWith('⚠') && !t.startsWith('✓')) {
+          lines.push('');
+          lines.push(`### ${t}`);
+          lines.push('');
+          continue;
+        }
+
+        // Tópicos com ⚠ de "De olho na prova"
+        if (t.startsWith('⚠') || (it.isBullet && it.hasTerracottaSpan)) {
+          const cleanT = t.replace(/^⚠\s*/, '').trim();
+          const colonIdx = cleanT.indexOf(':');
+          if (colonIdx > 0 && colonIdx < 60) {
+            const topic = cleanT.slice(0, colonIdx).trim();
+            const rest = cleanT.slice(colonIdx + 1).trim();
+            lines.push(`- ⚠ **${topic}:** ${rest}`);
+          } else {
+            lines.push(`- ⚠ **${cleanT}**`);
+          }
+          continue;
+        }
+
+        // Tópicos de "Para guardar" com checkmark
+        if (t.startsWith('✓') || (it.isBullet && t.includes('✓'))) {
+          const cleanT = t.replace(/^✓\s*/, '').trim();
+          lines.push(`- ✓ **${cleanT}**`);
+          continue;
+        }
+
+        if (it.isBullet) {
+          lines.push(`- ${t}`);
+          continue;
+        }
+
+        lines.push(t);
         lines.push('');
-        continue;
+      } else if (it.type === 'tbl') {
+        const rows = it.rows;
+        if (!rows || rows.length === 0) continue;
+
+        // Callout box de 1 linha e 1 célula
+        if (rows.length === 1 && rows[0].length === 1) {
+          const paras = rows[0][0];
+          const firstP = paras[0]?.text || '';
+          const restP = paras.slice(1).map(p => p.text).join('\n\n');
+
+          if (firstP.toLowerCase().includes('exemplo prático') || firstP.toLowerCase().includes('exemplo pratico')) {
+            lines.push('');
+            lines.push('> [!TIP] **Exemplo prático**');
+            if (restP) lines.push(`> *${restP}*`);
+            lines.push('');
+          } else if (firstP.toLowerCase().includes('atenção') || firstP.toLowerCase().includes('atencao') || firstP.toLowerCase().includes('curiosidade')) {
+            lines.push('');
+            lines.push('> [!WARNING] **Atenção — Curiosidade**');
+            const fullRest = (firstP.replace(/^aten[cç][aã]o\s*/i, '') + (restP ? '\n\n' + restP : '')).trim();
+            lines.push(`> *${fullRest}*`);
+            lines.push('');
+          } else if (firstP.toLowerCase().includes('aviso importante') || firstP.toLowerCase().includes('sobre este material')) {
+            lines.push('');
+            lines.push('> [!NOTE] **Aviso importante**');
+            lines.push(`> *${restP || firstP}*`);
+            lines.push('');
+          } else {
+            lines.push('');
+            lines.push(`> **${firstP}**`);
+            if (restP) lines.push(`> ${restP}`);
+            lines.push('');
+          }
+          continue;
+        }
+
+        // Tabela de dados (2 ou mais colunas)
+        const colCount = Math.max(...rows.map(r => r.length));
+        if (colCount >= 2) {
+          lines.push('');
+          const headerRow = rows[0];
+          const col1Header = headerRow[0]?.[0]?.text || 'Item / Conceito';
+          const col2Header = headerRow[1]?.[0]?.text || (colCount === 2 ? 'Detalhamento' : 'Definição');
+          const col3Header = headerRow[2]?.[0]?.text || 'Exemplo';
+
+          if (colCount === 2) {
+            lines.push(`| ${col1Header} | ${col2Header} |`);
+            lines.push(`| :--- | :--- |`);
+          } else {
+            lines.push(`| ${col1Header} | ${col2Header} | ${col3Header} |`);
+            lines.push(`| :--- | :--- | :--- |`);
+          }
+
+          for (let rIdx = 1; rIdx < rows.length; rIdx++) {
+            const r = rows[rIdx];
+            const col1 = (r[0] || []).map(p => p.text).join(' ').trim();
+            const col2 = (r[1] || []).map(p => p.text).join(' ').trim();
+            const col3 = (r[2] || []).map(p => p.text).join(' ').trim();
+
+            if (!col1 && !col2) continue;
+
+            const safeC1 = col1.replace(/\|/g, '\\|');
+            const safeC2 = col2.replace(/\|/g, '\\|');
+            const safeC3 = col3.replace(/\|/g, '\\|');
+
+            if (colCount === 2) {
+              lines.push(`| **${safeC1}** | ${safeC2} |`);
+            } else {
+              lines.push(`| **${safeC1}** | ${safeC2} | ${safeC3} |`);
+            }
+          }
+          lines.push('');
+        }
       }
-
-      const t = p.text;
-      if (!t) continue;
-
-      const isKnownSection = [
-        'Em linguagem simples', 'Para entender melhor', 'De olho na prova',
-        'Exemplo prático', 'Ficha do crime', 'Ficha do tema', 'Ficha do conceito', 'Para guardar'
-      ].some(s => t.toLowerCase() === s.toLowerCase());
-
-      if (isKnownSection) {
-        currentSection = t;
-        lines.push('');
-        if (t.toLowerCase().includes('olho na prova')) lines.push(`### 🎯 ${t}`);
-        else if (t.toLowerCase().includes('exemplo')) lines.push(`### 💡 ${t}`);
-        else if (t.toLowerCase().startsWith('ficha')) lines.push(`### 📋 ${t}`);
-        else if (t.toLowerCase().includes('guardar')) lines.push(`### 📌 ${t}`);
-        else lines.push(`### ${t}`);
-        lines.push('');
-        continue;
-      }
-
-      if (t.startsWith('⚠')) {
-        lines.push('> [!WARNING]');
-        lines.push(`> **${t.replace(/^⚠\s*/, '')}**`);
-        lines.push('');
-        continue;
-      }
-
-      if (t.startsWith('✓')) {
-        lines.push(`- **${t.replace(/^✓\s*/, '')}**`);
-        continue;
-      }
-
-      lines.push(t);
-      lines.push('');
     }
 
     chapters.push({

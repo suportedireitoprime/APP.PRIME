@@ -83,42 +83,191 @@ const METODOS: { id: Metodo; label: string }[] = [
   { id: "feynman", label: "Feynman" },
 ];
 
+// Função de normalização on-the-fly para garantir fidelidade visual ao Word em todo o catálogo
+function normalizarMarkdownWord(raw?: string | null): string {
+  if (!raw) return "";
+  let md = raw;
+
+  // 1. Converte headers legacy de seções para ##
+  md = md.replace(
+    /^###\s*(?:[🎯💡📋📌]\s*)?(Em linguagem simples|Para entender melhor|De olho na prova|Ficha do tema|Ficha do crime|Ficha do conceito|Para guardar|Antes de começar|Como usar este material|Sumário)/gim,
+    "## $1"
+  );
+
+  // 2. Se "De olho na prova" contiver múltiplos `> [!WARNING]\n> **Topic:** desc`, converte para bullets limpos com ⚠
+  md = md.replace(/>\s*\[!WARNING\]\s*\n>\s*\*\*([^\n*]+)\*\*/g, (match, p1) => {
+    if (p1.includes(":") || p1.startsWith("⚠")) {
+      const clean = p1.replace(/^⚠\s*/, "").trim();
+      const cIdx = clean.indexOf(":");
+      if (cIdx > 0 && cIdx < 60) {
+        return `- ⚠ **${clean.slice(0, cIdx).trim()}:** ${clean.slice(cIdx + 1).trim()}`;
+      }
+      return `- ⚠ **${clean}**`;
+    }
+    return match;
+  });
+
+  // 3. Se "Exemplo prático" estiver como ## Exemplo prático\n\nTexto ou ### 💡 Exemplo prático
+  md = md.replace(
+    /#{2,3}\s*(?:💡\s*)?Exemplo prático\s*\n+([\s\S]*?)(?=\n#{1,3}\s|\n---|$)/i,
+    (match, body) => {
+      const cleanBody = body.trim();
+      if (!cleanBody.startsWith(">")) {
+        return `> [!TIP] **Exemplo prático**\n> *${cleanBody}*\n\n`;
+      }
+      return match;
+    }
+  );
+
+  // 4. Se "Ficha do tema" estiver sem pipe de tabela (linhas soltas alternadas)
+  md = md.replace(
+    /#{2,3}\s*(?:📋\s*)?(Ficha do (?:tema|crime|conceito))\s*\n+([\s\S]*?)(?=\n#{1,3}\s|\n---|$)/i,
+    (match, headerTitle, body) => {
+      const trimmedBody = body.trim();
+      if (trimmedBody.includes("|")) return `## ${headerTitle}\n\n${trimmedBody}\n\n`;
+
+      const lines = trimmedBody.split("\n").map((l) => l.trim()).filter(Boolean);
+      if (lines.length >= 4) {
+        const rows = [];
+        rows.push(`| ${headerTitle} | Detalhamento |`);
+        rows.push(`| :--- | :--- |`);
+        for (let i = 0; i < lines.length; i += 2) {
+          const k = lines[i];
+          const v = lines[i + 1] || "";
+          if (k && v) {
+            rows.push(`| **${k}** | ${v} |`);
+          }
+        }
+        return `## ${headerTitle}\n\n` + rows.join("\n") + "\n\n";
+      }
+      return match;
+    }
+  );
+
+  // 5. Se houver subtítulos dentro de "Para entender melhor" que ficaram como parágrafos normais
+  md = md.replace(/(##\s*Para entender melhor[\s\S]*?)(?=\n##|\n---|$)/i, (match, sectionBody) => {
+    const lines = sectionBody.split("\n");
+    const newLines = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const l = lines[i];
+      const trimmed = l.trim();
+
+      if (
+        trimmed &&
+        !trimmed.startsWith("#") &&
+        !trimmed.startsWith("-") &&
+        !trimmed.startsWith(">") &&
+        !trimmed.startsWith("|") &&
+        trimmed.length >= 10 &&
+        trimmed.length <= 80 &&
+        !trimmed.endsWith(".") &&
+        !trimmed.endsWith(":") &&
+        !trimmed.endsWith(",") &&
+        lines[i + 1] === "" &&
+        lines[i + 2] &&
+        lines[i + 2].trim().length > 60
+      ) {
+        newLines.push(`### ${trimmed}`);
+      } else {
+        newLines.push(l);
+      }
+    }
+    return newLines.join("\n");
+  });
+
+  return md;
+}
+
 const markdownComponents = {
   h1: ({ node, ...props }: any) => (
-    <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#E11D48] mt-8 mb-4 border-b border-[#E11D48]/20 pb-2.5 font-display leading-tight" {...props} />
+    <h1
+      className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-6 mb-4 border-b border-border/40 pb-3 font-display leading-tight"
+      {...props}
+    />
   ),
   h2: ({ node, ...props }: any) => (
-    <h2 className="text-lg sm:text-xl font-bold tracking-tight text-[#E11D48] mt-7 mb-3 font-display leading-snug" {...props} />
+    <h2
+      className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-8 mb-4 font-display leading-snug border-b-2 border-amber-500/80 dark:border-amber-500 pb-2 flex items-center gap-2"
+      {...props}
+    />
   ),
-  h3: ({ node, ...props }: any) => (
-    <h3 className="text-base sm:text-lg font-semibold tracking-tight text-[#E11D48] mt-5 mb-2 font-display leading-snug" {...props} />
+  h3: ({ node, children, ...props }: any) => (
+    <h3
+      className="text-base sm:text-lg font-bold tracking-tight text-[#C0563F] dark:text-[#E26D5C] mt-6 mb-2.5 font-display leading-snug"
+      {...props}
+    >
+      {children}
+    </h3>
   ),
   h4: ({ node, ...props }: any) => (
-    <h4 className="text-[14px] sm:text-base font-semibold tracking-tight text-[#E11D48] mt-4 mb-1.5 font-display leading-snug" {...props} />
+    <h4
+      className="text-[15px] sm:text-base font-semibold tracking-tight text-amber-500 dark:text-amber-400 mt-4 mb-2 font-display leading-snug"
+      {...props}
+    />
   ),
   p: ({ node, ...props }: any) => (
     <p className="my-3.5 text-foreground/90 leading-[1.8] text-[15px] sm:text-[16px]" {...props} />
   ),
-  img: ({ node, ...props }: any) => (
-    <span className="my-6 block w-full text-center">
-      <img
-        className="rounded-2xl border border-white/10 max-h-[500px] w-auto max-w-full mx-auto object-contain shadow-2xl bg-zinc-950/60 p-1"
-        loading="lazy"
-        decoding="async"
-        {...props}
-      />
-    </span>
+  ul: ({ node, ...props }: any) => (
+    <ul className="my-4 space-y-2 pl-0 list-none" {...props} />
   ),
+  ol: ({ node, ...props }: any) => (
+    <ol className="my-4 space-y-2 pl-4 list-decimal" {...props} />
+  ),
+  li: ({ node, children, ...props }: any) => {
+    const extractText = (c: any): string => {
+      if (typeof c === "string") return c;
+      if (Array.isArray(c)) return c.map(extractText).join("");
+      if (c?.props?.children) return extractText(c.props.children);
+      return "";
+    };
+    const text = extractText(children);
+
+    if (text.includes("⚠")) {
+      return (
+        <li className="my-2.5 pl-0 leading-relaxed text-foreground/95 flex items-start gap-2.5 list-none">
+          <span
+            className="shrink-0 mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/15 text-amber-500 dark:text-amber-400 text-xs font-bold"
+            aria-hidden="true"
+          >
+            ⚠
+          </span>
+          <div className="flex-1 text-[15px] sm:text-[16px] leading-relaxed">{children}</div>
+        </li>
+      );
+    }
+
+    if (text.includes("✓")) {
+      return (
+        <li className="my-2 pl-0 leading-relaxed text-foreground/95 flex items-start gap-2.5 list-none">
+          <span
+            className="shrink-0 mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/15 text-emerald-500 dark:text-emerald-400 text-xs font-bold"
+            aria-hidden="true"
+          >
+            ✓
+          </span>
+          <div className="flex-1 text-[15px] sm:text-[16px] leading-relaxed">{children}</div>
+        </li>
+      );
+    }
+
+    return (
+      <li className="my-1.5 pl-1 leading-relaxed text-foreground/90 text-[15px] sm:text-[16px] list-disc list-inside" {...props}>
+        {children}
+      </li>
+    );
+  },
   table: ({ node, ...props }: any) => (
-    <div className="my-6 w-full overflow-x-auto rounded-2xl border border-primary/20 bg-card/70 shadow-lg backdrop-blur-md">
-      <table className="w-full text-left text-xs md:text-sm border-collapse" {...props} />
+    <div className="my-6 w-full overflow-x-auto rounded-2xl border border-border/80 bg-card/70 shadow-lg backdrop-blur-md not-prose">
+      <table className="w-full text-left text-xs sm:text-sm border-collapse" {...props} />
     </div>
   ),
   th: ({ node, ...props }: any) => (
-    <th className="bg-secondary/40 px-4 py-3.5 border-b border-border/50 text-slate-200 font-display font-bold text-sm tracking-wide uppercase" {...props} />
+    <th className="bg-[#1B2A4A] text-white px-4 py-3.5 border-b border-white/10 font-display font-bold text-xs sm:text-sm uppercase tracking-wider text-left" {...props} />
   ),
   td: ({ node, ...props }: any) => (
-    <td className="px-4 py-3 border-b border-border/30 text-foreground/90 font-body leading-relaxed" {...props} />
+    <td className="px-4 py-3.5 border-b border-border/30 text-foreground/90 font-body leading-relaxed first:font-bold first:text-foreground first:bg-secondary/20 first:w-[35%] sm:first:w-[30%]" {...props} />
   ),
   blockquote: ({ node, children, ...props }: any) => {
     const extractText = (c: any): string => {
@@ -128,6 +277,53 @@ const markdownComponents = {
       return "";
     };
     const text = extractText(children);
+
+    // Callout de Exemplo Prático (Word styling: fundo quente, borda âmbar espessa na esquerda e itálico)
+    if (/exemplo\s*pr[aá]tico/i.test(text)) {
+      const cleanChildren = (ch: any): any => {
+        if (typeof ch === "string") {
+          return ch.replace(/^\s*\[!(?:TIP|NOTE|WARNING|IMPORTANT)\]\s*(?:\*\*)?Exemplo\s*pr[aá]tico(?:\*\*)?\s*/i, "");
+        }
+        if (Array.isArray(ch)) return ch.map(cleanChildren);
+        if (ch?.props?.children) return { ...ch, props: { ...ch.props, children: cleanChildren(ch.props.children) } };
+        return ch;
+      };
+      return (
+        <div className="my-6 rounded-r-2xl border-l-4 border-amber-500 bg-amber-500/10 dark:bg-amber-950/20 p-4 sm:p-5 shadow-sm text-foreground/95 not-prose">
+          <div className="flex items-center gap-2 mb-2 text-amber-600 dark:text-amber-400 font-display font-bold text-xs uppercase tracking-wider">
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>Exemplo prático</span>
+          </div>
+          <div className="italic text-[15px] sm:text-[16px] text-foreground/90 font-body leading-relaxed">
+            {cleanChildren(children)}
+          </div>
+        </div>
+      );
+    }
+
+    // Callout de Atenção / Curiosidade
+    if (/aten[cç][aã]o\s*[—\-–]?\s*curiosidade/i.test(text) || /curiosidade:/i.test(text)) {
+      const cleanChildren = (ch: any): any => {
+        if (typeof ch === "string") {
+          return ch.replace(/^\s*\[!(?:WARNING|IMPORTANT|TIP|NOTE)\]\s*(?:\*\*)?Atenção\s*[—\-–]?\s*Curiosidade(?:\*\*)?\s*/i, "");
+        }
+        if (Array.isArray(ch)) return ch.map(cleanChildren);
+        if (ch?.props?.children) return { ...ch, props: { ...ch.props, children: cleanChildren(ch.props.children) } };
+        return ch;
+      };
+      return (
+        <div className="my-6 rounded-r-2xl border-l-4 border-rose-500 bg-rose-500/10 dark:bg-rose-950/20 p-4 sm:p-5 shadow-sm text-foreground/95 not-prose">
+          <div className="flex items-center gap-2 mb-2 text-rose-500 dark:text-rose-400 font-display font-bold text-xs uppercase tracking-wider">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>Atenção — Curiosidade</span>
+          </div>
+          <div className="italic text-[15px] sm:text-[16px] text-foreground/90 font-body leading-relaxed">
+            {cleanChildren(children)}
+          </div>
+        </div>
+      );
+    }
+
     const alertMatch = text.match(/^\s*\[!(NOTE|IMPORTANT|WARNING|TIP|CAUTION)\]\s*/i);
     if (alertMatch) {
       const type = alertMatch[1].toUpperCase();
@@ -158,10 +354,10 @@ const markdownComponents = {
       );
     }
     return (
-      <blockquote className="my-5 rounded-2xl border-l-4 border-primary bg-primary/10 p-4 md:p-5 shadow-sm text-foreground/95 not-italic" {...props}>
+      <blockquote className="my-5 rounded-2xl border-l-4 border-amber-500 bg-amber-500/10 p-4 md:p-5 shadow-sm text-foreground/95 not-italic" {...props}>
         <div className="flex items-start gap-3">
-          <Quote className="w-5 h-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
-          <div className="text-foreground/90 leading-relaxed">{children}</div>
+          <Quote className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" aria-hidden="true" />
+          <div className="text-foreground/90 leading-relaxed italic">{children}</div>
         </div>
       </blockquote>
     );
@@ -741,9 +937,9 @@ export default function ResumoJuridicoReaderSheet({
                         style={{ fontSize: `${fontSize}px` }}
                         className="
                           prose prose-sm md:prose-base max-w-none dark:prose-invert font-body
-                          prose-headings:font-display prose-headings:text-[#E11D48]
+                          prose-headings:font-display
                           prose-p:text-foreground/90 prose-p:leading-[1.8] prose-p:my-3.5
-                          prose-a:text-[#E11D48] prose-a:no-underline hover:prose-a:underline
+                          prose-a:text-amber-500 prose-a:no-underline hover:prose-a:underline
                           prose-strong:text-foreground
                           prose-ul:my-3 prose-li:my-1
                         "
@@ -769,7 +965,7 @@ export default function ResumoJuridicoReaderSheet({
                             remarkPlugins={[remarkGfm]}
                             components={markdownComponents}
                           >
-                            {content}
+                            {normalizarMarkdownWord(content)}
                           </ReactMarkdown>
                         ) : erroGerar ? (
                           <div className="rounded-2xl border border-border p-6 text-center space-y-4 mt-4 bg-secondary/30 not-prose">
