@@ -18,9 +18,13 @@ import {
   Clock,
   Check,
   Zap,
+  Search,
+  Mic,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/vademecum/navigation/PageHeader";
+import { Input } from "@/components/ui/input";
 import { BotaoDownloadAudio } from "./BotaoDownloadAudio";
 import { capaDaArea, decomporTituloCapitulo } from "@/lib/audioaulasHelper";
 import { type AulaAudio, audioIdOf, useAudioaulasPlayer } from "@/contexts/AudioaulasPlayerContext";
@@ -1178,6 +1182,8 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
   const [filtroStatus, setFiltroStatus] = useState<
     "todas" | "pendentes" | "andamento" | "concluidas"
   >("todas");
+  const [buscaAula, setBuscaAula] = useState("");
+  const [ordemAulas, setOrdemAulas] = useState<"crono" | "alpha" | "fav">("crono");
 
   const handleAlternarConcluidaComFeedback = useCallback(
     (id: number) => {
@@ -1203,6 +1209,8 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
 
   useEffect(() => {
     setFiltroStatus("todas");
+    setBuscaAula("");
+    setOrdemAulas("crono");
   }, [capituloSelecionado]);
 
   const prevCapituloRef = useRef<string | null>(capituloSelecionado);
@@ -1324,6 +1332,40 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
     const item = temasDaArea.find(([tema]) => tema === capituloSelecionado);
     return item ? item[1] : [];
   }, [capituloSelecionado, temasDaArea]);
+
+  const placeholderAula = useMemo(() => {
+    if (aulasDoCapitulo.length > 0) {
+      const primeiro = aulasDoCapitulo[0].titulo || "aula";
+      const formatado = formatarTituloAula(primeiro);
+      return `Pesquisar ${formatado.slice(0, 22).toLowerCase()}...`;
+    }
+    return "Pesquisar aula...";
+  }, [aulasDoCapitulo]);
+
+  const aulasProcessadas = useMemo(() => {
+    let lista = [...aulasDoCapitulo];
+
+    if (buscaAula.trim()) {
+      const termo = buscaAula.toLowerCase().trim();
+      lista = lista.filter((a) => {
+        const tit = (a.titulo || "").toLowerCase();
+        const num = formatarTituloAula(a.titulo || "").toLowerCase();
+        return tit.includes(termo) || num.includes(termo);
+      });
+    }
+
+    if (ordemAulas === "alpha") {
+      lista.sort((a, b) => {
+        const titA = formatarTituloAula(a.titulo || a.tema || "");
+        const titB = formatarTituloAula(b.titulo || b.tema || "");
+        return titA.localeCompare(titB, "pt-BR");
+      });
+    } else if (ordemAulas === "fav") {
+      lista = lista.filter((a) => favoritos.has(audioIdOf(a)));
+    }
+
+    return lista;
+  }, [aulasDoCapitulo, buscaAula, ordemAulas, favoritos]);
 
   const todasAulasDaArea = useMemo(() => {
     return temasDaArea.flatMap(([, lista]) => lista);
@@ -1456,8 +1498,8 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
         </div>
 
         <div className="relative z-10 space-y-3 sm:space-y-4">
-          {/* Painel Compacto de Produtividade da Disciplina */}
-          {metricasArea.total > 0 && (
+          {/* Painel Compacto de Produtividade da Disciplina (exibido apenas na lista de capítulos) */}
+          {capituloSelecionado === null && metricasArea.total > 0 && (
             <div className="rounded-xl bg-white/4 border border-white/10 px-3 py-2.5 sm:px-4 sm:py-3 backdrop-blur-md shadow-md">
               <div className="flex items-center justify-between gap-2.5">
                 {/* Indicador de progresso com ponto neon e contagem */}
@@ -1821,314 +1863,346 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                 )}
               </motion.div>
             ) : (
-              /* ════════════ VISTA 2: ARTIGOS DO CAPÍTULO SELECIONADO ════════════ */
+              /* ════════════ VISTA 2: AULAS DO CAPÍTULO SELECIONADO (ESTILO RESUMOS JURÍDICOS) ════════════ */
               <motion.div
-                key="vista-artigos"
-                initial={{ opacity: 0, y: 15 }}
+                key="vista-aulas-resumos"
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
+                exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.2 }}
-                className="space-y-6"
+                className="space-y-4"
               >
-                {/* Barra Superior do Capítulo — Sem botão duplicado de voltar */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-white/3 border border-white/10 space-y-3">
-                  <div className="flex items-center justify-between gap-3 flex-wrap">
-                    <span className="text-xs font-bold text-primary px-3 py-1 rounded-full bg-primary/15 border border-primary/30">
-                      {subAbaEfetiva === "pecas" ? "Peça" : "Capítulo"} {capituloIdx + 1} de{" "}
-                      {listaCapitulosAtiva.length}
-                    </span>
+                {/* Header Sticky idêntico aos Resumos Jurídicos */}
+                <div className="sticky top-0 z-20 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-white/10 shadow-sm pb-3 -mx-4 px-4 sm:-mx-10 sm:px-10">
+                  <PageHeader
+                    title={
+                      capituloSelecionado
+                        ? decomporTituloCapitulo(capituloSelecionado).tituloLimpo || capituloSelecionado
+                        : ""
+                    }
+                    subtitle={areaAtual?.replace(/^DIREITO\s+(DO\s+|DA\s+|DE\s+)?/i, "") || "Audioaulas"}
+                    onBack={() => {
+                      haptic.light();
+                      setCapituloSelecionado(null);
+                    }}
+                    className="border-b-0 pb-1"
+                  />
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-zinc-400 px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">
-                        {aulasDoCapitulo.length} {aulasDoCapitulo.length === 1 ? "aula" : "aulas"}
-                      </span>
+                  <div className="max-w-5xl mx-auto px-1 sm:px-4 mt-2 space-y-3">
+                    {/* Barra de Pesquisa */}
+                    <div className="relative flex items-center group">
+                      <Search className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-primary transition-colors" />
+                      <Input
+                        value={buscaAula}
+                        onChange={(e) => setBuscaAula(e.target.value)}
+                        placeholder={placeholderAula}
+                        className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          toast.info("Em breve: Pesquisa por Voz");
+                        }}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/10 active:opacity-70 transition-all text-white/70 hover:text-white"
+                        title="Pesquisar por voz"
+                      >
+                        <Mic className="w-5 h-5" />
+                      </button>
+                    </div>
 
-                      {/* Alternador de Modo de Visualização */}
-                      <div className="inline-flex items-center p-0.5 rounded-lg bg-white/5 border border-white/10">
+                    {/* Abas 3D de Pastas: CRONOLÓGICA | ALFABÉTICA | FAVORITOS */}
+                    <div className="flex w-full relative px-1 sm:px-2 h-11 sm:h-12 mt-3 items-end">
+                      {([
+                        { id: "crono", label: "Cronológica" },
+                        { id: "alpha", label: "Alfabética" },
+                        { id: "fav", label: "Favoritos" },
+                      ] as const).map((o, index) => {
+                        const ativo = ordemAulas === o.id;
+                        const zIndex = ativo ? 30 : 20 - index;
+                        return (
+                          <button
+                            key={o.id}
+                            type="button"
+                            onClick={() => {
+                              haptic.selection();
+                              setOrdemAulas(o.id);
+                            }}
+                            className={cn(
+                              "relative flex-1 flex justify-center items-center rounded-t-2xl transition-all duration-300 ease-out border-x border-t border-white/5 font-bold text-[9px] sm:text-[10px] uppercase tracking-wider",
+                              ativo
+                                ? "h-full bg-[#1A1A1A] text-white shadow-[0_-8px_20px_rgba(0,0,0,0.5)]"
+                                : "h-[75%] bg-[#0A0A0A] text-muted-foreground hover:bg-[#121212] shadow-[inset_0_-4px_10px_rgba(0,0,0,0.8)] hover:text-white",
+                            )}
+                            style={{
+                              zIndex,
+                              marginLeft: index > 0 ? "-12px" : "0",
+                            }}
+                          >
+                            <div className="absolute inset-0 rounded-t-2xl overflow-hidden pointer-events-none">
+                              {ativo && (
+                                <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/5 to-white/10 opacity-50" />
+                              )}
+                            </div>
+                            <span
+                              className={cn(
+                                "relative z-10 transition-transform duration-300",
+                                ativo ? "scale-105" : "scale-100",
+                              )}
+                              style={{ color: ativo ? palette.primary : undefined }}
+                            >
+                              {o.label}
+                            </span>
+                            {ativo && (
+                              <motion.div
+                                layoutId="activeFolderTabAudioaulas"
+                                className="absolute inset-0 rounded-t-2xl border-x border-t pointer-events-none"
+                                style={{
+                                  borderColor: `${palette.primary}80`,
+                                  boxShadow: `inset 0 2px 10px ${palette.primary}26`,
+                                }}
+                                initial={false}
+                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                              />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div
+                      className="w-full h-px bg-[#1A1A1A] relative z-20"
+                      style={{ boxShadow: `0 -1px 0 ${palette.primary}4D` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Conteúdo: Lista de Aulas estilo Resumos com Nós Numerados */}
+                <div className="max-w-5xl mx-auto px-1 sm:px-4 pt-2">
+                  {isShimmering ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3, 4, 5].map((idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-3.5 p-3 rounded-2xl bg-white/2 border border-white/5 animate-pulse"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-white/10 shrink-0" />
+                          <div className="flex-1 flex items-center gap-3 p-3 rounded-xl bg-white/2 border border-white/4">
+                            <div className="w-10 h-10 rounded-full bg-white/10 shrink-0" />
+                            <div className="flex-1 space-y-2 min-w-0">
+                              <div className="h-4 bg-white/10 rounded w-3/4" />
+                              <div className="h-3 bg-white/5 rounded w-1/4" />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : aulasProcessadas.length === 0 ? (
+                    <div className="text-center py-20 text-muted-foreground flex flex-col items-center">
+                      <Headphones className="w-10 h-10 opacity-20 mb-3" />
+                      <p className="font-semibold text-lg mb-2">
+                        {ordemAulas === "fav" ? "Nenhuma aula favoritada neste tema" : "Nenhuma aula encontrada"}
+                      </p>
+                      {buscaAula && (
                         <button
                           type="button"
                           onClick={() => {
                             haptic.selection();
-                            setModoVisualizacao("trilha");
+                            setBuscaAula("");
                           }}
-                          className={cn(
-                            "flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition",
-                            modoVisualizacao === "trilha"
-                              ? "bg-primary text-primary-foreground shadow-sm"
-                              : "text-zinc-400 hover:text-white",
-                          )}
-                          title="Visualizar em Trilha Serpenteante"
+                          className="mt-3 px-6 py-2.5 rounded-xl text-white font-bold text-sm active:opacity-70 transition-all shadow-md"
+                          style={{
+                            backgroundColor: palette.primary,
+                            boxShadow: `0 4px 14px ${palette.primary}4D`,
+                          }}
                         >
-                          <Route className="w-3 h-3" />
-                          <span>Trilha</span>
+                          Limpar Pesquisa
                         </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="relative py-4 sm:py-6 w-full min-w-0 max-w-full overflow-hidden">
+                      <div className="relative space-y-4 ml-1 sm:ml-4 pb-12 z-[2]">
+                        <AnimatePresence mode="popLayout">
+                          {aulasProcessadas.map((a, i) => {
+                            const numero = String(
+                              ordemAulas === "crono"
+                                ? i + 1
+                                : aulasDoCapitulo.findIndex((item) => item.id === a.id) + 1,
+                            ).padStart(2, "0");
+                            const isFav = favoritos.has(audioIdOf(a));
+                            const isTocando = atualId === a.id && tocando;
+                            const prog = mapaProgresso[a.id];
+                            const concluida = prog?.concluida ?? false;
+                            const pct = prog?.pct ?? 0;
+
+                            return (
+                              <motion.div
+                                layout
+                                key={a.id}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex items-center gap-2.5 sm:gap-4"
+                              >
+                                {/* Nó da Linha do Tempo */}
+                                <div
+                                  className={cn(
+                                    "w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-all shadow-md",
+                                    isTocando
+                                      ? "bg-primary/20 text-primary border-primary shadow-primary/20"
+                                      : isFav
+                                      ? "bg-[#ef4444]/20 text-[#ef4444] border-[#ef4444]"
+                                      : concluida
+                                      ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/60"
+                                      : "bg-card text-muted-foreground border-border/80",
+                                  )}
+                                >
+                                  {isTocando ? (
+                                    <EqualizadorAnimado cor={palette.primary} />
+                                  ) : (
+                                    <span>{numero}</span>
+                                  )}
+                                </div>
+
+                                {/* Card da Aula */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    haptic.selection();
+                                    handleTocarAula(a);
+                                  }}
+                                  className={cn(
+                                    "relative min-h-[72px] sm:min-h-[88px] h-auto overflow-hidden flex-1 min-w-0 flex items-center gap-3 sm:gap-4 p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm active:scale-[0.99] cursor-pointer select-none",
+                                    isTocando
+                                      ? "border-primary/60 bg-primary/[0.08] shadow-md shadow-primary/10"
+                                      : isFav
+                                      ? "bg-card shadow-sm border-rose-500/30"
+                                      : "border-border/50 bg-card/40 hover:bg-card/60",
+                                  )}
+                                  style={{
+                                    borderColor: isTocando
+                                      ? palette.primary
+                                      : isFav
+                                      ? `${palette.primary}99`
+                                      : undefined,
+                                  }}
+                                >
+                                  <div
+                                    className="absolute inset-y-0 left-0 w-1 opacity-20 group-hover:opacity-100 transition-opacity"
+                                    style={{
+                                      background: `linear-gradient(to bottom, ${palette.primary}, transparent)`,
+                                    }}
+                                  />
+
+                                  {/* Círculo do Ícone */}
+                                  <div className="flex flex-col items-center justify-center gap-2 shrink-0 w-[52px] sm:w-[60px] pl-0.5">
+                                    <div
+                                      className={cn(
+                                        "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border overflow-hidden shadow-inner shrink-0 transition-colors",
+                                        isTocando
+                                          ? "bg-primary/20 border-primary text-primary"
+                                          : "bg-white/5 border-white/10 text-white/80 group-hover:text-white",
+                                      )}
+                                    >
+                                      {isTocando ? (
+                                        <Headphones className="w-5 h-5 sm:w-6 sm:h-6 text-primary animate-pulse" />
+                                      ) : (
+                                        <FileText
+                                          className="w-5 h-5 sm:w-6 sm:h-6 transition-colors select-none"
+                                          strokeWidth={1.8}
+                                          aria-hidden="true"
+                                        />
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Informações da Aula */}
+                                  <div className="min-w-0 flex-1 flex flex-col justify-center h-full py-1 pr-1 sm:pr-2">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <h3
+                                        className={cn(
+                                          "text-sm sm:text-base font-medium font-sans break-words leading-snug line-clamp-3 transition-colors",
+                                          isTocando ? "text-primary font-semibold" : "text-foreground",
+                                        )}
+                                      >
+                                        {formatarTituloAula(a.titulo) || a.titulo}
+                                      </h3>
+
+                                      {/* Badge ÁUDIO */}
+                                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase text-rose-400 bg-rose-500/15 border border-rose-500/30 shrink-0">
+                                        <Headphones className="w-2.5 h-2.5 text-rose-400" />
+                                        ÁUDIO
+                                      </span>
+
+
+                                      {/* Badge Concluída / Em Andamento */}
+                                      {concluida && (
+                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 shrink-0">
+                                          <Check className="w-2.5 h-2.5" />
+                                          OUVIDA
+                                        </span>
+                                      )}
+                                      {!concluida && pct > 0 && (
+                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold text-amber-300 bg-amber-500/15 border border-amber-400/30 shrink-0">
+                                          {pct}%
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Ações: Favorito + Chevron */}
+                                  <div className="flex flex-col items-end gap-2 shrink-0 pr-1">
+                                    <div
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        haptic.selection();
+                                        alternarFavorito(a);
+                                      }}
+                                      className="p-1 -mr-1 rounded-full hover:bg-secondary/50 active:opacity-70 transition-transform"
+                                      title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                                    >
+                                      {isFav ? (
+                                        <Heart className="w-5 h-5 fill-rose-500 text-rose-500" />
+                                      ) : (
+                                        <Heart className="w-5 h-5 text-muted-foreground/50 hover:text-white" />
+                                      )}
+                                    </div>
+
+                                    <ChevronRight
+                                      className="w-4 h-4 text-muted-foreground/40 transition-transform duration-300 group-hover:translate-x-0.5"
+                                      style={{ color: palette.primary }}
+                                    />
+                                  </div>
+                                </button>
+                              </motion.div>
+                            );
+                          })}
+                        </AnimatePresence>
+                      </div>
+
+                      {/* Navegação entre Capítulos no Rodapé */}
+                      <div className="flex items-center justify-between gap-3 pt-6 max-w-3xl lg:max-w-4xl mx-auto">
                         <button
-                          type="button"
-                          onClick={() => {
-                            haptic.selection();
-                            setModoVisualizacao("lista");
-                          }}
-                          className={cn(
-                            "flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold transition",
-                            modoVisualizacao === "lista"
-                              ? "bg-primary text-primary-foreground shadow-sm"
-                              : "text-zinc-400 hover:text-white",
-                          )}
-                          title="Visualizar em Lista Tradicional"
+                          disabled={capituloIdx <= 0}
+                          onClick={() => navegarCapitulo(-1)}
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10 transition disabled:opacity-30 disabled:pointer-events-none active:scale-95"
                         >
-                          <List className="w-3 h-3" />
-                          <span>Lista</span>
+                          <ChevronLeft className="w-4 h-4" />
+                          <span>{subAbaEfetiva === "pecas" ? "Peça Anterior" : "Capítulo Anterior"}</span>
+                        </button>
+
+                        <button
+                          disabled={capituloIdx >= listaCapitulosAtiva.length - 1}
+                          onClick={() => navegarCapitulo(1)}
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10 transition disabled:opacity-30 disabled:pointer-events-none active:scale-95"
+                        >
+                          <span>{subAbaEfetiva === "pecas" ? "Próxima Peça" : "Próximo Capítulo"}</span>
+                          <ChevronRight className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
-                  </div>
-
-                  {(() => {
-                    const infoCap = capituloSelecionado
-                      ? decomporTituloCapitulo(capituloSelecionado)
-                      : { tituloLimpo: "", faixaArtigos: "" };
-                    const aulasConcluidasCap = aulasDoCapitulo.filter(
-                      (a) => mapaProgresso[a.id]?.concluida,
-                    ).length;
-                    const pctCap =
-                      aulasDoCapitulo.length > 0
-                        ? Math.round((aulasConcluidasCap / aulasDoCapitulo.length) * 100)
-                        : 0;
-                    return (
-                      <div className="space-y-2">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
-                          <div>
-                            <h3 className="text-base sm:text-lg font-sans! font-normal text-white leading-snug tracking-normal normal-case">
-                              {infoCap.tituloLimpo}
-                            </h3>
-                            <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-                              {infoCap.faixaArtigos ? `${infoCap.faixaArtigos} • ` : ""}
-                              {aulasDoCapitulo.length}{" "}
-                              {aulasDoCapitulo.length === 1
-                                ? "aula disponível"
-                                : "aulas disponíveis"}{" "}
-                              neste capítulo
-                            </p>
-                          </div>
-                          {aulasDoCapitulo.length > 0 && (
-                            <div className="flex items-center gap-2 self-start sm:self-auto bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
-                              <span className="text-xs font-semibold text-zinc-300">
-                                <span className="text-emerald-400 font-bold">
-                                  {aulasConcluidasCap}
-                                </span>
-                                /{aulasDoCapitulo.length} concluídas
-                              </span>
-                              <span className="text-xs font-bold px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                                {pctCap}%
-                              </span>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Barra de progresso horizontal do capítulo */}
-                        {aulasDoCapitulo.length > 0 && (
-                          <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden border border-white/5">
-                            <div
-                              className="h-full rounded-full transition-all duration-500"
-                              style={{
-                                width: `${pctCap}%`,
-                                backgroundColor: pctCap === 100 ? "#10b981" : palette.primary,
-                                boxShadow: `0 0 8px ${pctCap === 100 ? "#10b981" : palette.primary}`,
-                              }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()}
-                </div>
-
-                {/* Filtros Rápidos de Status no Capítulo */}
-                {aulasDoCapitulo.length > 0 && (
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        haptic.selection();
-                        setFiltroStatus("todas");
-                      }}
-                      className={cn(
-                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 select-none active:scale-95",
-                        filtroStatus === "todas"
-                          ? "bg-white/15 text-white shadow-sm border border-white/20"
-                          : "bg-white/4 text-zinc-400 hover:text-white border border-white/5",
-                      )}
-                    >
-                      <span>Todas</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-sans">
-                        {contagemStatus.todas}
-                      </span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        haptic.selection();
-                        setFiltroStatus("pendentes");
-                      }}
-                      className={cn(
-                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 select-none active:scale-95",
-                        filtroStatus === "pendentes"
-                          ? "bg-amber-500/20 text-amber-300 shadow-sm border border-amber-500/30"
-                          : "bg-white/4 text-zinc-400 hover:text-white border border-white/5",
-                      )}
-                    >
-                      <span>Pendentes</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-sans">
-                        {contagemStatus.pendentes}
-                      </span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        haptic.selection();
-                        setFiltroStatus("andamento");
-                      }}
-                      className={cn(
-                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 select-none active:scale-95",
-                        filtroStatus === "andamento"
-                          ? "bg-primary/20 text-primary shadow-sm border border-primary/30"
-                          : "bg-white/4 text-zinc-400 hover:text-white border border-white/5",
-                      )}
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      <span>Em andamento</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-sans">
-                        {contagemStatus.andamento}
-                      </span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        haptic.selection();
-                        setFiltroStatus("concluidas");
-                      }}
-                      className={cn(
-                        "px-3 py-1.5 rounded-xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 select-none active:scale-95",
-                        filtroStatus === "concluidas"
-                          ? "bg-emerald-500/20 text-emerald-400 shadow-sm border border-emerald-500/30"
-                          : "bg-white/4 text-zinc-400 hover:text-white border border-white/5",
-                      )}
-                    >
-                      <CheckCircle2 className="w-3 h-3" />
-                      <span>Ouvidas</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/10 font-sans">
-                        {contagemStatus.concluidas}
-                      </span>
-                    </button>
-                  </div>
-                )}
-
-                {/* Conteúdo: Trilha Serpenteante ou Lista Tradicional de Aulas */}
-                {isShimmering ? (
-                  <div className="bg-white/2 border border-white/5 rounded-2xl p-2 sm:p-3 space-y-2">
-                    {[1, 2, 3, 4, 5].map((idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center gap-3.5 p-3 rounded-xl bg-white/2 border border-white/4 animate-pulse"
-                      >
-                        <div className="w-10 h-10 rounded-xl bg-white/10 shrink-0" />
-                        <div className="flex-1 space-y-2 min-w-0">
-                          <div className="h-4 bg-white/10 rounded w-3/4" />
-                          <div className="h-3 bg-white/5 rounded w-1/3" />
-                        </div>
-                        <div className="w-8 h-8 rounded-full bg-white/5 shrink-0" />
-                      </div>
-                    ))}
-                  </div>
-                ) : aulasFiltradas.length === 0 ? (
-                  <div className="py-12 px-4 text-center rounded-2xl bg-white/2 border border-white/5 my-4">
-                    <p className="text-sm font-medium text-zinc-300">
-                      {filtroStatus === "concluidas"
-                        ? "Nenhuma aula concluída neste capítulo ainda. Ouça uma aula até o fim ou toque em Concluir!"
-                        : filtroStatus === "andamento"
-                          ? "Nenhuma aula em andamento neste capítulo. Toque em Ouvir para começar uma aula."
-                          : "Nenhuma aula pendente neste capítulo."}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setFiltroStatus("todas")}
-                      className="mt-3 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/15 text-white transition"
-                    >
-                      Ver todas as aulas
-                    </button>
-                  </div>
-                ) : modoVisualizacao === "trilha" ? (
-                  <TrilhaZigueZagueAulas
-                    aulas={aulasFiltradas}
-                    atualId={atualId}
-                    tocando={tocando}
-                    velocidade={velocidadePlayer}
-                    setVelocidade={setVelocidadePlayer}
-                    tempoAtual={tempoPlayer}
-                    duracaoAtual={durPlayer}
-                    coverUrl={coverUrl}
-                    palette={palette}
-                    favoritos={favoritos}
-                    mapaProgresso={mapaProgresso}
-                    alternarFavorito={alternarFavorito}
-                    handleTocarAula={handleTocarAula}
-                    alternarConcluida={handleAlternarConcluidaComFeedback}
-                  />
-                ) : (
-                  <motion.div
-                    key={`aulas-${capituloSelecionado}-${filtroStatus}`}
-                    className="bg-white/2 border border-white/5 rounded-2xl p-2 sm:p-3 divide-y divide-white/6"
-                    variants={{
-                      hidden: { opacity: 0 },
-                      show: { opacity: 1, transition: { staggerChildren: 0.03 } },
-                    }}
-                    initial="hidden"
-                    animate="show"
-                  >
-                    {aulasFiltradas.map((a) => {
-                      const isLocked = false;
-                      const prog = mapaProgresso[a.id];
-                      return (
-                        <LinhaAula
-                          key={a.id}
-                          a={a}
-                          atualId={atualId}
-                          tocando={tocando}
-                          favoritos={favoritos}
-                          concluida={prog?.concluida}
-                          pct={prog?.pct}
-                          alternarFavorito={alternarFavorito}
-                          handleTocarAula={handleTocarAula}
-                          isLocked={isLocked}
-                          onOpenGate={() => setShowPremiumGate(true)}
-                        />
-                      );
-                    })}
-                  </motion.div>
-                )}
-
-                {/* Navegação entre Capítulos no Rodapé */}
-                <div className="flex items-center justify-between gap-3 pt-6 max-w-3xl lg:max-w-4xl mx-auto">
-                  <button
-                    disabled={capituloIdx <= 0}
-                    onClick={() => navegarCapitulo(-1)}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10 transition disabled:opacity-30 disabled:pointer-events-none active:scale-95"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>{subAbaEfetiva === "pecas" ? "Peça Anterior" : "Capítulo Anterior"}</span>
-                  </button>
-
-                  <button
-                    disabled={capituloIdx >= listaCapitulosAtiva.length - 1}
-                    onClick={() => navegarCapitulo(1)}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-white/5 border border-white/10 text-zinc-300 hover:text-white hover:bg-white/10 transition disabled:opacity-30 disabled:pointer-events-none active:scale-95"
-                  >
-                    <span>{subAbaEfetiva === "pecas" ? "Próxima Peça" : "Próximo Capítulo"}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+                  )}
                 </div>
               </motion.div>
             )}

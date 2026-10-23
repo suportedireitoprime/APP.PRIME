@@ -110,18 +110,16 @@ const Audioaulas = () => {
       <div className="relative z-10">
         {state.gateNodes}
 
-      {/* Hero: exibido na home e na página da área. No "Ver todos", oculta para a lista iniciar direto no topo com um só botão voltar */}
-      {(areaAtual !== null || modoVerTodos === 'hub') && (
+      {/* Hero: exibido na home e na página da área quando nenhum capítulo estiver selecionado. Ao abrir as aulas de um capítulo, a lista assume o layout idêntico ao de Resumos Jurídicos */}
+      {(!capituloSelecionado && (areaAtual !== null || modoVerTodos === 'hub')) && (
         <AudioaulasHero 
           areaAtual={areaAtual}
           loading={state.loading}
           totalAulas={areaAtual ? state.daArea.length : state.aulas.length}
           onVoltar={
-            capituloSelecionado
-              ? () => setCapituloSelecionado(null)
-              : areaAtual
-                ? () => navigate('/audioaulas')
-                : () => navigate('/')
+            areaAtual
+              ? () => navigate('/audioaulas')
+              : () => navigate('/')
           }
         />
       )}
