@@ -316,10 +316,51 @@ const LAW_ICONS_MAP: Record<string, React.ElementType> = {
   estatuto: BookMarked,
 };
 
+const LAW_COLORS_MAP: Record<string, string> = {
+  cf88: "#fbbf24", // Dourado
+  cp: "#dc2626", // Vermelho vibrante
+  cc: "#2563eb", // Azul Royal vibrante
+  cpc: "#0284c7", // Sky
+  cpp: "#ea580c", // Laranja
+  ctn: "#10b981", // Verde Esmeralda
+  cdc: "#f97316", // Laranja Coral
+  clt: "#8b5cf6", // Roxo
+  ctb: "#0ea5e9", // Ciano
+  ce: "#6366f1", // Índigo
+  cpm: "#b91c1c", // Vinho
+  cppm: "#991b1b", // Bordô
+  cflor: "#16a34a", // Verde Floresta
+  ccom: "#a16207", // Castanho Dourado
+  cba: "#0284c7", // Azul Céu
+  cagua: "#0891b2", // Ciano
+  cmin: "#78716c", // Cinza
+  ctel: "#7c3aed", // Roxo Elétrico
+  eca: "#f43f5e", // Rosa
+  ei: "#8b5cf6", // Violeta
+  epd: "#06b6d4", // Ciano
+  eir: "#ea580c", // Laranja
+  ec: "#10b981", // Verde
+  ed: "#dc2626", // Vermelho
+  eoab: "#1d4ed8", // Azul
+  et: "#16a34a", // Verde
+  ej: "#d946ef", // Fúcsia
+  em: "#475569", // Ardósia
+  eind: "#b45309", // Âmbar
+  eterra: "#65a30d", // Lima
+  emig: "#0891b2", // Ciano
+  eref: "#7c3aed", // Roxo
+  emet: "#64748b", // Cinza
+  emus: "#a855f7", // Roxo
+  eme: "#f97316", // Laranja
+  epc: "#ec4899", // Rosa
+  lep: "#e11d48", // Carmim
+  lmp: "#a855f7", // Violeta
+};
+
 function getLawVisuals(law: LawOption) {
   const IconComponent = LAW_ICONS_MAP[law.id] || LAW_ICONS_MAP[law.tipo] || Scale;
   const catalogItem = LEIS_CATALOG.find((item) => item.id === law.id);
-  const iconColor = catalogItem?.iconColor || "#e11d48";
+  const iconColor = LAW_COLORS_MAP[law.id] || catalogItem?.iconColor || "#e11d48";
   return { IconComponent, iconColor };
 }
 
@@ -978,21 +1019,13 @@ export default function AudioleisPage() {
           />
         </div>
 
-        {/* Topo: Ícone temático da Lei à esquerda e Sigla à direita */}
-        <div className="flex items-center justify-between gap-2 w-full z-10">
-          <div
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 border border-white/10 shadow-sm transition-transform duration-300 group-hover:scale-105"
-            style={{
-              backgroundColor: `${iconColor}18`,
-              borderColor: `${iconColor}35`,
-            }}
-          >
-            <LawIcon
-              className="w-5 h-5 sm:w-5.5 sm:h-5.5 transition-transform duration-300"
-              style={{ color: iconColor }}
-              strokeWidth={1.8}
-            />
-          </div>
+        {/* Topo: Ícone temático da Lei à esquerda (sem fundo, tamanho ampliado) e Sigla à direita */}
+        <div className="flex items-start justify-between gap-2 w-full z-10">
+          <LawIcon
+            className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 transition-transform duration-300 group-hover:scale-110 drop-shadow-sm"
+            style={{ color: iconColor }}
+            strokeWidth={1.75}
+          />
           <span className="px-2 py-0.5 rounded-full text-[10.5px] font-bold tracking-wide bg-black/40 text-zinc-300 border border-white/10 backdrop-blur shadow-xs">
             {law.sigla}
           </span>
@@ -1034,21 +1067,13 @@ export default function AudioleisPage() {
           />
         </div>
 
-        {/* Topo: Ícone temático da Lei à esquerda e Sigla à direita */}
-        <div className="flex items-center justify-between gap-2 w-full z-10">
-          <div
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 border border-white/10 shadow-sm transition-transform duration-300 group-hover:scale-105"
-            style={{
-              backgroundColor: `${iconColor}18`,
-              borderColor: `${iconColor}35`,
-            }}
-          >
-            <LawIcon
-              className="w-5 h-5 sm:w-5.5 sm:h-5.5 transition-transform duration-300"
-              style={{ color: iconColor }}
-              strokeWidth={1.8}
-            />
-          </div>
+        {/* Topo: Ícone temático da Lei à esquerda (sem fundo, tamanho ampliado) e Sigla à direita */}
+        <div className="flex items-start justify-between gap-2 w-full z-10">
+          <LawIcon
+            className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 transition-transform duration-300 group-hover:scale-110 drop-shadow-sm"
+            style={{ color: iconColor }}
+            strokeWidth={1.75}
+          />
           <span className="px-2 py-0.5 rounded-full text-[10.5px] font-bold tracking-wide bg-black/40 text-zinc-300 border border-white/10 backdrop-blur shadow-xs">
             {law.sigla}
           </span>
