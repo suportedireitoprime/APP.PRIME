@@ -378,39 +378,18 @@ const TrilhaZigueZagueCapitulos = React.memo(function TrilhaZigueZagueCapitulos(
                       </div>
                     </div>
 
-                    {/* Rodapé: Total de Aulas e Métricas de Progresso */}
-                    <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
-                      <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-normal text-white/95 mb-1">
-                        <span className="truncate flex items-center gap-1">
-                          <Headphones className="w-3 h-3 text-primary" />
-                          <span>
-                            {aulasConcluidas > 0
-                              ? `${aulasConcluidas}/${totalCapAulas} concluídas`
-                              : `${totalCapAulas} ${totalCapAulas === 1 ? "aula" : "aulas"}`}
-                          </span>
-                        </span>
-                        <span
-                          className={cn(
-                            "font-semibold font-sans ml-1",
-                            pctCapitulo === 100 ? "text-emerald-400" : "text-white",
-                          )}
-                        >
-                          {pctCapitulo}%
-                        </span>
-                      </div>
-                      <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden border border-white/20">
+                    {/* Barra fina de progresso no rodapé da capa (apenas se houver aulas ouvidas) */}
+                    {aulasConcluidas > 0 && (
+                      <div className="absolute bottom-0 inset-x-0 h-1 bg-black/40 overflow-hidden z-[2]">
                         <div
-                          className={cn(
-                            "h-full rounded-full transition-all duration-500 shadow-sm",
-                            pctCapitulo === 100 ? "bg-emerald-400" : "",
-                          )}
+                          className="h-full transition-all duration-500"
                           style={{
-                            width: `${Math.max(pctCapitulo, totalCapAulas > 0 && aulasConcluidas > 0 ? 8 : 0)}%`,
-                            backgroundColor: pctCapitulo === 100 ? undefined : palette.primary,
+                            width: `${pctCapitulo}%`,
+                            backgroundColor: pctCapitulo === 100 ? "#10b981" : palette.primary,
                           }}
                         />
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
@@ -480,44 +459,39 @@ const TrilhaZigueZagueCapitulos = React.memo(function TrilhaZigueZagueCapitulos(
                           </span>
                         </>
                       )}
-                      {pctCapitulo === 100 ? (
+                      {pctCapitulo === 100 && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
                           <CheckCircle2 className="w-2.5 h-2.5" /> Concluído
                         </span>
-                      ) : aulasConcluidas > 0 ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full">
-                          <Clock className="w-2.5 h-2.5" /> {pctCapitulo}%
-                        </span>
-                      ) : null}
+                      )}
                     </div>
 
                     <h3 className="font-sans font-normal text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md mt-1">
                       {tituloLimpo}
                     </h3>
 
-                    {/* Barra de progresso do capítulo */}
-                    <div
-                      className={cn(
-                        "mt-2 flex items-center gap-2 w-full max-w-55",
-                        isLeft ? "justify-start" : "justify-end",
-                      )}
-                    >
-                      <div className="flex-1 bg-white/10 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className={cn(
-                            "h-full rounded-full transition-all duration-300",
-                            pctCapitulo === 100 ? "bg-emerald-400" : "",
-                          )}
-                          style={{
-                            width: `${pctCapitulo}%`,
-                            backgroundColor: pctCapitulo === 100 ? undefined : palette.primary,
-                          }}
-                        />
+                    {/* Barra de progresso do capítulo (apenas se o aluno já tiver começado a ouvir e não estiver 100% concluído) */}
+                    {aulasConcluidas > 0 && pctCapitulo < 100 && (
+                      <div
+                        className={cn(
+                          "mt-2 flex items-center gap-2 w-full max-w-55",
+                          isLeft ? "justify-start" : "justify-end",
+                        )}
+                      >
+                        <div className="flex-1 bg-white/10 h-1.5 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-300"
+                            style={{
+                              width: `${pctCapitulo}%`,
+                              backgroundColor: palette.primary,
+                            }}
+                          />
+                        </div>
+                        <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400 shrink-0">
+                          {aulasConcluidas}/{totalCapAulas} ouvidas
+                        </span>
                       </div>
-                      <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400 shrink-0">
-                        {aulasConcluidas}/{totalCapAulas} ouvidas
-                      </span>
-                    </div>
+                    )}
 
                     {contemAulaTocando && (
                       <div
