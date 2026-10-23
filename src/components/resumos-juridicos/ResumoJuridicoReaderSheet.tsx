@@ -43,6 +43,8 @@ import { abrirLink } from '@/lib/nativo';
 import { cn } from "@/lib/utils";
 import { haptic } from "@/lib/nativeHaptics";
 import { ResumoAudioPlayer } from "./ResumoAudioPlayer";
+import { ResumoBottomBar } from "./ResumoBottomBar";
+import { useResumoAudio } from "./useResumoAudio";
 
 export interface ResumoRow {
   id: string;
@@ -759,6 +761,12 @@ export default function ResumoJuridicoReaderSheet({
     return match ? match[1] : null;
   }, [catalogSubtema?.audio_url, resumo?.audio_url, currentMarkdown, resumo?.markdown]);
 
+  const audioCtrl = useResumoAudio({
+    audioUrl,
+    titulo: currentTitle,
+    subtitulo: resumo?.area,
+  });
+
   const rawContent =
     tab === "resumo" ? currentMarkdown : tab === "exemplos" ? currentExemplos : currentTermos;
 
@@ -906,7 +914,7 @@ export default function ResumoJuridicoReaderSheet({
                 ? "relative h-full w-full bg-card border border-border rounded-2xl flex flex-col overflow-hidden shadow-xl"
                 : isDesktop
                 ? "fixed z-[91] inset-x-0 mx-auto top-[4vh] bottom-0 bg-card border border-b-0 border-border rounded-t-2xl flex flex-col w-[1080px] max-w-[94vw] shadow-2xl overflow-hidden 2xl:w-[1200px]"
-                : "fixed inset-0 z-[91] flex flex-col bg-card text-foreground shadow-2xl overflow-hidden pb-[var(--sai-bottom,0px)]"
+                : "fixed inset-0 z-[91] flex flex-col bg-card text-foreground shadow-2xl overflow-hidden"
             }
           >
             {/* Background da Matéria (Capa + Gradiente + ShapeGrid) */}
@@ -977,6 +985,7 @@ export default function ResumoJuridicoReaderSheet({
                       audioUrl={audioUrl}
                       titulo={currentTitle}
                       subtitulo={resumo.area}
+                      controller={audioCtrl}
                     />
                   </div>
                 )}
@@ -1117,72 +1126,39 @@ export default function ResumoJuridicoReaderSheet({
               </div>
             </div>
 
-            {/* Ações flutuantes idênticas ao design system do app */}
-            <div 
-              className={`pointer-events-none absolute bottom-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] right-4 flex flex-col items-end gap-3 z-20 transition-all duration-300 ${
-                isScrolling ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
-              }`}
-            >
-              <AnimatePresence>
-                {fontOpen && !isScrolling && (
-                  <motion.div
-                    key="font-controls"
-                    initial={{ opacity: 0, scale: 0.95, y: 4 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 4 }}
-                    transition={{ duration: 0.18 }}
-                    className="pointer-events-auto flex items-center bg-card/95 backdrop-blur-md border border-border rounded-full shadow-xl overflow-hidden"
-                  >
-                    <button
-                      onClick={decFont}
-                      aria-label="Diminuir fonte"
-                      className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:opacity-70 transition-all"
-                    >
-                      <Minus className="w-4 h-4" strokeWidth={2.5} />
-                    </button>
-                    <span className="min-w-[44px] text-center text-[11px] font-bold tabular-nums text-foreground">
-                      {fontSize}px
-                    </span>
-                    <button
-                      onClick={incFont}
-                      aria-label="Aumentar fonte"
-                      className="w-10 h-11 flex items-center justify-center text-foreground hover:bg-secondary active:opacity-70 transition-all"
-                    >
-                      <Plus className="w-4 h-4" strokeWidth={2.5} />
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div className={`pointer-events-auto flex flex-col gap-2.5 items-end ${isScrolling ? "pointer-events-none" : ""}`}>
-                <button
-                  onClick={() => setFontOpen((v) => !v)}
-                  aria-label="Tamanho da fonte"
-                  aria-expanded={fontOpen}
-                  className="w-11 h-11 flex items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border shadow-xl text-foreground hover:bg-secondary active:opacity-70 transition-all"
-                >
-                  <Type className="w-5 h-5" strokeWidth={2.5} />
-                </button>
-                <button
-                  onClick={() => {
-                    if (gateDownload.blocked) {
-                      gateDownload.openGate();
-                      return;
-                    }
-                    void baixarPdf();
-                  }}
-                  disabled={salvandoDrive}
-                  aria-label="Baixar em PDF"
-                  className="w-12 h-12 flex items-center justify-center rounded-full bg-[#E11D48] text-white shadow-2xl hover:brightness-110 active:opacity-70 transition-all disabled:opacity-60"
-                >
-                  {salvandoDrive ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-white" />
-                  ) : (
-                    <FileDown className="w-5 h-5" />
-                  )}
-                </button>
-              </div>
-            </div>
+            {/* Barra de Rodapé Estilo Vade Mecum com 5 Ações */}
+            <ResumoBottomBar
+              metodo={metodo}
+              onSelectMetodo={(m) => {
+                setMetodo(m);
+                if (m === "cornell" && !cornell && !gerando) {
+                  void gerarMetodologia("cornell", false);
+                } else if (m === "feynman" && !feynman && !gerando) {
+                  void gerarMetodologia("feynman", false);
+                }
+              }}
+              temCornell={!!cornell}
+              temFeynman={!!feynman}
+              gerandoMetodo={gerando}
+              audioUrl={audioUrl}
+              audioPlaying={audioCtrl.isPlaying}
+              audioLoading={audioCtrl.isLoading}
+              audioProgress={audioCtrl.progressPct}
+              onToggleAudio={audioCtrl.togglePlay}
+              onBaixarPdf={() => {
+                if (gateDownload.blocked) {
+                  gateDownload.openGate();
+                  return;
+                }
+                void baixarPdf();
+              }}
+              salvandoPdf={salvandoDrive}
+              fontSize={fontSize}
+              onIncFont={incFont}
+              onDecFont={decFont}
+              fontOpen={fontOpen}
+              onToggleFont={() => setFontOpen((v) => !v)}
+            />
           </motion.div>
         </>
       )}
