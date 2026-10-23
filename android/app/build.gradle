@@ -15,12 +15,50 @@ android {
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
+        // ─── GOOGLE PLAY CONSOLE: Divisões de densidade ───────────────────────
+        // Ativa divisões por densidade no App Bundle para reduzir uso de memória
+        // e evitar escalonamento de imagens em tempo real pelo sistema.
+        // Dispositivos só baixam os recursos adaptados à sua densidade de tela.
+        // Referência: https://developer.android.com/guide/app-bundle/configure-base#density-splits
+        bundle {
+            density {
+                enableSplit true
+            }
+            abi {
+                enableSplit true
+            }
+            language {
+                enableSplit false
+            }
+        }
     }
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
+            // ─── GOOGLE PLAY CONSOLE: Otimização do R8 ────────────────────────
+            // Usa o arquivo de otimização completo do Android para ativar R8 full mode,
+            // reduzindo o tamanho do app e melhorando o desempenho em runtime.
+            // Referência: https://developer.android.com/build/shrink-code#optimization
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // ─── GOOGLE PLAY CONSOLE: Redução de resolução de bitmap ──────────────────
+    // Limita a densidade máxima de recursos drawable a xxxhdpi (640dpi).
+    // Isso evita que dispositivos de menor resolução baixem e escalonem bitmaps
+    // muito grandes, reduzindo consumo de memória e acelerando o carregamento.
+    // Referência: https://developer.android.com/studio/build/configure-apk-splits#configure-density-split
+    splits {
+        density {
+            enable true
+            exclude "ldpi", "mdpi"
+            compatibleScreens 'small', 'normal', 'large', 'xlarge'
         }
     }
 }

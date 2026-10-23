@@ -13,6 +13,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.EdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.getcapacitor.BridgeActivity
 import br.com.app.gpu2675756.gpu0e7509bfb7bde52aef412888bb17a456.R
 
@@ -25,7 +28,18 @@ class MainActivity : BridgeActivity() {
         var isReady = false
         splashScreen.setKeepOnScreenCondition { !isReady }
 
+        // GOOGLE PLAY CONSOLE: Edge-to-Edge para todos os usuários
+        // EdgeToEdge.enable() habilita a exibição ponta a ponta usando as APIs
+        // não-depreciadas: WindowCompat.setDecorFitsSystemWindows(window, false).
+        // Isso garante que o conteúdo se estenda atrás das barras de sistema em
+        // Android 10+ (API 29+), sem usar flags depreciadas como systemUiVisibility.
+        // Referência: https://developer.android.com/develop/ui/views/layout/edge-to-edge
         EdgeToEdge.enable(this)
+        
+        // Garante que o WindowCompat saiba que o app gerencia os insets manualmente.
+        // Isso é necessário para substituir APIs depreciadas (setSystemUiVisibility, etc.)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        
         super.onCreate(savedInstanceState)
 
         // Desabilita as barras de rolagem nativas do WebView na raiz
