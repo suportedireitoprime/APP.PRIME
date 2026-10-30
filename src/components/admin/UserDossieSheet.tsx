@@ -132,39 +132,40 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
       hoje.setHours(0, 0, 0, 0);
       const desdeHoje = hoje.toISOString();
 
-      const [perfilR, logR, sessR, featR, evR, favR, grifR, anotR, assR, horusR, horusStatsR] = await Promise.all([
-        supabase.from('profiles' as any).select('*').eq('id', userId).maybeSingle(),
-        supabase.from('app_events' as any)
-          .select('metadata, created_at')
-          .eq('user_id', userId).eq('event_name', 'page_view').gte('created_at', desde30)
-          .order('created_at', { ascending: true }).limit(2000),
-        supabase.from('user_sessions' as any)
-          .select('started_at, platform, initial_route, pais, uf, cidade, timezone, locale, user_agent')
-          .eq('user_id', userId).gte('started_at', desde30)
-          .order('started_at', { ascending: false }).limit(500),
-        supabase.from('feature_usage' as any)
-          .select('feature_key, scope_value, ref_key, used_at').eq('user_id', userId).limit(3000),
-        supabase.from('app_events' as any)
-          .select('event_name').eq('user_id', userId).gte('created_at', desde30).limit(2000),
-        supabase.from('artigos_favoritos' as any).select('id', { count: 'exact', head: true }).eq('user_id', userId),
-        supabase.from('artigos_grifos' as any).select('id', { count: 'exact', head: true }).eq('user_id', userId),
-        supabase.from('artigos_anotacoes' as any).select('id', { count: 'exact', head: true }).eq('user_id', userId),
-        supabase.from('play_subscriptions' as any)
-          .select('product_id, base_plan_id, status, expires_at, auto_renewing')
-          .eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('horus_whatsapp_users' as any)
-          .select('phone_e164, verified_at, msg_count, last_seen_at, first_seen_at, blocked, onboarding_state, nome_preferido, linked_at')
-          .or(`user_id.eq.${userId},linked_user_id.eq.${userId}`)
-          .order('verified_at', { ascending: false, nullsFirst: false })
-          .limit(1).maybeSingle(),
-        supabase.from('horus_user_stats' as any)
-          .select('telefone, ultima_atividade_em, dias_streak_estudo')
-          .eq('user_id', userId).maybeSingle(),
-        loadLimits(),
-      ]);
-      if (cancel) return;
+      try {
+        const [perfilR, logR, sessR, featR, evR, favR, grifR, anotR, assR, horusR, horusStatsR, limitsR] = await Promise.all([
+          supabase.from('profiles' as any).select('*').eq('id', userId).maybeSingle(),
+          supabase.from('app_events' as any)
+            .select('metadata, created_at')
+            .eq('user_id', userId).eq('event_name', 'page_view').gte('created_at', desde30)
+            .order('created_at', { ascending: true }).limit(2000),
+          supabase.from('user_sessions' as any)
+            .select('started_at, platform, initial_route, pais, uf, cidade, timezone, locale, user_agent')
+            .eq('user_id', userId).gte('started_at', desde30)
+            .order('started_at', { ascending: false }).limit(500),
+          supabase.from('feature_usage' as any)
+            .select('feature_key, scope_value, ref_key, used_at').eq('user_id', userId).limit(3000),
+          supabase.from('app_events' as any)
+            .select('event_name').eq('user_id', userId).gte('created_at', desde30).limit(2000),
+          supabase.from('artigos_favoritos' as any).select('id', { count: 'exact', head: true }).eq('user_id', userId),
+          supabase.from('artigos_grifos' as any).select('id', { count: 'exact', head: true }).eq('user_id', userId),
+          supabase.from('artigos_anotacoes' as any).select('id', { count: 'exact', head: true }).eq('user_id', userId),
+          supabase.from('play_subscriptions' as any)
+            .select('product_id, base_plan_id, status, expires_at, auto_renewing')
+            .eq('user_id', userId).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('horus_whatsapp_users' as any)
+            .select('phone_e164, verified_at, msg_count, last_seen_at, first_seen_at, blocked, onboarding_state, nome_preferido, linked_at')
+            .or(`user_id.eq.${userId},linked_user_id.eq.${userId}`)
+            .order('verified_at', { ascending: false, nullsFirst: false })
+            .limit(1).maybeSingle(),
+          supabase.from('horus_user_stats' as any)
+            .select('telefone, ultima_atividade_em, dias_streak_estudo')
+            .eq('user_id', userId).maybeSingle(),
+          loadLimits(),
+        ]);
+        if (cancel) return;
 
-      const allLimits = (limitsR as FeatureLimitConfig[]) || [];
+        const allLimits = (limitsR as FeatureLimitConfig[]) || [];
       const usageRows = ((featR.data as any[]) || []);
       const createdAt = perfilR.data?.created_at;
       const inicioMes = inicioCiclo(createdAt);
@@ -300,8 +301,17 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
         ultimaSessao: sessoes[0]?.started_at ?? null,
         primeiraSessao: sessoes[sessoes.length - 1]?.started_at ?? null,
       });
-      setLoading(false);
-    })();
+    } catch (err: any) {
+      console.error('Erro ao carregar dossiê do usuário:', err);
+      if (!cancel) {
+        toast.error('Erro ao carregar dados do usuário');
+      }
+    } finally {
+      if (!cancel) {
+        setLoading(false);
+      }
+    }
+  })();
     return () => {
       cancel = true;
     };
