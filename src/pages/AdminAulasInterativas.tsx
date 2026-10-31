@@ -13,35 +13,14 @@ import adminCover from '@/assets/biblioteca/areas/direito-administrativo.webp';
 import themisHero from '@/assets/jurisprudencia-hero-themis.webp';
 import capaAdminOrigens from '@/assets/aulas-interativas/direito-administrativo/capa-aula-01-origens.webp';
 import capaAdminDefinicoes from '@/assets/aulas-interativas/direito-administrativo/capa-aula-02-definicoes.webp';
-import aula01HtmlRaw from '@/assets/aulas-interativas/direito-administrativo/aula-01.html?raw';
-import aula02HtmlRaw from '@/assets/aulas-interativas/direito-administrativo/aula-02.html?raw';
 
-interface AulaItem {
-  id: string;
-  numeroAula: string;
-  titulo: string;
-  descricao: string;
-  slug: string;
-  etapas: number;
-  audioQtd: number;
-  imagensQtd: number;
-  urlHtmlR2: string;
-  capaUrl: string;
-  status: 'pronto' | 'pendente';
-  disciplinaId: string;
-  materiaId: string;
-  htmlConteudoRaw?: string;
-}
 
-interface MateriaItem {
-  id: string;
-  disciplinaId: string;
-  numeroMateria: string;
-  titulo: string;
-  subtitulo: string;
-  descricao: string;
-  capaUrl: string;
-}
+import { 
+  MATERIAS_CATALOGO_COMPLETO, 
+  AULAS_CATALOGO_COMPLETO,
+  MateriaItem,
+  AulaItem
+} from '@/data/aulasInterativasCatalogoCompleto';
 
 interface DisciplinaItem {
   id: string;
@@ -107,169 +86,8 @@ const DISCIPLINAS_CATALOGO: DisciplinaItem[] = [
   }
 ];
 
-const MATERIAS_CATALOGO: MateriaItem[] = [
-  {
-    id: 'penal-familia',
-    disciplinaId: 'penal',
-    numeroMateria: '01. CRIMES CONTRA A FAMÍLIA',
-    titulo: 'Crimes Contra a Família',
-    subtitulo: 'Título VII do Código Penal',
-    descricao: 'Estudo aprofundado dos crimes contra o casamento, bigamia, erro essencial e impedimentos com jurisprudência consolidada.',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/capa-3x4.webp'
-  },
-  {
-    id: 'admin-origens-definicoes',
-    disciplinaId: 'administrativo',
-    numeroMateria: '01. ORIGENS E DEFINIÇÕES DO DIREITO ADMINISTRATIVO',
-    titulo: 'Origens e Definições do Direito Administrativo',
-    subtitulo: 'Gênese histórica, Estado de Direito e critérios conceituais',
-    descricao: 'Estudo da formação do Direito Administrativo na França pós-revolucionária, superação do patrimonialismo pela burocracia, Lei de 1872, caso Blanco e critérios definidores.',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp'
-  },
-  {
-    id: 'const-historia',
-    disciplinaId: 'constitucional',
-    numeroMateria: '01. HISTÓRIA CONSTITUCIONAL DO BRASIL',
-    titulo: 'História Constitucional do Brasil',
-    subtitulo: 'Da Independência à Constituição Imperial de 1824',
-    descricao: 'Gênese do constitucionalismo brasileiro, Constituinte da Macaxeira de 1823, Noite da Agonia, outorga da Carta de 1824, o Poder Moderador e garantias imperiais.',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/capa-3x4.webp'
-  },
-  {
-    id: 'trab-introducao',
-    disciplinaId: 'trabalho',
-    numeroMateria: '01. INTRODUÇÃO AO DIREITO DO TRABALHO',
-    titulo: 'Introdução ao Direito do Trabalho',
-    subtitulo: 'Fontes materiais, formais e negociação coletiva',
-    descricao: 'Evolução histórica, classificação das fontes do Direito do Trabalho, fontes heterônomas vs autônomas, Convenções e Acordos Coletivos e prevalência do negociado.',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/capa-3x4.webp'
-  }
-];
-
-const AULAS_CATALOGO: AulaItem[] = [
-  {
-    id: 'penal-01-01',
-    disciplinaId: 'penal',
-    materiaId: 'penal-familia',
-    numeroAula: 'AULA 01',
-    titulo: 'Crimes Contra a Família (Bigamia)',
-    descricao: 'Estudo aprofundado dos crimes contra o casamento, tipicidade da bigamia, causas de anulação civil retroativa e jurisprudência consolidada dos Tribunais Superiores.',
-    slug: 'aula-01-crimes-contra-a-familia',
-    etapas: 32,
-    audioQtd: 32,
-    imagensQtd: 30,
-    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/aula.html',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/capa-3x4.webp',
-    status: 'pronto'
-  },
-  {
-    id: 'penal-01-02',
-    disciplinaId: 'penal',
-    materiaId: 'penal-familia',
-    numeroAula: 'AULA 02',
-    titulo: 'Induzimento a Erro Essencial e Ocultação de Impedimento',
-    descricao: 'Estudo aprofundado do art. 236 do CP: erro essencial sobre a pessoa, impedimentos dirimentes, condição objetiva de procedibilidade e ação penal privada personalíssima.',
-    slug: 'aula-02-induzimento-a-erro-essencial',
-    etapas: 32,
-    audioQtd: 32,
-    imagensQtd: 30,
-    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-02-induzimento-a-erro-essencial/aula.html',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-02-induzimento-a-erro-essencial/capa-3x4.webp',
-    status: 'pronto'
-  },
-  {
-    id: 'admin-01-01',
-    disciplinaId: 'administrativo',
-    materiaId: 'admin-origens-definicoes',
-    numeroAula: 'AULA 01',
-    titulo: 'Origens do Direito Administrativo',
-    descricao: 'Surge na França com o Estado de Direito, superação do patrimonialismo pela burocracia, Lei de 1872 do Conselho de Estado e o nascimento autônomo com o caso Blanco.',
-    slug: 'aula-01-origens',
-    etapas: 38,
-    audioQtd: 38,
-    imagensQtd: 38,
-    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/aula.html',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp',
-    status: 'pronto',
-    htmlConteudoRaw: aula01HtmlRaw
-  },
-  {
-    id: 'admin-01-02',
-    disciplinaId: 'administrativo',
-    materiaId: 'admin-origens-definicoes',
-    numeroAula: 'AULA 02',
-    titulo: 'Definições do Direito Administrativo',
-    descricao: 'Critérios de definição (puissance publique, service public, teleológico, negativo) e o critério da Administração Pública em sentido objetivo e subjetivo adotado no Brasil.',
-    slug: 'aula-02-definicoes',
-    etapas: 38,
-    audioQtd: 38,
-    imagensQtd: 38,
-    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/aula.html',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/capa-3x4.webp',
-    status: 'pronto',
-    htmlConteudoRaw: aula02HtmlRaw
-  },
-  {
-    id: 'const-01-01',
-    disciplinaId: 'constitucional',
-    materiaId: 'const-historia',
-    numeroAula: 'AULA 01',
-    titulo: 'Da Independência à Constituição de 1824',
-    descricao: 'Contexto pós-independência de 1822, convocação da Constituinte da Macaxeira, dissolução por D. Pedro I e outorga da Carta de 1824.',
-    slug: 'aula-01-da-independencia',
-    etapas: 30,
-    audioQtd: 38,
-    imagensQtd: 17,
-    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/aula.html',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/capa-3x4.webp',
-    status: 'pronto'
-  },
-  {
-    id: 'const-01-02',
-    disciplinaId: 'constitucional',
-    materiaId: 'const-historia',
-    numeroAula: 'AULA 02',
-    titulo: 'Constituição de 1824',
-    descricao: 'Estrutura institucional do Império, o Poder Moderador, o Senado vitalício, a religião oficial católica e os direitos civis e políticos.',
-    slug: 'aula-02-constituicao-1824',
-    etapas: 30,
-    audioQtd: 39,
-    imagensQtd: 18,
-    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/aula.html',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/capa-3x4.webp',
-    status: 'pronto'
-  },
-  {
-    id: 'trab-01-01',
-    disciplinaId: 'trabalho',
-    materiaId: 'trab-introducao',
-    numeroAula: 'AULA 01',
-    titulo: 'Fontes materiais e formais',
-    descricao: 'Compreensão das fontes materiais (fatores econômicos e sociais) e fontes formais (heterônomas e autônomas) no ordenamento trabalhista.',
-    slug: 'aula-01-fontes-materiais-formais',
-    etapas: 30,
-    audioQtd: 39,
-    imagensQtd: 12,
-    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/aula.html',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/capa-3x4.webp',
-    status: 'pronto'
-  },
-  {
-    id: 'trab-01-02',
-    disciplinaId: 'trabalho',
-    materiaId: 'trab-introducao',
-    numeroAula: 'AULA 02',
-    titulo: 'Fontes autônomas em espécie',
-    descricao: 'Convenção Coletiva de Trabalho (CCT), Acordo Coletivo de Trabalho (ACT), contratos individuais e a prevalência do negociado sobre o legislado.',
-    slug: 'aula-02-fontes-autonomas',
-    etapas: 30,
-    audioQtd: 39,
-    imagensQtd: 12,
-    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-02-fontes-autonomas/aula.html',
-    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-02-fontes-autonomas/capa-3x4.webp',
-    status: 'pronto'
-  }
-];
+const MATERIAS_CATALOGO: MateriaItem[] = MATERIAS_CATALOGO_COMPLETO;
+const AULAS_CATALOGO: AulaItem[] = AULAS_CATALOGO_COMPLETO;
 
 const PROGRESSO_STORAGE_KEY = 'aulas_interativas_progresso_v1';
 const FLASHCARDS_STORAGE_KEY = 'aulas_interativas_flashcards_v1';
@@ -470,19 +288,32 @@ export default function AdminAulasInterativas() {
   // ─────────────────────────────────────────────────────────────────────────────
   if (aulaAtiva) {
     const progAula = calcularProgressoCiclo(aulaAtiva);
-    const isAdministrativo = aulaAtiva.disciplinaId === 'administrativo';
-    const discNome = isAdministrativo ? 'DIREITO ADMINISTRATIVO' : 'DIREITO PENAL';
-    const discCor = isAdministrativo ? '#d9a00a' : '#ff8296';
-    const headerBg = isAdministrativo 
-      ? 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)' 
-      : 'linear-gradient(180deg, #280611 0%, #16040a 100%)';
-    const headerBorder = isAdministrativo
-      ? 'border-[rgba(217,160,10,0.35)]'
-      : 'border-[rgba(226,62,87,0.35)]';
-    const buttonBackClass = isAdministrativo
-      ? 'bg-[rgba(46,36,16,0.85)] border-[rgba(217,160,10,0.45)] text-[#ffe38a] hover:bg-[rgba(70,52,20,1)]'
-      : 'bg-[rgba(46,15,24,0.85)] border-[rgba(226,62,87,0.45)] text-[#ff8296] hover:bg-[rgba(66,20,34,1)]';
-    const iframeBg = isAdministrativo ? '#140e02' : '#120409';
+    const discAtual = DISCIPLINAS_CATALOGO.find(d => d.id === aulaAtiva.disciplinaId) || DISCIPLINAS_CATALOGO[0];
+    const discNome = discAtual.nome;
+    const discCor = discAtual.corDestaque;
+    
+    // Configurações temáticas precisas por disciplina (Penal, Administrativo, Constitucional, Trabalho)
+    let headerBg = 'linear-gradient(180deg, #280611 0%, #16040a 100%)';
+    let headerBorder = 'border-[rgba(226,62,87,0.35)]';
+    let buttonBackClass = 'bg-[rgba(46,15,24,0.85)] border-[rgba(226,62,87,0.45)] text-[#ff8296] hover:bg-[rgba(66,20,34,1)]';
+    let iframeBg = '#120409';
+
+    if (aulaAtiva.disciplinaId === 'administrativo') {
+      headerBg = 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)';
+      headerBorder = 'border-[rgba(217,160,10,0.35)]';
+      buttonBackClass = 'bg-[rgba(46,36,16,0.85)] border-[rgba(217,160,10,0.45)] text-[#ffe38a] hover:bg-[rgba(70,52,20,1)]';
+      iframeBg = '#140e02';
+    } else if (aulaAtiva.disciplinaId === 'constitucional') {
+      headerBg = 'linear-gradient(180deg, #0e2916 0%, #08170c 100%)';
+      headerBorder = 'border-[rgba(34,197,94,0.35)]';
+      buttonBackClass = 'bg-[rgba(14,41,22,0.85)] border-[rgba(34,197,94,0.45)] text-[#4ade80] hover:bg-[rgba(20,60,32,1)]';
+      iframeBg = '#05140b';
+    } else if (aulaAtiva.disciplinaId === 'trabalho') {
+      headerBg = 'linear-gradient(180deg, #25123d 0%, #150924 100%)';
+      headerBorder = 'border-[rgba(168,85,247,0.35)]';
+      buttonBackClass = 'bg-[rgba(37,18,61,0.85)] border-[rgba(168,85,247,0.45)] text-[#c084fc] hover:bg-[rgba(55,27,90,1)]';
+      iframeBg = '#0f051a';
+    }
 
     return (
       <div 
