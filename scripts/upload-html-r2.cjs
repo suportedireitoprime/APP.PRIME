@@ -22,12 +22,11 @@ async function main() {
     Key: key,
     Body: Buffer.from(html, 'utf8'),
     ContentType: 'text/html; charset=utf-8',
-    CacheControl: 'public, max-age=3600'
+    CacheControl: 'no-cache, no-store, must-revalidate, max-age=0'
   }));
 
   const url = `${R2_DOMAIN}/${key}`;
-  console.log('HTML enviado ao R2:', url);
+  console.log('HTML enviado ao R2 com no-cache:', url);
 }
 
 main().catch(console.error);
-

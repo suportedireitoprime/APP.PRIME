@@ -64,7 +64,7 @@ export default function AdminAulasInterativas() {
                 <CheckCircle2 className="w-3.5 h-3.5" /> Servido via Cloudflare R2
               </span>
               <a
-                href={aulaAtiva.urlHtmlR2}
+                href={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
                 target="_blank"
                 rel="noreferrer"
                 className="p-1.5 rounded-xl bg-white/5 border border-white/10 text-zinc-300 hover:text-white transition hover:bg-white/10"
@@ -78,7 +78,7 @@ export default function AdminAulasInterativas() {
           {/* Iframe 100% Tela Cheia */}
           <div className="flex-1 w-full h-full relative overflow-hidden bg-black">
             <iframe
-              src={aulaAtiva.urlHtmlR2}
+              src={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
               title={aulaAtiva.titulo}
               className="w-full h-full border-0 absolute inset-0"
               allow="autoplay; clipboard-write; fullscreen"

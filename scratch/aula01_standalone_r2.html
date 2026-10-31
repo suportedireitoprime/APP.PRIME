@@ -52,14 +52,14 @@
         border-radius:0;border:none;box-shadow:none;
       }
       header{
-        padding:12px 20px 10px;
-        border-bottom:1px solid rgba(226,62,87,.22);
-        background:rgba(20,4,9,.85);
-        backdrop-filter:blur(14px);
-        -webkit-backdrop-filter:blur(14px);
+        padding:8px 16px 6px;
+        border-bottom:1px solid rgba(226,62,87,.25);
+        background:rgba(18,4,9,.94);
+        backdrop-filter:blur(16px);
+        -webkit-backdrop-filter:blur(16px);
         flex:0 0 auto;
         width:100%;
-        z-index:20;
+        z-index:30;
       }
       .header-inner{
         max-width:860px;
@@ -67,40 +67,66 @@
         width:100%;
         display:flex;flex-direction:column;gap:5px;
       }
-      .hrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-      .subject{color:var(--red2);font-weight:700;font-size:11.5px;letter-spacing:2.4px}
-      .design{color:var(--muted);font-size:11px;letter-spacing:1.4px;font-weight:600;white-space:nowrap}
-      h1{font-family:"Playfair Display",Georgia,serif;font-size:20px;line-height:1.2;margin:2px 0;font-weight:800}
-      .hmeta{display:flex;align-items:center;justify-content:space-between;gap:8px}
-      .etapa{color:var(--muted);font-size:12.5px;margin:0}
-      .etapa b{color:var(--ink);font-weight:600}
-      .track{height:5px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin:2px 0 6px}
-      .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
-      .audio{
-        margin:4px 0 2px;
-        background:linear-gradient(90deg,rgba(46,15,24,.85),rgba(33,10,17,.92));
-        border:1px solid rgba(226,62,87,.45);
-        border-radius:14px;
-        padding:8px 14px;
-        cursor:pointer;
-        box-shadow:0 6px 18px rgba(0,0,0,.35);
+      .top-row{
+        display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;
       }
-      .audio .arow{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-      .audio .alabel{color:var(--red2);font-size:11px;font-weight:700;letter-spacing:1.8px}
-      .audio .atime{color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums;font-weight:600}
-      .audio .acontrol{display:flex;align-items:center;gap:12px}
+      .top-left{
+        display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+      }
+      .subject{color:var(--red2);font-weight:800;font-size:11px;letter-spacing:2px}
+      .dot{color:rgba(255,255,255,.25);font-size:10px}
+      .etapa{color:var(--muted);font-size:11.5px;font-weight:600;margin:0}
+      .etapa b{color:var(--ink);font-weight:600}
+      .blockseal{
+        background:rgba(212,175,55,.12);
+        border:1px solid rgba(212,175,55,.3);
+        color:var(--gold2);
+        font-size:10px;font-weight:700;letter-spacing:1px;
+        padding:1px 7px;border-radius:99px;text-transform:uppercase;
+      }
+      h1{
+        font-family:"Playfair Display",Georgia,serif;
+        font-size:15px;line-height:1.2;margin:0;font-weight:700;color:#fff;
+      }
+      /* Player Compacto no Cabeçalho */
+      .audio-compact{
+        display:flex;align-items:center;gap:10px;
+        background:rgba(46,15,24,.75);
+        border:1px solid rgba(226,62,87,.35);
+        border-radius:10px;
+        padding:4px 10px;
+        cursor:pointer;
+        transition:background .2s ease;
+        margin:0;
+      }
+      .audio-compact:hover{background:rgba(56,18,30,.9)}
       .playbtn{
-        flex:0 0 auto;width:38px;height:38px;border-radius:50%;
+        flex:0 0 28px;width:28px;height:28px;border-radius:50%;
         background:linear-gradient(135deg,#ff5e78,#c8102e);
-        border:1px solid rgba(255,255,255,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;
-        box-shadow:0 4px 14px rgba(226,62,87,.45);
+        border:1px solid rgba(255,255,255,.3);cursor:pointer;
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 2px 8px rgba(226,62,87,.4);
         transition:transform .15s ease;
       }
-      .playbtn:hover{transform:scale(1.05)}
-      .playbtn:active{transform:scale(0.95)}
-      .playbtn svg{width:18px;height:18px;fill:#fff}
-      .atrack{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden;cursor:pointer}
-      .afill{height:100%;width:0%;background:linear-gradient(90deg,var(--red),var(--gold));transition:width .15s linear}
+      .playbtn:hover{transform:scale(1.08)}
+      .playbtn:active{transform:scale(0.92)}
+      .playbtn svg{width:13px;height:13px;fill:#fff}
+      .audio-track-wrap{
+        flex:1 1 auto;min-width:0;
+        display:flex;flex-direction:column;gap:3px;
+      }
+      .audio-labels{
+        display:flex;justify-content:space-between;align-items:center;gap:8px;
+      }
+      .alabel{color:var(--red2);font-size:9.5px;font-weight:800;letter-spacing:1.4px}
+      .atime{color:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums;font-weight:600}
+      .atrack{
+        position:relative;height:4px;border-radius:99px;
+        background:rgba(255,255,255,.12);overflow:hidden;cursor:pointer;
+      }
+      .afill{height:100%;width:0%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:99px}
+      .track{height:3px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:1px}
+      .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
       .scroll{
         flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
         padding:20px 20px 30px;
@@ -119,7 +145,7 @@
       footer{
         padding:12px 20px calc(12px + env(safe-area-inset-bottom));
         border-top:1px solid rgba(226,62,87,.22);
-        background:rgba(20,4,9,.88);
+        background:rgba(18,4,9,.92);
         backdrop-filter:blur(14px);
         -webkit-backdrop-filter:blur(14px);
         flex:0 0 auto;
@@ -498,30 +524,31 @@
     <div class="phone" id="phone">
       <header>
         <div class="header-inner">
-          <div class="hrow">
-            <span class="subject">DIREITO PENAL</span>
-            <span class="design">AULA INTERATIVA</span>
-          </div>
-          <h1>Crimes Contra a Família</h1>
-          <div class="hmeta">
-            <p class="etapa" id="etapaLabel">Etapa 1 de 32</p>
-            <div class="sealrow"><span class="blockseal" id="blockSeal">Bloco 1 de 3 · O terreno da família</span></div>
-          </div>
-          <div class="track"><div class="fill" id="progressFill" style="width:3.13%"></div></div>
-
-          <!-- Player de Narração Horizontal Integrado -->
-          <div class="audio" id="audioBox" title="Ouvir a narração desta etapa">
-            <div class="arow">
-              <span class="alabel">NARRAÇÃO · VOZ FEMININA</span>
-              <span class="atime" id="aTime">0:00 / 0:00</span>
+          <div class="top-row">
+            <div class="top-left">
+              <span class="subject">DIREITO PENAL</span>
+              <span class="dot">•</span>
+              <span class="etapa" id="etapaLabel">Etapa 1 de 32</span>
+              <div class="sealrow" style="margin:0;display:inline-block"><span class="blockseal" id="blockSeal">Bloco 1 de 3</span></div>
             </div>
-            <div class="acontrol">
-              <button class="playbtn" id="playBtn" type="button" aria-label="Ouvir ou pausar a narração">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
-              </button>
+            <h1 id="aulaTitulo">Crimes Contra a Família</h1>
+          </div>
+
+          <!-- Player de Narração Compacto no Cabeçalho -->
+          <div class="audio audio-compact" id="audioBox" title="Ouvir a narração desta etapa">
+            <button class="playbtn" id="playBtn" type="button" aria-label="Ouvir ou pausar a narração">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+            </button>
+            <div class="audio-track-wrap">
+              <div class="audio-labels">
+                <span class="alabel">NARRAÇÃO · VOZ FEMININA</span>
+                <span class="atime" id="aTime">0:00 / 0:00</span>
+              </div>
               <div class="atrack" id="aTrack"><div class="afill" id="aFill"></div></div>
             </div>
           </div>
+
+          <div class="track"><div class="fill" id="progressFill" style="width:3.13%"></div></div>
         </div>
       </header>
 
