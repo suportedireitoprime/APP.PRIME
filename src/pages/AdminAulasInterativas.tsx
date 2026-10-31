@@ -28,7 +28,7 @@ const AULAS_CATALOGO: AulaItem[] = [
     id: 'penal-01-01',
     numeroAula: 'AULA 01',
     titulo: 'Crimes Contra a Família (Bigamia)',
-    descricao: 'Estudo aprofundado dos crimes contra o casamento, elementos típicos da bigamia, causas de anulação civil e jurisprudência aplicada dos Tribunais Superiores.',
+    descricao: 'Estudo aprofundado dos crimes contra o casamento, tipicidade da bigamia, causas de anulação civil retroativa e jurisprudência consolidada dos Tribunais Superiores.',
     slug: 'aula-01-crimes-contra-a-familia',
     etapas: 32,
     audioQtd: 32,
@@ -41,7 +41,7 @@ const AULAS_CATALOGO: AulaItem[] = [
     id: 'penal-01-02',
     numeroAula: 'AULA 02',
     titulo: 'Induzimento a Erro Essencial e Ocultação de Impedimento',
-    descricao: 'Análise aprofundada do art. 236 do Código Penal: condutas de induzimento a erro essencial sobre a pessoa e impedimentos dirimentes, condição objetiva de procedibilidade e ação penal privada personalíssima.',
+    descricao: 'Estudo aprofundado do art. 236 do CP: erro essencial sobre a pessoa, impedimentos dirimentes, condição objetiva de procedibilidade e ação penal privada personalíssima.',
     slug: 'aula-02-induzimento-a-erro-essencial',
     etapas: 32,
     audioQtd: 32,
@@ -429,7 +429,7 @@ export default function AdminAulasInterativas() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
             {AULAS_CATALOGO.map((aula) => {
               const prog = calcularProgressoCiclo(aula);
               const flashcardsLiberados = prog.aulaTerminada || modoLivreTeste;
@@ -442,14 +442,26 @@ export default function AdminAulasInterativas() {
               return (
                 <div
                   key={aula.id}
-                  className="group rounded-3xl border border-[rgba(226,62,87,0.25)] hover:border-[rgba(226,62,87,0.5)] p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between shadow-xl shadow-black/40 hover:shadow-red-500/10"
+                  className="group rounded-3xl border border-[rgba(226,62,87,0.25)] hover:border-[rgba(226,62,87,0.5)] p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between h-full shadow-xl shadow-black/40 hover:shadow-red-500/10"
                   style={{ background: 'linear-gradient(180deg, #2e1219 0%, #250d14 100%)' }}
                 >
-                  <div className="space-y-3.5">
-                    {/* Topo do Card: Capa + Matéria e Título COMPLETOS SEM ABREVIAÇÃO */}
-                    <div className="flex gap-4 items-start">
+                  <div className="space-y-3.5 flex-1 flex flex-col">
+                    {/* Cabeçalho do Card: NÚMERO DA AULA ACIMA DA CAPA */}
+                    <div className="flex items-center justify-between pb-2 border-b border-[rgba(226,62,87,0.18)]">
+                      <span className="text-[11px] sm:text-xs font-black uppercase tracking-widest text-[#ff8296] px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 shadow-sm flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#ff8296]" />
+                        <span>{aula.numeroAula}</span>
+                      </span>
+
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#c9a7ad]/80">
+                        DIREITO PENAL
+                      </span>
+                    </div>
+
+                    {/* Bloco Central: Capa 3x4 + Título e Descrição Padronizados */}
+                    <div className="flex gap-4 items-start flex-1">
                       {/* Capa 3x4 */}
-                      <div className="relative w-20 h-28 rounded-2xl overflow-hidden shrink-0 border border-[rgba(212,175,55,0.35)] bg-zinc-950 shadow-md">
+                      <div className="relative w-20 h-28 sm:w-22 sm:h-30 rounded-2xl overflow-hidden shrink-0 border border-[rgba(212,175,55,0.35)] bg-zinc-950 shadow-md">
                         <img 
                           src={aula.capaUrl} 
                           alt={aula.titulo}
@@ -462,21 +474,14 @@ export default function AdminAulasInterativas() {
                         </span>
                       </div>
 
-                      <div className="min-w-0 flex-1 space-y-1.5">
-                        {/* Número da Aula em destaque no lugar do tema (sem redundância) */}
-                        <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-black uppercase tracking-widest text-[#ff8296] px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 shadow-sm">
-                            {aula.numeroAula}
-                          </span>
-                        </div>
-
-                        {/* Título do Conteúdo Completo Sem Reticências */}
-                        <h4 className="text-base sm:text-lg font-bold text-white leading-snug group-hover:text-[#ff8296] transition-colors font-serif">
+                      <div className="min-w-0 flex-1 flex flex-col justify-between space-y-2">
+                        {/* Título com altura mínima para igualdade absoluta entre cards */}
+                        <h4 className="text-sm sm:text-base font-bold text-white leading-snug group-hover:text-[#ff8296] transition-colors font-serif min-h-[46px] sm:min-h-[50px] flex items-center">
                           {aula.titulo}
                         </h4>
 
-                        {/* Descrição Completa Sem Reticências */}
-                        <p className="text-xs sm:text-sm text-[#f8edef]/85 leading-relaxed pt-0.5 font-sans">
+                        {/* Descrição de mesmo tamanho e altura mínima para todos */}
+                        <p className="text-xs sm:text-sm text-[#f8edef]/85 leading-relaxed font-sans min-h-[64px] sm:min-h-[58px]">
                           {aula.descricao}
                         </p>
                       </div>
