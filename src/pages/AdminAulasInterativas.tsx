@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { 
   Sparkles, Play, CheckCircle2, BookOpen, Layers, 
-  ExternalLink, ArrowLeft, Headphones
+  ExternalLink, ArrowLeft, Headphones, Clock
 } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface AulaItem {
   id: string;
   materia: string;
   titulo: string;
+  descricao: string;
+  duracaoMedia: string;
   slug: string;
   etapas: number;
   audioQtd: number;
@@ -25,6 +26,8 @@ const AULAS_CATALOGO: AulaItem[] = [
     id: 'penal-01-01',
     materia: '01. Crimes Contra a Família',
     titulo: 'Aula 01 - Crimes Contra a Família (Bigamia)',
+    descricao: 'Estudo aprofundado dos crimes contra o casamento, elementos da bigamia, causas de anulação e jurisprudência aplicada.',
+    duracaoMedia: '~25 min de aula',
     slug: 'aula-01-crimes-contra-a-familia',
     etapas: 32,
     audioQtd: 32,
@@ -188,26 +191,22 @@ export default function AdminAulasInterativas() {
                     <span className="text-[11px] font-bold uppercase tracking-wider block truncate text-[#ff8296]">
                       {aula.materia}
                     </span>
-                    <h4 className="text-sm sm:text-base font-bold text-white leading-snug line-clamp-2 group-hover:text-[#ff8296] transition-colors font-serif">
+                    <h4 className="text-sm sm:text-base font-bold text-white leading-snug line-clamp-1 group-hover:text-[#ff8296] transition-colors font-serif">
                       {aula.titulo}
                     </h4>
 
-                    <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-[#c9a7ad]">
-                      <span className="inline-flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
-                        <Headphones className="w-3 h-3 text-[#ff8296]" />
-                        {aula.audioQtd} áudios
-                      </span>
-                      <span className="inline-flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-md border border-white/5">
-                        <Layers className="w-3 h-3 text-[#e9cd6d]" />
-                        {aula.imagensQtd} ilustrações
-                      </span>
-                    </div>
+                    {/* Descrição resumida em 2 linhas */}
+                    <p className="text-xs text-[#c9a7ad] leading-relaxed line-clamp-2 pt-0.5">
+                      {aula.descricao}
+                    </p>
                   </div>
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-[rgba(226,62,87,0.2)] flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Pronta no R2
+                  {/* Tempo médio da aula */}
+                  <span className="inline-flex items-center gap-1.5 text-xs text-[#e9cd6d] font-semibold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                    <Clock className="w-3.5 h-3.5 text-[#e9cd6d]" />
+                    <span>{aula.duracaoMedia}</span>
                   </span>
 
                   <button
