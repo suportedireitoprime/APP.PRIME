@@ -3286,12 +3286,17 @@ jobs:
           # excluímos tudo que é sensível via data_extraction_rules.xml.
           def upsert(attr, value):
               global s
+              m_app = re.search(r'<application\b([^>]*)>', s)
+              if not m_app:
+                  return
+              app_tag = m_app.group(0)
               pattern = rf'android:{attr}="[^"]*"'
               new = f'android:{attr}="{value}"'
-              if re.search(pattern, s):
-                  s = re.sub(pattern, new, s, count=1)
+              if re.search(pattern, app_tag):
+                  new_tag = re.sub(pattern, new, app_tag, count=1)
               else:
-                  s = s.replace('<application', f'<application\n        {new}', 1)
+                  new_tag = re.sub(r'<application\b', f'<application\n        {new}', app_tag, count=1)
+              s = s[:m_app.start()] + new_tag + s[m_app.end():]
           upsert('allowBackup', 'true')
           upsert('fullBackupContent', '@xml/backup_rules')
           upsert('dataExtractionRules', '@xml/data_extraction_rules')
@@ -3336,12 +3341,17 @@ jobs:
           s = p.read_text()
           def upsert(attr, value):
               global s
+              m_app = re.search(r'<application\b([^>]*)>', s)
+              if not m_app:
+                  return
+              app_tag = m_app.group(0)
               pattern = rf'android:{attr}="[^"]*"'
               new = f'android:{attr}="{value}"'
-              if re.search(pattern, s):
-                  s = re.sub(pattern, new, s, count=1)
+              if re.search(pattern, app_tag):
+                  new_tag = re.sub(pattern, new, app_tag, count=1)
               else:
-                  s = s.replace('<application', f'<application\n        {new}', 1)
+                  new_tag = re.sub(r'<application\b', f'<application\n        {new}', app_tag, count=1)
+              s = s[:m_app.start()] + new_tag + s[m_app.end():]
           # Predictive Back Gesture (Android 14+ opt-in / 15+ default).
           # Sem isso, a animação nativa de "voltar" fica travada.
           upsert('enableOnBackInvokedCallback', 'true')
