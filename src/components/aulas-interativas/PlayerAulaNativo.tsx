@@ -882,11 +882,8 @@ export function PlayerAulaNativo({
             </button>
 
             <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-              <div className="flex items-center justify-between text-[10px] sm:text-xs font-black uppercase tracking-wider leading-none">
-                <span className="truncate" style={{ color: tema.destaque }}>
-                  {tocando ? 'NARRANDO...' : 'NARRAÇÃO'}
-                </span>
-                <span className="text-zinc-300 font-mono text-xs sm:text-sm font-bold">
+              <div className="flex items-center justify-center text-center leading-none">
+                <span className="text-zinc-200 font-mono text-xs sm:text-sm font-bold tracking-wider">
                   {formatTempo(tempoAtual)} / {duracao > 0 ? formatTempo(duracao) : '0:45'}
                 </span>
               </div>
