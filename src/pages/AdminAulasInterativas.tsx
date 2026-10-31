@@ -68,13 +68,13 @@ const DISCIPLINAS_CATALOGO: DisciplinaItem[] = [
     id: 'administrativo',
     nome: 'DIREITO ADMINISTRATIVO',
     subtitulo: 'ÁREA DO CONHECIMENTO',
-    descricao: 'Regime jurídico-administrativo, princípios expressos e implícitos da CF/88, poderes estatais e controle de legalidade.',
-    capaHeroUrl: adminCover,
-    corDestaque: '#38bdf8',
-    corGradientRing: ['#38bdf8', '#0284c7'],
-    corFundoCard: 'linear-gradient(180deg, #0f2738 0%, #081722 100%)',
-    corBorda: 'rgba(56,189,248,0.35)',
-    textAccentClass: 'text-[#38bdf8]'
+    descricao: 'Origens históricas na França revolucionária, consolidação do Estado de Direito, critérios de definição e regime jurídico-administrativo.',
+    capaHeroUrl: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/capa-aula-01-origens.webp',
+    corDestaque: '#d9a00a',
+    corGradientRing: ['#ffe38a', '#d9a00a'],
+    corFundoCard: 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)',
+    corBorda: 'rgba(217,160,10,0.35)',
+    textAccentClass: 'text-[#d9a00a]'
   }
 ];
 
@@ -89,13 +89,13 @@ const MATERIAS_CATALOGO: MateriaItem[] = [
     capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/capa-3x4.webp'
   },
   {
-    id: 'admin-principios',
+    id: 'admin-origens-definicoes',
     disciplinaId: 'administrativo',
-    numeroMateria: '01. REGIME JURÍDICO E PRINCÍPIOS DA ADMINISTRAÇÃO',
-    titulo: 'Princípios da Administração Pública',
-    subtitulo: 'Art. 37, caput e § 1º da CF/88',
-    descricao: 'Legalidade estrita, impessoalidade e vedação à autopromoção, moralidade proba, publicidade e eficiência administrativa.',
-    capaUrl: adminCover
+    numeroMateria: '01. ORIGENS E DEFINIÇÕES DO DIREITO ADMINISTRATIVO',
+    titulo: 'Origens e Definições do Direito Administrativo',
+    subtitulo: 'Gênese histórica, Estado de Direito e critérios conceituais',
+    descricao: 'Estudo da formação do Direito Administrativo na França pós-revolucionária, superação do patrimonialismo pela burocracia, Lei de 1872, caso Blanco e critérios definidores.',
+    capaUrl: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/capa-aula-01-origens.webp'
   }
 ];
 
@@ -133,16 +133,31 @@ const AULAS_CATALOGO: AulaItem[] = [
   {
     id: 'admin-01-01',
     disciplinaId: 'administrativo',
-    materiaId: 'admin-principios',
+    materiaId: 'admin-origens-definicoes',
     numeroAula: 'AULA 01',
-    titulo: 'Princípios Expressos da Administração Pública (LIMPE)',
-    descricao: 'Estudo aprofundado dos princípios da legalidade estrita, impessoalidade e vedação à promoção pessoal, moralidade administrativa, publicidade republicana e eficiência.',
-    slug: 'aula-01-principios-da-administracao-publica',
-    etapas: 28,
-    audioQtd: 28,
-    imagensQtd: 28,
-    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/aula.html',
-    capaUrl: adminCover,
+    titulo: 'Origens do Direito Administrativo',
+    descricao: 'Surge na França com o Estado de Direito, superação do patrimonialismo pela burocracia, Lei de 1872 do Conselho de Estado e o nascimento autônomo com o caso Blanco.',
+    slug: 'aula-01-origens',
+    etapas: 38,
+    audioQtd: 38,
+    imagensQtd: 38,
+    urlHtmlR2: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01.html',
+    capaUrl: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/capa-aula-01-origens.webp',
+    status: 'pronto'
+  },
+  {
+    id: 'admin-01-02',
+    disciplinaId: 'administrativo',
+    materiaId: 'admin-origens-definicoes',
+    numeroAula: 'AULA 02',
+    titulo: 'Definições do Direito Administrativo',
+    descricao: 'Critérios de definição (puissance publique, service public, teleológico, negativo) e o critério da Administração Pública em sentido objetivo e subjetivo adotado no Brasil.',
+    slug: 'aula-02-definicoes',
+    etapas: 38,
+    audioQtd: 38,
+    imagensQtd: 38,
+    urlHtmlR2: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02.html',
+    capaUrl: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/capa-aula-02-definicoes.webp',
     status: 'pronto'
   }
 ];
@@ -346,16 +361,30 @@ export default function AdminAulasInterativas() {
   // ─────────────────────────────────────────────────────────────────────────────
   if (aulaAtiva) {
     const progAula = calcularProgressoCiclo(aulaAtiva);
-    const discNome = aulaAtiva.disciplinaId === 'administrativo' ? 'DIREITO ADMINISTRATIVO' : 'DIREITO PENAL';
-    const discCor = aulaAtiva.disciplinaId === 'administrativo' ? '#38bdf8' : '#ff8296';
+    const isAdministrativo = aulaAtiva.disciplinaId === 'administrativo';
+    const discNome = isAdministrativo ? 'DIREITO ADMINISTRATIVO' : 'DIREITO PENAL';
+    const discCor = isAdministrativo ? '#d9a00a' : '#ff8296';
+    const headerBg = isAdministrativo 
+      ? 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)' 
+      : 'linear-gradient(180deg, #280611 0%, #16040a 100%)';
+    const headerBorder = isAdministrativo
+      ? 'border-[rgba(217,160,10,0.35)]'
+      : 'border-[rgba(226,62,87,0.35)]';
+    const buttonBackClass = isAdministrativo
+      ? 'bg-[rgba(46,36,16,0.85)] border-[rgba(217,160,10,0.45)] text-[#ffe38a] hover:bg-[rgba(70,52,20,1)]'
+      : 'bg-[rgba(46,15,24,0.85)] border-[rgba(226,62,87,0.45)] text-[#ff8296] hover:bg-[rgba(66,20,34,1)]';
+    const iframeBg = isAdministrativo ? '#140e02' : '#120409';
 
     return (
-      <div className="fixed inset-0 z-[100] bg-[#0c0d10] flex flex-col w-screen h-screen overflow-hidden">
-        {/* Cabeçalho Superior Temático */}
+      <div 
+        className="fixed inset-0 z-[100] flex flex-col w-screen h-screen overflow-hidden"
+        style={{ backgroundColor: iframeBg }}
+      >
+        {/* Cabeçalho Superior Temático Adaptado à Paleta Real */}
         <header
-          className="flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 border-b border-white/10 shrink-0 z-30 shadow-lg shadow-black/60"
+          className={`flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 border-b ${headerBorder} shrink-0 z-30 shadow-lg shadow-black/60`}
           style={{
-            background: 'linear-gradient(180deg, #1b1e24 0%, #111317 100%)',
+            background: headerBg,
             paddingTop: 'calc(0.6rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
           }}
         >
@@ -363,7 +392,7 @@ export default function AdminAulasInterativas() {
             <button
               type="button"
               onClick={() => setAulaAtiva(null)}
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 border border-white/15 flex items-center justify-center shrink-0 text-white hover:bg-white/20 transition active:scale-95 shadow-md shadow-black/40"
+              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center shrink-0 transition active:scale-95 shadow-md shadow-black/40 ${buttonBackClass}`}
               aria-label="Voltar à matéria"
             >
               <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
@@ -406,7 +435,10 @@ export default function AdminAulasInterativas() {
         </header>
 
         {/* Iframe 100% Tela Cheia */}
-        <div className="flex-1 w-full h-full relative overflow-hidden bg-[#0c0d10]">
+        <div 
+          className="flex-1 w-full h-full relative overflow-hidden"
+          style={{ backgroundColor: iframeBg }}
+        >
           <iframe
             src={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
             title={aulaAtiva.titulo}
@@ -959,7 +991,9 @@ export default function AdminAulasInterativas() {
                           className={`w-full py-2.5 px-2 rounded-2xl font-black text-[11px] sm:text-xs transition flex items-center justify-center gap-1.5 shadow-md active:scale-95 ${
                             prog.aulaTerminada 
                               ? 'bg-[#1b1c22] hover:bg-[#252830] text-zinc-200 border border-white/15' 
-                              : 'bg-gradient-to-r from-[#e23e57] to-[#c8102e] hover:from-[#ff4d6d] hover:to-[#dc143c] text-white shadow-red-950/50'
+                              : aula.disciplinaId === 'administrativo'
+                                ? 'bg-gradient-to-r from-[#d9a00a] to-[#b45309] hover:from-[#f59e0b] hover:to-[#92400e] text-black font-black shadow-amber-950/50'
+                                : 'bg-gradient-to-r from-[#e23e57] to-[#c8102e] hover:from-[#ff4d6d] hover:to-[#dc143c] text-white shadow-red-950/50'
                           }`}
                         >
                           {prog.aulaTerminada ? (

@@ -644,320 +644,639 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
   },
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // AULA 01: DIREITO ADMINISTRATIVO · PRINCÍPIOS DA ADMINISTRAÇÃO PÚBLICA (LIMPE)
-  // 18 Flashcards + 12 Questões
+  // AULA 01: DIREITO ADMINISTRATIVO · ORIGENS DO DIREITO ADMINISTRATIVO
+  // 18 Flashcards + 12 Questões (Baseado nas 38 etapas reais)
   // ─────────────────────────────────────────────────────────────────────────────
   'admin-01-01': {
     aulaId: 'admin-01-01',
-    titulo: 'Princípios Expressos da Administração Pública (LIMPE)',
+    titulo: 'Origens do Direito Administrativo',
     flashcards: [
       {
         id: 'fc-admin-01-01',
-        pergunta: 'O que representa o mnemônico LIMPE no art. 37, caput, da Constituição Federal?',
-        resposta: 'Representa os cinco princípios expressos que regem a Administração Pública direta e indireta de qualquer dos Poderes da União, Estados, DF e Municípios: Legalidade, Impessoalidade, Moralidade, Publicidade e Eficiência.',
-        artigoLei: 'Art. 37, caput, da Constituição Federal de 1988',
-        dicaPratica: 'São mandamentos nucleares de observância obrigatória por todos os entes da Federação.'
+        pergunta: 'Em qual contexto histórico e país surge formalmente o Direito Administrativo como ramo autônomo?',
+        resposta: 'Surge na França, no final do século XVIII e início do século XIX, intimamente associado à consolidação do Estado de Direito pós-Revolução Francesa de 1789.',
+        artigoLei: 'Evolução histórica do Estado de Direito francês',
+        dicaPratica: 'O Direito Administrativo nasce como instrumento de limitação jurídica do poder estatal e garantia dos cidadãos.'
       },
       {
         id: 'fc-admin-01-02',
-        pergunta: 'Qual é a diferença fundamental entre a Legalidade para o particular e para a Administração Pública?',
-        resposta: 'O particular pode fazer tudo o que a lei não proíbe (art. 5º, II da CF - autonomia da vontade). Já a Administração Pública só pode agir quando houver expressa autorização ou determinação em lei (subordinação estrita à lei).',
-        artigoLei: 'Art. 5º, II e Art. 37, caput, da CF/88',
-        dicaPratica: 'Na Administração não há autonomia da vontade privada: a lei é o limite máximo e mínimo da conduta pública.'
+        pergunta: 'O que caracteriza o Estado de Direito na relação entre Administração Pública e administrados?',
+        resposta: 'A sujeição do próprio Estado à lei, garantindo segurança jurídica aos cidadãos contra arbítrios do soberano e substituindo a vontade pessoal do governante pela supremacia da lei.',
+        artigoLei: 'Princípio do Estado Democrático de Direito (art. 1º da CF/88)',
+        dicaPratica: 'No absolutismo o Rei não errava ("the King can do no wrong"); no Estado de Direito, o Estado é responsabilizável.'
       },
       {
         id: 'fc-admin-01-03',
-        pergunta: 'Quais são as duas facetas primordiais do Princípio da Impessoalidade?',
-        resposta: '1ª: Igualdade/Isonomia no tratamento dos administrados (sem perseguições ou favoritismos indevidos); 2ª: Imputação dos atos ao órgão ou entidade estatal, e não à pessoa física do agente público executor.',
-        artigoLei: 'Art. 37, caput e § 1º da CF/88',
-        dicaPratica: 'Quem age é o Estado (órgão), não o indivíduo titular. Daí a vedação absoluta à autopromoção pessoal.'
+        pergunta: 'Quais são os quatro postulados fundamentais do Estado de Direito destacados na gênese administrativa?',
+        resposta: '1) Legalidade estrita dos atos estatais; 2) Separação dos Poderes; 3) Reconhecimento e garantia dos direitos fundamentais; 4) Responsabilidade jurídica do Estado por seus atos lesivos.',
+        artigoLei: 'Fundamentos constitucionais do Estado de Direito',
+        dicaPratica: 'Esses quatro postulados retiraram a imunidade arbitrária da Coroa e criaram o controle dos atos de gestão.'
       },
       {
         id: 'fc-admin-01-04',
-        pergunta: 'O que estabelece o art. 37, § 1º, da CF a respeito da publicidade de programas e obras públicas?',
-        resposta: 'A publicidade dos atos, programas, obras, serviços e campanhas dos órgãos públicos deverá ter caráter exclusivamente educativo, informativo ou de orientação social, dela não podendo constar nomes, símbolos ou imagens que caracterizem promoção pessoal.',
-        artigoLei: 'Art. 37, § 1º, da CF/88',
-        dicaPratica: 'A autopromoção em propaganda oficial viola simultaneamente a Impessoalidade e a Moralidade administrativa.'
+        pergunta: 'Qual a distinção essencial entre a Legalidade Privada e a Legalidade Pública?',
+        resposta: 'A legalidade privada baseia-se na autonomia da vontade (o particular pode fazer tudo o que a lei não proíbe). A legalidade pública é subordinação estrita (o administrador só pode fazer o que a lei expressamente autoriza ou determina).',
+        artigoLei: 'Art. 5º, II e Art. 37, caput da CF/88',
+        dicaPratica: 'O administrador público não possui liberdade de escolha subjetiva fora dos limites balizados pela lei.'
       },
       {
         id: 'fc-admin-01-05',
-        pergunta: 'Como o Supremo Tribunal Federal consolidou a vedação ao Nepotismo através da Súmula Vinculante 13?',
-        resposta: 'Vedou a nomeação de cônjuge, companheiro ou parente em linha reta, colateral ou por afinidade, até o 3º grau, da autoridade nomeante ou de servidor da mesma pessoa jurídica com poder de direção para cargos em comissão ou funções de confiança.',
-        artigoLei: 'Súmula Vinculante 13 do STF',
-        dicaPratica: 'A proibição decorre diretamente dos princípios da impessoalidade, moralidade, igualdade e eficiência, mesmo sem lei formal ordinária.'
+        pergunta: 'O que caracterizava a Administração Pública sob o modelo de Estado Patrimonialista?',
+        resposta: 'A completa confusão entre os bens públicos da Coroa e os bens privados do monarca. Cargos públicos eram vendidos, herdados ou concedidos como benesses e favores pessoais.',
+        artigoLei: 'Evolução dos modelos de administração pública',
+        dicaPratica: 'No patrimonialismo inexiste a noção republicana de res publica (coisa do povo).'
       },
       {
         id: 'fc-admin-01-06',
-        pergunta: 'Qual a distinção entre a Moralidade Administrativa e a moralidade comum (subjetiva)?',
-        resposta: 'A moralidade administrativa não se confunde com preceitos éticos religiosos ou puramente subjetivos. Trata-se de uma moralidade jurídica institucional, voltada à probidade, boa-fé objetiva, lealdade e honestidade no trato da coisa pública.',
-        artigoLei: 'Art. 37, caput e § 4º da CF/88 c/c Lei 8.429/92',
-        dicaPratica: 'O ato formalmente legal pode ser anulado por vício de moralidade se comprovado o desvio ético-institucional.'
+        pergunta: 'Qual foi a ruptura imposta pelo Modelo Burocrático weberiano sobre o modelo patrimonialista?',
+        resposta: 'Instituiu a impessoalidade, hierarquia funcional clara, meritocracia com critérios objetivos de seleção (concursos), separação estrita entre o cargo e a pessoa física e apego à formalidade legal.',
+        artigoLei: 'Teoria Burocrática de Max Weber / Art. 37 da CF/88',
+        dicaPratica: 'O modelo burocrático nasceu para combater o compadrio e a corrupção patrimonialista.'
       },
       {
         id: 'fc-admin-01-07',
-        pergunta: 'O Princípio da Publicidade é absoluto no ordenamento jurídico brasileiro?',
-        resposta: 'Não. A publicidade é a regra geral da transparência republicana, mas comporta exceções constitucionais taxativas: hipóteses em que o sigilo seja imprescindível à segurança da sociedade e do Estado, ou para resguardar a intimidade e a vida privada.',
-        artigoLei: 'Art. 5º, incisos XXXIII e LX, e Art. 37, caput da CF/88',
-        dicaPratica: 'A publicidade é requisito de eficácia e de controle dos atos administrativos pelos cidadãos e órgãos de fiscalização.'
+        pergunta: 'Qual a relevância da Lei Francesa de 24 de maio de 1872 na história da jurisdição administrativa?',
+        resposta: 'Consagrou a passagem da "justiça retida" para a "justiça delegada", atribuindo ao Conselho de Estado francês competência soberana para julgar os litígios administrativos sem necessidade de chancela do Chefe de Estado.',
+        artigoLei: 'Lei de 24 de maio de 1872 (França) - Conselho de Estado',
+        dicaPratica: 'Marco da jurisdição contenciosa administrativa autônoma e da independência dos tribunais administrativos franceses.'
       },
       {
         id: 'fc-admin-01-08',
-        pergunta: 'Qual princípio explícito foi inserido no art. 37 pela Emenda Constitucional nº 19/1998 (Reforma Administrativa)?',
-        resposta: 'O Princípio da Eficiência, que impõe à Administração Pública a busca contínua por produtividade, economicidade, rendimento funcional e qualidade na prestação dos serviços públicos aos cidadãos.',
-        artigoLei: 'Art. 37, caput, da CF/88 (redação dada pela EC 19/98)',
-        dicaPratica: 'O princípio da eficiência deu ensejo à avaliação especial e periódica de desempenho funcional.'
+        pergunta: 'Por que se diz que o Direito Administrativo francês original foi construído pela jurisprudência?',
+        resposta: 'Porque não nasceu de um Código civil ou penal pronto, mas sim dos acórdãos e precedentes do Conselho de Estado francês (Tribunal de Conflitos e Conseil d’État), que moldaram seus conceitos e prerrogativas.',
+        artigoLei: 'Origem jurisprudencial do direito administrativo',
+        dicaPratica: 'O célebre caso Blanco (1873) é o exemplo maior dessa construção pretoriana jurisprudencial.'
       },
       {
         id: 'fc-admin-01-09',
-        pergunta: 'O Princípio da Eficiência autoriza o administrador público a afastar ou descumprir a Legalidade?',
-        resposta: 'De forma alguma. A eficiência jamais se sobrepõe à legalidade estrita. O administrador deve ser eficiente dentro dos limites da lei (eficiência com conformidade legal), sendo vedado atalhos ilícitos em nome de agilidade.',
-        artigoLei: 'Art. 37, caput, da CF/88',
-        dicaPratica: 'Não existe eficácia administrativa legítima obtida mediante violação de garantias legais e licitatórias.'
+        pergunta: 'Qual foi o marco definitivo estabelecido pelo famoso acórdão do Caso Blanco (1873) na França?',
+        resposta: 'Reconheceu que a responsabilidade do Estado pelos danos causados pelos serviços públicos não se rege pelas regras gerais do Código Civil privado, mas sim por regras especiais e autônomas do Direito Administrativo.',
+        artigoLei: 'Tribunal de Conflitos Francês (Arrêt Blanco, 8 de fevereiro de 1873)',
+        dicaPratica: 'O caso Blanco é considerado pela doutrina mundial a certidão de nascimento oficial do Direito Administrativo moderno.'
       },
       {
         id: 'fc-admin-01-10',
-        pergunta: 'Em que consiste o Princípio da Autotutela Administrativa (Súmulas 346 e 473 do STF)?',
-        resposta: 'É o poder-dever da Administração de controlar seus próprios atos, podendo anular aqueles eivados de vícios de legalidade (ex tunc) e revogar os inconvenientes ou inoportunos (ex nunc), ressalvados os direitos adquiridos.',
-        artigoLei: 'Súmulas 346 e 473 do STF e Art. 53 da Lei 9.784/1999',
-        dicaPratica: 'Se a anulação do ato ilegal atingir interesses de terceiros, é obrigatório garantir o prévio contraditório e a ampla defesa.'
+        pergunta: 'Por que a Revolução Francesa desconfiava dos juízes civis comuns em relação à Administração Pública?',
+        resposta: 'Porque os juízes do Antigo Regime (os Parlamentos judiciais) freavam e sabotavam as reformas populares. Assim, a Lei de 1790 proibiu os juízes comuns de se imiscuírem nos atos da Administração.',
+        artigoLei: 'Lei de 16-24 de agosto de 1790 (França)',
+        dicaPratica: 'Dessa desconfiança surgiu o sistema de dualidade de jurisdição (tribunal comum vs. tribunal administrativo).'
       },
       {
         id: 'fc-admin-01-11',
-        pergunta: 'O que determina o Princípio da Indisponibilidade do Interesse Público?',
-        resposta: 'Determina que os bens, direitos e interesses públicos não pertencem ao administrador público, mas sim à coletividade. O gestor público é apenas um mero curador e guardião, não podendo dispor, renunciar ou transigir fora das hipóteses autorizadas por lei.',
-        artigoLei: 'Princípio implícito / Regime Jurídico Administrativo',
-        dicaPratica: 'Compõe, juntamente com a supremacia do interesse público, o binômio basilar do Direito Administrativo.'
+        pergunta: 'Qual a diferença entre o sistema de Jurisdição Dual (francês) e o sistema de Jurisdição Una (adotado no Brasil)?',
+        resposta: 'Na jurisdição dual há duas ordens judiciais independentes (comum e administrativa). No Brasil vigora a Jurisdição Una (art. 5º, XXXV da CF - sistema inglês): somente o Poder Judiciário tem competência para decidir com força de coisa julgada material.',
+        artigoLei: 'Art. 5º, XXXV da CF/88 (Princípio da Inafastabilidade da Jurisdição)',
+        dicaPratica: 'As decisões dos órgãos administrativos brasileiros não têm força de coisa julgada judicial.'
       },
       {
         id: 'fc-admin-01-12',
-        pergunta: 'Qual a prerrogativa conferida pelo Princípio da Supremacia do Interesse Público sobre o Privado?',
-        resposta: 'Confere à Administração Pública uma posição de verticalidade sobre o particular nas relações jurídicas regidas pelo direito público, garantindo poderes extrovertidos como a autoexecutoriedade, desapropriação e cláusulas exorbitantes em contratos.',
-        artigoLei: 'Regime Jurídico-Administrativo Constitucional',
-        dicaPratica: 'A supremacia do interesse público deve sempre respeitar os direitos e garantias fundamentais individuais.'
+        pergunta: 'Em que consistem as Prerrogativas Públicas concedidas à Administração nas suas origens?',
+        resposta: 'São poderes especiais exorbitantes ao direito privado concedidos ao Estado para que ele possa sobrepor o interesse público aos interesses egoísticos individuais (ex.: presunção de veracidade, autoexecutoriedade).',
+        artigoLei: 'Regime Jurídico Administrativo',
+        dicaPratica: 'Prerrogativas não são privilégios do administrador, mas ferramentas para a defesa da coletividade.'
       },
       {
         id: 'fc-admin-01-13',
-        pergunta: 'O que exige o Princípio da Motivação nos atos administrativos vinculados e discricionários?',
-        resposta: 'Exige que a autoridade indique expressamente os fundamentos fáticos (acontecimentos reais) e jurídicos (dispositivos de lei) que justificaram a prática do ato administrativo, possibilitando o controle de legitimidade e legalidade.',
-        artigoLei: 'Art. 50 da Lei 9.784/1999 e art. 93, IX da CF/88',
-        dicaPratica: 'A motivação contextual é indispensável em atos que neguem, limitem ou afetem direitos de administrados.'
+        pergunta: 'Qual o contraponto indispensável às prerrogativas públicas estatais no Estado de Direito?',
+        resposta: 'As sujeições administrativas: limitações expressas impostas pela lei e pelo controle de legalidade que impedem o Estado de agir arbitrariamente ou ferir os direitos fundamentais dos cidadãos.',
+        artigoLei: 'Binômio Prerrogativas e Sujeições',
+        dicaPratica: 'O regime jurídico-administrativo equilibra autoridade estatal (prerrogativas) com liberdade cidadã (sujeições).'
       },
       {
         id: 'fc-admin-01-14',
-        pergunta: 'Como funciona a Teoria dos Motivos Determinantes no controle dos atos administrativos?',
-        resposta: 'A validade do ato administrativo fica irrevogavelmente vinculada aos motivos fáticos e jurídicos alegados pela autoridade ao praticá-lo. Se os motivos forem comprovadamente falsos ou inexistentes, o ato é nulo, mesmo que a motivação fosse originalmente facultativa.',
-        artigoLei: 'Jurisprudência uníssona do STJ e STF',
-        dicaPratica: 'Se o chefe exonera servidor comissionado alegando "falta de verba" e nomeia outro logo em seguida, o ato é nulo.'
+        pergunta: 'Por que delimitar as funções estatais foi crucial para a formação do Direito Administrativo?',
+        resposta: 'Para garantir a especialização funcional, previsibilidade das competências e contenção mútua dos poderes, impedindo que a execução administrativa invadisse o mérito legislativo ou o julgamento jurisdicional.',
+        artigoLei: 'Teoria da Separação dos Poderes de Montesquieu / Art. 2º da CF/88',
+        dicaPratica: 'A função administrativa é típica do Executivo, mas exercida atipicamente pelo Judiciário e Legislativo.'
       },
       {
         id: 'fc-admin-01-15',
-        pergunta: 'Qual o critério de distinção entre Razoabilidade e Proporcionalidade no controle jurisdicional?',
-        resposta: 'A Razoabilidade veda atuações absurdas, desarrazoadas ou que fujam ao bom senso comum. A Proporcionalidade exige a tríplice aferição da medida: adequação (meio apto ao fim), necessidade (menor sacrifício ao cidadão) e proporcionalidade em sentido estrito (custo-benefício justo).',
-        artigoLei: 'Art. 2º da Lei 9.784/1999 e Art. 5º, LIV da CF/88',
-        dicaPratica: 'Ambos os princípios balizam o poder discricionário impedindo o excesso de poder e o desvio de finalidade.'
+        pergunta: 'Qual a relação histórica entre o advento do Serviço Público e o crescimento do Direito Administrativo?',
+        resposta: 'Com a evolução do Estado Liberal para o Estado Social (Welfare State), o Estado passou a prestar diretamente serviços de educação, saúde e infraestrutura, expandindo enormemente a atuação administrativa.',
+        artigoLei: 'Evolução do Estado de Direito',
+        dicaPratica: 'O serviço público substituiu o puro poder de polícia repressivo pelo fomento e prestação positiva aos cidadãos.'
       },
       {
         id: 'fc-admin-01-16',
-        pergunta: 'Qual é o prazo decadencial para a Administração Pública anular atos que gerem efeitos favoráveis aos destinatários?',
-        resposta: 'O direito da Administração de anular os atos administrativos de que decorram efeitos favoráveis para os destinatários decai em 5 (cinco) anos, contados da data em que foram praticados, salvo comprovada má-fé do beneficiário.',
-        artigoLei: 'Art. 54 da Lei 9.784/1999',
-        dicaPratica: 'Havendo comprovada má-fé do administrado, não incide o prazo decadencial quinquenal.'
+        pergunta: 'Como o princípio da publicidade administrativa se relaciona com a superação do absolutismo?',
+        resposta: 'No absolutismo governava-se sob o manto do segredo de Estado (arcana imperii). Na República, a publicidade é a regra essencial para permitir que o cidadão fiscalize o uso do dinheiro e do poder público.',
+        artigoLei: 'Art. 37, caput da CF/88',
+        dicaPratica: 'A transparência é a maior vacina contra o renascimento de práticas patrimonialistas.'
       },
       {
         id: 'fc-admin-01-17',
-        pergunta: 'O que dita o Princípio da Continuidade do Serviço Público quanto à suspensão de serviços essenciais?',
-        resposta: 'Dita que as atividades públicas essenciais não podem sofrer interrupções repentinas. A suspensão por inadimplemento de usuário só é legítima mediante prévio aviso formal, resguardados os serviços essenciais à vida e à saúde coletiva (ex: hospitais e UTIs).',
-        artigoLei: 'Art. 6º, § 3º da Lei 8.987/1995',
-        dicaPratica: 'O STJ não admite corte de energia de hospitais públicos ou centros de tratamento intensivo por falta de verba.'
+        pergunta: 'O que restou das origens francesas no Direito Administrativo contemporâneo brasileiro?',
+        resposta: 'A concepção autônoma do regime jurídico-administrativo, as prerrogativas de autoexecutoriedade e presunção de legitimidade dos atos públicos e o dever de reparação objetiva por danos causados a terceiros.',
+        artigoLei: 'Doutrina de Direito Administrativo e art. 37, § 6º da CF/88',
+        dicaPratica: 'O Brasil importou o regime material de direito público da França, mas manteve a jurisdição una do modelo anglo-saxão.'
       },
       {
         id: 'fc-admin-01-18',
-        pergunta: 'A nomeação de cônjuge ou parente para cargos políticos (como Ministros de Estado ou Secretários) viola a Súmula Vinculante 13?',
-        resposta: 'Em regra, não. A jurisprudência do STF firmou entendimento de que a restrição da Súmula Vinculante 13 não se aplica indistintamente a cargos de natureza estritamente política, salvo em casos de patente ausência de qualificação técnica ou inequívoco desvio de finalidade.',
-        artigoLei: 'Jurisprudência vinculante do STF (Rcl 29.033, Rcl 22.339)',
-        dicaPratica: 'Se o parente não possui nenhuma qualificação profissional mínima para a pasta política, incide a nulidade por nepotismo.'
+        pergunta: 'Por que o Direito Administrativo não possui um Código unificado no Brasil até os dias de hoje?',
+        resposta: 'Devido à autonomia político-administrativa dos entes federativos (União, Estados, DF e Municípios), que possuem competência concorrente e própria para legislar sobre seus respectivos servidores e estruturas administrativas.',
+        artigoLei: 'Art. 18 e Art. 24 da CF/88',
+        dicaPratica: 'O Direito Administrativo brasileiro é descentralizado em leis esparsas (Lei 8.112, Lei 8.666/14.133, Lei 9.784, etc.).'
       }
     ],
     questoes: [
       {
         id: 'q-admin-01-01',
         tipo: 'definicao',
-        tema: 'Direito Administrativo · Regime Jurídico e Princípio da Legalidade',
-        enunciado: 'No regime jurídico-administrativo brasileiro, a legalidade que subordina a atuação dos órgãos e agentes públicos distingue-se daquela aplicável aos particulares pelo seguinte postulado:',
+        tema: 'Direito Administrativo · Origem Histórica e Estado de Direito',
+        enunciado: 'O nascimento do Direito Administrativo como ciência e subsistema jurídico dotado de regras autônomas e derrogatórias do direito privado vincula-se historicamente:',
         alternativas: [
-          { letra: 'A', texto: 'A Administração pode realizar qualquer ato que não esteja expressamente proibido por lei ordinária.' },
-          { letra: 'B', texto: 'A Administração Pública só pode agir quando houver expressa autorização ou determinação na lei (critério de subordinação estrita).' },
-          { letra: 'C', texto: 'A vontade do administrador prevalece sobre a lei sempre que visar à satisfação imediata de uma demanda popular.' },
-          { letra: 'D', texto: 'Os administrados só podem fazer o que a lei expressamente autorizar de forma tarifada.' }
+          { letra: 'A', texto: 'Ao apogeu das monarquias absolutistas europeias sob a teoria da imunidade régia.' },
+          { letra: 'B', texto: 'À consolidação do Estado de Direito após a Revolução Francesa de 1789, exigindo a submissão do Estado à lei.' },
+          { letra: 'C', texto: 'À publicação do Código Civil de Napoleão de 1804 para regular todas as relações jurídicas.' },
+          { letra: 'D', texto: 'Ao surgimento das primeiras corporações mercantis na Itália renascentista.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'Enquanto na esfera privada vigora a autonomia da vontade (art. 5º, II da CF - pode-se fazer tudo o que a lei não proíbe), na Administração Pública vigora o princípio da estrita legalidade: o administrador só pode praticar atos expressamente determinados ou permitidos por lei.',
-        fundamentoLegal: 'Art. 37, caput, da CF/88 c/c art. 2º da Lei 9.784/1999'
+        comentario: 'O Direito Administrativo surge com a gênese do Estado de Direito (Revolução Francesa), momento em que os atos da Administração passam a ser subordinados à lei em vez da vontade tirânica do monarca.',
+        fundamentoLegal: 'Evolução histórica do Estado de Direito'
       },
       {
         id: 'q-admin-01-02',
-        tipo: 'definicao',
-        tema: 'Direito Administrativo · Princípio da Impessoalidade',
-        enunciado: 'A regra constitucional contida no art. 37, § 1º, da CF/88, que proíbe a aposição de nomes, símbolos ou imagens que caracterizem promoção pessoal em propaganda oficial de obras públicas, é desdobramento direto e precípuo do princípio da:',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Caso Blanco e Autonomia Disciplinar',
+        enunciado: 'Na França do século XIX (1873), uma menina chamada Agnès Blanco foi atropelada e ferida por um vagão de tabaco de uma fábrica estatal francesa. Seu pai acionou a Justiça. O Tribunal de Conflitos francês decidiu que:',
         alternativas: [
-          { letra: 'A', texto: 'Publicidade estrita.' },
-          { letra: 'B', texto: 'Impessoalidade.' },
-          { letra: 'C', texto: 'Autonomia corporativa.' },
-          { letra: 'D', texto: 'Eficiência orçamentária.' }
+          { letra: 'A', texto: 'A Administração era imune e não podia indenizar súditos em nenhuma circunstância.' },
+          { letra: 'B', texto: 'O caso deveria ser julgado pelas regras especiais do Direito Administrativo, autônomas em relação ao Código Civil privado.' },
+          { letra: 'C', texto: 'O operário condutor do vagão responderia pessoalmente sem qualquer vínculo com o Estado.' },
+          { letra: 'D', texto: 'Deveria ser aplicada a responsabilidade penal sem repercussão indenizatória patrimonial.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'O art. 37, § 1º concretiza diretamente a faceta de não-personificação do poder público advinda da Impessoalidade. As realizações são imputadas à pessoa jurídica estatal, jamais à figura individual do governante ou mandatário.',
-        fundamentoLegal: 'Art. 37, § 1º, da Constituição Federal de 1988'
+        comentario: 'O emblemático Caso Blanco (Arrêt Blanco - 1873) consagrou a autonomia do Direito Administrativo, determinando que os litígios decorrentes dos serviços públicos regem-se por regras especiais de direito público e não pelo direito civil comum.',
+        fundamentoLegal: 'Tribunal de Conflitos Francês, Arrêt Blanco (1873)'
       },
       {
         id: 'q-admin-01-03',
-        tipo: 'caso_pratico',
-        tema: 'Direito Administrativo · Promoção Pessoal e Improbidade',
-        enunciado: 'Determinado Prefeito Municipal recém-empossado ordenou que toda a frota de ambulâncias da cidade recebesse adesivos com a sua foto oficial e o slogan utilizado em sua campanha eleitoral vitoriosa. À luz da Constituição Federal e da jurisprudência dominante:',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Legalidade Pública versus Privada',
+        enunciado: 'Sob a ótica dos postulados fundamentais do Direito Administrativo nascido com o Estado de Direito, assinale a opção que reflete a regra da legalidade na Administração Pública:',
         alternativas: [
-          { letra: 'A', texto: 'A conduta é plenamente válida em homenagem ao princípio da transparência pública.' },
-          { letra: 'B', texto: 'A conduta viola expressamente a impessoalidade e a moralidade administrativa, sujeitando o gestor à responsabilização civil e por improbidade.' },
-          { letra: 'C', texto: 'O prefeito agiu no exercício de seu poder discricionário soberano, infenso a controle jurisdicional.' },
-          { letra: 'D', texto: 'A proibição aplica-se apenas ao Presidente da República, permitindo-se exceções a prefeitos do interior.' }
+          { letra: 'A', texto: 'A Administração Pública possui autonomia da vontade e pode praticar tudo o que a lei não proíba expressamente.' },
+          { letra: 'B', texto: 'O administrador público subordina-se estritamente à lei, somente podendo agir quando houver expressa autorização ou imposição legal.' },
+          { letra: 'C', texto: 'O particular está adstrito à mesma regra da Administração, só podendo agir mediante expressa licença legal.' },
+          { letra: 'D', texto: 'A conveniência política do governante afasta a exigência de base legal formal.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'A veiculação de slogans de campanha e imagem de mandatário em veículos do patrimônio público afronta flagrantemente o art. 37, § 1º da CF, violando a impessoalidade e a probidade exigida no trato dos recursos municipais.',
-        fundamentoLegal: 'Art. 37, § 1º e § 4º da CF/88'
+        comentario: 'A legalidade pública é princípio de subordinação estrita à lei (princípio da indisponibilidade e conformidade legal): enquanto o cidadão pode fazer tudo o que a lei não proíbe, o administrador só atua conforme a lei determina ou autoriza.',
+        fundamentoLegal: 'Art. 5º, II e Art. 37, caput da CF/88'
       },
       {
         id: 'q-admin-01-04',
         tipo: 'introdutoria',
-        tema: 'Direito Administrativo · Princípio da Eficiência e EC 19/1998',
-        enunciado: 'O Princípio da Eficiência foi introduzido expressamente no caput do art. 37 da Constituição Federal pela Emenda Constitucional nº 19/1998. Dentre os instrumentos criados para dar concretude à eficiência no serviço público, destaca-se:',
+        tema: 'Direito Administrativo · Transição do Patrimonialismo para a Burocracia',
+        enunciado: 'O modelo de Administração Burocrática consolidado no Estado moderno teve como principal objetivo histórico superar o modelo patrimonialista. Dentre os elementos definidores da burocracia, destaca-se:',
         alternativas: [
-          { letra: 'A', texto: 'A extinção sumária da estabilidade de todos os servidores públicos federais.' },
-          { letra: 'B', texto: 'A dispensa universal de licitação para contratações com empresas de inovação.' },
-          { letra: 'C', texto: 'A possibilidade de perda do cargo do servidor estável mediante procedimento de avaliação periódica de desempenho, na forma de lei complementar.' },
-          { letra: 'D', texto: 'A obrigatoriedade de privatização imediata de todas as empresas públicas deficitárias.' }
+          { letra: 'A', texto: 'A hereditariedade e comercialização privada dos cargos públicos.' },
+          { letra: 'B', texto: 'A impessoalidade e a separação estrita entre a esfera pública do cargo e o patrimônio pessoal do servidor.' },
+          { letra: 'C', texto: 'O livre arbítrio do gestor para conceder privilégios a amigos e aliados políticos.' },
+          { letra: 'D', texto: 'A dispensa de concurso público para todas as funções do Estado.' }
         ],
-        respostaCorreta: 'C',
-        comentario: 'O art. 41, § 1º, III da CF, modificado pela EC 19/98, instituiu a avaliação periódica de desempenho como hipótese constitucional de perda de cargo do servidor estável, assegurada ampla defesa, visando a eficiência do serviço estatal.',
-        fundamentoLegal: 'Art. 37, caput e Art. 41, § 1º, inciso III da CF/88'
+        respostaCorreta: 'B',
+        comentario: 'A administração burocrática rompeu com o patrimonialismo justamente ao impor a impessoalidade, o profissionalismo, a hierarquia funcional e a estrita separação entre a coisa pública e o patrimônio particular do agente.',
+        fundamentoLegal: 'Teoria Burocrática do Estado de Direito'
       },
       {
         id: 'q-admin-01-05',
         tipo: 'caso_pratico',
-        tema: 'Direito Administrativo · Nepotismo e Súmula Vinculante 13',
-        enunciado: 'O Secretário Municipal de Obras nomeou o cunhado de sua esposa (portanto, irmão de sua companheira, parente colateral por afinidade de 2º grau) para exercer cargo em comissão de diretor técnico de fiscalização na mesma pasta. Diante do enunciado da Súmula Vinculante 13 do STF:',
+        tema: 'Direito Administrativo · Jurisdição Una no Brasil',
+        enunciado: 'Um servidor público federal teve sua aposentadoria cancelada por decisão terminativa do Tribunal de Contas e de órgão ministerial recursal administrativo. Inconformado com a ilegalidade do ato, o servidor ajuíza ação perante a Justiça Federal. O órgão público contesta alegando que a matéria já transitou em julgado na via administrativa. O juiz deve:',
         alternativas: [
-          { letra: 'A', texto: 'A nomeação é válida, pois parentesco por afinidade não gera impedimento de nepotismo.' },
-          { letra: 'B', texto: 'A nomeação configura nepotismo vedado, sendo nulo o ato de investidura por violação aos princípios do art. 37 da CF.' },
-          { letra: 'C', texto: 'Apenas parentes consanguíneos em linha reta até o 1º grau (pais e filhos) estão abrangidos pelo nepotismo.' },
-          { letra: 'D', texto: 'O nepotismo só se aplica se houver prévia condenação criminal transitada em julgado.' }
+          { letra: 'A', texto: 'Extinguir o processo sem resolução do mérito, pois o Brasil adota a jurisdição contenciosa administrativa dual.' },
+          { letra: 'B', texto: 'Processar e julgar a ação, pois no Brasil vigora o princípio da inafastabilidade da jurisdição una (art. 5º, XXXV da CF).' },
+          { letra: 'C', texto: 'Remeter os autos ao Conselho de Estado brasileiro para ratificação.' },
+          { letra: 'D', texto: 'Julgar improcedente por presunção absoluta de infalibilidade dos tribunais de contas.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'A Súmula Vinculante 13 veda a nomeação de parentes em linha reta, colateral ou por afinidade até o 3º grau da autoridade nomeante ou de servidores com poder hierárquico na mesma pessoa jurídica para cargos comissionados ou funções gratificadas.',
-        fundamentoLegal: 'Súmula Vinculante nº 13 do STF'
+        comentario: 'Diferente da França (sistema dual), o Brasil adota o sistema inglês de jurisdição una (art. 5º, XXXV da CF). Decisões administrativas não fazem coisa julgada material perante o Poder Judiciário.',
+        fundamentoLegal: 'Art. 5º, inciso XXXV da Constituição Federal de 1988'
       },
       {
         id: 'q-admin-01-06',
         tipo: 'pegadinha',
-        tema: 'Direito Administrativo · Anulação vs. Revogação de Atos',
-        enunciado: 'Sobre o controle dos atos administrativos exercido pela própria Administração com esteio no Princípio da Autotutela, assinale a proposição tecnicamente correta:',
+        tema: 'Direito Administrativo · Lei Francesa de 1872 e Justiça Delegada',
+        enunciado: 'A Lei francesa de 24 de maio de 1872 representou um divisor de águas no Conselho de Estado francês porque operou a transição da:',
         alternativas: [
-          { letra: 'A', texto: 'A revogação de atos administrativos decorre de vício de ilegalidade e produz efeitos retroativos (ex tunc).' },
-          { letra: 'B', texto: 'A anulação atinge atos ilegais com eficácia retroativa (ex tunc), enquanto a revogação incide sobre atos legais e discricionários por razões de mérito, com eficácia não-retroativa (ex nunc).' },
-          { letra: 'C', texto: 'O Poder Judiciário pode revogar atos administrativos do Poder Executivo quando entender que a decisão foi inoportuna.' },
-          { letra: 'D', texto: 'Atos vinculados podem ser revogados pelo administrador a qualquer momento por conveniência pública.' }
+          { letra: 'A', texto: 'Justiça comum para a jurisdição inquisitorial militar.' },
+          { letra: 'B', texto: 'Justiça retida para a justiça delegada, outorgando ao Conselho de Estado autonomia para julgar em nome do povo sem chancela do governante.' },
+          { letra: 'C', texto: 'Responsabilidade objetiva do Estado para a irresponsabilidade civil da Administração.' },
+          { letra: 'D', texto: 'Criação dos juizados de pequenas causas cíveis.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'Anulação = ato ilegal/ilegítimo, efeito retroativo (ex tunc), pode ser feita pela Administração e pelo Judiciário. Revogação = ato legal e discricionário, razões de mérito (conveniência e oportunidade), efeito prospectivo (ex nunc), privativa da Administração.',
-        fundamentoLegal: 'Súmula 473 do STF e art. 53 da Lei 9.784/1999'
+        comentario: 'Na justiça retida o Conselho de Estado apenas opinava e o Chefe do Executivo decidia. Com a Lei de 1872 passou à justiça delegada, julgando de forma soberana e definitiva os litígios administrativos.',
+        fundamentoLegal: 'Lei de 24 de maio de 1872 (França)'
       },
       {
         id: 'q-admin-01-07',
-        tipo: 'pegadinha',
-        tema: 'Direito Administrativo · Exceções à Publicidade',
-        enunciado: 'Um cidadão solicitou formalmente com base na Lei de Acesso à Informação o relatório minucioso das rotas de deslocamento e esquemas táticos de blindagem pessoal utilizados pela segurança do Presidente da República. O órgão negou o acesso. O ato de indeferimento:',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Regime Jurídico Administrativo',
+        enunciado: 'O núcleo conceitual do regime jurídico-administrativo construído desde as origens do Direito Administrativo assenta-se no binômio indissociável de:',
         alternativas: [
-          { letra: 'A', texto: 'É ilícito, pois na República a publicidade é absoluta e todo documento público deve ser livremente franqueado.' },
-          { letra: 'B', texto: 'É legítimo, haja vista que a própria Constituição ressalva o sigilo indispensável à segurança da sociedade e das mais altas autoridades do Estado.' },
-          { letra: 'C', texto: 'Configura crime de abuso de autoridade por violar a publicidade do art. 37 da CF.' },
-          { letra: 'D', texto: 'Só seria legítimo se o solicitante fosse pessoa estrangeira não residente.' }
+          { letra: 'A', texto: 'Liberdade ampla contratual e imunidade de jurisdição.' },
+          { letra: 'B', texto: 'Prerrogativas de autoridade pública e sujeições especiais em favor do interesse público.' },
+          { letra: 'C', texto: 'Soberania absolutista e segredo de Estado.' },
+          { letra: 'D', texto: 'Privatização integral de serviços e desregulamentação.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'O princípio da publicidade não é absoluto. O art. 5º, XXXIII da CF e a Lei 12.527/2011 (LAI) ressalvam expressamente informações cujo sigilo seja imprescindível à segurança da sociedade e do Estado, além da proteção da intimidade e da vida privada.',
-        fundamentoLegal: 'Art. 5º, XXXIII e Art. 37, caput, da CF/88 c/c Lei 12.527/2011'
+        comentario: 'O regime jurídico-administrativo conjuga prerrogativas (poderes exorbitantes para fazer valer o interesse público) e sujeições (deveres e restrições legais para proteger as liberdades dos cidadãos).',
+        fundamentoLegal: 'Doutrina consolidada de Direito Administrativo'
       },
       {
         id: 'q-admin-01-08',
         tipo: 'caso_pratico',
-        tema: 'Direito Administrativo · Cargo Político e Súmula Vinculante 13',
-        enunciado: 'O Governador do Estado nomeou seu irmão, profissional com mais de 20 anos de experiência em gestão financeira e doutorado em economia, para exercer o cargo de Secretário Estadual da Fazenda. Segundo a jurisprudência dominante do STF:',
+        tema: 'Direito Administrativo · Poder de Polícia e Autoexecutoriedade',
+        enunciado: 'Fiscais sanitários municipais flagraram um restaurante comercializando toneladas de carne bovina em avançado estado de decomposição. Com base no poder de polícia originado no regime administrativo, os fiscais apreenderam e inutilizaram a mercadoria de imediato. A atuação dos fiscais:',
         alternativas: [
-          { letra: 'A', texto: 'O ato é automaticamente nulo, pois a vedação da Súmula Vinculante 13 não comporta exceção a nenhum cargo público.' },
-          { letra: 'B', texto: 'A vedação da Súmula Vinculante 13, em regra, não alcança cargos de natureza estritamente política (Secretários e Ministros), exceto se comprovada patente incapacidade técnica ou desvio de finalidade.' },
-          { letra: 'C', texto: 'Apenas filhos do governante poderiam ser nomeados, sendo proibida a investidura de irmãos.' },
-          { letra: 'D', texto: 'O STF equiparou todos os cargos comissionados a cargos de provimento efetivo por concurso.' }
+          { letra: 'A', texto: 'É nula por não ter aguardado prévia autorização judicial de busca e apreensão.' },
+          { letra: 'B', texto: 'É legítima com base no atributo da autoexecutoriedade das prerrogativas administrativas de urgência na proteção da saúde pública.' },
+          { letra: 'C', texto: 'Viola a presunção de inocência comercial do comerciante.' },
+          { letra: 'D', texto: 'Exigia a concordância unânime da vigilância sanitária estadual e federal.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'O STF firmou tese de que a Súmula Vinculante 13 não incide de forma genérica sobre nomeações para cargos políticos (como Ministros de Estado e Secretários Estaduais/Municipais), ressalvada a hipótese de nepotismo cruzado, manifesta inaptidão profissional ou fraude à lei.',
-        fundamentoLegal: 'Jurisprudência vinculante do STF (Rcl 29.033-AgR e RE 579.951)'
+        comentario: 'A autoexecutoriedade é uma das prerrogativas clássicas do Direito Administrativo, permitindo à Administração executar diretamente medidas urgentes sem necessidade de recorrer previamente ao Judiciário quando a lei autorizar ou diante de perigo iminente.',
+        fundamentoLegal: 'Atributo da autoexecutoriedade do ato administrativo'
       },
       {
         id: 'q-admin-01-09',
-        tipo: 'definicao',
-        tema: 'Direito Administrativo · Autotutela e Devido Processo Legal',
-        enunciado: 'Ao constatar que concedeu gratificação salarial em duplicidade a um servidor público por equívoco de interpretação há três anos, a Administração Pública decide anular o ato. Para cumprir o entendimento do STF e a Lei de Processo Administrativo, a Administração deve:',
+        tipo: 'introdutoria',
+        tema: 'Direito Administrativo · Codificação do Direito Administrativo',
+        enunciado: 'Diferentemente do Direito Penal e do Direito Civil, no Brasil o Direito Administrativo caracteriza-se pela não codificação. Essa ausência de um Código Administrativo único decorre:',
         alternativas: [
-          { letra: 'A', texto: 'Anular o ato de imediato de forma sigilosa sem notificar o servidor afetado.' },
-          { letra: 'B', texto: 'Garantir ao servidor previamente o exercício do contraditório e da ampla defesa, haja vista que a anulação afetará sua esfera jurídica patrimonial.' },
-          { letra: 'C', texto: 'Aguardar obrigatoriamente uma decisão judicial transitada em julgado.' },
-          { letra: 'D', texto: 'Demitir o servidor sumariamente por locupletamento ilícito.' }
+          { letra: 'A', texto: 'De omissão inconstitucional do Congresso Nacional que deve ser suprida pelo Supremo Tribunal Federal.' },
+          { letra: 'B', texto: 'Da estrutura federativa descentralizada, na qual cada ente político (União, Estados, DF e Municípios) possui competência para organizar sua própria administração.' },
+          { letra: 'C', texto: 'Da proibição expressa contida nas cláusulas pétreas da Constituição Federal.' },
+          { letra: 'D', texto: 'Do fato de o Brasil não adotar o Direito Administrativo como ramo autônomo.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'Embora a Administração tenha o poder-dever da autotutela (Súmula 473), o STF e a Lei 9.784/99 (art. 2º) pacificaram que a anulação de ato que produza efeitos favoráveis a terceiro exige instauração prévia de procedimento com contraditório e ampla defesa.',
-        fundamentoLegal: 'Súmula Vinculante nº 3 e Tema 138 de Repercussão Geral do STF'
+        comentario: 'O pacto federativo confere autonomia a cada ente político para estruturar seus órgãos, regimes de servidores e processos, tornando inviável um código único e exaustivo que regule todos os municípios, estados e a União simultaneamente.',
+        fundamentoLegal: 'Art. 18 e Art. 24 da Constituição Federal de 1988'
       },
       {
         id: 'q-admin-01-10',
-        tipo: 'caso_pratico',
-        tema: 'Direito Administrativo · Continuidade do Serviço Público',
-        enunciado: 'Concessionária distribuidora de energia elétrica suspendeu abruptamente o fornecimento de luz de um Hospital Municipal de Urgência devido ao atraso de faturas emitidas pelo Município. Considerando o princípio da continuidade dos serviços públicos e a jurisprudência do STJ:',
+        tipo: 'pegadinha',
+        tema: 'Direito Administrativo · Teoria dos Parlamentos e Separação de Funções',
+        enunciado: 'A vedação expressa imposta aos juízes franceses de se intrometerem na administração de Estado (Lei de 1790) deveu-se precipuamente:',
         alternativas: [
-          { letra: 'A', texto: 'O corte é legítimo e irrepreensível, pois o inadimplemento autoriza a interrupção indistinta em qualquer unidade consumidora.' },
-          { letra: 'B', texto: 'O corte é ilegítimo, pois o serviço essencial a unidade hospitalar não pode ser interrompido, devendo a cobrança ser realizada pelas vias judiciais ordinárias.' },
-          { letra: 'C', texto: 'A concessionária pode expropriar os equipamentos do hospital para abater a dívida.' },
-          { letra: 'D', texto: 'O corte só seria indevido se houvesse prévio acordo arbitral homologado.' }
+          { letra: 'A', texto: 'À inexistência de advogados na França revolucionária.' },
+          { letra: 'B', texto: 'Ao receio justificado dos revolucionários de que juízes conservadores paralisassem as transformações sociais em favor da burguesia nascente.' },
+          { letra: 'C', texto: 'À subordinação do Judiciário ao Ministério da Fazenda francês.' },
+          { letra: 'D', texto: 'À adoção do sistema de júri popular para todos os atos de governo.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'O STJ consolidou que, em razão do princípio da continuidade do serviço público essencial e da preservação da dignidade da pessoa humana e da saúde pública, é ilegítimo o corte de energia de hospitais, prontos-socorros e UTIs por inadimplemento do ente público.',
-        fundamentoLegal: 'Art. 6º, § 3º da Lei 8.987/1995 e Jurisprudência pacificada do STJ'
+        comentario: 'Os Parlamentos do Antigo Regime eram compostos pela nobreza de toga e sabotavam decretos reais de reforma. Por isso os revolucionários franceses proibiram terminantemente os juízes comuns de julgarem atos do Executivo.',
+        fundamentoLegal: 'História do Constitucionalismo e Direito Público Francês'
       },
       {
         id: 'q-admin-01-11',
-        tipo: 'pegadinha',
-        tema: 'Direito Administrativo · Teoria dos Motivos Determinantes',
-        enunciado: 'Uma autoridade pública exonerou servidor ocupante de cargo em comissão de livre nomeação e exoneração ad nutum. Na portaria de desligamento, a autoridade expressou textualmente como motivo: "redução drástica de despesas com pessoal por insuficiência de arrecadação". Posteriormente, restou documentalmente provado que a arrecadação bateu recorde e dois novos assessores foram nomeados no mesmo dia. O servidor exonerado poderá pleitear:',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Responsabilidade do Estado e Evolução Histórica',
+        enunciado: 'Viatura da Polícia Militar, ao perseguir criminosos em alta velocidade, colide contra veículo particular regularmente estacionado na via pública. Considerando a evolução da responsabilidade do Estado desde a superação da imunidade régia absolutista até o art. 37, § 6º da CF/88:',
         alternativas: [
-          { letra: 'A', texto: 'Nada, pois cargos em comissão dispensam motivação e seu desligamento é imune a anulação judicial.' },
-          { letra: 'B', texto: 'A nulidade da exoneração com base na Teoria dos Motivos Determinantes, haja vista a falsidade inconteste do motivo explicitado pelo gestor.' },
-          { letra: 'C', texto: 'Apenas indenização por danos morais na Justiça do Trabalho.' },
-          { letra: 'D', texto: 'A sua efetivação automática no serviço público como servidor concursado.' }
+          { letra: 'A', texto: 'O proprietário do carro nada receberá em razão da teoria feudal de que o soberano não comete atos ilícitos.' },
+          { letra: 'B', texto: 'O Estado responde objetivamente pelos danos causados pelo agente público no exercício da função, bastando comprovar nexo de causalidade e o dano.' },
+          { letra: 'C', texto: 'O lesado é obrigado a provar que o policial agiu com dolo direto para conseguir reparação.' },
+          { letra: 'D', texto: 'A responsabilidade do Estado exige prévia ação penal condenatória transitada em julgado contra o motorista da viatura.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'Pela Teoria dos Motivos Determinantes, ainda que o ato prescinda originariamente de motivação (como a exoneração ad nutum), uma vez declarados os motivos pela autoridade, a validade do ato fica vinculada à veracidade desses motivos. Se comprovada a inexistência ou falsidade do motivo, o ato é nulo.',
-        fundamentoLegal: 'Jurisprudência consolidada do STF e STJ'
+        comentario: 'O Estado moderno superou a irresponsabilidade da monarquia absolutista e consagra, no art. 37, § 6º da CF, a responsabilidade civil objetiva na modalidade do risco administrativo pelos atos de seus prepostos.',
+        fundamentoLegal: 'Art. 37, § 6º da Constituição Federal de 1988'
       },
       {
         id: 'q-admin-01-12',
-        tipo: 'caso_pratico',
-        tema: 'Direito Administrativo · Prazo Decadencial e Má-Fé',
-        enunciado: 'Servidor aposentou-se com benefício concedido por ato administrativo homologado. Sete anos após a concessão, a auditoria constatou que o servidor utilizou certidões dolosamente falsificadas por ele próprio para comprovar tempo de contribuição fictício. Diante do prazo de 5 anos do art. 54 da Lei 9.784/1999, a Administração Pública:',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Função Administrativa e Exercício Atípico',
+        enunciado: 'Sobre o exercício das funções estatais no Estado Democrático de Direito contemporâneo, assinale a assertiva correta:',
         alternativas: [
-          { letra: 'A', texto: 'Decaiu de seu direito de anular o ato, tornando a aposentadoria intangível pela prescrição.' },
-          { letra: 'B', texto: 'Pode anular a aposentadoria a qualquer tempo, pois a comprovada má-fé do beneficiário afasta a decadência quinquenal administrativa.' },
-          { letra: 'C', texto: 'Deverá pagar um abono pecuniário indenizatório ao servidor.' },
-          { letra: 'D', texto: 'Só pode reaver os valores se o servidor renunciar expressamente ao direito adquirido.' }
+          { letra: 'A', texto: 'Apenas o Poder Executivo exerce função administrativa, sendo terminantemente proibido a outros poderes realizarem atos de gestão.' },
+          { letra: 'B', texto: 'Os Poderes Legislativo e Judiciário exercem a função administrativa de forma atípica quando, por exemplo, realizam licitações ou concedem férias a seus servidores.' },
+          { letra: 'C', texto: 'O Poder Judiciário só pode praticar atos administrativos mediante autorização prévia do Ministério da Fazenda.' },
+          { letra: 'D', texto: 'A função jurisdicional é exercida tipicamente pelo Poder Executivo nos processos disciplinares.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'O art. 54 da Lei 9.784/1999 ressalva expressamente a "comprovada má-fé": verificada fraude ou conduta dolosa do administrado, não opera a decadência quinquenal, podendo a Administração exercer a autotutela e restabelecer a legalidade.',
-        fundamentoLegal: 'Art. 54, caput, da Lei 9.784/1999'
+        comentario: 'A função administrativa é típica do Poder Executivo, mas é exercida de forma atípica pelo Poder Legislativo e pelo Poder Judiciário na gestão de seu patrimônio, de seu pessoal e na realização de seus contratos administrativos.',
+        fundamentoLegal: 'Teoria da Separação de Poderes / Arts. 2º, 96 e 51 da CF/88'
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AULA 02: DIREITO ADMINISTRATIVO · DEFINIÇÕES DO DIREITO ADMINISTRATIVO
+  // 18 Flashcards + 12 Questões (Baseado nas 38 etapas reais)
+  // ─────────────────────────────────────────────────────────────────────────────
+  'admin-01-02': {
+    aulaId: 'admin-01-02',
+    titulo: 'Definições do Direito Administrativo',
+    flashcards: [
+      {
+        id: 'fc-admin-02-01',
+        pergunta: 'Por que a doutrina clássica e moderna afirma que definir o Direito Administrativo não é uma tarefa simples?',
+        resposta: 'Porque o Direito Administrativo abrange múltiplas facetas: órgãos, agentes, serviços, prerrogativas, poder de polícia e relações com a sociedade, variando o conceito conforme o critério doutrinário adotado.',
+        artigoLei: 'Critérios doutrinários de conceituação',
+        dicaPratica: 'Nenhum critério isolado esgota a totalidade do ramo; cada um recorta um ângulo do fenômeno administrativo.'
+      },
+      {
+        id: 'fc-admin-02-02',
+        pergunta: 'O que sustenta o Critério da "Puissance Publique" (Poder Público Extrovertido)?',
+        resposta: 'Sustenta que o Direito Administrativo é o ramo que rege os atos de autoridade do Estado dotados de imperatividade e prerrogativas exorbitantes, excluindo os atos de mera gestão privada.',
+        artigoLei: 'Critério da autoridade / Puissance publique',
+        dicaPratica: 'Critério insuficiente porque o Estado também pratica atos de gestão e presta serviços sem usar coerção autoritária.'
+      },
+      {
+        id: 'fc-admin-02-03',
+        pergunta: 'Em que se baseia o Critério do Serviço Público (Escola de Bordeaux de Léon Duguit)?',
+        resposta: 'Define o Direito Administrativo como o conjunto de normas que disciplina a criação, organização e prestação dos serviços públicos aos cidadãos.',
+        artigoLei: 'Escola do Serviço Público (Léon Duguit, Gaston Jèze)',
+        dicaPratica: 'O critério pecou pelo excesso de abrangência, pois nem toda atividade estatal é estritamente serviço público.'
+      },
+      {
+        id: 'fc-admin-02-04',
+        pergunta: 'Qual a deficiência apontada no Critério do Poder Executivo?',
+        resposta: 'Definir o Direito Administrativo como o conjunto de leis que disciplina apenas o Poder Executivo é incompleto, pois o Judiciário e o Legislativo também exercem função administrativa atípica.',
+        artigoLei: 'Critério do Poder Executivo (critério orgânico restrito)',
+        dicaPratica: 'Licitações e gestão de servidores ocorrem em todos os três Poderes da República.'
+      },
+      {
+        id: 'fc-admin-02-05',
+        pergunta: 'O que propõe o Critério das Relações Jurídicas?',
+        resposta: 'Conceitua o Direito Administrativo a partir do feixe de relações jurídicas travadas entre o Estado e os particulares ou entre diferentes pessoas jurídicas públicas.',
+        artigoLei: 'Critério das relações jurídicas',
+        dicaPratica: 'Critério genérico demais, pois o direito civil, penal e tributário também disciplinam relações com o Estado.'
+      },
+      {
+        id: 'fc-admin-02-06',
+        pergunta: 'O que dita o Critério Teleológico ou Finalístico?',
+        resposta: 'Afirma que o Direito Administrativo é o ramo que disciplina as atividades estatais destinadas à consecução direta dos fins do Estado (bem comum e satisfação das necessidades coletivas).',
+        artigoLei: 'Critério teleológico',
+        dicaPratica: 'Critério muito abrangente e impreciso, pois todo o ordenamento jurídico busca fins sociais do Estado.'
+      },
+      {
+        id: 'fc-admin-02-07',
+        pergunta: 'Em que consiste o Critério Negativo ou Residual na definição do Direito Administrativo?',
+        resposta: 'Define o Direito Administrativo por exclusão: é todo o direito público que não é Direito Constitucional, não é Direito Processual, não é Direito Penal e não é Direito Tributário.',
+        artigoLei: 'Critério residual / negativo',
+        dicaPratica: 'Critério útil pedagogicamente, mas insuficiente por dizer o que o ramo NÃO é, em vez de definir o que ele É.'
+      },
+      {
+        id: 'fc-admin-02-08',
+        pergunta: 'Qual é o critério preponderantemente adotado pela doutrina majoritária brasileira?',
+        resposta: 'É o Critério da Administração Pública, que concebe o Direito Administrativo como o conjunto de princípios e regras que disciplinam a Administração Pública em seus sentidos subjetivo e objetivo.',
+        artigoLei: 'Doutrina de Hely Lopes Meirelles, Maria Sylvia Di Pietro e Celso Antônio Bandeira de Mello',
+        dicaPratica: 'É o critério mais técnico e completo adotado nos manuais e bancas de concursos.'
+      },
+      {
+        id: 'fc-admin-02-09',
+        pergunta: 'O que significa Administração Pública em Sentido Subjetivo, Orgânico ou Formal?',
+        resposta: 'Designa o conjunto de órgãos, agentes e pessoas jurídicas públicas que desempenham as funções administrativas (a máquina pública: quem age).',
+        artigoLei: 'Sentido subjetivo / orgânico / formal',
+        dicaPratica: 'Responde à pergunta: QUEM exerce a função administrativa?'
+      },
+      {
+        id: 'fc-admin-02-10',
+        pergunta: 'O que significa Administração Pública em Sentido Objetivo, Material ou Funcional?',
+        resposta: 'Designa a própria atividade administrativa desempenhada pelo Estado: prestação de serviços públicos, poder de polícia, fomento e intervenção econômica (a função administrativa em si).',
+        artigoLei: 'Sentido objetivo / material / funcional',
+        dicaPratica: 'Responde à pergunta: O QUE é feito pelo Estado?'
+      },
+      {
+        id: 'fc-admin-02-11',
+        pergunta: 'Como se diferencia a Administração Pública em sentido amplo da Administração Pública em sentido estrito?',
+        resposta: 'Em sentido amplo, abrange a função política/governamental (fixação de metas e diretrizes) e a função administrativa de execução. Em sentido estrito, engloba exclusivamente as funções de execução técnica e operacional.',
+        artigoLei: 'Dicotomia Governo versus Administração',
+        dicaPratica: 'O Governo comanda com discricionariedade política; a Administração executa com subordinação legal.'
+      },
+      {
+        id: 'fc-admin-02-12',
+        pergunta: 'Qual a clássica definição doutrinária de Hely Lopes Meirelles para o Direito Administrativo?',
+        resposta: '"Conjunto harmônico de princípios jurídicos que regem os órgãos, os agentes e as atividades públicas tendentes a realizar concreta, direta e imediatamente os fins desejados pelo Estado."',
+        artigoLei: 'Conceito clássico de Hely Lopes Meirelles',
+        dicaPratica: 'Palavras-chave: direta, concreta e imediatamente (a lei é abstrata; a administração concretiza).'
+      },
+      {
+        id: 'fc-admin-02-13',
+        pergunta: 'Como Maria Sylvia Zanella Di Pietro define sinteticamente o Direito Administrativo?',
+        resposta: 'Como o ramo do direito público que tem por objeto os órgãos, agentes e pessoas jurídicas administrativas que integram a Administração Pública, a atividade jurídica não contenciosa que exerce e os bens de que se utiliza.',
+        artigoLei: 'Doutrina de Maria Sylvia Zanella Di Pietro',
+        dicaPratica: 'Enfatiza a atividade jurídica não contenciosa (diferente da atividade do Poder Judiciário).'
+      },
+      {
+        id: 'fc-admin-02-14',
+        pergunta: 'Por que a atividade administrativa é qualificada como "não contenciosa"?',
+        resposta: 'Porque a Administração decide os processos com base na autotutela, mas suas decisões não formam coisa julgada definitiva perante o Poder Judiciário, diferentemente da jurisdição contenciosa.',
+        artigoLei: 'Art. 5º, XXXV da CF/88',
+        dicaPratica: 'Apenas os juízes e tribunais exercem jurisdição com força de coisa julgada material irrecorrível.'
+      },
+      {
+        id: 'fc-admin-02-15',
+        pergunta: 'O que integra a Administração Pública Direta no ordenamento brasileiro?',
+        resposta: 'São os órgãos públicos despersonalizados integrantes da estrutura centralizada das próprias pessoas políticas da Federação: União, Estados, Distrito Federal e Municípios.',
+        artigoLei: 'Art. 4º, I do Decreto-Lei 200/1967 c/c art. 37 da CF/88',
+        dicaPratica: 'Ministérios e Secretarias são órgãos da Administração Direta (não possuem personalidade jurídica própria).'
+      },
+      {
+        id: 'fc-admin-02-16',
+        pergunta: 'O que integra a Administração Pública Indireta no Brasil?',
+        resposta: 'São as entidades dotadas de personalidade jurídica própria criadas por descentralização administrativa: Autarquias, Fundações Públicas, Empresas Públicas e Sociedades de Economia Mista.',
+        artigoLei: 'Art. 37, XIX da CF/88 e Decreto-Lei 200/1967',
+        dicaPratica: 'Autarquias são criadas diretamente por lei específica; as estatais e fundações têm sua criação autorizada por lei.'
+      },
+      {
+        id: 'fc-admin-02-17',
+        pergunta: 'Qual a finalidade teleológica primordial da atividade administrativa para a sociedade?',
+        resposta: 'Atender com probidade, igualdade e eficácia às necessidades e direitos fundamentais da coletividade, garantindo a coesão social e a concretização das promessas constitucionais de cidadania.',
+        artigoLei: 'Art. 1º, II e III e Art. 3º da CF/88',
+        dicaPratica: 'O Estado existe para a sociedade, e não a sociedade para servir aos caprichos do Estado.'
+      },
+      {
+        id: 'fc-admin-02-18',
+        pergunta: 'O Direito Administrativo regula relações puramente internas ou também relações externas do Estado?',
+        resposta: 'Regula ambas: as relações internas de organização, hierarquia e disciplina de agentes e órgãos públicos, e as relações externas travadas entre a Administração e os particulares e concessionárias.',
+        artigoLei: 'Relações intraorgânicas e extraorgânicas',
+        dicaPratica: 'Abrevia tanto o estatuto do servidor público (interno) quanto os contratos de concessão de rodovias (externo).'
+      }
+    ],
+    questoes: [
+      {
+        id: 'q-admin-02-01',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Sentido Subjetivo vs. Objetivo',
+        enunciado: 'Quando a doutrina jurídica emprega a expressão "Administração Pública" grafada em letras maiúsculas para designar o conjunto de órgãos, agentes públicos e pessoas jurídicas encarregadas da função estatal, está utilizando a acepção em sentido:',
+        alternativas: [
+          { letra: 'A', texto: 'Objetivo, funcional ou material.' },
+          { letra: 'B', texto: 'Subjetivo, orgânico ou formal.' },
+          { letra: 'C', texto: 'Teleológico ou puramente econômico.' },
+          { letra: 'D', texto: 'Processual contencioso estrito.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O sentido subjetivo (orgânico ou formal) refere-se a QUEM realiza a atividade (os órgãos e agentes públicos). Já o sentido objetivo (material ou funcional) diz respeito à ATIVIDADE desenvolvida.',
+        fundamentoLegal: 'Doutrina de Direito Administrativo Constitucional'
+      },
+      {
+        id: 'q-admin-02-02',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Sentido Objetivo ou Material',
+        enunciado: 'A prestação de serviços públicos de transporte coletivo, a fiscalização sanitária de alimentos (poder de polícia) e a realização de obras de infraestrutura correspondem à Administração Pública em sentido:',
+        alternativas: [
+          { letra: 'A', texto: 'Subjetivo ou corporativo.' },
+          { letra: 'B', texto: 'Objetivo, material ou funcional.' },
+          { letra: 'C', texto: 'Diplomático soberano.' },
+          { letra: 'D', texto: 'Exclusivamente judicial.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A atividade administrativa em si (serviço público, polícia administrativa, fomento e intervenção) consubstancia a Administração Pública em sentido objetivo, material ou funcional.',
+        fundamentoLegal: 'Classificação doutrinária clássica'
+      },
+      {
+        id: 'q-admin-02-03',
+        tipo: 'pegadinha',
+        tema: 'Direito Administrativo · Critério do Poder Executivo',
+        enunciado: 'Candidato a concurso público sustentou em prova discursiva que "o Direito Administrativo é o ramo que disciplina exclusivamente os atos praticados pelo Poder Executivo". De acordo com a doutrina contemporânea, a afirmação:',
+        alternativas: [
+          { letra: 'A', texto: 'Está perfeita, pois os Poderes Legislativo e Judiciário não praticam atos administrativos sob nenhuma hipótese.' },
+          { letra: 'B', texto: 'Está incorreta, pois os Poderes Legislativo e Judiciário também exercem função administrativa atípica ao gerirem seus servidores, orçamento e contratações.' },
+          { letra: 'C', texto: 'Só é verdadeira nos regimes parlamentaristas europeus.' },
+          { letra: 'D', texto: 'Depende de prévia declaração de constitucionalidade pelo STF.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O critério do Poder Executivo é falho porque todos os Poderes exercem a função administrativa: o Executivo de forma típica, e o Legislativo e Judiciário de forma atípica (ex.: licitações de tribunais, concessão de férias a assessores do Senado).',
+        fundamentoLegal: 'Arts. 2º, 51, 52 e 96 da CF/88'
+      },
+      {
+        id: 'q-admin-02-04',
+        tipo: 'introdutoria',
+        tema: 'Direito Administrativo · Critério da Puissance Publique',
+        enunciado: 'O critério da Puissance Publique (Escola da Autoridade Pública) conceituou o Direito Administrativo como o ramo que cuida exclusivamente dos atos de império e coerção do Estado. A principal crítica a essa definição é que:',
+        alternativas: [
+          { letra: 'A', texto: 'O Estado nunca utiliza prerrogativas de autoridade sobre particulares.' },
+          { letra: 'B', texto: 'Desconsidera que a Administração Pública também atua prestando serviços públicos e praticando atos de gestão sem utilizar necessariamente a coerção autoritária.' },
+          { letra: 'C', texto: 'A autoridade pública foi abolida após a Segunda Guerra Mundial.' },
+          { letra: 'D', texto: 'Confunde o Direito Administrativo com o Direito Internacional Humanitário.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A Puissance Publique focava apenas no poder exorbitante coercitivo (atos de império), ignorando a vasta área em que a Administração atua cooperativamente prestando serviços públicos essenciais, fomento e assistência social aos administrados.',
+        fundamentoLegal: 'Evolução doutrinária das escolas de Direito Administrativo'
+      },
+      {
+        id: 'q-admin-02-05',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Atuação Concreta, Direta e Imediata',
+        enunciado: 'O Congresso Nacional aprova lei orçamentária abstrata fixando metas de investimento em saúde. Para operacionalizar a lei, a Secretaria Municipal de Saúde adquire vacinas, contrata enfermeiros e inicia a imunização nos postos. A diferença entre a lei aprovada e a atuação dos enfermeiros e fiscais ilustra que o Direito Administrativo realiza os fins do Estado de forma:',
+        alternativas: [
+          { letra: 'A', texto: 'Abstrata, genérica e mediata.' },
+          { letra: 'B', texto: 'Concreta, direta e imediata.' },
+          { letra: 'C', texto: 'Hipotética e subordinada ao Tribunal de Haia.' },
+          { letra: 'D', texto: 'Revogável por vontade unilateral do particular.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A função legislativa é geral e abstrata. A função administrativa, conforme conceituou Hely Lopes Meirelles, é concreta, direta e imediata, materializando na prática do dia a dia as diretrizes normativas.',
+        fundamentoLegal: 'Conceito clássico de Hely Lopes Meirelles'
+      },
+      {
+        id: 'q-admin-02-06',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Governo versus Administração',
+        enunciado: 'Na clássica distinção entre Governo e Administração Pública em sentido estrito, é correto afirmar que:',
+        alternativas: [
+          { letra: 'A', texto: 'Governo e Administração Pública são expressões rigorosamente sinônimas no direito público.' },
+          { letra: 'B', texto: 'Governo expressa a atividade política superior de comando, metas e diretrizes; já a Administração é o aparelhamento técnico subordinado responsável por executar essas políticas.' },
+          { letra: 'C', texto: 'A Administração comanda politicamente o Estado e o Governo apenas obedece aos servidores de carreira.' },
+          { letra: 'D', texto: 'O Governo se extingue a cada mudança de servidores concursados.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Governo = poder político, diretrizes estratégicas e comando estatal (função discricionária de direção). Administração = instrumento técnico neutro, permanente e profissional que executa as políticas públicas em subordinação à lei.',
+        fundamentoLegal: 'Distinção doutrinária entre Governo e Administração'
+      },
+      {
+        id: 'q-admin-02-07',
+        tipo: 'pegadinha',
+        tema: 'Direito Administrativo · Critério Negativo ou Residual',
+        enunciado: 'Sobre o Critério Negativo ou Residual utilizado por alguns juristas na tentativa de definir o Direito Administrativo, assinale a opção que descreve com precisão sua metodologia:',
+        alternativas: [
+          { letra: 'A', texto: 'Consiste em catalogar todas as leis inconstitucionais revogadas pelo Supremo Tribunal Federal.' },
+          { letra: 'B', texto: 'Define o Direito Administrativo por exclusão das demais áreas, abrangendo as atividades estatais que não sejam legislação, jurisdição, direito penal ou tributário.' },
+          { letra: 'C', texto: 'Determina que a Administração só pode gastar o saldo residual que sobrar das contas bancárias.' },
+          { letra: 'D', texto: 'Afirma que o Direito Administrativo só cuida de bens inservíveis ou residuais do patrimônio público.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Pelo critério negativo ou residual, o Direito Administrativo é o ramo residual que resta após excluir as funções legislativa, jurisdicional e os ramos especiais já destacados (penal, tributário, eleitoral).',
+        fundamentoLegal: 'Critério doutrinário negativo ou residual'
+      },
+      {
+        id: 'q-admin-02-08',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Órgão Despersonalizado vs. Pessoa Jurídica',
+        enunciado: 'Cidadão sofreu lesão causada por buraco em rodovia federal fiscalizada pelo DNIT (Autarquia Federal). Seu advogado propôs ação de reparação civil contra o Ministério dos Transportes. A defesa da União alegou ilegitimidade passiva do Ministério dos Transportes porque:',
+        alternativas: [
+          { letra: 'A', texto: 'Ministérios não possuem responsabilidade jurídica por danos a cidadãos.' },
+          { letra: 'B', texto: 'Ministérios são meros órgãos despersonalizados da Administração Direta, não tendo personalidade jurídica própria para estar em juízo.' },
+          { letra: 'C', texto: 'A responsabilidade por rodovias é exclusiva das montadoras de veículos.' },
+          { letra: 'D', texto: 'O Ministério dos Transportes foi privatizado pela Lei de Concessões.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Órgãos públicos (como Ministérios e Secretarias) são centros de competência despersonalizados. Quem tem personalidade jurídica para figurar no polo passivo é a pessoa federativa (União) ou a respectiva autarquia responsável (DNIT).',
+        fundamentoLegal: 'Teoria do Órgão e art. 37 da CF/88 c/c art. 43 do Código Civil'
+      },
+      {
+        id: 'q-admin-02-09',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Descentralização vs. Desconcentração',
+        enunciado: 'A criação de uma Autarquia (como o INSS ou o Banco Central) por meio de lei específica para exercer atividade estatal especializada constitui hipótese de:',
+        alternativas: [
+          { letra: 'A', texto: 'Desconcentração administrativa interna dentro da mesma pessoa jurídica.' },
+          { letra: 'B', texto: 'Descentralização administrativa por serviços, criando uma nova pessoa jurídica autônoma na Administração Indireta.' },
+          { letra: 'C', texto: 'Terceirização ilícita de mão de obra para empresas privadas.' },
+          { letra: 'D', texto: 'Concentração estatal monocrática.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Descentralização = criação de nova pessoa jurídica autônoma (Administração Indireta). Desconcentração = distribuição interna de competências entre órgãos da mesma pessoa jurídica (órgãos sem personalidade).',
+        fundamentoLegal: 'Art. 37, XIX da CF/88 e Decreto-Lei 200/1967'
+      },
+      {
+        id: 'q-admin-02-10',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Atividade Não Contenciosa e Inafastabilidade',
+        enunciado: 'Em um processo administrativo disciplinar (PAD), a comissão processante concluiu pela demissão de um servidor público estável por abandono de cargo. O servidor esgotou todos os recursos hierárquicos na via administrativa. É correto afirmar que:',
+        alternativas: [
+          { letra: 'A', texto: 'A demissão transitou em julgado em definitivo, sendo impossível qualquer controle ou anulação pelo Poder Judiciário.' },
+          { letra: 'B', texto: 'O servidor pode submeter a legalidade do ato demissório ao Poder Judiciário, pois a atividade administrativa é não contenciosa e não produz coisa julgada material perante os tribunais.' },
+          { letra: 'C', texto: 'O Judiciário só pode analisar o caso se o Presidente da República anuir com a ação.' },
+          { letra: 'D', texto: 'A decisão administrativa substitui o juiz natural em matéria de servidores públicos.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'No Brasil, a jurisdição é una: decisões de órgãos administrativos não produzem coisa julgada material. Se o servidor demonstrar vício de legalidade ou cerceamento de defesa, o ato de demissão pode ser anulado pela Justiça.',
+        fundamentoLegal: 'Art. 5º, XXXV da CF/88 e Súmula Vinculante 21 do STF'
+      },
+      {
+        id: 'q-admin-02-11',
+        tipo: 'pegadinha',
+        tema: 'Direito Administrativo · Relações Jurídicas Internas e Externas',
+        enunciado: 'Quanto ao objeto do Direito Administrativo, assinale a opção que expressa corretamente a abrangência de suas normas:',
+        alternativas: [
+          { letra: 'A', texto: 'O Direito Administrativo regula unicamente o relacionamento externo entre o Estado e os usuários de serviços públicos.' },
+          { letra: 'B', texto: 'O Direito Administrativo abrange tanto as relações internas (estruturação de órgãos, regime jurídico e disciplina de servidores públicos) quanto as relações externas (com administrados, empresas contratadas e delegatárias).' },
+          { letra: 'C', texto: 'A disciplina de servidores públicos submete-se exclusivamente ao Direito do Trabalho da CLT.' },
+          { letra: 'D', texto: 'Os contratos celebrados pela Administração com empresas construtoras são regidos 100% pelo direito civil comum.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O Direito Administrativo tem amplo alcance: disciplina a máquina estatal internamente (organização, servidores, hierarquia funcional) e externamente (relação com os cidadãos, poder de polícia, contratos públicos e licitações).',
+        fundamentoLegal: 'Objeto amplo do Direito Administrativo contemporâneo'
+      },
+      {
+        id: 'q-admin-02-12',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Critério Adotado no Brasil',
+        enunciado: 'A síntese doutrinária prevalecente no Brasil define o Direito Administrativo como o ramo do direito público que rege:',
+        alternativas: [
+          { letra: 'A', texto: 'Os crimes praticados por militares contra a administração da justiça marcial.' },
+          { letra: 'B', texto: 'A Administração Pública em seus aspectos orgânico (sujeitos) e material (funções), com seus princípios, prerrogativas e deveres instrumentais em prol do interesse coletivo.' },
+          { letra: 'C', texto: 'As relações diplomáticas entre governos estrangeiros e embaixadas.' },
+          { letra: 'D', texto: 'A arrecadação exclusiva de impostos sobre grandes fortunas.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O critério da Administração Pública engloba harmonicamente os sujeitos da Administração (órgãos, agentes e entidades) e as atividades exercidas de forma concreta e direta para atender o interesse público sob o império da lei.',
+        fundamentoLegal: 'Doutrina brasileira de Direito Administrativo'
       }
     ]
   }
