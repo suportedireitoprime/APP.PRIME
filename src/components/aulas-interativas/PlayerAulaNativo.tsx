@@ -17,6 +17,35 @@ interface PlayerAulaNativoProps {
   onProgresso?: (etapaAtual: number, totalEtapas: number) => void;
 }
 
+function highlightFraseInHtml(html: string, frase: string): string {
+  if (!frase || frase.trim().length < 4) return html;
+
+  const cleanFrase = frase.trim();
+  const escaped = cleanFrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+                            .replace(/\s+/g, '\\s+');
+
+  try {
+    const reg = new RegExp(`(${escaped})`, 'i');
+    if (reg.test(html)) {
+      return html.replace(reg, '<mark class="karaoke-grifo">$1</mark>');
+    }
+  } catch {}
+
+  // Match flexível: aceita tags HTML internas como <b> e pontuação adjacente
+  try {
+    const tokens = cleanFrase.match(/[\w\u00C0-\u017F]+|[^\s\w\u00C0-\u017F]+/g) || [];
+    if (tokens.length >= 2) {
+      const pattern = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('(?:<[^>]+>|\\s)*');
+      const regFlex = new RegExp(`(${pattern})`, 'i');
+      if (regFlex.test(html)) {
+        return html.replace(regFlex, '<mark class="karaoke-grifo">$1</mark>');
+      }
+    }
+  } catch {}
+
+  return html;
+}
+
 export function PlayerAulaNativo({
   aula,
   disciplinaNome,
@@ -123,32 +152,22 @@ export function PlayerAulaNativo({
     }
   }, [idx, total, onProgresso]);
 
-  // Estruturar os parágrafos e frases do slide para o Karaokê
-  const paragrafosComFrases = useMemo(() => {
-    if (!slideAtual?.corpo) return [];
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = slideAtual.corpo;
-    
-    // Obter todos os nós de parágrafo ou o texto direto
-    const pElements = Array.from(tempDiv.querySelectorAll('p'));
-    const blocosTexto = pElements.length > 0 
-      ? pElements.map(p => p.textContent || '') 
-      : [tempDiv.textContent || ''];
+  // Sentenças da narração para sincronizar o karaokê
+  const frasesNarr = useMemo(() => {
+    const text = slideAtual?.narr || '';
+    if (!text) return [];
+    const matches = text.match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g);
+    return matches && matches.length > 0 ? matches.map(s => s.trim()) : [text.trim()];
+  }, [slideAtual?.narr]);
 
-    let globalFraseIdx = 0;
-    return blocosTexto.map(bloco => {
-      const frases = bloco.match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g) || [bloco];
-      const frasesComIdx = frases.map(frase => ({
-        texto: frase,
-        idx: globalFraseIdx++
-      }));
-      return frasesComIdx;
-    });
-  }, [slideAtual?.corpo]);
-
-  const totalFrases = useMemo(() => {
-    return paragrafosComFrases.reduce((acc, p) => acc + p.length, 0);
-  }, [paragrafosComFrases]);
+  // HTML com o Grifo Leve por cima na frase ativa
+  const htmlComGrifo = useMemo(() => {
+    if (!slideAtual?.corpo) return '';
+    if (!tocando || karaIdx < 0 || !frasesNarr[karaIdx]) {
+      return slideAtual.corpo;
+    }
+    return highlightFraseInHtml(slideAtual.corpo, frasesNarr[karaIdx]);
+  }, [slideAtual?.corpo, tocando, karaIdx, frasesNarr]);
 
   // Resetar estados ao mudar de etapa e iniciar autoplay contínuo
   useEffect(() => {
@@ -197,8 +216,8 @@ export function PlayerAulaNativo({
     setDuracao(dur);
 
     const pos = cur / dur;
-    if (totalFrases > 0) {
-      const activeI = Math.min(totalFrases - 1, Math.floor(pos * totalFrases));
+    if (frasesNarr.length > 0) {
+      const activeI = Math.min(frasesNarr.length - 1, Math.floor(pos * frasesNarr.length));
       setKaraIdx(activeI);
     }
   };
@@ -321,6 +340,308 @@ export function PlayerAulaNativo({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
+      {/* Estilos CSS da Tipografia Padrão do HTML e Grifo Leve */}
+      <style>{`
+        .aula-html-tipografia {
+          font-family: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+          color: #f8edef;
+          font-size: 16.5px;
+          line-height: 1.62;
+        }
+        .aula-html-tipografia p {
+          font-size: 16.5px;
+          line-height: 1.62;
+          margin: 0 0 14px;
+          color: #f8edef;
+        }
+        .aula-html-tipografia p.lead {
+          font-size: 17.5px;
+          color: #fdf3f4;
+          line-height: 1.65;
+          font-weight: 400;
+        }
+        .aula-html-tipografia b, 
+        .aula-html-tipografia strong {
+          color: #e9cd6d;
+          font-weight: 700;
+        }
+        .aula-html-tipografia p b,
+        .aula-html-tipografia ul.tight li b,
+        .aula-html-tipografia .box p b,
+        .aula-html-tipografia .fimbloco li b {
+          color: #e9cd6d;
+          font-weight: 700;
+        }
+        .aula-html-tipografia .term {
+          color: ${tema.destaque};
+          font-weight: 700;
+        }
+        .aula-html-tipografia h1,
+        .aula-html-tipografia .covertitle {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 28px;
+          line-height: 1.15;
+          margin: 6px 0 6px;
+          font-weight: 800;
+          color: #ffffff;
+        }
+        .aula-html-tipografia h2 {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 25px;
+          line-height: 1.22;
+          margin: 0 0 12px;
+          font-weight: 700;
+          color: #ffffff;
+        }
+        .aula-html-tipografia h3 {
+          font-family: "Playfair Display", Georgia, serif;
+          font-weight: 700;
+          color: #ffffff;
+        }
+        .aula-html-tipografia .kicker {
+          color: ${tema.destaque};
+          font-size: 12px;
+          font-weight: 700;
+          letter-spacing: 2.2px;
+          text-transform: uppercase;
+          margin: 0 0 6px;
+        }
+        .aula-html-tipografia .kicker::before {
+          content: "◆";
+          font-size: 8px;
+          vertical-align: 2px;
+          margin-right: 7px;
+          color: #d4af37;
+        }
+        .aula-html-tipografia .coverrule {
+          height: 3px;
+          width: 72px;
+          border-radius: 99px;
+          margin: 12px 0 16px;
+          background: linear-gradient(90deg, ${tema.destaque}, #d4af37);
+        }
+        .aula-html-tipografia .chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin: 14px 0 8px;
+        }
+        .aula-html-tipografia .chip {
+          border: 1px solid rgba(212, 175, 55, 0.35);
+          color: #e9cd6d;
+          border-radius: 99px;
+          padding: 6px 14px;
+          font-size: 13.5px;
+          font-weight: 600;
+          background: rgba(212, 175, 55, 0.08);
+        }
+        .aula-html-tipografia .viarow {
+          display: flex;
+          gap: 12px;
+          align-items: flex-start;
+          background: #250d14;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          border-radius: 14px;
+          padding: 13px 14px;
+          margin: 12px 0;
+        }
+        .aula-html-tipografia .viarow h3 {
+          margin: 2px 0 3px;
+          font-size: 17px;
+          font-weight: 700;
+          color: #ffffff;
+        }
+        .aula-html-tipografia .viarow p {
+          margin: 0;
+          font-size: 15px;
+          color: #c9a7ad;
+          line-height: 1.5;
+        }
+        .aula-html-tipografia .vianum {
+          flex: 0 0 auto;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          border: 1.5px solid ${tema.destaque};
+          color: ${tema.destaque};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: "Playfair Display", Georgia, serif;
+          font-weight: 700;
+          font-size: 16px;
+        }
+        .aula-html-tipografia .box {
+          background: #2e1219;
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          border-radius: 14px;
+          padding: 14px 16px;
+          margin: 14px 0;
+        }
+        .aula-html-tipografia .box .blabel {
+          color: ${tema.destaque};
+          font-size: 11.5px;
+          font-weight: 700;
+          letter-spacing: 1.8px;
+          margin: 0 0 6px;
+          text-transform: uppercase;
+        }
+        .aula-html-tipografia .box p {
+          margin: 0;
+          font-size: 15.5px;
+          color: #f8edef;
+        }
+        .aula-html-tipografia .box p + p {
+          margin-top: 8px;
+        }
+        .aula-html-tipografia .box.exemplo {
+          position: relative;
+          overflow: hidden;
+        }
+        .aula-html-tipografia .box.exemplo .wm {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 74%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0.15;
+          mix-blend-mode: screen;
+          pointer-events: none;
+          -webkit-mask-image: linear-gradient(to left, #000 40%, transparent 96%);
+          mask-image: linear-gradient(to left, #000 40%, transparent 96%);
+        }
+        .aula-html-tipografia .box.exemplo .excontent {
+          position: relative;
+          z-index: 1;
+        }
+        .aula-html-tipografia .frasechave {
+          background: linear-gradient(160deg, rgba(226, 62, 87, 0.17), rgba(226, 62, 87, 0.05));
+          border: 1px solid rgba(226, 62, 87, 0.45);
+          border-radius: 14px;
+          padding: 14px 16px;
+          margin: 16px 0;
+        }
+        .aula-html-tipografia .frasechave .flabel {
+          color: ${tema.destaque};
+          font-size: 11.5px;
+          font-weight: 700;
+          letter-spacing: 1.8px;
+          margin: 0 0 6px;
+          display: flex;
+          align-items: center;
+        }
+        .aula-html-tipografia .frasechave p.fq2 {
+          font-family: "Playfair Display", Georgia, serif;
+          font-size: 19px;
+          line-height: 1.45;
+          margin: 0;
+          color: #fdf3f4;
+        }
+        .aula-html-tipografia .fimbloco {
+          background: #2e1219;
+          border: 1px solid rgba(212, 175, 55, 0.3);
+          border-radius: 14px;
+          padding: 14px 16px;
+          margin: 16px 0 4px;
+        }
+        .aula-html-tipografia .fimbloco .flabel {
+          color: #e9cd6d;
+          font-size: 11.5px;
+          font-weight: 700;
+          letter-spacing: 1.8px;
+          margin: 0 0 8px;
+          display: flex;
+          align-items: center;
+          text-transform: uppercase;
+        }
+        .aula-html-tipografia .fimbloco ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+        .aula-html-tipografia .fimbloco li {
+          position: relative;
+          font-size: 15.5px;
+          line-height: 1.5;
+          padding: 5px 0 5px 22px;
+          border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+          color: #f8edef;
+        }
+        .aula-html-tipografia .fimbloco li:last-child {
+          border-bottom: none;
+        }
+        .aula-html-tipografia .fimbloco li::before {
+          content: "◆";
+          position: absolute;
+          left: 2px;
+          top: 8px;
+          font-size: 8px;
+          color: #d4af37;
+        }
+        .aula-html-tipografia .vazada {
+          position: relative;
+          height: 140px;
+          border-radius: 14px;
+          overflow: hidden;
+          margin: 16px 0;
+          border: 1px solid rgba(212, 175, 55, 0.2);
+          background: #250d14;
+        }
+        .aula-html-tipografia .vazada img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center 40%;
+          opacity: 0.45;
+          display: block;
+        }
+        .aula-html-tipografia .vazada::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(29, 8, 16, 0.72), rgba(29, 8, 16, 0) 38%, rgba(29, 8, 16, 0) 62%, rgba(29, 8, 16, 0.72));
+        }
+        .aula-html-tipografia ul.tight {
+          list-style: none;
+          margin: 4px 0 14px;
+          padding: 0;
+        }
+        .aula-html-tipografia ul.tight li {
+          position: relative;
+          font-size: 16.5px;
+          line-height: 1.55;
+          padding: 7px 0 7px 24px;
+          border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+          color: #f8edef;
+        }
+        .aula-html-tipografia ul.tight li:last-child {
+          border-bottom: none;
+        }
+        .aula-html-tipografia ul.tight li::before {
+          content: "◆";
+          position: absolute;
+          left: 2px;
+          top: 10px;
+          font-size: 8px;
+          color: #d4af37;
+        }
+        .aula-html-tipografia mark.karaoke-grifo {
+          background: rgba(212, 175, 55, 0.22) !important;
+          border: 1px solid rgba(212, 175, 55, 0.6) !important;
+          border-radius: 6px !important;
+          padding: 2px 6px !important;
+          color: #ffffff !important;
+          font-weight: 700 !important;
+          display: inline !important;
+          box-decoration-break: clone !important;
+          -webkit-box-decoration-break: clone !important;
+          box-shadow: 0 0 14px rgba(212, 175, 55, 0.2) !important;
+          transition: all 0.2s ease-in-out !important;
+        }
+      `}</style>
+
       {/* Elemento de áudio oculto */}
       <audio
         ref={audioRef}
@@ -399,25 +720,26 @@ export function PlayerAulaNativo({
       </div>
 
       {/* ÁREA CENTRAL DE CONTEÚDO (ROLAGEM SUAVE SEM SCROLLBAR VISÍVEL COM PADDING SEGURO NO RODAPÉ) */}
-      <main className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 pb-36 md:pb-32 max-w-3xl mx-auto scroll-smooth">
+      <main className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 pb-44 sm:pb-48 max-w-3xl mx-auto scroll-smooth">
         {slideAtual && (
           <div className="space-y-4 sm:space-y-5 animate-in fade-in duration-300">
-            {/* Tag / Kicker da Etapa */}
+            {/* Tag / Kicker da Etapa idêntico ao HTML (.kicker com ◆ dourado) */}
             <div className="flex items-center justify-between gap-2">
               <span 
-                className="text-[10px] sm:text-xs font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/5 border border-white/10"
+                className="text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center gap-1.5"
                 style={{ color: tema.destaque }}
               >
+                <span className="text-[9px] text-[#d4af37]">◆</span>
                 {slideAtual.kicker || `Etapa ${idx + 1} de ${total} · ${slideAtual.tipo}`}
               </span>
-              <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">
                 {slideAtual.tipo}
               </span>
             </div>
 
             {/* Imagem Cinematográfica em Alta Resolução (Altura Generosa 16:9.5 sem cortes) */}
             {imagemUrl && (
-              <div className="relative w-full aspect-[16/10] sm:aspect-[16/9.5] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-black/40 group">
+              <div className="relative w-full aspect-[16/10] sm:aspect-[16/9.5] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-[#250d14] group">
                 <img
                   src={imagemUrl}
                   alt={slideAtual.alt || slideAtual.titulo || aula.titulo}
@@ -429,22 +751,25 @@ export function PlayerAulaNativo({
               </div>
             )}
 
-            {/* Título do Slide */}
+            {/* Título do Slide com Playfair Display Autêntico (.covertitle / h1) */}
             {slideAtual.titulo && (
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-black font-serif text-white tracking-tight leading-snug">
+              <h1 
+                className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight"
+                style={{ fontFamily: '"Playfair Display", Georgia, serif' }}
+              >
                 {slideAtual.titulo}
               </h1>
             )}
 
-            {/* Divisor sutil */}
+            {/* Divisor sutil em gradiente idêntico ao HTML (.coverrule) */}
             <div 
-              className="w-16 h-1 rounded-full shadow-sm"
-              style={{ backgroundColor: tema.destaque }}
+              className="h-[3px] w-20 rounded-full shadow-sm"
+              style={{ background: `linear-gradient(90deg, ${tema.destaque}, #d4af37)` }}
             />
 
             {/* Bloco de Questão Prática (se for slide de questão) */}
             {(slideAtual.tipo === 'Questão' || slideAtual.tipo === 'Questão de banca' || slideAtual.opcoes) && (
-              <div className="rounded-2xl border border-white/15 p-4 sm:p-5 bg-white/5 space-y-3 mt-4">
+              <div className="rounded-2xl border border-white/15 p-4 sm:p-5 bg-[#250d14] space-y-3 mt-4">
                 {slideAtual.intro && (
                   <p className="text-xs sm:text-sm text-zinc-300 italic">{slideAtual.intro}</p>
                 )}
@@ -502,98 +827,72 @@ export function PlayerAulaNativo({
               </div>
             )}
 
-            {/* Texto do Slide com Efeito Karaokê Sincronizado por Frase */}
+            {/* Conteúdo Rico da Aula: 100% Tipografia Autêntica do HTML com Grifo Leve por cima */}
             {slideAtual.corpo && (
-              <div className="rounded-2xl border border-white/10 p-4 sm:p-5 bg-white/[0.03] space-y-3 font-sans">
-                {paragrafosComFrases.length > 0 ? (
-                  <div className="space-y-3 text-sm sm:text-base leading-relaxed text-zinc-300">
-                    {paragrafosComFrases.map((paragrafo, pi) => (
-                      <p key={pi} className="space-x-1">
-                        {paragrafo.map(({ texto, idx: fraseGlobalIdx }) => {
-                          const isAtual = karaIdx === fraseGlobalIdx;
-                          return (
-                            <span
-                              key={fraseGlobalIdx}
-                              className={`transition-all duration-200 rounded px-1.5 py-0.5 inline-block my-0.5 ${
-                                isAtual
-                                  ? 'bg-amber-400/25 text-white font-semibold ring-1 ring-amber-400/40 shadow-sm'
-                                  : 'text-zinc-300'
-                              }`}
-                            >
-                              {texto}
-                            </span>
-                          );
-                        })}
-                      </p>
-                    ))}
-                  </div>
-                ) : (
-                  <div 
-                    className="prose prose-invert max-w-none text-sm sm:text-base leading-relaxed text-zinc-300/95" 
-                    dangerouslySetInnerHTML={{ __html: slideAtual.corpo }} 
-                  />
-                )}
-              </div>
+              <div 
+                className="aula-html-tipografia pt-1"
+                dangerouslySetInnerHTML={{ __html: htmlComGrifo }}
+              />
             )}
           </div>
         )}
       </main>
 
-      {/* RODAPÉ NATIVO COMPACTO, FINO E 100% RESPONSIVO COM SAFE AREA INSET BOTTOM */}
+      {/* RODAPÉ NATIVO COMPLETO, ENCORPADO (ALTO) E 100% RESPONSIVO COM SAFE AREA INSET BOTTOM */}
       <footer 
-        className="fixed bottom-0 inset-x-0 z-40 backdrop-blur-xl border-t border-white/10 px-3 sm:px-6 py-2.5 shadow-2xl"
+        className="fixed bottom-0 inset-x-0 z-40 backdrop-blur-xl border-t border-white/10 px-3.5 sm:px-6 py-3.5 sm:py-4 shadow-2xl"
         style={{
           backgroundColor: tema.footerBg,
-          paddingBottom: 'calc(0.65rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))'
+          paddingBottom: 'calc(0.95rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))'
         }}
       >
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-2 sm:gap-3">
-          {/* Botão Anterior */}
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-2.5 sm:gap-4">
+          {/* Botão Anterior: Alto e Ergonômico */}
           <button
             type="button"
             onClick={voltarEtapa}
             disabled={idx === 0}
-            className={`min-w-[74px] sm:min-w-[88px] h-10 px-3 rounded-xl border font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shrink-0 ${
+            className={`min-w-[98px] sm:min-w-[124px] h-14 sm:h-[58px] px-3.5 sm:px-4 rounded-2xl border font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition active:scale-95 shrink-0 ${
               idx === 0 
                 ? 'opacity-30 border-white/5 bg-white/5 text-zinc-500 cursor-not-allowed'
-                : 'border-white/15 bg-white/5 hover:bg-white/10 text-zinc-200'
+                : 'border-white/20 bg-white/5 hover:bg-white/10 text-zinc-100 shadow-md'
             }`}
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
             <span>Anterior</span>
           </button>
 
-          {/* Player Central Ergonômico em Linha Única */}
+          {/* Player Central Ergonômico, Robusto e Alto */}
           <div 
             onClick={toggleAudio}
-            className="flex-1 min-w-0 h-10 px-2.5 sm:px-3 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 flex items-center gap-2 sm:gap-2.5 cursor-pointer transition active:scale-[0.99] shadow-inner"
+            className="flex-1 min-w-0 h-14 sm:h-[58px] px-3 sm:px-4 rounded-2xl border border-white/20 bg-white/5 hover:bg-white/10 flex items-center gap-2.5 sm:gap-3.5 cursor-pointer transition active:scale-[0.99] shadow-inner"
             title="Tocar ou pausar narração desta etapa"
           >
             <button
               type="button"
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-white shrink-0 shadow-md transition active:scale-90"
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white shrink-0 shadow-lg shadow-black/50 transition active:scale-90"
               style={{ background: tema.accentGradient }}
               aria-label={tocando ? 'Pausar narração' : 'Tocar narração'}
             >
               {tocando ? (
-                <Pause className="w-3.5 h-3.5 fill-current" />
+                <Pause className="w-5 h-5 fill-current" />
               ) : (
-                <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
+                <Play className="w-5 h-5 fill-current ml-0.5" />
               )}
             </button>
 
-            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
-              <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-black uppercase tracking-wider leading-none">
+            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+              <div className="flex items-center justify-between text-[10px] sm:text-xs font-black uppercase tracking-wider leading-none">
                 <span className="truncate" style={{ color: tema.destaque }}>
                   {tocando ? 'NARRANDO...' : 'NARRAÇÃO'}
                 </span>
-                <span className="text-zinc-400 font-mono text-[9px]">
+                <span className="text-zinc-300 font-mono text-xs sm:text-sm font-bold">
                   {formatTempo(tempoAtual)} / {duracao > 0 ? formatTempo(duracao) : '0:45'}
                 </span>
               </div>
 
-              {/* Barra fina de progresso do áudio */}
-              <div className="w-full h-1 rounded-full bg-white/10 overflow-hidden">
+              {/* Barra de progresso do áudio */}
+              <div className="w-full h-1.5 rounded-full bg-white/15 overflow-hidden">
                 <div 
                   className="h-full rounded-full transition-all duration-200"
                   style={{ 
@@ -605,14 +904,14 @@ export function PlayerAulaNativo({
             </div>
           </div>
 
-          {/* Botão Próximo / Concluir */}
+          {/* Botão Próximo / Concluir: Alto, Destaque e Largura Segura */}
           <button
             type="button"
             onClick={avancarEtapa}
-            className={`min-w-[78px] sm:min-w-[94px] h-10 px-3.5 rounded-xl font-black text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-lg shrink-0 ${
+            className={`min-w-[110px] sm:min-w-[136px] h-14 sm:h-[58px] px-4 sm:px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 transition active:scale-95 shadow-xl shrink-0 ${
               isUltimaEtapa
                 ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-950/40'
-                : 'text-white shadow-red-950/40'
+                : 'text-white shadow-black/40'
             }`}
             style={{
               background: isUltimaEtapa 
@@ -622,9 +921,9 @@ export function PlayerAulaNativo({
           >
             <span>{isUltimaEtapa ? 'Concluir' : 'Próximo'}</span>
             {isUltimaEtapa ? (
-              <Check className="w-4 h-4 stroke-[3]" />
+              <Check className="w-5 h-5 stroke-[3]" />
             ) : (
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5 stroke-[2.5]" />
             )}
           </button>
         </div>
