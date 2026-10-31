@@ -626,3 +626,4 @@ export function getAulaFallbackHtml(aula: AulaItem): string {
 </body>
 </html>`;
 }
+

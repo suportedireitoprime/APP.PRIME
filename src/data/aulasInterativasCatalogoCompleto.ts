@@ -1267,8 +1267,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-01-direito-penal/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-01-direito-penal/capa-3x4.webp",
     "status": "pronto"
   },
   {
@@ -1282,8 +1282,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_02_-_direito_penal_criminologia_e_politica_criminal.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-02-direito-penal-criminologia-e-politica-criminal/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-02-direito-penal-criminologia-e-politica-criminal/capa-3x4.webp",
     "status": "pronto"
   },
   {
@@ -1297,8 +1297,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_03_-_movimentos_de_politica_criminal.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-03-movimentos-de-politica-criminal/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-03-movimentos-de-politica-criminal/capa-3x4.webp",
     "status": "pronto"
   },
   {
@@ -1312,8 +1312,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_04_-_positivismo_criminologico.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-04-positivismo-criminologico/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-04-positivismo-criminologico/capa-3x4.webp",
     "status": "pronto"
   },
   {
@@ -1327,8 +1327,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_05_-_as_variantes_do_positivismo.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-05-as-variantes-do-positivismo/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-05-as-variantes-do-positivismo/capa-3x4.webp",
     "status": "pronto"
   },
   {
@@ -1342,8 +1342,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_06_-_principio_da_legalidade.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-06-principio-da-legalidade/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-06-principio-da-legalidade/capa-3x4.webp",
     "status": "pronto"
   },
   {
@@ -1357,8 +1357,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_07_-_principio_da_intervencao_minima.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-07-principio-da-intervencao-minima/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-07-principio-da-intervencao-minima/capa-3x4.webp",
     "status": "pronto"
   },
   {
@@ -1372,8 +1372,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_08_-_principio_da_lesividade_e_principio_da_humanidade.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-08-principio-da-lesividade-e-principio-da-humanidade/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-08-principio-da-lesividade-e-principio-da-humanidade/capa-3x4.webp",
     "status": "pronto"
   },
   {
@@ -1387,8 +1387,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_09_-_principio_da_adequacao_social.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-09-principio-da-adequacao-social/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-09-principio-da-adequacao-social/capa-3x4.webp",
     "status": "pronto"
   },
   {
@@ -1402,8 +1402,8 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_10_-_principio_da_culpabilidade.webp",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-10-principio-da-culpabilidade/aula.html",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/05-nocoes-gerais/aula-10-principio-da-culpabilidade/capa-3x4.webp",
     "status": "pronto"
   },
   {
