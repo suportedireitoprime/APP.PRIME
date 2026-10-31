@@ -3,7 +3,7 @@ const fs = require('fs');
 // Ler o html base
 let html = fs.readFileSync('scratch/aula01_standalone_r2.html', 'utf8');
 
-// 1. Substituir o bloco body para cabeçalho ultra compacto com audio integrado
+// 1. Substituir o bloco body com o player no rodapé centralizado entre os botões Anterior e Próximo
 const oldBodyPattern = /<body>[\s\S]*?<script>/;
 
 const newBody = `<body>
@@ -19,21 +19,6 @@ const newBody = `<body>
             </div>
             <h1 id="aulaTitulo">Crimes Contra a Família</h1>
           </div>
-
-          <!-- Player de Narração Compacto no Cabeçalho -->
-          <div class="audio audio-compact" id="audioBox" title="Ouvir a narração desta etapa">
-            <button class="playbtn" id="playBtn" type="button" aria-label="Ouvir ou pausar a narração">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
-            </button>
-            <div class="audio-track-wrap">
-              <div class="audio-labels">
-                <span class="alabel">NARRAÇÃO · VOZ FEMININA</span>
-                <span class="atime" id="aTime">0:00 / 0:00</span>
-              </div>
-              <div class="atrack" id="aTrack"><div class="afill" id="aFill"></div></div>
-            </div>
-          </div>
-
           <div class="track"><div class="fill" id="progressFill" style="width:3.13%"></div></div>
         </div>
       </header>
@@ -41,9 +26,30 @@ const newBody = `<body>
       <div class="scroll" id="scrollArea" tabindex="0"></div>
 
       <footer>
-        <div class="footer-inner">
-          <button class="navbtn" id="btnPrev" type="button">← Anterior</button>
-          <button class="navbtn next" id="btnNext" type="button">Próximo →</button>
+        <div class="footer-bar">
+          <button class="navbtn prev" id="btnPrev" type="button">
+            <svg viewBox="0 0 24 24" class="navbtn-svg" aria-hidden="true"><path d="M15 19l-7-7 7-7"/></svg>
+            <span>Anterior</span>
+          </button>
+
+          <!-- Player Centralizado no Rodapé -->
+          <div class="footer-player audio" id="audioBox" title="Ouvir a narração desta etapa">
+            <button class="playbtn" id="playBtn" type="button" aria-label="Ouvir ou pausar a narração">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+            </button>
+            <div class="footer-player-body">
+              <div class="footer-player-labels arow">
+                <span class="alabel">NARRAÇÃO</span>
+                <span class="atime" id="aTime">0:00 / 0:00</span>
+              </div>
+              <div class="atrack" id="aTrack"><div class="afill" id="aFill"></div></div>
+            </div>
+          </div>
+
+          <button class="navbtn next" id="btnNext" type="button">
+            <span>Próximo</span>
+            <svg viewBox="0 0 24 24" class="navbtn-svg" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
         </div>
       </footer>
     </div>
@@ -52,7 +58,10 @@ const newBody = `<body>
 
 html = html.replace(oldBodyPattern, newBody);
 
-// 2. Substituir o CSS do topo garantindo 100% tela cheia e cabeçalho compacto sem playerdock
+// 2. Substituir o CSS garantindo:
+// - Sem barra de rolagem (hidden scrollbars)
+// - Player no rodapé centralizado
+// - 100% tela cheia
 const cssHeaderRegex = /body\s*\{[\s\S]*?\.banner\s*\{/;
 
 const newCSSHeader = `body{
@@ -69,6 +78,11 @@ const newCSSHeader = `body{
         height:100vh;
         height:100dvh;
         overflow:hidden;
+        scrollbar-width:none;
+        -ms-overflow-style:none;
+      }
+      body::-webkit-scrollbar, html::-webkit-scrollbar{
+        display:none;width:0;height:0;
       }
       .phone{
         position:relative;
@@ -80,7 +94,7 @@ const newCSSHeader = `body{
         border-radius:0;border:none;box-shadow:none;
       }
       header{
-        padding:8px 16px 6px;
+        padding:10px 16px 8px;
         border-bottom:1px solid rgba(226,62,87,.25);
         background:rgba(18,4,9,.94);
         backdrop-filter:blur(16px);
@@ -116,20 +130,88 @@ const newCSSHeader = `body{
         font-family:"Playfair Display",Georgia,serif;
         font-size:15px;line-height:1.2;margin:0;font-weight:700;color:#fff;
       }
-      /* Player Compacto no Cabeçalho */
-      .audio-compact{
-        display:flex;align-items:center;gap:10px;
+      .track{height:3px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:2px}
+      .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
+      
+      /* Área de Conteúdo SEM barra de scroll */
+      .scroll{
+        flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
+        padding:20px 20px 30px;
+        scrollbar-width:none;
+        -ms-overflow-style:none;
+        overscroll-behavior:contain;
+        width:100%;
+      }
+      .scroll::-webkit-scrollbar{
+        display:none;width:0;height:0;
+      }
+      .scroll > *{
+        max-width:860px;
+        margin-left:auto;
+        margin-right:auto;
+      }
+
+      /* Rodapé com Player Centralizado e Botões nas Pontas */
+      footer{
+        padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+        border-top:1px solid rgba(226,62,87,.25);
+        background:rgba(18,4,9,.95);
+        backdrop-filter:blur(16px);
+        -webkit-backdrop-filter:blur(16px);
+        flex:0 0 auto;
+        width:100%;
+        z-index:30;
+      }
+      .footer-bar{
+        max-width:860px;
+        margin:0 auto;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        width:100%;
+      }
+      .navbtn{
+        flex:0 0 auto;
+        min-width:92px;
+        font-size:13.5px;font-weight:700;
+        padding:10px 14px;border-radius:12px;
+        cursor:pointer;
+        display:inline-flex;align-items:center;justify-content:center;gap:5px;
+        border:1px solid rgba(255,255,255,.12);
+        background:rgba(255,255,255,.06);
+        color:var(--ink);
+        transition:all .15s ease;
+      }
+      .navbtn:hover{background:rgba(255,255,255,.12)}
+      .navbtn:active{transform:scale(0.96)}
+      .navbtn.next{
+        background:linear-gradient(135deg,#c8102e,#8a081c);
+        border:1px solid rgba(255,255,255,.2);
+        color:#fff;
+        box-shadow:0 3px 12px rgba(200,16,46,.35);
+      }
+      .navbtn.next:hover{filter:brightness(1.1)}
+      .navbtn:disabled{opacity:.35;pointer-events:none}
+      .navbtn-svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+      /* Player Centralizado */
+      .footer-player{
+        flex:1 1 auto;
+        min-width:0;
+        display:flex;
+        align-items:center;
+        gap:10px;
         background:rgba(46,15,24,.75);
         border:1px solid rgba(226,62,87,.35);
-        border-radius:10px;
-        padding:4px 10px;
+        border-radius:12px;
+        padding:5px 10px;
         cursor:pointer;
         transition:background .2s ease;
-        margin:0;
       }
-      .audio-compact:hover{background:rgba(56,18,30,.9)}
+      .footer-player:hover{background:rgba(56,18,30,.9)}
       .playbtn{
-        flex:0 0 28px;width:28px;height:28px;border-radius:50%;
+        flex:0 0 32px;width:32px;height:32px;border-radius:50%;
         background:linear-gradient(135deg,#ff5e78,#c8102e);
         border:1px solid rgba(255,255,255,.3);cursor:pointer;
         display:flex;align-items:center;justify-content:center;
@@ -138,65 +220,38 @@ const newCSSHeader = `body{
       }
       .playbtn:hover{transform:scale(1.08)}
       .playbtn:active{transform:scale(0.92)}
-      .playbtn svg{width:13px;height:13px;fill:#fff}
-      .audio-track-wrap{
+      .playbtn svg{width:14px;height:14px;fill:#fff}
+      .footer-player-body{
         flex:1 1 auto;min-width:0;
         display:flex;flex-direction:column;gap:3px;
       }
-      .audio-labels{
-        display:flex;justify-content:space-between;align-items:center;gap:8px;
+      .footer-player-labels{
+        display:flex;justify-content:space-between;align-items:center;gap:6px;
       }
       .alabel{color:var(--red2);font-size:9.5px;font-weight:800;letter-spacing:1.4px}
       .atime{color:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums;font-weight:600}
       .atrack{
-        position:relative;height:4px;border-radius:99px;
+        position:relative;height:5px;border-radius:99px;
         background:rgba(255,255,255,.12);overflow:hidden;cursor:pointer;
       }
       .afill{height:100%;width:0%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:99px}
-      .track{height:3px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:1px}
-      .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
-      .scroll{
-        flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
-        padding:20px 20px 30px;
-        scrollbar-width:thin;scrollbar-color:rgba(226,62,87,.6) rgba(255,255,255,.04);
-        overscroll-behavior:contain;
-        width:100%;
-      }
-      .scroll::-webkit-scrollbar{width:6px}
-      .scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:99px}
-      .scroll::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--red),#7d0c1e);border-radius:99px}
-      .scroll > *{
-        max-width:860px;
-        margin-left:auto;
-        margin-right:auto;
-      }
-      footer{
-        padding:12px 20px calc(12px + env(safe-area-inset-bottom));
-        border-top:1px solid rgba(226,62,87,.22);
-        background:rgba(18,4,9,.92);
-        backdrop-filter:blur(14px);
-        -webkit-backdrop-filter:blur(14px);
-        flex:0 0 auto;
-        width:100%;
-        z-index:20;
-      }
-      .footer-inner{
-        max-width:860px;
-        margin:0 auto;
-        display:flex;gap:14px;
-        width:100%;
-      }
-      .navbtn{
-        flex:1;
-        font-size:15px;font-weight:700;
-        padding:12px 16px;border-radius:12px;
-        cursor:pointer;
-        transition:all .15s ease;
+
+      @media (max-width: 480px){
+        .navbtn{min-width:76px;padding:9px 10px;font-size:12px}
+        .alabel{font-size:8.5px}
+        .atime{font-size:9.5px}
       }
       .banner{`;
 
 html = html.replace(cssHeaderRegex, newCSSHeader);
 
+// 3. Corrigir o audioSrc para carregar a URL real do Cloudflare R2
+const oldAudioSrc = /function audioSrc\(i\)\{\s*return\s*\"assets\/audio\/s\"\s*\+\s*pad\(i\+1\)\s*\+\s*\"\.mp3\";\s*\}/;
+const newAudioSrc = `var AUDIO_BASE_URL = "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/audio/";
+    function audioSrc(i){ return AUDIO_BASE_URL + "s" + pad(i+1) + ".mp3"; }`;
+
+html = html.replace(oldAudioSrc, newAudioSrc);
+
 fs.writeFileSync('scratch/aula01_fullscreen.html', html, 'utf8');
 fs.copyFileSync('scratch/aula01_fullscreen.html', 'scratch/aula01_standalone_r2.html');
-console.log('HTML atualizado com sucesso! Tamanho:', html.length);
+console.log('HTML atualizado com sucesso com player no rodapé e URLs R2 de áudio! Tamanho:', html.length);
