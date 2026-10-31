@@ -728,19 +728,17 @@ export function PlayerAulaNativo({
           color: #d4af37;
         }
         .aula-html-tipografia mark.karaoke-grifo {
-          background: linear-gradient(135deg, rgba(233, 205, 109, 0.22) 0%, rgba(212, 175, 55, 0.12) 100%) !important;
-          border: 1px solid rgba(233, 205, 109, 0.55) !important;
-          border-bottom: 2.5px solid #e9cd6d !important;
-          border-radius: 7px !important;
-          padding: 2px 7px !important;
-          margin: 0 1px !important;
+          background-color: rgba(234, 179, 8, 0.25) !important;
           color: #ffffff !important;
           font-weight: 600 !important;
-          display: inline !important;
-          box-decoration-break: clone !important;
-          -webkit-box-decoration-break: clone !important;
-          box-shadow: 0 2px 10px rgba(212, 175, 55, 0.18), inset 0 0 6px rgba(233, 205, 109, 0.08) !important;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+          padding: 1px 4px !important;
+          border-radius: 4px !important;
+          box-decoration-break: slice !important;
+          -webkit-box-decoration-break: slice !important;
+          outline: 1.5px solid #eab308 !important;
+          outline-offset: 1px !important;
+          box-shadow: 0 0 12px rgba(234, 179, 8, 0.22) !important;
+          transition: background-color 0.2s ease, outline-color 0.2s ease !important;
         }
 
         /* Animação Cinematográfica de Flip 3D para Flashcards */
