@@ -1279,5 +1279,233 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
         fundamentoLegal: 'Doutrina brasileira de Direito Administrativo'
       }
     ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AULA 01: HISTÓRIA CONSTITUCIONAL DO BRASIL (INDEPENDÊNCIA À CARTA DE 1824)
+  // ─────────────────────────────────────────────────────────────────────────────
+  'const-01-01': {
+    aulaId: 'const-01-01',
+    titulo: 'Da Independência à Constituição de 1824',
+    flashcards: [
+      {
+        id: 'fc-const-01-01',
+        pergunta: 'Qual foi a primeira tentativa formal de elaboração de uma Constituição no Brasil pós-independência?',
+        resposta: 'A Assembleia Constituinte de 1823, cujos trabalhos resultaram no Projeto da Constituição que ficou popularmente conhecido como o "Projeto da Mandioca" (ou Constituinte da Macaxeira).',
+        artigoLei: 'História Constitucional do Brasil de 1823',
+        dicaPratica: 'O voto era censitário baseado no rendimento equivalente a alqueires de farinha de mandioca.'
+      },
+      {
+        id: 'fc-const-01-02',
+        pergunta: 'Por que o projeto de 1823 ficou conhecido como "Constituição da Mandioca"?',
+        resposta: 'Porque fixava o critério censitário para ser eleitor e elegível com base na renda líquida anual correspondente a determinada quantidade de alqueires de farinha de mandioca, favorecendo grandes latifundiários rurais.',
+        artigoLei: 'Projeto de Constituição de 1823'
+      },
+      {
+        id: 'fc-const-01-03',
+        pergunta: 'O que foi a célebre "Noite da Agonia" na história constitucional brasileira?',
+        resposta: 'Foi a madrugada de 11 para 12 de novembro de 1823, na qual deputados constituintes resistiram em vigília no plenário antes de o imperador Dom Pedro I cercar o prédio com tropas armadas e decretar a dissolução da Assembleia Constituinte.',
+        artigoLei: 'Decreto Imperial de Dissolução de 12/11/1823'
+      },
+      {
+        id: 'fc-const-01-04',
+        pergunta: 'A Constituição Imperial de 1824 foi promulgada ou outorgada?',
+        resposta: 'Foi OUTORGADA (imposta unilateralmente pelo Imperador Dom Pedro I), redigida por um Conselho de Estado composto por 10 cidadãos de sua confiança, sem aprovação popular ou parlamentar.',
+        artigoLei: 'Carta de Lei de 25 de março de 1824'
+      },
+      {
+        id: 'fc-const-01-05',
+        pergunta: 'Qual foi o período de vigência da Constituição de 1824 e qual seu recorde no Brasil?',
+        resposta: 'Vigou de 25 de março de 1824 até 15 de novembro de 1889 (65 anos), sendo até hoje a Constituição com maior tempo de vigência de toda a história do Brasil.',
+        artigoLei: 'Constituição Política do Império do Brasil (1824)'
+      },
+      {
+        id: 'fc-const-01-06',
+        pergunta: 'Como se classificava a Constituição de 1824 quanto à sua estabilidade ou alterabilidade?',
+        resposta: 'Classificava-se como SEMIRRÍGIDA (ou semiflexível), pois exigia processo legislativo solene e mais dificultoso apenas para alterar dispositivos substancialmente constitucionais, enquanto as leis ordinárias podiam alterar os demais.',
+        artigoLei: 'Art. 178 da Carta de 1824'
+      }
+    ],
+    questoes: [
+      {
+        id: 'q-const-01-01',
+        tipo: 'definicao',
+        tema: 'Direito Constitucional · Origem da Carta Imperial',
+        enunciado: 'Quanto à forma de nascimento da primeira Constituição brasileira, promulgada/outorgada em 25 de março de 1824, é correto afirmar que se tratou de uma Constituição:',
+        alternativas: [
+          { letra: 'A', texto: 'Promulgada, pois resultou dos debates soberanos da Assembleia Constituinte de 1823.' },
+          { letra: 'B', texto: 'Outorgada, tendo sido imposta monocraticamente pelo Imperador Dom Pedro I após a dissolução da Constituinte.' },
+          { letra: 'C', texto: 'Cesarista, confirmada por plebiscito popular secreto de sufrágio universal.' },
+          { letra: 'D', texto: 'Pactuada, celebrada entre a Coroa de Portugal e o Reino Unido do Brasil.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A Carta de 1824 foi outorgada (imposta) por Dom Pedro I, auxiliado pelo Conselho de Estado de 10 membros, após dissolver a Assembleia Constituinte na Noite da Agonia.',
+        fundamentoLegal: 'Carta Imperial de 25 de março de 1824'
+      },
+      {
+        id: 'q-const-01-02',
+        tipo: 'pegadinha',
+        tema: 'Direito Constitucional · Projeto da Mandioca de 1823',
+        enunciado: 'O Projeto Constitucional de 1823 ("Projeto da Mandioca") possuía como marcante característica política:',
+        alternativas: [
+          { letra: 'A', texto: 'A criação imediata da República Federativa com sufrágio universal feminino.' },
+          { letra: 'B', texto: 'A restrição dos poderes do Imperador e a fixação de critério censitário rural para o direito de voto.' },
+          { letra: 'C', texto: 'A abolição total da escravidão no território nacional com indenização aos cativos.' },
+          { letra: 'D', texto: 'A subordinação do Brasil à Constituição Portuguesa de 1822.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A Constituinte de 1823 buscava limitar a autoridade imperial e resguardar a hegemonia da elite agrária por meio do voto censitário baseado em alqueires de farinha de mandioca.',
+        fundamentoLegal: 'Projeto Constitucional de 1823'
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AULA 02: CONSTITUIÇÃO DE 1824 (PODER MODERADOR E ESTRUTURA DO IMPÉRIO)
+  // ─────────────────────────────────────────────────────────────────────────────
+  'const-01-02': {
+    aulaId: 'const-01-02',
+    titulo: 'Constituição de 1824',
+    flashcards: [
+      {
+        id: 'fc-const-02-01',
+        pergunta: 'Quais eram os QUATRO poderes consagrados pela Constituição Imperial de 1824?',
+        resposta: 'Poder Legislativo, Poder Moderador, Poder Executivo e Poder Judicial (art. 10 da Carta de 1824).',
+        artigoLei: 'Art. 10 da Carta de 1824',
+        dicaPratica: 'O Poder Moderador era a "chave de toda a organização política" imperial.'
+      },
+      {
+        id: 'fc-const-02-02',
+        pergunta: 'A quem competia privativamente o exercício do Poder Moderador?',
+        resposta: 'Competia privativamente ao Imperador, como Chefe Supremo da Nação e seu Primeiro Representante, para manter o equilíbrio e harmonia entre os demais poderes.',
+        artigoLei: 'Arts. 98 e 99 da Carta de 1824'
+      },
+      {
+        id: 'fc-const-02-03',
+        pergunta: 'Como funcionava a investidura dos Senadores no Império do Brasil?',
+        resposta: 'O Senado era VITALÍCIO. A eleição era indireta em lista tríplice formulada pelas províncias, cabendo ao Imperador nomear livremente um dos três nomes.',
+        artigoLei: 'Arts. 40 e 43 da Carta de 1824'
+      },
+      {
+        id: 'fc-const-02-04',
+        pergunta: 'Qual era a religião oficial do Estado segundo a Constituição de 1824?',
+        resposta: 'A Religião Católica Apostólica Romana era a religião do Império (Estado Confessional). As outras religiões eram toleradas apenas para culto doméstico em casas sem forma exterior de templo.',
+        artigoLei: 'Art. 5º da Carta de 1824'
+      },
+      {
+        id: 'fc-const-02-05',
+        pergunta: 'Como era estruturada a forma de Estado na Constituição de 1824?',
+        resposta: 'Era um Estado UNITÁRIO com centralização político-administrativa e divisões provinciais governadas por Presidentes de Província nomeados pelo Imperador.',
+        artigoLei: 'Art. 2º da Carta de 1824'
+      }
+    ],
+    questoes: [
+      {
+        id: 'q-const-02-01',
+        tipo: 'definicao',
+        tema: 'Direito Constitucional · Poder Moderador',
+        enunciado: 'Sobre o Poder Moderador previsto na Carta Imperial de 1824, sob inspiração das teses de Benjamin Constant, é correto afirmar:',
+        alternativas: [
+          { letra: 'A', texto: 'Era exercido de forma colegiada pelo Conselho de Ministros e pelo Supremo Tribunal de Justiça.' },
+          { letra: 'B', texto: 'Era privativo do Imperador, conferindo-lhe prerrogativas como dissolver a Câmara dos Deputados e nomear senadores em lista tríplice.' },
+          { letra: 'C', texto: 'Foi expressamente preservado pela Constituição da República de 1891.' },
+          { letra: 'D', texto: 'Subordinava-se diretamente às decisões vinculantes do Poder Judiciário.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O art. 98 definia o Poder Moderador como privativo do Imperador, permitindo-lhe intervir e vetar atos dos demais poderes para garantir o equilíbrio do Império.',
+        fundamentoLegal: 'Arts. 98 e 101 da Carta de 1824'
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AULA 01: INTRODUÇÃO AO DIREITO DO TRABALHO (FONTES MATERIAIS E FORMAIS)
+  // ─────────────────────────────────────────────────────────────────────────────
+  'trab-01-01': {
+    aulaId: 'trab-01-01',
+    titulo: 'Fontes materiais e formais',
+    flashcards: [
+      {
+        id: 'fc-trab-01-01',
+        pergunta: 'O que são fontes materiais do Direito do Trabalho?',
+        resposta: 'São os fatos sociais, econômicos, filosóficos e políticos (greves, pressões sindicais, revolução industrial) que impulsionam e pressionam o Estado a criar a norma jurídica.',
+        artigoLei: 'Teoria Geral do Direito do Trabalho'
+      },
+      {
+        id: 'fc-trab-01-02',
+        pergunta: 'O que são fontes formais heterônomas?',
+        resposta: 'São normas produzidas por um terceiro exterior à relação (o Estado ou organismos internacionais), como a Constituição Federal, Leis em sentido estrito, Decretos e Sentenças Normativas.',
+        artigoLei: 'Art. 8º da CLT'
+      },
+      {
+        id: 'fc-trab-01-03',
+        pergunta: 'O que são fontes formais autônomas?',
+        resposta: 'São normas elaboradas diretamente pelos próprios destinatários/atores sociais da relação de trabalho, sem imposição estatal direta (Convenções Coletivas, Acordos Coletivos e costumes).',
+        artigoLei: 'Arts. 611 e 611-A da CLT'
+      }
+    ],
+    questoes: [
+      {
+        id: 'q-trab-01-01',
+        tipo: 'definicao',
+        tema: 'Direito do Trabalho · Fontes Formais',
+        enunciado: 'Constitui exemplo autêntico de fonte formal autônoma do Direito do Trabalho:',
+        alternativas: [
+          { letra: 'A', texto: 'A Consolidação das Leis do Trabalho (Decreto-Lei 5.452/1943).' },
+          { letra: 'B', texto: 'A Convenção Coletiva de Trabalho (CCT) celebrada entre sindicatos patronal e obreiro.' },
+          { letra: 'C', texto: 'A Medida Provisória editada pelo Presidente da República.' },
+          { letra: 'D', texto: 'A sentença normativa proferida por Tribunal Regional do Trabalho em dissídio coletivo.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A Convenção Coletiva de Trabalho é fonte autônoma porque é pactuada diretamente pelas entidades sindicais representativas das categorias econômica e profissional.',
+        fundamentoLegal: 'Art. 611 da CLT'
+      }
+    ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AULA 02: FONTES AUTÔNOMAS EM ESPÉCIE (CCT, ACT E CONTRATO)
+  // ─────────────────────────────────────────────────────────────────────────────
+  'trab-01-02': {
+    aulaId: 'trab-01-02',
+    titulo: 'Fontes autônomas em espécie',
+    flashcards: [
+      {
+        id: 'fc-trab-02-01',
+        pergunta: 'Qual a principal diferença subjetiva entre CCT (Convenção Coletiva) e ACT (Acordo Coletivo)?',
+        resposta: 'Na CCT participam dois sindicatos (sindicato laboral e sindicato patronal). No ACT participa o sindicato laboral negociando diretamente com uma ou mais empresas específicas.',
+        artigoLei: 'Art. 611, §§ 1º e 2º da CLT'
+      },
+      {
+        id: 'fc-trab-02-02',
+        pergunta: 'Após a Reforma Trabalhista (Lei 13.467/2017), em caso de conflito, o que prevalece: o Acordo Coletivo (ACT) ou a Convenção Coletiva (CCT)?',
+        resposta: 'O Acordo Coletivo de Trabalho (ACT) SEMPRE prevalece sobre a Convenção Coletiva de Trabalho (CCT), independentemente de ser mais ou menos favorável (art. 620 da CLT).',
+        artigoLei: 'Art. 620 da CLT (redação da Lei 13.467/2017)'
+      },
+      {
+        id: 'fc-trab-02-03',
+        pergunta: 'Qual o prazo máximo de vigência de uma Convenção ou Acordo Coletivo de Trabalho?',
+        resposta: 'O prazo máximo é de até 2 (dois) anos, sendo expressamente vedada a ultratividade das normas coletivas no Brasil.',
+        artigoLei: 'Art. 614, § 3º da CLT e ADPF 323 do STF'
+      }
+    ],
+    questoes: [
+      {
+        id: 'q-trab-02-01',
+        tipo: 'definicao',
+        tema: 'Direito do Trabalho · Conflito entre ACT e CCT',
+        enunciado: 'Nos termos expressos do art. 620 da CLT, com redação dada pela Reforma Trabalhista (Lei nº 13.467/2017):',
+        alternativas: [
+          { letra: 'A', texto: 'A Convenção Coletiva prevalecerá sempre por ter maior abrangência territorial.' },
+          { letra: 'B', texto: 'As condições estabelecidas em Acordo Coletivo de Trabalho sempre prevalecerão sobre as estipuladas em Convenção Coletiva de Trabalho.' },
+          { letra: 'C', texto: 'Prevalecerá sempre a norma mais favorável, segundo a teoria do conglobamento.' },
+          { letra: 'D', texto: 'O conflito deve ser dirimido obrigatoriamente por laudo arbitral do Ministério Público do Trabalho.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O art. 620 da CLT estabeleceu expressamente o primado da especificidade: as condições fixadas em ACT prevalecem sempre sobre as da CCT.',
+        fundamentoLegal: 'Art. 620 da CLT'
+      }
+    ]
   }
+
 };

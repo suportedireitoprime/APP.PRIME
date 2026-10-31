@@ -1,0 +1,2158 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" href="data:," />
+    <title>Constituição de 1824 · Direito Constitucional</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --bg:#04120a;
+        --phone:#081d10;
+        --panel:#122e19;
+        --panel2:#0d2514;
+        --red:#2fa84f;
+        --red2:#8fe8ab;
+        --gold:#d4af37;
+        --gold2:#e9cd6d;
+        --ink:#edf8ef;
+        --muted:#a7c9ab;
+        --line:rgba(212,175,55,.3);
+        --ok:#3ecf7a;
+        --bad:#ff7a7a;
+        color-scheme:dark;
+      }
+      *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+      html,body{height:100%}
+      body{
+        margin:0;
+        font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
+        background:
+          radial-gradient(900px 500px at 15% -10%, #0f3a1c 0%, transparent 60%),
+          radial-gradient(800px 500px at 110% 110%, #2b0812 0%, transparent 55%),
+          var(--bg);
+        color:var(--ink);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;
+        gap:12px;padding:12px;
+        min-height:100dvh;
+      }
+      .stage{
+        display:flex;flex-direction:row;align-items:stretch;justify-content:center;
+        gap:12px;width:min(574px,100%);flex:1 1 auto;min-height:0;
+      }
+      .phone{
+        position:relative;
+        width:auto;max-width:430px;min-width:0;
+        flex:1 1 auto;min-height:0;
+        background:linear-gradient(180deg,#26060f 0%,var(--phone) 30%);
+        display:flex;flex-direction:column;
+        overflow:hidden;
+        border-radius:26px;
+      }
+      @media (min-width:520px){
+        .phone{
+          max-height:880px;
+          border-radius:38px;
+          border:1px solid rgba(226,62,87,.5);
+          box-shadow:0 30px 80px rgba(0,0,0,.65),0 0 0 8px #0d0206,0 0 60px rgba(226,62,87,.1);
+        }
+      }
+      header{
+        padding:16px 20px 10px;
+        border-bottom:1px solid rgba(226,62,87,.18);
+        background:rgba(20,4,9,.55);
+        flex:0 0 auto;
+      }
+      .hrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+      .subject{color:var(--red2);font-weight:700;font-size:11.5px;letter-spacing:2.4px}
+      .design{color:var(--muted);font-size:11px;letter-spacing:1.4px;font-weight:600;white-space:nowrap}
+      h1{font-family:"Playfair Display",Georgia,serif;font-size:21px;line-height:1.15;margin:6px 0 2px;font-weight:800}
+      .etapa{color:var(--muted);font-size:13.5px;margin:0 0 10px}
+      .etapa b{color:var(--ink);font-weight:600}
+      .track{height:6px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+      .fill{height:100%;background:linear-gradient(90deg,#0d7031,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
+      .playerdock{
+        flex:0 0 132px;width:132px;
+        display:flex;flex-direction:column;justify-content:center;
+        background:linear-gradient(180deg,#0f2e18,#210a11);
+        border:1px solid rgba(226,62,87,.5);
+        border-radius:18px;
+        padding:18px 14px;
+        box-shadow:0 14px 34px rgba(0,0,0,.5);
+      }
+      .playerdock .audio{margin:0;border:none;background:transparent;padding:0;width:100%;display:flex;flex-direction:column;gap:14px}
+      .playerdock .audio .arow{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:0}
+      .playerdock .audio .alabel{line-height:1.55}
+      .playerdock .audio .acontrol{flex-direction:column;align-items:center;gap:14px}
+      .playerdock .playbtn{width:56px;height:56px}
+      .playerdock .playbtn svg{width:24px;height:24px}
+      .playerdock .audio .atrack{flex:0 0 auto;width:100%}
+      @media (max-width:560px){
+        .stage{gap:10px}
+        .playerdock{flex-basis:102px;width:102px;padding:14px 10px;border-radius:16px}
+        .playerdock .audio .alabel{font-size:10px;letter-spacing:1.2px}
+        .playerdock .audio .atime{font-size:11.5px}
+        .playerdock .playbtn{width:50px;height:50px}
+        header{padding:14px 15px 10px}
+        .covertitle{font-size:28px}
+        .scroll{padding:16px 15px 22px}
+        footer{padding:12px 14px calc(12px + env(safe-area-inset-bottom))}
+        .navbtn{font-size:15px;padding:14px 6px}
+      }
+      .scroll{
+        flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
+        padding:18px 20px 26px;
+        scrollbar-width:thin;scrollbar-color:rgba(226,62,87,.6) rgba(255,255,255,.04);
+        overscroll-behavior:contain;
+      }
+      .scroll::-webkit-scrollbar{width:5px}
+      .scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:99px}
+      .scroll::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--red),#0a612b);border-radius:99px}
+      .banner{
+        width:100%;aspect-ratio:5/2;object-fit:cover;display:block;
+        border-radius:14px;border:1px solid var(--line);
+        margin-bottom:16px;background:#0d2514;
+      }
+      .coverimg{
+        width:100%;aspect-ratio:7/4.4;object-fit:cover;object-position:center 38%;display:block;
+        border-radius:16px;border:1px solid var(--line);
+        box-shadow:0 20px 44px rgba(0,0,0,.5),0 0 34px rgba(226,62,87,.12);
+        margin-bottom:16px;background:#0d2514;
+      }
+      .covertitle{
+        font-family:"Playfair Display",Georgia,serif;font-size:34px;line-height:1.12;
+        font-weight:800;margin:0 0 6px;
+      }
+      .coverrule{
+        height:3px;width:72px;border-radius:99px;margin:12px 0 16px;
+        background:linear-gradient(90deg,var(--red),var(--gold));
+      }
+      .vazada{
+        position:relative;height:138px;border-radius:14px;overflow:hidden;
+        margin:16px 0;border:1px solid rgba(212,175,55,.2);background:#0d2514;
+      }
+      .vazada img{
+        width:100%;height:100%;object-fit:cover;object-position:center 40%;
+        opacity:.42;display:block;
+      }
+      .vazada::after{
+        content:"";position:absolute;inset:0;pointer-events:none;
+        background:linear-gradient(180deg,rgba(8,29,16,.72),rgba(8,29,16,0) 38%,rgba(8,29,16,0) 62%,rgba(8,29,16,.72));
+      }
+      .scroll.enter{animation:fadein .32s ease}
+      @keyframes fadein{from{opacity:.25}to{opacity:1}}
+      .term{color:var(--red2);font-weight:700}
+      p b.term, ul.tight li b.term, .box p b.term{color:var(--red2)}
+      .frasechave{
+        background:linear-gradient(160deg,rgba(226,62,87,.17),rgba(226,62,87,.05));
+        border:1px solid rgba(226,62,87,.45);border-radius:14px;
+        padding:14px 16px;margin:16px 0;
+      }
+      .frasechave .flabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:1.8px;margin:0 0 6px;display:flex;align-items:center}
+      .frasechave p.fq2{font-family:"Playfair Display",Georgia,serif;font-size:19px;line-height:1.45;margin:0;color:#f3fdf4}
+      .fimbloco{
+        background:var(--panel);border:1px solid var(--line);border-radius:14px;
+        padding:14px 16px;margin:16px 0 4px;
+      }
+      .fimbloco .flabel{color:var(--gold2);font-size:11.5px;font-weight:700;letter-spacing:1.8px;margin:0 0 8px;display:flex;align-items:center}
+      .fimbloco ul{list-style:none;margin:0;padding:0}
+      .fimbloco li{position:relative;font-size:15.5px;line-height:1.5;padding:5px 0 5px 22px;border-bottom:1px dashed rgba(255,255,255,.07)}
+      .fimbloco li:last-child{border-bottom:none}
+      .fimbloco li::before{content:"◆";position:absolute;left:2px;top:10px;font-size:8px;color:var(--gold)}
+      .fimbloco li b{color:var(--gold2);font-weight:700}
+      .bic{display:inline-flex;vertical-align:-2px;margin-right:7px;flex:0 0 auto}
+      .bic svg{width:14px;height:14px;display:block}
+      .sealrow{margin-top:9px}
+      .blockseal{
+        display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.6px;
+        color:var(--gold2);border:1px solid var(--line);border-radius:99px;
+        padding:4px 11px;background:rgba(212,175,55,.07);text-transform:uppercase;
+      }
+      .kicker{color:var(--red2);font-size:12px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;margin:0 0 6px}
+      .kicker::before{content:"◆";font-size:8px;vertical-align:2px;margin-right:7px;color:var(--gold)}
+      h2{font-family:"Playfair Display",Georgia,serif;font-size:25px;line-height:1.22;margin:0 0 12px;font-weight:700}
+      p{font-size:16.5px;line-height:1.62;margin:0 0 12px;color:var(--ink)}
+      p.lead{font-size:17.5px;color:#f3fdf4}
+      ul.tight{list-style:none;margin:4px 0 14px;padding:0}
+      ul.tight li{
+        position:relative;font-size:16.5px;line-height:1.55;
+        padding:7px 0 7px 24px;border-bottom:1px dashed rgba(255,255,255,.07);
+      }
+      ul.tight li:last-child{border-bottom:none}
+      ul.tight li::before{content:"◆";position:absolute;left:2px;top:12px;font-size:8px;color:var(--gold)}
+      ul.tight li b, p b{color:var(--gold2);font-weight:700}
+      .box{
+        background:var(--panel);border:1px solid var(--line);border-radius:14px;
+        padding:14px 16px;margin:14px 0;
+      }
+      .box .blabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:1.8px;margin:0 0 6px}
+      .box p{margin:0;font-size:15.5px}
+      .box p + p{margin-top:8px}
+      .box.lei p{font-family:"Playfair Display",Georgia,serif;font-size:16.5px;line-height:1.55;font-style:italic}
+      .box.exemplo{position:relative;overflow:hidden}
+      .box.exemplo .wm{
+        position:absolute;top:0;right:0;width:74%;height:100%;object-fit:cover;
+        opacity:.15;mix-blend-mode:screen;pointer-events:none;
+        -webkit-mask-image:linear-gradient(to left,#000 40%,transparent 96%);
+        mask-image:linear-gradient(to left,#000 40%,transparent 96%);
+      }
+      .box.exemplo .excontent{position:relative;z-index:1}
+      .viarow{display:flex;gap:12px;align-items:flex-start;background:var(--panel2);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:13px 14px;margin:10px 0}
+      .vianum{
+        flex:0 0 auto;width:40px;height:40px;border-radius:50%;
+        border:1.5px solid var(--red);color:var(--red2);
+        display:flex;align-items:center;justify-content:center;
+        font-family:"Playfair Display",serif;font-weight:700;font-size:16px;
+      }
+      .viarow h3{margin:2px 0 3px;font-size:17px;font-weight:700}
+      .viarow p{margin:0;font-size:15px;color:var(--muted);line-height:1.5}
+      .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+      .chip{border:1px solid var(--line);color:var(--gold2);border-radius:99px;padding:6px 12px;font-size:13.5px;font-weight:600;background:rgba(212,175,55,.07)}
+      .audio{
+        margin:0 0 16px;background:#2c0f18;border:1px solid rgba(226,62,87,.4);
+        border-radius:16px;padding:13px 15px 12px;cursor:pointer;
+      }
+      .audio .arow{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+      .audio .alabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:1.8px}
+      .audio .atime{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+      .audio .acontrol{display:flex;align-items:center;gap:12px}
+      .playbtn{
+        flex:0 0 auto;width:46px;height:46px;border-radius:50%;
+        background:linear-gradient(180deg,#7fe0a0,#1e9e46);
+        border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+        box-shadow:0 4px 14px rgba(226,62,87,.4);
+      }
+      .playbtn svg{width:20px;height:20px;fill:#fff}
+      .atrack{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden;cursor:pointer}
+      .afill{height:100%;width:0%;background:linear-gradient(90deg,var(--red),var(--gold))}
+      .qtext{font-size:17.5px;line-height:1.6;margin-bottom:14px}
+      .opt{
+        display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;
+        background:var(--panel2);border:1.5px solid rgba(255,255,255,.12);color:var(--ink);
+        border-radius:13px;padding:13px 14px;margin:9px 0;font-size:16px;line-height:1.45;
+        font-family:inherit;cursor:pointer;transition:border-color .15s,background .15s;
+      }
+      .opt:hover{border-color:rgba(226,62,87,.65)}
+      .opt .letter{
+        flex:0 0 auto;width:27px;height:27px;border-radius:8px;margin-top:1px;
+        border:1.5px solid var(--red);color:var(--red2);
+        display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;
+      }
+      .opt.correct{border-color:var(--ok);background:rgba(62,207,122,.12)}
+      .opt.correct .letter{border-color:var(--ok);color:var(--ok)}
+      .opt.wrong{border-color:var(--bad);background:rgba(255,122,122,.1)}
+      .opt.wrong .letter{border-color:var(--bad);color:var(--bad)}
+      .opt:disabled{cursor:default;opacity:.92}
+      .feedback{display:none;border-radius:13px;padding:13px 15px;margin-top:13px;font-size:15.5px;line-height:1.55}
+      .feedback.show{display:block}
+      .feedback.good{background:rgba(62,207,122,.13);border:1px solid rgba(62,207,122,.5)}
+      .feedback.bad{background:rgba(255,122,122,.1);border:1px solid rgba(255,122,122,.45)}
+      .feedback b{display:block;margin-bottom:3px;font-size:16px}
+      .flashwrap{perspective:1200px;margin:6px 0 4px}
+      .flash{
+        position:relative;width:100%;min-height:250px;cursor:pointer;
+        transform-style:preserve-3d;transition:transform .6s cubic-bezier(.3,.7,.3,1);
+      }
+      .flash.flipped{transform:rotateY(180deg)}
+      .face{
+        position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+        border-radius:18px;padding:22px 20px;display:flex;flex-direction:column;justify-content:center;
+      }
+      .face.front{background:linear-gradient(160deg,#12331b,#0a2010);border:1.5px solid var(--line);text-align:center;align-items:center}
+      .face.back{background:linear-gradient(160deg,#163d20,#0e2a16);border:1.5px solid var(--red);transform:rotateY(180deg)}
+      .face .flabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:2px;margin-bottom:12px}
+      .face.front .fq{font-family:"Playfair Display",serif;font-size:21px;line-height:1.4}
+      .face.back p{font-size:16px;line-height:1.6;margin:0}
+      .face.back p b{color:var(--gold2)}
+      .tap{margin-top:16px;color:var(--muted);font-size:13px}
+      .matchscore{color:var(--muted);font-size:14.5px;margin-bottom:10px}
+      .matchscore b{color:var(--gold2)}
+      .matchgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+      .mbtn{
+        background:var(--panel2);border:1.5px solid rgba(255,255,255,.12);color:var(--ink);
+        border-radius:12px;padding:11px 11px;font-size:14.5px;line-height:1.4;font-family:inherit;
+        cursor:pointer;text-align:left;transition:border-color .15s,background .15s;
+      }
+      .mbtn.sel{border-color:var(--red);background:rgba(226,62,87,.16)}
+      .mbtn.done{border-color:var(--ok);background:rgba(62,207,122,.12);color:#c9f2da;cursor:default}
+      .mbtn.shake{animation:shake .35s}
+      @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+      .matchdone{display:none;margin-top:14px;background:rgba(62,207,122,.13);border:1px solid rgba(62,207,122,.5);border-radius:13px;padding:13px 15px;font-size:15.5px}
+      .matchdone.show{display:block}
+      table.cmp{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:14px}
+      table.cmp th{
+        background:#12331b;color:var(--gold2);text-align:left;padding:10px 9px;
+        font-size:13px;letter-spacing:.4px;border-bottom:2px solid var(--red);
+      }
+      table.cmp td{padding:10px 9px;border-bottom:1px solid rgba(255,255,255,.09);line-height:1.45;vertical-align:top}
+      table.cmp td.t{font-weight:700;color:var(--gold2)}
+      .explorebox{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);margin:4px 0 12px;background:#0d2514}
+      .explorebox img{width:100%;display:block}
+      .hotspot{
+        position:absolute;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;
+        background:rgba(20,4,9,.85);border:2px solid var(--gold);color:var(--gold2);
+        font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;z-index:2;
+        display:flex;align-items:center;justify-content:center;
+      }
+      .hotspot::after{
+        content:"";position:absolute;inset:-2px;border-radius:50%;
+        border:2px solid rgba(212,175,55,.8);animation:pulse 1.8s ease-out infinite;pointer-events:none;
+      }
+      @keyframes pulse{0%{transform:scale(1);opacity:.9}70%{transform:scale(1.7);opacity:0}100%{transform:scale(1.7);opacity:0}}
+      .hotspot.active{background:linear-gradient(180deg,#7fe0a0,#1e9e46);border-color:#fff;color:#fff}
+      .hotspot.active::after{display:none}
+      .hotspot.seen{background:var(--gold);color:#0e2a16;border-color:var(--gold2)}
+      .hotspot.seen::after{animation:none;opacity:0}
+      .explorecount{color:var(--muted);font-size:14.5px;margin:0 0 10px}
+      .explorecount b{color:var(--gold2)}
+      .hotpanel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 6px}
+      .hotpanel h3{margin:0 0 6px;font-size:18px;font-family:"Playfair Display",serif;font-weight:700}
+      .hotpanel p{margin:0;font-size:15.5px}
+      .explorehint{color:var(--muted);font-size:15px;margin:0}
+      .revealcard{
+        display:block;width:100%;text-align:left;cursor:pointer;color:var(--ink);font-family:inherit;
+        background:linear-gradient(160deg,#12331b,#0a2010);border:1.5px solid var(--line);
+        border-radius:14px;padding:15px 16px;margin:10px 0;
+      }
+      .revealcard .rlabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:1.8px;margin:0 0 6px}
+      .revealcard .rbody{font-size:16px;line-height:1.55;margin:0}
+      .revealcard .rbody b{color:var(--gold2)}
+      .revealcard .rhint{color:var(--muted);font-size:13px;margin:8px 0 0}
+      .revealcard.open{border-color:var(--red)}
+      .revealcard.done{border-color:var(--gold);background:linear-gradient(160deg,#143a20,#0e2a16);cursor:default}
+      .revealcard.done .rlabel{color:var(--gold2)}
+      .timeline{position:relative;margin:8px 0 4px;padding-left:30px}
+      .timeline::before{content:"";position:absolute;left:12px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--gold),var(--red))}
+      .tlitem{position:relative;margin-bottom:10px}
+      .tlbtn{
+        width:100%;text-align:left;background:var(--panel2);border:1.5px solid rgba(255,255,255,.12);
+        color:var(--ink);border-radius:12px;padding:11px 13px;font-family:inherit;cursor:pointer;
+        display:flex;gap:11px;align-items:baseline;
+      }
+      .tlbtn::before{
+        content:"";position:absolute;left:-24px;top:16px;width:11px;height:11px;border-radius:50%;
+        background:#081d10;border:2.5px solid var(--gold);
+      }
+      .tlbtn.open{border-color:var(--gold)}
+      .tlbtn.open::before{background:var(--gold)}
+      .tlyear{font-family:"Playfair Display",serif;font-weight:800;color:var(--gold2);font-size:16px;white-space:nowrap}
+      .tltitle{font-size:15.5px;font-weight:600;line-height:1.35}
+      .tlbody{display:none;background:var(--panel);border:1px solid var(--line);border-radius:0 0 12px 12px;border-top:none;padding:4px 13px 12px;margin-top:-6px}
+      .tlbody.show{display:block}
+      .tlbody p{font-size:15px;margin:6px 0 2px}
+      .vfstage{position:relative;margin:6px 0 4px;touch-action:pan-y}
+      .vfcard{
+        background:linear-gradient(160deg,#12331b,#0a2010);border:1.5px solid var(--line);border-radius:16px;
+        padding:20px 18px;min-height:150px;display:flex;flex-direction:column;justify-content:center;
+        cursor:grab;user-select:none;-webkit-user-select:none;position:relative;
+      }
+      .vfcard .vflabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:1.8px;margin:0 0 8px}
+      .vfcard .vftext{font-size:17.5px;line-height:1.55;margin:0;font-family:"Playfair Display",serif}
+      .vfstamp{
+        position:absolute;top:14px;font-weight:800;font-size:14px;letter-spacing:1.5px;
+        border:2.5px solid;border-radius:8px;padding:3px 9px;opacity:0;transform:rotate(-8deg);
+      }
+      .vfstamp.f{left:14px;color:var(--bad);border-color:var(--bad)}
+      .vfstamp.v{right:14px;color:var(--ok);border-color:var(--ok);transform:rotate(8deg)}
+      .vfbtns{display:flex;gap:10px;margin-top:12px}
+      .vfbtn{
+        flex:1;padding:13px 8px;border-radius:12px;font-size:15.5px;font-weight:700;font-family:inherit;cursor:pointer;
+        background:transparent;color:var(--ink);border:1.5px solid rgba(255,255,255,.25);
+      }
+      .vfbtn.f:hover{border-color:var(--bad);color:var(--bad)}
+      .vfbtn.v:hover{border-color:var(--ok);color:var(--ok)}
+      .filltext{font-size:17.5px;line-height:1.9;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin:6px 0 12px}
+      .blank{
+        display:inline-block;min-width:88px;text-align:center;border-bottom:2.5px solid var(--gold);
+        color:var(--gold2);font-weight:700;padding:0 6px;margin:0 2px;vertical-align:baseline;
+      }
+      .blank.empty{color:var(--muted);font-weight:400}
+      .blank.next{border-bottom-color:var(--red2);animation:blankglow 1.2s ease-in-out infinite}
+      @keyframes blankglow{0%,100%{background:rgba(226,62,87,.05)}50%{background:rgba(226,62,87,.22)}}
+      .wordbank{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 6px}
+      .wordchip{
+        background:var(--panel2);border:1.5px solid rgba(255,255,255,.2);color:var(--ink);border-radius:99px;
+        padding:9px 15px;font-size:15.5px;font-weight:600;font-family:inherit;cursor:pointer;
+      }
+      .wordchip:hover{border-color:var(--gold)}
+      .wordchip.used{opacity:.28;cursor:default;border-style:dashed}
+      .wordchip.shake{animation:shake .35s;border-color:var(--bad)}
+      .karaoke{font-size:17.5px;line-height:1.85}
+      .karaoke .sent{border-radius:6px;padding:1px 3px;cursor:pointer;color:#bfd8c2;transition:background .3s,color .3s}
+      .karaoke .sent.on{background:rgba(212,175,55,.28);color:#fff}
+      .karaoke .sent.done{color:var(--ink)}
+      .cmpbox{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);aspect-ratio:4/4.6;margin:6px 0 12px;background:#0d2514;touch-action:none}
+      .cmpbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+      .cmpbox .cmpafter{clip-path:inset(0 0 0 50%)}
+      .cmplabel{
+        position:absolute;top:10px;z-index:3;background:rgba(20,4,9,.78);color:var(--gold2);
+        font-size:12px;font-weight:700;letter-spacing:1.4px;border:1px solid var(--line);
+        border-radius:99px;padding:5px 11px;pointer-events:none;
+      }
+      .cmplabel.l{left:10px}.cmplabel.r{right:10px}
+      .cmphandle{
+        position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;z-index:2;
+        background:linear-gradient(180deg,var(--gold2),var(--gold));pointer-events:none;
+      }
+      .cmphandle::after{
+        content:"◂ ▸";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+        background:linear-gradient(180deg,#7fe0a0,#1e9e46);color:#fff;font-size:13px;font-weight:700;
+        border-radius:99px;padding:7px 11px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.5);
+      }
+      input.cmprange{width:100%;margin:2px 0 12px;accent-color:var(--gold);height:28px;cursor:pointer}
+      .mindcenter{
+        text-align:center;font-family:"Playfair Display",serif;font-size:19px;font-weight:800;
+        background:linear-gradient(160deg,#163d20,#0e2a16);border:1.5px solid var(--gold);color:var(--gold2);
+        border-radius:14px;padding:14px 12px;margin:6px 0 12px;
+      }
+      .mindbranch{margin-bottom:9px}
+      .mindbtn{
+        width:100%;text-align:left;background:var(--panel2);border:1.5px solid rgba(255,255,255,.12);color:var(--ink);
+        border-radius:12px;padding:12px 14px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;
+        display:flex;justify-content:space-between;align-items:center;gap:8px;
+      }
+      .mindbtn.open{border-color:var(--red)}
+      .mindbtn .marr{color:var(--gold2);font-size:13px}
+      .mindbody{display:none;background:var(--panel);border:1px solid var(--line);border-top:none;border-radius:0 0 12px 12px;padding:12px 14px 6px;margin-top:-5px}
+      .mindbody.show{display:block}
+      .mindbody p{font-size:15px;margin:0 0 8px}
+      .scorebar{
+        display:flex;justify-content:space-between;align-items:center;background:var(--panel);
+        border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:6px 0 12px;
+        font-size:15px;color:var(--muted);
+      }
+      .scorebar .pts{color:var(--gold2);font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+      .goldtag{
+        display:inline-block;font-size:12px;font-weight:800;letter-spacing:1.6px;color:#0e2a16;
+        background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:99px;
+        padding:5px 12px;margin:0 0 10px;
+      }
+      .finalscore{
+        text-align:center;background:linear-gradient(160deg,#163d20,#0e2a16);border:1.5px solid var(--gold);
+        border-radius:16px;padding:20px 16px;margin:8px 0;
+      }
+      .finalscore .big{font-family:"Playfair Display",serif;font-size:38px;font-weight:800;color:var(--gold2);margin:4px 0}
+      .finalscore p{margin:0;font-size:15.5px}
+      .againbtn{
+        margin-top:14px;background:linear-gradient(180deg,#7fe0a0,#1e9e46);color:#fff;border:none;
+        border-radius:12px;padding:12px 22px;font-size:15.5px;font-weight:700;font-family:inherit;cursor:pointer;
+      }
+      footer{
+        flex:0 0 auto;display:flex;gap:12px;padding:13px 20px calc(13px + env(safe-area-inset-bottom));
+        border-top:1px solid rgba(226,62,87,.18);background:rgba(20,4,9,.7);
+      }
+      .navbtn{
+        flex:1;padding:15px 10px;border-radius:14px;font-size:16.5px;font-weight:700;
+        font-family:inherit;cursor:pointer;border:1.5px solid rgba(255,255,255,.2);
+        background:transparent;color:var(--ink);transition:opacity .15s,transform .1s;
+      }
+      .navbtn:active{transform:scale(.98)}
+      .navbtn.next{background:linear-gradient(180deg,#7fe0a0,#1e9e46);color:#fff;border-color:transparent}
+      .navbtn:disabled{opacity:.35;cursor:default}
+      @media (prefers-reduced-motion:reduce){
+        .flash{transition:none}.fill{transition:none}.hotspot::after{animation:none}
+        .scroll.enter{animation:none}
+      }
+    
+    /* === DESIGN ADAPTATIVO MODERNO & CINEMÁTICO === */
+    html, body {
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh; height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Source Sans 3", system-ui, -apple-system, sans-serif;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    body::-webkit-scrollbar, html::-webkit-scrollbar { display: none; width: 0; height: 0; }
+    
+    .stage {
+      display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start;
+      width: 100%; height: 100%; flex: 1 1 auto; min-height: 0;
+    }
+    .phone {
+      position: relative;
+      width: 100%; max-width: 100%; min-width: 0;
+      height: 100%; flex: 1 1 auto; min-height: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, var(--phone) 35%);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      border-radius: 0; border: none; box-shadow: none;
+    }
+    header {
+      flex: 0 0 auto !important;
+      padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 10px !important;
+      border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+      background: rgba(10, 14, 12, 0.96) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      width: 100% !important;
+      box-sizing: border-box !important;
+      z-index: 40 !important;
+    }
+    .header-wrap {
+      max-width: 860px; margin: 0 auto; width: 100%; box-sizing: border-box !important;
+    }
+    .etapa { color: var(--muted); font-size: 12.5px; margin: 0 0 6px; font-weight: 600; }
+    .track { height: 4px; border-radius: 99px; background: rgba(255,255,255,0.1); overflow: hidden; margin-bottom: 6px; }
+    .fill { height: 100%; background: linear-gradient(90deg, var(--red), #eab308); border-radius: 99px; transition: width .35s ease; }
+
+    /* Área de leitura com animação de Crossfade 300ms */
+    .scroll {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      padding: 20px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+      width: 100%;
+      box-sizing: border-box !important;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      overscroll-behavior: contain;
+      opacity: 1;
+      animation: slideCrossFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
+    .scroll > * { max-width: 860px; margin-left: auto; margin-right: auto; box-sizing: border-box !important; }
+
+    @keyframes slideCrossFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Efeito de zoom cinemático nas imagens */
+    .banner, .vazada img, .card-ilustrado img {
+      animation: imageCinematicZoom 12s ease-out infinite alternate !important;
+      transform-origin: center center;
+    }
+    @keyframes imageCinematicZoom {
+      0% { transform: scale(1.0); }
+      100% { transform: scale(1.055); }
+    }
+
+    /* Rodapé FIXO na base da tela */
+    footer {
+      flex: 0 0 auto !important;
+      padding: 12px 14px calc(28px + env(safe-area-inset-bottom, 28px)) !important;
+      border-top: 1px solid rgba(255,255,255,0.1) !important;
+      background: rgba(10, 14, 12, 0.98) !important;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+      z-index: 40 !important;
+    }
+    .footer-wrap {
+      max-width: 860px; margin: 0 auto; display: flex; align-items: center;
+      justify-content: space-between; gap: 10px; width: 100%; box-sizing: border-box !important;
+    }
+    .navbtn {
+      flex: 0 0 auto !important;
+      min-width: 88px !important;
+      height: 54px !important;
+      font-size: 13.5px !important;
+      font-weight: 700 !important;
+      padding: 0 14px !important;
+      border-radius: 14px !important;
+      cursor: pointer;
+      display: inline-flex !important;
+      align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,0.15) !important;
+      background: rgba(255,255,255,0.06) !important;
+      color: var(--ink) !important;
+      white-space: nowrap !important;
+      transition: all .15s ease;
+      box-sizing: border-box !important;
+    }
+    .navbtn:hover { background: rgba(255,255,255,0.12) !important; }
+    .navbtn:active { transform: scale(0.96); }
+    .navbtn.next {
+      background: var(--red) !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      color: #fff !important;
+      font-weight: 800 !important;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4) !important;
+    }
+    .navbtn.next:hover { filter: brightness(1.15) !important; }
+    .navbtn:disabled { opacity: .35 !important; pointer-events: none; }
+
+    /* Player Centralizado Responsivo Ergonômico */
+    .audio {
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      height: 54px !important;
+      margin: 0 !important;
+      background: rgba(255,255,255,0.05) !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      border-radius: 14px !important;
+      padding: 4px 12px !important;
+      cursor: pointer;
+      display: flex !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      gap: 10px !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,.5);
+      box-sizing: border-box !important;
+      overflow: hidden !important;
+    }
+    .playbtn {
+      flex: 0 0 38px !important;
+      width: 38px !important;
+      height: 38px !important;
+      border-radius: 50% !important;
+      background: var(--red) !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      cursor: pointer;
+      display: flex !important;
+      align-items: center; justify-content: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+      transition: transform .15s ease;
+      padding: 0 !important;
+    }
+    .playbtn:hover { transform: scale(1.08); }
+    .playbtn:active { transform: scale(0.92); }
+    .playbtn svg { width: 16px; height: 16px; fill: #ffffff !important; }
+
+    .acontrol {
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      gap: 2px !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+    }
+    .arow {
+      display: flex !important;
+      flex-direction: row !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      margin: 0 !important;
+      line-height: 1.1 !important;
+      gap: 4px !important;
+    }
+    .alabel {
+      color: var(--red2) !important;
+      font-size: 10.5px !important;
+      font-weight: 700 !important;
+      letter-spacing: 1px !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      text-transform: uppercase;
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+    }
+    .atime {
+      color: var(--muted) !important;
+      font-size: 11px !important;
+      font-variant-numeric: tabular-nums !important;
+      font-weight: 600 !important;
+      white-space: nowrap !important;
+      flex: 0 0 auto !important;
+      margin-left: auto !important;
+    }
+    .atrack {
+      position: relative;
+      width: 100% !important;
+      height: 6px !important;
+      border-radius: 99px !important;
+      background: rgba(255,255,255,.16) !important;
+      overflow: hidden !important;
+      cursor: pointer;
+      margin: 0 !important;
+    }
+    .afill {
+      height: 100% !important;
+      width: 0%;
+      background: linear-gradient(90deg, var(--red), #eab308) !important;
+      border-radius: 99px !important;
+      transition: width .2s linear;
+    }
+  
+</style>
+  </head>
+  <body>
+    <div class="stage">
+    <div class="phone" id="phone">
+      <header>
+        <div class="header-wrap">
+          <p class="etapa" id="etapaLabel">Carregando aula...</p>
+          <div class="track"><div class="fill" id="progressFill" style="width:3.13%"></div></div>
+          <div class="sealrow"><span class="blockseal" id="blockSeal">Iniciando</span></div>
+        </div>
+      </header>
+      
+      <div class="scroll" id="scrollArea" tabindex="0"></div>
+
+      <footer>
+        <div class="footer-wrap">
+          <button class="navbtn" id="btnPrev" type="button">← Anterior</button>
+
+          <!-- Player Centralizado no Rodapé -->
+          <div class="audio" id="audioBox" title="Ouvir a narração desta etapa">
+            <button class="playbtn" id="playBtn" type="button" aria-label="Ouvir ou pausar a narração">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+            </button>
+            <div class="acontrol">
+              <div class="arow">
+                <span class="alabel">NARRAÇÃO</span>
+                <span class="atime" id="aTime">0:00 / 0:00</span>
+              </div>
+              <div class="atrack" id="aTrack"><div class="afill" id="aFill"></div></div>
+            </div>
+          </div>
+
+          <button class="navbtn next" id="btnNext" type="button">Próximo →</button>
+        </div>
+      </footer>
+    </div>
+    </div>
+
+    <script>
+    var IMG = {
+  "capa": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/capa.webp",
+  "roteiro": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/roteiro.webp",
+  "retrato": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/retrato.webp",
+  "unitario": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/unitario.webp",
+  "questao": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/questao.webp",
+  "flashcards": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/flashcards.webp",
+  "quatro": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/quatro.webp",
+  "moderador": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/moderador.webp",
+  "voto": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/voto.webp",
+  "liberdades": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/liberdades.webp",
+  "semirrigida": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/semirrigida.webp",
+  "parlamentarismo": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/parlamentarismo.webp",
+  "assembleia": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/assembleia.webp",
+  "explorar": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/explorar.webp",
+  "costura": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/costura.webp",
+  "garantias": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/garantias.webp",
+  "ligar": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/ligar.webp",
+  "timeline": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/timeline.webp"
+};
+    var SLIDES = [
+  {
+    "tipo": "Capa",
+    "img": "capa",
+    "alt": "Salão imperial brasileiro do século dezenove, com o Imperador de pé diante do trono segurando uma grande chave dourada, cortesãos e o manuscrito da Constituição sobre uma mesa, em verde profundo e dourado",
+    "kicker": "Direito Constitucional · História Constitucional do Brasil",
+    "titulo": "Constituição de 1824",
+    "corpo": "<p class=\"lead\">Em vinte e cinco de março de mil oitocentos e vinte e quatro, o Brasil ganhou a sua primeira Constituição: a Constituição Política do Império, outorgada por D. Pedro I. Ela se tornaria a mais duradoura da nossa história constitucional, e entender o desenho dela é entender como o Império funcionava por dentro.</p><p>Prepare-se para um retrato cheio de contrastes. De um lado, um texto com aspectos liberais nos direitos individuais, no espírito do constitucionalismo europeu da época. Do outro, um desenho conservador e quase absolutista nos direitos políticos, com províncias sem autonomia, voto restrito a quem tinha posses e um quarto poder, o <b class=\"term\">Poder Moderador</b>, entregue com exclusividade ao Imperador.</p><p>Guarde a imagem da capa: o Imperador diante do trono, segurando a chave da organização política do país. Essa chave existe de verdade no texto da Carta, e é ela que vamos girar nesta aula.</p><div class=\"chips\"><span class=\"chip\">Liberalismo conservador</span><span class=\"chip\">Estado unitário</span><span class=\"chip\">Poder Moderador</span><span class=\"chip\">Voto censitário</span><span class=\"chip\">Constituição semirrígida</span></div>",
+    "narr": "Em vinte e cinco de março de mil oitocentos e vinte e quatro, o Brasil ganhou a sua primeira Constituição: a Constituição Política do Império, outorgada por D. Pedro I. Ela se tornaria a mais duradoura da nossa história constitucional, e entender o desenho dela é entender como o Império funcionava por dentro. Prepare-se para um retrato cheio de contrastes. De um lado, um texto com aspectos liberais nos direitos individuais, no espírito do constitucionalismo europeu da época. Do outro, um desenho conservador e quase absolutista nos direitos políticos, com províncias sem autonomia, voto restrito a quem tinha posses e um quarto poder, o Poder Moderador, entregue com exclusividade ao Imperador. Guarde a imagem da capa: o Imperador diante do trono, segurando a chave da organização política do país. Essa chave existe de verdade no texto da Carta, e é ela que vamos girar nesta aula."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "roteiro",
+    "alt": "Mapa antigo do Império do Brasil sobre uma mesa escura, com uma rota dourada ligando as províncias à capital",
+    "kicker": "Abertura · O caminho",
+    "titulo": "O caminho desta aula",
+    "corpo": "<p>Deixa eu te mostrar o <b>caminho que vamos percorrer juntas</b>. A aula está organizada em <b>cinco blocos</b>, e eu vou te acompanhar em cada um deles:</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/roteiro.webp\" alt=\"\"></div><p><b>Bloco um: o retrato geral.</b> O liberalismo conservador e o semiabsolutismo da Carta, o Estado unitário com províncias sem autonomia e a religião oficial do Império.</p><p><b>Bloco dois: o Poder Moderador.</b> Os quatro poderes do artigo décimo, a definição do artigo noventa e oito e a figura do Imperador inviolável, acima de qualquer responsabilidade.</p><p><b>Bloco três: liberdades, rigidez e curiosidades.</b> As liberdades públicas que conviveram com a escravidão, a Constituição semirrígida, o parlamentarismo às avessas e a Assembleia Geral.</p><p><b>Bloco quatro: a costura do Império.</b> Como as peças se ligam: direitos individuais largos, direitos políticos estreitos, garantias no papel e o Moderador mandando na prática.</p><p><b>Bloco cinco: revisão e desafio.</b> Ligar termos, verdadeiro ou falso, linha do tempo, mapa mental, pegadinhas e o desafio final com a pergunta de ouro.</p><p>O conteúdo vem em <b>texto corrido</b>, seguindo a ordem do capítulo, e a prática fica concentrada no <b>fim de cada bloco</b>. No meio da aula, uma página de exploração te espera, com o palácio imperial em tamanho grande. Vamos abrir a Carta de mil oitocentos e vinte e quatro!</p>",
+    "narr": "O caminho desta aula. Deixa eu te mostrar o caminho que vamos percorrer juntas. A aula está organizada em cinco blocos, e eu vou te acompanhar em cada um deles. Bloco um: o retrato geral. O liberalismo conservador e o semiabsolutismo da Carta, o Estado unitário com províncias sem autonomia e a religião oficial do Império. Bloco dois: o Poder Moderador. Os quatro poderes do artigo décimo, a definição do artigo noventa e oito e a figura do Imperador inviolável, acima de qualquer responsabilidade. Bloco três: liberdades, rigidez e curiosidades. As liberdades públicas que conviveram com a escravidão, a Constituição semirrígida, o parlamentarismo às avessas e a Assembleia Geral. Bloco quatro: a costura do Império. Como as peças se ligam: direitos individuais largos, direitos políticos estreitos, garantias no papel e o Moderador mandando na prática. Bloco cinco: revisão e desafio. Ligar termos, verdadeiro ou falso, linha do tempo, mapa mental, pegadinhas e o desafio final com a pergunta de ouro. O conteúdo vem em texto corrido, seguindo a ordem do capítulo, e a prática fica concentrada no fim de cada bloco. No meio da aula, uma página de exploração te espera, com o palácio imperial em tamanho grande. Vamos abrir a Carta de mil oitocentos e vinte e quatro!"
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "retrato",
+    "alt": "Retrato de época com duas metades em contraste: de um lado, cidadãos lendo um documento de direitos à luz do dia; do outro, o trono imperial em sombra solene",
+    "kicker": "Aspectos gerais · O retrato",
+    "titulo": "Um retrato em duas metades: liberalismo conservador",
+    "corpo": "<p>Começo pelo retrato geral, porque ele explica todo o resto. A Constituição de mil oitocentos e vinte e quatro foi marcada por um <b class=\"term\">liberalismo conservador</b> e por um <b>semiabsolutismo</b>. Traduzindo: ela imprimia aspectos liberais quanto aos <b>direitos individuais</b> e aspectos absolutistas, conservadores, quanto aos <b>direitos políticos</b>, seguindo o modelo do constitucionalismo europeu da época.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/retrato.webp\" alt=\"\"></div><p>Pense numa casa com duas fachadas. Pela frente, a fachada liberal: o texto fala de liberdade, de propriedade, de proteção contra prisões arbitrárias, no vocabulário moderno das constituições do seu tempo. Pelos fundos, a fachada conservadora: quem podia votar, quem mandava nas províncias e quem estava acima de todos continuava desenhado para concentrar poder.</p><p>Uma das marcas conservadoras aparece logo na forma de tratar o monarca: falava-se, inclusive, em uma <b>Dinastia Imperante do Senhor D. Pedro I, Imperador e Defensor Perpétuo do Brasil</b>. E a maior dessas marcas tem nome próprio, que você já viu na capa: o <b>Poder Moderador</b>, assunto do nosso segundo bloco.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/moderador.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Sempre que uma questão descrever a Carta de mil oitocentos e vinte e quatro, pergunte de qual metade ela está falando. Direitos individuais? Metade liberal. Direitos políticos e organização do poder? Metade conservadora. Essa pergunta simples resolve boa parte das alternativas.</p></div></div>",
+    "narr": "Um retrato em duas metades: liberalismo conservador. Começo pelo retrato geral, porque ele explica todo o resto. A Constituição de mil oitocentos e vinte e quatro foi marcada por um liberalismo conservador e por um semiabsolutismo. Traduzindo: ela imprimia aspectos liberais quanto aos direitos individuais e aspectos absolutistas, conservadores, quanto aos direitos políticos, seguindo o modelo do constitucionalismo europeu da época. Pense numa casa com duas fachadas. Pela frente, a fachada liberal: o texto fala de liberdade, de propriedade, de proteção contra prisões arbitrárias, no vocabulário moderno das constituições do seu tempo. Pelos fundos, a fachada conservadora: quem podia votar, quem mandava nas províncias e quem estava acima de todos continuava desenhado para concentrar poder. Uma das marcas conservadoras aparece logo na forma de tratar o monarca: falava-se, inclusive, em uma Dinastia Imperante do Senhor D. Pedro I, Imperador e Defensor Perpétuo do Brasil. E a maior dessas marcas tem nome próprio, que você já viu na capa: o Poder Moderador, assunto do nosso segundo bloco. Pense assim: Sempre que uma questão descrever a Carta de mil oitocentos e vinte e quatro, pergunte de qual metade ela está falando. Direitos individuais? Metade liberal. Direitos políticos e organização do poder? Metade conservadora. Essa pergunta simples resolve boa parte das alternativas."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "unitario",
+    "alt": "Mapa do Império do Brasil no século dezenove com as províncias desenhadas e fios dourados ligando todas à capital, ao lado de uma igreja de época",
+    "kicker": "Aspectos gerais · Estado e religião",
+    "titulo": "Estado unitário, províncias sem autonomia e religião oficial",
+    "corpo": "<p>Vamos à organização do Estado. A Constituição previa o <b class=\"term\">unitarismo</b>, e não a forma federativa que temos hoje. Havia, portanto, um <b>governo centralizado</b>: as antigas capitanias hereditárias foram convertidas em <b>Províncias</b>, e não em estados. Essas Províncias possuíam interventores nomeados pelo Imperador, motivo pelo qual elas <b>não tinham qualquer autonomia</b>. A capital era o Rio de Janeiro, à época a cidade mais importante do Brasil.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/unitario.webp\" alt=\"\"></div><p>A Carta também previa uma <b>religião oficial</b>: a Religião Católica Apostólica Romana. As demais religiões eram permitidas apenas com seu <b>culto doméstico</b>, sendo proibida a expressão delas de forma exteriorizada. É o que diz o artigo quinto da Constituição Política do Império:</p><div class=\"box lei\"><p class=\"blabel\">ART. 5º DA CONSTITUIÇÃO DE 1824</p><p>A Religião Católica Apostólica Romana continuará a ser a Religião do Império. Todas as outras Religiões serão permitidas com seu culto doméstico, ou particular em casas para isso destinadas, sem forma alguma exterior de Templo.</p></div><p>Repare no detalhe: o outro culto podia existir dentro de casa, mas não podia ter forma exterior de templo. Liberdade religiosa, em mil oitocentos e vinte e quatro, era liberdade de porta para dentro.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>A Carta de 1824 uniu liberalismo nos direitos individuais e absolutismo nos direitos políticos: o liberalismo conservador.</li><li>O Estado era unitário e centralizado, com Províncias sem autonomia e interventores nomeados pelo Imperador.</li><li>A religião oficial era a Católica Apostólica Romana, e os demais cultos só eram permitidos de forma doméstica (art. 5º).</li></ul></div>",
+    "narr": "Estado unitário, províncias sem autonomia e religião oficial. Vamos à organização do Estado. A Constituição previa o unitarismo, e não a forma federativa que temos hoje. Havia, portanto, um governo centralizado: as antigas capitanias hereditárias foram convertidas em Províncias, e não em estados. Essas Províncias possuíam interventores nomeados pelo Imperador, motivo pelo qual elas não tinham qualquer autonomia. A capital era o Rio de Janeiro, à época a cidade mais importante do Brasil. A Carta também previa uma religião oficial: a Religião Católica Apostólica Romana. As demais religiões eram permitidas apenas com seu culto doméstico, sendo proibida a expressão delas de forma exteriorizada. É o que diz o artigo quinto da Constituição Política do Império: Artigo quinto da Constituição de mil oitocentos e vinte e quatro: a Religião Católica Apostólica Romana continuará a ser a Religião do Império. Todas as outras Religiões serão permitidas com seu culto doméstico, ou particular em casas para isso destinadas, sem forma alguma exterior de Templo. Repare no detalhe: o outro culto podia existir dentro de casa, mas não podia ter forma exterior de templo. Liberdade religiosa, em mil oitocentos e vinte e quatro, era liberdade de porta para dentro."
+  },
+  {
+    "tipo": "Questão",
+    "img": "questao",
+    "alt": "Folha de prova antiga em branco com pena de escrever e ampulheta dourada sobre uma mesa escura de madeira",
+    "kicker": "Questão 1 · Organização do Estado",
+    "titulo": "Questão 1",
+    "intro": "Hora de treinar! Pense na organização do Estado desenhada pela Carta de 1824:",
+    "questao": "Quanto à forma de Estado, a Constituição de 1824 estabeleceu:",
+    "opcoes": [
+      "Uma federação, com estados autônomos e governadores eleitos",
+      "O unitarismo, com governo centralizado e Províncias sem autonomia, governadas por interventores nomeados pelo Imperador",
+      "Uma confederação de capitanias hereditárias independentes",
+      "Uma república federativa com capital em Salvador"
+    ],
+    "certa": 1,
+    "feedback": "Isso mesmo! Estado unitário e centralizado: as capitanias viraram Províncias, sem autonomia, com interventores nomeados pelo Imperador. Federação, no Brasil, só chegaria com a Constituição de 1891.",
+    "narr": "Questão um: organização do Estado. Hora de treinar! Pense na organização do Estado desenhada pela Carta de mil oitocentos e vinte e quatro: quanto à forma de Estado, a Constituição de mil oitocentos e vinte e quatro estabeleceu o quê? Leia as alternativas e escolha a correta."
+  },
+  {
+    "tipo": "Flashcard",
+    "img": "flashcards",
+    "alt": "Pilha de cartões de estudo antigos amarrados com fita dourada sobre uma mesa escura",
+    "kicker": "Flashcard 1 · O retrato da Carta",
+    "titulo": "Flashcard 1",
+    "frente": "O que significa dizer que a Constituição de 1824 foi marcada por um liberalismo conservador?",
+    "verso": "<p>Ela era <b>liberal nos direitos individuais</b> e <b>absolutista, conservadora, nos direitos políticos</b>: um semiabsolutismo, no modelo do constitucionalismo europeu da época.</p><p style='margin-top:10px'>A maior marca conservadora desse desenho é o <b>Poder Moderador</b>, entregue ao Imperador.</p>",
+    "narr": "Flashcard um: o retrato da Carta. O que significa dizer que a Constituição de mil oitocentos e vinte e quatro foi marcada por um liberalismo conservador? Toque no cartão para ver a resposta."
+  },
+  {
+    "tipo": "Karaokê",
+    "img": "retrato",
+    "alt": "O retrato de época em duas metades, cidadãos com o documento de direitos e o trono em sombra",
+    "kicker": "Karaokê · Siga a narração",
+    "titulo": "Recapitule com a narração",
+    "frases": [
+      "Vamos recapitular o retrato geral, acompanhando a narração pela tela.",
+      "A Carta de mil oitocentos e vinte e quatro uniu liberalismo nos direitos individuais e absolutismo nos direitos políticos.",
+      "O Estado era unitário, com governo centralizado e capital no Rio de Janeiro.",
+      "As capitanias viraram Províncias, sem autonomia, com interventores nomeados pelo Imperador.",
+      "A religião oficial era a Católica Apostólica Romana.",
+      "E os demais cultos só eram permitidos de forma doméstica, sem forma exterior de templo."
+    ],
+    "narr": "Vamos recapitular o retrato geral, acompanhando a narração pela tela. A Carta de mil oitocentos e vinte e quatro uniu liberalismo nos direitos individuais e absolutismo nos direitos políticos. O Estado era unitário, com governo centralizado e capital no Rio de Janeiro. As capitanias viraram Províncias, sem autonomia, com interventores nomeados pelo Imperador. A religião oficial era a Católica Apostólica Romana. E os demais cultos só eram permitidos de forma doméstica, sem forma exterior de templo."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "quatro",
+    "alt": "Fachada de palácio imperial brasileiro com quatro grandes colunas douradas sustentando o frontão, em luz dramática",
+    "kicker": "Poder Moderador · Os quatro poderes",
+    "titulo": "Quatro poderes: a divisão quadripartite do artigo 10",
+    "corpo": "<p>Entro agora na grande marca desta Constituição. Hoje você está acostumada com três poderes: Executivo, Legislativo e Judiciário. Em mil oitocentos e vinte e quatro, eram <b>quatro</b>. A Carta adotou uma <b class=\"term\">divisão quadripartite</b> dos poderes políticos, como está no artigo décimo:</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/quatro.webp\" alt=\"\"></div><div class=\"box lei\"><p class=\"blabel\">ART. 10 DA CONSTITUIÇÃO DE 1824</p><p>Os Poderes Políticos reconhecidos pela Constituição do Império do Brasil são quatro: o Poder Legislativo, o Poder Moderador, o Poder Executivo, e o Poder Judicial.</p></div><p>Repare na companhia em que o Moderador aparece: ele não é um apêndice do Executivo, nem um apelido do Imperador. Ele é um <b>poder político próprio</b>, listado lado a lado com os outros três. É esse quarto pilar que sustenta a fachada conservadora da casa que eu te mostrei no primeiro bloco, e é sobre ele que as próximas duas etapas vão girar.</p>",
+    "narr": "Quatro poderes: a divisão quadripartite do artigo décimo. Entro agora na grande marca desta Constituição. Hoje você está acostumada com três poderes: Executivo, Legislativo e Judiciário. Em mil oitocentos e vinte e quatro, eram quatro. A Carta adotou uma divisão quadripartite dos poderes políticos, como está no artigo décimo: Artigo décimo da Constituição de mil oitocentos e vinte e quatro: os Poderes Políticos reconhecidos pela Constituição do Império do Brasil são quatro: o Poder Legislativo, o Poder Moderador, o Poder Executivo, e o Poder Judicial. Repare na companhia em que o Moderador aparece: ele não é um apêndice do Executivo, nem um apelido do Imperador. Ele é um poder político próprio, listado lado a lado com os outros três. É esse quarto pilar que sustenta a fachada conservadora da casa que eu te mostrei no primeiro bloco, e é sobre ele que as próximas duas etapas vão girar."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "moderador",
+    "alt": "O Imperador brasileiro do século dezenove segurando uma grande chave dourada diante dos outros poderes representados por figuras em semicírculo",
+    "kicker": "Poder Moderador · O artigo 98",
+    "titulo": "Art. 98: a chave de toda a organização política",
+    "corpo": "<p>A definição do Poder Moderador está no artigo noventa e oito da Carta, e vale ler a frase com calma, porque ela é a mais cobrada deste capítulo:</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/moderador.webp\" alt=\"\"></div><div class=\"box lei\"><p class=\"blabel\">ART. 98 DA CONSTITUIÇÃO DE 1824</p><p>O Poder Moderador é a chave de toda a organização Política, e é delegado privativamente ao Imperador, como Chefe Supremo da Nação, e seu Primeiro Representante, para que incessantemente vele sobre a manutenção da Independência, equilíbrio, e harmonia dos mais Poderes Políticos.</p></div><p>Desmontando a frase: o Moderador é a <b class=\"term\">chave de toda a organização política</b>, a peça que tranca e destranca o sistema inteiro. Ele é delegado <b>privativamente ao Imperador</b>, isto é, só dele, sem dividir com ninguém, na posição de Chefe Supremo da Nação e seu Primeiro Representante. E a missão escrita no papel é nobre: velar, sem parar, pela <b>independência</b>, pelo <b>equilíbrio</b> e pela <b>harmonia</b> dos demais poderes.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Poder Moderador: a chave de toda a organização política, delegado privativamente ao Imperador para velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes (art. 98).</p></div>",
+    "narr": "Artigo noventa e oito: a chave de toda a organização política. A definição do Poder Moderador está no artigo noventa e oito da Carta, e vale ler a frase com calma, porque ela é a mais cobrada deste capítulo: Artigo noventa e oito da Constituição de mil oitocentos e vinte e quatro: o Poder Moderador é a chave de toda a organização Política, e é delegado privativamente ao Imperador, como Chefe Supremo da Nação, e seu Primeiro Representante, para que incessantemente vele sobre a manutenção da Independência, equilíbrio, e harmonia dos mais Poderes Políticos. Desmontando a frase: o Moderador é a chave de toda a organização política, a peça que tranca e destranca o sistema inteiro. Ele é delegado privativamente ao Imperador, isto é, só dele, sem dividir com ninguém, na posição de Chefe Supremo da Nação e seu Primeiro Representante. E a missão escrita no papel é nobre: velar, sem parar, pela independência, pelo equilíbrio e pela harmonia dos demais poderes. Poder Moderador: a chave de toda a organização política, delegado privativamente ao Imperador para velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "voto",
+    "alt": "Urna eleitoral de madeira do século dezenove cercada por moedas e documentos de posses, com poucos eleitores de época ao fundo",
+    "kicker": "Poder Moderador · Na prática",
+    "titulo": "Inviolável e sagrado: o Moderador na prática e o voto censitário",
+    "corpo": "<p>Agora, o que esse poder significava na prática. O Poder Moderador foi delegado privativamente ao próprio Imperador, sendo, na verdade, um <b>verdadeiro poder absolutista</b>, pois a ele era permitido <b>mandar e desmandar</b> em todas as outras esferas de poder. Incumbido de velar pela independência e pela harmonia dos poderes, o Imperador tinha a sua pessoa <b class=\"term\">inviolável e sagrada</b>, não estando sujeito a responsabilidade alguma: nem política, nem administrativa, nem civil, nem penal, nos termos dos artigos noventa e oito e noventa e nove da Carta.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/voto.webp\" alt=\"\"></div><p>E quem escolhia os representantes nesse desenho? Pouquíssima gente. O <b>voto era censitário</b>, ou seja, só podia votar quem tinha dinheiro e outras posses; era <b>indireto</b> e <b>restrito aos homens</b>. O voto feminino, infelizmente, só foi permitido a partir de mil novecentos e trinta e dois, mais de um século depois.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/moderador.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Imagine dois brasileiros de mil oitocentos e vinte e quatro. Um comerciante rico, dono de terras e de posses, vota, ainda que de forma indireta. O vizinho dele, trabalhador livre mas sem patrimônio, não vota, não é votado e ainda vive numa Província governada por um interventor que ele não escolheu, nomeado pelo Imperador. É a metade conservadora da Carta funcionando na vida real.</p></div></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>A Carta reconhecia quatro poderes políticos, incluindo o Poder Moderador como poder próprio (art. 10).</li><li>O Moderador é a chave de toda a organização política, delegado privativamente ao Imperador (art. 98).</li><li>Na prática, era um poder absolutista: o Imperador, inviolável e sagrado, não respondia por nada, e o voto era censitário, indireto e só de homens.</li></ul></div>",
+    "narr": "Inviolável e sagrado: o Moderador na prática e o voto censitário. Agora, o que esse poder significava na prática. O Poder Moderador foi delegado privativamente ao próprio Imperador, sendo, na verdade, um verdadeiro poder absolutista, pois a ele era permitido mandar e desmandar em todas as outras esferas de poder. Incumbido de velar pela independência e pela harmonia dos poderes, o Imperador tinha a sua pessoa inviolável e sagrada, não estando sujeito a responsabilidade alguma: nem política, nem administrativa, nem civil, nem penal, nos termos dos artigos noventa e oito e noventa e nove da Carta. E quem escolhia os representantes nesse desenho? Pouquíssima gente. O voto era censitário, ou seja, só podia votar quem tinha dinheiro e outras posses; era indireto e restrito aos homens. O voto feminino, infelizmente, só foi permitido a partir de mil novecentos e trinta e dois, mais de um século depois. Exemplo prático: Imagine dois brasileiros de mil oitocentos e vinte e quatro. Um comerciante rico, dono de terras e de posses, vota, ainda que de forma indireta. O vizinho dele, trabalhador livre mas sem patrimônio, não vota, não é votado e ainda vive numa Província governada por um interventor que ele não escolheu, nomeado pelo Imperador. É a metade conservadora da Carta funcionando na vida real."
+  },
+  {
+    "tipo": "Questão",
+    "img": "questao",
+    "alt": "Folha de prova antiga em branco com pena de escrever e ampulheta dourada sobre uma mesa escura de madeira",
+    "kicker": "Questão 2 · Poder Moderador",
+    "titulo": "Questão 2",
+    "intro": "Hora de treinar! Pense na definição do artigo 98 da Carta de 1824:",
+    "questao": "Nos termos do artigo 98 da Constituição de 1824, o Poder Moderador é corretamente definido como:",
+    "opcoes": [
+      "Um órgão colegiado de conselheiros eleitos pela Assembleia Geral",
+      "A chave de toda a organização política, delegado privativamente ao Imperador, para velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes",
+      "O poder de julgar os conflitos entre o Executivo e o Legislativo, exercido pelo Poder Judicial",
+      "Uma atribuição temporária do Imperador, exercida apenas durante guerras"
+    ],
+    "certa": 1,
+    "feedback": "Isso mesmo! É a letra do art. 98: chave de toda a organização política, delegado privativamente ao Imperador, Chefe Supremo da Nação, para velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes.",
+    "narr": "Questão dois: Poder Moderador. Hora de treinar! Pense na definição do artigo noventa e oito da Carta de mil oitocentos e vinte e quatro: nos termos do artigo noventa e oito, o Poder Moderador é corretamente definido como o quê? Leia as alternativas e escolha a correta."
+  },
+  {
+    "tipo": "Flashcard",
+    "img": "flashcards",
+    "alt": "Pilha de cartões de estudo antigos amarrados com fita dourada sobre uma mesa escura",
+    "kicker": "Flashcard 2 · Os quatro poderes",
+    "titulo": "Flashcard 2",
+    "frente": "Quais eram os quatro poderes políticos reconhecidos pela Constituição de 1824, no artigo 10?",
+    "verso": "<p><b>Poder Legislativo</b>, <b>Poder Moderador</b>, <b>Poder Executivo</b> e <b>Poder Judicial</b>.</p><p style='margin-top:10px'>É a <b>divisão quadripartite</b>: o Moderador é um poder próprio, e não parte do Executivo.</p>",
+    "narr": "Flashcard dois: os quatro poderes. Quais eram os quatro poderes políticos reconhecidos pela Constituição de mil oitocentos e vinte e quatro, no artigo décimo? Toque no cartão para ver a resposta."
+  },
+  {
+    "tipo": "Karaokê",
+    "img": "moderador",
+    "alt": "O Imperador segurando a grande chave dourada diante dos outros poderes em semicírculo",
+    "kicker": "Karaokê · Siga a narração",
+    "titulo": "Recapitule com a narração",
+    "frases": [
+      "Vamos recapitular o Poder Moderador, acompanhando a narração pela tela.",
+      "A Carta de mil oitocentos e vinte e quatro reconhecia quatro poderes políticos.",
+      "O Poder Moderador é a chave de toda a organização política.",
+      "Ele foi delegado privativamente ao Imperador, Chefe Supremo da Nação.",
+      "Sua missão era velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes.",
+      "Na prática, era um poder absolutista, com um Imperador inviolável e sagrado."
+    ],
+    "narr": "Vamos recapitular o Poder Moderador, acompanhando a narração pela tela. A Carta de mil oitocentos e vinte e quatro reconhecia quatro poderes políticos. O Poder Moderador é a chave de toda a organização política. Ele foi delegado privativamente ao Imperador, Chefe Supremo da Nação. Sua missão era velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes. Na prática, era um poder absolutista, com um Imperador inviolável e sagrado."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "liberdades",
+    "alt": "Documento antigo de liberdades aberto sobre uma mesa, com correntes pesadas ao fundo em sombra, em contraste dramático",
+    "kicker": "Liberdades · A incongruência",
+    "titulo": "Liberdades públicas que conviviam com a escravidão",
+    "corpo": "<p>Abro o terceiro bloco pela tensão mais incômoda da Carta. A Constituição de mil oitocentos e vinte e quatro previa <b class=\"term\">liberdades públicas</b>, e proibia, por exemplo, as <b>prisões arbitrárias</b>. Era a metade liberal falando alto, no papel.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/liberdades.webp\" alt=\"\"></div><p>Mas essa mesma Constituição <b>não proibia a escravidão</b>, demonstrando uma grande <b>incongruência</b> com a realidade brasileira: falava-se em liberdade num país sustentado pelo trabalho escravizado. E, apesar de proibir prisões arbitrárias, ela também <b>não previa o instrumento do habeas corpus</b>, aquela ordem judicial que hoje usamos justamente para libertar quem está preso ilegalmente.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/garantias.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como uma porta com uma placa bonita dizendo liberdade, mas sem maçaneta por dentro. A Carta anunciava liberdades e vedava a prisão arbitrária, mas não entregava o habeas corpus, a ferramenta para fazer essa vedação valer, e ainda silenciava sobre a escravidão. Direito anunciado sem instrumento é promessa pela metade.</p></div></div>",
+    "narr": "Liberdades públicas que conviviam com a escravidão. Abro o terceiro bloco pela tensão mais incômoda da Carta. A Constituição de mil oitocentos e vinte e quatro previa liberdades públicas, e proibia, por exemplo, as prisões arbitrárias. Era a metade liberal falando alto, no papel. Mas essa mesma Constituição não proibia a escravidão, demonstrando uma grande incongruência com a realidade brasileira: falava-se em liberdade num país sustentado pelo trabalho escravizado. E, apesar de proibir prisões arbitrárias, ela também não previa o instrumento do habeas corpus, aquela ordem judicial que hoje usamos justamente para libertar quem está preso ilegalmente. Pense assim: É como uma porta com uma placa bonita dizendo liberdade, mas sem maçaneta por dentro. A Carta anunciava liberdades e vedava a prisão arbitrária, mas não entregava o habeas corpus, a ferramenta para fazer essa vedação valer, e ainda silenciava sobre a escravidão. Direito anunciado sem instrumento é promessa pela metade."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "semirrigida",
+    "alt": "Manuscrito constitucional antigo com um pesado selo dourado numa das metades e folhas comuns soltas na outra metade, sobre mesa de madeira",
+    "kicker": "Rigidez · Sem cláusulas pétreas",
+    "titulo": "Uma Constituição semirrígida, sem cláusulas pétreas e sem controle",
+    "corpo": "<p>Agora, a pergunta que as provas adoram: a Carta de mil oitocentos e vinte e quatro era fácil ou difícil de mudar? Nem uma coisa, nem outra. Tratava-se de uma Constituição <b class=\"term\">semirrígida</b>.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/semirrigida.webp\" alt=\"\"></div><p>Para entender: uma Constituição <b>rígida</b> tem um processo árduo e dificultoso de alteração, bem mais complexo do que o necessário para alterar leis ordinárias. A <b>semirrígida</b>, como o nome denuncia, mistura os dois mundos: possui partes que demandam esse processo mais complexo e partes que o dispensam, bastando o mesmo procedimento das leis ordinárias.</p><p>Na Carta de mil oitocentos e vinte e quatro, as formalidades mais complexas valiam para as normas <b>materialmente constitucionais</b>, aquelas referentes aos limites e às atribuições dos Poderes Políticos e aos direitos políticos e individuais. Para as demais normas, era possível se valer do procedimento legislativo ordinário, nos termos dos artigos cento e setenta e quatro a cento e setenta e oito. E dois detalhes fecham o retrato: nessa Constituição, <b>não havia cláusulas pétreas</b> e <b>não se falava em controle de constitucionalidade</b>, embora essa ideia já existisse em outros países à época.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Constituição semirrígida: processo complexo só para as normas materialmente constitucionais, e procedimento ordinário para as demais. Sem cláusulas pétreas e sem controle de constitucionalidade.</p></div>",
+    "narr": "Uma Constituição semirrígida, sem cláusulas pétreas e sem controle. Agora, a pergunta que as provas adoram: a Carta de mil oitocentos e vinte e quatro era fácil ou difícil de mudar? Nem uma coisa, nem outra. Tratava-se de uma Constituição semirrígida. Para entender: uma Constituição rígida tem um processo árduo e dificultoso de alteração, bem mais complexo do que o necessário para alterar leis ordinárias. A semirrígida, como o nome denuncia, mistura os dois mundos: possui partes que demandam esse processo mais complexo e partes que o dispensam, bastando o mesmo procedimento das leis ordinárias. Na Carta de mil oitocentos e vinte e quatro, as formalidades mais complexas valiam para as normas materialmente constitucionais, aquelas referentes aos limites e às atribuições dos Poderes Políticos e aos direitos políticos e individuais. Para as demais normas, era possível se valer do procedimento legislativo ordinário, nos termos dos artigos cento e setenta e quatro a cento e setenta e oito. E dois detalhes fecham o retrato: nessa Constituição, não havia cláusulas pétreas e não se falava em controle de constitucionalidade, embora essa ideia já existisse em outros países à época. Constituição semirrígida: processo complexo só para as normas materialmente constitucionais, e procedimento ordinário para as demais. Sem cláusulas pétreas e sem controle de constitucionalidade."
+  },
+  {
+    "tipo": "Comparador",
+    "img": "retrato",
+    "img2": "moderador",
+    "labelL": "DIREITOS INDIVIDUAIS",
+    "labelR": "DIREITOS POLÍTICOS",
+    "alt": "Comparador de duas cenas: de um lado, cidadãos de época lendo o documento de direitos à luz do dia; do outro, o Imperador com a chave dourada diante do trono",
+    "kicker": "Comparador · Arraste a barra",
+    "titulo": "As duas metades da Carta de 1824",
+    "intro": "Arraste a barra dourada e compare as duas metades do liberalismo conservador. De um lado, os direitos individuais: liberdades públicas, vedação das prisões arbitrárias, proteção da liberdade, da privacidade e da propriedade, no espírito liberal do constitucionalismo europeu. Do outro, os direitos políticos: voto censitário, indireto e restrito aos homens, Províncias sem autonomia e o Poder Moderador concentrado no Imperador inviolável. Liberal de um lado, absolutista do outro: é esse o retrato da Carta.",
+    "narr": "As duas metades da Carta de mil oitocentos e vinte e quatro. Arraste a barra dourada e compare as duas metades do liberalismo conservador. De um lado, os direitos individuais: liberdades públicas, vedação das prisões arbitrárias, proteção da liberdade, da privacidade e da propriedade, no espírito liberal do constitucionalismo europeu. Do outro, os direitos políticos: voto censitário, indireto e restrito aos homens, Províncias sem autonomia e o Poder Moderador concentrado no Imperador inviolável. Liberal de um lado, absolutista do outro: é esse o retrato da Carta."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "parlamentarismo",
+    "alt": "Sala de conselho imperial do século dezenove, com o presidente do conselho indicando nomes numa lista diante de ministros sentados em volta da mesa",
+    "kicker": "Para saber mais · O costume",
+    "titulo": "Parlamentarismo às avessas: o costume contra o texto",
+    "corpo": "<p>Uma curiosidade que revela muito sobre o Império: o chamado <b class=\"term\">parlamentarismo às avessas</b>. Era uma prática adotada para a composição do Conselho de Ministros, na qual o <b>Presidente do Conselho</b>, nomeado pelo Imperador, escolhia os demais membros, tendo em conta as forças políticas representadas na Câmara dos Deputados.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/parlamentarismo.webp\" alt=\"\"></div><p>Perceba a inversão embutida no apelido: num parlamentarismo comum, é a força política do Parlamento que forma o governo. Aqui, o ponto de partida era o nomeado pelo Imperador, e era ele quem montava o restante do Conselho, ainda que olhando para as forças da Câmara. E o detalhe que a prova gosta: isso era <b>contrário ao que a Constituição previa como correto</b>. Era o costume mandando mais do que o texto, dentro da própria casa do poder.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/assembleia.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Precisando formar um novo Conselho de Ministros, o Imperador nomeia o Presidente do Conselho. Em vez de o desenho sair da Câmara, é esse presidente nomeado quem escolhe os demais ministros, apenas levando em conta as forças políticas representadas entre os deputados. Pronto: você acabou de ver o parlamentarismo às avessas funcionando.</p></div></div>",
+    "narr": "Parlamentarismo às avessas: o costume contra o texto. Uma curiosidade que revela muito sobre o Império: o chamado parlamentarismo às avessas. Era uma prática adotada para a composição do Conselho de Ministros, na qual o Presidente do Conselho, nomeado pelo Imperador, escolhia os demais membros, tendo em conta as forças políticas representadas na Câmara dos Deputados. Perceba a inversão embutida no apelido: num parlamentarismo comum, é a força política do Parlamento que forma o governo. Aqui, o ponto de partida era o nomeado pelo Imperador, e era ele quem montava o restante do Conselho, ainda que olhando para as forças da Câmara. E o detalhe que a prova gosta: isso era contrário ao que a Constituição previa como correto. Era o costume mandando mais do que o texto, dentro da própria casa do poder. Exemplo prático: Precisando formar um novo Conselho de Ministros, o Imperador nomeia o Presidente do Conselho. Em vez de o desenho sair da Câmara, é esse presidente nomeado quem escolhe os demais ministros, apenas levando em conta as forças políticas representadas entre os deputados. Pronto: você acabou de ver o parlamentarismo às avessas funcionando."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "assembleia",
+    "alt": "Interior de assembleia legislativa imperial do século dezenove, com bancadas de deputados e senadores em semicírculo e lustres dourados",
+    "kicker": "Para saber mais · Legislativo e direitos",
+    "titulo": "Assembleia Geral, imunidades e o rol de direitos",
+    "corpo": "<p>Fecho o bloco com o Legislativo e com o lado mais generoso da Carta. O <b>Poder Legislativo</b> era exercido pela <b class=\"term\">Assembleia Geral</b>, composta pela <b>Câmara dos Deputados</b> e pelo <b>Senado</b>. Os parlamentares eram <b>invioláveis</b> por suas opiniões proferidas no exercício da função, a chamada imunidade material, e não podiam ser presos, salvo em algumas situações, como por ordem da respectiva Casa ou em flagrante delito de crime com pena capital.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/assembleia.webp\" alt=\"\"></div><p>E havia previsão de um <b>extenso rol de direitos fundamentais individuais</b>, como o direito à <b>liberdade</b>, à <b>privacidade</b> e à <b>propriedade</b>. As garantias individuais da época foram consagradas em princípios que você conhece bem de hoje: <b>legalidade</b>, <b>não retroatividade</b>, <b>presunção de inocência</b>, <b>juiz natural</b> e <b>individualização da pena</b>. É a metade liberal da Carta aparecendo com força, e vale guardar esse rol, porque ele volta na costura do próximo bloco.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>A Carta previa liberdades públicas e vedava prisões arbitrárias, mas não proibia a escravidão e não previa habeas corpus.</li><li>Era uma Constituição semirrígida, sem cláusulas pétreas e sem controle de constitucionalidade.</li><li>Parlamentarismo às avessas, Assembleia Geral com Câmara e Senado, imunidade material e um extenso rol de direitos individuais.</li></ul></div>",
+    "narr": "Assembleia Geral, imunidades e o rol de direitos. Fecho o bloco com o Legislativo e com o lado mais generoso da Carta. O Poder Legislativo era exercido pela Assembleia Geral, composta pela Câmara dos Deputados e pelo Senado. Os parlamentares eram invioláveis por suas opiniões proferidas no exercício da função, a chamada imunidade material, e não podiam ser presos, salvo em algumas situações, como por ordem da respectiva Casa ou em flagrante delito de crime com pena capital. E havia previsão de um extenso rol de direitos fundamentais individuais, como o direito à liberdade, à privacidade e à propriedade. As garantias individuais da época foram consagradas em princípios que você conhece bem de hoje: legalidade, não retroatividade, presunção de inocência, juiz natural e individualização da pena. É a metade liberal da Carta aparecendo com força, e vale guardar esse rol, porque ele volta na costura do próximo bloco."
+  },
+  {
+    "tipo": "Explorar",
+    "img": "explorar",
+    "alt": "Em tamanho grande e na vertical, palácio imperial brasileiro com cinco cenas empilhadas: o Imperador com a chave dourada no trono, quatro colunas do pórtico, o mapa das províncias ligadas à capital, a igreja oficial com cultos domésticos discretos e a urna do voto censitário",
+    "kicker": "Exploração · Toque nos pontos",
+    "titulo": "Explore a imagem: o palácio da Carta de 1824",
+    "intro": "Este é o palácio da Carta de mil oitocentos e vinte e quatro em tamanho grande, com cinco cenas empilhadas, de cima para baixo: o trono do Imperador, as quatro colunas dos poderes, o mapa das Províncias, a igreja oficial e a urna do voto. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada ponto. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+    "pontos": [
+      {
+        "x": 50,
+        "y": 10,
+        "titulo": "O trono e a chave: o Poder Moderador",
+        "texto": "No alto, o Imperador com a grande chave dourada. É o artigo 98 em imagem: o Poder Moderador é a chave de toda a organização política, delegado privativamente ao Imperador, inviolável e sagrado, sem responsabilidade política, administrativa, civil ou penal."
+      },
+      {
+        "x": 50,
+        "y": 30,
+        "titulo": "As quatro colunas: a divisão quadripartite",
+        "texto": "Logo abaixo, as quatro colunas do pórtico são os quatro poderes do artigo 10: Legislativo, Moderador, Executivo e Judicial. O Moderador é um poder próprio, e não um pedaço do Executivo."
+      },
+      {
+        "x": 50,
+        "y": 50,
+        "titulo": "O mapa: Estado unitário e Províncias",
+        "texto": "No meio, o mapa do Império com fios ligando as Províncias à capital, o Rio de Janeiro. Estado unitário e centralizado: Províncias sem autonomia, governadas por interventores nomeados pelo Imperador."
+      },
+      {
+        "x": 50,
+        "y": 70,
+        "titulo": "A igreja: a religião oficial do art. 5º",
+        "texto": "Abaixo, a igreja em destaque é a Religião Católica Apostólica Romana, oficial do Império. As outras religiões só podiam ter culto doméstico, em casas destinadas a isso, sem forma alguma exterior de templo."
+      },
+      {
+        "x": 50,
+        "y": 90,
+        "titulo": "A urna: o voto censitário",
+        "texto": "Na base, a urna cercada de moedas e de poucos eleitores. O voto era censitário, só de quem tinha dinheiro e posses, indireto e restrito aos homens. O voto feminino só chegaria em 1932."
+      }
+    ],
+    "fimTexto": "Você percorreu os cinco pontos: a chave do Moderador, as quatro colunas, o mapa unitário, a religião oficial e a urna censitária. Quando uma questão misturar esses temas, volte a esta imagem e separe cada cena.",
+    "narr": "Explore a imagem: o palácio da Carta de mil oitocentos e vinte e quatro. Este é o palácio da Carta de mil oitocentos e vinte e quatro em tamanho grande, com cinco cenas empilhadas, de cima para baixo: o trono do Imperador, as quatro colunas dos poderes, o mapa das Províncias, a igreja oficial e a urna do voto. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada ponto. São cinco pontos para descobrir: tente encontrar todos antes de seguir."
+  },
+  {
+    "tipo": "Questão de banca",
+    "img": "questao",
+    "alt": "Folha de prova antiga em branco com pena de escrever e ampulheta dourada sobre uma mesa escura de madeira",
+    "kicker": "Questão 3 · Constituição semirrígida",
+    "titulo": "Questão 3",
+    "intro": "Questão em estilo de banca, sobre a rigidez da Constituição de 1824. Leia o enunciado com atenção:",
+    "questao": "A Constituição de 1824 é classificada como semirrígida porque:",
+    "opcoes": [
+      "Podia ser alterada por decreto do Imperador, sem qualquer formalidade",
+      "Exigia formalidades mais complexas apenas para as normas materialmente constitucionais, admitindo o procedimento legislativo ordinário para as demais",
+      "Era inteiramente imutável, protegida por cláusulas pétreas",
+      "Dependia de ratificação pelas assembleias de todas as Províncias"
+    ],
+    "certa": 1,
+    "feedback": "Isso mesmo! Semirrígida: processo complexo só para as normas materialmente constitucionais, ligadas aos limites e às atribuições dos poderes e aos direitos políticos e individuais; para as demais, procedimento ordinário (arts. 174 a 178). E não havia cláusulas pétreas.",
+    "narr": "Questão três, em estilo de banca, sobre a rigidez da Constituição de mil oitocentos e vinte e quatro. Leia o enunciado com atenção: a Constituição de mil oitocentos e vinte e quatro é classificada como semirrígida por quê? Leia as alternativas e escolha a correta."
+  },
+  {
+    "tipo": "Flashcard",
+    "img": "flashcards",
+    "alt": "Pilha de cartões de estudo antigos amarrados com fita dourada sobre uma mesa escura",
+    "kicker": "Flashcard 3 · O voto em 1824",
+    "titulo": "Flashcard 3",
+    "frente": "Como era o voto na Constituição de 1824?",
+    "verso": "<p><b>Censitário</b>: só votava quem tinha dinheiro e outras posses. Era também <b>indireto</b> e <b>restrito aos homens</b>.</p><p style='margin-top:10px'>O voto feminino só foi permitido a partir de <b>1932</b>.</p>",
+    "narr": "Flashcard três: o voto em mil oitocentos e vinte e quatro. Como era o voto na Constituição de mil oitocentos e vinte e quatro? Toque no cartão para ver a resposta."
+  },
+  {
+    "tipo": "Karaokê",
+    "img": "semirrigida",
+    "alt": "O manuscrito constitucional com o selo dourado numa metade e folhas soltas na outra",
+    "kicker": "Karaokê · Siga a narração",
+    "titulo": "Recapitule com a narração",
+    "frases": [
+      "Vamos recapitular liberdades e rigidez, acompanhando a narração pela tela.",
+      "A Carta previa liberdades públicas e vedava prisões arbitrárias.",
+      "Mas não proibia a escravidão e não previa o habeas corpus.",
+      "Era uma Constituição semirrígida: processo complexo só para as normas materialmente constitucionais.",
+      "Não havia cláusulas pétreas nem controle de constitucionalidade.",
+      "E o Legislativo era a Assembleia Geral, com Câmara dos Deputados e Senado."
+    ],
+    "narr": "Vamos recapitular liberdades e rigidez, acompanhando a narração pela tela. A Carta previa liberdades públicas e vedava prisões arbitrárias. Mas não proibia a escravidão e não previa o habeas corpus. Era uma Constituição semirrígida: processo complexo só para as normas materialmente constitucionais. Não havia cláusulas pétreas nem controle de constitucionalidade. E o Legislativo era a Assembleia Geral, com Câmara dos Deputados e Senado."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "costura",
+    "alt": "Grande balança de época desequilibrada num salão imperial, com documentos de direitos num prato e uma coroa pesada no outro",
+    "kicker": "A costura · O mapa das tensões",
+    "titulo": "Direitos largos, política estreita: o mapa das tensões",
+    "corpo": "<p>Com as peças na mesa, deixa eu costurar tudo para você enxergar a Carta como um mapa só. A Constituição de mil oitocentos e vinte e quatro vive de <b>duas tensões</b>, e quem enxerga as duas não se perde em nenhuma questão.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/costura.webp\" alt=\"\"></div><p>A primeira tensão é a do <b>texto</b>: direitos individuais desenhados com generosidade liberal, liberdade, privacidade, propriedade e garantias processuais, convivendo com direitos políticos desenhados com mão conservadora, voto censitário, indireto e masculino, Províncias sem voz e religião oficial.</p><p>A segunda tensão é a da <b>prática</b>: o texto prometia equilíbrio e harmonia entre os poderes, mas entregava a chave desse equilíbrio a uma só pessoa, inviolável e sem responsabilidade. No fundo, as duas tensões são a mesma: uma Carta que olhava para o futuro nos direitos de cada pessoa, e para o passado na forma de organizar o poder.</p>",
+    "narr": "Direitos largos, política estreita: o mapa das tensões. Com as peças na mesa, deixa eu costurar tudo para você enxergar a Carta como um mapa só. A Constituição de mil oitocentos e vinte e quatro vive de duas tensões, e quem enxerga as duas não se perde em nenhuma questão. A primeira tensão é a do texto: direitos individuais desenhados com generosidade liberal, liberdade, privacidade, propriedade e garantias processuais, convivendo com direitos políticos desenhados com mão conservadora, voto censitário, indireto e masculino, Províncias sem voz e religião oficial. A segunda tensão é a da prática: o texto prometia equilíbrio e harmonia entre os poderes, mas entregava a chave desse equilíbrio a uma só pessoa, inviolável e sem responsabilidade. No fundo, as duas tensões são a mesma: uma Carta que olhava para o futuro nos direitos de cada pessoa, e para o passado na forma de organizar o poder."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "moderador",
+    "alt": "O Imperador com a chave dourada diante dos outros poderes em semicírculo, em detalhe aproximado",
+    "kicker": "A costura · Equilíbrio prometido",
+    "titulo": "Equilíbrio no papel, concentração na mão",
+    "corpo": "<p>Quero desfazer agora a confusão mais comum deste capítulo: achar que o Poder Moderador era um poder fraquinho, só de aconselhar. Não era. Releia a engenharia: ele era a <b class=\"term\">chave de toda a organização política</b>, delegado <b>privativamente</b> ao Imperador, e a ele era permitido <b>mandar e desmandar</b> em todas as outras esferas de poder.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/quatro.webp\" alt=\"\"></div><p>A missão escrita no artigo noventa e oito era de equilíbrio: velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes. Mas quem exerce essa missão é uma pessoa <b>inviolável e sagrada</b>, que não responde política, administrativa, civil ou penalmente por ato algum. Equilíbrio fiscalizado por quem não presta contas a ninguém é, na prática, concentração com nome bonito.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">O Moderador prometia equilíbrio entre os poderes, mas, sem responsabilidade do Imperador, funcionava como poder absolutista.</p></div>",
+    "narr": "Equilíbrio no papel, concentração na mão. Quero desfazer agora a confusão mais comum deste capítulo: achar que o Poder Moderador era um poder fraquinho, só de aconselhar. Não era. Releia a engenharia: ele era a chave de toda a organização política, delegado privativamente ao Imperador, e a ele era permitido mandar e desmandar em todas as outras esferas de poder. A missão escrita no artigo noventa e oito era de equilíbrio: velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes. Mas quem exerce essa missão é uma pessoa inviolável e sagrada, que não responde política, administrativa, civil ou penalmente por ato algum. Equilíbrio fiscalizado por quem não presta contas a ninguém é, na prática, concentração com nome bonito. O Moderador prometia equilíbrio entre os poderes, mas, sem responsabilidade do Imperador, funcionava como poder absolutista."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "garantias",
+    "alt": "Pergaminho antigo com selos dourados aberto ao lado de uma pena e de chaves de ferro, em luz dramática verde e dourada",
+    "kicker": "A costura · As garantias",
+    "titulo": "O rol de garantias: a metade liberal em detalhe",
+    "corpo": "<p>Volto agora ao lado generoso da Carta, porque ele também cai em prova, e em detalhe. A Constituição de mil oitocentos e vinte e quatro trazia um <b class=\"term\">extenso rol de direitos fundamentais individuais</b>: liberdade, privacidade e propriedade são os exemplos que você deve ter na ponta da língua.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/garantias.webp\" alt=\"\"></div><p>E as garantias individuais da época foram consagradas em cinco princípios: <b>legalidade</b>, ninguém obrigado senão em virtude de lei; <b>não retroatividade</b>, a lei nova não alcança o passado; <b>presunção de inocência</b>; <b>juiz natural</b>, ninguém julgado por tribunal de exceção montado para o caso; e <b>individualização da pena</b>, cada pena medida para a pessoa e para o fato. São princípios que atravessaram os séculos e vivem até hoje na nossa Constituição.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/liberdades.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Um morador do Império é acusado de um fato que, quando aconteceu, não era proibido por lei alguma. Pela legalidade e pela não retroatividade, uma lei criada depois não pode ser usada para puni-lo por aquele fato passado. É a metade liberal da Carta protegendo uma pessoa concreta, com princípios que você reconhece das provas de hoje.</p></div></div>",
+    "narr": "O rol de garantias: a metade liberal em detalhe. Volto agora ao lado generoso da Carta, porque ele também cai em prova, e em detalhe. A Constituição de mil oitocentos e vinte e quatro trazia um extenso rol de direitos fundamentais individuais: liberdade, privacidade e propriedade são os exemplos que você deve ter na ponta da língua. E as garantias individuais da época foram consagradas em cinco princípios: legalidade, ninguém obrigado senão em virtude de lei; não retroatividade, a lei nova não alcança o passado; presunção de inocência; juiz natural, ninguém julgado por tribunal de exceção montado para o caso; e individualização da pena, cada pena medida para a pessoa e para o fato. São princípios que atravessaram os séculos e vivem até hoje na nossa Constituição. Exemplo prático: Um morador do Império é acusado de um fato que, quando aconteceu, não era proibido por lei alguma. Pela legalidade e pela não retroatividade, uma lei criada depois não pode ser usada para puni-lo por aquele fato passado. É a metade liberal da Carta protegendo uma pessoa concreta, com princípios que você reconhece das provas de hoje."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "capa",
+    "alt": "O Imperador diante do trono com a chave dourada e o manuscrito da Constituição sobre a mesa, em luz dramática",
+    "kicker": "A costura · A síntese",
+    "titulo": "Por que esta Carta durou tanto e importa tanto",
+    "corpo": "<p>Fecho a costura com a pergunta do conjunto: por que estudar com tanto cuidado uma Constituição de dois séculos atrás? Primeiro, porque ela foi a <b>primeira Constituição brasileira</b> e a <b>mais duradoura</b> da nossa história constitucional: o desenho de mil oitocentos e vinte e quatro sustentou o Império por décadas.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/roteiro.webp\" alt=\"\"></div><p>Segundo, porque quase tudo que veio depois pode ser lido como uma resposta a ela. Federação contra unitarismo, três poderes contra quatro, voto ampliado contra voto censitário, liberdade religiosa plena contra culto doméstico permitido: cada Constituição seguinte conversa com este ponto de partida, concordando ou brigando com ele.</p><p>Se você guardar o retrato em duas metades, a chave do artigo noventa e oito e a etiqueta de semirrígida, você guarda a aula inteira. É com esse mapa na mão que vamos para a revisão final.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Duas tensões organizam a Carta: direitos individuais largos com política estreita, e equilíbrio prometido com concentração na prática.</li><li>O rol liberal inclui liberdade, privacidade, propriedade e as garantias de legalidade, não retroatividade, presunção de inocência, juiz natural e individualização da pena.</li><li>Primeira e mais duradoura Constituição brasileira: o ponto de partida com o qual todas as seguintes conversam.</li></ul></div>",
+    "narr": "Por que esta Carta durou tanto e importa tanto. Fecho a costura com a pergunta do conjunto: por que estudar com tanto cuidado uma Constituição de dois séculos atrás? Primeiro, porque ela foi a primeira Constituição brasileira e a mais duradoura da nossa história constitucional: o desenho de mil oitocentos e vinte e quatro sustentou o Império por décadas. Segundo, porque quase tudo que veio depois pode ser lido como uma resposta a ela. Federação contra unitarismo, três poderes contra quatro, voto ampliado contra voto censitário, liberdade religiosa plena contra culto doméstico permitido: cada Constituição seguinte conversa com este ponto de partida, concordando ou brigando com ele. Se você guardar o retrato em duas metades, a chave do artigo noventa e oito e a etiqueta de semirrígida, você guarda a aula inteira. É com esse mapa na mão que vamos para a revisão final."
+  },
+  {
+    "tipo": "Questão de banca",
+    "img": "questao",
+    "alt": "Folha de prova antiga em branco com pena de escrever e ampulheta dourada sobre uma mesa escura de madeira",
+    "kicker": "Questão 4 · Religião oficial",
+    "titulo": "Questão 4",
+    "intro": "Questão em estilo de banca, sobre o artigo 5º da Constituição de 1824. Leia com atenção:",
+    "questao": "Nos termos do artigo 5º da Constituição de 1824, é correto afirmar que:",
+    "opcoes": [
+      "O Império não tinha religião oficial e todos os cultos eram livres, inclusive com templos",
+      "A Religião Católica Apostólica Romana era a religião do Império, e as outras religiões eram permitidas apenas com culto doméstico, sem forma exterior de templo",
+      "Todas as religiões eram proibidas, exceto em casas particulares com autorização do Imperador",
+      "A religião oficial era definida por cada Província, conforme a sua maioria"
+    ],
+    "certa": 1,
+    "feedback": "Isso mesmo! É a letra do art. 5º: a Católica Apostólica Romana continuaria a ser a religião do Império, e as outras só eram permitidas com culto doméstico ou particular, sem forma alguma exterior de templo.",
+    "narr": "Questão quatro, em estilo de banca, sobre o artigo quinto da Constituição de mil oitocentos e vinte e quatro. Leia com atenção: nos termos do artigo quinto, é correto afirmar o quê? Leia as alternativas e escolha a correta."
+  },
+  {
+    "tipo": "Flashcard",
+    "img": "flashcards",
+    "alt": "Pilha de cartões de estudo antigos amarrados com fita dourada sobre uma mesa escura",
+    "kicker": "Flashcard 4 · O que faltava",
+    "titulo": "Flashcard 4",
+    "frente": "O que a Constituição de 1824 NÃO tinha, embora o controle de constitucionalidade já existisse em outros países?",
+    "verso": "<p>Ela <b>não tinha cláusulas pétreas</b> e <b>não falava em controle de constitucionalidade</b>.</p><p style='margin-top:10px'>Também <b>não previa habeas corpus</b>, apesar de vedar prisões arbitrárias, e <b>não proibia a escravidão</b>.</p>",
+    "narr": "Flashcard quatro: o que faltava. O que a Constituição de mil oitocentos e vinte e quatro não tinha, embora o controle de constitucionalidade já existisse em outros países? Toque no cartão para ver a resposta."
+  },
+  {
+    "tipo": "Karaokê",
+    "img": "costura",
+    "alt": "A balança de época desequilibrada com documentos de direitos e a coroa, no salão imperial",
+    "kicker": "Karaokê · Siga a narração",
+    "titulo": "Recapitule com a narração",
+    "frases": [
+      "Vamos recapitular a costura da Carta, acompanhando a narração pela tela.",
+      "Direitos individuais largos, direitos políticos estreitos: essa é a primeira tensão.",
+      "O Moderador prometia equilíbrio, mas concentrava o poder no Imperador.",
+      "O rol liberal trazia liberdade, privacidade, propriedade e cinco garantias.",
+      "Legalidade, não retroatividade, presunção de inocência, juiz natural e individualização da pena.",
+      "E foi a primeira e mais duradoura Constituição da nossa história."
+    ],
+    "narr": "Vamos recapitular a costura da Carta, acompanhando a narração pela tela. Direitos individuais largos, direitos políticos estreitos: essa é a primeira tensão. O Moderador prometia equilíbrio, mas concentrava o poder no Imperador. O rol liberal trazia liberdade, privacidade, propriedade e cinco garantias. Legalidade, não retroatividade, presunção de inocência, juiz natural e individualização da pena. E foi a primeira e mais duradoura Constituição da nossa história."
+  },
+  {
+    "tipo": "Ligar termos",
+    "img": "ligar",
+    "alt": "Teia de fios dourados ligando objetos de época sobre uma mesa escura",
+    "kicker": "Ligar termos · Revisão",
+    "titulo": "Ligar termos",
+    "instrucao": "Toque em um termo da coluna da esquerda e, em seguida, na definição correspondente da coluna da direita. Se o par estiver certo, os dois botões ficam verdes; se estiver errado, eles balançam e você tenta de novo.",
+    "pares": [
+      [
+        "Poder Moderador",
+        "A chave de toda a organização política, delegada privativamente ao Imperador (art. 98)"
+      ],
+      [
+        "Estado unitário",
+        "Governo centralizado, com Províncias sem autonomia e interventores nomeados pelo Imperador"
+      ],
+      [
+        "Voto censitário",
+        "Voto de quem tinha dinheiro e posses, indireto e restrito aos homens"
+      ],
+      [
+        "Constituição semirrígida",
+        "Processo complexo só para as normas materialmente constitucionais, e ordinário para as demais"
+      ],
+      [
+        "Art. 5º",
+        "Religião Católica como oficial do Império, e demais cultos apenas domésticos"
+      ],
+      [
+        "Assembleia Geral",
+        "O Poder Legislativo do Império, composto por Câmara dos Deputados e Senado"
+      ]
+    ],
+    "ordemDefs": [
+      2,
+      4,
+      0,
+      5,
+      1,
+      3
+    ],
+    "feedbackFinal": "<b>Todos os pares ligados!</b> Moderador, unitarismo, voto, rigidez, religião e Legislativo: a Carta inteira está na sua cabeça.",
+    "narr": "Ligar termos. Toque em um termo da coluna da esquerda e, em seguida, na definição correspondente da coluna da direita. Se o par estiver certo, os dois botões ficam verdes; se estiver errado, eles balançam e você tenta de novo."
+  },
+  {
+    "tipo": "Verdadeiro ou falso",
+    "img": "assembleia",
+    "alt": "A assembleia legislativa imperial com bancadas em semicírculo e lustres dourados",
+    "kicker": "Verdadeiro ou falso · Revisão",
+    "titulo": "Verdadeiro ou falso: arraste e decida",
+    "intro": "Cinco afirmações sobre a Constituição de 1824. Para cada carta, decida: é verdadeira ou falsa? Arraste a carta para o lado da sua resposta, ou toque nos botões.",
+    "afirmacoes": [
+      {
+        "t": "A Constituição de 1824 organizou o Brasil como uma federação, com Províncias autônomas.",
+        "v": false,
+        "exp": "Não organizou. Era Estado unitário e centralizado: Províncias sem autonomia, com interventores nomeados pelo Imperador."
+      },
+      {
+        "t": "O Poder Moderador era delegado privativamente ao Imperador, cuja pessoa era inviolável e sagrada.",
+        "v": true,
+        "exp": "Correto. Artigos 98 e 99 da Carta: chave da organização política, só do Imperador, sem responsabilidade política, administrativa, civil ou penal."
+      },
+      {
+        "t": "A Constituição de 1824 proibia a escravidão e previa o habeas corpus.",
+        "v": false,
+        "exp": "Não proibia e não previa. Ela vedava prisões arbitrárias, mas silenciava sobre a escravidão e não trazia o habeas corpus: a grande incongruência da Carta."
+      },
+      {
+        "t": "O voto em 1824 era universal, direto e incluía as mulheres.",
+        "v": false,
+        "exp": "Era o contrário: voto censitário, indireto e restrito aos homens. O voto feminino só foi permitido a partir de 1932."
+      },
+      {
+        "t": "A Carta de 1824 não tinha cláusulas pétreas nem controle de constitucionalidade.",
+        "v": true,
+        "exp": "Correto. Não havia cláusulas pétreas e não se falava em controle de constitucionalidade, embora a ideia já existisse em outros países."
+      }
+    ],
+    "narr": "Verdadeiro ou falso: arraste e decida. Cinco afirmações sobre a Constituição de mil oitocentos e vinte e quatro. Para cada carta, decida: é verdadeira ou falsa? Arraste a carta para o lado da sua resposta, ou toque nos botões."
+  },
+  {
+    "tipo": "Toque e revele",
+    "img": "moderador",
+    "alt": "O Imperador com a chave dourada diante dos outros poderes em semicírculo",
+    "kicker": "Toque e revele · Revisão",
+    "titulo": "Toque, pense e revele",
+    "intro": "Três cartas com casos rápidos desta aula. Toque para ver a pergunta, pense na resposta e toque de novo para revelar. Sem pressa: o objetivo é o seu cérebro buscar a resposta antes de vê-la.",
+    "cartas": [
+      {
+        "p": "Uma questão afirma que as Províncias de 1824 elegiam seus governantes e tinham ampla autonomia. Está certa?",
+        "r": "<b>Está errada.</b> No Estado <b>unitário</b> da Carta, as Províncias <b>não tinham qualquer autonomia</b> e eram governadas por interventores <b>nomeados pelo Imperador</b>."
+      },
+      {
+        "p": "Um enunciado diz que o Imperador podia ser responsabilizado politicamente pelos atos do Poder Moderador. Procede?",
+        "r": "<b>Não procede.</b> A pessoa do Imperador era <b>inviolável e sagrada</b>, sem responsabilidade política, administrativa, civil ou penal (arts. 98 e 99)."
+      },
+      {
+        "p": "Alterar uma norma sobre os limites dos Poderes Políticos exigia o mesmo rito simples de uma lei ordinária. Verdade?",
+        "r": "<b>Não é verdade.</b> Normas <b>materialmente constitucionais</b>, como as de limites e atribuições dos poderes e de direitos políticos e individuais, exigiam formalidades <b>mais complexas</b>. O rito ordinário valia para as demais normas."
+      }
+    ],
+    "narr": "Toque, pense e revele. Três cartas com casos rápidos desta aula. Toque para ver a pergunta, pense na resposta e toque de novo para revelar. Sem pressa: o objetivo é o seu cérebro buscar a resposta antes de vê-la."
+  },
+  {
+    "tipo": "Completar",
+    "img": "capa",
+    "alt": "O Imperador diante do trono com a chave dourada e o manuscrito da Constituição sobre a mesa",
+    "kicker": "Completar · Toque nas palavras",
+    "titulo": "Complete o artigo 98",
+    "intro": "A frase mais famosa desta aula apareceu com três palavras faltando. Abaixo dela estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+    "partes": [
+      "O Poder Moderador é a ",
+      " de toda a organização Política, e é delegado ",
+      " ao Imperador; e a Constituição que o criou era ",
+      "."
+    ],
+    "respostas": [
+      "chave",
+      "privativamente",
+      "semirrígida"
+    ],
+    "banco": [
+      "semirrígida",
+      "porta",
+      "privativamente",
+      "chave",
+      "rígida",
+      "temporariamente"
+    ],
+    "feedbackFinal": "<b>Frase completa!</b> A chave, a exclusividade do Imperador e a semirrigidez: três etiquetas que resumem a Carta de 1824.",
+    "narr": "Complete o artigo noventa e oito. A frase mais famosa desta aula apareceu com três palavras faltando. Abaixo dela estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima."
+  },
+  {
+    "tipo": "Linha do tempo",
+    "img": "timeline",
+    "alt": "Mapa antigo do Império com uma rota dourada e marcos luminosos sobre uma mesa escura",
+    "kicker": "Linha do tempo · Toque nos marcos",
+    "titulo": "O percurso desta aula",
+    "intro": "Vamos amarrar o capítulo numa linha só, seguindo os artigos da Carta. Toque em cada marco para abrir a explicação dele: são cinco momentos, do artigo quinto ao bloco final de alteração do texto.",
+    "marcos": [
+      {
+        "ano": "1824",
+        "titulo": "A outorga da primeira Constituição",
+        "texto": "Em 25 de março de 1824, D. Pedro I outorga a Constituição Política do Império: liberalismo conservador, semiabsolutismo e o destino de ser a mais duradoura da nossa história constitucional."
+      },
+      {
+        "ano": "Art. 5º",
+        "titulo": "A religião oficial",
+        "texto": "A Religião Católica Apostólica Romana é a religião do Império. As outras religiões são permitidas apenas com culto doméstico, sem forma alguma exterior de templo."
+      },
+      {
+        "ano": "Art. 10",
+        "titulo": "Os quatro poderes",
+        "texto": "A divisão quadripartite: Poder Legislativo, Poder Moderador, Poder Executivo e Poder Judicial. O Moderador nasce como poder político próprio."
+      },
+      {
+        "ano": "Art. 98",
+        "titulo": "A chave do sistema",
+        "texto": "O Poder Moderador é a chave de toda a organização política, delegado privativamente ao Imperador, inviolável e sagrado, para velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes."
+      },
+      {
+        "ano": "Arts. 174 a 178",
+        "titulo": "Como mudar a Carta",
+        "texto": "A Constituição semirrígida em ação: formalidades complexas para as normas materialmente constitucionais e procedimento ordinário para as demais. Sem cláusulas pétreas e sem controle de constitucionalidade."
+      }
+    ],
+    "narr": "O percurso desta aula. Vamos amarrar o capítulo numa linha só, seguindo os artigos da Carta. Toque em cada marco para abrir a explicação dele: são cinco momentos, do artigo quinto ao bloco final de alteração do texto."
+  },
+  {
+    "tipo": "Mapa mental",
+    "img": "roteiro",
+    "alt": "Mapa antigo do Império do Brasil sobre mesa escura, com rota dourada ligando as províncias à capital",
+    "kicker": "Mapa mental · Toque nos ramos",
+    "titulo": "Mapa mental da Constituição de 1824",
+    "intro": "O mapa inteiro da aula num lugar só. Toque em cada ramo para abrir o resumo dele e conferir se você domina o capítulo antes do desafio final.",
+    "centro": "CONSTITUIÇÃO DE 1824",
+    "ramos": [
+      {
+        "nome": "Retrato geral",
+        "texto": "Liberalismo conservador e semiabsolutismo: liberal nos direitos individuais, absolutista e conservadora nos direitos políticos, no modelo do constitucionalismo europeu da época. Falava-se na Dinastia Imperante de D. Pedro I, Imperador e Defensor Perpétuo do Brasil.",
+        "chips": [
+          "Duas metades",
+          "Modelo europeu"
+        ]
+      },
+      {
+        "nome": "Organização do Estado",
+        "texto": "Estado unitário e centralizado, com capital no Rio de Janeiro. As capitanias viraram Províncias, sem autonomia, com interventores nomeados pelo Imperador. Religião oficial católica (art. 5º) e demais cultos apenas domésticos.",
+        "chips": [
+          "Unitário",
+          "Art. 5º"
+        ]
+      },
+      {
+        "nome": "Poder Moderador",
+        "texto": "Quarto poder político (art. 10), a chave de toda a organização política, delegado privativamente ao Imperador (art. 98). Na prática, poder absolutista: Imperador inviolável e sagrado, sem qualquer responsabilidade.",
+        "chips": [
+          "Art. 98",
+          "Inviolável e sagrado"
+        ]
+      },
+      {
+        "nome": "Direitos e limites",
+        "texto": "Extenso rol de direitos individuais: liberdade, privacidade e propriedade, com legalidade, não retroatividade, presunção de inocência, juiz natural e individualização da pena. Mas sem proibir a escravidão, sem habeas corpus e com voto censitário, indireto e masculino.",
+        "chips": [
+          "Rol extenso",
+          "Voto censitário"
+        ]
+      },
+      {
+        "nome": "Rigidez e prática",
+        "texto": "Constituição semirrígida (arts. 174 a 178), sem cláusulas pétreas e sem controle de constitucionalidade. Na prática, parlamentarismo às avessas e Legislativo na Assembleia Geral, com Câmara dos Deputados e Senado.",
+        "chips": [
+          "Semirrígida",
+          "Assembleia Geral"
+        ]
+      }
+    ],
+    "narr": "Mapa mental da Constituição de mil oitocentos e vinte e quatro. O mapa inteiro da aula num lugar só. Toque em cada ramo para abrir o resumo dele e conferir se você domina o capítulo antes do desafio final."
+  },
+  {
+    "tipo": "Conteúdo",
+    "img": "assembleia",
+    "alt": "A assembleia legislativa imperial com bancadas em semicírculo, em detalhe aproximado",
+    "kicker": "Pegadinhas · Não caia nessas",
+    "titulo": "Não caia nessas!",
+    "corpo": "<p>Antes do desafio final, deixa eu te mostrar quatro armadilhas clássicas que as provas montam com este capítulo. Leia cada uma com calma, porque aqui as pegadinhas são o coração da aula.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/imagens/assembleia.webp\" alt=\"\"></div><p><b>Pegadinha um:</b> a Carta de mil oitocentos e vinte e quatro criou uma federação, porque dividiu o país em Províncias. Errado. Dividir em Províncias não é federar: o Estado era unitário, as Províncias não tinham autonomia e seus interventores eram nomeados pelo Imperador.</p><p><b>Pegadinha dois:</b> o Poder Moderador era um poder decorativo, de meros conselhos ao Imperador. Errado. Ele era a chave de toda a organização política, privativo do Imperador, que podia mandar e desmandar nas outras esferas, sem responder por nada.</p><p><b>Pegadinha três:</b> a Constituição de mil oitocentos e vinte e quatro aboliu a escravidão e criou o habeas corpus. Errado duas vezes: ela não proibia a escravidão e não previa habeas corpus, embora vedasse prisões arbitrárias.</p><p><b>Pegadinha quatro:</b> a Carta era totalmente rígida e protegia cláusulas pétreas com controle de constitucionalidade. Errado. Ela era semirrígida, sem cláusulas pétreas e sem controle de constitucionalidade. Se você guardou o unitarismo, a chave do artigo noventa e oito e a etiqueta de semirrígida, nenhuma dessas armadilhas te pega. Agora é com você: o desafio final te espera.</p>",
+    "narr": "Não caia nessas! Antes do desafio final, deixa eu te mostrar quatro armadilhas clássicas que as provas montam com este capítulo. Leia cada uma com calma, porque aqui as pegadinhas são o coração da aula. Pegadinha um: a Carta de mil oitocentos e vinte e quatro criou uma federação, porque dividiu o país em Províncias. Errado. Dividir em Províncias não é federar: o Estado era unitário, as Províncias não tinham autonomia e seus interventores eram nomeados pelo Imperador. Pegadinha dois: o Poder Moderador era um poder decorativo, de meros conselhos ao Imperador. Errado. Ele era a chave de toda a organização política, privativo do Imperador, que podia mandar e desmandar nas outras esferas, sem responder por nada. Pegadinha três: a Constituição de mil oitocentos e vinte e quatro aboliu a escravidão e criou o habeas corpus. Errado duas vezes: ela não proibia a escravidão e não previa habeas corpus, embora vedasse prisões arbitrárias. Pegadinha quatro: a Carta era totalmente rígida e protegia cláusulas pétreas com controle de constitucionalidade. Errado. Ela era semirrígida, sem cláusulas pétreas e sem controle de constitucionalidade. Se você guardou o unitarismo, a chave do artigo noventa e oito e a etiqueta de semirrígida, nenhuma dessas armadilhas te pega. Agora é com você: o desafio final te espera."
+  },
+  {
+    "tipo": "Karaokê",
+    "img": "capa",
+    "alt": "O Imperador diante do trono com a chave dourada e o manuscrito da Constituição sobre a mesa",
+    "kicker": "Karaokê · Siga a narração",
+    "titulo": "A aula inteira em um minuto",
+    "frases": [
+      "A aula inteira em um minuto, acompanhando a narração pela tela.",
+      "A Carta de mil oitocentos e vinte e quatro: liberal nos direitos individuais, conservadora nos políticos.",
+      "Estado unitário, Províncias sem autonomia e religião oficial católica.",
+      "Quatro poderes, com o Moderador como chave de toda a organização política.",
+      "Voto censitário, sem proibição da escravidão e sem habeas corpus.",
+      "Constituição semirrígida, sem cláusulas pétreas e sem controle de constitucionalidade."
+    ],
+    "narr": "A aula inteira em um minuto, acompanhando a narração pela tela. A Carta de mil oitocentos e vinte e quatro: liberal nos direitos individuais, conservadora nos políticos. Estado unitário, Províncias sem autonomia e religião oficial católica. Quatro poderes, com o Moderador como chave de toda a organização política. Voto censitário, sem proibição da escravidão e sem habeas corpus. Constituição semirrígida, sem cláusulas pétreas e sem controle de constitucionalidade."
+  },
+  {
+    "tipo": "Desafio",
+    "img": "capa",
+    "alt": "O Imperador diante do trono com a chave dourada e o manuscrito da Constituição sobre a mesa, em luz dramática",
+    "kicker": "Desafio final · Cinco perguntas",
+    "titulo": "Desafio final: o placar da professora",
+    "intro": "Chegou a hora de juntar tudo. São cinco perguntas sobre a Constituição de 1824, valendo cem pontos cada uma, e a última é a pergunta de ouro, que vale o dobro. Responda com calma: o placar aparece no fim.",
+    "perguntas": [
+      {
+        "q": "A forma de Estado adotada pela Constituição de 1824 foi:",
+        "ops": [
+          "A federação, com Províncias autônomas",
+          "O unitarismo, com governo centralizado e Províncias sem autonomia",
+          "A confederação de capitanias",
+          "A república federativa"
+        ],
+        "certa": 1,
+        "exp": "Estado unitário: capitanias convertidas em Províncias, sem autonomia, com interventores nomeados pelo Imperador e capital no Rio de Janeiro."
+      },
+      {
+        "q": "Os quatro poderes políticos do artigo 10 da Carta eram:",
+        "ops": [
+          "Legislativo, Executivo, Judicial e Militar",
+          "Legislativo, Moderador, Executivo e Judicial",
+          "Moderador, Clero, Executivo e Judicial",
+          "Legislativo, Executivo, Judicial e Eleitoral"
+        ],
+        "certa": 1,
+        "exp": "Legislativo, Moderador, Executivo e Judicial: a divisão quadripartite, marca registrada de 1824."
+      },
+      {
+        "q": "O voto na Constituição de 1824 era:",
+        "ops": [
+          "Universal e secreto",
+          "Direto, incluindo as mulheres",
+          "Censitário, indireto e restrito aos homens",
+          "Obrigatório para todos os livres maiores de idade"
+        ],
+        "certa": 2,
+        "exp": "Censitário, só de quem tinha dinheiro e posses, indireto e masculino. O voto feminino só foi permitido a partir de 1932."
+      },
+      {
+        "q": "Sobre a rigidez da Carta de 1824, é correto dizer que ela era:",
+        "ops": [
+          "Rígida, com cláusulas pétreas e controle de constitucionalidade",
+          "Flexível, alterável por qualquer lei ordinária em todas as partes",
+          "Imutável, por vontade do Imperador",
+          "Semirrígida, com processo complexo só para as normas materialmente constitucionais"
+        ],
+        "certa": 3,
+        "exp": "Semirrígida (arts. 174 a 178): formalidades complexas para as normas materialmente constitucionais e procedimento ordinário para as demais, sem cláusulas pétreas e sem controle."
+      },
+      {
+        "q": "Numa disputa entre os poderes do Império, procura-se o dispositivo que entrega ao Imperador, com exclusividade, a peça central de todo o sistema político de 1824. Esse dispositivo é:",
+        "ops": [
+          "O artigo 5º, que trata da religião oficial",
+          "O artigo 98, que define o Poder Moderador como a chave de toda a organização política, delegado privativamente ao Imperador",
+          "O artigo 10, que apenas lista os quatro poderes",
+          "Os artigos 174 a 178, que tratam da alteração da Constituição"
+        ],
+        "certa": 1,
+        "pts": 200,
+        "ouro": true,
+        "exp": "É a pergunta de ouro! É o artigo 98: o Poder Moderador é a chave de toda a organização política, delegado privativamente ao Imperador, Chefe Supremo da Nação, para velar pela independência, pelo equilíbrio e pela harmonia dos demais poderes."
+      }
+    ],
+    "narr": "Desafio final: o placar da professora. Chegou a hora de juntar tudo. São cinco perguntas sobre a Constituição de mil oitocentos e vinte e quatro, valendo cem pontos cada uma, e a última é a pergunta de ouro, que vale o dobro. Responda com calma: o placar aparece no fim."
+  },
+  {
+    "tipo": "Encerramento",
+    "img": "capa",
+    "alt": "O Imperador diante do trono com a chave dourada e o manuscrito da Constituição sobre a mesa, em luz dramática verde e dourada",
+    "kicker": "Encerramento · Fechando a Carta",
+    "titulo": "O que você leva desta aula",
+    "corpo": "<p>Você agora enxerga a Constituição de mil oitocentos e vinte e quatro inteira, nas suas duas metades. Sabe que ela foi liberal nos direitos individuais, com um rol extenso de liberdades e garantias que reconhecemos até hoje, e conservadora nos direitos políticos, com voto censitário, Províncias sem autonomia e religião oficial. Sabe que o coração do sistema era o Poder Moderador, a chave do artigo noventa e oito nas mãos exclusivas de um Imperador inviolável. E sabe ler as etiquetas que as provas cobram: semirrígida, sem cláusulas pétreas, sem controle de constitucionalidade, sem habeas corpus e sem proibição da escravidão.</p><p>Esta Carta abriu a nossa história constitucional e durou mais do que qualquer outra. Na próxima aula, vamos ver o Império ruir e a República nascer, com uma Constituição que responde a quase tudo o que você aprendeu hoje.</p>",
+    "pontos": [
+      "Retrato em duas metades: liberalismo nos direitos individuais e absolutismo nos direitos políticos, o liberalismo conservador de 1824.",
+      "Poder Moderador: quarto poder (art. 10), chave de toda a organização política delegada privativamente ao Imperador (art. 98), inviolável e sagrado.",
+      "Etiquetas da prova: Estado unitário, religião oficial católica (art. 5º), voto censitário, Constituição semirrígida, sem cláusulas pétreas, sem controle e sem habeas corpus."
+    ],
+    "narr": "O que você leva desta aula. Você agora enxerga a Constituição de mil oitocentos e vinte e quatro inteira, nas suas duas metades. Sabe que ela foi liberal nos direitos individuais, com um rol extenso de liberdades e garantias que reconhecemos até hoje, e conservadora nos direitos políticos, com voto censitário, Províncias sem autonomia e religião oficial. Sabe que o coração do sistema era o Poder Moderador, a chave do artigo noventa e oito nas mãos exclusivas de um Imperador inviolável. E sabe ler as etiquetas que as provas cobram: semirrígida, sem cláusulas pétreas, sem controle de constitucionalidade, sem habeas corpus e sem proibição da escravidão. Esta Carta abriu a nossa história constitucional e durou mais do que qualquer outra. Na próxima aula, vamos ver o Império ruir e a República nascer, com uma Constituição que responde a quase tudo o que você aprendeu hoje."
+  }
+];
+
+
+    var total = SLIDES.length;
+    var idx = 0;
+    var unlocked = false;
+    var player = new Audio();
+    player.preload = "auto";
+    var state = {};
+
+    var scrollArea = document.getElementById("scrollArea");
+    var etapaLabel = document.getElementById("etapaLabel");
+    var progressFill = document.getElementById("progressFill");
+    var btnPrev = document.getElementById("btnPrev");
+    var btnNext = document.getElementById("btnNext");
+
+    var ICON_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
+    var ICON_PAUSE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
+
+    /* ===== ÍCONES DOS BLOCOS ESPECIAIS ===== */
+    var BIC = {
+      book:'<span class="bic"><svg viewBox="0 0 24 24" fill="none" stroke="#e9cd6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></span>',
+      bulb:'<span class="bic"><svg viewBox="0 0 24 24" fill="none" stroke="#e9cd6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg></span>',
+      eye:'<span class="bic"><svg viewBox="0 0 24 24" fill="none" stroke="#e9cd6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>',
+      contrast:'<span class="bic"><svg viewBox="0 0 24 24" fill="none" stroke="#e9cd6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18V3z" fill="#e9cd6d" stroke="none"/></svg></span>',
+      warn:'<span class="bic"><svg viewBox="0 0 24 24" fill="none" stroke="#e9cd6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>',
+      list:'<span class="bic"><svg viewBox="0 0 24 24" fill="none" stroke="#e9cd6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3.5 6h.01"/><path d="M3.5 12h.01"/><path d="M3.5 18h.01"/></svg></span>',
+      check:'<span class="bic"><svg viewBox="0 0 24 24" fill="none" stroke="#e9cd6d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg></span>',
+      key:'<span class="bic"><svg viewBox="0 0 24 24" fill="none" stroke="#e9cd6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="16" r="4.5"/><path d="M11.2 12.8L20 4"/><path d="M16.5 7.5L19 10"/><path d="M14 10l2.5 2.5"/></svg></span>'
+    };
+    function iconize(h){
+      h = h.split('<p class="blabel">EXEMPLO PRÁTICO</p>').join('<p class="blabel">' + BIC.book + 'EXEMPLO PRÁTICO</p>');
+      h = h.split('<p class="blabel">PENSE ASSIM</p>').join('<p class="blabel">' + BIC.bulb + 'PENSE ASSIM</p>');
+      h = h.split('<p class="blabel">OLHE COM CUIDADO</p>').join('<p class="blabel">' + BIC.eye + 'OLHE COM CUIDADO</p>');
+      h = h.split('<p class="blabel">CONTRASTE RÁPIDO</p>').join('<p class="blabel">' + BIC.contrast + 'CONTRASTE RÁPIDO</p>');
+      h = h.replace(/(<p class="blabel">)(PEGADINHA)/g, '$1' + BIC.warn + '$2');
+      h = h.split('<p class="flabel">FRASE-CHAVE</p>').join('<p class="flabel">' + BIC.key + 'FRASE-CHAVE</p>');
+      h = h.split('<p class="flabel">NESSE BLOCO VOCÊ VIU</p>').join('<p class="flabel">' + BIC.check + 'NESSE BLOCO VOCÊ VIU</p>');
+      h = h.split('<p class="flabel">PONTOS PRINCIPAIS DA AULA</p>').join('<p class="flabel">' + BIC.check + 'PONTOS PRINCIPAIS DA AULA</p>');
+      return h;
+    }
+
+    function pad(n){ return String(n).padStart(2,"0"); }
+    function fmt(t){
+      if(!isFinite(t) || t == null) return "0:00";
+      t = Math.max(0, Math.floor(t));
+      return Math.floor(t/60) + ":" + pad(t%60);
+    }
+    function audioSrc(i){ return "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/audio/s" + pad(i+1) + ".mp3"; }
+
+    function hotPanelHTML(s, es){
+      if(es.cur === null || es.cur === undefined){
+        return '<p class="explorehint">Toque em uma bolinha dourada sobre a imagem para ler a explicação daquela cena.</p>';
+      }
+      var pt = s.pontos[es.cur];
+      var h = '<h3>' + pt.titulo + '</h3><p>' + pt.texto + '</p>';
+      if(es.count === s.pontos.length && s.fimTexto){
+        h += '<p style="margin-top:10px"><b>Viagem completa!</b> ' + s.fimTexto + '</p>';
+      }
+      return h;
+    }
+
+    function slideHTML(s){
+      if(s.tipo === "Capa"){
+        var hc = '<img class="coverimg" src="' + IMG[s.img] + '" alt="' + s.alt + '">';
+        hc += '<p class="kicker">' + s.kicker + '</p>';
+        hc += '<h2 class="covertitle">' + s.titulo + '</h2>';
+        hc += '<div class="coverrule"></div>';
+        hc += s.corpo;
+        return iconize(hc);
+      }
+      if(s.tipo === "Encerramento"){
+        var hf = '<img class="coverimg" src="' + IMG[s.img] + '" alt="' + s.alt + '">';
+        hf += '<p class="kicker">' + s.kicker + '</p>';
+        hf += '<h2 class="covertitle">' + s.titulo + '</h2>';
+        hf += '<div class="coverrule"></div>';
+        hf += s.corpo;
+        if(s.pontos && s.pontos.length){
+          hf += '<div class="fimbloco"><p class="flabel">PONTOS PRINCIPAIS DA AULA</p><ul>';
+          s.pontos.forEach(function(pt){ hf += '<li>' + pt + '</li>'; });
+          hf += '</ul></div>';
+        }
+        return iconize(hf);
+      }
+      var h = '<img class="banner" src="' + IMG[s.img] + '" alt="' + s.alt + '">';
+      h += '<p class="kicker">' + s.kicker + '</p>';
+      if(s.tipo === "Questão" || s.tipo === "Questão de banca"){
+        if(s.intro) h += '<p>' + s.intro + '</p>';
+        h += '<p class="qtext">' + s.questao + '</p>';
+        var letters = ["A","B","C","D","E"];
+        s.opcoes.forEach(function(op, oi){
+          h += '<button class="opt" type="button" data-opt="' + oi + '"><span class="letter">' + letters[oi] + '</span><span>' + op + '</span></button>';
+        });
+        h += '<div class="feedback" id="feedback"></div>';
+      } else if(s.tipo === "Flashcard"){
+        h += '<div class="flashwrap"><div class="flash" id="flashCard">'
+          + '<div class="face front"><div><p class="flabel">FLASHCARD · FRENTE</p><p class="fq">' + s.frente + '</p><p class="tap">Toque no cartão para ver a resposta</p></div></div>'
+          + '<div class="face back"><div><p class="flabel">RESPOSTA</p>' + s.verso + '<p class="tap">Toque para voltar à pergunta</p></div></div>'
+          + '</div></div>';
+      } else if(s.tipo === "Ligar termos"){
+        var st = state[idx] || (state[idx] = {done:{}, selT:null, selD:null, count:0});
+        h += '<p>' + s.instrucao + '</p>';
+        h += '<p class="matchscore">Pares encontrados: <b id="matchCount">' + st.count + ' de ' + s.pares.length + '</b></p>';
+        h += '<div class="matchgrid"><div id="colTerms">';
+        s.pares.forEach(function(p, pi){
+          h += '<button class="mbtn term' + (st.done[pi] ? ' done' : '') + '" type="button" data-term="' + pi + '" style="display:block;width:100%;margin-bottom:9px">' + p[0] + '</button>';
+        });
+        h += '</div><div id="colDefs">';
+        s.ordemDefs.forEach(function(pi){
+          h += '<button class="mbtn def' + (st.done[pi] ? ' done' : '') + '" type="button" data-def="' + pi + '" style="display:block;width:100%;margin-bottom:9px">' + s.pares[pi][1] + '</button>';
+        });
+        h += '</div></div>';
+        h += '<div class="matchdone' + (st.count === s.pares.length ? ' show' : '') + '" id="matchDone">' + (s.feedbackFinal || '<b>Muito bem!</b> Todos os pares foram ligados corretamente.') + '</div>';
+      } else if(s.tipo === "Explorar"){
+        var es = state[idx] || (state[idx] = {seen:{}, cur:null, count:0});
+        h = '<p class="kicker">' + s.kicker + '</p>';
+        h += '<h2>' + s.titulo + '</h2>';
+        h += '<p>' + s.intro + '</p>';
+        h += '<p class="explorecount">Pontos descobertos: <b id="exploreCount">' + es.count + ' de ' + s.pontos.length + '</b></p>';
+        h += '<div class="explorebox"><img src="' + IMG[s.img] + '" alt="' + s.alt + '">';
+        s.pontos.forEach(function(pt, pi){
+          var cls = "hotspot" + (es.cur === pi ? " active" : "") + (es.seen[pi] && es.cur !== pi ? " seen" : "");
+          var label = (es.seen[pi] && es.cur !== pi) ? "✓" : (pi + 1);
+          h += '<button class="' + cls + '" type="button" data-hot="' + pi + '" style="left:' + pt.x + '%;top:' + pt.y + '%" aria-label="Ponto ' + (pi + 1) + ': ' + pt.titulo + '">' + label + '</button>';
+        });
+        h += '</div>';
+        h += '<div class="hotpanel" id="hotPanel">' + hotPanelHTML(s, es) + '</div>';
+      } else if(s.tipo === "Toque e revele"){
+        h = '<img class="banner" src="' + IMG[s.img] + '" alt="' + s.alt + '">';
+        h += '<p class="kicker">' + s.kicker + '</p>';
+        h += '<h2>' + s.titulo + '</h2>';
+        h += '<p>' + s.intro + '</p>';
+        var rs = state[idx] || (state[idx] = {stage:{}, count:0});
+        h += '<p class="matchscore">Respostas reveladas: <b id="revealCount">' + rs.count + ' de ' + s.cartas.length + '</b></p>';
+        s.cartas.forEach(function(c, ci){
+          var stage = rs.stage[ci] || 0;
+          var cls = "revealcard" + (stage === 1 ? " open" : "") + (stage === 2 ? " done" : "");
+          var inner;
+          if(stage === 0){ inner = '<p class="rlabel">CARTA ' + (ci + 1) + '</p><p class="rbody">Uma pergunta está escondida aqui.</p><p class="rhint">Toque para ver a pergunta</p>'; }
+          else if(stage === 1){ inner = '<p class="rlabel">PERGUNTA</p><p class="rbody">' + c.p + '</p><p class="rhint">Pensou? Toque de novo para revelar a resposta</p>'; }
+          else { inner = '<p class="rlabel">RESPOSTA</p><p class="rbody">' + c.r + '</p>'; }
+          h += '<button class="' + cls + '" type="button" data-card="' + ci + '">' + inner + '</button>';
+        });
+      } else if(s.tipo === "Linha do tempo"){
+        var ts = state[idx] || (state[idx] = {open:{}, count:0});
+        h = '<p class="kicker">' + s.kicker + '</p>';
+        h += '<h2>' + s.titulo + '</h2>';
+        h += '<p>' + s.intro + '</p>';
+        h += '<p class="explorecount">Marcos abertos: <b id="tlCount">' + ts.count + ' de ' + s.marcos.length + '</b></p>';
+        h += '<div class="timeline">';
+        s.marcos.forEach(function(m, mi){
+          var open = !!ts.open[mi];
+          h += '<div class="tlitem"><button class="tlbtn' + (open ? ' open' : '') + '" type="button" data-tl="' + mi + '"><span class="tlyear">' + m.ano + '</span><span class="tltitle">' + m.titulo + '</span></button>'
+            + '<div class="tlbody' + (open ? ' show' : '') + '" id="tlBody' + mi + '"><p>' + m.texto + '</p></div></div>';
+        });
+        h += '</div>';
+      } else if(s.tipo === "Verdadeiro ou falso"){
+        if(!state[idx]) state[idx] = {cur:0, score:0, answered:false, chosen:null, done:false};
+        h += '<h2>' + s.titulo + '</h2>';
+        h += '<p>' + s.intro + '</p>';
+        h += '<div id="vfArea"></div>';
+      } else if(s.tipo === "Comparador"){
+        h = '<p class="kicker">' + s.kicker + '</p>';
+        h += '<h2>' + s.titulo + '</h2>';
+        h += '<p>' + s.intro + '</p>';
+        h += '<div class="cmpbox" id="cmpBox">'
+          + '<img src="' + IMG[s.img] + '" alt="">'
+          + '<img class="cmpafter" id="cmpTop" src="' + IMG[s.img2] + '" alt="">'
+          + '<span class="cmplabel l">' + (s.labelL || "ANTES") + '</span><span class="cmplabel r">' + (s.labelR || "DEPOIS") + '</span>'
+          + '<div class="cmphandle" id="cmpHandle"></div>'
+          + '</div>';
+        h += '<input class="cmprange" id="cmpRange" type="range" min="0" max="100" value="50" aria-label="Arraste para comparar os dois critérios">';
+      } else if(s.tipo === "Completar"){
+        var cs = state[idx] || (state[idx] = {filled:0, used:{}});
+        h += '<h2>' + s.titulo + '</h2>';
+        h += '<p>' + s.intro + '</p>';
+        var ft = '';
+        s.partes.forEach(function(part, pi){
+          ft += part;
+          if(pi < s.respostas.length){
+            var filled = cs.filled > pi;
+            var isNext = cs.filled === pi;
+            ft += '<span class="blank' + (filled ? '' : ' empty') + (isNext ? ' next' : '') + '" data-blank="' + pi + '">' + (filled ? s.respostas[pi] : '· · · · · ·') + '</span>';
+          }
+        });
+        h += '<div class="filltext">' + ft + '</div>';
+        h += '<div class="wordbank" id="wordBank">';
+        s.banco.forEach(function(w, wi){
+          h += '<button class="wordchip' + (cs.used[wi] ? ' used' : '') + '" type="button" data-word="' + wi + '">' + w + '</button>';
+        });
+        h += '</div>';
+        h += '<div class="matchdone' + (cs.filled === s.respostas.length ? ' show' : '') + '" id="fillDone">' + (s.feedbackFinal || '<b>Frase completa!</b>') + '</div>';
+      } else if(s.tipo === "Karaokê"){
+        h = '<p class="kicker">' + s.kicker + '</p>';
+        h += '<h2>' + s.titulo + '</h2>';
+        h += '<p class="karaoke" id="karaokeBox">';
+        s.frases.forEach(function(f, fi){
+          h += '<span class="sent" data-sent="' + fi + '">' + f + '</span> ';
+        });
+        h += '</p>';
+        h += '<p class="explorehint">Toque no player, do lado de fora do celular, e acompanhe: cada frase acende na tela no ritmo da narração. Se quiser, toque numa frase para ouvir a partir dela.</p>';
+      } else if(s.tipo === "Mapa mental"){
+        var ms = state[idx] || (state[idx] = {open:{}, seen:{}, count:0});
+        h = '<p class="kicker">' + s.kicker + '</p>';
+        h += '<h2>' + s.titulo + '</h2>';
+        h += '<p>' + s.intro + '</p>';
+        h += '<p class="explorecount">Ramos abertos: <b id="mindCount">' + ms.count + ' de ' + s.ramos.length + '</b></p>';
+        h += '<div class="mindcenter">' + (s.centro || "MAPA DA AULA") + '</div>';
+        s.ramos.forEach(function(r, ri){
+          var open = !!ms.open[ri];
+          h += '<div class="mindbranch"><button class="mindbtn' + (open ? ' open' : '') + '" type="button" data-mind="' + ri + '"><span>' + r.nome + '</span><span class="marr">' + (open ? '▾ aberto' : '▸ tocar') + '</span></button>'
+            + '<div class="mindbody' + (open ? ' show' : '') + '" id="mindBody' + ri + '"><p>' + r.texto + '</p><div class="chips">' + r.chips.map(function(c){ return '<span class="chip">' + c + '</span>'; }).join('') + '</div></div></div>';
+        });
+      } else if(s.tipo === "Desafio"){
+        if(!state[idx]) state[idx] = {q:0, pts:0, answered:false, chosen:null, finished:false};
+        h = '<p class="kicker">' + s.kicker + '</p>';
+        h += '<h2>' + s.titulo + '</h2>';
+        h += '<p>' + s.intro + '</p>';
+        h += '<div id="desafioArea"></div>';
+      } else {
+        h += '<h2>' + s.titulo + '</h2>' + s.corpo;
+      }
+      return iconize(h);
+    }
+
+    function bindAudio(){
+      var playBtn = document.getElementById("playBtn");
+      var box = document.getElementById("audioBox");
+      var track = document.getElementById("aTrack");
+      playBtn.addEventListener("click", function(ev){
+        ev.stopPropagation();
+        unlocked = true;
+        togglePlay();
+      });
+      track.addEventListener("click", function(ev){
+        ev.stopPropagation();
+        var r = track.getBoundingClientRect();
+        if(player.duration){
+          player.currentTime = player.duration * ((ev.clientX - r.left) / r.width);
+        }
+      });
+      box.addEventListener("mouseenter", function(){
+        if(player.paused){ tryPlay(); }
+      });
+    }
+
+    function tryPlay(){
+      var p = player.play();
+      if(p && p.catch){ p.catch(function(){}); }
+    }
+    function togglePlay(){
+      if(player.paused){ tryPlay(); } else { player.pause(); }
+    }
+
+    player.addEventListener("play", function(){
+      var b = document.getElementById("playBtn");
+      if(b) b.innerHTML = ICON_PAUSE;
+    });
+    player.addEventListener("pause", function(){
+      var b = document.getElementById("playBtn");
+      if(b) b.innerHTML = ICON_PLAY;
+    });
+    player.addEventListener("timeupdate", function(){
+      var f = document.getElementById("aFill");
+      var t = document.getElementById("aTime");
+      if(f && player.duration) f.style.width = (100 * player.currentTime / player.duration) + "%";
+      if(t) t.textContent = fmt(player.currentTime) + " / " + fmt(player.duration);
+      karaSync();
+    });
+    player.addEventListener("loadedmetadata", function(){
+      var t = document.getElementById("aTime");
+      if(t) t.textContent = "0:00 / " + fmt(player.duration);
+    });
+    player.addEventListener("ended", function(){
+      var f = document.getElementById("aFill");
+      if(f) f.style.width = "0%";
+    });
+
+    function bindInteractions(s){
+      if(s.tipo === "Questão" || s.tipo === "Questão de banca"){
+        var answered = state[idx] && state[idx].answered;
+        var opts = scrollArea.querySelectorAll(".opt");
+        var fb = document.getElementById("feedback");
+        function paint(chosen){
+          opts.forEach(function(o){
+            var oi = parseInt(o.getAttribute("data-opt"), 10);
+            o.disabled = true;
+            if(oi === s.certa) o.classList.add("correct");
+            else if(oi === chosen) o.classList.add("wrong");
+          });
+          fb.className = "feedback show " + (chosen === s.certa ? "good" : "bad");
+          fb.innerHTML = "<b>" + (chosen === s.certa ? "Resposta certa!" : "Não foi dessa vez.") + "</b>" + s.feedback;
+        }
+        if(answered){ paint(state[idx].chosen); }
+        opts.forEach(function(o){
+          o.addEventListener("click", function(){
+            if(state[idx] && state[idx].answered) return;
+            var oi = parseInt(o.getAttribute("data-opt"), 10);
+            state[idx] = {answered:true, chosen:oi};
+            paint(oi);
+          });
+        });
+      } else if(s.tipo === "Flashcard"){
+        var card = document.getElementById("flashCard");
+        card.addEventListener("click", function(){ card.classList.toggle("flipped"); });
+      } else if(s.tipo === "Ligar termos"){
+        var st = state[idx];
+        var terms = scrollArea.querySelectorAll(".term");
+        var defs = scrollArea.querySelectorAll(".def");
+        function select(el, group){
+          if(el.classList.contains("done")) return;
+          var groupBtns = group === "t" ? terms : defs;
+          groupBtns.forEach(function(b){ b.classList.remove("sel"); });
+          el.classList.add("sel");
+          if(group === "t") st.selT = parseInt(el.getAttribute("data-term"), 10);
+          else st.selD = parseInt(el.getAttribute("data-def"), 10);
+          checkMatch();
+        }
+        function checkMatch(){
+          if(st.selT === null || st.selT === undefined || st.selD === null || st.selD === undefined) return;
+          var tBtn = scrollArea.querySelector('.term[data-term="' + st.selT + '"]');
+          var dBtn = scrollArea.querySelector('.def[data-def="' + st.selD + '"]');
+          if(st.selT === st.selD){
+            st.done[st.selT] = true;
+            st.count++;
+            tBtn.classList.add("done"); dBtn.classList.add("done");
+            tBtn.classList.remove("sel"); dBtn.classList.remove("sel");
+            var mc = document.getElementById("matchCount");
+            if(mc) mc.textContent = st.count + " de " + s.pares.length;
+            if(st.count === s.pares.length){
+              var md = document.getElementById("matchDone");
+              if(md) md.classList.add("show");
+            }
+          } else {
+            [tBtn, dBtn].forEach(function(b){
+              b.classList.add("shake");
+              setTimeout(function(){ b.classList.remove("shake", "sel"); }, 380);
+            });
+          }
+          st.selT = null; st.selD = null;
+        }
+        terms.forEach(function(b){ b.addEventListener("click", function(){ select(b, "t"); }); });
+        defs.forEach(function(b){ b.addEventListener("click", function(){ select(b, "d"); }); });
+      } else if(s.tipo === "Explorar"){
+        var es = state[idx];
+        var hots = scrollArea.querySelectorAll(".hotspot");
+        hots.forEach(function(b){
+          b.addEventListener("click", function(){
+            var pi = parseInt(b.getAttribute("data-hot"), 10);
+            if(!es.seen[pi]){ es.seen[pi] = true; es.count++; }
+            es.cur = pi;
+            var ec = document.getElementById("exploreCount");
+            if(ec) ec.textContent = es.count + " de " + s.pontos.length;
+            var panel = document.getElementById("hotPanel");
+            if(panel) panel.innerHTML = hotPanelHTML(s, es);
+            hots.forEach(function(o){
+              var oi = parseInt(o.getAttribute("data-hot"), 10);
+              var isCur = oi === pi;
+              var isSeen = !!es.seen[oi] && !isCur;
+              o.classList.toggle("active", isCur);
+              o.classList.toggle("seen", isSeen);
+              o.textContent = isSeen ? "✓" : (oi + 1);
+            });
+            if(panel) panel.scrollIntoView({behavior:"smooth", block:"nearest"});
+          });
+        });
+      } else if(s.tipo === "Toque e revele"){
+        var rs = state[idx];
+        var cards = scrollArea.querySelectorAll(".revealcard");
+        cards.forEach(function(card){
+          card.addEventListener("click", function(){
+            var ci = parseInt(card.getAttribute("data-card"), 10);
+            var stage = rs.stage[ci] || 0;
+            if(stage >= 2) return;
+            stage++;
+            rs.stage[ci] = stage;
+            var c = s.cartas[ci];
+            if(stage === 2){
+              rs.count++;
+              var rc = document.getElementById("revealCount");
+              if(rc) rc.textContent = rs.count + " de " + s.cartas.length;
+              card.classList.remove("open");
+              card.classList.add("done");
+              card.innerHTML = '<p class="rlabel">RESPOSTA</p><p class="rbody">' + c.r + '</p>';
+            } else {
+              card.classList.add("open");
+              card.innerHTML = '<p class="rlabel">PERGUNTA</p><p class="rbody">' + c.p + '</p><p class="rhint">Pensou? Toque de novo para revelar a resposta</p>';
+            }
+          });
+        });
+      } else if(s.tipo === "Linha do tempo"){
+        var ts = state[idx];
+        scrollArea.querySelectorAll(".tlbtn").forEach(function(b){
+          b.addEventListener("click", function(){
+            var mi = parseInt(b.getAttribute("data-tl"), 10);
+            var body = document.getElementById("tlBody" + mi);
+            var opening = !body.classList.contains("show");
+            body.classList.toggle("show", opening);
+            b.classList.toggle("open", opening);
+            ts.open[mi] = opening;
+            if(opening && !b.getAttribute("data-counted")){
+              b.setAttribute("data-counted", "1");
+              ts.count++;
+              var tc = document.getElementById("tlCount");
+              if(tc) tc.textContent = ts.count + " de " + s.marcos.length;
+            }
+          });
+        });
+      } else if(s.tipo === "Verdadeiro ou falso"){
+        var vst = state[idx];
+        var vfArea = document.getElementById("vfArea");
+        function renderVF(){
+          if(vst.done){
+            vfArea.innerHTML = '<div class="finalscore"><p>Você acertou</p><p class="big">' + vst.score + ' de ' + s.afirmacoes.length + '</p><p>' + (vst.score === s.afirmacoes.length ? "Perfeito! Nenhuma armadilha te derrubou." : vst.score >= 3 ? "Muito bem! O homem de trás já não se esconde de você." : "Bom treino! Volte às cartas com calma depois de rever as explicações das etapas.") + '</p></div>';
+            return;
+          }
+          var a = s.afirmacoes[vst.cur];
+          var h = '<p class="matchscore">Carta <b>' + (vst.cur + 1) + ' de ' + s.afirmacoes.length + '</b> · Acertos: <b>' + vst.score + '</b></p>';
+          h += '<div class="vfstage"><div class="vfcard" id="vfCard"><span class="vfstamp f" id="stampF">FALSO</span><span class="vfstamp v" id="stampV">VERDADEIRO</span><p class="vflabel">AFIRMAÇÃO</p><p class="vftext">' + a.t + '</p></div></div>';
+          if(!vst.answered){
+            h += '<div class="vfbtns"><button class="vfbtn f" type="button" id="vfFalse">← Falso</button><button class="vfbtn v" type="button" id="vfTrue">Verdadeiro →</button></div>';
+            h += '<p class="explorehint" style="margin-top:10px">Você também pode arrastar a carta para o lado da sua resposta.</p>';
+          } else {
+            h += '<div class="feedback show ' + (vst.chosen === a.v ? 'good' : 'bad') + '"><b>' + (vst.chosen === a.v ? "Acertou! " : "Não foi dessa vez. ") + (a.v ? "É verdadeira." : "É falsa.") + '</b>' + a.exp + '</div>';
+            h += '<button class="againbtn" type="button" id="vfNext" style="width:100%">' + (vst.cur === s.afirmacoes.length - 1 ? "Ver o resultado" : "Próxima carta →") + '</button>';
+          }
+          vfArea.innerHTML = h;
+          bindVFCard();
+        }
+        function answerVF(choice){
+          if(vst.answered) return;
+          var a = s.afirmacoes[vst.cur];
+          vst.answered = true;
+          vst.chosen = choice;
+          if(choice === a.v) vst.score++;
+          renderVF();
+        }
+        function bindVFCard(){
+          var card = document.getElementById("vfCard");
+          var bF = document.getElementById("vfFalse");
+          var bT = document.getElementById("vfTrue");
+          var bN = document.getElementById("vfNext");
+          if(bF) bF.addEventListener("click", function(){ answerVF(false); });
+          if(bT) bT.addEventListener("click", function(){ answerVF(true); });
+          if(bN) bN.addEventListener("click", function(){
+            if(vst.cur === s.afirmacoes.length - 1){ vst.done = true; }
+            else { vst.cur++; vst.answered = false; vst.chosen = null; }
+            renderVF();
+          });
+          if(!card || vst.answered) return;
+          card.addEventListener("touchstart", function(ev){ ev.stopPropagation(); }, {passive:true});
+          card.addEventListener("touchend", function(ev){ ev.stopPropagation(); }, {passive:true});
+          var startX = null, dx = 0;
+          var stampF = document.getElementById("stampF");
+          var stampV = document.getElementById("stampV");
+          card.addEventListener("pointerdown", function(ev){
+            startX = ev.clientX; dx = 0;
+            try{ card.setPointerCapture(ev.pointerId); }catch(e){}
+          });
+          card.addEventListener("pointermove", function(ev){
+            if(startX === null) return;
+            dx = ev.clientX - startX;
+            card.style.transform = "translateX(" + dx + "px) rotate(" + (dx / 22) + "deg)";
+            if(stampV) stampV.style.opacity = dx > 12 ? Math.min(1, dx / 80) : 0;
+            if(stampF) stampF.style.opacity = dx < -12 ? Math.min(1, -dx / 80) : 0;
+          });
+          card.addEventListener("pointerup", function(){
+            if(startX === null) return;
+            var finalDx = dx;
+            startX = null;
+            card.style.transform = "";
+            if(stampV) stampV.style.opacity = 0;
+            if(stampF) stampF.style.opacity = 0;
+            if(finalDx > 70) answerVF(true);
+            else if(finalDx < -70) answerVF(false);
+          });
+          card.addEventListener("pointercancel", function(){
+            startX = null;
+            card.style.transform = "";
+          });
+        }
+        renderVF();
+      } else if(s.tipo === "Comparador"){
+        var top = document.getElementById("cmpTop");
+        var handle = document.getElementById("cmpHandle");
+        var range = document.getElementById("cmpRange");
+        var box = document.getElementById("cmpBox");
+        function setCmp(v){
+          v = Math.max(0, Math.min(100, v));
+          top.style.clipPath = "inset(0 0 0 " + v + "%)";
+          handle.style.left = v + "%";
+          range.value = v;
+        }
+        range.addEventListener("input", function(){ setCmp(parseFloat(range.value)); });
+        range.addEventListener("touchstart", function(ev){ ev.stopPropagation(); }, {passive:true});
+        range.addEventListener("touchend", function(ev){ ev.stopPropagation(); }, {passive:true});
+        box.addEventListener("touchstart", function(ev){ ev.stopPropagation(); }, {passive:true});
+        box.addEventListener("touchend", function(ev){ ev.stopPropagation(); }, {passive:true});
+        var cmpDrag = false;
+        function cmpFromEvent(ev){
+          var r = box.getBoundingClientRect();
+          setCmp((ev.clientX - r.left) / r.width * 100);
+        }
+        box.addEventListener("pointerdown", function(ev){ cmpDrag = true; try{ box.setPointerCapture(ev.pointerId); }catch(e){} cmpFromEvent(ev); });
+        box.addEventListener("pointermove", function(ev){ if(cmpDrag) cmpFromEvent(ev); });
+        box.addEventListener("pointerup", function(){ cmpDrag = false; });
+        box.addEventListener("pointercancel", function(){ cmpDrag = false; });
+        setCmp(50);
+      } else if(s.tipo === "Completar"){
+        var cs2 = state[idx];
+        scrollArea.querySelectorAll(".wordchip").forEach(function(chip){
+          chip.addEventListener("click", function(){
+            var wi = parseInt(chip.getAttribute("data-word"), 10);
+            if(cs2.used[wi] || cs2.filled >= s.respostas.length) return;
+            if(s.banco[wi] === s.respostas[cs2.filled]){
+              cs2.used[wi] = true;
+              chip.classList.add("used");
+              var blank = scrollArea.querySelector('.blank[data-blank="' + cs2.filled + '"]');
+              if(blank){
+                blank.textContent = s.respostas[cs2.filled];
+                blank.classList.remove("empty", "next");
+              }
+              cs2.filled++;
+              var nb = scrollArea.querySelector('.blank[data-blank="' + cs2.filled + '"]');
+              if(nb) nb.classList.add("next");
+              if(cs2.filled === s.respostas.length){
+                var fd = document.getElementById("fillDone");
+                if(fd) fd.classList.add("show");
+              }
+            } else {
+              chip.classList.add("shake");
+              setTimeout(function(){ chip.classList.remove("shake"); }, 380);
+            }
+          });
+        });
+      } else if(s.tipo === "Karaokê"){
+        var kbox = document.getElementById("karaokeBox");
+        if(kbox){
+          kbox.querySelectorAll(".sent").forEach(function(sp){
+            sp.addEventListener("click", function(){
+              karaSeek(parseInt(sp.getAttribute("data-sent"), 10));
+            });
+          });
+        }
+      } else if(s.tipo === "Mapa mental"){
+        var ms = state[idx];
+        scrollArea.querySelectorAll(".mindbtn").forEach(function(b){
+          b.addEventListener("click", function(){
+            var ri = parseInt(b.getAttribute("data-mind"), 10);
+            var body = document.getElementById("mindBody" + ri);
+            var opening = !body.classList.contains("show");
+            body.classList.toggle("show", opening);
+            b.classList.toggle("open", opening);
+            ms.open[ri] = opening;
+            b.querySelector(".marr").textContent = opening ? "▾ aberto" : "▸ tocar";
+            if(opening && !ms.seen[ri]){
+              ms.seen[ri] = true; ms.count++;
+              var mc = document.getElementById("mindCount");
+              if(mc) mc.textContent = ms.count + " de " + s.ramos.length;
+            }
+          });
+        });
+      } else if(s.tipo === "Desafio"){
+        var dst = state[idx];
+        var dArea = document.getElementById("desafioArea");
+        var dLetters = ["A","B","C","D","E"];
+        var maxPts = 0;
+        s.perguntas.forEach(function(pq){ maxPts += (pq.pts || 100); });
+        function renderDesafio(){
+          if(dst.finished){
+            var msg = dst.pts >= maxPts ? "Pontuação máxima! Você dominou esta aula: da teoria que o Código adotou ao homem de trás da autoria mediata." : dst.pts >= maxPts * 0.6 ? "Muito bem! A teoria adotada e a autoria mediata já estão na sua mão." : "Bom começo! Refaça as questões e os flashcards da aula e tente de novo: o placar sobe rápido.";
+            dArea.innerHTML = '<div class="finalscore"><p>SEU PLACAR FINAL</p><p class="big">' + dst.pts + ' pontos</p><p>' + msg + '</p><button class="againbtn" type="button" id="desafioAgain">Jogar de novo</button></div>';
+            document.getElementById("desafioAgain").addEventListener("click", function(){
+              dst.q = 0; dst.pts = 0; dst.answered = false; dst.chosen = null; dst.finished = false;
+              renderDesafio();
+            });
+            return;
+          }
+          var pq = s.perguntas[dst.q];
+          var val = pq.pts || 100;
+          var h = '<div class="scorebar"><span>Pergunta <b>' + (dst.q + 1) + ' de ' + s.perguntas.length + '</b></span><span class="pts">' + dst.pts + ' pts</span></div>';
+          if(pq.ouro) h += '<p><span class="goldtag">PERGUNTA DE OURO · VALE 200 PONTOS</span></p>';
+          h += '<p class="qtext">' + pq.q + '</p>';
+          pq.ops.forEach(function(op, oi){
+            var cls = "opt";
+            if(dst.answered){
+              if(oi === pq.certa) cls += " correct";
+              else if(oi === dst.chosen) cls += " wrong";
+            }
+            h += '<button class="' + cls + '" type="button" data-dopt="' + oi + '"' + (dst.answered ? ' disabled' : '') + '><span class="letter">' + dLetters[oi] + '</span><span>' + op + '</span></button>';
+          });
+          if(dst.answered){
+            h += '<div class="feedback show ' + (dst.chosen === pq.certa ? 'good' : 'bad') + '"><b>' + (dst.chosen === pq.certa ? ("Resposta certa! +" + val + " pontos") : "Não foi dessa vez.") + '</b>' + pq.exp + '</div>';
+            h += '<button class="againbtn" type="button" id="desafioNext" style="width:100%">' + (dst.q === s.perguntas.length - 1 ? "Ver meu placar" : "Próxima pergunta →") + '</button>';
+          }
+          dArea.innerHTML = h;
+          dArea.querySelectorAll(".opt").forEach(function(o){
+            o.addEventListener("click", function(){
+              if(dst.answered) return;
+              var oi = parseInt(o.getAttribute("data-dopt"), 10);
+              dst.answered = true;
+              dst.chosen = oi;
+              if(oi === pq.certa) dst.pts += val;
+              renderDesafio();
+            });
+          });
+          var nb2 = document.getElementById("desafioNext");
+          if(nb2) nb2.addEventListener("click", function(){
+            if(dst.q === s.perguntas.length - 1){ dst.finished = true; }
+            else { dst.q++; dst.answered = false; dst.chosen = null; }
+            renderDesafio();
+          });
+        }
+        renderDesafio();
+      }
+    }
+
+    var karaIdx = -1;
+    function karaFracs(s){
+      var totalChars = 0;
+      s.frases.forEach(function(f){ totalChars += f.length; });
+      var acc = 0, fr = [];
+      s.frases.forEach(function(f){
+        fr.push([acc / totalChars, (acc + f.length) / totalChars]);
+        acc += f.length;
+      });
+      return fr;
+    }
+    function karaSync(){
+      var s = SLIDES[idx];
+      if(!s || s.tipo !== "Karaokê" || !player.duration) return;
+      var box = document.getElementById("karaokeBox");
+      if(!box) return;
+      var fr = karaFracs(s);
+      var pos = player.currentTime / player.duration;
+      var cur = 0;
+      for(var i = 0; i < fr.length; i++){ if(pos >= fr[i][0]) cur = i; }
+      if(cur === karaIdx) return;
+      karaIdx = cur;
+      var spans = box.querySelectorAll(".sent");
+      spans.forEach(function(sp, si){
+        sp.classList.toggle("on", si === cur);
+        sp.classList.toggle("done", si < cur);
+      });
+      var el = spans[cur];
+      if(el) el.scrollIntoView({behavior:"smooth", block:"nearest"});
+    }
+    function karaSeek(fi){
+      var s = SLIDES[idx];
+      if(!s || s.tipo !== "Karaokê" || !player.duration) return;
+      var fr = karaFracs(s);
+      player.currentTime = Math.max(0, fr[fi][0] * player.duration - 0.05);
+      karaIdx = -1;
+      karaSync();
+      unlocked = true;
+      tryPlay();
+    }
+
+    var BLOCKS = [[6, "Bloco 1 de 5 · Retrato geral da Carta de 1824"], [12, "Bloco 2 de 5 · O Poder Moderador"], [21, "Bloco 3 de 5 · Liberdades, rigidez e curiosidades"], [28, "Bloco 4 de 5 · A costura do Império"], [37, "Bloco 5 de 5 · Revisão e desafio"], [38, "Fechamento"]];
+    function blockLabel(i){
+      for(var b = 0; b < BLOCKS.length; b++){ if(i <= BLOCKS[b][0]) return BLOCKS[b][1]; }
+      return "Fechamento";
+    }
+
+    function show(i, autoplay){
+      idx = Math.max(0, Math.min(total - 1, i));
+      var s = SLIDES[idx];
+      karaIdx = -1;
+      scrollArea.innerHTML = slideHTML(s);
+      scrollArea.scrollTop = 0;
+      scrollArea.classList.remove("enter");
+      void scrollArea.offsetWidth;
+      scrollArea.classList.add("enter");
+      var h1El = document.querySelector("header h1");
+      if(h1El) h1El.style.display = idx === 0 ? "none" : "";
+      var seal = document.getElementById("blockSeal");
+      if(seal) seal.textContent = blockLabel(idx);
+      etapaLabel.innerHTML = "Etapa <b>" + (idx + 1) + " de " + total + "</b> · " + s.tipo + (s.titulo ? ": " + s.titulo : "");
+      progressFill.style.width = ((idx + 1) / total * 100) + "%";
+      btnPrev.disabled = idx === 0;
+      btnNext.innerHTML = idx === total - 1 ? "↺ Voltar ao início" : "Próximo →";
+      bindInteractions(s);
+      player.pause();
+      player.src = audioSrc(idx);
+      player.load();
+      if(autoplay && unlocked){ tryPlay(); }
+    }
+
+    btnPrev.addEventListener("click", function(){ show(idx - 1, true); });
+    btnNext.addEventListener("click", function(){
+      if(idx === total - 1){ show(0, true); } else { show(idx + 1, true); }
+    });
+    document.addEventListener("keydown", function(ev){
+      if(ev.key === "ArrowRight"){ btnNext.click(); }
+      else if(ev.key === "ArrowLeft"){ btnPrev.click(); }
+    });
+    document.addEventListener("pointerdown", function(){
+      if(!unlocked){
+        unlocked = true;
+        if(player.paused){ tryPlay(); }
+      }
+    }, {once:false});
+
+    var tx = null, ty = null;
+    var phone = document.getElementById("phone");
+    phone.addEventListener("touchstart", function(ev){
+      tx = ev.touches[0].clientX; ty = ev.touches[0].clientY;
+    }, {passive:true});
+    phone.addEventListener("touchend", function(ev){
+      if(tx === null) return;
+      var dx = ev.changedTouches[0].clientX - tx;
+      var dy = ev.changedTouches[0].clientY - ty;
+      if(Math.abs(dx) > 64 && Math.abs(dx) > Math.abs(dy) * 1.7){
+        if(dx < 0){ btnNext.click(); } else { btnPrev.click(); }
+      }
+      tx = null; ty = null;
+    }, {passive:true});
+
+    bindAudio();
+    show(0, false);
+    </script>
+  </body>
+</html>

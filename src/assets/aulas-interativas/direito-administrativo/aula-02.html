@@ -643,7 +643,18 @@
         transition:transform .4s ease;
       }
 
-    </style>
+    
+  /* Transição Suave Crossfade de 300ms entre as trocas de slide */
+  .scroll {
+    opacity: 1;
+    animation: slideCrossFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
+  @keyframes slideCrossFadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+</style>
   </head>
   <body>
     <div class="stage">

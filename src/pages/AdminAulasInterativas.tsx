@@ -80,6 +80,30 @@ const DISCIPLINAS_CATALOGO: DisciplinaItem[] = [
     corFundoCard: 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)',
     corBorda: 'rgba(217,160,10,0.35)',
     textAccentClass: 'text-[#d9a00a]'
+  },
+  {
+    id: 'constitucional',
+    nome: 'DIREITO CONSTITUCIONAL',
+    subtitulo: 'ÁREA DO CONHECIMENTO',
+    descricao: 'Evolução constitucional do Brasil, da independência de 1822 e Carta de 1824 aos princípios fundamentais, organização dos poderes e garantias fundamentais.',
+    capaHeroUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp',
+    corDestaque: '#22c55e',
+    corGradientRing: ['#4ade80', '#16a34a'],
+    corFundoCard: 'linear-gradient(180deg, #0e2916 0%, #08170c 100%)',
+    corBorda: 'rgba(34,197,94,0.35)',
+    textAccentClass: 'text-[#22c55e]'
+  },
+  {
+    id: 'trabalho',
+    nome: 'DIREITO DO TRABALHO',
+    subtitulo: 'ÁREA DO CONHECIMENTO',
+    descricao: 'Princípios fundamentais, fontes materiais e formais do trabalho, negociação coletiva (CCT/ACT) e as reformas e jurisprudência do TST.',
+    capaHeroUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp',
+    corDestaque: '#a855f7',
+    corGradientRing: ['#c084fc', '#9333ea'],
+    corFundoCard: 'linear-gradient(180deg, #25123d 0%, #150924 100%)',
+    corBorda: 'rgba(168,85,247,0.35)',
+    textAccentClass: 'text-[#a855f7]'
   }
 ];
 
@@ -101,6 +125,24 @@ const MATERIAS_CATALOGO: MateriaItem[] = [
     subtitulo: 'Gênese histórica, Estado de Direito e critérios conceituais',
     descricao: 'Estudo da formação do Direito Administrativo na França pós-revolucionária, superação do patrimonialismo pela burocracia, Lei de 1872, caso Blanco e critérios definidores.',
     capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp'
+  },
+  {
+    id: 'const-historia',
+    disciplinaId: 'constitucional',
+    numeroMateria: '01. HISTÓRIA CONSTITUCIONAL DO BRASIL',
+    titulo: 'História Constitucional do Brasil',
+    subtitulo: 'Da Independência à Constituição Imperial de 1824',
+    descricao: 'Gênese do constitucionalismo brasileiro, Constituinte da Macaxeira de 1823, Noite da Agonia, outorga da Carta de 1824, o Poder Moderador e garantias imperiais.',
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/capa-3x4.webp'
+  },
+  {
+    id: 'trab-introducao',
+    disciplinaId: 'trabalho',
+    numeroMateria: '01. INTRODUÇÃO AO DIREITO DO TRABALHO',
+    titulo: 'Introdução ao Direito do Trabalho',
+    subtitulo: 'Fontes materiais, formais e negociação coletiva',
+    descricao: 'Evolução histórica, classificação das fontes do Direito do Trabalho, fontes heterônomas vs autônomas, Convenções e Acordos Coletivos e prevalência do negociado.',
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/capa-3x4.webp'
   }
 ];
 
@@ -166,6 +208,66 @@ const AULAS_CATALOGO: AulaItem[] = [
     capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/capa-3x4.webp',
     status: 'pronto',
     htmlConteudoRaw: aula02HtmlRaw
+  },
+  {
+    id: 'const-01-01',
+    disciplinaId: 'constitucional',
+    materiaId: 'const-historia',
+    numeroAula: 'AULA 01',
+    titulo: 'Da Independência à Constituição de 1824',
+    descricao: 'Contexto pós-independência de 1822, convocação da Constituinte da Macaxeira, dissolução por D. Pedro I e outorga da Carta de 1824.',
+    slug: 'aula-01-da-independencia',
+    etapas: 30,
+    audioQtd: 38,
+    imagensQtd: 17,
+    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/aula.html',
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/capa-3x4.webp',
+    status: 'pronto'
+  },
+  {
+    id: 'const-01-02',
+    disciplinaId: 'constitucional',
+    materiaId: 'const-historia',
+    numeroAula: 'AULA 02',
+    titulo: 'Constituição de 1824',
+    descricao: 'Estrutura institucional do Império, o Poder Moderador, o Senado vitalício, a religião oficial católica e os direitos civis e políticos.',
+    slug: 'aula-02-constituicao-1824',
+    etapas: 30,
+    audioQtd: 39,
+    imagensQtd: 18,
+    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/aula.html',
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-02-constituicao-1824/capa-3x4.webp',
+    status: 'pronto'
+  },
+  {
+    id: 'trab-01-01',
+    disciplinaId: 'trabalho',
+    materiaId: 'trab-introducao',
+    numeroAula: 'AULA 01',
+    titulo: 'Fontes materiais e formais',
+    descricao: 'Compreensão das fontes materiais (fatores econômicos e sociais) e fontes formais (heterônomas e autônomas) no ordenamento trabalhista.',
+    slug: 'aula-01-fontes-materiais-formais',
+    etapas: 30,
+    audioQtd: 39,
+    imagensQtd: 12,
+    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/aula.html',
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/capa-3x4.webp',
+    status: 'pronto'
+  },
+  {
+    id: 'trab-01-02',
+    disciplinaId: 'trabalho',
+    materiaId: 'trab-introducao',
+    numeroAula: 'AULA 02',
+    titulo: 'Fontes autônomas em espécie',
+    descricao: 'Convenção Coletiva de Trabalho (CCT), Acordo Coletivo de Trabalho (ACT), contratos individuais e a prevalência do negociado sobre o legislado.',
+    slug: 'aula-02-fontes-autonomas',
+    etapas: 30,
+    audioQtd: 39,
+    imagensQtd: 12,
+    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-02-fontes-autonomas/aula.html',
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-02-fontes-autonomas/capa-3x4.webp',
+    status: 'pronto'
   }
 ];
 
