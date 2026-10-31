@@ -5,3 +5,4 @@ export const Route = createFileRoute("/admin-aulas-interativas")({
   head: () => ({ meta: [{ title: "Aulas Interativas Admin — Direito Prime" }] }),
   component: () => null,
 });
+
