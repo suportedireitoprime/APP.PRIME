@@ -64,9 +64,9 @@
       }
       header{
         flex:0 0 auto !important;
-        padding:8px 12px 6px !important;
+        padding:calc(14px + env(safe-area-inset-top, 0px)) 16px 10px !important;
         border-bottom:1px solid rgba(217,160,10,.25) !important;
-        background:rgba(20,14,2,.97) !important;
+        background:rgba(20,14,2,.98) !important;
         backdrop-filter:blur(14px);
         -webkit-backdrop-filter:blur(14px);
         width:100% !important;
@@ -110,11 +110,11 @@
       /* Rodapé FIXO na base da tela */
       footer{
         flex:0 0 auto !important;
-        padding:8px 8px calc(8px + env(safe-area-inset-bottom)) !important;
-        border-top:1px solid rgba(217,160,10,.25) !important;
-        background:rgba(20,14,2,.97) !important;
-        backdrop-filter:blur(16px);
-        -webkit-backdrop-filter:blur(16px);
+        padding:12px 14px calc(24px + env(safe-area-inset-bottom, 24px)) !important;
+        border-top:1px solid rgba(217,160,10,.3) !important;
+        background:rgba(20,14,2,.98) !important;
+        backdrop-filter:blur(18px);
+        -webkit-backdrop-filter:blur(18px);
         width:100% !important;
         max-width:100% !important;
         overflow:hidden !important;
@@ -127,25 +127,25 @@
         display:flex;
         align-items:center;
         justify-content:space-between;
-        gap:6px;
+        gap:10px;
         width:100%;
         box-sizing:border-box !important;
       }
       .navbtn{
         flex:0 0 auto !important;
         width:auto !important;
-        min-width:64px !important;
-        height:42px !important;
-        font-size:12px !important;
+        min-width:88px !important;
+        height:54px !important;
+        font-size:13.5px !important;
         font-weight:700 !important;
-        padding:0 8px !important;
-        border-radius:10px !important;
+        padding:0 14px !important;
+        border-radius:14px !important;
         cursor:pointer;
         display:inline-flex !important;
         align-items:center;
         justify-content:center;
-        border:1px solid rgba(217,160,10,.3) !important;
-        background:rgba(46,36,16,.75) !important;
+        border:1px solid rgba(217,160,10,.35) !important;
+        background:rgba(46,36,16,.85) !important;
         color:var(--ink) !important;
         white-space:nowrap !important;
         transition:all .15s ease;
@@ -163,29 +163,29 @@
       .navbtn.next:hover{filter:brightness(1.1) !important}
       .navbtn:disabled{opacity:.35 !important;pointer-events:none}
 
-      /* Player Centralizado Responsivo */
+      /* Player Centralizado Responsivo Ergonômico */
       .audio{
         flex:1 1 auto !important;
         min-width:0 !important;
-        height:42px !important;
+        height:54px !important;
         margin:0 !important;
-        background:linear-gradient(90deg,rgba(46,36,16,.92),rgba(33,24,10,.96)) !important;
-        border:1px solid rgba(217,160,10,.45) !important;
-        border-radius:10px !important;
-        padding:3px 8px !important;
+        background:linear-gradient(90deg,rgba(46,36,16,.96),rgba(33,24,10,.98)) !important;
+        border:1px solid rgba(217,160,10,.5) !important;
+        border-radius:14px !important;
+        padding:4px 12px !important;
         cursor:pointer;
         display:flex !important;
         flex-direction:row !important;
         align-items:center !important;
-        gap:6px !important;
-        box-shadow:0 4px 14px rgba(0,0,0,.4);
+        gap:10px !important;
+        box-shadow:0 4px 16px rgba(0,0,0,.5);
         box-sizing:border-box !important;
         overflow:hidden !important;
       }
       .playbtn{
-        flex:0 0 30px !important;
-        width:30px !important;
-        height:30px !important;
+        flex:0 0 38px !important;
+        width:38px !important;
+        height:38px !important;
         border-radius:50% !important;
         background:linear-gradient(135deg,#ffe38a,#d9a00a) !important;
         border:1px solid rgba(255,255,255,.25) !important;
@@ -193,13 +193,13 @@
         display:flex !important;
         align-items:center;
         justify-content:center;
-        box-shadow:0 3px 10px rgba(217,160,10,.45);
+        box-shadow:0 3px 12px rgba(217,160,10,.5);
         transition:transform .15s ease;
         padding:0 !important;
       }
       .playbtn:hover{transform:scale(1.08)}
       .playbtn:active{transform:scale(0.92)}
-      .playbtn svg{width:13px;height:13px;fill:#140e02 !important}
+      .playbtn svg{width:15px;height:15px;fill:#140e02 !important}
 
       .acontrol{
         flex:1 1 auto !important;
@@ -224,7 +224,7 @@
       }
       .alabel{
         color:var(--red2) !important;
-        font-size:9px !important;
+        font-size:10.5px !important;
         font-weight:700 !important;
         letter-spacing:1px !important;
         white-space:nowrap !important;
@@ -236,7 +236,7 @@
       }
       .atime{
         color:var(--muted) !important;
-        font-size:10px !important;
+        font-size:11px !important;
         font-variant-numeric:tabular-nums !important;
         font-weight:600 !important;
         white-space:nowrap !important;
@@ -246,9 +246,9 @@
       .atrack{
         position:relative;
         width:100% !important;
-        height:4px !important;
+        height:6px !important;
         border-radius:99px !important;
-        background:rgba(255,255,255,.14) !important;
+        background:rgba(255,255,255,.16) !important;
         overflow:hidden !important;
         cursor:pointer;
         margin:0 !important;
@@ -640,24 +640,24 @@
   <script>
     var AULA_ID = "admin-01-02";
     var IMG = {
-  "capa": "/assets/img/capa-aula-02.webp",
-  "roteiro": "/assets/img/roteiro.webp",
-  "questao": "/assets/img/questao.webp",
-  "flashcards": "/assets/img/flashcards.webp",
-  "ligar": "/assets/img/ligar.webp",
-  "timeline": "/assets/img/timeline.webp",
-  "explorar": "/assets/img/explorar.webp",
-  "definicao": "/assets/img/definicao.webp",
-  "criterios": "/assets/img/criterios.webp",
-  "puissance": "/assets/img/puissance.webp",
-  "service": "/assets/img/service.webp",
-  "executivo": "/assets/img/executivo.webp",
-  "relacoes": "/assets/img/relacoes.webp",
-  "teleologico": "/assets/img/teleologico.webp",
-  "residual": "/assets/img/residual.webp",
-  "adotado": "/assets/img/adotado.webp",
-  "objetivo": "/assets/img/objetivo.webp",
-  "subjetivo": "/assets/img/subjetivo.webp"
+  "capa": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/capa.webp",
+  "roteiro": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/roteiro.webp",
+  "questao": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/questao.webp",
+  "flashcards": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/flashcards.webp",
+  "ligar": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/ligar.webp",
+  "timeline": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/timeline.webp",
+  "explorar": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/explorar.webp",
+  "definicao": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/definicao.webp",
+  "criterios": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/criterios.webp",
+  "puissance": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/puissance.webp",
+  "service": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/service.webp",
+  "executivo": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/executivo.webp",
+  "relacoes": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/relacoes.webp",
+  "teleologico": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/teleologico.webp",
+  "residual": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/residual.webp",
+  "adotado": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/adotado.webp",
+  "objetivo": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/objetivo.webp",
+  "subjetivo": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/imagens/subjetivo.webp"
 };
     var SLIDES = [
   {
@@ -1397,7 +1397,7 @@
       t = Math.max(0, Math.floor(t));
       return Math.floor(t/60) + ":" + pad(t%60);
     }
-    function audioSrc(i){ return "/assets/audio/s" + pad(i+1) + ".mp3"; }
+    function audioSrc(i){ return "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/audio/s" + pad(i+1) + ".mp3"; }
 
     function hotPanelHTML(s, es){
       if(es.cur === null || es.cur === undefined){

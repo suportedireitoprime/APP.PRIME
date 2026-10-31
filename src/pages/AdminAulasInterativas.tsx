@@ -100,7 +100,7 @@ const MATERIAS_CATALOGO: MateriaItem[] = [
     titulo: 'Origens e Definições do Direito Administrativo',
     subtitulo: 'Gênese histórica, Estado de Direito e critérios conceituais',
     descricao: 'Estudo da formação do Direito Administrativo na França pós-revolucionária, superação do patrimonialismo pela burocracia, Lei de 1872, caso Blanco e critérios definidores.',
-    capaUrl: capaAdminOrigens
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp'
   }
 ];
 
@@ -146,8 +146,8 @@ const AULAS_CATALOGO: AulaItem[] = [
     etapas: 38,
     audioQtd: 38,
     imagensQtd: 38,
-    urlHtmlR2: '/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01.html',
-    capaUrl: capaAdminOrigens,
+    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/aula.html',
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp',
     status: 'pronto',
     htmlConteudoRaw: aula01HtmlRaw
   },
@@ -162,8 +162,8 @@ const AULAS_CATALOGO: AulaItem[] = [
     etapas: 38,
     audioQtd: 38,
     imagensQtd: 38,
-    urlHtmlR2: '/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02.html',
-    capaUrl: capaAdminDefinicoes,
+    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/aula.html',
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/capa-3x4.webp',
     status: 'pronto',
     htmlConteudoRaw: aula02HtmlRaw
   }
@@ -387,12 +387,13 @@ export default function AdminAulasInterativas() {
         className="fixed inset-0 z-[100] flex flex-col w-screen h-screen overflow-hidden"
         style={{ backgroundColor: iframeBg }}
       >
-        {/* Cabeçalho Superior Temático Adaptado à Paleta Real */}
+        {/* Cabeçalho Superior Temático Adaptado à Paleta Real com Safe Area Inset Top */}
         <header
-          className={`flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 border-b ${headerBorder} shrink-0 z-30 shadow-lg shadow-black/60`}
+          className={`flex items-center justify-between px-3 sm:px-6 border-b ${headerBorder} shrink-0 z-30 shadow-lg shadow-black/60`}
           style={{
             background: headerBg,
-            paddingTop: 'calc(0.6rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+            paddingTop: 'calc(1.15rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+            paddingBottom: '0.85rem'
           }}
         >
           <div className="flex items-center gap-3 min-w-0">
@@ -444,7 +445,10 @@ export default function AdminAulasInterativas() {
         {/* Iframe 100% Tela Cheia com suporte a srcDoc para carregamento instantâneo offline */}
         <div 
           className="flex-1 w-full h-full relative overflow-hidden"
-          style={{ backgroundColor: iframeBg }}
+          style={{ 
+            backgroundColor: iframeBg,
+            paddingBottom: 'env(safe-area-inset-bottom, 0px)'
+          }}
         >
           <iframe
             srcDoc={aulaAtiva.htmlConteudoRaw || undefined}
