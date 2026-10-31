@@ -10,6 +10,7 @@ import {
 import { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
 import { ModalRevisarFlashcards } from '@/components/aulas-interativas/ModalRevisarFlashcards';
 import { ModalPraticarQuestoes } from '@/components/aulas-interativas/ModalPraticarQuestoes';
+import { PlayerAulaNativo } from '@/components/aulas-interativas/PlayerAulaNativo';
 import adminCover from '@/assets/biblioteca/areas/direito-administrativo.webp';
 import themisHero from '@/assets/jurisprudencia-hero-themis.webp';
 import capaAdminOrigens from '@/assets/aulas-interativas/direito-administrativo/capa-aula-01-origens.webp';
@@ -314,114 +315,25 @@ export default function AdminAulasInterativas() {
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // NÍVEL 4: TELA CHEIA DA AULA INTERATIVA
+  // NÍVEL 4: TELA CHEIA DA AULA INTERATIVA (PLAYER NATIVO EM REACT SEM IFRAMES)
   // ─────────────────────────────────────────────────────────────────────────────
   if (aulaAtiva) {
-    const progAula = calcularProgressoCiclo(aulaAtiva);
     const discAtual = DISCIPLINAS_CATALOGO.find(d => d.id === aulaAtiva.disciplinaId) || DISCIPLINAS_CATALOGO[0];
-    const discNome = discAtual.nome;
-    const discCor = discAtual.corDestaque;
-    
-    // Configurações temáticas precisas por disciplina (Penal, Administrativo, Constitucional, Trabalho)
-    let headerBg = 'linear-gradient(180deg, #280611 0%, #16040a 100%)';
-    let headerBorder = 'border-[rgba(226,62,87,0.35)]';
-    let buttonBackClass = 'bg-[rgba(46,15,24,0.85)] border-[rgba(226,62,87,0.45)] text-[#ff8296] hover:bg-[rgba(66,20,34,1)]';
-    let iframeBg = '#120409';
-
-    if (aulaAtiva.disciplinaId === 'administrativo') {
-      headerBg = 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)';
-      headerBorder = 'border-[rgba(217,160,10,0.35)]';
-      buttonBackClass = 'bg-[rgba(46,36,16,0.85)] border-[rgba(217,160,10,0.45)] text-[#ffe38a] hover:bg-[rgba(70,52,20,1)]';
-      iframeBg = '#140e02';
-    } else if (aulaAtiva.disciplinaId === 'constitucional') {
-      headerBg = 'linear-gradient(180deg, #0e2916 0%, #08170c 100%)';
-      headerBorder = 'border-[rgba(34,197,94,0.35)]';
-      buttonBackClass = 'bg-[rgba(14,41,22,0.85)] border-[rgba(34,197,94,0.45)] text-[#4ade80] hover:bg-[rgba(20,60,32,1)]';
-      iframeBg = '#05140b';
-    } else if (aulaAtiva.disciplinaId === 'trabalho') {
-      headerBg = 'linear-gradient(180deg, #25123d 0%, #150924 100%)';
-      headerBorder = 'border-[rgba(168,85,247,0.35)]';
-      buttonBackClass = 'bg-[rgba(37,18,61,0.85)] border-[rgba(168,85,247,0.45)] text-[#c084fc] hover:bg-[rgba(55,27,90,1)]';
-      iframeBg = '#0f051a';
-    }
-
     return (
-      <div 
-        className="fixed inset-0 z-[100] flex flex-col w-screen h-screen overflow-hidden"
-        style={{ backgroundColor: iframeBg, paddingBottom: "calc(var(--sai-bottom, env(safe-area-inset-bottom, 0px)))" }}
-      >
-        {/* Cabeçalho Superior Temático Adaptado à Paleta Real com Safe Area Inset Top */}
-        <header
-          className={`flex items-center justify-between px-3 sm:px-6 border-b ${headerBorder} shrink-0 z-30 shadow-lg shadow-black/60`}
-          style={{
-            background: headerBg,
-            paddingTop: 'calc(1.15rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
-            paddingBottom: '0.85rem'
-          }}
-        >
-          <div className="flex items-center gap-3 min-w-0">
-            <button
-              type="button"
-              onClick={() => setAulaAtiva(null)}
-              className={`w-11 h-11 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center shrink-0 transition active:scale-95 shadow-md shadow-black/40 ${buttonBackClass}`}
-              aria-label="Voltar à matéria"
-            >
-              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
-            </button>
-
-            <div className="min-w-0 flex flex-col justify-center">
-              <div className="flex items-center gap-2">
-                <span 
-                  className="text-[10px] font-extrabold uppercase tracking-widest truncate"
-                  style={{ color: discCor }}
-                >
-                  {discNome} · {aulaAtiva.numeroAula}
-                </span>
-                <span className="hidden xs:inline-block text-[10px] px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">
-                  {aulaAtiva.etapas} Etapas
-                </span>
-              </div>
-              <h2 className="text-xs sm:text-sm font-bold text-white truncate font-serif">
-                {aulaAtiva.titulo}
-              </h2>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            {!progAula.aulaTerminada ? (
-              <button
-                type="button"
-                onClick={() => concluirAulaManual(aulaAtiva.id, aulaAtiva.etapas)}
-                className="px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-[11px] font-bold text-emerald-300 transition flex items-center gap-1.5 shadow-sm active:scale-95"
-              >
-                <Check className="w-3.5 h-3.5 stroke-[3]" />
-                <span className="hidden xs:inline">Concluir Aula</span>
-              </button>
-            ) : (
-              <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300 text-[10px] font-bold border border-emerald-500/30 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Aula Concluída
-              </span>
-            )}
-          </div>
-        </header>
-
-        {/* Iframe 100% Tela Cheia com suporte a srcDoc para carregamento instantâneo offline */}
-        <div 
-          className="flex-1 w-full h-full relative overflow-hidden"
-          style={{ 
-            backgroundColor: iframeBg,
-            paddingBottom: 'env(safe-area-inset-bottom, 0px)'
-          }}
-        >
-          <iframe
-            srcDoc={aulaAtiva.htmlConteudoRaw || (!aulaAtiva.urlHtmlR2 ? getAulaFallbackHtml(aulaAtiva) : undefined)}
-            src={!aulaAtiva.htmlConteudoRaw ? `${aulaAtiva.urlHtmlR2}?t=${Date.now()}` : undefined}
-            title={aulaAtiva.titulo}
-            className="w-full h-full border-0 absolute inset-0"
-            allow="autoplay; clipboard-write; fullscreen"
-          />
-        </div>
-      </div>
+      <PlayerAulaNativo
+        aula={aulaAtiva}
+        disciplinaNome={discAtual.nome}
+        corDestaque={discAtual.corDestaque}
+        onVoltar={() => setAulaAtiva(null)}
+        onConcluir={(totalEtapas) => {
+          concluirAulaManual(aulaAtiva.id, totalEtapas);
+          setAulaAtiva(null);
+        }}
+        onProgresso={(etapaAtual, totalEtapas) => {
+          saveStoredProgresso(aulaAtiva.id, etapaAtual);
+          setProgressoMap(prev => ({ ...prev, [aulaAtiva.id]: { etapaAtual } }));
+        }}
+      />
     );
   }
 
