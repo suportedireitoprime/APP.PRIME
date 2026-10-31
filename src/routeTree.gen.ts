@@ -18,6 +18,7 @@ import { Route as AdminAssinantesRouteImport } from './routes/admin-assinantes'
 import { Route as AdminAssinantesAsaasRouteImport } from './routes/admin-assinantes-asaas'
 import { Route as AdminAtualizacaoRouteImport } from './routes/admin-atualizacao'
 import { Route as AdminAudioaulasRouteImport } from './routes/admin-audioaulas'
+import { Route as AdminAulasInterativasRouteImport } from './routes/admin-aulas-interativas'
 import { Route as AdminAvaliacaoLojaRouteImport } from './routes/admin-avaliacao-loja'
 import { Route as AdminBibliotecaEditarRouteImport } from './routes/admin-biblioteca-editar'
 import { Route as AdminBibliotecaLeisRouteImport } from './routes/admin-biblioteca-leis'
@@ -382,6 +383,11 @@ const AdminAtualizacaoRoute = AdminAtualizacaoRouteImport.update({
 const AdminAudioaulasRoute = AdminAudioaulasRouteImport.update({
   id: '/admin-audioaulas',
   path: '/admin-audioaulas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAulasInterativasRoute = AdminAulasInterativasRouteImport.update({
+  id: '/admin-aulas-interativas',
+  path: '/admin-aulas-interativas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAvaliacaoLojaRoute = AdminAvaliacaoLojaRouteImport.update({
@@ -2039,6 +2045,7 @@ export interface FileRoutesByFullPath {
   '/admin-assinantes-asaas': typeof AdminAssinantesAsaasRoute
   '/admin-atualizacao': typeof AdminAtualizacaoRoute
   '/admin-audioaulas': typeof AdminAudioaulasRoute
+  '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-avaliacao-loja': typeof AdminAvaliacaoLojaRoute
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
@@ -2370,6 +2377,7 @@ export interface FileRoutesByTo {
   '/admin-assinantes-asaas': typeof AdminAssinantesAsaasRoute
   '/admin-atualizacao': typeof AdminAtualizacaoRoute
   '/admin-audioaulas': typeof AdminAudioaulasRoute
+  '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-avaliacao-loja': typeof AdminAvaliacaoLojaRoute
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
@@ -2702,6 +2710,7 @@ export interface FileRoutesById {
   '/admin-assinantes-asaas': typeof AdminAssinantesAsaasRoute
   '/admin-atualizacao': typeof AdminAtualizacaoRoute
   '/admin-audioaulas': typeof AdminAudioaulasRoute
+  '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-avaliacao-loja': typeof AdminAvaliacaoLojaRoute
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
@@ -3035,6 +3044,7 @@ export interface FileRouteTypes {
     | '/admin-assinantes-asaas'
     | '/admin-atualizacao'
     | '/admin-audioaulas'
+    | '/admin-aulas-interativas'
     | '/admin-avaliacao-loja'
     | '/admin-biblioteca-editar'
     | '/admin-biblioteca-leis'
@@ -3366,6 +3376,7 @@ export interface FileRouteTypes {
     | '/admin-assinantes-asaas'
     | '/admin-atualizacao'
     | '/admin-audioaulas'
+    | '/admin-aulas-interativas'
     | '/admin-avaliacao-loja'
     | '/admin-biblioteca-editar'
     | '/admin-biblioteca-leis'
@@ -3697,6 +3708,7 @@ export interface FileRouteTypes {
     | '/admin-assinantes-asaas'
     | '/admin-atualizacao'
     | '/admin-audioaulas'
+    | '/admin-aulas-interativas'
     | '/admin-avaliacao-loja'
     | '/admin-biblioteca-editar'
     | '/admin-biblioteca-leis'
@@ -4029,6 +4041,7 @@ export interface RootRouteChildren {
   AdminAssinantesAsaasRoute: typeof AdminAssinantesAsaasRoute
   AdminAtualizacaoRoute: typeof AdminAtualizacaoRoute
   AdminAudioaulasRoute: typeof AdminAudioaulasRoute
+  AdminAulasInterativasRoute: typeof AdminAulasInterativasRoute
   AdminAvaliacaoLojaRoute: typeof AdminAvaliacaoLojaRoute
   AdminBibliotecaEditarRoute: typeof AdminBibliotecaEditarRoute
   AdminBibliotecaLeisRoute: typeof AdminBibliotecaLeisRouteWithChildren
@@ -4260,6 +4273,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-audioaulas'
       fullPath: '/admin-audioaulas'
       preLoaderRoute: typeof AdminAudioaulasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-aulas-interativas': {
+      id: '/admin-aulas-interativas'
+      path: '/admin-aulas-interativas'
+      fullPath: '/admin-aulas-interativas'
+      preLoaderRoute: typeof AdminAulasInterativasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-avaliacao-loja': {
@@ -7317,6 +7337,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAssinantesAsaasRoute: AdminAssinantesAsaasRoute,
   AdminAtualizacaoRoute: AdminAtualizacaoRoute,
   AdminAudioaulasRoute: AdminAudioaulasRoute,
+  AdminAulasInterativasRoute: AdminAulasInterativasRoute,
   AdminAvaliacaoLojaRoute: AdminAvaliacaoLojaRoute,
   AdminBibliotecaEditarRoute: AdminBibliotecaEditarRoute,
   AdminBibliotecaLeisRoute: AdminBibliotecaLeisRouteWithChildren,

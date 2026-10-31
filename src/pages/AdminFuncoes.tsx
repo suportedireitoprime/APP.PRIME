@@ -18,6 +18,7 @@ import { AdminHojeCards } from '@/components/admin/AdminHojeCards';
 // Prefetch map
 const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-cotas-analise': () => import('./AdminCotasAnalise'),
+  '/admin-aulas-interativas': () => import('./AdminAulasInterativas'),
   '/admin-monitor': () => import('./AdminMonitor'),
   '/admin-monitor-usuarios': () => import('./AdminMonitorUsuarios'),
   '/admin-monitoramento': () => import('./AdminMonitoramento'),
@@ -151,6 +152,16 @@ const CATEGORIES: Category[] = [
     route: '/admin-instagram-posts',
     items: [
       { id: 'instagram-posts', label: 'Instagram Posts', icon: ImageIcon, desc: 'Gerar carrosséis com IA no padrão Vade Mecum', route: '/admin-instagram-posts' },
+    ],
+  },
+  {
+    id: 'aulas-interativas-cat',
+    title: 'Aulas Interativas',
+    desc: 'Catálogo de aulas com áudio narrado e conteúdos interativos',
+    icon: Sparkles,
+    route: '/admin-aulas-interativas',
+    items: [
+      { id: 'aulas-interativas', label: 'Aulas Interativas', icon: Sparkles, desc: 'Aulas completas em HTML com narração e ilustrações', route: '/admin-aulas-interativas' },
     ],
   },
   {
