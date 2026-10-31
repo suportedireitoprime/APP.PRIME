@@ -2657,7 +2657,7 @@ jobs:
             echo "❌ Missing secret ANDROID_KEYSTORE_BASE64"
             exit 1
           fi
-          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '\r\n ' | base64 --decode > android/app/upload-keystore.jks
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -d '\n ' | base64 --decode > android/app/upload-keystore.jks
           if [ ! -s android/app/upload-keystore.jks ]; then
             echo "❌ ANDROID_KEYSTORE_BASE64 decoded to an empty file"
             exit 1
@@ -3884,6 +3884,12 @@ jobs:
           BASE="${ARTIFACT_BASENAME:-app-vacatio-release}"
           AAB_SRC="android/app/build/outputs/bundle/release/app-release.aab"
           APK_SRC="android/app/build/outputs/apk/release/app-release.apk"
+          if [ ! -f "$AAB_SRC" ]; then
+            AAB_SRC=$(find android/app/build/outputs/bundle/release -name "*.aab" | head -n 1)
+          fi
+          if [ ! -f "$APK_SRC" ]; then
+            APK_SRC=$(find android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          fi
           AAB_DST="android/app/build/outputs/bundle/release/${BASE}.aab"
           APK_DST="android/app/build/outputs/apk/release/${BASE}.apk"
           cp "$AAB_SRC" "$AAB_DST"

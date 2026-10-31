@@ -50,15 +50,11 @@ android {
     }
 
     // ─── GOOGLE PLAY CONSOLE: Redução de resolução de bitmap ──────────────────
-    // Limita a densidade máxima de recursos drawable a xxxhdpi (640dpi).
-    // Isso evita que dispositivos de menor resolução baixem e escalonem bitmaps
-    // muito grandes, reduzindo consumo de memória e acelerando o carregamento.
-    // Referência: https://developer.android.com/studio/build/configure-apk-splits#configure-density-split
+    // O split de densidade é gerenciado nativamente pelo App Bundle (bloco bundle {} acima).
+    // O split de APK clássico via splits {} foi desativado para garantir geração de APK universal.
     splits {
         density {
-            enable true
-            exclude "ldpi", "mdpi"
-            compatibleScreens 'small', 'normal', 'large', 'xlarge'
+            enable false
         }
     }
 }
