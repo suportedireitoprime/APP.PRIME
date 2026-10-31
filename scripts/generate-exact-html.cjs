@@ -3,20 +3,16 @@ const fs = require('fs');
 // Ler o arquivo original do Drive intacto
 let html = fs.readFileSync('scratch/aula.html', 'utf8');
 
-// 1. Mapear URLs de imagens para o Cloudflare R2
 const R2_BASE = 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia';
 
-// Substituir assets/img/ por URLs do R2
+// 1. Substituir URLs de imagens e áudio para R2
 html = html.replace(/assets\/img\/([a-zA-Z0-9_-]+\.webp)/g, `${R2_BASE}/imagens/$1`);
-
-// Substituir áudio por URLs do R2
 html = html.replace(
   'function audioSrc(i){ return "assets/audio/s" + pad(i+1) + ".mp3"; }',
   `function audioSrc(i){ return "${R2_BASE}/audio/s" + pad(i+1) + ".mp3"; }`
 );
 
-// 2. Substituir o corpo do HTML:
-// Tirar o .playerdock da lateral e colocar o player dentro do footer, entre os botões
+// 2. Substituir o corpo do HTML (colocar o player dentro do footer-wrap)
 const oldBodyPattern = /<body>[\s\S]*?<script>/;
 
 const newBody = `<body>
@@ -65,8 +61,7 @@ const newBody = `<body>
 
 html = html.replace(oldBodyPattern, newBody);
 
-// 3. Ajustar CSS mantendo 100% das cores, tipografias e regras originais,
-// apenas tornando responsivo (tela cheia), sem barra de rolagem e estilizando o footer-wrap
+// 3. Substituir CSS inicial
 const cssLayoutRegex = /body\s*\{[\s\S]*?\.banner\s*\{/;
 
 const newCSSLayout = `body{
@@ -103,8 +98,8 @@ const newCSSLayout = `body{
         border-radius:0;border:none;box-shadow:none;
       }
       header{
-        padding:14px 20px 10px;
-        border-bottom:1px solid rgba(226,62,87,.18);
+        padding:10px 16px 8px;
+        border-bottom:1px solid rgba(226,62,87,.2);
         background:rgba(20,4,9,.88);
         backdrop-filter:blur(14px);
         -webkit-backdrop-filter:blur(14px);
@@ -117,19 +112,19 @@ const newCSSLayout = `body{
         margin:0 auto;
         width:100%;
       }
-      .hrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-      .subject{color:var(--red2);font-weight:700;font-size:11.5px;letter-spacing:2.4px}
-      .design{color:var(--muted);font-size:11px;letter-spacing:1.4px;font-weight:600;white-space:nowrap}
-      h1{font-family:"Playfair Display",Georgia,serif;font-size:22px;line-height:1.2;margin:6px 0 2px;font-weight:800}
-      .etapa{color:var(--muted);font-size:13px;margin:0 0 8px}
+      .hrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+      .subject{color:var(--red2);font-weight:700;font-size:11px;letter-spacing:2.2px}
+      .design{color:var(--muted);font-size:10.5px;letter-spacing:1.2px;font-weight:600;white-space:nowrap}
+      h1{font-family:"Playfair Display",Georgia,serif;font-size:19px;line-height:1.2;margin:3px 0 2px;font-weight:800}
+      .etapa{color:var(--muted);font-size:12px;margin:0 0 6px}
       .etapa b{color:var(--ink);font-weight:600}
-      .track{height:5px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+      .track{height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-bottom:6px}
       .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
 
-      /* Área de leitura centralizada e SEM barra de scroll */
+      /* Área de leitura centralizada SEM barra de scroll */
       .scroll{
         flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
-        padding:20px 20px 30px;
+        padding:16px 16px 24px;
         scrollbar-width:none;
         -ms-overflow-style:none;
         overscroll-behavior:contain;
@@ -146,14 +141,14 @@ const newCSSLayout = `body{
 
       /* Rodapé com Player Centralizado */
       footer{
-        padding:10px 16px calc(10px + env(safe-area-inset-bottom));
-        border-top:1px solid rgba(226,62,87,.22);
-        background:rgba(20,4,9,.94);
+        padding:8px 12px calc(8px + env(safe-area-inset-bottom)) !important;
+        border-top:1px solid rgba(226,62,87,.22) !important;
+        background:rgba(20,4,9,.95) !important;
         backdrop-filter:blur(14px);
         -webkit-backdrop-filter:blur(14px);
-        flex:0 0 auto;
-        width:100%;
-        z-index:20;
+        flex:0 0 auto !important;
+        width:100% !important;
+        z-index:30;
       }
       .footer-wrap{
         max-width:860px;
@@ -161,83 +156,215 @@ const newCSSLayout = `body{
         display:flex;
         align-items:center;
         justify-content:space-between;
-        gap:12px;
+        gap:8px;
         width:100%;
       }
       .navbtn{
-        flex:0 0 auto;
-        min-width:96px;
-        font-size:14px;font-weight:700;
-        padding:11px 16px;border-radius:12px;
+        flex:0 0 auto !important;
+        width:auto !important;
+        min-width:80px !important;
+        max-width:96px !important;
+        height:44px !important;
+        font-size:13px !important;
+        font-weight:700 !important;
+        padding:0 10px !important;
+        border-radius:12px !important;
         cursor:pointer;
-        display:inline-flex;align-items:center;justify-content:center;
-        border:1px solid rgba(226,62,87,.3);
-        background:rgba(46,15,24,.7);
-        color:var(--ink);
+        display:inline-flex !important;
+        align-items:center;
+        justify-content:center;
+        border:1px solid rgba(226,62,87,.3) !important;
+        background:rgba(46,15,24,.75) !important;
+        color:var(--ink) !important;
+        white-space:nowrap !important;
         transition:all .15s ease;
       }
-      .navbtn:hover{background:rgba(56,18,30,.9)}
+      .navbtn:hover{background:rgba(56,18,30,.9) !important}
       .navbtn:active{transform:scale(0.96)}
       .navbtn.next{
-        background:linear-gradient(135deg,#ff7a8a,#c8102e);
-        border:1px solid rgba(255,255,255,.2);
-        color:#fff;
-        box-shadow:0 4px 14px rgba(226,62,87,.4);
+        background:linear-gradient(135deg,#ff7a8a,#c8102e) !important;
+        border:1px solid rgba(255,255,255,.25) !important;
+        color:#fff !important;
+        box-shadow:0 4px 14px rgba(226,62,87,.4) !important;
       }
-      .navbtn.next:hover{filter:brightness(1.1)}
-      .navbtn:disabled{opacity:.35;pointer-events:none}
+      .navbtn.next:hover{filter:brightness(1.1) !important}
+      .navbtn:disabled{opacity:.35 !important;pointer-events:none}
 
-      /* Player Centralizado */
+      /* Player Centralizado Responsivo */
       .audio{
-        flex:1 1 auto;
-        min-width:0;
-        margin:0;
-        background:linear-gradient(90deg,rgba(46,15,24,.88),rgba(33,10,17,.94));
-        border:1px solid rgba(226,62,87,.45);
-        border-radius:14px;
-        padding:6px 12px;
+        flex:1 1 auto !important;
+        min-width:0 !important;
+        height:44px !important;
+        margin:0 !important;
+        background:linear-gradient(90deg,rgba(46,15,24,.92),rgba(33,10,17,.96)) !important;
+        border:1px solid rgba(226,62,87,.45) !important;
+        border-radius:12px !important;
+        padding:4px 10px !important;
         cursor:pointer;
-        display:flex;
-        align-items:center;
-        gap:10px;
-        box-shadow:0 6px 18px rgba(0,0,0,.35);
+        display:flex !important;
+        flex-direction:row !important;
+        align-items:center !important;
+        gap:8px !important;
+        box-shadow:0 4px 14px rgba(0,0,0,.4);
       }
       .playbtn{
-        flex:0 0 36px;width:36px;height:36px;border-radius:50%;
-        background:linear-gradient(135deg,#ff7a8a,#c8102e);
-        border:1px solid rgba(255,255,255,.2);cursor:pointer;
-        display:flex;align-items:center;justify-content:center;
-        box-shadow:0 3px 10px rgba(226,62,87,.4);
+        flex:0 0 32px !important;
+        width:32px !important;
+        height:32px !important;
+        border-radius:50% !important;
+        background:linear-gradient(135deg,#ff7a8a,#c8102e) !important;
+        border:1px solid rgba(255,255,255,.25) !important;
+        cursor:pointer;
+        display:flex !important;
+        align-items:center;
+        justify-content:center;
+        box-shadow:0 3px 10px rgba(226,62,87,.45);
         transition:transform .15s ease;
+        padding:0 !important;
       }
       .playbtn:hover{transform:scale(1.08)}
       .playbtn:active{transform:scale(0.92)}
-      .playbtn svg{width:16px;height:16px;fill:#fff}
+      .playbtn svg{width:14px;height:14px;fill:#fff}
+
       .acontrol{
-        flex:1 1 auto;min-width:0;
-        display:flex;flex-direction:column;gap:3px;
+        flex:1 1 auto !important;
+        min-width:0 !important;
+        display:flex !important;
+        flex-direction:column !important;
+        justify-content:center !important;
+        gap:3px !important;
+        width:calc(100% - 40px) !important;
       }
       .arow{
-        display:flex;justify-content:space-between;align-items:center;
-        margin-bottom:0;
+        display:flex !important;
+        flex-direction:row !important;
+        justify-content:space-between !important;
+        align-items:center !important;
+        width:100% !important;
+        margin:0 !important;
+        line-height:1.2 !important;
       }
-      .alabel{color:var(--red2);font-size:10px;font-weight:700;letter-spacing:1.5px}
-      .atime{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;font-weight:600}
+      .alabel{
+        color:var(--red2) !important;
+        font-size:9.5px !important;
+        font-weight:700 !important;
+        letter-spacing:1.2px !important;
+        white-space:nowrap !important;
+        text-transform:uppercase;
+      }
+      .atime{
+        color:var(--muted) !important;
+        font-size:10.5px !important;
+        font-variant-numeric:tabular-nums !important;
+        font-weight:600 !important;
+        white-space:nowrap !important;
+      }
       .atrack{
-        position:relative;height:5px;border-radius:99px;
-        background:rgba(255,255,255,.14);overflow:hidden;cursor:pointer;
+        position:relative;
+        width:100% !important;
+        height:4px !important;
+        border-radius:99px;
+        background:rgba(255,255,255,.14) !important;
+        overflow:hidden;
+        cursor:pointer;
+        margin:0 !important;
       }
-      .afill{height:100%;width:0%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:99px}
+      .afill{
+        height:100% !important;
+        width:0%;
+        background:linear-gradient(90deg,var(--red),var(--gold)) !important;
+        border-radius:99px;
+      }
 
       @media (max-width:480px){
-        .navbtn{min-width:76px;padding:9px 10px;font-size:12.5px}
-        .alabel{font-size:8.5px}
-        .atime{font-size:9.5px}
+        .navbtn{min-width:74px !important;font-size:12px !important;padding:0 6px !important}
+        .alabel{font-size:8.5px !important;letter-spacing:0.8px !important}
+        .atime{font-size:9.5px !important}
+        header{padding:8px 12px 6px}
+        h1{font-size:17px}
       }
       .banner{`;
 
 html = html.replace(cssLayoutRegex, newCSSLayout);
 
+// 4. Remover regras legadas duplicadas no meio e final do arquivo que sobrepunham o footer e navbtn
+// Remover o bloco antigo de footer no final
+html = html.replace(
+  /footer\s*\{\s*flex:0 0 auto;\s*display:flex;gap:12px;[\s\S]*?\.navbtn:disabled\{opacity:\.35;cursor:default\}/,
+  '/* footer original migrado */'
+);
+
+// Remover o bloco antigo de .audio duplicado no meio
+html = html.replace(
+  /\.audio\{\s*margin:0 0 16px;background:#2c0f18;[\s\S]*?\.afill\{height:100%;width:0%;background:linear-gradient\(90deg,var\(--red\),var\(--gold\)\)\}/,
+  '/* .audio original migrado */'
+);
+
+// 5. Aprimorar a mecânica do áudio para suporte a clique, toque suave e seek instantâneo
+const oldBindAudio = /function bindAudio\(\)\{[\s\S]*?player\.addEventListener\("ended"/;
+
+const newBindAudio = `function bindAudio(){
+      var playBtn = document.getElementById("playBtn");
+      var box = document.getElementById("audioBox");
+      var track = document.getElementById("aTrack");
+
+      function onPlayToggle(ev){
+        if(ev){ ev.stopPropagation(); ev.preventDefault(); }
+        unlocked = true;
+        togglePlay();
+      }
+
+      playBtn.addEventListener("click", onPlayToggle);
+      playBtn.addEventListener("touchend", onPlayToggle);
+
+      function onSeek(ev){
+        if(ev){ ev.stopPropagation(); }
+        var r = track.getBoundingClientRect();
+        var clientX = ev.clientX;
+        if(clientX === undefined && ev.touches && ev.touches[0]){
+          clientX = ev.touches[0].clientX;
+        }
+        if(player.duration && r.width > 0 && clientX !== undefined){
+          var pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+          player.currentTime = player.duration * pct;
+        }
+      }
+
+      track.addEventListener("click", onSeek);
+      track.addEventListener("touchstart", onSeek);
+    }
+
+    function tryPlay(){
+      var p = player.play();
+      if(p && p.catch){ p.catch(function(){}); }
+    }
+    function togglePlay(){
+      if(player.paused){ tryPlay(); } else { player.pause(); }
+    }
+
+    player.addEventListener("play", function(){
+      var b = document.getElementById("playBtn");
+      if(b) b.innerHTML = ICON_PAUSE;
+    });
+    player.addEventListener("pause", function(){
+      var b = document.getElementById("playBtn");
+      if(b) b.innerHTML = ICON_PLAY;
+    });
+    player.addEventListener("timeupdate", function(){
+      var f = document.getElementById("aFill");
+      var t = document.getElementById("aTime");
+      if(f && player.duration) f.style.width = (100 * player.currentTime / player.duration) + "%";
+      if(t && player.duration) t.textContent = fmt(player.currentTime) + " / " + fmt(player.duration);
+      karaSync();
+    });
+    player.addEventListener("loadedmetadata", function(){
+      var t = document.getElementById("aTime");
+      if(t && player.duration) t.textContent = "0:00 / " + fmt(player.duration);
+    });
+    player.addEventListener("ended"`;
+
+html = html.replace(oldBindAudio, newBindAudio);
+
 fs.writeFileSync('scratch/aula01_exata.html', html, 'utf8');
 fs.copyFileSync('scratch/aula01_exata.html', 'scratch/aula01_standalone_r2.html');
-console.log('HTML exato gerado com sucesso! Tamanho:', html.length);
+console.log('HTML refinado e blindado com sucesso! Tamanho:', html.length);
