@@ -641,5 +641,324 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
         fundamentoLegal: 'Art. 104 e Art. 107, inciso V, do Código Penal'
       }
     ]
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // AULA 01: DIREITO ADMINISTRATIVO · PRINCÍPIOS DA ADMINISTRAÇÃO PÚBLICA (LIMPE)
+  // 18 Flashcards + 12 Questões
+  // ─────────────────────────────────────────────────────────────────────────────
+  'admin-01-01': {
+    aulaId: 'admin-01-01',
+    titulo: 'Princípios Expressos da Administração Pública (LIMPE)',
+    flashcards: [
+      {
+        id: 'fc-admin-01-01',
+        pergunta: 'O que representa o mnemônico LIMPE no art. 37, caput, da Constituição Federal?',
+        resposta: 'Representa os cinco princípios expressos que regem a Administração Pública direta e indireta de qualquer dos Poderes da União, Estados, DF e Municípios: Legalidade, Impessoalidade, Moralidade, Publicidade e Eficiência.',
+        artigoLei: 'Art. 37, caput, da Constituição Federal de 1988',
+        dicaPratica: 'São mandamentos nucleares de observância obrigatória por todos os entes da Federação.'
+      },
+      {
+        id: 'fc-admin-01-02',
+        pergunta: 'Qual é a diferença fundamental entre a Legalidade para o particular e para a Administração Pública?',
+        resposta: 'O particular pode fazer tudo o que a lei não proíbe (art. 5º, II da CF - autonomia da vontade). Já a Administração Pública só pode agir quando houver expressa autorização ou determinação em lei (subordinação estrita à lei).',
+        artigoLei: 'Art. 5º, II e Art. 37, caput, da CF/88',
+        dicaPratica: 'Na Administração não há autonomia da vontade privada: a lei é o limite máximo e mínimo da conduta pública.'
+      },
+      {
+        id: 'fc-admin-01-03',
+        pergunta: 'Quais são as duas facetas primordiais do Princípio da Impessoalidade?',
+        resposta: '1ª: Igualdade/Isonomia no tratamento dos administrados (sem perseguições ou favoritismos indevidos); 2ª: Imputação dos atos ao órgão ou entidade estatal, e não à pessoa física do agente público executor.',
+        artigoLei: 'Art. 37, caput e § 1º da CF/88',
+        dicaPratica: 'Quem age é o Estado (órgão), não o indivíduo titular. Daí a vedação absoluta à autopromoção pessoal.'
+      },
+      {
+        id: 'fc-admin-01-04',
+        pergunta: 'O que estabelece o art. 37, § 1º, da CF a respeito da publicidade de programas e obras públicas?',
+        resposta: 'A publicidade dos atos, programas, obras, serviços e campanhas dos órgãos públicos deverá ter caráter exclusivamente educativo, informativo ou de orientação social, dela não podendo constar nomes, símbolos ou imagens que caracterizem promoção pessoal.',
+        artigoLei: 'Art. 37, § 1º, da CF/88',
+        dicaPratica: 'A autopromoção em propaganda oficial viola simultaneamente a Impessoalidade e a Moralidade administrativa.'
+      },
+      {
+        id: 'fc-admin-01-05',
+        pergunta: 'Como o Supremo Tribunal Federal consolidou a vedação ao Nepotismo através da Súmula Vinculante 13?',
+        resposta: 'Vedou a nomeação de cônjuge, companheiro ou parente em linha reta, colateral ou por afinidade, até o 3º grau, da autoridade nomeante ou de servidor da mesma pessoa jurídica com poder de direção para cargos em comissão ou funções de confiança.',
+        artigoLei: 'Súmula Vinculante 13 do STF',
+        dicaPratica: 'A proibição decorre diretamente dos princípios da impessoalidade, moralidade, igualdade e eficiência, mesmo sem lei formal ordinária.'
+      },
+      {
+        id: 'fc-admin-01-06',
+        pergunta: 'Qual a distinção entre a Moralidade Administrativa e a moralidade comum (subjetiva)?',
+        resposta: 'A moralidade administrativa não se confunde com preceitos éticos religiosos ou puramente subjetivos. Trata-se de uma moralidade jurídica institucional, voltada à probidade, boa-fé objetiva, lealdade e honestidade no trato da coisa pública.',
+        artigoLei: 'Art. 37, caput e § 4º da CF/88 c/c Lei 8.429/92',
+        dicaPratica: 'O ato formalmente legal pode ser anulado por vício de moralidade se comprovado o desvio ético-institucional.'
+      },
+      {
+        id: 'fc-admin-01-07',
+        pergunta: 'O Princípio da Publicidade é absoluto no ordenamento jurídico brasileiro?',
+        resposta: 'Não. A publicidade é a regra geral da transparência republicana, mas comporta exceções constitucionais taxativas: hipóteses em que o sigilo seja imprescindível à segurança da sociedade e do Estado, ou para resguardar a intimidade e a vida privada.',
+        artigoLei: 'Art. 5º, incisos XXXIII e LX, e Art. 37, caput da CF/88',
+        dicaPratica: 'A publicidade é requisito de eficácia e de controle dos atos administrativos pelos cidadãos e órgãos de fiscalização.'
+      },
+      {
+        id: 'fc-admin-01-08',
+        pergunta: 'Qual princípio explícito foi inserido no art. 37 pela Emenda Constitucional nº 19/1998 (Reforma Administrativa)?',
+        resposta: 'O Princípio da Eficiência, que impõe à Administração Pública a busca contínua por produtividade, economicidade, rendimento funcional e qualidade na prestação dos serviços públicos aos cidadãos.',
+        artigoLei: 'Art. 37, caput, da CF/88 (redação dada pela EC 19/98)',
+        dicaPratica: 'O princípio da eficiência deu ensejo à avaliação especial e periódica de desempenho funcional.'
+      },
+      {
+        id: 'fc-admin-01-09',
+        pergunta: 'O Princípio da Eficiência autoriza o administrador público a afastar ou descumprir a Legalidade?',
+        resposta: 'De forma alguma. A eficiência jamais se sobrepõe à legalidade estrita. O administrador deve ser eficiente dentro dos limites da lei (eficiência com conformidade legal), sendo vedado atalhos ilícitos em nome de agilidade.',
+        artigoLei: 'Art. 37, caput, da CF/88',
+        dicaPratica: 'Não existe eficácia administrativa legítima obtida mediante violação de garantias legais e licitatórias.'
+      },
+      {
+        id: 'fc-admin-01-10',
+        pergunta: 'Em que consiste o Princípio da Autotutela Administrativa (Súmulas 346 e 473 do STF)?',
+        resposta: 'É o poder-dever da Administração de controlar seus próprios atos, podendo anular aqueles eivados de vícios de legalidade (ex tunc) e revogar os inconvenientes ou inoportunos (ex nunc), ressalvados os direitos adquiridos.',
+        artigoLei: 'Súmulas 346 e 473 do STF e Art. 53 da Lei 9.784/1999',
+        dicaPratica: 'Se a anulação do ato ilegal atingir interesses de terceiros, é obrigatório garantir o prévio contraditório e a ampla defesa.'
+      },
+      {
+        id: 'fc-admin-01-11',
+        pergunta: 'O que determina o Princípio da Indisponibilidade do Interesse Público?',
+        resposta: 'Determina que os bens, direitos e interesses públicos não pertencem ao administrador público, mas sim à coletividade. O gestor público é apenas um mero curador e guardião, não podendo dispor, renunciar ou transigir fora das hipóteses autorizadas por lei.',
+        artigoLei: 'Princípio implícito / Regime Jurídico Administrativo',
+        dicaPratica: 'Compõe, juntamente com a supremacia do interesse público, o binômio basilar do Direito Administrativo.'
+      },
+      {
+        id: 'fc-admin-01-12',
+        pergunta: 'Qual a prerrogativa conferida pelo Princípio da Supremacia do Interesse Público sobre o Privado?',
+        resposta: 'Confere à Administração Pública uma posição de verticalidade sobre o particular nas relações jurídicas regidas pelo direito público, garantindo poderes extrovertidos como a autoexecutoriedade, desapropriação e cláusulas exorbitantes em contratos.',
+        artigoLei: 'Regime Jurídico-Administrativo Constitucional',
+        dicaPratica: 'A supremacia do interesse público deve sempre respeitar os direitos e garantias fundamentais individuais.'
+      },
+      {
+        id: 'fc-admin-01-13',
+        pergunta: 'O que exige o Princípio da Motivação nos atos administrativos vinculados e discricionários?',
+        resposta: 'Exige que a autoridade indique expressamente os fundamentos fáticos (acontecimentos reais) e jurídicos (dispositivos de lei) que justificaram a prática do ato administrativo, possibilitando o controle de legitimidade e legalidade.',
+        artigoLei: 'Art. 50 da Lei 9.784/1999 e art. 93, IX da CF/88',
+        dicaPratica: 'A motivação contextual é indispensável em atos que neguem, limitem ou afetem direitos de administrados.'
+      },
+      {
+        id: 'fc-admin-01-14',
+        pergunta: 'Como funciona a Teoria dos Motivos Determinantes no controle dos atos administrativos?',
+        resposta: 'A validade do ato administrativo fica irrevogavelmente vinculada aos motivos fáticos e jurídicos alegados pela autoridade ao praticá-lo. Se os motivos forem comprovadamente falsos ou inexistentes, o ato é nulo, mesmo que a motivação fosse originalmente facultativa.',
+        artigoLei: 'Jurisprudência uníssona do STJ e STF',
+        dicaPratica: 'Se o chefe exonera servidor comissionado alegando "falta de verba" e nomeia outro logo em seguida, o ato é nulo.'
+      },
+      {
+        id: 'fc-admin-01-15',
+        pergunta: 'Qual o critério de distinção entre Razoabilidade e Proporcionalidade no controle jurisdicional?',
+        resposta: 'A Razoabilidade veda atuações absurdas, desarrazoadas ou que fujam ao bom senso comum. A Proporcionalidade exige a tríplice aferição da medida: adequação (meio apto ao fim), necessidade (menor sacrifício ao cidadão) e proporcionalidade em sentido estrito (custo-benefício justo).',
+        artigoLei: 'Art. 2º da Lei 9.784/1999 e Art. 5º, LIV da CF/88',
+        dicaPratica: 'Ambos os princípios balizam o poder discricionário impedindo o excesso de poder e o desvio de finalidade.'
+      },
+      {
+        id: 'fc-admin-01-16',
+        pergunta: 'Qual é o prazo decadencial para a Administração Pública anular atos que gerem efeitos favoráveis aos destinatários?',
+        resposta: 'O direito da Administração de anular os atos administrativos de que decorram efeitos favoráveis para os destinatários decai em 5 (cinco) anos, contados da data em que foram praticados, salvo comprovada má-fé do beneficiário.',
+        artigoLei: 'Art. 54 da Lei 9.784/1999',
+        dicaPratica: 'Havendo comprovada má-fé do administrado, não incide o prazo decadencial quinquenal.'
+      },
+      {
+        id: 'fc-admin-01-17',
+        pergunta: 'O que dita o Princípio da Continuidade do Serviço Público quanto à suspensão de serviços essenciais?',
+        resposta: 'Dita que as atividades públicas essenciais não podem sofrer interrupções repentinas. A suspensão por inadimplemento de usuário só é legítima mediante prévio aviso formal, resguardados os serviços essenciais à vida e à saúde coletiva (ex: hospitais e UTIs).',
+        artigoLei: 'Art. 6º, § 3º da Lei 8.987/1995',
+        dicaPratica: 'O STJ não admite corte de energia de hospitais públicos ou centros de tratamento intensivo por falta de verba.'
+      },
+      {
+        id: 'fc-admin-01-18',
+        pergunta: 'A nomeação de cônjuge ou parente para cargos políticos (como Ministros de Estado ou Secretários) viola a Súmula Vinculante 13?',
+        resposta: 'Em regra, não. A jurisprudência do STF firmou entendimento de que a restrição da Súmula Vinculante 13 não se aplica indistintamente a cargos de natureza estritamente política, salvo em casos de patente ausência de qualificação técnica ou inequívoco desvio de finalidade.',
+        artigoLei: 'Jurisprudência vinculante do STF (Rcl 29.033, Rcl 22.339)',
+        dicaPratica: 'Se o parente não possui nenhuma qualificação profissional mínima para a pasta política, incide a nulidade por nepotismo.'
+      }
+    ],
+    questoes: [
+      {
+        id: 'q-admin-01-01',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Regime Jurídico e Princípio da Legalidade',
+        enunciado: 'No regime jurídico-administrativo brasileiro, a legalidade que subordina a atuação dos órgãos e agentes públicos distingue-se daquela aplicável aos particulares pelo seguinte postulado:',
+        alternativas: [
+          { letra: 'A', texto: 'A Administração pode realizar qualquer ato que não esteja expressamente proibido por lei ordinária.' },
+          { letra: 'B', texto: 'A Administração Pública só pode agir quando houver expressa autorização ou determinação na lei (critério de subordinação estrita).' },
+          { letra: 'C', texto: 'A vontade do administrador prevalece sobre a lei sempre que visar à satisfação imediata de uma demanda popular.' },
+          { letra: 'D', texto: 'Os administrados só podem fazer o que a lei expressamente autorizar de forma tarifada.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Enquanto na esfera privada vigora a autonomia da vontade (art. 5º, II da CF - pode-se fazer tudo o que a lei não proíbe), na Administração Pública vigora o princípio da estrita legalidade: o administrador só pode praticar atos expressamente determinados ou permitidos por lei.',
+        fundamentoLegal: 'Art. 37, caput, da CF/88 c/c art. 2º da Lei 9.784/1999'
+      },
+      {
+        id: 'q-admin-01-02',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Princípio da Impessoalidade',
+        enunciado: 'A regra constitucional contida no art. 37, § 1º, da CF/88, que proíbe a aposição de nomes, símbolos ou imagens que caracterizem promoção pessoal em propaganda oficial de obras públicas, é desdobramento direto e precípuo do princípio da:',
+        alternativas: [
+          { letra: 'A', texto: 'Publicidade estrita.' },
+          { letra: 'B', texto: 'Impessoalidade.' },
+          { letra: 'C', texto: 'Autonomia corporativa.' },
+          { letra: 'D', texto: 'Eficiência orçamentária.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O art. 37, § 1º concretiza diretamente a faceta de não-personificação do poder público advinda da Impessoalidade. As realizações são imputadas à pessoa jurídica estatal, jamais à figura individual do governante ou mandatário.',
+        fundamentoLegal: 'Art. 37, § 1º, da Constituição Federal de 1988'
+      },
+      {
+        id: 'q-admin-01-03',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Promoção Pessoal e Improbidade',
+        enunciado: 'Determinado Prefeito Municipal recém-empossado ordenou que toda a frota de ambulâncias da cidade recebesse adesivos com a sua foto oficial e o slogan utilizado em sua campanha eleitoral vitoriosa. À luz da Constituição Federal e da jurisprudência dominante:',
+        alternativas: [
+          { letra: 'A', texto: 'A conduta é plenamente válida em homenagem ao princípio da transparência pública.' },
+          { letra: 'B', texto: 'A conduta viola expressamente a impessoalidade e a moralidade administrativa, sujeitando o gestor à responsabilização civil e por improbidade.' },
+          { letra: 'C', texto: 'O prefeito agiu no exercício de seu poder discricionário soberano, infenso a controle jurisdicional.' },
+          { letra: 'D', texto: 'A proibição aplica-se apenas ao Presidente da República, permitindo-se exceções a prefeitos do interior.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A veiculação de slogans de campanha e imagem de mandatário em veículos do patrimônio público afronta flagrantemente o art. 37, § 1º da CF, violando a impessoalidade e a probidade exigida no trato dos recursos municipais.',
+        fundamentoLegal: 'Art. 37, § 1º e § 4º da CF/88'
+      },
+      {
+        id: 'q-admin-01-04',
+        tipo: 'introdutoria',
+        tema: 'Direito Administrativo · Princípio da Eficiência e EC 19/1998',
+        enunciado: 'O Princípio da Eficiência foi introduzido expressamente no caput do art. 37 da Constituição Federal pela Emenda Constitucional nº 19/1998. Dentre os instrumentos criados para dar concretude à eficiência no serviço público, destaca-se:',
+        alternativas: [
+          { letra: 'A', texto: 'A extinção sumária da estabilidade de todos os servidores públicos federais.' },
+          { letra: 'B', texto: 'A dispensa universal de licitação para contratações com empresas de inovação.' },
+          { letra: 'C', texto: 'A possibilidade de perda do cargo do servidor estável mediante procedimento de avaliação periódica de desempenho, na forma de lei complementar.' },
+          { letra: 'D', texto: 'A obrigatoriedade de privatização imediata de todas as empresas públicas deficitárias.' }
+        ],
+        respostaCorreta: 'C',
+        comentario: 'O art. 41, § 1º, III da CF, modificado pela EC 19/98, instituiu a avaliação periódica de desempenho como hipótese constitucional de perda de cargo do servidor estável, assegurada ampla defesa, visando a eficiência do serviço estatal.',
+        fundamentoLegal: 'Art. 37, caput e Art. 41, § 1º, inciso III da CF/88'
+      },
+      {
+        id: 'q-admin-01-05',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Nepotismo e Súmula Vinculante 13',
+        enunciado: 'O Secretário Municipal de Obras nomeou o cunhado de sua esposa (portanto, irmão de sua companheira, parente colateral por afinidade de 2º grau) para exercer cargo em comissão de diretor técnico de fiscalização na mesma pasta. Diante do enunciado da Súmula Vinculante 13 do STF:',
+        alternativas: [
+          { letra: 'A', texto: 'A nomeação é válida, pois parentesco por afinidade não gera impedimento de nepotismo.' },
+          { letra: 'B', texto: 'A nomeação configura nepotismo vedado, sendo nulo o ato de investidura por violação aos princípios do art. 37 da CF.' },
+          { letra: 'C', texto: 'Apenas parentes consanguíneos em linha reta até o 1º grau (pais e filhos) estão abrangidos pelo nepotismo.' },
+          { letra: 'D', texto: 'O nepotismo só se aplica se houver prévia condenação criminal transitada em julgado.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A Súmula Vinculante 13 veda a nomeação de parentes em linha reta, colateral ou por afinidade até o 3º grau da autoridade nomeante ou de servidores com poder hierárquico na mesma pessoa jurídica para cargos comissionados ou funções gratificadas.',
+        fundamentoLegal: 'Súmula Vinculante nº 13 do STF'
+      },
+      {
+        id: 'q-admin-01-06',
+        tipo: 'pegadinha',
+        tema: 'Direito Administrativo · Anulação vs. Revogação de Atos',
+        enunciado: 'Sobre o controle dos atos administrativos exercido pela própria Administração com esteio no Princípio da Autotutela, assinale a proposição tecnicamente correta:',
+        alternativas: [
+          { letra: 'A', texto: 'A revogação de atos administrativos decorre de vício de ilegalidade e produz efeitos retroativos (ex tunc).' },
+          { letra: 'B', texto: 'A anulação atinge atos ilegais com eficácia retroativa (ex tunc), enquanto a revogação incide sobre atos legais e discricionários por razões de mérito, com eficácia não-retroativa (ex nunc).' },
+          { letra: 'C', texto: 'O Poder Judiciário pode revogar atos administrativos do Poder Executivo quando entender que a decisão foi inoportuna.' },
+          { letra: 'D', texto: 'Atos vinculados podem ser revogados pelo administrador a qualquer momento por conveniência pública.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Anulação = ato ilegal/ilegítimo, efeito retroativo (ex tunc), pode ser feita pela Administração e pelo Judiciário. Revogação = ato legal e discricionário, razões de mérito (conveniência e oportunidade), efeito prospectivo (ex nunc), privativa da Administração.',
+        fundamentoLegal: 'Súmula 473 do STF e art. 53 da Lei 9.784/1999'
+      },
+      {
+        id: 'q-admin-01-07',
+        tipo: 'pegadinha',
+        tema: 'Direito Administrativo · Exceções à Publicidade',
+        enunciado: 'Um cidadão solicitou formalmente com base na Lei de Acesso à Informação o relatório minucioso das rotas de deslocamento e esquemas táticos de blindagem pessoal utilizados pela segurança do Presidente da República. O órgão negou o acesso. O ato de indeferimento:',
+        alternativas: [
+          { letra: 'A', texto: 'É ilícito, pois na República a publicidade é absoluta e todo documento público deve ser livremente franqueado.' },
+          { letra: 'B', texto: 'É legítimo, haja vista que a própria Constituição ressalva o sigilo indispensável à segurança da sociedade e das mais altas autoridades do Estado.' },
+          { letra: 'C', texto: 'Configura crime de abuso de autoridade por violar a publicidade do art. 37 da CF.' },
+          { letra: 'D', texto: 'Só seria legítimo se o solicitante fosse pessoa estrangeira não residente.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O princípio da publicidade não é absoluto. O art. 5º, XXXIII da CF e a Lei 12.527/2011 (LAI) ressalvam expressamente informações cujo sigilo seja imprescindível à segurança da sociedade e do Estado, além da proteção da intimidade e da vida privada.',
+        fundamentoLegal: 'Art. 5º, XXXIII e Art. 37, caput, da CF/88 c/c Lei 12.527/2011'
+      },
+      {
+        id: 'q-admin-01-08',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Cargo Político e Súmula Vinculante 13',
+        enunciado: 'O Governador do Estado nomeou seu irmão, profissional com mais de 20 anos de experiência em gestão financeira e doutorado em economia, para exercer o cargo de Secretário Estadual da Fazenda. Segundo a jurisprudência dominante do STF:',
+        alternativas: [
+          { letra: 'A', texto: 'O ato é automaticamente nulo, pois a vedação da Súmula Vinculante 13 não comporta exceção a nenhum cargo público.' },
+          { letra: 'B', texto: 'A vedação da Súmula Vinculante 13, em regra, não alcança cargos de natureza estritamente política (Secretários e Ministros), exceto se comprovada patente incapacidade técnica ou desvio de finalidade.' },
+          { letra: 'C', texto: 'Apenas filhos do governante poderiam ser nomeados, sendo proibida a investidura de irmãos.' },
+          { letra: 'D', texto: 'O STF equiparou todos os cargos comissionados a cargos de provimento efetivo por concurso.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O STF firmou tese de que a Súmula Vinculante 13 não incide de forma genérica sobre nomeações para cargos políticos (como Ministros de Estado e Secretários Estaduais/Municipais), ressalvada a hipótese de nepotismo cruzado, manifesta inaptidão profissional ou fraude à lei.',
+        fundamentoLegal: 'Jurisprudência vinculante do STF (Rcl 29.033-AgR e RE 579.951)'
+      },
+      {
+        id: 'q-admin-01-09',
+        tipo: 'definicao',
+        tema: 'Direito Administrativo · Autotutela e Devido Processo Legal',
+        enunciado: 'Ao constatar que concedeu gratificação salarial em duplicidade a um servidor público por equívoco de interpretação há três anos, a Administração Pública decide anular o ato. Para cumprir o entendimento do STF e a Lei de Processo Administrativo, a Administração deve:',
+        alternativas: [
+          { letra: 'A', texto: 'Anular o ato de imediato de forma sigilosa sem notificar o servidor afetado.' },
+          { letra: 'B', texto: 'Garantir ao servidor previamente o exercício do contraditório e da ampla defesa, haja vista que a anulação afetará sua esfera jurídica patrimonial.' },
+          { letra: 'C', texto: 'Aguardar obrigatoriamente uma decisão judicial transitada em julgado.' },
+          { letra: 'D', texto: 'Demitir o servidor sumariamente por locupletamento ilícito.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Embora a Administração tenha o poder-dever da autotutela (Súmula 473), o STF e a Lei 9.784/99 (art. 2º) pacificaram que a anulação de ato que produza efeitos favoráveis a terceiro exige instauração prévia de procedimento com contraditório e ampla defesa.',
+        fundamentoLegal: 'Súmula Vinculante nº 3 e Tema 138 de Repercussão Geral do STF'
+      },
+      {
+        id: 'q-admin-01-10',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Continuidade do Serviço Público',
+        enunciado: 'Concessionária distribuidora de energia elétrica suspendeu abruptamente o fornecimento de luz de um Hospital Municipal de Urgência devido ao atraso de faturas emitidas pelo Município. Considerando o princípio da continuidade dos serviços públicos e a jurisprudência do STJ:',
+        alternativas: [
+          { letra: 'A', texto: 'O corte é legítimo e irrepreensível, pois o inadimplemento autoriza a interrupção indistinta em qualquer unidade consumidora.' },
+          { letra: 'B', texto: 'O corte é ilegítimo, pois o serviço essencial a unidade hospitalar não pode ser interrompido, devendo a cobrança ser realizada pelas vias judiciais ordinárias.' },
+          { letra: 'C', texto: 'A concessionária pode expropriar os equipamentos do hospital para abater a dívida.' },
+          { letra: 'D', texto: 'O corte só seria indevido se houvesse prévio acordo arbitral homologado.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O STJ consolidou que, em razão do princípio da continuidade do serviço público essencial e da preservação da dignidade da pessoa humana e da saúde pública, é ilegítimo o corte de energia de hospitais, prontos-socorros e UTIs por inadimplemento do ente público.',
+        fundamentoLegal: 'Art. 6º, § 3º da Lei 8.987/1995 e Jurisprudência pacificada do STJ'
+      },
+      {
+        id: 'q-admin-01-11',
+        tipo: 'pegadinha',
+        tema: 'Direito Administrativo · Teoria dos Motivos Determinantes',
+        enunciado: 'Uma autoridade pública exonerou servidor ocupante de cargo em comissão de livre nomeação e exoneração ad nutum. Na portaria de desligamento, a autoridade expressou textualmente como motivo: "redução drástica de despesas com pessoal por insuficiência de arrecadação". Posteriormente, restou documentalmente provado que a arrecadação bateu recorde e dois novos assessores foram nomeados no mesmo dia. O servidor exonerado poderá pleitear:',
+        alternativas: [
+          { letra: 'A', texto: 'Nada, pois cargos em comissão dispensam motivação e seu desligamento é imune a anulação judicial.' },
+          { letra: 'B', texto: 'A nulidade da exoneração com base na Teoria dos Motivos Determinantes, haja vista a falsidade inconteste do motivo explicitado pelo gestor.' },
+          { letra: 'C', texto: 'Apenas indenização por danos morais na Justiça do Trabalho.' },
+          { letra: 'D', texto: 'A sua efetivação automática no serviço público como servidor concursado.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Pela Teoria dos Motivos Determinantes, ainda que o ato prescinda originariamente de motivação (como a exoneração ad nutum), uma vez declarados os motivos pela autoridade, a validade do ato fica vinculada à veracidade desses motivos. Se comprovada a inexistência ou falsidade do motivo, o ato é nulo.',
+        fundamentoLegal: 'Jurisprudência consolidada do STF e STJ'
+      },
+      {
+        id: 'q-admin-01-12',
+        tipo: 'caso_pratico',
+        tema: 'Direito Administrativo · Prazo Decadencial e Má-Fé',
+        enunciado: 'Servidor aposentou-se com benefício concedido por ato administrativo homologado. Sete anos após a concessão, a auditoria constatou que o servidor utilizou certidões dolosamente falsificadas por ele próprio para comprovar tempo de contribuição fictício. Diante do prazo de 5 anos do art. 54 da Lei 9.784/1999, a Administração Pública:',
+        alternativas: [
+          { letra: 'A', texto: 'Decaiu de seu direito de anular o ato, tornando a aposentadoria intangível pela prescrição.' },
+          { letra: 'B', texto: 'Pode anular a aposentadoria a qualquer tempo, pois a comprovada má-fé do beneficiário afasta a decadência quinquenal administrativa.' },
+          { letra: 'C', texto: 'Deverá pagar um abono pecuniário indenizatório ao servidor.' },
+          { letra: 'D', texto: 'Só pode reaver os valores se o servidor renunciar expressamente ao direito adquirido.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O art. 54 da Lei 9.784/1999 ressalva expressamente a "comprovada má-fé": verificada fraude ou conduta dolosa do administrado, não opera a decadência quinquenal, podendo a Administração exercer a autotutela e restabelecer a legalidade.',
+        fundamentoLegal: 'Art. 54, caput, da Lei 9.784/1999'
+      }
+    ]
   }
 };
