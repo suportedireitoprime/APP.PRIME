@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowLeft, CheckCircle2, XCircle, Award, 
-  HelpCircle, ChevronRight, RotateCcw, BookOpen, AlertCircle
+  ChevronRight, BookOpen
 } from 'lucide-react';
 import type { QuestaoAula } from '@/data/aulasInterativasConteudo';
 
@@ -29,7 +30,7 @@ export function ModalPraticarQuestoes({
   const progressoPct = Math.round(((indexAtual + 1) / total) * 100);
 
   const handleSelectAlternativa = (letra: 'A' | 'B' | 'C' | 'D') => {
-    if (respostaSelecionada !== null) return; // Já respondeu esta questão
+    if (respostaSelecionada !== null) return;
 
     setRespostaSelecionada(letra);
     if (letra === questao.respostaCorreta) {
@@ -76,7 +77,10 @@ export function ModalPraticarQuestoes({
 
     return (
       <div className="fixed inset-0 z-[120] bg-[#0c0306] flex flex-col items-center justify-center p-4 text-white overflow-y-auto">
-        <div 
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
           className="max-w-md w-full rounded-3xl border border-[rgba(226,62,87,0.4)] p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden"
           style={{ background: 'linear-gradient(180deg, #240811 0%, #140409 100%)' }}
         >
@@ -92,7 +96,7 @@ export function ModalPraticarQuestoes({
               Treinamento de Questões Finalizado!
             </h2>
             <p className="text-xs sm:text-sm text-[#f8edef]/80 leading-relaxed">
-              Você completou todas as questões de fixação da aula <span className="text-[#ff8296] font-semibold">{tituloAula}</span>.
+              Você completou todas as <span className="text-white font-bold">{total} questões</span> de fixação da aula <span className="text-[#ff8296] font-semibold">{tituloAula}</span>.
             </p>
           </div>
 
@@ -132,7 +136,7 @@ export function ModalPraticarQuestoes({
               Refazer Questões
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -175,7 +179,7 @@ export function ModalPraticarQuestoes({
           <span className="text-xs font-black text-emerald-400 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30">
             {acertos.length} acertos
           </span>
-          <span className="text-xs font-black text-[#ff8296] px-3 py-1 rounded-full bg-black/50 border border-[rgba(226,62,87,0.3)]">
+          <span className="text-xs font-black text-[#ff8296] px-3 py-1 rounded-full bg-black/50 border border-[rgba(226,62,87,0.3)] shadow-md">
             {indexAtual + 1} / {total}
           </span>
         </div>
@@ -183,128 +187,144 @@ export function ModalPraticarQuestoes({
 
       {/* Barra de Progresso Superior */}
       <div className="w-full h-1.5 bg-black/60 shrink-0">
-        <div 
-          className="h-full bg-gradient-to-r from-[#c8102e] to-[#ff8296] transition-all duration-300"
-          style={{ width: `${progressoPct}%` }}
+        <motion.div 
+          className="h-full bg-gradient-to-r from-[#c8102e] to-[#ff8296]"
+          initial={{ width: 0 }}
+          animate={{ width: `${progressoPct}%` }}
+          transition={{ duration: 0.3 }}
         />
       </div>
 
-      {/* Conteúdo da Questão */}
+      {/* Conteúdo da Questão com Entrada/Saída animada */}
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 max-w-2xl mx-auto w-full space-y-4">
-        {/* Card do Enunciado */}
-        <div 
-          className="rounded-3xl border border-[rgba(226,62,87,0.35)] p-5 sm:p-7 shadow-xl space-y-3.5"
-          style={{ background: 'linear-gradient(180deg, #2b0c15 0%, #1e070e 100%)' }}
-        >
-          <div className="flex items-center justify-between">
-            <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full border ${badge.color}`}>
-              {badge.label}
-            </span>
-            <span className="text-[10px] text-[#c9a7ad] font-semibold">
-              {questao.tema}
-            </span>
-          </div>
-
-          <p className="text-sm sm:text-base font-medium text-white leading-relaxed font-serif pt-1">
-            {questao.enunciado}
-          </p>
-        </div>
-
-        {/* Lista de Alternativas (A, B, C, D) */}
-        <div className="space-y-2.5">
-          {questao.alternativas.map((alt) => {
-            const isSelected = respostaSelecionada === alt.letra;
-            const isCorreta = alt.letra === questao.respostaCorreta;
-            
-            let btnStyle = 'bg-[#250d14] border-[rgba(226,62,87,0.25)] text-white hover:border-[rgba(226,62,87,0.6)]';
-            let circleStyle = 'bg-black/40 text-[#ff8296] border-[rgba(226,62,87,0.3)]';
-
-            if (respondido) {
-              if (isCorreta) {
-                btnStyle = 'bg-emerald-950/80 border-emerald-500 text-emerald-100 shadow-md shadow-emerald-950/50';
-                circleStyle = 'bg-emerald-500 text-black border-emerald-400 font-black';
-              } else if (isSelected) {
-                btnStyle = 'bg-red-950/80 border-red-500 text-red-100 shadow-md shadow-red-950/50';
-                circleStyle = 'bg-red-500 text-white border-red-400 font-black';
-              } else {
-                btnStyle = 'bg-[#1b080f]/60 border-white/5 text-white/40 opacity-50';
-                circleStyle = 'bg-black/30 text-white/30 border-white/5';
-              }
-            }
-
-            return (
-              <button
-                key={alt.letra}
-                type="button"
-                disabled={respondido}
-                onClick={() => handleSelectAlternativa(alt.letra)}
-                className={`w-full text-left p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 flex items-start gap-3.5 ${btnStyle} active:scale-[0.99]`}
-              >
-                <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border ${circleStyle}`}>
-                  {respondido && isCorreta ? '✓' : respondido && isSelected ? '✕' : alt.letra}
-                </span>
-                <span className="text-xs sm:text-sm font-medium leading-relaxed pt-1 flex-1">
-                  {alt.texto}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Comentário e Gabarito (Aberto após responder) */}
-        {respondido && (
-          <div 
-            className="rounded-3xl border border-[rgba(226,62,87,0.35)] p-5 sm:p-6 space-y-3.5 shadow-2xl animate-in fade-in slide-in-from-bottom-3 duration-300"
-            style={{ background: 'linear-gradient(180deg, #200810 0%, #16040a 100%)' }}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={questao.id}
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -40 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="space-y-4"
           >
-            <div className="flex items-center gap-2">
-              {respostaSelecionada === questao.respostaCorreta ? (
-                <>
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
-                    Você Acertou! (Gabarito: Letra {questao.respostaCorreta})
-                  </span>
-                </>
-              ) : (
-                <>
-                  <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
-                  <span className="text-xs font-black uppercase tracking-wider text-rose-400">
-                    Você Errou! (Gabarito Correto: Letra {questao.respostaCorreta})
-                  </span>
-                </>
-              )}
-            </div>
-
-            <p className="text-xs sm:text-sm text-[#f8edef]/90 leading-relaxed font-sans">
-              {questao.comentario}
-            </p>
-
-            <div className="p-3 rounded-2xl bg-black/40 border border-amber-500/30 flex items-start gap-2.5">
-              <BookOpen className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
-              <div>
-                <span className="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider block">
-                  Fundamentação Legal
-                </span>
-                <p className="text-xs text-amber-200/90 font-medium">
-                  {questao.fundamentoLegal}
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleProxima}
-              className="w-full mt-2 py-3 sm:py-3.5 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider text-white shadow-xl transition active:scale-95 flex items-center justify-center gap-2"
-              style={{
-                background: 'linear-gradient(135deg, #ff7a8a 0%, #c8102e 100%)',
-                boxShadow: '0 4px 18px rgba(226,62,87,0.5)'
-              }}
+            {/* Card do Enunciado */}
+            <div 
+              className="rounded-3xl border border-[rgba(226,62,87,0.35)] p-5 sm:p-7 shadow-xl space-y-3.5"
+              style={{ background: 'linear-gradient(180deg, #2b0c15 0%, #1e070e 100%)' }}
             >
-              <span>{indexAtual + 1 < total ? 'Próxima Questão' : 'Ver Resultado Final'}</span>
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        )}
+              <div className="flex items-center justify-between">
+                <span className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full border ${badge.color}`}>
+                  {badge.label}
+                </span>
+                <span className="text-[10px] text-[#c9a7ad] font-semibold">
+                  {questao.tema}
+                </span>
+              </div>
+
+              <p className="text-sm sm:text-base font-medium text-white leading-relaxed font-serif pt-1">
+                {questao.enunciado}
+              </p>
+            </div>
+
+            {/* Lista de Alternativas (A, B, C, D) */}
+            <div className="space-y-2.5">
+              {questao.alternativas.map((alt) => {
+                const isSelected = respostaSelecionada === alt.letra;
+                const isCorreta = alt.letra === questao.respostaCorreta;
+                
+                let btnStyle = 'bg-[#250d14] border-[rgba(226,62,87,0.25)] text-white hover:border-[rgba(226,62,87,0.6)]';
+                let circleStyle = 'bg-black/40 text-[#ff8296] border-[rgba(226,62,87,0.3)]';
+
+                if (respondido) {
+                  if (isCorreta) {
+                    btnStyle = 'bg-emerald-950/80 border-emerald-500 text-emerald-100 shadow-md shadow-emerald-950/50';
+                    circleStyle = 'bg-emerald-500 text-black border-emerald-400 font-black';
+                  } else if (isSelected) {
+                    btnStyle = 'bg-red-950/80 border-red-500 text-red-100 shadow-md shadow-red-950/50';
+                    circleStyle = 'bg-red-500 text-white border-red-400 font-black';
+                  } else {
+                    btnStyle = 'bg-[#1b080f]/60 border-white/5 text-white/40 opacity-50';
+                    circleStyle = 'bg-black/30 text-white/30 border-white/5';
+                  }
+                }
+
+                return (
+                  <button
+                    key={alt.letra}
+                    type="button"
+                    disabled={respondido}
+                    onClick={() => handleSelectAlternativa(alt.letra)}
+                    className={`w-full text-left p-3.5 sm:p-4 rounded-2xl border transition-all duration-200 flex items-start gap-3.5 ${btnStyle} active:scale-[0.99]`}
+                  >
+                    <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 border ${circleStyle}`}>
+                      {respondido && isCorreta ? '✓' : respondido && isSelected ? '✕' : alt.letra}
+                    </span>
+                    <span className="text-xs sm:text-sm font-medium leading-relaxed pt-1 flex-1">
+                      {alt.texto}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Comentário e Gabarito (Aberto após responder) */}
+            {respondido && (
+              <motion.div 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="rounded-3xl border border-[rgba(226,62,87,0.35)] p-5 sm:p-6 space-y-3.5 shadow-2xl"
+                style={{ background: 'linear-gradient(180deg, #200810 0%, #16040a 100%)' }}
+              >
+                <div className="flex items-center gap-2">
+                  {respostaSelecionada === questao.respostaCorreta ? (
+                    <>
+                      <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                      <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
+                        Você Acertou! (Gabarito: Letra {questao.respostaCorreta})
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                      <span className="text-xs font-black uppercase tracking-wider text-rose-400">
+                        Você Errou! (Gabarito Correto: Letra {questao.respostaCorreta})
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                <p className="text-xs sm:text-sm text-[#f8edef]/90 leading-relaxed font-sans">
+                  {questao.comentario}
+                </p>
+
+                <div className="p-3 rounded-2xl bg-black/40 border border-amber-500/30 flex items-start gap-2.5">
+                  <BookOpen className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider block">
+                      Fundamentação Legal
+                    </span>
+                    <p className="text-xs text-amber-200/90 font-medium">
+                      {questao.fundamentoLegal}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleProxima}
+                  className="w-full mt-2 py-3 sm:py-3.5 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider text-white shadow-xl transition active:scale-95 flex items-center justify-center gap-2"
+                  style={{
+                    background: 'linear-gradient(135deg, #ff7a8a 0%, #c8102e 100%)',
+                    boxShadow: '0 4px 18px rgba(226,62,87,0.5)'
+                  }}
+                >
+                  <span>{indexAtual + 1 < total ? 'Próxima Questão' : 'Ver Resultado Final'}</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </motion.div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );

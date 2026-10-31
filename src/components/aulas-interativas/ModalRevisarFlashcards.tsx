@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  ArrowLeft, RotateCcw, CheckCircle2, RotateCw, 
-  Sparkles, BookOpen, Layers, Award, ChevronRight, LockOpen 
+  ArrowLeft, CheckCircle2, RotateCw, 
+  Award, LockOpen, Check
 } from 'lucide-react';
 import type { FlashcardAula } from '@/data/aulasInterativasConteudo';
 
@@ -20,22 +21,16 @@ export function ModalRevisarFlashcards({
 }: ModalRevisarFlashcardsProps) {
   const [indexAtual, setIndexAtual] = useState(0);
   const [virado, setVirado] = useState(false);
-  const [compreendidos, setCompreendidos] = useState<number[]>([]);
-  const [paraRevisar, setParaRevisar] = useState<number[]>([]);
+  const [direcao, setDirecao] = useState(1);
   const [finalizado, setFinalizado] = useState(false);
 
-  const card = flashcards[indexAtual];
   const total = flashcards.length;
+  const card = flashcards[indexAtual];
   const progressoPct = Math.round(((indexAtual + 1) / total) * 100);
 
-  const handleProximo = (tipo: 'compreendi' | 'revisar') => {
-    if (tipo === 'compreendi') {
-      setCompreendidos(prev => [...prev, indexAtual]);
-    } else {
-      setParaRevisar(prev => [...prev, indexAtual]);
-    }
-
+  const handleCompreendi = () => {
     setVirado(false);
+    setDirecao(1);
 
     if (indexAtual + 1 < total) {
       setIndexAtual(prev => prev + 1);
@@ -48,15 +43,16 @@ export function ModalRevisarFlashcards({
   const reiniciar = () => {
     setIndexAtual(0);
     setVirado(false);
-    setCompreendidos([]);
-    setParaRevisar([]);
     setFinalizado(false);
   };
 
   if (finalizado) {
     return (
       <div className="fixed inset-0 z-[120] bg-[#0c0306] flex flex-col items-center justify-center p-4 text-white overflow-y-auto">
-        <div 
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
           className="max-w-md w-full rounded-3xl border border-[rgba(226,62,87,0.4)] p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden"
           style={{ background: 'linear-gradient(180deg, #240811 0%, #140409 100%)' }}
         >
@@ -76,19 +72,7 @@ export function ModalRevisarFlashcards({
             </p>
           </div>
 
-          {/* Placar de desempenho */}
-          <div className="grid grid-cols-2 gap-3 p-3 rounded-2xl bg-black/40 border border-[rgba(226,62,87,0.25)]">
-            <div className="text-center p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-              <span className="text-xl font-black text-emerald-400">{compreendidos.length}</span>
-              <p className="text-[10px] font-bold uppercase text-emerald-300">Compreendidos</p>
-            </div>
-            <div className="text-center p-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
-              <span className="text-xl font-black text-amber-400">{paraRevisar.length}</span>
-              <p className="text-[10px] font-bold uppercase text-amber-300">A Reforçar</p>
-            </div>
-          </div>
-
-          {/* Mensagem de Desbloqueio */}
+          {/* Mensagem de Desbloqueio da Próxima Fase */}
           <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-teal-500/10 border border-emerald-500/40 text-left">
             <div className="w-9 h-9 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0 text-emerald-400">
               <LockOpen className="w-5 h-5" />
@@ -119,7 +103,7 @@ export function ModalRevisarFlashcards({
               Revisar Novamente
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -156,7 +140,7 @@ export function ModalRevisarFlashcards({
 
         {/* Indicador de Card Atual */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-xs font-black text-[#ff8296] px-3 py-1 rounded-full bg-black/50 border border-[rgba(226,62,87,0.3)]">
+          <span className="text-xs font-black text-[#ff8296] px-3.5 py-1 rounded-full bg-black/50 border border-[rgba(226,62,87,0.35)] shadow-md">
             {indexAtual + 1} / {total}
           </span>
         </div>
@@ -164,97 +148,140 @@ export function ModalRevisarFlashcards({
 
       {/* Barra de Progresso Superior */}
       <div className="w-full h-1.5 bg-black/60 shrink-0">
-        <div 
-          className="h-full bg-gradient-to-r from-[#c8102e] to-[#ff8296] transition-all duration-300"
-          style={{ width: `${progressoPct}%` }}
+        <motion.div 
+          className="h-full bg-gradient-to-r from-[#c8102e] to-[#ff8296]"
+          initial={{ width: 0 }}
+          animate={{ width: `${progressoPct}%` }}
+          transition={{ duration: 0.3 }}
         />
       </div>
 
-      {/* Área Central: Flashcard Interativo com Flip */}
-      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 max-w-xl mx-auto w-full overflow-y-auto">
-        <div 
-          onClick={() => setVirado(!virado)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setVirado(!virado); }}
-          className="w-full min-h-[340px] sm:min-h-[380px] rounded-3xl border border-[rgba(226,62,87,0.35)] hover:border-[rgba(226,62,87,0.6)] p-6 sm:p-8 flex flex-col justify-between cursor-pointer transition-all duration-300 shadow-2xl relative select-none transform-gpu"
-          style={{
-            background: virado 
-              ? 'linear-gradient(180deg, #1f070f 0%, #2f0d18 100%)' 
-              : 'linear-gradient(180deg, #2b0c15 0%, #1e070e 100%)',
-            boxShadow: '0 12px 40px rgba(0,0,0,0.8), 0 0 20px rgba(226,62,87,0.15)'
-          }}
-        >
-          {/* Topo do card: Tag indicadora */}
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#ff8296] px-2.5 py-1 rounded-full bg-black/40 border border-[rgba(226,62,87,0.25)]">
-              <Sparkles className="w-3 h-3 fill-current" />
-              <span>{virado ? 'Resposta & Fundamentação' : 'Pergunta de Fixação'}</span>
-            </span>
+      {/* Área Central: Flashcard Interativo com Flip 3D e Transição de Entrada/Saída */}
+      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 max-w-xl mx-auto w-full overflow-hidden perspective-[1200px]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={card.id}
+            initial={{ opacity: 0, x: 50 * direcao, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -50 * direcao, scale: 0.95 }}
+            transition={{ duration: 0.28, ease: 'easeInOut' }}
+            className="w-full"
+          >
+            {/* Card com Flip 3D */}
+            <div
+              onClick={() => setVirado(!virado)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setVirado(!virado); }}
+              className="w-full min-h-[350px] sm:min-h-[390px] rounded-3xl border border-[rgba(226,62,87,0.35)] hover:border-[rgba(226,62,87,0.6)] p-6 sm:p-8 flex flex-col justify-between cursor-pointer select-none transition-shadow duration-300 shadow-2xl relative transform-gpu"
+              style={{
+                perspective: '1200px',
+                background: virado 
+                  ? 'linear-gradient(180deg, #220712 0%, #300d19 100%)' 
+                  : 'linear-gradient(180deg, #2c0c16 0%, #1e070f 100%)',
+                boxShadow: '0 16px 48px rgba(0,0,0,0.85), 0 0 24px rgba(226,62,87,0.2)'
+              }}
+            >
+              <motion.div
+                animate={{ rotateY: virado ? 180 : 0 }}
+                transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+                className="w-full h-full flex flex-col justify-between flex-1"
+                style={{ transformStyle: 'preserve-3d' }}
+              >
+                {!virado ? (
+                  // Face Frontal (Pergunta)
+                  <div className="flex flex-col justify-between h-full flex-1">
+                    {/* Topo do card: SEM ícone de brilho, apenas o badge estilizado */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#ff8296] px-3 py-1 rounded-full bg-black/40 border border-[rgba(226,62,87,0.25)]">
+                        PERGUNTA DE FIXAÇÃO
+                      </span>
 
-            <span className="text-[10px] font-semibold text-[#c9a7ad] flex items-center gap-1">
-              <RotateCw className="w-3 h-3" />
-              <span>Toque para virar</span>
-            </span>
-          </div>
+                      <span className="text-[10px] font-semibold text-[#c9a7ad] flex items-center gap-1.5">
+                        <RotateCw className="w-3 h-3 text-[#ff8296]" />
+                        <span>Toque para virar</span>
+                      </span>
+                    </div>
 
-          {/* Conteúdo: Frente vs Verso */}
-          <div className="my-auto py-4">
-            {!virado ? (
-              <div className="space-y-4">
-                <p className="text-lg sm:text-xl md:text-2xl font-bold text-white leading-relaxed font-serif">
-                  {card.pergunta}
-                </p>
-                <p className="text-xs text-[#c9a7ad] italic">
-                  Pense na resposta antes de virar para checar a fundamentação doutrinária.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-3.5 text-left">
-                <p className="text-sm sm:text-base font-medium text-[#f8edef] leading-relaxed">
-                  {card.resposta}
-                </p>
+                    <div className="my-auto py-6">
+                      <p className="text-lg sm:text-xl md:text-2xl font-bold text-white leading-relaxed font-serif">
+                        {card.pergunta}
+                      </p>
+                      <p className="text-xs text-[#c9a7ad]/80 italic mt-3">
+                        Pense na resposta antes de virar para checar a fundamentação jurídica.
+                      </p>
+                    </div>
 
-                {card.artigoLei && (
-                  <div className="p-2.5 rounded-xl bg-black/40 border border-amber-500/25">
-                    <span className="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider block mb-0.5">
-                      Fundamento Legal
-                    </span>
-                    <p className="text-xs font-semibold text-amber-200">{card.artigoLei}</p>
+                    <div className="pt-2 text-center border-t border-[rgba(226,62,87,0.15)]">
+                      <span className="text-[11px] text-[#c9a7ad]/70 font-medium">
+                        Toque no card para ver a resposta
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  // Face Traseira (Resposta) com compensação de rotação para leitura
+                  <div 
+                    className="flex flex-col justify-between h-full flex-1"
+                    style={{ transform: 'rotateY(180deg)' }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 px-3 py-1 rounded-full bg-black/40 border border-emerald-500/30">
+                        RESPOSTA & FUNDAMENTAÇÃO
+                      </span>
+
+                      <span className="text-[10px] font-semibold text-[#c9a7ad] flex items-center gap-1.5">
+                        <RotateCw className="w-3 h-3 text-emerald-400" />
+                        <span>Toque para desvirar</span>
+                      </span>
+                    </div>
+
+                    <div className="my-auto py-4 space-y-3 text-left">
+                      <p className="text-sm sm:text-base font-medium text-[#f8edef] leading-relaxed">
+                        {card.resposta}
+                      </p>
+
+                      {card.artigoLei && (
+                        <div className="p-2.5 rounded-xl bg-black/40 border border-amber-500/25">
+                          <span className="text-[10px] font-extrabold text-amber-300 uppercase tracking-wider block mb-0.5">
+                            Fundamento Legal
+                          </span>
+                          <p className="text-xs font-semibold text-amber-200">{card.artigoLei}</p>
+                        </div>
+                      )}
+
+                      {card.dicaPratica && (
+                        <div className="p-2.5 rounded-xl bg-black/40 border border-emerald-500/25">
+                          <span className="text-[10px] font-extrabold text-emerald-300 uppercase tracking-wider block mb-0.5">
+                            Dica de Ouro / Pegadinha
+                          </span>
+                          <p className="text-xs text-emerald-200">{card.dicaPratica}</p>
+                        </div>
+                      )}
+
+                      {card.exemplo && (
+                        <div className="p-2.5 rounded-xl bg-black/40 border border-rose-500/25">
+                          <span className="text-[10px] font-extrabold text-[#ff8296] uppercase tracking-wider block mb-0.5">
+                            Exemplo Prático
+                          </span>
+                          <p className="text-xs text-[#f8edef]/90">{card.exemplo}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-2 text-center border-t border-[rgba(226,62,87,0.15)]">
+                      <span className="text-[11px] text-[#c9a7ad]/70 font-medium">
+                        Clique em &quot;Compreendi&quot; abaixo para avançar
+                      </span>
+                    </div>
                   </div>
                 )}
-
-                {card.dicaPratica && (
-                  <div className="p-2.5 rounded-xl bg-black/40 border border-emerald-500/25">
-                    <span className="text-[10px] font-extrabold text-emerald-300 uppercase tracking-wider block mb-0.5">
-                      Dica de Ouro / Pegadinha
-                    </span>
-                    <p className="text-xs text-emerald-200">{card.dicaPratica}</p>
-                  </div>
-                )}
-
-                {card.exemplo && (
-                  <div className="p-2.5 rounded-xl bg-black/40 border border-rose-500/25">
-                    <span className="text-[10px] font-extrabold text-[#ff8296] uppercase tracking-wider block mb-0.5">
-                      Exemplo Prático
-                    </span>
-                    <p className="text-xs text-[#f8edef]/90">{card.exemplo}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Rodapé do card: instrução sutil */}
-          <div className="pt-2 text-center border-t border-[rgba(226,62,87,0.15)]">
-            <span className="text-[11px] text-[#c9a7ad]/70 font-medium">
-              {virado ? 'Avalie seu conhecimento nos botões abaixo' : 'Clique ou toque em qualquer lugar do card para ver a resposta'}
-            </span>
-          </div>
-        </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </main>
 
-      {/* Barra de Ações Inferior: Preciso Revisar vs Compreendi */}
+      {/* Barra de Ações Inferior: APENAS O BOTÃO COMPREENDI */}
       <footer
         className="px-4 sm:px-8 py-3.5 border-t border-[rgba(226,62,87,0.25)] shrink-0 z-30"
         style={{
@@ -262,23 +289,14 @@ export function ModalRevisarFlashcards({
           paddingBottom: 'calc(0.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))'
         }}
       >
-        <div className="max-w-xl mx-auto flex items-center gap-3">
+        <div className="max-w-xl mx-auto">
           <button
             type="button"
-            onClick={() => handleProximo('revisar')}
-            className="flex-1 py-3 sm:py-3.5 px-4 rounded-2xl bg-amber-500/15 border border-amber-500/35 hover:bg-amber-500/25 text-amber-300 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-lg"
+            onClick={handleCompreendi}
+            className="w-full py-3.5 sm:py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition active:scale-[0.98] shadow-2xl shadow-emerald-950/60 border border-emerald-400/30"
           >
-            <RotateCcw className="w-4 h-4" />
-            <span>Preciso Revisar</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleProximo('compreendi')}
-            className="flex-1 py-3 sm:py-3.5 px-4 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-xl shadow-emerald-950/40 border border-emerald-400/30"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Compreendi</span>
+            <CheckCircle2 className="w-5 h-5 stroke-[2.5]" />
+            <span>Compreendi {indexAtual + 1 < total ? '(Próximo)' : '(Concluir)'}</span>
           </button>
         </div>
       </footer>

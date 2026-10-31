@@ -33,6 +33,7 @@ export interface ConteudoAulaInterativa {
 export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
   // ─────────────────────────────────────────────────────────────────────────────
   // AULA 01: CRIMES CONTRA A FAMÍLIA (BIGAMIA - ART. 235 DO CP)
+  // 18 Flashcards + 12 Questões
   // ─────────────────────────────────────────────────────────────────────────────
   'penal-01-01': {
     aulaId: 'penal-01-01',
@@ -41,75 +42,123 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
       {
         id: 'fc-penal-01-01',
         pergunta: 'Qual é o bem jurídico tutelado no crime de bigamia (art. 235 do Código Penal)?',
-        resposta: 'Tutela-se a instituição da família, mais especificamente o princípio da monogamia, pilar da ordem matrimonial civil brasileira.',
-        artigoLei: 'Art. 235 do Código Penal',
-        dicaPratica: 'A família matrimonial monogâmica possui proteção constitucional (art. 226 da CF).'
+        resposta: 'Tutela-se a instituição da família, mais especificamente o princípio da monogamia matrimonial civil, alçado a garantia fundamental da organização social pela Constituição Federal.',
+        artigoLei: 'Art. 235 do Código Penal e art. 226 da CF/88',
+        dicaPratica: 'O casamento monogâmico é a base da tutela dos crimes contra o casamento no Título VII do CP.'
       },
       {
         id: 'fc-penal-01-02',
         pergunta: 'Quem é o sujeito ativo e passivo na figura do caput do art. 235?',
-        resposta: 'No caput, o sujeito ativo é a pessoa já casada civilmente (crime próprio). Os sujeitos passivos são o Estado e o cônjuge do primeiro casamento, além do segundo cônjuge se estava de boa-fé.',
+        resposta: 'No caput, o sujeito ativo é a pessoa já casada civilmente (crime próprio). Os sujeitos passivos são o Estado (sujeito passivo formal) e o cônjuge do primeiro casamento, além do segundo cônjuge quando de boa-fé.',
         artigoLei: 'Art. 235, caput, CP',
-        exemplo: 'Marcos, casado com Ana, celebra novo casamento com Bruna. Marcos comete o crime do caput.'
+        exemplo: 'Marcos, formalmente casado com Ana, contrai segundas núpcias com Bruna. Marcos comete o crime do caput.'
       },
       {
         id: 'fc-penal-01-03',
-        pergunta: 'Qual é o crime cometido pela pessoa solteira que contrai casamento com pessoa casada sabendo do impedimento?',
-        resposta: 'Responde pela figura equiparada do § 1º do art. 235 do CP ("Aquele que, não sendo casado, contrai casamento com pessoa casada, conhecendo essa circunstância"). Trata-se de hipótese expressa de exceção à teoria monista.',
+        pergunta: 'Qual crime comete a pessoa solteira que contrai casamento com pessoa casada sabendo do vínculo anterior?',
+        resposta: 'Responde pela figura típica equiparada do § 1º do art. 235 do CP ("Aquele que, não sendo casado, contrai casamento com pessoa casada, conhecendo essa circunstância"). É exceção pluralista expressa à teoria monista.',
         artigoLei: 'Art. 235, § 1º, CP',
-        dicaPratica: 'Se a pessoa solteira desconhecia o estado de casada do parceiro, é vítima inocente e sua conduta é atípica por erro de tipo (art. 20 do CP).'
+        dicaPratica: 'Se a pessoa solteira ignorava que o parceiro era casado, é vítima inocente e sua conduta é atípica.'
       },
       {
         id: 'fc-penal-01-04',
-        pergunta: 'Quando se consuma o crime de bigamia e cabe tentativa?',
-        resposta: 'Consuma-se no momento exato em que a celebração do segundo casamento é concluída perante o celebrante (juiz de paz) após a manifestação de vontade recíproca. A tentativa é plenamente admissível (ex.: cerimônia interrompida antes da declaração do juiz por voz de prisão).',
-        artigoLei: 'Art. 14, II e Art. 235 do CP'
+        pergunta: 'Quando se consuma a bigamia e é admissível a forma tentada?',
+        resposta: 'Consuma-se com a declaração solene da autoridade celebrante (juiz de paz) atestando que os nubentes estão casados. A tentativa é plenamente admissível (ex.: autoridade interrompe a celebração por denúncia antes do ato final).',
+        artigoLei: 'Art. 14, II c/c art. 235 do CP'
       },
       {
         id: 'fc-penal-01-05',
-        pergunta: 'A união estável prévia impede novo casamento civil ou caracteriza bigamia se houver novo relacionamento?',
-        resposta: 'NÃO configura crime de bigamia! O tipo penal exige casamento civil anterior válido. A união estável, embora entidade familiar reconhecida constitucionalmente, não preenche o elemento normativo "casamento". Punir geraria analogia in malam partem proibida no Direito Penal.',
+        pergunta: 'A união estável anterior impede o casamento civil ou gera bigamia se a pessoa casar no civil?',
+        resposta: 'NÃO configura crime de bigamia! O tipo penal exige casamento civil anterior válido. A união estável, embora entidade familiar reconhecida constitucionalmente, não preenche a elementar "casado". Punir seria analogia in malam partem proibida.',
         artigoLei: 'Princípio da Legalidade Estrita (art. 5º, XXXIX da CF)',
-        dicaPratica: 'Tema campeão de pegadinhas na FGV/OAB e concursos públicos!'
+        dicaPratica: 'Pegadinha recorrente na OAB e concursos de carreiras jurídicas.'
       },
       {
         id: 'fc-penal-01-06',
-        pergunta: 'Qual o efeito da anulação civil do PRIMEIRO casamento sobre o crime de bigamia?',
-        resposta: 'Se o primeiro casamento for anulado por motivo que não a própria bigamia, o crime de bigamia deixa de existir, operando-se a anulação do fato criminoso retroativamente (o agente passa a ser considerado solteiro à época das segundas núpcias).',
-        artigoLei: 'Art. 235, § 2º do CP',
-        exemplo: 'Se o 1º casamento foi declarado nulo por incompetência absoluta da autoridade celebrante, não havia casamento válido anterior.'
+        pergunta: 'Qual o efeito penal se o PRIMEIRO casamento for anulado por sentença civil definitiva?',
+        resposta: 'Considera-se inexistente o crime de bigamia (art. 235, § 2º). A declaração de nulidade ou anulação civil retroage, retirando a condição material de "casado" à época das segundas núpcias.',
+        artigoLei: 'Art. 235, § 2º do Código Penal',
+        exemplo: 'Primeiro matrimônio anulado por coação moral irresistível de terceiros.'
       },
       {
         id: 'fc-penal-01-07',
-        pergunta: 'O que ocorre se apenas o SEGUNDO casamento for declarado nulo?',
-        resposta: 'Se o segundo casamento for declarado nulo em razão de outro vício (ex.: coação ou impedimento absoluto distinto), o crime ainda persiste se o agente contraiu o vínculo de má-fé, exceto se a nulidade retirar qualquer eficácia jurídica civil da celebração.',
-        artigoLei: 'Art. 235, § 2º do CP'
+        pergunta: 'O que ocorre se apenas o SEGUNDO casamento for declarado nulo no juízo cível?',
+        resposta: 'Se o segundo casamento for anulado por motivo que não a própria bigamia (ex.: incapacidade absoluta do celebrante), o crime é considerado inexistente. Mas se anulado justamente por ser bigâmico, o crime persiste intacto.',
+        artigoLei: 'Art. 235, § 2º, segunda parte, do CP'
       },
       {
         id: 'fc-penal-01-08',
-        pergunta: 'O casamento puramente religioso (sem registro público civil) pode gerar o crime de bigamia?',
-        resposta: 'NÃO. Para fins penais, exige-se casamento com efeitos civis (ou religioso registrado em cartório no prazo legal). Celebração religiosa clandestina ou sem efeito civil não preenche a elementar do tipo.',
-        artigoLei: 'Código Civil arts. 1.515 e 1.516 / CP art. 235'
+        pergunta: 'O casamento exclusivamente religioso (sem qualquer registro civil) pode tipificar bigamia?',
+        resposta: 'NÃO. O Direito Penal brasileiro tutela o casamento com eficácia civil. Cerimônia meramente religiosa sem registro público competente não gera status matrimonial para fins do art. 235.',
+        artigoLei: 'Código Civil arts. 1.515 e 1.516 / Art. 235 do CP'
       },
       {
         id: 'fc-penal-01-09',
-        pergunta: 'Se o agente contrai casamento acreditando sinceramente que seu primeiro cônjuge faleceu em naufrágio (sem morte presumida declarada), qual a tese defensiva?',
-        resposta: 'Erro de tipo essencial escusável (art. 20, caput, do CP). O agente erra sobre a elementar normativa "sendo casado", afastando o dolo e tornando o fato atípico, uma vez que não existe previsão de bigamia culposa.',
-        artigoLei: 'Art. 20, caput, do CP',
-        dicaPratica: 'Como não há modalidade culposa no art. 235, o erro de tipo exclui a tipicidade.'
+        pergunta: 'Como se resolve o caso do agente que casa novamente convicto de que seu cônjuge anterior faleceu?',
+        resposta: 'Configura erro de tipo essencial (art. 20 do CP), o qual exclui o dolo. Como a lei não prevê modalidade culposa para a bigamia, a conduta resta atípica.',
+        artigoLei: 'Art. 20, caput, do Código Penal',
+        dicaPratica: 'Inexistindo previsão culposa no art. 235, o erro de tipo invencível ou vencível sempre afasta o crime.'
       },
       {
         id: 'fc-penal-01-10',
-        pergunta: 'Qual é a ação penal no crime de bigamia?',
-        resposta: 'Ação penal pública incondicionada, promovida privativamente pelo Ministério Público por se tratar de crime contra o interesse público da organização da família e da fé pública matrimonial.',
-        artigoLei: 'Art. 100, § 1º do CP'
+        pergunta: 'Qual é a natureza da ação penal no crime de bigamia?',
+        resposta: 'Ação penal pública incondicionada, de competência privativa do Ministério Público, por envolver o interesse social indisponível da ordem matrimonial e familiar.',
+        artigoLei: 'Art. 100, § 1º do Código Penal'
+      },
+      {
+        id: 'fc-penal-01-11',
+        pergunta: 'Qual a pena cominada para o crime de bigamia no caput e no § 1º?',
+        resposta: 'Tanto para o caput (cônjuge búlgaro/casado) quanto para o § 1º (partícipe/solteiro ciente), a pena é de reclusão, de 2 a 6 anos, e multa. Admite fiança em sede policial ou judicial.',
+        artigoLei: 'Art. 235, caput e § 1º, CP'
+      },
+      {
+        id: 'fc-penal-01-12',
+        pergunta: 'O estrangeiro que casou no exterior sob lei que admite poligamia comete bigamia ao casar no Brasil?',
+        resposta: 'SIM! Vigora o princípio da territorialidade mitigada (art. 5º do CP) e a ordem pública brasileira (LINDB, art. 17). O princípio da monogamia é de ordem pública inderrogável em território nacional.',
+        artigoLei: 'Art. 5º do CP e art. 17 da LINDB'
+      },
+      {
+        id: 'fc-penal-01-13',
+        pergunta: 'A separação de fato ou a separação judicial pendente extingue o dever de monogamia penal?',
+        resposta: 'NÃO. Apenas o divórcio definitivo, a anulação do casamento ou a morte (real ou presumida declarada) dissolvem o vínculo matrimonial anterior. A separação de fato mantém a pessoa civilmente casada.',
+        artigoLei: 'Art. 1.571 do Código Civil'
+      },
+      {
+        id: 'fc-penal-01-14',
+        pergunta: 'Se o oficial do cartório sabe que um dos noivos é casado e mesmo assim realiza o casamento, qual o crime?',
+        resposta: 'O oficial de registro público ou juiz de paz responde pelo crime específico do art. 238 do Código Penal (conhecimento prévio de impedimento no casamento), ou coautoria na bigamia se concorreu de forma dolosa direta.',
+        artigoLei: 'Art. 238 do Código Penal'
+      },
+      {
+        id: 'fc-penal-01-15',
+        pergunta: 'O crime de bigamia prescreve a partir de qual data?',
+        resposta: 'A prescrição da pretensão punitiva começa a correr no dia em que o fato se tornou conhecido da autoridade pública (art. 111, IV do CP), em razão da natureza de ocultação do estado civil.',
+        artigoLei: 'Art. 111, inciso IV, do Código Penal'
+      },
+      {
+        id: 'fc-penal-01-16',
+        pergunta: 'A falsa declaração de estado civil perante o juiz de paz é absorvida pela bigamia?',
+        resposta: 'SIM. Pelo princípio da consunção, a falsidade ideológica no processo de habilitação matrimonial é crime-meio indispensável para a consecução da bigamia (crime-fim), restando por ela absorvida.',
+        artigoLei: 'Súmula 17 do STJ (aplicação analógica do princípio da consunção)'
+      },
+      {
+        id: 'fc-penal-01-17',
+        pergunta: 'Casamento celebrado perante autoridade diplomática estrangeira no exterior tem validade para configurar bigamia?',
+        resposta: 'SIM, desde que celebrado de acordo com a lei do local e com eficácia civil, preenche o elemento normativo anterior do tipo penal.',
+        artigoLei: 'Art. 7º da LINDB e Art. 235 do CP'
+      },
+      {
+        id: 'fc-penal-01-18',
+        pergunta: 'O perdão do primeiro cônjuge ofendido extingue a punibilidade da bigamia?',
+        resposta: 'NÃO. Como a ação penal é pública incondicionada, o perdão da vítima é instituto restrito à ação penal privada (art. 107, V do CP), não produzindo qualquer efeito sobre a persecução penal do MP.',
+        artigoLei: 'Art. 100, § 1º e Art. 107 do CP'
       }
     ],
     questoes: [
       {
         id: 'q-penal-01-01',
         tipo: 'introdutoria',
-        tema: 'Direito Penal · Crimes Contra a Família',
+        tema: 'Direito Penal · Conceito e Sujeitos',
         enunciado: 'Sobre o crime de bigamia previsto no art. 235 do Código Penal, assinale a afirmativa correta:',
         alternativas: [
           { letra: 'A', texto: 'Trata-se de crime comum quanto ao sujeito ativo no caput, podendo ser praticado por qualquer pessoa, casada ou solteira.' },
@@ -133,22 +182,22 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
           { letra: 'D', texto: 'O casamento de Eduardo com Juliana é válido até que Fernanda requeira a sua dissolução.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'Eduardo é casado e contraiu novo casamento (art. 235, caput). Juliana, por sua vez, desconhecia o estado de casado de Eduardo (erro de tipo, art. 20 do CP), o que afasta o dolo e qualquer tipicidade, restando como vítima inocente da farsa.',
+        comentario: 'Eduardo é casado e contraiu novo casamento (art. 235, caput). Juliana desconhecia o estado de casado de Eduardo (erro de tipo essencial, art. 20 do CP), o que afasta o dolo e qualquer tipicidade, restando como vítima inocente da farsa.',
         fundamentoLegal: 'Art. 20 c/c art. 235, § 1º do Código Penal'
       },
       {
         id: 'q-penal-01-03',
         tipo: 'definicao',
-        tema: 'Direito Penal · Condições do Casamento Anterior',
+        tema: 'Direito Penal · Efeitos da Anulação do Casamento',
         enunciado: 'Nos termos do art. 235, § 2º do Código Penal, caso o primeiro casamento de quem contraiu segundas núpcias venha a ser anulado por vício de consentimento por sentença cível definitiva, qual é a consequência na esfera penal?',
         alternativas: [
           { letra: 'A', texto: 'A pena da bigamia é reduzida de metade em face do arrependimento posterior.' },
-          { letra: 'B', texto: 'Considera-se inexistente o crime de bigamia, uma vez que a anulação do primeiro casamento extingue o pressuposto material do tipo.' },
+          { letra: 'B', texto: 'Considera-se inexistente o crime de bigamia, uma vez que a anulação do primeiro casamento extingue retroativamente o pressuposto material do tipo.' },
           { letra: 'C', texto: 'O crime subsiste inalterado, pois a consumação já havia se perfectibilizado no ato do segundo casamento.' },
           { letra: 'D', texto: 'O agente passa a responder pelo crime de falsidade ideológica em substituição à bigamia.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'O § 2º do art. 235 dispõe expressamente: "Anulado por qualquer motivo o primeiro casamento, ou o outro por motivo que não a bigamia, considera-se inexistente o crime". Trata-se de hipótese legal de atipicidade superveniente do fato.',
+        comentario: 'O § 2º do art. 235 dispõe expressamente: "Anulado por qualquer motivo o primeiro casamento, ou o outro por motivo que não a bigamia, considera-se inexistente o crime". Trata-se de hipótese legal de atipicidade material superveniente do fato.',
         fundamentoLegal: 'Art. 235, § 2º do Código Penal'
       },
       {
@@ -163,7 +212,7 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
           { letra: 'D', texto: 'Sim, incidindo na causa de aumento de pena do crime continuado.' }
         ],
         respostaCorreta: 'C',
-        comentario: 'O Direito Penal é regido pela estrita legalidade e tipicidade cerrada. A elementar normativa "sendo casado" exige celebração de casamento civil válido anterior. A união estável, por mais solene que seja, não preenche esse elemento, e equipará-la para fins de punição criminal violaria a vedação constitucional de analogia prejudicial ao réu.',
+        comentario: 'O Direito Penal é regido pela estrita legalidade e tipicidade cerrada. A elementar normativa "sendo casado" exige celebração de casamento civil válido anterior. A união estável, por mais solene que seja, não preenche esse elemento, e equipará-la para fins de punição criminal violaria a vedação constitucional de analogia in malam partem.',
         fundamentoLegal: 'Art. 5º, XXXIX da CF e Art. 235 do CP'
       },
       {
@@ -184,7 +233,7 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
       {
         id: 'q-penal-01-06',
         tipo: 'definicao',
-        tema: 'Direito Penal · Casamento Religioso',
+        tema: 'Direito Penal · Casamento Religioso sem Efeito Civil',
         enunciado: 'Um ministro de confissão religiosa celebra o matrimônio religioso de uma pessoa já casada no civil, sem qualquer subsequente inscrição no Registro Civil das Pessoas Naturais. Do ponto de vista penal:',
         alternativas: [
           { letra: 'A', texto: 'O casamento religioso puro sem efeitos civis não configura o crime de bigamia.' },
@@ -193,14 +242,105 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
           { letra: 'D', texto: 'Aplica-se ao caso a pena do art. 235 atenuada de um terço.' }
         ],
         respostaCorreta: 'A',
-        comentario: 'O casamento meramente religioso, despido de valor civil (não registrado no prazo legal), não cria sociedade conjugal com validade jurídica de direito positivo. Portanto, não tipifica bigamia.',
+        comentario: 'O casamento meramente religioso, despido de valor civil (não registrado no prazo legal), não cria sociedade conjugal com validade jurídica de direito positivo. Portanto, não preenche a elementar do tipo.',
         fundamentoLegal: 'Art. 235 do CP e art. 1.515 do Código Civil'
+      },
+      {
+        id: 'q-penal-01-07',
+        tipo: 'caso_pratico',
+        tema: 'Direito Penal · Separação de Fato x Casamento',
+        enunciado: 'Marcos está separado de fato de sua esposa há mais de 15 anos, não mantendo qualquer contato com ela. Conhecendo Laura, decide casar-se formalmente no cartório sem realizar o divórcio prévio, acreditando que a separação por mais de uma década extingue automaticamente o vínculo conjugal. Assinale a alternativa correta:',
+        alternativas: [
+          { letra: 'A', texto: 'Marcos não comete crime, pois a separação fática superior a dois anos opera a dissolução tácita da sociedade conjugal.' },
+          { letra: 'B', texto: 'Marcos responde pelo crime de bigamia dolosa, pois a separação fática não dissolve o casamento e o desconhecimento da lei é inescusável (erro de proibição direto ou inescusável).' },
+          { letra: 'C', texto: 'A conduta é atípica por ausência de lesividade ao patrimônio do casal.' },
+          { letra: 'D', texto: 'Marcos comete crime contra a previdência social e não bigamia.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Apenas a morte ou o divórcio dissolvem o vínculo matrimonial. A separação de fato não extingue o estado civil de casado. Crer que o decurso do tempo extingue o dever penal constitui erro de proibição que, em regra, é inescusável (art. 21 do CP), não afastando o dolo da bigamia.',
+        fundamentoLegal: 'Art. 21 e Art. 235 do CP; art. 1.571 do CC'
+      },
+      {
+        id: 'q-penal-01-08',
+        tipo: 'pegadinha',
+        tema: 'Direito Penal · Princípio da Consunção',
+        enunciado: 'Para habilitar-se e contrair o segundo casamento proibido, o agente apresenta ao oficial do registro civil uma declaração falsa afirmando sob as penas da lei que é solteiro. Quanto ao concurso entre o falso e a bigamia:',
+        alternativas: [
+          { letra: 'A', texto: 'Responde por falsidade ideológica em concurso material com a bigamia.' },
+          { letra: 'B', texto: 'A falsidade ideológica (crime-meio) resta absorvida pela bigamia (crime-fim) pelo princípio da consunção.' },
+          { letra: 'C', texto: 'Responde apenas por estelionato sentimental contra a fazenda pública.' },
+          { letra: 'D', texto: 'A bigamia é absorvida pela falsidade ideológica por ter pena mais severa.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A falsidade perpetrada para viabilizar a habilitação nupcial é crime de passagem indispensável para o crime-fim (bigamia). Aplica-se a consunção: o falso é absorvido pela consumação da bigamia.',
+        fundamentoLegal: 'Princípio da Consunção / Súmula 17 do STJ analógica'
+      },
+      {
+        id: 'q-penal-01-09',
+        tipo: 'caso_pratico',
+        tema: 'Direito Penal · Prescrição da Pretensão Punitiva',
+        enunciado: 'Em 2015, Cláudio contraiu segundo casamento mediante bigamia, mantendo duas famílias em cidades distintas. Somente em 2024 a primeira esposa descobriu a certidão e noticiou à autoridade policial. O prazo prescricional para persecução da bigamia:',
+        alternativas: [
+          { letra: 'A', texto: 'Começou a correr na data da celebração do segundo casamento em 2015.' },
+          { letra: 'B', texto: 'Começa a correr no dia em que o fato se tornou conhecido da autoridade pública competente.' },
+          { letra: 'C', texto: 'É imprescritível por se tratar de crime contra a família constitucional.' },
+          { letra: 'D', texto: 'Conta-se da data da dissolução do primeiro matrimônio.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O art. 111, IV do Código Penal estipula expressamente que nos crimes de bigamia e nos de falsificação ou alteração de assentamento do registro civil, a prescrição começa a correr da data em que o fato se tornou conhecido da autoridade pública.',
+        fundamentoLegal: 'Art. 111, inciso IV, do Código Penal'
+      },
+      {
+        id: 'q-penal-01-10',
+        tipo: 'definicao',
+        tema: 'Direito Penal · Ação Penal e Perdão',
+        enunciado: 'Após a deflagração da ação penal pelo Ministério Público em face de autor de bigamia, a primeira esposa comparece em juízo e declara que perdoa expressamente o réu, requerendo o arquivamento do feito. O magistrado deve:',
+        alternativas: [
+          { letra: 'A', texto: 'Declarar extinta a punibilidade pelo perdão do ofendido.' },
+          { letra: 'B', texto: 'Rejeitar o pedido e prosseguir com a ação penal, haja vista cuidar-se de ação penal pública incondicionada indisponível.' },
+          { letra: 'C', texto: 'Conceder indulto presidencial com base na anistia judicial.' },
+          { letra: 'D', texto: 'Desclassificar a conduta para infração de menor potencial ofensivo.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'A ação penal no crime de bigamia é de iniciativa pública incondicionada (art. 100, § 1º do CP). O perdão do ofendido é causa extintiva privativa de ações penais de iniciativa privada (art. 107, V do CP), sendo irrelevante na esfera pública.',
+        fundamentoLegal: 'Art. 100, § 1º e Art. 107, V do Código Penal'
+      },
+      {
+        id: 'q-penal-01-11',
+        tipo: 'caso_pratico',
+        tema: 'Direito Penal · Concurso de Pessoas Solteiro e Casado',
+        enunciado: 'Guilherme (casado) e Vanessa (solteira) comparecem juntos ao cartório e casam-se civilmente. Vanessa tinha pleno conhecimento de que Guilherme era casado com Bianca. Nos termos do Código Penal, quais as capitulações jurídicas para Guilherme e Vanessa?',
+        alternativas: [
+          { letra: 'A', texto: 'Ambos respondem pelo art. 235, caput, em coautoria unificada pela teoria monista.' },
+          { letra: 'B', texto: 'Guilherme responde pelo art. 235, caput; Vanessa responde pela figura autônoma do art. 235, § 1º do Código Penal.' },
+          { letra: 'C', texto: 'Guilherme responde por bigamia e Vanessa responde por estelionato comum.' },
+          { letra: 'D', texto: 'Vanessa não comete crime, pois não tem o dever legal de preservar o matrimônio alheio.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O Código Penal adotou a exceção pluralista à teoria monista no art. 235. O já casado responde pelo caput e a pessoa não casada ciente do impedimento responde pelo § 1º ("aquele que, não sendo casado, contrai casamento com pessoa casada").',
+        fundamentoLegal: 'Art. 235, caput e § 1º do Código Penal'
+      },
+      {
+        id: 'q-penal-01-12',
+        tipo: 'pegadinha',
+        tema: 'Direito Penal · Poligamia no Exterior e LINDB',
+        enunciado: 'Cidadão estrangeiro originário de país cuja legislação permite a poligamia contrai primeiro matrimônio em seu país de origem. Ao transferir domicílio para o Brasil, contrai novo casamento civil em território brasileiro perante oficial do cartório nacional. O agente:',
+        alternativas: [
+          { letra: 'A', texto: 'Não comete crime no Brasil por força da aplicação do estatuto pessoal de sua nacionalidade de origem.' },
+          { letra: 'B', texto: 'Responde pelo crime de bigamia no Brasil, visto que o princípio da monogamia é matéria de ordem pública imperativa que afasta leis estrangeiras no território nacional.' },
+          { letra: 'C', texto: 'Deve ser compulsoriamente deportado sem persecução criminal prévia.' },
+          { letra: 'D', texto: 'Tem o segundo casamento reconhecido como união estável poliafetiva válida.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Aplica-se o princípio da territorialidade (art. 5º do CP) e o art. 17 da LINDB (leis e atos estrangeiros não terão eficácia no Brasil quando ofenderem a ordem pública e os bons costumes). A vedação à bigamia é absoluta no território brasileiro.',
+        fundamentoLegal: 'Art. 5º do CP e art. 17 da LINDB'
       }
     ]
   },
 
   // ─────────────────────────────────────────────────────────────────────────────
   // AULA 02: INDUZIMENTO A ERRO ESSENCIAL E OCULTAÇÃO DE IMPEDIMENTO (ART. 236)
+  // 18 Flashcards + 12 Questões
   // ─────────────────────────────────────────────────────────────────────────────
   'penal-01-02': {
     aulaId: 'penal-01-02',
@@ -209,66 +349,114 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
       {
         id: 'fc-penal-02-01',
         pergunta: 'Quais são os dois núcleos da conduta incriminada no art. 236 do Código Penal?',
-        resposta: '1) "Induzir a erro essencial" (fazer crer falsamente em uma qualidade inexistente ou ocultar aspecto essencial da pessoa); e 2) "Ocultar impedimento que não seja casamento anterior".',
+        resposta: '1) "Induzir a erro essencial" (fazer crer falsamente em qualidade inexistente ou ocultar aspecto essencial da pessoa); e 2) "Ocultar impedimento que não seja casamento anterior".',
         artigoLei: 'Art. 236, caput, do Código Penal',
-        dicaPratica: 'Se o impedimento ocultado for de casamento anterior, o crime será Bigamia (art. 235) e não o art. 236!'
+        dicaPratica: 'Se o impedimento for casamento anterior, o crime é Bigamia (art. 235) e NÃO o art. 236!'
       },
       {
         id: 'fc-penal-02-02',
         pergunta: 'Qual é a indispensável condição objetiva de procedibilidade/punibilidade do art. 236?',
         resposta: 'O trânsito em julgado da sentença cível que anula o casamento (parágrafo único: "A ação penal não pode ser intentada senão depois de transitar em julgado a sentença que, por motivo de erro ou impedimento, anule o casamento").',
         artigoLei: 'Art. 236, parágrafo único, CP',
-        dicaPratica: 'Sem a sentença cível anulatória definitiva, o Ministério Público ou o ofendido sequer podem propor a ação penal!'
+        dicaPratica: 'Sem a anulação cível definitiva transitada, o processo penal sequer pode ser instaurado!'
       },
       {
         id: 'fc-penal-02-03',
         pergunta: 'Qual é a espécie de ação penal cabível no crime do art. 236 do Código Penal?',
         resposta: 'Ação penal de iniciativa PRIVADA personalíssima promovida pelo cônjuge enganado.',
         artigoLei: 'Art. 236, parágrafo único, CP',
-        dicaPratica: 'Apenas o cônjuge vítima do erro ou do impedimento tem legitimidade ativa para a queixa-crime.'
+        dicaPratica: 'Apenas o cônjuge vítima do erro ou da ocultação tem legitimidade para oferecer queixa-crime.'
       },
       {
         id: 'fc-penal-02-04',
-        pergunta: 'A partir de quando se conta o prazo decadencial de 6 meses para oferecer queixa no crime do art. 236?',
-        resposta: 'Conta-se da data do TRÂNSITO EM JULGADO da sentença cível que anular o casamento, e não da data da celebração ou da descoberta da fraude.',
+        pergunta: 'A partir de qual momento se inicia o prazo decadencial de 6 meses para oferecer queixa no art. 236?',
+        resposta: 'Conta-se da data do TRÂNSITO EM JULGADO da sentença cível que anula o casamento, e não da celebração ou da descoberta da fraude.',
         artigoLei: 'Art. 236, parágrafo único c/c art. 38 do CPP'
       },
       {
         id: 'fc-penal-02-05',
         pergunta: 'O que se entende por "erro essencial sobre a pessoa" para efeitos do art. 236?',
-        resposta: 'São as hipóteses elencadas pelo art. 1.557 do Código Civil: identidade, honra e boa fama, defeito físico irremediável ou moléstia grave e transmissível prévia capaz de pôr em risco a saúde do outro ou da prole.',
+        resposta: 'São as hipóteses taxativas do art. 1.557 do Código Civil: identidade, honra e boa fama, defeito físico irremediável ou moléstia grave e transmissível prévia capaz de pôr em risco a saúde do outro ou da prole.',
         artigoLei: 'Art. 1.557 do Código Civil / Art. 236 do CP',
-        exemplo: 'Ocultar deliberadamente ser portador de moléstia venérea incurável e contagiosa antes de se casar.'
+        exemplo: 'Ocultar deliberadamente ser portador de moléstia incurável e contagiosa pré-nupcial.'
       },
       {
         id: 'fc-penal-02-06',
         pergunta: 'Qual a diferença entre a ocultação de impedimento do art. 236 e a bigamia do art. 235?',
-        resposta: 'A bigamia pune a ocultação do impedimento de ser previamente casado. O art. 236 abrange TODOS os demais impedimentos matrimoniais (parentesco, afinidade, crime doloso contra ex-cônjuge - art. 1.521 do CC), ressalvado expressamente o casamento anterior.',
+        resposta: 'A bigamia tutela exclusivamente o casamento anterior. O art. 236 abrange todos os outros impedimentos matrimoniais (parentesco consanguíneo, afinidade, crime contra ex-cônjuge - art. 1.521 do CC), ressalvado expressamente o casamento anterior.',
         artigoLei: 'Art. 236 ("impedimento que não seja casamento anterior")'
       },
       {
         id: 'fc-penal-02-07',
-        pergunta: 'Se os noivos celebram casamento e, posteriormente, decidem se divorciar em vez de anular o casamento, haverá processo penal pelo art. 236?',
-        resposta: 'NÃO. O divórcio dissolve o vínculo de um casamento válido; não anula. Sem sentença anulatória transitada em julgado, a condição de procedibilidade jamais se perfectibiliza e o crime não poderá ser processado.',
+        pergunta: 'Se os cônjuges optarem pelo divórcio consensual em vez da anulação, haverá crime pelo art. 236?',
+        resposta: 'NÃO. O divórcio dissolve um casamento válido; não o anula. Sem a sentença anulatória transitada em julgado, a condição de procedibilidade jamais se perfectibiliza e o crime não pode ser processado.',
         artigoLei: 'Art. 236, parágrafo único, CP'
       },
       {
         id: 'fc-penal-02-08',
-        pergunta: 'Um terceiro (como pai ou amigo) que ajuda a omitir o impedimento pode responder pelo crime do art. 236?',
-        resposta: 'Sim, na qualidade de partícipe (art. 29 do CP), desde que o cônjuge autor realize o casamento e se cumpra a condição de anulação civil transitada em julgado.',
+        pergunta: 'Terceiro (como mãe ou amigo) que auxilia a ocultar o impedimento pode responder penalmente?',
+        resposta: 'SIM, na qualidade de partícipe (art. 29 do CP), desde que o casamento seja celebrado e advenha a sentença anulatória civil transitada em julgado.',
         artigoLei: 'Art. 29 c/c art. 236 do CP'
       },
       {
         id: 'fc-penal-02-09',
         pergunta: 'O que é a ocultação de impedimento resultante de crime (art. 1.521, VII do Código Civil)?',
-        resposta: 'É a hipótese em que o nubente oculta ter sido condenado por homicídio doloso consumado ou tentado contra o cônjuge do outro com quem pretende se casar.',
+        resposta: 'É a hipótese em que o nubente oculta ter sido condenado definitivamente por homicídio doloso consumado ou tentado contra o cônjuge da pessoa com quem pretende se casar.',
         artigoLei: 'Art. 1.521, VII do CC / Art. 236 do CP'
       },
       {
         id: 'fc-penal-02-10',
-        pergunta: 'Qual o elemento subjetivo do tipo do art. 236 do CP?',
-        resposta: 'Exige-se o DOLO (vontade livre e consciente de induzir em erro essencial ou ocultar o impedimento da outra parte nubente). A conduta meramente culposa é atípica.',
+        pergunta: 'Qual o elemento subjetivo exigido no crime do art. 236 do Código Penal?',
+        resposta: 'Exige-se o DOLO direto ou eventual. Não existe modalidade culposa no art. 236; se a omissão decorreu de mera ignorância de parentesco, o fato é atípico por erro de tipo.',
         artigoLei: 'Art. 18, I do Código Penal'
+      },
+      {
+        id: 'fc-penal-02-11',
+        pergunta: 'Quem é o sujeito ativo no induzimento a erro essencial?',
+        resposta: 'Crime comum quanto ao induzimento ou ocultação: o sujeito ativo é qualquer dos nubentes que engana o outro perante o matrimônio.',
+        artigoLei: 'Art. 236, caput, do CP'
+      },
+      {
+        id: 'fc-penal-02-12',
+        pergunta: 'Quem pode ajuizar a queixa-crime se o cônjuge ofendido falecer após o trânsito da anulação?',
+        resposta: 'Como a ação penal privada do art. 236 é personalíssima, o direito de queixa NÃO se transmite aos sucessores (CADI do art. 31 do CPP não se aplica aqui). Extingue-se a punibilidade com a morte do ofendido.',
+        artigoLei: 'Art. 107, IV do CP e jurisprudência pacífica'
+      },
+      {
+        id: 'fc-penal-02-13',
+        pergunta: 'Qual a pena prevista no art. 236 do Código Penal?',
+        resposta: 'Detenção, de 6 meses a 2 anos. Por ter pena máxima não superior a 2 anos, é infração de menor potencial ofensivo sujeita aos benefícios da Lei 9.099/95 (Juizados Especiais).',
+        artigoLei: 'Art. 236 do CP e art. 61 da Lei 9.099/95'
+      },
+      {
+        id: 'fc-penal-02-14',
+        pergunta: 'A prescrição da pretensão punitiva corre durante a tramitação da ação anulatória civil?',
+        resposta: 'NÃO corre! O art. 116, I do CP prevê que a prescrição não corre enquanto não resolvida, em outro processo, questão de que dependa o reconhecimento da existência do crime (questão prejudicial heterogênea).',
+        artigoLei: 'Art. 116, inciso I, do Código Penal'
+      },
+      {
+        id: 'fc-penal-02-15',
+        pergunta: 'A ocultação de impotência coeundi (incapacidade de consumar o ato sexual) pode tipificar o art. 236?',
+        resposta: 'SIM, desde que caracterize defeito físico irremediável pré-existente e desconhecido do outro cônjuge nos termos do art. 1.557, III do Código Civil, vindo a ser o casamento anulado judicialmente.',
+        artigoLei: 'Art. 1.557, III do CC c/c art. 236 do CP'
+      },
+      {
+        id: 'fc-penal-02-16',
+        pergunta: 'O perdão concedido na esfera cível pelo cônjuge prejudicado extingue a persecução penal?',
+        resposta: 'SIM. Sendo a ação penal de iniciativa privada personalíssima, a reconciliação, renúncia ou perdão tácito/expresso no cível impede ou extingue a punibilidade penal (art. 107, V do CP).',
+        artigoLei: 'Art. 107, V do Código Penal'
+      },
+      {
+        id: 'fc-penal-02-17',
+        pergunta: 'Qual a diferença entre impedimento matrimonial e causa suspensiva para fins do art. 236?',
+        resposta: 'O art. 236 incrimina apenas a ocultação de IMPEDIMENTO DIRIMENTE (art. 1.521 do CC), que torna o casamento nulo. As causas suspensivas (art. 1.523 do CC) geram apenas regime de separação obrigatória de bens e não configuram crime!',
+        artigoLei: 'Arts. 1.521 e 1.523 do CC / Art. 236 do CP'
+      },
+      {
+        id: 'fc-penal-02-18',
+        pergunta: 'Quando se dá o momento consumativo do crime do art. 236?',
+        resposta: 'A doutrina majoritária entende que o crime se consuma com a celebração do casamento viciado, ficando sua punibilidade e persecução sujeitas à condição resolutiva da sentença anulatória cível transitada.',
+        artigoLei: 'Art. 236 do Código Penal'
       }
     ],
     questoes: [
@@ -276,7 +464,7 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
         id: 'q-penal-02-01',
         tipo: 'definicao',
         tema: 'Direito Penal · Condição Objetiva de Procedibilidade',
-        enunciado: 'Nos termos expressos do Código Penal, o crime de induzimento a erro essencial e ocultação de impedimento (art. 236) subordina o início da ação penal a qual requisito específico?',
+        enunciado: 'Nos termos expressos do Código Penal, o crime de induzimento a erro essencial e ocultação de impedimento (art. 236) subordina a propositura da ação penal a qual requisito específico?',
         alternativas: [
           { letra: 'A', texto: 'À autorização expressa do Procurador-Geral de Justiça.' },
           { letra: 'B', texto: 'Ao trânsito em julgado da sentença cível que, por motivo de erro ou impedimento, anule o casamento.' },
@@ -284,13 +472,13 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
           { letra: 'D', texto: 'Ao laudo pericial atestando a enfermidade grave do réu.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'O parágrafo único do art. 236 do CP é textual: "A ação penal não pode ser intentada senão depois de transitar em julgado a sentença que, por motivo de erro ou impedimento, anule o casamento". Essa é uma clássica condição de procedibilidade.',
+        comentario: 'O parágrafo único do art. 236 do CP é textual: "A ação penal não pode ser intentada senão depois de transitar em julgado a sentença que, por motivo de erro ou impedimento, anule o casamento". Essa é uma clássica condição objetiva de procedibilidade.',
         fundamentoLegal: 'Art. 236, parágrafo único, do Código Penal'
       },
       {
         id: 'q-penal-02-02',
         tipo: 'introdutoria',
-        tema: 'Direito Penal · Ação Penal Privada',
+        tema: 'Direito Penal · Ação Penal Privada Personalíssima',
         enunciado: 'Sobre a titularidade da ação penal no crime do art. 236 do Código Penal (induzimento a erro essencial e ocultação de impedimento), assinale a opção correta:',
         alternativas: [
           { letra: 'A', texto: 'É pública incondicionada privativa do Ministério Público.' },
@@ -299,22 +487,22 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
           { letra: 'D', texto: 'É pública subsidiária da privada no prazo decadencial de 30 dias.' }
         ],
         respostaCorreta: 'C',
-        comentario: 'O crime do art. 236 do CP é um dos raros exemplos de ação penal privada personalíssima no ordenamento brasileiro. Apenas o cônjuge vítima do induzimento ou ocultação pode oferecer queixa-crime.',
+        comentario: 'O crime do art. 236 do CP é hipótese de ação penal privada personalíssima no ordenamento brasileiro. Apenas o cônjuge vítima do induzimento ou ocultação pode oferecer queixa-crime, não se transferindo a terceiros.',
         fundamentoLegal: 'Art. 236, parágrafo único, do Código Penal'
       },
       {
         id: 'q-penal-02-03',
         tipo: 'caso_pratico',
         tema: 'Direito Penal · Prazo Decadencial',
-        enunciado: 'Patrícia casou-se com Guilherme em janeiro de 2024. Em junho de 2024, descobriu que Guilherme havia ocultado ser irmão biológico de seu pai (impedimento de parentesco por consanguinidade). Patrícia ajuizou ação anulatória, obtendo sentença de procedência transitada em julgado em 10 de outubro de 2025. O prazo para Patrícia ajuizar a queixa-crime criminal contra Guilherme expira em:',
+        enunciado: 'Patrícia casou-se com Guilherme em janeiro de 2024. Em junho de 2024, descobriu que Guilherme havia ocultado ser irmão biológico de seu pai (impedimento de parentesco por consanguinidade). Patrícia ajuizou ação anulatória, obtendo sentença de procedência transitada em julgado em 10 de outubro de 2025. O prazo decadencial para Patrícia ajuizar a queixa-crime contra Guilherme expira em:',
         alternativas: [
           { letra: 'A', texto: '6 meses contados da celebração do casamento (julho de 2024).' },
           { letra: 'B', texto: '6 meses contados do conhecimento do fato por Patrícia (dezembro de 2024).' },
-          { letra: 'C', texto: '6 meses contados do trânsito em julgado da sentença anulatória civil (abril de 2026).' },
+          { letra: 'C', texto: '6 meses contados do trânsito em julgado da sentença anulatória civil (10 de abril de 2026).' },
           { letra: 'D', texto: 'O crime prescreve imediatamente no dia seguinte ao trânsito da decisão cível.' }
         ],
         respostaCorreta: 'C',
-        comentario: 'A decadência do direito de queixa no art. 236 inicia o seu cômputo da data em que transita em julgado a sentença anulatória, pois até aquele momento a vítima estava impedida por lei de ajuizar a queixa (art. 236, p. único c/c art. 38 do CPP).',
+        comentario: 'A decadência do direito de queixa no art. 236 inicia seu cômputo da data em que transita em julgado a sentença anulatória, pois até aquele momento a vítima estava impedida por lei de ajuizar a queixa (art. 236, p. único c/c art. 38 do CPP).',
         fundamentoLegal: 'Art. 236, parágrafo único c/c art. 38 do CPP'
       },
       {
@@ -329,22 +517,22 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
           { letra: 'D', texto: 'Crime de estelionato afetivo em concurso material com falsidade.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'O art. 236 do CP ressalva expressamente em seu texto: "ocultando impedimento que NÃO seja casamento anterior". Portanto, havendo casamento anterior válido, o tipo especial e prevalente é a Bigamia (art. 235 do CP).',
+        comentario: 'O art. 236 do CP ressalva expressamente: "ocultando impedimento que NÃO seja casamento anterior". Havendo casamento anterior válido, o tipo especial e exclusivo é a Bigamia (art. 235 do CP).',
         fundamentoLegal: 'Art. 235 e Art. 236 do Código Penal'
       },
       {
         id: 'q-penal-02-05',
         tipo: 'caso_pratico',
         tema: 'Direito Penal · Divórcio x Anulação',
-        enunciado: 'Thiago casou-se com Flávia omitindo que fora condenado definitivamente por estupro de vulnerável no passado. Após 3 meses de casados, Flávia descobre a ficha criminal de Thiago. Magoada, Flávia opta por ajuizar imediatamente um divórcio consensual em cartório extrajudicial para se livrar do vínculo com rapidez. Três meses após o divórcio, Flávia contrata advogado para oferecer queixa-crime contra Thiago com base no art. 236 do CP. Nessa situação:',
+        enunciado: 'Thiago casou-se com Flávia omitindo que fora condenado definitivamente por estupro de vulnerável no passado. Após 3 meses de casados, Flávia descobre a ficha criminal de Thiago. Magoada, Flávia opta por ajuizar imediatamente um divórcio consensual para se livrar do vínculo com rapidez. Três meses após o divórcio, Flávia contrata advogado para oferecer queixa-crime contra Thiago com base no art. 236 do CP. Nessa situação:',
         alternativas: [
           { letra: 'A', texto: 'A queixa-crime deve ser rejeitada, pois ausente a condição de procedibilidade indispensável (sentença que anule o casamento).' },
           { letra: 'B', texto: 'A queixa deve ser recebida normalmente, pois o divórcio tem os mesmos efeitos práticos de uma anulação.' },
-          { letra: 'C', texto: 'O Ministério Público deve assumir o polo ativo da demanda como ação incondicionada.' },
+          { letra: 'C', texto: 'O Ministério Público deve assumir o polo ativo da demanda como ação pública incondicionada.' },
           { letra: 'D', texto: 'Thiago deve ser condenado com perdão judicial facultativo.' }
         ],
         respostaCorreta: 'A',
-        comentario: 'O divórcio dissolve um casamento válido; não anula o matrimônio. O parágrafo único do art. 236 exige expressamente sentença judicial transitada em julgado que declare NULO ou ANULE o casamento. Na falta dela, falta condição de procedibilidade da ação penal.',
+        comentario: 'O divórcio dissolve um casamento válido; não o anula. O parágrafo único do art. 236 exige expressamente sentença judicial transitada em julgado que declare NULO ou ANULE o casamento. Na sua falta, falta condição da ação penal.',
         fundamentoLegal: 'Art. 236, parágrafo único, do CP e art. 395, II do CPP'
       },
       {
@@ -359,8 +547,98 @@ export const CONTEUDO_AULAS: Record<string, ConteudoAulaInterativa> = {
           { letra: 'D', texto: 'A reprovação em exame da OAB ou concurso público prometido antes do noivado.' }
         ],
         respostaCorreta: 'B',
-        comentario: 'O erro essencial tem contornos jurídicos estritos definidos no art. 1.557 do Código Civil, abarcando identidade, honra, defeito físico irremediável ou moléstia grave e transmissível preexistente ao enlace.',
+        comentario: 'O erro essencial tem contornos jurídicos estritos definidos no art. 1.557 do Código Civil, abarcando identidade, honra, defeito físico irremediável ou moléstia grave e transmissível preexistente.',
         fundamentoLegal: 'Art. 1.557 do Código Civil e Art. 236 do Código Penal'
+      },
+      {
+        id: 'q-penal-02-07',
+        tipo: 'caso_pratico',
+        tema: 'Direito Penal · Morte do Cônjuge Ofendido e Legitimidade',
+        enunciado: 'Roberto foi vítima de ocultação de impedimento matrimonial ao casar-se com Camila. Após obter a anulação civil do casamento transitada em julgado, Roberto faleceu subitamente de infarto antes de ajuizar a queixa-crime. Os pais de Roberto pretendem ingressar com a queixa-crime criminal contra Camila. Nesse cenário:',
+        alternativas: [
+          { letra: 'A', texto: 'Os genitores podem ajuizar a ação em até 60 dias com base no rol do art. 31 do CPP.' },
+          { letra: 'B', texto: 'Não é possível a propositura da queixa-crime, pois a ação penal do art. 236 é personalíssima, extinguindo-se o direito com a morte da vítima.' },
+          { letra: 'C', texto: 'O Ministério Público assume obrigatoriamente a titularidade por sucessão processual.' },
+          { letra: 'D', texto: 'Camila deve ser processada perante a Vara da Infância e Juventude.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O crime do art. 236 constitui ação penal privada personalíssima. Com a morte do cônjuge ofendido antes da queixa, extingue-se a punibilidade, sendo inaplicável a sucessão do art. 31 do CPP.',
+        fundamentoLegal: 'Art. 236, parágrafo único do CP e art. 107, IV do CP'
+      },
+      {
+        id: 'q-penal-02-08',
+        tipo: 'pegadinha',
+        tema: 'Direito Penal · Causas Suspensivas x Impedimentos',
+        enunciado: 'O noivo oculta de sua futura esposa que é viúvo e que não realizou o inventário dos bens do casamento anterior com partilha aos herdeiros (causa suspensiva do art. 1.523, I do CC). A conduta tipifica o crime do art. 236 do Código Penal?',
+        alternativas: [
+          { letra: 'A', texto: 'Sim, pois qualquer vício no processo de habilitação constitui crime contra a família.' },
+          { letra: 'B', texto: 'Não, pois o art. 236 pune apenas a ocultação de impedimento dirimente (art. 1.521 do CC), não abrangendo meras causas suspensivas da celebração.' },
+          { letra: 'C', texto: 'Sim, sujeitando o infrator à perda da herança em favor do Estado.' },
+          { letra: 'D', texto: 'Configura o crime de apropriação indébita familiar previdenciária.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'As causas suspensivas (art. 1.523 do CC) não impedem a validade intrínseca do casamento, gerando apenas a imposição do regime da separação obrigatória de bens. O tipo do art. 236 exige ocultação de impedimento matrimonial que dê causa à anulação/nulidade.',
+        fundamentoLegal: 'Art. 1.521 e 1.523 do CC c/c art. 236 do CP'
+      },
+      {
+        id: 'q-penal-02-09',
+        tipo: 'caso_pratico',
+        tema: 'Direito Penal · Prescrição e Questão Prejudicial',
+        enunciado: 'A ação anulatória de casamento fundada em erro essencial demorou 5 anos tramitando na Justiça Cível até o trânsito em julgado. A defesa no processo penal alegou que o crime de detenção de 2 anos já estaria prescrito pelo decurso de tempo desde o casamento. A alegação defensiva procede?',
+        alternativas: [
+          { letra: 'A', texto: 'Sim, a prescrição da pretensão punitiva é fatal e conta-se ininterruptamente do fato.' },
+          { letra: 'B', texto: 'Não, pois o curso da prescrição fica suspenso enquanto não resolvida a questão prejudicial cível heterogênea da qual depende o reconhecimento do crime.' },
+          { letra: 'C', texto: 'Sim, cabendo indenização por dano moral ao acusado pela mora do Estado.' },
+          { letra: 'D', texto: 'Não, porque os crimes do Código Penal prescrevem em prazo fixo de 20 anos.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'O art. 116, I do CP prevê a suspensão do prazo prescricional enquanto não resolvida, em outro processo, questão prejudicial de que dependa o reconhecimento da existência do crime (a sentença de anulação cível).',
+        fundamentoLegal: 'Art. 116, inciso I, do Código Penal'
+      },
+      {
+        id: 'q-penal-02-10',
+        tipo: 'definicao',
+        tema: 'Direito Penal · Procedimento e Lei 9.099/95',
+        enunciado: 'Considerando que o art. 236 comina pena de detenção de 6 meses a 2 anos, assinale a consequência processual adequada quanto ao rito e benefícios legais:',
+        alternativas: [
+          { letra: 'A', texto: 'Adota-se o rito do tribunal do júri popular.' },
+          { letra: 'B', texto: 'Constitui infração de menor potencial ofensivo, admitindo a transação penal e a conciliação nos Juizados Especiais Criminais.' },
+          { letra: 'C', texto: 'O réu não tem direito a nenhum benefício despenalizador por se tratar de crime contra a família.' },
+          { letra: 'D', texto: 'O processo segue o rito ordinário com prisão preventiva obrigatória.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Infrações cuja pena máxima não seja superior a 2 anos submetem-se ao rito sumaríssimo da Lei 9.099/95, comportando conciliação, transação penal (proposta pelo querelante ou MP) e suspensão condicional do processo.',
+        fundamentoLegal: 'Art. 61 da Lei 9.099/95 e Art. 236 do CP'
+      },
+      {
+        id: 'q-penal-02-11',
+        tipo: 'caso_pratico',
+        tema: 'Direito Penal · Concurso de Pessoas e Cumplicidade',
+        enunciado: 'Márcia ajudou ativamente seu filho Gustavo a ocultar de sua futura noiva que Gustavo era seu irmão unilateral por parte de pai, falsificando certidões de família para que o casamento ocorresse. O casamento foi celebrado e posteriormente anulado no cível com trânsito em julgado. Diante do concurso de pessoas:',
+        alternativas: [
+          { letra: 'A', texto: 'Márcia está isenta de pena pela escusa absolutória de parentesco.' },
+          { letra: 'B', texto: 'Márcia responde como partícipe do crime do art. 236 do Código Penal em concurso com seu filho.' },
+          { letra: 'C', texto: 'Apenas Gustavo pode ser punido por ser o cônjuge celebrante.' },
+          { letra: 'D', texto: 'A conduta de Márcia é atípica na esfera penal, cabendo apenas reparação cível.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Quem, de qualquer modo, concorre para o crime incide nas penas a este cominadas (art. 29 do CP). O terceiro que auxilia dolosamente na ocultação do impedimento responde como partícipe do art. 236.',
+        fundamentoLegal: 'Art. 29 c/c art. 236 do Código Penal'
+      },
+      {
+        id: 'q-penal-02-12',
+        tipo: 'pegadinha',
+        tema: 'Direito Penal · Renúncia e Perdão do Cônjuge',
+        enunciado: 'Após o trânsito em julgado da sentença anulatória do casamento por erro essencial, o cônjuge ofendido reata informalmente a convivência com o ex-consorte e declara em documento assinado que o perdoa de qualquer ofensa, abrindo mão de medidas criminais. Posteriormente, após novo desentendimento, protocola queixa-crime criminal dentro do prazo de 6 meses. O magistrado deve:',
+        alternativas: [
+          { letra: 'A', texto: 'Receber a queixa, pois o direito penal é indisponível aos particulares.' },
+          { letra: 'B', texto: 'Rejeitar a queixa em razão da renúncia tácita/expressa ao direito de queixa, causa de extinção da punibilidade.' },
+          { letra: 'C', texto: 'Submeter o processo à mediação de família compulsória.' },
+          { letra: 'D', texto: 'Condenar o querelado com diminuição de pena em dois terços.' }
+        ],
+        respostaCorreta: 'B',
+        comentario: 'Na ação penal de iniciativa privada, a renúncia prévia expressa ou tácita ao direito de queixa extingue a punibilidade nos termos do art. 104 e art. 107, V do Código Penal, impedindo a posterior propositura da queixa.',
+        fundamentoLegal: 'Art. 104 e Art. 107, inciso V, do Código Penal'
       }
     ]
   }
