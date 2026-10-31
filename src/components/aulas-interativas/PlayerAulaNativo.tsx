@@ -3,11 +3,15 @@ import {
   ArrowLeft, Play, Pause, Check, CheckCircle2, 
   RotateCcw, Sparkles, BookOpen, Volume2, VolumeX,
   ChevronRight, ChevronLeft, Award, HelpCircle, XCircle,
-  Clock, GitBranch, Link2, CheckSquare
+  Clock, GitBranch, Link2, CheckSquare, LayoutGrid, X,
+  Highlighter
 } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { AulaData, SlideItem } from '@/types/aulaInterativa';
 import { loadAulaData } from '@/utils/aulaDataLoader';
+import { haptic } from '@/lib/nativeHaptics';
+import { supabase } from '@/integrations/supabase/client';
+import { getLocalAulaProgress, saveLocalAulaProgress } from '@/lib/aprenderProgressoStorage';
 
 interface PlayerAulaNativoProps {
   aula: AulaItem;
@@ -32,9 +36,21 @@ function highlightFraseInHtml(html: string, frase: string): string {
     }
   } catch {}
 
-  // Match flexível: aceita tags HTML internas como <b> e pontuação adjacente
+  // Testar sem o ponto final ou pontuação terminal (que muitas vezes fica adjacente a tags HTML)
+  const semPonto = cleanFrase.replace(/[.!?]+$/, '').trim();
+  if (semPonto.length >= 4) {
+    const escapedSemPonto = semPonto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+    try {
+      const reg = new RegExp(`(${escapedSemPonto})`, 'i');
+      if (reg.test(html)) {
+        return html.replace(reg, '<mark class="karaoke-grifo">$1</mark>');
+      }
+    } catch {}
+  }
+
+  // Match flexível: aceita tags HTML internas como <b>, <span>, <i> e pontuação adjacente
   try {
-    const tokens = cleanFrase.match(/[\w\u00C0-\u017F]+|[^\s\w\u00C0-\u017F]+/g) || [];
+    const tokens = (semPonto || cleanFrase).match(/[\w\u00C0-\u017F]+|[^\s\w\u00C0-\u017F]+/g) || [];
     if (tokens.length >= 2) {
       const pattern = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('(?:<[^>]+>|\\s)*');
       const regFlex = new RegExp(`(${pattern})`, 'i');
@@ -63,7 +79,22 @@ export function PlayerAulaNativo({
   const [tocando, setTocando] = useState(false);
   const [tempoAtual, setTempoAtual] = useState(0);
   const [duracao, setDuracao] = useState(0);
+  const [velocidade, setVelocidade] = useState<number>(1);
   const [karaIdx, setKaraIdx] = useState(-1);
+  const [drawerAberto, setDrawerAberto] = useState(false);
+  const [modalGrifoAberto, setModalGrifoAberto] = useState(false);
+  const [grifoAulaAtivo, setGrifoAulaAtivo] = useState(true);
+  const [grifoGlobalAtivo, setGrifoGlobalAtivo] = useState(() => {
+    try {
+      return localStorage.getItem('aulas_grifo_global_desativado') !== 'true';
+    } catch {
+      return true;
+    }
+  });
+
+  // O grifo está ativo se não foi desativado globalmente nem nesta aula
+  const grifoAtivo = grifoGlobalAtivo && grifoAulaAtivo;
+
   const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(null);
   const [respostaConfirmada, setRespostaConfirmada] = useState(false);
   const [flashcardVirado, setFlashcardVirado] = useState(false);
@@ -121,17 +152,27 @@ export function PlayerAulaNativo({
     }
   }, [aula.disciplinaId]);
 
-  // Carregar dados da aula
+  // Carregar dados da aula e restaurar ponto de parada
   useEffect(() => {
     let ativo = true;
     setCarregando(true);
     setIdx(0);
     setTocando(false);
 
-    loadAulaData(aula).then((data) => {
+    loadAulaData(aula).then(async (data) => {
       if (ativo) {
         setAulaData(data);
         setCarregando(false);
+
+        // Restaurar onde parou (IndexedDB + Supabase)
+        try {
+          const salvo = await getLocalAulaProgress(aula.id);
+          if (salvo && salvo.currentIdx > 0 && salvo.currentIdx < (data.slides?.length || 1) && !salvo.concluida) {
+            setIdx(salvo.currentIdx);
+          }
+        } catch (e) {
+          console.warn('Erro ao restaurar progresso da aula:', e);
+        }
       }
     });
 
@@ -185,16 +226,18 @@ export function PlayerAulaNativo({
     return matches && matches.length > 0 ? matches.map(s => s.trim()) : [text.trim()];
   }, [slideAtual?.narr, slideAtual?.frases]);
 
-  // Faixas temporais ponderadas proporcionalmente ao tamanho e pontuação de cada frase (elimina atrasos)
+  // Faixas temporais ponderadas proporcionalmente ao tamanho e pausas reais da fala
   const faixasKaraoke = useMemo(() => {
     if (!frasesNarr || frasesNarr.length === 0) return [];
     
-    // Cada frase consome tempo ponderado por caracteres e pausas
+    // Cada frase consome tempo ponderado por caracteres e pausas naturais
     const pesos = frasesNarr.map(f => {
       const clean = f.trim();
-      const base = Math.max(10, clean.length);
-      const temPausaForte = /[.!?]$/.test(clean);
-      return base + (temPausaForte ? 16 : 6);
+      const baseChars = Math.max(6, clean.length);
+      const pontuacaoFinal = /[.!?]$/.test(clean) ? 5 : 2;
+      const virgulas = (clean.match(/[,;]/g) || []).length * 2;
+      const doisPontos = (clean.match(/[:]/g) || []).length * 3;
+      return baseChars + pontuacaoFinal + virgulas + doisPontos;
     });
 
     const totalPeso = pesos.reduce((acc, p) => acc + p, 0);
@@ -211,14 +254,22 @@ export function PlayerAulaNativo({
     return ranges;
   }, [frasesNarr]);
 
-  // HTML com o Grifo Leve e Elegante por cima na frase ativa
+  // HTML com o Grifo Leve e Elegante por cima na frase ativa (respeita a chavinha de ativar/desativar)
   const htmlComGrifo = useMemo(() => {
     if (!slideAtual?.corpo) return '';
-    if (!tocando || karaIdx < 0 || !frasesNarr[karaIdx]) {
+    if (!grifoAtivo || !tocando || karaIdx < 0 || !frasesNarr[karaIdx]) {
       return slideAtual.corpo;
     }
     return highlightFraseInHtml(slideAtual.corpo, frasesNarr[karaIdx]);
-  }, [slideAtual?.corpo, tocando, karaIdx, frasesNarr]);
+  }, [slideAtual?.corpo, grifoAtivo, tocando, karaIdx, frasesNarr]);
+
+  // Verifica se o título do slide deve receber o grifo inicial quando a narração começa nele
+  const isTituloAtivo = useMemo(() => {
+    if (!grifoAtivo || !tocando || karaIdx < 0 || !frasesNarr[karaIdx] || !slideAtual?.titulo) return false;
+    const fNorm = frasesNarr[karaIdx].toLowerCase().replace(/[^a-záàâãéèêíïóôõöúçñ0-9]/g, ' ').trim();
+    const tNorm = slideAtual.titulo.toLowerCase().replace(/[^a-záàâãéèêíïóôõöúçñ0-9]/g, ' ').trim();
+    return fNorm.length > 3 && (fNorm.includes(tNorm) || tNorm.includes(fNorm));
+  }, [grifoAtivo, tocando, karaIdx, frasesNarr, slideAtual?.titulo]);
 
   // Formatação inteligente do Kicker para eliminar redundâncias visuais
   const kickerFormatado = useMemo(() => {
@@ -282,6 +333,7 @@ export function PlayerAulaNativo({
       audioRef.current.pause();
       audioRef.current.src = currentAudioSrc;
       audioRef.current.load();
+      audioRef.current.playbackRate = velocidade;
       const playPromise = audioRef.current.play();
       if (playPromise) {
         playPromise
@@ -293,7 +345,7 @@ export function PlayerAulaNativo({
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(slideAtual.narr);
       utter.lang = 'pt-BR';
-      utter.rate = 1.05;
+      utter.rate = 1.05 * velocidade;
       utter.onstart = () => setTocando(true);
       utter.onend = () => {
         setTocando(false);
@@ -305,9 +357,86 @@ export function PlayerAulaNativo({
       utter.onerror = () => setTocando(false);
       window.speechSynthesis.speak(utter);
     }
-  }, [idx, currentAudioSrc, slideAtual?.narr, total, isInterativo]);
+  }, [idx, currentAudioSrc, slideAtual?.narr, total, isInterativo, velocidade]);
 
-  // Sincronização do Karaokê em tempo real com compensação de timing
+  // Sincronização em Nuvem (Supabase) e Persistência Local (IndexedDB)
+  useEffect(() => {
+    if (!aulaData || total <= 0) return;
+    const isConcluida = idx === total - 1;
+    saveLocalAulaProgress(aula.id, idx, total, isConcluida);
+
+    void (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('aprender_progresso_aula').upsert({
+            user_id: user.id,
+            aula_id: aula.id,
+            blocos_concluidos: idx + 1,
+            total_perguntas: total,
+            tempo_ms: 0,
+            concluida_em: isConcluida ? new Date().toISOString() : null,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,aula_id' });
+        }
+      } catch (err) {
+        // Silencioso se offline
+      }
+    })();
+  }, [idx, total, aula.id, aulaData]);
+
+  // Preload da próxima etapa (Imagem + Áudio) para Latência 0ms
+  useEffect(() => {
+    if (!slides || slides.length === 0) return;
+    const proxIdx = idx + 1;
+    if (proxIdx < total) {
+      const proxSlide = slides[proxIdx];
+      // Preload da imagem
+      const proxImg = proxSlide?.imgUrl || (aulaData?.imagens && proxSlide?.img ? aulaData.imagens[proxSlide.img] : null);
+      if (proxImg) {
+        const img = new Image();
+        img.src = proxImg;
+      }
+      // Preload do áudio
+      if (aulaData?.audioBaseUrl) {
+        const proxAudioUrl = `${aulaData.audioBaseUrl}${String(proxIdx + 1).padStart(2, '0')}.mp3`;
+        const a = new Audio();
+        a.preload = 'auto';
+        a.src = proxAudioUrl;
+      }
+    }
+  }, [idx, slides, total, aulaData?.audioBaseUrl, aulaData?.imagens]);
+
+  // Alternar velocidade de reprodução da narração (1.0x, 1.25x, 1.5x, 2.0x)
+  const velocidades = [1, 1.25, 1.5, 2];
+  const alternarVelocidade = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    haptic.selection();
+    const nextIdx = (velocidades.indexOf(velocidade) + 1) % velocidades.length;
+    const novaVel = velocidades[nextIdx];
+    setVelocidade(novaVel);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = novaVel;
+    }
+  };
+
+  // Alternar estado do Grifo da Narração (Ligar direto ou abrir modal com 2 opções de desativação)
+  const handleToggleGrifoClick = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (grifoAtivo) {
+      haptic.light();
+      setModalGrifoAberto(true);
+    } else {
+      haptic.selection();
+      setGrifoAulaAtivo(true);
+      setGrifoGlobalAtivo(true);
+      try {
+        localStorage.removeItem('aulas_grifo_global_desativado');
+      } catch {}
+    }
+  };
+
+  // Sincronização do Karaokê em tempo real com compensação de timing precisa
   const handleTimeUpdate = () => {
     if (!audioRef.current) return;
     const cur = audioRef.current.currentTime;
@@ -316,8 +445,8 @@ export function PlayerAulaNativo({
     setDuracao(dur);
 
     if (faixasKaraoke.length > 0 && dur > 0) {
-      // Offset de antecipação: +0.25s para o grifo entrar exatamente na primeira sílaba falada
-      const pos = Math.max(0, (cur + 0.25) / dur);
+      // Offset de antecipação fino: +0.08s para sincronia perceptual perfeita com o início da fala
+      const pos = Math.max(0, (cur + 0.08) / dur);
       const foundIdx = faixasKaraoke.findIndex(r => pos >= r.start && pos < r.end);
       if (foundIdx !== -1) {
         setKaraIdx(foundIdx);
@@ -365,15 +494,17 @@ export function PlayerAulaNativo({
 
   const avancarEtapa = () => {
     if (idx < total - 1) {
+      haptic.light();
       setIdx(prev => prev + 1);
     } else {
-      // Concluir aula
+      haptic.success();
       onConcluir(total);
     }
   };
 
   const voltarEtapa = () => {
     if (idx > 0) {
+      haptic.light();
       setIdx(prev => prev - 1);
     }
   };
@@ -763,18 +894,19 @@ export function PlayerAulaNativo({
           font-size: 8px;
           color: #d4af37;
         }
-        .aula-html-tipografia mark.karaoke-grifo {
-          background-color: rgba(234, 179, 8, 0.25) !important;
+        .aula-html-tipografia mark.karaoke-grifo,
+        h1 mark.karaoke-grifo {
+          background-color: rgba(253, 224, 71, 0.12) !important;
           color: #ffffff !important;
           font-weight: 600 !important;
-          padding: 1px 4px !important;
+          padding: 2px 4px !important;
           border-radius: 4px !important;
           box-decoration-break: slice !important;
           -webkit-box-decoration-break: slice !important;
-          outline: 1.5px solid #eab308 !important;
+          outline: 1px solid rgba(250, 204, 21, 0.3) !important;
           outline-offset: 1px !important;
-          box-shadow: 0 0 12px rgba(234, 179, 8, 0.22) !important;
-          transition: background-color 0.2s ease, outline-color 0.2s ease !important;
+          box-shadow: none !important;
+          transition: background-color 0.25s ease-out, outline-color 0.25s ease-out !important;
         }
 
         /* Animação Cinematográfica de Flip 3D para Flashcards */
@@ -852,19 +984,45 @@ export function PlayerAulaNativo({
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {isUltimaEtapa ? (
+          {/* Botão de Chavinha (Switch Toggle) do Grifo da Narração */}
+          <button
+            type="button"
+            onClick={handleToggleGrifoClick}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-all active:scale-95 shadow-sm cursor-pointer ${
+              grifoAtivo 
+                ? 'bg-amber-400/10 border-amber-400/30 text-amber-300' 
+                : 'bg-white/5 border-white/10 text-zinc-500'
+            }`}
+            title={grifoAtivo ? 'Grifo da narração ligado (toque para opções)' : 'Grifo da narração desligado (toque para ligar)'}
+            aria-label="Alternar grifo da narração"
+          >
+            <Highlighter className={`w-3.5 h-3.5 transition-colors ${grifoAtivo ? 'text-amber-400' : 'text-zinc-500'}`} />
+            <span className="text-[10px] sm:text-[11px] font-bold hidden xs:inline">
+              Grifo
+            </span>
+            {/* Chavinha Switch Visual */}
+            <div 
+              className={`w-7 h-4 sm:w-8 sm:h-4.5 rounded-full transition-colors relative flex items-center px-0.5 ${
+                grifoAtivo ? 'bg-amber-400' : 'bg-zinc-700'
+              }`}
+            >
+              <div 
+                className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full shadow-sm transform transition-transform duration-200 ${
+                  grifoAtivo ? 'translate-x-3 sm:translate-x-3.5 bg-black' : 'translate-x-0 bg-zinc-300'
+                }`}
+              />
+            </div>
+          </button>
+
+          {isUltimaEtapa && (
             <button
               type="button"
               onClick={() => onConcluir(total)}
-              className="px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white font-black text-[11px] transition flex items-center gap-1.5 active:scale-95 shadow-md"
+              className="px-3.5 py-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white font-black text-[11px] transition flex items-center gap-1.5 active:scale-95 shadow-md shrink-0"
             >
               <Check className="w-3.5 h-3.5 stroke-[3]" />
               <span className="hidden xs:inline">Concluir</span>
             </button>
-          ) : (
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-zinc-400">
-              <span>{Math.round(((idx + 1) / total) * 100)}%</span>
-            </div>
           )}
         </div>
       </header>
@@ -923,7 +1081,11 @@ export function PlayerAulaNativo({
                   className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight"
                   style={{ fontFamily: '"Playfair Display", Georgia, serif' }}
                 >
-                  {slideAtual.titulo}
+                  {isTituloAtivo ? (
+                    <mark className="karaoke-grifo">{slideAtual.titulo}</mark>
+                  ) : (
+                    slideAtual.titulo
+                  )}
                 </h1>
                 <div 
                   className="h-[3px] w-20 rounded-full shadow-sm"
@@ -991,7 +1153,10 @@ export function PlayerAulaNativo({
                           key={oi}
                           type="button"
                           disabled={respostaConfirmada}
-                          onClick={() => setRespostaSelecionada(oi)}
+                          onClick={() => {
+                            haptic.selection();
+                            setRespostaSelecionada(oi);
+                          }}
                           className={`w-full p-3.5 sm:p-4 rounded-2xl border text-left flex items-start gap-3 transition-all active:scale-[0.99] cursor-pointer ${btnStyle}`}
                         >
                           <span 
@@ -1019,7 +1184,15 @@ export function PlayerAulaNativo({
                   <div className="pt-2 animate-in fade-in duration-200">
                     <button
                       type="button"
-                      onClick={() => setRespostaConfirmada(true)}
+                      onClick={() => {
+                        const corretaIdx = slideAtual.correta ?? slideAtual.certa ?? 0;
+                        if (respostaSelecionada === corretaIdx) {
+                          haptic.success();
+                        } else {
+                          haptic.error();
+                        }
+                        setRespostaConfirmada(true);
+                      }}
                       className="w-full py-3.5 sm:py-4 px-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shadow-xl flex items-center justify-center gap-2 transition active:scale-98 cursor-pointer"
                       style={{ background: tema.accentGradient }}
                     >
@@ -1079,7 +1252,10 @@ export function PlayerAulaNativo({
             {isFlashcard && (
               <div className="w-full flip-perspective my-2 select-none">
                 <div 
-                  onClick={() => setFlashcardVirado(!flashcardVirado)}
+                  onClick={() => {
+                    haptic.medium();
+                    setFlashcardVirado(!flashcardVirado);
+                  }}
                   className={`flip-card-inner min-h-[300px] sm:min-h-[340px] cursor-pointer ${
                     flashcardVirado ? 'is-flipped' : ''
                   }`}
@@ -1164,6 +1340,7 @@ export function PlayerAulaNativo({
                       <div
                         key={fi}
                         onClick={() => {
+                          haptic.selection();
                           if (audioRef.current && duracao > 0 && faixasKaraoke[fi]) {
                             audioRef.current.currentTime = faixasKaraoke[fi].start * duracao;
                             if (!tocando) {
@@ -1408,10 +1585,19 @@ export function PlayerAulaNativo({
             </button>
 
             <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-              <div className="flex items-center justify-center text-center leading-none">
-                <span className="text-zinc-200 font-mono text-xs sm:text-sm font-bold tracking-wider">
+              <div className="flex items-center justify-between leading-none">
+                <span className="text-zinc-200 font-mono text-[11px] sm:text-xs font-bold tracking-wider">
                   {formatTempo(tempoAtual)} / {duracao > 0 ? formatTempo(duracao) : '0:45'}
                 </span>
+                {/* Seletor de Velocidade da Narração (1x, 1.25x, 1.5x, 2x) */}
+                <button
+                  type="button"
+                  onClick={alternarVelocidade}
+                  className="px-1.5 py-0.5 rounded-md border border-white/20 bg-white/10 hover:bg-white/20 text-amber-300 font-mono text-[10px] sm:text-[11px] font-black transition active:scale-90"
+                  title="Alterar velocidade de reprodução"
+                >
+                  {velocidade}x
+                </button>
               </div>
 
               {/* Barra de progresso do áudio */}
@@ -1431,7 +1617,7 @@ export function PlayerAulaNativo({
           <button
             type="button"
             onClick={avancarEtapa}
-            className={`min-w-[110px] sm:min-w-[136px] h-14 sm:h-[58px] px-4 sm:px-5 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 transition active:scale-95 shadow-xl shrink-0 ${
+            className={`min-w-[100px] sm:min-w-[126px] h-14 sm:h-[58px] px-3.5 sm:px-4 rounded-2xl font-black text-sm sm:text-base flex items-center justify-center gap-2 transition active:scale-95 shadow-xl shrink-0 ${
               isUltimaEtapa
                 ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-950/40'
                 : 'text-white shadow-black/40'
@@ -1449,8 +1635,224 @@ export function PlayerAulaNativo({
               <ChevronRight className="w-5 h-5 stroke-[2.5]" />
             )}
           </button>
+
+          {/* Botão do Mini-Sumário de Etapas (Drawer) */}
+          <button
+            type="button"
+            onClick={() => {
+              haptic.light();
+              setDrawerAberto(true);
+            }}
+            className="w-12 h-14 sm:w-[58px] sm:h-[58px] rounded-2xl border border-white/20 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-amber-300 flex items-center justify-center transition active:scale-95 shadow-md shrink-0"
+            title="Sumário de Etapas da Aula"
+            aria-label="Abrir sumário de etapas"
+          >
+            <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.2} />
+          </button>
         </div>
       </footer>
+
+      {/* DRAWER DO MINI-SUMÁRIO DE ETAPAS (BOTTOM SHEET FLUIDO E MODERNO) */}
+      {drawerAberto && (
+        <div 
+          className="fixed inset-0 z-50 flex flex-col justify-end bg-black/75 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setDrawerAberto(false)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-2xl mx-auto rounded-t-3xl border-t border-x border-white/15 bg-[#18090f]/98 shadow-2xl flex flex-col max-h-[82vh] animate-in slide-in-from-bottom duration-300"
+            style={{ backgroundColor: tema.bg }}
+          >
+            {/* Header do Drawer */}
+            <div className="p-4 sm:p-5 border-b border-white/10 shrink-0">
+              <div className="w-12 h-1.5 rounded-full bg-white/20 mx-auto mb-3" />
+              <div className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-400">
+                    Navegação Rápida · {disciplinaNome}
+                  </span>
+                  <h3 className="text-base sm:text-lg font-bold text-white truncate font-serif">
+                    {aula.titulo}
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDrawerAberto(false)}
+                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center text-zinc-300 transition active:scale-95"
+                  aria-label="Fechar sumário"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Progresso visual */}
+              <div className="mt-3 flex items-center justify-between text-xs text-zinc-400 mb-1.5 font-bold">
+                <span>Progresso da Aula</span>
+                <span className="text-amber-300">{Math.round(((idx + 1) / total) * 100)}% ({idx + 1} de {total})</span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-white/10 overflow-hidden">
+                <div 
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{ 
+                    width: `${((idx + 1) / total) * 100}%`,
+                    background: tema.accentGradient
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Lista rolável de todos os slides da aula */}
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-2">
+              {slides.map((s, si) => {
+                const isAtual = si === idx;
+                const isConcluido = si < idx;
+
+                let tipoIcon = <BookOpen className="w-4 h-4 text-zinc-400" />;
+                if (s.tipo === 'Questão' || s.tipo === 'Questão de banca' || s.opcoes) {
+                  tipoIcon = <HelpCircle className="w-4 h-4 text-amber-400" />;
+                } else if (s.tipo === 'Flashcard') {
+                  tipoIcon = <RotateCcw className="w-4 h-4 text-emerald-400" />;
+                } else if (s.tipo === 'Karaokê' || s.frases) {
+                  tipoIcon = <Volume2 className="w-4 h-4 text-rose-400" />;
+                } else if (s.tipo === 'Ligar termos') {
+                  tipoIcon = <Link2 className="w-4 h-4 text-sky-400" />;
+                }
+
+                return (
+                  <button
+                    key={si}
+                    type="button"
+                    onClick={() => {
+                      haptic.selection();
+                      setIdx(si);
+                      setDrawerAberto(false);
+                    }}
+                    className={`w-full p-3 sm:p-3.5 rounded-2xl border text-left flex items-center justify-between gap-3 transition-all active:scale-[0.99] cursor-pointer ${
+                      isAtual
+                        ? 'border-amber-400 bg-amber-400/20 text-white font-bold ring-1 ring-amber-400/50 shadow-md scale-[1.01]'
+                        : isConcluido
+                        ? 'border-white/10 bg-white/[0.03] hover:bg-white/[0.06] text-zinc-300'
+                        : 'border-white/5 bg-transparent hover:bg-white/[0.03] text-zinc-400'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span 
+                        className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-mono font-black shrink-0 ${
+                          isAtual
+                            ? 'bg-amber-400 text-black'
+                            : isConcluido
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-white/10 text-zinc-400'
+                        }`}
+                      >
+                        {String(si + 1).padStart(2, '0')}
+                      </span>
+                      <div className="flex items-center gap-2 truncate">
+                        {tipoIcon}
+                        <span className="text-xs sm:text-sm font-medium truncate text-white">
+                          {s.titulo || s.kicker || `Etapa ${si + 1}`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 flex items-center gap-1.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 px-2 py-0.5 rounded-full bg-white/5 border border-white/10">
+                        {s.tipo}
+                      </span>
+                      {isConcluido && (
+                        <Check className="w-4 h-4 text-emerald-400 stroke-[3]" />
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL DE CONFIRMAÇÃO DO GRIFO DA NARRAÇÃO (2 OPÇÕES: ESTA AULA OU TODAS AS AULAS) */}
+      {modalGrifoAberto && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+          onClick={() => setModalGrifoAberto(false)}
+        >
+          <div 
+            onClick={e => e.stopPropagation()}
+            className="w-full max-w-sm rounded-3xl border border-white/15 p-5 sm:p-6 shadow-2xl animate-in zoom-in-95 duration-200 space-y-4"
+            style={{ backgroundColor: tema.bg }}
+          >
+            <div className="flex items-start gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center text-amber-300 shrink-0">
+                <Highlighter className="w-5 h-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-base font-bold text-white font-serif">Grifo da Narração</h3>
+                <p className="text-xs text-zinc-300 mt-0.5 leading-relaxed">
+                  Como deseja desativar o destaque sincronizado com a voz?
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2.5 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.light();
+                  setGrifoAulaAtivo(false);
+                  setModalGrifoAberto(false);
+                }}
+                className="w-full p-3.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-left transition flex items-center justify-between group active:scale-[0.99] cursor-pointer"
+              >
+                <div>
+                  <div className="text-xs sm:text-sm font-bold text-zinc-100 group-hover:text-amber-300 transition-colors">
+                    Desligar para esta aula
+                  </div>
+                  <div className="text-[11px] text-zinc-400 mt-0.5">
+                    O grifo será desativado apenas nesta aula atual
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.light();
+                  setGrifoAulaAtivo(false);
+                  setGrifoGlobalAtivo(false);
+                  try {
+                    localStorage.setItem('aulas_grifo_global_desativado', 'true');
+                  } catch {}
+                  setModalGrifoAberto(false);
+                }}
+                className="w-full p-3.5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 text-left transition flex items-center justify-between group active:scale-[0.99] cursor-pointer"
+              >
+                <div>
+                  <div className="text-xs sm:text-sm font-bold text-zinc-100 group-hover:text-amber-300 transition-colors">
+                    Desligar para todas as aulas
+                  </div>
+                  <div className="text-[11px] text-zinc-400 mt-0.5">
+                    Nenhuma aula exibirá o grifo por padrão
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                setModalGrifoAberto(false);
+              }}
+              className="w-full py-2.5 text-center text-xs font-semibold text-zinc-400 hover:text-white transition cursor-pointer"
+            >
+              Cancelar (manter ligado)
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
