@@ -234,3 +234,4 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = ${JSON.stringify(finalAulas, 
 
 fs.writeFileSync('src/data/aulasInterativasCatalogoCompleto.ts', tsContent, 'utf8');
 console.log('src/data/aulasInterativasCatalogoCompleto.ts gravado com sucesso!');
+
