@@ -18,3 +18,4 @@ json.etapas.forEach(e => {
 
 fs.writeFileSync('scratch/aula01_r2.json', JSON.stringify(json, null, 2), 'utf8');
 console.log('JSON com URLs R2 gerado com sucesso! Total etapas:', json.etapas.length);
+
