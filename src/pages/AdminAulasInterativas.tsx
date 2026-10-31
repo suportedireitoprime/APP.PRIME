@@ -312,9 +312,6 @@ export default function AdminAulasInterativas() {
     : [];
 
     const getBotaoIniciarClass = (aula: AulaItem, aulaTerminada: boolean) => {
-    if (aula.status === 'pendente' || !aula.urlHtmlR2) {
-      return 'bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-300 border border-white/10 shadow-sm';
-    }
     if (aulaTerminada) {
       return 'bg-[#1b1c22] hover:bg-[#252830] text-zinc-200 border border-white/15';
     }
@@ -331,11 +328,7 @@ export default function AdminAulasInterativas() {
     }
   };
 
-const iniciarAula = (aula: AulaItem) => {
-    if (aula.status === 'pendente' || !aula.urlHtmlR2) {
-      setAulaPendenteModal(aula);
-      return;
-    }
+  const iniciarAula = (aula: AulaItem) => {
     if (!progressoMap[aula.id] || progressoMap[aula.id].etapaAtual === 0) {
       saveStoredProgresso(aula.id, 1);
       setProgressoMap(prev => ({ ...prev, [aula.id]: { etapaAtual: 1 } }));
@@ -1050,12 +1043,7 @@ const iniciarAula = (aula: AulaItem) => {
                           onClick={() => iniciarAula(aula)}
                           className={`w-full py-2.5 px-2 rounded-2xl font-black text-[11px] sm:text-xs transition flex items-center justify-center gap-1.5 shadow-md active:scale-95 ${getBotaoIniciarClass(aula, prog.aulaTerminada)}`}
                         >
-                          {aula.status === 'pendente' || !aula.urlHtmlR2 ? (
-                            <>
-                              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                              <span>Em Breve</span>
-                            </>
-                          ) : prog.aulaTerminada ? (
+                          {prog.aulaTerminada ? (
                             <>
                               <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
                               <span>Ver Aula</span>
