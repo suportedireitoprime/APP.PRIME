@@ -214,7 +214,6 @@ export default function AdminAulasInterativas() {
                     type="button"
                     onClick={() => {
                       setAulaAtiva(aula);
-                      toast.success(`Iniciando ${aula.titulo}`);
                     }}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white transition active:scale-95 shadow-lg"
                     style={{

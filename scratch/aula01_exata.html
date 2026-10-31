@@ -38,10 +38,9 @@
         color:var(--ink);
         display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
         width:100vw;
-        min-height:100vh;
-        min-height:100dvh;
-        overflow-x:hidden;
-        overflow-y:auto;
+        height:100vh;
+        height:100dvh;
+        overflow:hidden;
         scrollbar-width:none;
         -ms-overflow-style:none;
       }
@@ -50,20 +49,19 @@
       }
       .stage{
         display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
-        width:100%;min-height:100%;flex:1 0 auto;
+        width:100%;height:100%;flex:1 1 auto;min-height:0;
       }
       .phone{
         position:relative;
         width:100%;max-width:100%;min-width:0;
-        min-height:100%;flex:1 0 auto;
+        height:100%;flex:1 1 auto;min-height:0;
         background:linear-gradient(180deg,#26060f 0%,var(--phone) 30%);
         display:flex;flex-direction:column;
-        overflow-x:hidden;
+        overflow:hidden;
         border-radius:0;border:none;box-shadow:none;
       }
       header{
-        position:sticky !important;
-        top:0 !important;
+        flex:0 0 auto !important;
         padding:8px 12px 6px !important;
         border-bottom:1px solid rgba(226,62,87,.25) !important;
         background:rgba(20,4,9,.97) !important;
@@ -71,7 +69,7 @@
         -webkit-backdrop-filter:blur(14px);
         width:100% !important;
         box-sizing:border-box !important;
-        z-index:50 !important;
+        z-index:40 !important;
       }
       .header-wrap{
         max-width:860px;
@@ -84,12 +82,21 @@
       .track{height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-bottom:5px}
       .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
 
-      /* Área de leitura no fluxo natural da página inteira */
+      /* Área de leitura com rolagem independente suave (Sem barra de scroll) */
       .scroll{
-        flex:1 0 auto;
+        flex:1 1 auto !important;
+        min-height:0 !important;
+        overflow-y:auto !important;
+        overflow-x:hidden !important;
         padding:16px 14px 20px;
         width:100%;
         box-sizing:border-box !important;
+        scrollbar-width:none;
+        -ms-overflow-style:none;
+        overscroll-behavior:contain;
+      }
+      .scroll::-webkit-scrollbar{
+        display:none;width:0;height:0;
       }
       .scroll > *{
         max-width:860px;
@@ -98,10 +105,10 @@
         box-sizing:border-box !important;
       }
 
-      /* Rodapé no final do conteúdo (rola junto com a tela toda) */
+      /* Rodapé FIXO na base da tela */
       footer{
-        margin-top:auto !important;
-        padding:16px 8px calc(24px + env(safe-area-inset-bottom)) !important;
+        flex:0 0 auto !important;
+        padding:8px 8px calc(8px + env(safe-area-inset-bottom)) !important;
         border-top:1px solid rgba(226,62,87,.25) !important;
         background:rgba(20,4,9,.97) !important;
         backdrop-filter:blur(16px);
@@ -110,7 +117,7 @@
         max-width:100% !important;
         overflow:hidden !important;
         box-sizing:border-box !important;
-        z-index:30;
+        z-index:40 !important;
       }
       .footer-wrap{
         max-width:860px;
