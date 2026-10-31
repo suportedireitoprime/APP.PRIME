@@ -11,7 +11,7 @@ import { ModalPraticarQuestoes } from '@/components/aulas-interativas/ModalPrati
 
 interface AulaItem {
   id: string;
-  materia: string;
+  numeroAula: string;
   titulo: string;
   descricao: string;
   slug: string;
@@ -26,8 +26,8 @@ interface AulaItem {
 const AULAS_CATALOGO: AulaItem[] = [
   {
     id: 'penal-01-01',
-    materia: '01. Crimes Contra a Família',
-    titulo: 'Aula 01 - Crimes Contra a Família (Bigamia)',
+    numeroAula: 'AULA 01',
+    titulo: 'Crimes Contra a Família (Bigamia)',
     descricao: 'Estudo aprofundado dos crimes contra o casamento, elementos típicos da bigamia, causas de anulação civil e jurisprudência aplicada dos Tribunais Superiores.',
     slug: 'aula-01-crimes-contra-a-familia',
     etapas: 32,
@@ -39,8 +39,8 @@ const AULAS_CATALOGO: AulaItem[] = [
   },
   {
     id: 'penal-01-02',
-    materia: '01. Crimes Contra a Família',
-    titulo: 'Aula 02 - Induzimento a Erro Essencial e Ocultação de Impedimento',
+    numeroAula: 'AULA 02',
+    titulo: 'Induzimento a Erro Essencial e Ocultação de Impedimento',
     descricao: 'Análise aprofundada do art. 236 do Código Penal: condutas de induzimento a erro essencial sobre a pessoa e impedimentos dirimentes, condição objetiva de procedibilidade e ação penal privada personalíssima.',
     slug: 'aula-02-induzimento-a-erro-essencial',
     etapas: 32,
@@ -247,7 +247,7 @@ export default function AdminAulasInterativas() {
             <div className="min-w-0 flex flex-col justify-center">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#ff8296] truncate">
-                  DIREITO PENAL · AULA INTERATIVA
+                  DIREITO PENAL · {aulaAtiva.numeroAula}
                 </span>
                 <span className="hidden xs:inline-block text-[10px] px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">
                   {aulaAtiva.etapas} Etapas
@@ -463,20 +463,20 @@ export default function AdminAulasInterativas() {
                       </div>
 
                       <div className="min-w-0 flex-1 space-y-1.5">
-                        {/* Matéria Completa Sem Abreviação */}
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#ff8296]">
-                            {aula.materia}
+                        {/* Número da Aula em destaque no lugar do tema (sem redundância) */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-black uppercase tracking-widest text-[#ff8296] px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 shadow-sm">
+                            {aula.numeroAula}
                           </span>
                         </div>
 
-                        {/* Título Completo da Aula Sem Reticências */}
-                        <h4 className="text-sm sm:text-base font-bold text-white leading-snug group-hover:text-[#ff8296] transition-colors font-serif">
+                        {/* Título do Conteúdo Completo Sem Reticências */}
+                        <h4 className="text-base sm:text-lg font-bold text-white leading-snug group-hover:text-[#ff8296] transition-colors font-serif">
                           {aula.titulo}
                         </h4>
 
                         {/* Descrição Completa Sem Reticências */}
-                        <p className="text-xs text-[#f8edef]/85 leading-relaxed pt-0.5 font-sans">
+                        <p className="text-xs sm:text-sm text-[#f8edef]/85 leading-relaxed pt-0.5 font-sans">
                           {aula.descricao}
                         </p>
                       </div>
