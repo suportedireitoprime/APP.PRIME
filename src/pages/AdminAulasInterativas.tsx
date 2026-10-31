@@ -850,18 +850,35 @@ export default function AdminAulasInterativas() {
                       style={{ background: disciplinaAtual.corFundoCard }}
                     >
                       <div className="space-y-3.5 flex-1 flex flex-col">
-                        {/* Cabeçalho do Card: NÚMERO DA AULA ACIMA DA CAPA */}
-                        <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                          <span 
-                            className="text-[11px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15"
-                            style={{ color: disciplinaAtual.corDestaque }}
-                          >
-                            {aula.numeroAula}
-                          </span>
+                        {/* Cabeçalho do Card: NÚMERO DA AULA | TÍTULO DO TEMA (SEM DIREITO PENAL) E STATUS FINALIZADO */}
+                        <div className="flex items-center justify-between pb-2 border-b border-white/10 gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span 
+                              className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 shrink-0"
+                              style={{ color: disciplinaAtual.corDestaque }}
+                            >
+                              {aula.numeroAula}
+                            </span>
+                            <span className="text-zinc-500 text-xs font-light select-none">|</span>
+                            <span 
+                              className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest truncate"
+                              style={{ color: disciplinaAtual.corDestaque }}
+                            >
+                              {materiaAtual.titulo}
+                            </span>
+                          </div>
 
-                          <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">
-                            {prog.cicloCompleto ? '100% Concluído' : `${prog.fasesConcluidasCount} de 3 Fases`}
-                          </span>
+                          {/* Se a pessoa completar toda a aula (100%), exibe a badge "Finalizado" */}
+                          {prog.cicloCompleto ? (
+                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] sm:text-[11px] font-black uppercase tracking-wider border border-emerald-500/40 flex items-center gap-1.5 shadow-sm shadow-emerald-950/30 shrink-0 animate-in fade-in duration-300">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
+                              <span>Finalizado</span>
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider shrink-0">
+                              {prog.porcentagemTotal > 0 ? `${prog.porcentagemTotal}%` : '0%'}
+                            </span>
+                          )}
                         </div>
 
                         {/* Bloco Capa + Título + Descrição */}
@@ -878,6 +895,13 @@ export default function AdminAulasInterativas() {
                             <span className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-extrabold text-white border border-white/20">
                               {aula.etapas}p
                             </span>
+
+                            {prog.cicloCompleto && (
+                              <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-emerald-500/90 text-[9px] font-black uppercase tracking-wider text-white shadow-md flex items-center gap-1">
+                                <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                <span>100%</span>
+                              </div>
+                            )}
                           </div>
 
                           <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
@@ -903,8 +927,15 @@ export default function AdminAulasInterativas() {
                               />
                               Progresso da Aula
                             </span>
-                            <span className={prog.cicloCompleto ? 'text-emerald-400 font-black' : 'text-zinc-300 font-black'}>
-                              {prog.porcentagemTotal}% · {prog.cicloCompleto ? 'Concluída' : `${prog.fasesConcluidasCount} de 3 fases`}
+                            <span className={prog.cicloCompleto ? 'text-emerald-400 font-black flex items-center gap-1' : 'text-zinc-300 font-black'}>
+                              {prog.cicloCompleto ? (
+                                <>
+                                  <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-400" />
+                                  <span>100% · Finalizado</span>
+                                </>
+                              ) : (
+                                `${prog.porcentagemTotal}% · ${prog.fasesConcluidasCount} de 3 fases`
+                              )}
                             </span>
                           </div>
 
@@ -915,19 +946,6 @@ export default function AdminAulasInterativas() {
                               }`}
                               style={{ width: `${prog.porcentagemTotal}%` }}
                             />
-                          </div>
-
-                          {/* Mini Indicadores dos 3 Atos */}
-                          <div className="grid grid-cols-3 gap-1.5 mt-2 text-[10px] font-bold text-center">
-                            <div className={`py-1 rounded-md border ${prog.aulaTerminada ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
-                              1. Aula
-                            </div>
-                            <div className={`py-1 rounded-md border ${prog.fcOk ? 'bg-amber-500/15 border-amber-500/30 text-amber-300' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
-                              2. Revisão
-                            </div>
-                            <div className={`py-1 rounded-md border ${prog.questoesOk ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
-                              3. Praticar
-                            </div>
                           </div>
                         </div>
                       </div>
