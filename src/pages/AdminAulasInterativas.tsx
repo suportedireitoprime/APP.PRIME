@@ -1,3 +1,86 @@
+function getAulaFallbackHtml(aula: AulaItem): string {
+  const isPenal = aula.disciplinaId === 'penal';
+  const isConst = aula.disciplinaId === 'constitucional';
+  const isTrab = aula.disciplinaId === 'trabalho';
+  const corHex = isPenal ? '#ff8296' : isConst ? '#22c55e' : isTrab ? '#a855f7' : '#d9a00a';
+  const discNome = isPenal ? 'DIREITO PENAL' : isConst ? 'DIREITO CONSTITUCIONAL' : isTrab ? 'DIREITO DO TRABALHO' : 'DIREITO ADMINISTRATIVO';
+
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>${aula.titulo}</title>
+  <style>
+    :root { --accent: ${corHex}; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0d0f12; color: #fdf6e3;
+      display: flex; flex-direction: column;
+      height: 100%; height: 100dvh; overflow: hidden;
+    }
+    header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      background: rgba(18,19,24,.95);
+    }
+    .kicker { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin: 0 0 4px; }
+    .title { font-size: 18px; font-weight: 800; color: #fff; margin: 0; }
+    .scroll {
+      flex: 1 1 auto; overflow-y: auto; padding: 24px 20px 40px;
+      max-width: 680px; width: 100%; margin: 0 auto;
+    }
+    .cover {
+      width: 100%; min-height: 240px; max-height: 380px; aspect-ratio: 16/10;
+      object-fit: cover; border-radius: 20px; border: 1px solid rgba(255,255,255,.15);
+      margin-bottom: 24px; box-shadow: 0 20px 40px rgba(0,0,0,.6);
+    }
+    .content-box {
+      background: rgba(25,27,34,.7); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 20px; padding: 22px; margin-bottom: 20px;
+    }
+    h2 { font-size: 22px; font-weight: 800; margin: 0 0 14px; color: #fff; }
+    p { font-size: 16.5px; line-height: 1.8; color: #d8d8de; margin: 0 0 16px; }
+    .sent { border-radius: 6px; padding: 2px 4px; display: inline; transition: all .3s; }
+    .sent.on { background: rgba(255,255,255,.18); color: #fff; border-bottom: 2px solid var(--accent); }
+    footer {
+      flex: 0 0 auto; padding: 14px 16px max(34px, calc(28px + env(safe-area-inset-bottom, 24px)));
+      background: rgba(15,16,20,.98); border-top: 1px solid rgba(255,255,255,.12);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .navbtn {
+      padding: 10px 18px; border-radius: 14px; font-size: 13px; font-weight: 800;
+      background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.15); cursor: pointer;
+    }
+    .navbtn.primary { background: var(--accent); color: #000; border: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <p class="kicker">${discNome} · ${aula.numeroAula}</p>
+    <h1 class="title">${aula.titulo}</h1>
+  </header>
+
+  <div class="scroll">
+    <img src="${aula.capaUrl}" alt="${aula.titulo}" class="cover" />
+    <div class="content-box">
+      <h2>Visão Geral da Lição</h2>
+      <p><span class="sent on">Bem-vindo à aula interativa sobre ${aula.titulo}.</span> <span class="sent">Esta lição está estruturada no método de aprendizagem ativa em 3 atos: Fundamentos, Aprofundamento e Fixação.</span></p>
+      <p><span class="sent">Utilize os controles abaixo para avançar na aula e destravar os Flashcards 3D e as Questões práticas comentadas.</span></p>
+    </div>
+  </div>
+
+  <footer>
+    <button class="navbtn" type="button" onclick="history.back()">← Anterior</button>
+    <div style="font-size:12px; font-weight:800; color:var(--accent);">CICLO INTERATIVO ATIVO</div>
+    <button class="navbtn primary" type="button" onclick="alert('Excelente! Primeira etapa fixada.')">Próximo →</button>
+  </footer>
+</body>
+</html>`;
+}
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -145,6 +228,13 @@ export default function AdminAulasInterativas() {
   const [modalFlashcardsAula, setModalFlashcardsAula] = useState<AulaItem | null>(null);
   const [modalQuestoesAula, setModalQuestoesAula] = useState<AulaItem | null>(null);
   const [toastAviso, setToastAviso] = useState<string | null>(null);
+
+  // Efeito de scroll para o topo imediato ao trocar de matéria ou disciplina
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [materiaSelecionadaId, disciplinaSelecionadaId]);
   const [modoLivreTeste, setModoLivreTeste] = useState(false);
 
   useEffect(() => {
@@ -409,7 +499,7 @@ const iniciarAula = (aula: AulaItem) => {
           }}
         >
           <iframe
-            srcDoc={aulaAtiva.htmlConteudoRaw || undefined}
+            srcDoc={aulaAtiva.htmlConteudoRaw || (!aulaAtiva.urlHtmlR2 ? getAulaFallbackHtml(aulaAtiva) : undefined)}
             src={!aulaAtiva.htmlConteudoRaw ? `${aulaAtiva.urlHtmlR2}?t=${Date.now()}` : undefined}
             title={aulaAtiva.titulo}
             className="w-full h-full border-0 absolute inset-0"

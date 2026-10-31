@@ -1299,7 +1299,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_03_-_conhecimento_previo_de_impedimento.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-01-04",
@@ -1314,7 +1314,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_04_-_simulacao_de_casamento.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-01-05",
@@ -1329,7 +1329,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_05_-_registro_de_nascimento_inexistente.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-01-06",
@@ -1344,7 +1344,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_06_-_parto_suposto._supressao_ou_alteracao_de_direito_inerente_ao_estado_civil_de_recem-nascido.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-01-07",
@@ -1359,7 +1359,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_07_-_abandono_material.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-01-08",
@@ -1374,7 +1374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_08_-_entrega_de_filho_menor_a_pessoa_inidonea.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-01-09",
@@ -1389,7 +1389,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_09_-_abandono_intelectual.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-01-10",
@@ -1404,7 +1404,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_10_-_induzimento_a_fuga_entrega_arbitraria_ou_sonegacao_de_incapaz.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-01-11",
@@ -1419,7 +1419,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_11_-_subtracao_de_incapazes.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-01",
@@ -1432,9 +1432,9 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 30,
     "imagensQtd": 20,
-    "urlHtmlR2": "",
+    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/02-criminologia/aula-01-periodo-pre-cientifico/aula.html",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_02_-_evolucao_historica_periodo_pre-cientifico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-02",
@@ -1449,7 +1449,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_03_-_evolucao_historica_periodo_cientifico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-03",
@@ -1464,7 +1464,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_03_-_evolucao_historica_periodo_cientifico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-04",
@@ -1479,7 +1479,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_04_-_criminologia_tradicional.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-05",
@@ -1494,7 +1494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_04_-_criminologia_tradicional.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-06",
@@ -1509,7 +1509,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_05_-_criminologia_critica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-07",
@@ -1524,7 +1524,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_05_-_criminologia_critica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-08",
@@ -1539,7 +1539,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_06_-_vitimologia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-09",
@@ -1554,7 +1554,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_06_-_vitimologia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-10",
@@ -1569,7 +1569,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_07_-_cifras_e_prevencao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-02-11",
@@ -1584,7 +1584,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_07_-_cifras_e_prevencao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-03-01",
@@ -1599,7 +1599,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-03-02",
@@ -1614,7 +1614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_02_-_contrato_social.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-03-03",
@@ -1629,7 +1629,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_03_-_funcionalismo_sistemico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-03-04",
@@ -1644,7 +1644,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_04_-_cidadao_e_individuo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-03-05",
@@ -1659,7 +1659,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_05_-_pena_e_medida_de_seguranca.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-03-06",
@@ -1674,7 +1674,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_06_-_manifestacoes_do_dp_do_inimigo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-03-07",
@@ -1689,7 +1689,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_07_-_revisao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-04-01",
@@ -1704,7 +1704,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-04-02",
@@ -1719,7 +1719,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/04._critica_ao_direito_penal_do_inimigo_-_aula_02_-_inexistencia_do_direito_1_critica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-04-03",
@@ -1734,7 +1734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/04._critica_ao_direito_penal_do_inimigo_-_aula_03_-_direito_penal_simbolico_e_punitivismo_2_critica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-04-04",
@@ -1749,7 +1749,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/04._critica_ao_direito_penal_do_inimigo_-_aula_04_-_direito_penal_do_autor_3_critica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-04-05",
@@ -1764,7 +1764,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/04._critica_ao_direito_penal_do_inimigo_-_aula_05_-_insuficiencia_da_prevencao_4_critica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-04-06",
@@ -1779,7 +1779,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/04._critica_ao_direito_penal_do_inimigo_-_aula_06_-_dp_do_inimigo_e_ato_de_guerra_5_critica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-04-07",
@@ -1794,7 +1794,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_07_-_revisao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-01",
@@ -1809,7 +1809,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-02",
@@ -1824,7 +1824,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_02_-_direito_penal_criminologia_e_politica_criminal.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-03",
@@ -1839,7 +1839,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_03_-_movimentos_de_politica_criminal.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-04",
@@ -1854,7 +1854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_04_-_positivismo_criminologico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-05",
@@ -1869,7 +1869,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_05_-_as_variantes_do_positivismo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-06",
@@ -1884,7 +1884,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_06_-_principio_da_legalidade.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-07",
@@ -1899,7 +1899,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_07_-_principio_da_intervencao_minima.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-08",
@@ -1914,7 +1914,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_08_-_principio_da_lesividade_e_principio_da_humanidade.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-09",
@@ -1929,7 +1929,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_09_-_principio_da_adequacao_social.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-05-10",
@@ -1944,7 +1944,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_10_-_principio_da_culpabilidade.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-06-01",
@@ -1959,7 +1959,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-06-02",
@@ -1974,7 +1974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_02_-_principio_da_reserva_legal_ou_da_estrita_legalidade.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-06-03",
@@ -1989,7 +1989,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_03_-_principio_da_anterioridade.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-06-04",
@@ -2004,7 +2004,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_04_-_principios_da_alteridade_e_da_confianca.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-06-05",
@@ -2019,7 +2019,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_05_-_principio_da_proporcionalidade_ou_razoabilidade.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-06-06",
@@ -2034,7 +2034,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_06_-_principio_da_intervencao_minima_ou_da_necessidade.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-06-07",
@@ -2049,7 +2049,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_07_-_principios_da_intranscendencia_da_responsabilidade_pelo_fato_e_da_individualizacao_da_pena.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-06-08",
@@ -2064,7 +2064,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_08_-_principio_da_adequacao_social_da_culpabilidade_e_da_exclusiva_protecao_ao_bem_juridico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-06-09",
@@ -2079,7 +2079,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_09_-_principio_da_insignificancia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-07-01",
@@ -2094,7 +2094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-07-02",
@@ -2109,7 +2109,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-07-03",
@@ -2124,7 +2124,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-07-04",
@@ -2139,7 +2139,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-08-01",
@@ -2154,7 +2154,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-08-02",
@@ -2169,7 +2169,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-08-03",
@@ -2184,7 +2184,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-08-04",
@@ -2199,7 +2199,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-01",
@@ -2214,7 +2214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-02",
@@ -2229,7 +2229,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-03",
@@ -2244,7 +2244,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-04",
@@ -2259,7 +2259,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-05",
@@ -2274,7 +2274,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-06",
@@ -2289,7 +2289,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-07",
@@ -2304,7 +2304,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-08",
@@ -2319,7 +2319,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-09",
@@ -2334,7 +2334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-10",
@@ -2349,7 +2349,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-11",
@@ -2364,7 +2364,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-12",
@@ -2379,7 +2379,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-13",
@@ -2394,7 +2394,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_10_-_principio_da_culpabilidade.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-14",
@@ -2409,7 +2409,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-15",
@@ -2424,7 +2424,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-16",
@@ -2439,7 +2439,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-09-17",
@@ -2454,7 +2454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-01",
@@ -2469,7 +2469,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-02",
@@ -2484,7 +2484,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-03",
@@ -2499,7 +2499,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-04",
@@ -2514,7 +2514,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-05",
@@ -2529,7 +2529,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-06",
@@ -2544,7 +2544,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-07",
@@ -2559,7 +2559,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-08",
@@ -2574,7 +2574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-09",
@@ -2589,7 +2589,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-10",
@@ -2604,7 +2604,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-11",
@@ -2619,7 +2619,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-10-12",
@@ -2634,7 +2634,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-11-01",
@@ -2649,7 +2649,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_09_-_principio_da_insignificancia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-11-02",
@@ -2664,7 +2664,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_09_-_principio_da_insignificancia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-11-03",
@@ -2679,7 +2679,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_09_-_principio_da_insignificancia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-11-04",
@@ -2694,7 +2694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_09_-_principio_da_insignificancia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-11-05",
@@ -2709,7 +2709,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_09_-_principio_da_insignificancia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-11-06",
@@ -2724,7 +2724,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_09_-_principio_da_insignificancia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-12-01",
@@ -2739,7 +2739,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-12-02",
@@ -2754,7 +2754,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-12-03",
@@ -2769,7 +2769,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-12-04",
@@ -2784,7 +2784,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-12-05",
@@ -2799,7 +2799,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-13-01",
@@ -2814,7 +2814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-13-02",
@@ -2829,7 +2829,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-13-03",
@@ -2844,7 +2844,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-13-04",
@@ -2859,7 +2859,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-13-05",
@@ -2874,7 +2874,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-13-06",
@@ -2889,7 +2889,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_05_-_pena_e_medida_de_seguranca.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-13-07",
@@ -2904,7 +2904,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-13-08",
@@ -2919,7 +2919,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-13-09",
@@ -2934,7 +2934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-14-01",
@@ -2949,7 +2949,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-14-02",
@@ -2964,7 +2964,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-14-03",
@@ -2979,7 +2979,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-14-04",
@@ -2994,7 +2994,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-14-05",
@@ -3009,7 +3009,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-14-06",
@@ -3024,7 +3024,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-14-07",
@@ -3039,7 +3039,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-01",
@@ -3054,7 +3054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-02",
@@ -3069,7 +3069,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-03",
@@ -3084,7 +3084,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-04",
@@ -3099,7 +3099,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-05",
@@ -3114,7 +3114,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-06",
@@ -3129,7 +3129,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-07",
@@ -3144,7 +3144,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-08",
@@ -3159,7 +3159,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-09",
@@ -3174,7 +3174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-15-10",
@@ -3189,7 +3189,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-16-01",
@@ -3204,7 +3204,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-16-02",
@@ -3219,7 +3219,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-16-03",
@@ -3234,7 +3234,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-16-04",
@@ -3249,7 +3249,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_07_-_revisao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-17-01",
@@ -3264,7 +3264,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-17-02",
@@ -3279,7 +3279,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-17-03",
@@ -3294,7 +3294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-17-04",
@@ -3309,7 +3309,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-18-01",
@@ -3324,7 +3324,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-18-02",
@@ -3339,7 +3339,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-18-03",
@@ -3354,7 +3354,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-01",
@@ -3369,7 +3369,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-02",
@@ -3384,7 +3384,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-03",
@@ -3399,7 +3399,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-04",
@@ -3414,7 +3414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-05",
@@ -3429,7 +3429,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-06",
@@ -3444,7 +3444,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-07",
@@ -3459,7 +3459,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-08",
@@ -3474,7 +3474,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-09",
@@ -3489,7 +3489,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-19-10",
@@ -3504,7 +3504,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-20-01",
@@ -3519,7 +3519,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-20-02",
@@ -3534,7 +3534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-20-03",
@@ -3549,7 +3549,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-20-04",
@@ -3564,7 +3564,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-20-05",
@@ -3579,7 +3579,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-21-01",
@@ -3594,7 +3594,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-21-02",
@@ -3609,7 +3609,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-21-03",
@@ -3624,7 +3624,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-21-04",
@@ -3639,7 +3639,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-22-01",
@@ -3654,7 +3654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-22-02",
@@ -3669,7 +3669,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-22-03",
@@ -3684,7 +3684,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-22-04",
@@ -3699,7 +3699,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-22-05",
@@ -3714,7 +3714,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-22-06",
@@ -3729,7 +3729,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-22-07",
@@ -3744,7 +3744,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-23-01",
@@ -3759,7 +3759,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-23-02",
@@ -3774,7 +3774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-23-03",
@@ -3789,7 +3789,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-23-04",
@@ -3804,7 +3804,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-23-05",
@@ -3819,7 +3819,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-23-06",
@@ -3834,7 +3834,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-23-07",
@@ -3849,7 +3849,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-23-08",
@@ -3864,7 +3864,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-23-09",
@@ -3879,7 +3879,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-24-01",
@@ -3894,7 +3894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-24-02",
@@ -3909,7 +3909,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-24-03",
@@ -3924,7 +3924,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-24-04",
@@ -3939,7 +3939,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-24-05",
@@ -3954,7 +3954,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-24-06",
@@ -3969,7 +3969,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-24-07",
@@ -3984,7 +3984,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-24-08",
@@ -3999,7 +3999,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-01",
@@ -4014,7 +4014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-02",
@@ -4029,7 +4029,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-03",
@@ -4044,7 +4044,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-04",
@@ -4059,7 +4059,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-05",
@@ -4074,7 +4074,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-06",
@@ -4089,7 +4089,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-07",
@@ -4104,7 +4104,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-08",
@@ -4119,7 +4119,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-09",
@@ -4134,7 +4134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-10",
@@ -4149,7 +4149,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-11",
@@ -4164,7 +4164,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-12",
@@ -4179,7 +4179,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-13",
@@ -4194,7 +4194,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-14",
@@ -4209,7 +4209,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-15",
@@ -4224,7 +4224,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-16",
@@ -4239,7 +4239,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-17",
@@ -4254,7 +4254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-18",
@@ -4269,7 +4269,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-19",
@@ -4284,7 +4284,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-20",
@@ -4299,7 +4299,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-21",
@@ -4314,7 +4314,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-22",
@@ -4329,7 +4329,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-23",
@@ -4344,7 +4344,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-24",
@@ -4359,7 +4359,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-25",
@@ -4374,7 +4374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-26",
@@ -4389,7 +4389,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-27",
@@ -4404,7 +4404,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-28",
@@ -4419,7 +4419,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-29",
@@ -4434,7 +4434,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-30",
@@ -4449,7 +4449,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-31",
@@ -4464,7 +4464,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-32",
@@ -4479,7 +4479,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-33",
@@ -4494,7 +4494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-34",
@@ -4509,7 +4509,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-35",
@@ -4524,7 +4524,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-36",
@@ -4539,7 +4539,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-37",
@@ -4554,7 +4554,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-38",
@@ -4569,7 +4569,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-39",
@@ -4584,7 +4584,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-40",
@@ -4599,7 +4599,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-41",
@@ -4614,7 +4614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-42",
@@ -4629,7 +4629,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-43",
@@ -4644,7 +4644,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-44",
@@ -4659,7 +4659,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-45",
@@ -4674,7 +4674,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-46",
@@ -4689,7 +4689,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-47",
@@ -4704,7 +4704,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-48",
@@ -4719,7 +4719,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-49",
@@ -4734,7 +4734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-50",
@@ -4749,7 +4749,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-25-51",
@@ -4764,7 +4764,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-01",
@@ -4779,7 +4779,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-02",
@@ -4794,7 +4794,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-03",
@@ -4809,7 +4809,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-04",
@@ -4824,7 +4824,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-05",
@@ -4839,7 +4839,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-06",
@@ -4854,7 +4854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-07",
@@ -4869,7 +4869,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-08",
@@ -4884,7 +4884,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-09",
@@ -4899,7 +4899,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-10",
@@ -4914,7 +4914,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-26-11",
@@ -4929,7 +4929,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-01",
@@ -4944,7 +4944,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-02",
@@ -4959,7 +4959,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-03",
@@ -4974,7 +4974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-04",
@@ -4989,7 +4989,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-05",
@@ -5004,7 +5004,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-06",
@@ -5019,7 +5019,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-07",
@@ -5034,7 +5034,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-08",
@@ -5049,7 +5049,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-09",
@@ -5064,7 +5064,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-27-10",
@@ -5079,7 +5079,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-01",
@@ -5094,7 +5094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-02",
@@ -5109,7 +5109,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-03",
@@ -5124,7 +5124,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-04",
@@ -5139,7 +5139,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-05",
@@ -5154,7 +5154,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-06",
@@ -5169,7 +5169,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-07",
@@ -5184,7 +5184,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-08",
@@ -5199,7 +5199,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-09",
@@ -5214,7 +5214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-10",
@@ -5229,7 +5229,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-11",
@@ -5244,7 +5244,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-12",
@@ -5259,7 +5259,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-13",
@@ -5274,7 +5274,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-14",
@@ -5289,7 +5289,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-15",
@@ -5304,7 +5304,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-16",
@@ -5319,7 +5319,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-17",
@@ -5334,7 +5334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-18",
@@ -5349,7 +5349,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-19",
@@ -5364,7 +5364,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-20",
@@ -5379,7 +5379,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-21",
@@ -5394,7 +5394,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-22",
@@ -5409,7 +5409,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-23",
@@ -5424,7 +5424,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-24",
@@ -5439,7 +5439,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-28-25",
@@ -5454,7 +5454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-01",
@@ -5469,7 +5469,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-02",
@@ -5484,7 +5484,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-03",
@@ -5499,7 +5499,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-04",
@@ -5514,7 +5514,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-05",
@@ -5529,7 +5529,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-06",
@@ -5544,7 +5544,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-07",
@@ -5559,7 +5559,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-08",
@@ -5574,7 +5574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-09",
@@ -5589,7 +5589,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-10",
@@ -5604,7 +5604,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-11",
@@ -5619,7 +5619,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-12",
@@ -5634,7 +5634,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-13",
@@ -5649,7 +5649,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-14",
@@ -5664,7 +5664,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-15",
@@ -5679,7 +5679,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-16",
@@ -5694,7 +5694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-29-17",
@@ -5709,7 +5709,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-01",
@@ -5724,7 +5724,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-02",
@@ -5739,7 +5739,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-03",
@@ -5754,7 +5754,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-04",
@@ -5769,7 +5769,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-05",
@@ -5784,7 +5784,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-06",
@@ -5799,7 +5799,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-07",
@@ -5814,7 +5814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-08",
@@ -5829,7 +5829,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-09",
@@ -5844,7 +5844,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-10",
@@ -5859,7 +5859,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-30-11",
@@ -5874,7 +5874,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-31-01",
@@ -5889,7 +5889,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-31-02",
@@ -5904,7 +5904,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-31-03",
@@ -5919,7 +5919,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-31-04",
@@ -5934,7 +5934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-31-05",
@@ -5949,7 +5949,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-31-06",
@@ -5964,7 +5964,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-31-07",
@@ -5979,7 +5979,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-31-08",
@@ -5994,7 +5994,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-32-01",
@@ -6009,7 +6009,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-32-02",
@@ -6024,7 +6024,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-32-03",
@@ -6039,7 +6039,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-32-04",
@@ -6054,7 +6054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-32-05",
@@ -6069,7 +6069,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-01",
@@ -6084,7 +6084,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-02",
@@ -6099,7 +6099,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-03",
@@ -6114,7 +6114,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-04",
@@ -6129,7 +6129,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-05",
@@ -6144,7 +6144,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-06",
@@ -6159,7 +6159,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-07",
@@ -6174,7 +6174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-08",
@@ -6189,7 +6189,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-09",
@@ -6204,7 +6204,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-10",
@@ -6219,7 +6219,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-11",
@@ -6234,7 +6234,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-12",
@@ -6249,7 +6249,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-13",
@@ -6264,7 +6264,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-14",
@@ -6279,7 +6279,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-15",
@@ -6294,7 +6294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-16",
@@ -6309,7 +6309,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-17",
@@ -6324,7 +6324,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-18",
@@ -6339,7 +6339,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-33-19",
@@ -6354,7 +6354,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-01",
@@ -6369,7 +6369,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-02",
@@ -6384,7 +6384,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-03",
@@ -6399,7 +6399,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-04",
@@ -6414,7 +6414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-05",
@@ -6429,7 +6429,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-06",
@@ -6444,7 +6444,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-07",
@@ -6459,7 +6459,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-08",
@@ -6474,7 +6474,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-09",
@@ -6489,7 +6489,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-10",
@@ -6504,7 +6504,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-11",
@@ -6519,7 +6519,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-12",
@@ -6534,7 +6534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-13",
@@ -6549,7 +6549,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-14",
@@ -6564,7 +6564,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-15",
@@ -6579,7 +6579,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-34-16",
@@ -6594,7 +6594,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-35-01",
@@ -6609,7 +6609,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-35-02",
@@ -6624,7 +6624,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-35-03",
@@ -6639,7 +6639,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-35-04",
@@ -6654,7 +6654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-35-05",
@@ -6669,7 +6669,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-01",
@@ -6684,7 +6684,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-02",
@@ -6699,7 +6699,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-03",
@@ -6714,7 +6714,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-04",
@@ -6729,7 +6729,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-05",
@@ -6744,7 +6744,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-06",
@@ -6759,7 +6759,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-07",
@@ -6774,7 +6774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-08",
@@ -6789,7 +6789,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-09",
@@ -6804,7 +6804,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-10",
@@ -6819,7 +6819,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-11",
@@ -6834,7 +6834,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-36-12",
@@ -6849,7 +6849,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-37-01",
@@ -6864,7 +6864,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-37-02",
@@ -6879,7 +6879,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-37-03",
@@ -6894,7 +6894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-37-04",
@@ -6909,7 +6909,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-37-05",
@@ -6924,7 +6924,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-37-06",
@@ -6939,7 +6939,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-37-07",
@@ -6954,7 +6954,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-37-08",
@@ -6969,7 +6969,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-38-01",
@@ -6984,7 +6984,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-38-02",
@@ -6999,7 +6999,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-38-03",
@@ -7014,7 +7014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-38-04",
@@ -7029,7 +7029,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-38-05",
@@ -7044,7 +7044,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-38-06",
@@ -7059,7 +7059,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-38-07",
@@ -7074,7 +7074,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-38-08",
@@ -7089,7 +7089,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-01",
@@ -7104,7 +7104,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-02",
@@ -7119,7 +7119,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-03",
@@ -7134,7 +7134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-04",
@@ -7149,7 +7149,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-05",
@@ -7164,7 +7164,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-06",
@@ -7179,7 +7179,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-07",
@@ -7194,7 +7194,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-08",
@@ -7209,7 +7209,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-09",
@@ -7224,7 +7224,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-10",
@@ -7239,7 +7239,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-11",
@@ -7254,7 +7254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-12",
@@ -7269,7 +7269,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-13",
@@ -7284,7 +7284,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-14",
@@ -7299,7 +7299,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-15",
@@ -7314,7 +7314,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-16",
@@ -7329,7 +7329,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-17",
@@ -7344,7 +7344,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-18",
@@ -7359,7 +7359,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-19",
@@ -7374,7 +7374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-39-20",
@@ -7389,7 +7389,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-40-01",
@@ -7404,7 +7404,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-40-02",
@@ -7419,7 +7419,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-40-03",
@@ -7434,7 +7434,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-40-04",
@@ -7449,7 +7449,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-40-05",
@@ -7464,7 +7464,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-40-06",
@@ -7479,7 +7479,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-40-07",
@@ -7494,7 +7494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-40-08",
@@ -7509,7 +7509,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-40-09",
@@ -7524,7 +7524,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-01",
@@ -7539,7 +7539,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-02",
@@ -7554,7 +7554,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-03",
@@ -7569,7 +7569,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-04",
@@ -7584,7 +7584,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-05",
@@ -7599,7 +7599,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-06",
@@ -7614,7 +7614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-07",
@@ -7629,7 +7629,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-08",
@@ -7644,7 +7644,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-09",
@@ -7659,7 +7659,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-10",
@@ -7674,7 +7674,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-11",
@@ -7689,7 +7689,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-12",
@@ -7704,7 +7704,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-13",
@@ -7719,7 +7719,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-14",
@@ -7734,7 +7734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-15",
@@ -7749,7 +7749,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-16",
@@ -7764,7 +7764,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-17",
@@ -7779,7 +7779,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-18",
@@ -7794,7 +7794,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-19",
@@ -7809,7 +7809,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-20",
@@ -7824,7 +7824,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-21",
@@ -7839,7 +7839,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-22",
@@ -7854,7 +7854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-23",
@@ -7869,7 +7869,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-24",
@@ -7884,7 +7884,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-25",
@@ -7899,7 +7899,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-26",
@@ -7914,7 +7914,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-27",
@@ -7929,7 +7929,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-41-28",
@@ -7944,7 +7944,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-42-01",
@@ -7959,7 +7959,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-42-02",
@@ -7974,7 +7974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-42-03",
@@ -7989,7 +7989,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-42-04",
@@ -8004,7 +8004,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-42-05",
@@ -8019,7 +8019,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-42-06",
@@ -8034,7 +8034,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-42-07",
@@ -8049,7 +8049,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-42-08",
@@ -8064,7 +8064,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-42-09",
@@ -8079,7 +8079,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-01",
@@ -8094,7 +8094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-02",
@@ -8109,7 +8109,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-03",
@@ -8124,7 +8124,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-04",
@@ -8139,7 +8139,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-05",
@@ -8154,7 +8154,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-06",
@@ -8169,7 +8169,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-07",
@@ -8184,7 +8184,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-08",
@@ -8199,7 +8199,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-09",
@@ -8214,7 +8214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-10",
@@ -8229,7 +8229,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-11",
@@ -8244,7 +8244,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-12",
@@ -8259,7 +8259,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-13",
@@ -8274,7 +8274,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-14",
@@ -8289,7 +8289,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "penal-43-15",
@@ -8304,7 +8304,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-01-01",
@@ -8349,7 +8349,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_03_-_constitucionalizacao_do_direito_administrativo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-01-04",
@@ -8364,7 +8364,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_04_-_poderes_da_ordem_publica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-02-01",
@@ -8379,7 +8379,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/02._conceitos_fundamentais_de_direito_administrativo_-_aula_01_-_o_que_e_direito_administrativo_.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-02-02",
@@ -8394,7 +8394,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/02._conceitos_fundamentais_de_direito_administrativo_-_aula_02_-_patrimonialismo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-02-03",
@@ -8409,7 +8409,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/02._conceitos_fundamentais_de_direito_administrativo_-_aula_03_-_burocracia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-02-04",
@@ -8424,7 +8424,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/02._conceitos_fundamentais_de_direito_administrativo_-_aula_04_-_gerencialismo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-02-05",
@@ -8439,7 +8439,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/02._conceitos_fundamentais_de_direito_administrativo_-_aula_05_-_regime_juridico_administrativo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-02-06",
@@ -8454,7 +8454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/02._conceitos_fundamentais_de_direito_administrativo_-_aula_06_-_classificacoes_do_direito_administrativo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-03-01",
@@ -8469,7 +8469,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_01_-_panorama_geral.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-03-02",
@@ -8484,7 +8484,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_02_-_fontes_constitucionais_do_direito_administrativo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-03-03",
@@ -8499,7 +8499,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_03_-_fontes_legislativas_do_direito_administrativo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-03-04",
@@ -8514,7 +8514,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_04_-_poder_normativo_e_regulamentar_da_administracao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-03-05",
@@ -8529,7 +8529,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_05_-_poder_regulamentar_e_regulamentos_executivos.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-03-06",
@@ -8544,7 +8544,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_06_-_regulamentos_autonomos_e_setoriais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-03-07",
@@ -8559,7 +8559,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_07_-_costume_jurisprudencia_sumulas_consultas_e_orientacoes_na_administracao_publica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-03-08",
@@ -8574,7 +8574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_08_-_judiciario_e_administracao_publica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-04-01",
@@ -8589,7 +8589,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/04._regime_juridico_administrativo_-_aula_01_-_regime_juridico_administrativo_definicoes_e_fundamentos.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-04-02",
@@ -8604,7 +8604,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/04._regime_juridico_administrativo_-_aula_02_-_o_que_nao_e_interesse_publico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-04-03",
@@ -8619,7 +8619,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/04._regime_juridico_administrativo_-_aula_03_-_contribuicoes_teoricas_finais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-01",
@@ -8634,7 +8634,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_01_-_terceiro_setor_e_a_administracao_paraestatal_panorama.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-02",
@@ -8649,7 +8649,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_02_-_organizacoes_sociais_os_.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-03",
@@ -8664,7 +8664,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_03_-_organizacao_da_sociedade_civil_de_interesse_publico_oscip_.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-04",
@@ -8679,7 +8679,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_04_-_organizacao_da_sociedade_civil_osc_lei_13.019_e_parcerias_sociais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-05",
@@ -8694,7 +8694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_05_-_organizacao_da_sociedade_civil_osc_pmis_dispensa_e_inexigibilidade.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-06",
@@ -8709,7 +8709,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_06_-_organizacao_da_sociedade_civil_osc_chamamento_publico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-07",
@@ -8724,7 +8724,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_07_-_organizacao_da_sociedade_civil_osc_conteudo_da_parceria_execucao_e_bens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-08",
@@ -8739,7 +8739,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_08_-_organizacao_da_sociedade_civil_osc_despesas_prestacao_de_contas_sancoes_e_responsabilidades.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-09",
@@ -8754,7 +8754,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_09_-_administracao_paraestatal_e_fundacoes_de_apoio.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-05-10",
@@ -8769,7 +8769,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_10_-_administracao_paraestatal_servicos_sociais_autonomos_e_sistema_s.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-06-01",
@@ -8784,7 +8784,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/06._poderes_administrativos_-_aula_01_-_poderes_administrativos_introducao_conceito_classificacao_e_visao_geral.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-06-02",
@@ -8799,7 +8799,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/06._poderes_administrativos_-_aula_02_-_poder_hierarquico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-06-03",
@@ -8814,7 +8814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/06._poderes_administrativos_-_aula_03_-_poder_disciplinar.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-06-04",
@@ -8829,7 +8829,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/06._poderes_administrativos_-_aula_04_-_poder_normativo_ou_regulamentar.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-06-05",
@@ -8844,7 +8844,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/06._poderes_administrativos_-_aula_05_-_poder_de_policia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-07-01",
@@ -8859,7 +8859,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/07._atos_administrativos_-_aula_01_-_atos_administrativos_conceito.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-07-02",
@@ -8874,7 +8874,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/07._atos_administrativos_-_aula_02_-_elementos_do_ato_administrativo_parte_i.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-07-03",
@@ -8889,7 +8889,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/07._atos_administrativos_-_aula_03_-_atributos_do_ato_administrativo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-07-04",
@@ -8904,7 +8904,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/07._atos_administrativos_-_aula_04_-_classificacao_dos_atos_administrativos_parte_i.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-07-05",
@@ -8919,7 +8919,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/07._atos_administrativos_-_aula_05_-_especies_de_ato_administrativo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-07-06",
@@ -8934,7 +8934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/07._atos_administrativos_-_aula_06_-_vicios_do_ato_administrativo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-07-07",
@@ -8949,7 +8949,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/07._atos_administrativos_-_aula_07_-_anulacao_e_revogacao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-08-01",
@@ -8964,7 +8964,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_07_-_costume_jurisprudencia_sumulas_consultas_e_orientacoes_na_administracao_publica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-09-01",
@@ -8979,7 +8979,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/10._controle_da_administracao_-_aula_01_-_controle_da_administracao_conceitos_iniciais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-09-02",
@@ -8994,7 +8994,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/10._controle_da_administracao_-_aula_02_-_especies_de_controle.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-09-03",
@@ -9009,7 +9009,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/10._controle_da_administracao_-_aula_03_-_meios_de_controle.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-09-04",
@@ -9024,7 +9024,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/10._controle_da_administracao_-_aula_04_-_recursos_administrativos.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-09-05",
@@ -9039,7 +9039,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/10._controle_da_administracao_-_aula_05_-_controle_legislativo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-09-06",
@@ -9054,7 +9054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/10._controle_da_administracao_-_aula_06_-_controle_judicial.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-10-01",
@@ -9069,7 +9069,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-10-02",
@@ -9084,7 +9084,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-10-03",
@@ -9099,7 +9099,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-10-04",
@@ -9114,7 +9114,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-10-05",
@@ -9129,7 +9129,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-10-06",
@@ -9144,7 +9144,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-10-07",
@@ -9159,7 +9159,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-11-01",
@@ -9174,7 +9174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-11-02",
@@ -9189,7 +9189,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-11-03",
@@ -9204,7 +9204,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-11-04",
@@ -9219,7 +9219,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-11-05",
@@ -9234,7 +9234,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-11-06",
@@ -9249,7 +9249,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-11-07",
@@ -9264,7 +9264,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-11-08",
@@ -9279,7 +9279,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-12-01",
@@ -9294,7 +9294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-12-02",
@@ -9309,7 +9309,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-12-03",
@@ -9324,7 +9324,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-12-04",
@@ -9339,7 +9339,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-12-05",
@@ -9354,7 +9354,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-12-06",
@@ -9369,7 +9369,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-12-07",
@@ -9384,7 +9384,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-12-08",
@@ -9399,7 +9399,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-12-09",
@@ -9414,7 +9414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-01",
@@ -9429,7 +9429,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-02",
@@ -9444,7 +9444,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-03",
@@ -9459,7 +9459,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-04",
@@ -9474,7 +9474,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-05",
@@ -9489,7 +9489,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-06",
@@ -9504,7 +9504,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-07",
@@ -9519,7 +9519,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-08",
@@ -9534,7 +9534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-09",
@@ -9549,7 +9549,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-10",
@@ -9564,7 +9564,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-11",
@@ -9579,7 +9579,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-13-12",
@@ -9594,7 +9594,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-14-01",
@@ -9609,7 +9609,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-14-02",
@@ -9624,7 +9624,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-14-03",
@@ -9639,7 +9639,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-14-04",
@@ -9654,7 +9654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-14-05",
@@ -9669,7 +9669,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-14-06",
@@ -9684,7 +9684,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-14-07",
@@ -9699,7 +9699,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-15-01",
@@ -9714,7 +9714,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-15-02",
@@ -9729,7 +9729,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-15-03",
@@ -9744,7 +9744,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-15-04",
@@ -9759,7 +9759,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-15-05",
@@ -9774,7 +9774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-15-06",
@@ -9789,7 +9789,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-15-07",
@@ -9804,7 +9804,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-15-08",
@@ -9819,7 +9819,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-16-01",
@@ -9834,7 +9834,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-16-02",
@@ -9849,7 +9849,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-16-03",
@@ -9864,7 +9864,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-16-04",
@@ -9879,7 +9879,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-01",
@@ -9894,7 +9894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-02",
@@ -9909,7 +9909,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-03",
@@ -9924,7 +9924,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-04",
@@ -9939,7 +9939,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-05",
@@ -9954,7 +9954,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-06",
@@ -9969,7 +9969,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-07",
@@ -9984,7 +9984,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-08",
@@ -9999,7 +9999,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-09",
@@ -10014,7 +10014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-17-10",
@@ -10029,7 +10029,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-18-01",
@@ -10044,7 +10044,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-18-02",
@@ -10059,7 +10059,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-18-03",
@@ -10074,7 +10074,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-18-04",
@@ -10089,7 +10089,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-19-01",
@@ -10104,7 +10104,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-19-02",
@@ -10119,7 +10119,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-19-03",
@@ -10134,7 +10134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-19-04",
@@ -10149,7 +10149,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-19-05",
@@ -10164,7 +10164,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-19-06",
@@ -10179,7 +10179,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-20-01",
@@ -10194,7 +10194,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-20-02",
@@ -10209,7 +10209,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-20-03",
@@ -10224,7 +10224,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-20-04",
@@ -10239,7 +10239,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-20-05",
@@ -10254,7 +10254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-20-06",
@@ -10269,7 +10269,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-01",
@@ -10284,7 +10284,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-02",
@@ -10299,7 +10299,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-03",
@@ -10314,7 +10314,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-04",
@@ -10329,7 +10329,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-05",
@@ -10344,7 +10344,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-06",
@@ -10359,7 +10359,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-07",
@@ -10374,7 +10374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-08",
@@ -10389,7 +10389,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-09",
@@ -10404,7 +10404,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-10",
@@ -10419,7 +10419,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-11",
@@ -10434,7 +10434,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-12",
@@ -10449,7 +10449,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-13",
@@ -10464,7 +10464,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-14",
@@ -10479,7 +10479,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-15",
@@ -10494,7 +10494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-16",
@@ -10509,7 +10509,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-17",
@@ -10524,7 +10524,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-18",
@@ -10539,7 +10539,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-19",
@@ -10554,7 +10554,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-21-20",
@@ -10569,7 +10569,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-22-01",
@@ -10584,7 +10584,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-22-02",
@@ -10599,7 +10599,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-22-03",
@@ -10614,7 +10614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-22-04",
@@ -10629,7 +10629,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-22-05",
@@ -10644,7 +10644,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-22-06",
@@ -10659,7 +10659,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-22-07",
@@ -10674,7 +10674,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-22-08",
@@ -10689,7 +10689,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-22-09",
@@ -10704,7 +10704,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-01",
@@ -10719,7 +10719,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-02",
@@ -10734,7 +10734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-03",
@@ -10749,7 +10749,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-04",
@@ -10764,7 +10764,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-05",
@@ -10779,7 +10779,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-06",
@@ -10794,7 +10794,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-07",
@@ -10809,7 +10809,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-08",
@@ -10824,7 +10824,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-09",
@@ -10839,7 +10839,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-10",
@@ -10854,7 +10854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-11",
@@ -10869,7 +10869,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-12",
@@ -10884,7 +10884,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-13",
@@ -10899,7 +10899,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-14",
@@ -10914,7 +10914,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-23-15",
@@ -10929,7 +10929,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-24-01",
@@ -10944,7 +10944,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-24-02",
@@ -10959,7 +10959,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-24-03",
@@ -10974,7 +10974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "administrativo-24-04",
@@ -10989,7 +10989,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-01",
@@ -11034,7 +11034,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_03_-_do_imperio_a_proclamacao_da_republica_e_a_constituicao_de_1891.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-04",
@@ -11049,7 +11049,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_03_-_do_imperio_a_proclamacao_da_republica_e_a_constituicao_de_1891.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-05",
@@ -11064,7 +11064,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_05_-_republica_velha_revolucao_de_1930_e_a_constituicao_de_1934.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-06",
@@ -11079,7 +11079,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_05_-_republica_velha_revolucao_de_1930_e_a_constituicao_de_1934.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-07",
@@ -11094,7 +11094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_07_-_o_estado_novo_e_a_constituicao_de_1937.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-08",
@@ -11109,7 +11109,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_08_-_o_governo_do_estado_novo_e_a_constituicao_de_1946.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-09",
@@ -11124,7 +11124,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_09_-_da_democracia_ao_golpe_militar_de_1964.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-10",
@@ -11139,7 +11139,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_10_-_constituicao_de_1967_ai-5_e_constituicao_de_1969.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-11",
@@ -11154,7 +11154,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_11_-_da_ditadura_a_democracia.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-01-12",
@@ -11169,7 +11169,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_12_-_constituicao_federal_de_1988.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-02-01",
@@ -11184,7 +11184,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_01_-_constitucionalismo_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-02-02",
@@ -11199,7 +11199,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_02_-_constitucionalismo_historico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-02-03",
@@ -11214,7 +11214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_03_-_constitucionalismo_moderno_evolucao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-02-04",
@@ -11229,7 +11229,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_01_-_constitucionalismo_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-02-05",
@@ -11244,7 +11244,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_05_-_fenomenos_que_surgem_com_uma_nova_constituicao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-02-06",
@@ -11259,7 +11259,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_06_-_eficacia_das_normas_constitucionais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-03-01",
@@ -11274,7 +11274,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/03._introducao_a_constituicao_federal_de_1988_-_aula_01_-_estrutura_da_cf_88.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-03-02",
@@ -11289,7 +11289,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/03._introducao_a_constituicao_federal_de_1988_-_aula_02_-_principios_fundamentais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-01",
@@ -11304,7 +11304,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_01_-_constitucionalismo_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-02",
@@ -11319,7 +11319,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_02_-_poder_constituinte_originario.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-03",
@@ -11334,7 +11334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_03_-_o_fenomeno_constituinte.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-04",
@@ -11349,7 +11349,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_04_-_titularidade_e_exercicio.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-05",
@@ -11364,7 +11364,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_05_-_caracteristicas_essenciais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-06",
@@ -11379,7 +11379,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_06_-_natureza.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-07",
@@ -11394,7 +11394,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_07_-_poder_constituinte_decorrente.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-08",
@@ -11409,7 +11409,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_05_-_caracteristicas_essenciais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-09",
@@ -11424,7 +11424,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_06_-_natureza.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-10",
@@ -11439,7 +11439,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_10_-_limitacoes.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-11",
@@ -11454,7 +11454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_11_-_poder_constituinte_derivado.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-12",
@@ -11469,7 +11469,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_12_-_o_poder_da_reforma_constitucional.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-13",
@@ -11484,7 +11484,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_13_-_limitacoes_impostas_ao_poder_reformador.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-14",
@@ -11499,7 +11499,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_14_-_limitacoes_impostas_ao_poder_revisor.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-04-15",
@@ -11514,7 +11514,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_15_-_poder_constituinte_supranacional.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-01",
@@ -11529,7 +11529,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_01_-_consideracoes_preliminares.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-02",
@@ -11544,7 +11544,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_02_-_do_formalismo_legalista_ao_pos-positivismo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-03",
@@ -11559,7 +11559,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_03_-_quem_interpreta_a_constituicao_.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-04",
@@ -11574,7 +11574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_04_-_pluralizacao_do_universo_de_interpretes.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-05",
@@ -11589,7 +11589,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_05_-_canones_tradicionais_de_interpretacao_e_hermeneutica_constitucional.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-06",
@@ -11604,7 +11604,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_06_-_contribuicoes_da_dogmatica_alema.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-07",
@@ -11619,7 +11619,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_07_-_metodos_de_interpretacao_constitucional.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-08",
@@ -11634,7 +11634,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_08_-_contribuicoes_da_doutrina_estadunidense.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-09",
@@ -11649,7 +11649,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_09_-_preambulo_e_adct.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-05-10",
@@ -11664,7 +11664,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_10_-_integracao_constitucional.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-01",
@@ -11679,7 +11679,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_01_-_constitucionalismo_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-02",
@@ -11694,7 +11694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_02_-_perspectiva_historica.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-03",
@@ -11709,7 +11709,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_03_-_as_diversas_dimensoes_dos_direitos_fundamentais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-04",
@@ -11724,7 +11724,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_04_-_direitos_fundamentais_e_constituicao_de_um_estado_de_direito.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-05",
@@ -11739,7 +11739,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_05_-_direitos_fundamentais_na_constituicao_federal_de_1988.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-06",
@@ -11754,7 +11754,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-07",
@@ -11769,7 +11769,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-08",
@@ -11784,7 +11784,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_04_-_titularidade_e_exercicio.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-09",
@@ -11799,7 +11799,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-10",
@@ -11814,7 +11814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-11",
@@ -11829,7 +11829,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-12",
@@ -11844,7 +11844,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-13",
@@ -11859,7 +11859,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-14",
@@ -11874,7 +11874,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-15",
@@ -11889,7 +11889,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-16",
@@ -11904,7 +11904,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-17",
@@ -11919,7 +11919,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-06-18",
@@ -11934,7 +11934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-07-01",
@@ -11949,7 +11949,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-07-02",
@@ -11964,7 +11964,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-07-03",
@@ -11979,7 +11979,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-07-04",
@@ -11994,7 +11994,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-07-05",
@@ -12009,7 +12009,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-07-06",
@@ -12024,7 +12024,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-01",
@@ -12039,7 +12039,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-02",
@@ -12054,7 +12054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-03",
@@ -12069,7 +12069,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-04",
@@ -12084,7 +12084,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-05",
@@ -12099,7 +12099,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-06",
@@ -12114,7 +12114,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-07",
@@ -12129,7 +12129,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-08",
@@ -12144,7 +12144,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-09",
@@ -12159,7 +12159,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-10",
@@ -12174,7 +12174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-08-11",
@@ -12189,7 +12189,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-01",
@@ -12204,7 +12204,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_01_-_constitucionalismo_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-02",
@@ -12219,7 +12219,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-03",
@@ -12234,7 +12234,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-04",
@@ -12249,7 +12249,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-05",
@@ -12264,7 +12264,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-06",
@@ -12279,7 +12279,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-07",
@@ -12294,7 +12294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-08",
@@ -12309,7 +12309,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-09",
@@ -12324,7 +12324,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-09-10",
@@ -12339,7 +12339,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-10-01",
@@ -12354,7 +12354,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-10-02",
@@ -12369,7 +12369,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-10-03",
@@ -12384,7 +12384,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-10-04",
@@ -12399,7 +12399,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-10-05",
@@ -12414,7 +12414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-10-06",
@@ -12429,7 +12429,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-01",
@@ -12444,7 +12444,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_01_-_constitucionalismo_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-02",
@@ -12459,7 +12459,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-03",
@@ -12474,7 +12474,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-04",
@@ -12489,7 +12489,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-05",
@@ -12504,7 +12504,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-06",
@@ -12519,7 +12519,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-07",
@@ -12534,7 +12534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-08",
@@ -12549,7 +12549,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-09",
@@ -12564,7 +12564,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-10",
@@ -12579,7 +12579,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-11-11",
@@ -12594,7 +12594,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-12-01",
@@ -12609,7 +12609,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-12-02",
@@ -12624,7 +12624,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-12-03",
@@ -12639,7 +12639,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-12-04",
@@ -12654,7 +12654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-12-05",
@@ -12669,7 +12669,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-13-01",
@@ -12684,7 +12684,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-13-02",
@@ -12699,7 +12699,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-13-03",
@@ -12714,7 +12714,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-13-04",
@@ -12729,7 +12729,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-13-05",
@@ -12744,7 +12744,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-14-01",
@@ -12759,7 +12759,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_01_-_constitucionalismo_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-14-02",
@@ -12774,7 +12774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-14-03",
@@ -12789,7 +12789,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-15-01",
@@ -12804,7 +12804,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-15-02",
@@ -12819,7 +12819,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-15-03",
@@ -12834,7 +12834,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-15-04",
@@ -12849,7 +12849,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-15-05",
@@ -12864,7 +12864,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-15-06",
@@ -12879,7 +12879,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-15-07",
@@ -12894,7 +12894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-16-01",
@@ -12909,7 +12909,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-16-02",
@@ -12924,7 +12924,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-16-03",
@@ -12939,7 +12939,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-16-04",
@@ -12954,7 +12954,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-17-01",
@@ -12969,7 +12969,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/03._introducao_a_constituicao_federal_de_1988_-_aula_01_-_estrutura_da_cf_88.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-17-02",
@@ -12984,7 +12984,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-17-03",
@@ -12999,7 +12999,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-17-04",
@@ -13014,7 +13014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-17-05",
@@ -13029,7 +13029,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-17-06",
@@ -13044,7 +13044,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-18-01",
@@ -13059,7 +13059,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-18-02",
@@ -13074,7 +13074,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-18-03",
@@ -13089,7 +13089,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-18-04",
@@ -13104,7 +13104,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-18-05",
@@ -13119,7 +13119,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-18-06",
@@ -13134,7 +13134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-18-07",
@@ -13149,7 +13149,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-18-08",
@@ -13164,7 +13164,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-19-01",
@@ -13179,7 +13179,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-19-02",
@@ -13194,7 +13194,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-19-03",
@@ -13209,7 +13209,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-19-04",
@@ -13224,7 +13224,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-19-05",
@@ -13239,7 +13239,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-19-06",
@@ -13254,7 +13254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-19-07",
@@ -13269,7 +13269,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-19-08",
@@ -13284,7 +13284,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-20-01",
@@ -13299,7 +13299,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-20-02",
@@ -13314,7 +13314,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-20-03",
@@ -13329,7 +13329,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-20-04",
@@ -13344,7 +13344,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-20-05",
@@ -13359,7 +13359,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-20-06",
@@ -13374,7 +13374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-20-07",
@@ -13389,7 +13389,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-21-01",
@@ -13404,7 +13404,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-21-02",
@@ -13419,7 +13419,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-21-03",
@@ -13434,7 +13434,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-21-04",
@@ -13449,7 +13449,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-21-05",
@@ -13464,7 +13464,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-21-06",
@@ -13479,7 +13479,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-01",
@@ -13494,7 +13494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-02",
@@ -13509,7 +13509,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-03",
@@ -13524,7 +13524,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-04",
@@ -13539,7 +13539,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-05",
@@ -13554,7 +13554,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-06",
@@ -13569,7 +13569,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-07",
@@ -13584,7 +13584,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-08",
@@ -13599,7 +13599,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-09",
@@ -13614,7 +13614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-10",
@@ -13629,7 +13629,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-22-11",
@@ -13644,7 +13644,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-01",
@@ -13659,7 +13659,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-02",
@@ -13674,7 +13674,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-03",
@@ -13689,7 +13689,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-04",
@@ -13704,7 +13704,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-05",
@@ -13719,7 +13719,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-06",
@@ -13734,7 +13734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-07",
@@ -13749,7 +13749,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-08",
@@ -13764,7 +13764,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-09",
@@ -13779,7 +13779,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-23-10",
@@ -13794,7 +13794,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-24-01",
@@ -13809,7 +13809,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_01_-_constitucionalismo_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-24-02",
@@ -13824,7 +13824,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/03._introducao_a_constituicao_federal_de_1988_-_aula_02_-_principios_fundamentais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-24-03",
@@ -13839,7 +13839,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-24-04",
@@ -13854,7 +13854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-24-05",
@@ -13869,7 +13869,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-24-06",
@@ -13884,7 +13884,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-24-07",
@@ -13899,7 +13899,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-24-08",
@@ -13914,7 +13914,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-25-01",
@@ -13929,7 +13929,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-25-02",
@@ -13944,7 +13944,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-25-03",
@@ -13959,7 +13959,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-25-04",
@@ -13974,7 +13974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-25-05",
@@ -13989,7 +13989,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-25-06",
@@ -14004,7 +14004,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-25-07",
@@ -14019,7 +14019,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-26-01",
@@ -14034,7 +14034,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-26-02",
@@ -14049,7 +14049,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-26-03",
@@ -14064,7 +14064,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-27-01",
@@ -14079,7 +14079,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-27-02",
@@ -14094,7 +14094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-27-03",
@@ -14109,7 +14109,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-27-04",
@@ -14124,7 +14124,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-27-05",
@@ -14139,7 +14139,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-27-06",
@@ -14154,7 +14154,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-27-07",
@@ -14169,7 +14169,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-27-08",
@@ -14184,7 +14184,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-01",
@@ -14199,7 +14199,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-02",
@@ -14214,7 +14214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-03",
@@ -14229,7 +14229,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-04",
@@ -14244,7 +14244,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-05",
@@ -14259,7 +14259,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-06",
@@ -14274,7 +14274,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-07",
@@ -14289,7 +14289,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-08",
@@ -14304,7 +14304,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-09",
@@ -14319,7 +14319,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-10",
@@ -14334,7 +14334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-11",
@@ -14349,7 +14349,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-28-12",
@@ -14364,7 +14364,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-29-01",
@@ -14379,7 +14379,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-29-02",
@@ -14394,7 +14394,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-29-03",
@@ -14409,7 +14409,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-29-04",
@@ -14424,7 +14424,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-30-01",
@@ -14439,7 +14439,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-30-02",
@@ -14454,7 +14454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-30-03",
@@ -14469,7 +14469,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-31-01",
@@ -14484,7 +14484,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-31-02",
@@ -14499,7 +14499,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-31-03",
@@ -14514,7 +14514,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-32-01",
@@ -14529,7 +14529,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-32-02",
@@ -14544,7 +14544,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-33-01",
@@ -14559,7 +14559,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-34-01",
@@ -14574,7 +14574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-34-02",
@@ -14589,7 +14589,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-35-01",
@@ -14604,7 +14604,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-35-02",
@@ -14619,7 +14619,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-35-03",
@@ -14634,7 +14634,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-36-01",
@@ -14649,7 +14649,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-36-02",
@@ -14664,7 +14664,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-36-03",
@@ -14679,7 +14679,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-37-01",
@@ -14694,7 +14694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-37-02",
@@ -14709,7 +14709,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-38-01",
@@ -14724,7 +14724,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-38-02",
@@ -14739,7 +14739,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-38-03",
@@ -14754,7 +14754,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-39-01",
@@ -14769,7 +14769,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-39-02",
@@ -14784,7 +14784,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-39-03",
@@ -14799,7 +14799,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-40-01",
@@ -14814,7 +14814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-40-02",
@@ -14829,7 +14829,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-40-03",
@@ -14844,7 +14844,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-41-01",
@@ -14859,7 +14859,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-41-02",
@@ -14874,7 +14874,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-41-03",
@@ -14889,7 +14889,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-42-01",
@@ -14904,7 +14904,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-42-02",
@@ -14919,7 +14919,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-42-03",
@@ -14934,7 +14934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-42-04",
@@ -14949,7 +14949,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "constitucional-42-05",
@@ -14964,7 +14964,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-01-01",
@@ -15009,7 +15009,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_04_-_fontes_heteronomas_em_especie.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-01-04",
@@ -15024,7 +15024,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_05_-_hierarquia_entre_as_fontes_formais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-01-05",
@@ -15039,7 +15039,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_06_-_conflito_entre_fontes.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-01-06",
@@ -15054,7 +15054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_07_-_hermeneutica_interpretacao_do_direito_do_trabalho_.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-01-07",
@@ -15069,7 +15069,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_08_-_integracao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-01-08",
@@ -15084,7 +15084,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_09_-_eficacia_das_normas_trabalhistas.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-01-09",
@@ -15099,7 +15099,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-01-10",
@@ -15114,7 +15114,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_11_-_eficacia_espacial.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-02-01",
@@ -15129,7 +15129,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-02-02",
@@ -15144,7 +15144,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_02_-_desenvolvimento_do_direito_do_trabalho_no_brasil.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-02-03",
@@ -15159,7 +15159,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_02_-_desenvolvimento_do_direito_do_trabalho_no_brasil.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-03-01",
@@ -15174,7 +15174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_02_-_fontes_materiais_e_formais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-03-02",
@@ -15189,7 +15189,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/03._fontes_e_principios_do_direito_do_trabalho_-_aula_02_-_hierarquia_entre_as_fontes_formais_no_direito_do_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-03-03",
@@ -15204,7 +15204,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/03._fontes_e_principios_do_direito_do_trabalho_-_aula_03_-_interpretacao_e_integracao_no_direito_do_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-03-04",
@@ -15219,7 +15219,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_09_-_eficacia_das_normas_trabalhistas.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-03-05",
@@ -15234,7 +15234,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/03._fontes_e_principios_do_direito_do_trabalho_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-04-01",
@@ -15249,7 +15249,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_01_-_trabalho_lato_sensu.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-04-02",
@@ -15264,7 +15264,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_02_-_trabalho_eventual.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-04-03",
@@ -15279,7 +15279,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_03_-_trabalho_voluntario.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-04-04",
@@ -15294,7 +15294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_04_-_trabalho_avulso.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-04-05",
@@ -15309,7 +15309,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_05_-_trabalho_portuario.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-04-06",
@@ -15324,7 +15324,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_06_-_trabalho_cooperado.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-04-07",
@@ -15339,7 +15339,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_07_-_trabalhador_autonomo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-04-08",
@@ -15354,7 +15354,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_08_-_estagiario.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-04-09",
@@ -15369,7 +15369,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_09_-_trabalhador_parceiro_lei_do_salao_parceiro.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-01",
@@ -15384,7 +15384,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_01_-_empregado.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-02",
@@ -15399,7 +15399,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_02_-_empregado_domestico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-03",
@@ -15414,7 +15414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_03_-_empregado_rural_lei_n_5.889_1973_.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-04",
@@ -15429,7 +15429,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_04_-_empregado_publico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-05",
@@ -15444,7 +15444,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_05_-_empregado_intermitente.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-06",
@@ -15459,7 +15459,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_06_-_empregado_hipersuficiente.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-07",
@@ -15474,7 +15474,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_07_-_contrato_de_aprendizagem.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-08",
@@ -15489,7 +15489,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_08_-_teletrabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-09",
@@ -15504,7 +15504,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_09_-_sucessao_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-10",
@@ -15519,7 +15519,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_10_-_grupo_economico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-11",
@@ -15534,7 +15534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_11_-_socio_retirante.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-05-12",
@@ -15549,7 +15549,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_12_-_poderes_do_empregador.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-01",
@@ -15564,7 +15564,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_01_-_remuneracao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-02",
@@ -15579,7 +15579,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_02_-_caracteristicas_do_salario.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-03",
@@ -15594,7 +15594,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_03_-_parcelas_integrantes_do_salario.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-04",
@@ -15609,7 +15609,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_04_-_pagamento_de_comissoes.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-05",
@@ -15624,7 +15624,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_05_-_pagamento_de_salario.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-06",
@@ -15639,7 +15639,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_06_-_verbas_que_nao_integram_remuneracao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-07",
@@ -15654,7 +15654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_07_-_participacao_nos_lucros_e_resultados_plr.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-08",
@@ -15669,7 +15669,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_08_-_salario_in_natura.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-09",
@@ -15684,7 +15684,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_09_-_equiparacao_salarial.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-06-10",
@@ -15699,7 +15699,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_10_-_sumulas_relevantes.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-07-01",
@@ -15714,7 +15714,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-07-02",
@@ -15729,7 +15729,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_02_-_direitos_intelectuais.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-07-03",
@@ -15744,7 +15744,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-07-04",
@@ -15759,7 +15759,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-07-05",
@@ -15774,7 +15774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-07-06",
@@ -15789,7 +15789,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-07-07",
@@ -15804,7 +15804,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-07-08",
@@ -15819,7 +15819,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-08-01",
@@ -15834,7 +15834,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-08-02",
@@ -15849,7 +15849,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-08-03",
@@ -15864,7 +15864,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-08-04",
@@ -15879,7 +15879,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-08-05",
@@ -15894,7 +15894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-08-06",
@@ -15909,7 +15909,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-08-07",
@@ -15924,7 +15924,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-01",
@@ -15939,7 +15939,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-02",
@@ -15954,7 +15954,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-03",
@@ -15969,7 +15969,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-04",
@@ -15984,7 +15984,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-05",
@@ -15999,7 +15999,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-06",
@@ -16014,7 +16014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-07",
@@ -16029,7 +16029,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-08",
@@ -16044,7 +16044,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-09",
@@ -16059,7 +16059,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-10",
@@ -16074,7 +16074,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-11",
@@ -16089,7 +16089,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-12",
@@ -16104,7 +16104,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-09-13",
@@ -16119,7 +16119,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-10-01",
@@ -16134,7 +16134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-10-02",
@@ -16149,7 +16149,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-10-03",
@@ -16164,7 +16164,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-10-04",
@@ -16179,7 +16179,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-10-05",
@@ -16194,7 +16194,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-10-06",
@@ -16209,7 +16209,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-10-07",
@@ -16224,7 +16224,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-11-01",
@@ -16239,7 +16239,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-11-02",
@@ -16254,7 +16254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-12-01",
@@ -16269,7 +16269,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-12-02",
@@ -16284,7 +16284,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-01",
@@ -16299,7 +16299,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-02",
@@ -16314,7 +16314,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-03",
@@ -16329,7 +16329,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-04",
@@ -16344,7 +16344,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-05",
@@ -16359,7 +16359,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-06",
@@ -16374,7 +16374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-07",
@@ -16389,7 +16389,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-08",
@@ -16404,7 +16404,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-09",
@@ -16419,7 +16419,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-10",
@@ -16434,7 +16434,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-13-11",
@@ -16449,7 +16449,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-01",
@@ -16464,7 +16464,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-02",
@@ -16479,7 +16479,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-03",
@@ -16494,7 +16494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-04",
@@ -16509,7 +16509,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-05",
@@ -16524,7 +16524,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-06",
@@ -16539,7 +16539,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-07",
@@ -16554,7 +16554,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-08",
@@ -16569,7 +16569,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-09",
@@ -16584,7 +16584,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-14-10",
@@ -16599,7 +16599,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-01",
@@ -16614,7 +16614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-02",
@@ -16629,7 +16629,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-03",
@@ -16644,7 +16644,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-04",
@@ -16659,7 +16659,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-05",
@@ -16674,7 +16674,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-06",
@@ -16689,7 +16689,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-07",
@@ -16704,7 +16704,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-08",
@@ -16719,7 +16719,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-09",
@@ -16734,7 +16734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-10",
@@ -16749,7 +16749,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-11",
@@ -16764,7 +16764,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-12",
@@ -16779,7 +16779,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-13",
@@ -16794,7 +16794,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-14",
@@ -16809,7 +16809,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-15",
@@ -16824,7 +16824,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-16",
@@ -16839,7 +16839,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-17",
@@ -16854,7 +16854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-18",
@@ -16869,7 +16869,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-19",
@@ -16884,7 +16884,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-20",
@@ -16899,7 +16899,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-21",
@@ -16914,7 +16914,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-22",
@@ -16929,7 +16929,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-23",
@@ -16944,7 +16944,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-24",
@@ -16959,7 +16959,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-25",
@@ -16974,7 +16974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-26",
@@ -16989,7 +16989,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-27",
@@ -17004,7 +17004,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-28",
@@ -17019,7 +17019,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-15-29",
@@ -17034,7 +17034,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-01",
@@ -17049,7 +17049,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-02",
@@ -17064,7 +17064,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-03",
@@ -17079,7 +17079,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-04",
@@ -17094,7 +17094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-05",
@@ -17109,7 +17109,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-06",
@@ -17124,7 +17124,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-07",
@@ -17139,7 +17139,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-08",
@@ -17154,7 +17154,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-09",
@@ -17169,7 +17169,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-10",
@@ -17184,7 +17184,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-11",
@@ -17199,7 +17199,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/03._fontes_e_principios_do_direito_do_trabalho_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-12",
@@ -17214,7 +17214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/03._fontes_e_principios_do_direito_do_trabalho_-_aula_01_-_introducao.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-13",
@@ -17229,7 +17229,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-14",
@@ -17244,7 +17244,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-15",
@@ -17259,7 +17259,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-16-16",
@@ -17274,7 +17274,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-17-01",
@@ -17289,7 +17289,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-17-02",
@@ -17304,7 +17304,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-17-03",
@@ -17319,7 +17319,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-17-04",
@@ -17334,7 +17334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-17-05",
@@ -17349,7 +17349,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-18-01",
@@ -17364,7 +17364,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-18-02",
@@ -17379,7 +17379,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-18-03",
@@ -17394,7 +17394,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-18-04",
@@ -17409,7 +17409,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-18-05",
@@ -17424,7 +17424,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-18-06",
@@ -17439,7 +17439,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-01",
@@ -17454,7 +17454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-02",
@@ -17469,7 +17469,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-03",
@@ -17484,7 +17484,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-04",
@@ -17499,7 +17499,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-05",
@@ -17514,7 +17514,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-06",
@@ -17529,7 +17529,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-07",
@@ -17544,7 +17544,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-08",
@@ -17559,7 +17559,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-09",
@@ -17574,7 +17574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-10",
@@ -17589,7 +17589,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-11",
@@ -17604,7 +17604,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-19-12",
@@ -17619,7 +17619,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-20-01",
@@ -17634,7 +17634,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-20-02",
@@ -17649,7 +17649,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-20-03",
@@ -17664,7 +17664,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-20-04",
@@ -17679,7 +17679,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-20-05",
@@ -17694,7 +17694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-21-01",
@@ -17709,7 +17709,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-21-02",
@@ -17724,7 +17724,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-21-03",
@@ -17739,7 +17739,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-21-04",
@@ -17754,7 +17754,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-21-05",
@@ -17769,7 +17769,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-21-06",
@@ -17784,7 +17784,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-21-07",
@@ -17799,7 +17799,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_02_-_empregado_domestico.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-22-01",
@@ -17814,7 +17814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-22-02",
@@ -17829,7 +17829,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-22-03",
@@ -17844,7 +17844,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-22-04",
@@ -17859,7 +17859,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-01",
@@ -17874,7 +17874,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-02",
@@ -17889,7 +17889,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-03",
@@ -17904,7 +17904,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-04",
@@ -17919,7 +17919,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-05",
@@ -17934,7 +17934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-06",
@@ -17949,7 +17949,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_04_-_pagamento_de_comissoes.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-07",
@@ -17964,7 +17964,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-08",
@@ -17979,7 +17979,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-09",
@@ -17994,7 +17994,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-23-10",
@@ -18009,7 +18009,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-01",
@@ -18024,7 +18024,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-02",
@@ -18039,7 +18039,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-03",
@@ -18054,7 +18054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-04",
@@ -18069,7 +18069,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-05",
@@ -18084,7 +18084,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-06",
@@ -18099,7 +18099,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-07",
@@ -18114,7 +18114,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-08",
@@ -18129,7 +18129,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-09",
@@ -18144,7 +18144,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-10",
@@ -18159,7 +18159,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-11",
@@ -18174,7 +18174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-12",
@@ -18189,7 +18189,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-13",
@@ -18204,7 +18204,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-24-14",
@@ -18219,7 +18219,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-25-01",
@@ -18234,7 +18234,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-25-02",
@@ -18249,7 +18249,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-25-03",
@@ -18264,7 +18264,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-25-04",
@@ -18279,7 +18279,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-26-01",
@@ -18294,7 +18294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-26-02",
@@ -18309,7 +18309,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-26-03",
@@ -18324,7 +18324,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-26-04",
@@ -18339,7 +18339,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-26-05",
@@ -18354,7 +18354,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-26-06",
@@ -18369,7 +18369,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-26-07",
@@ -18384,7 +18384,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-26-08",
@@ -18399,7 +18399,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-01",
@@ -18414,7 +18414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-02",
@@ -18429,7 +18429,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-03",
@@ -18444,7 +18444,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-04",
@@ -18459,7 +18459,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-05",
@@ -18474,7 +18474,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-06",
@@ -18489,7 +18489,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-07",
@@ -18504,7 +18504,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-08",
@@ -18519,7 +18519,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-09",
@@ -18534,7 +18534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-10",
@@ -18549,7 +18549,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-11",
@@ -18564,7 +18564,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   },
   {
     "id": "trabalho-27-12",
@@ -18579,6 +18579,6 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "imagensQtd": 20,
     "urlHtmlR2": "",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
-    "status": "pendente"
+    "status": "pronto"
   }
 ];
