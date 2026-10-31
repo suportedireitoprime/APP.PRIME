@@ -185,7 +185,33 @@ export function PlayerAulaNativo({
     return matches && matches.length > 0 ? matches.map(s => s.trim()) : [text.trim()];
   }, [slideAtual?.narr, slideAtual?.frases]);
 
-  // HTML com o Grifo Leve por cima na frase ativa
+  // Faixas temporais ponderadas proporcionalmente ao tamanho e pontuação de cada frase (elimina atrasos)
+  const faixasKaraoke = useMemo(() => {
+    if (!frasesNarr || frasesNarr.length === 0) return [];
+    
+    // Cada frase consome tempo ponderado por caracteres e pausas
+    const pesos = frasesNarr.map(f => {
+      const clean = f.trim();
+      const base = Math.max(10, clean.length);
+      const temPausaForte = /[.!?]$/.test(clean);
+      return base + (temPausaForte ? 16 : 6);
+    });
+
+    const totalPeso = pesos.reduce((acc, p) => acc + p, 0);
+    const ranges: { start: number; end: number }[] = [];
+    let acumulado = 0;
+
+    for (let i = 0; i < frasesNarr.length; i++) {
+      const startRatio = acumulado / totalPeso;
+      acumulado += pesos[i];
+      const endRatio = acumulado / totalPeso;
+      ranges.push({ start: startRatio, end: endRatio });
+    }
+
+    return ranges;
+  }, [frasesNarr]);
+
+  // HTML com o Grifo Leve e Elegante por cima na frase ativa
   const htmlComGrifo = useMemo(() => {
     if (!slideAtual?.corpo) return '';
     if (!tocando || karaIdx < 0 || !frasesNarr[karaIdx]) {
@@ -245,7 +271,7 @@ export function PlayerAulaNativo({
     }
   }, [idx, currentAudioSrc, slideAtual?.narr, total, isInterativo]);
 
-  // Sincronização do Karaokê em tempo real
+  // Sincronização do Karaokê em tempo real com compensação de timing
   const handleTimeUpdate = () => {
     if (!audioRef.current) return;
     const cur = audioRef.current.currentTime;
@@ -253,10 +279,15 @@ export function PlayerAulaNativo({
     setTempoAtual(cur);
     setDuracao(dur);
 
-    const pos = cur / dur;
-    if (frasesNarr.length > 0) {
-      const activeI = Math.min(frasesNarr.length - 1, Math.floor(pos * frasesNarr.length));
-      setKaraIdx(activeI);
+    if (faixasKaraoke.length > 0 && dur > 0) {
+      // Offset de antecipação: +0.25s para o grifo entrar exatamente na primeira sílaba falada
+      const pos = Math.max(0, (cur + 0.25) / dur);
+      const foundIdx = faixasKaraoke.findIndex(r => pos >= r.start && pos < r.end);
+      if (foundIdx !== -1) {
+        setKaraIdx(foundIdx);
+      } else if (pos >= 1) {
+        setKaraIdx(faixasKaraoke.length - 1);
+      }
     }
   };
 
@@ -697,17 +728,40 @@ export function PlayerAulaNativo({
           color: #d4af37;
         }
         .aula-html-tipografia mark.karaoke-grifo {
-          background: rgba(212, 175, 55, 0.22) !important;
-          border: 1px solid rgba(212, 175, 55, 0.6) !important;
-          border-radius: 6px !important;
-          padding: 2px 6px !important;
+          background: linear-gradient(135deg, rgba(233, 205, 109, 0.22) 0%, rgba(212, 175, 55, 0.12) 100%) !important;
+          border: 1px solid rgba(233, 205, 109, 0.55) !important;
+          border-bottom: 2.5px solid #e9cd6d !important;
+          border-radius: 7px !important;
+          padding: 2px 7px !important;
+          margin: 0 1px !important;
           color: #ffffff !important;
-          font-weight: 700 !important;
+          font-weight: 600 !important;
           display: inline !important;
           box-decoration-break: clone !important;
           -webkit-box-decoration-break: clone !important;
-          box-shadow: 0 0 14px rgba(212, 175, 55, 0.2) !important;
-          transition: all 0.2s ease-in-out !important;
+          box-shadow: 0 2px 10px rgba(212, 175, 55, 0.18), inset 0 0 6px rgba(233, 205, 109, 0.08) !important;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        /* Animação Cinematográfica de Flip 3D para Flashcards */
+        .flip-perspective {
+          perspective: 1200px;
+        }
+        .flip-card-inner {
+          position: relative;
+          width: 100%;
+          transform-style: preserve-3d;
+          transition: transform 0.65s cubic-bezier(0.34, 1.45, 0.64, 1);
+        }
+        .flip-card-inner.is-flipped {
+          transform: rotateY(180deg);
+        }
+        .flip-face {
+          backface-visibility: hidden;
+          -webkit-backface-visibility: hidden;
+        }
+        .flip-face-back {
+          transform: rotateY(180deg);
         }
       `}</style>
 
@@ -984,41 +1038,68 @@ export function PlayerAulaNativo({
               </div>
             )}
 
-            {/* Bloco de Flashcard Interativo com Altura Mínima Estável (Sem picar) e Suporte HTML no Verso */}
+            {/* Bloco de Flashcard Interativo com Efeito 3D Flip Card */}
             {isFlashcard && (
-              <div 
-                onClick={() => setFlashcardVirado(!flashcardVirado)}
-                className="cursor-pointer min-h-[290px] sm:min-h-[330px] rounded-3xl border border-amber-500/40 bg-gradient-to-b from-amber-950/40 via-black/80 to-[#1d0810] p-6 sm:p-8 flex flex-col justify-between text-center transition-all duration-300 hover:border-amber-400 active:scale-[0.99] shadow-2xl shadow-amber-950/30 group animate-in fade-in zoom-in-[0.98] duration-300"
-              >
-                <div className="flex items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
-                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-amber-400 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30">
-                    {flashcardVirado ? 'VERSO · RESPOSTA' : 'FRENTE · CONCEITO'}
-                  </span>
-                  <span className="text-xs text-amber-200/80 font-medium flex items-center gap-1.5 group-hover:text-amber-300 transition">
-                    <RotateCcw className={`w-4 h-4 transition-transform duration-500 ${flashcardVirado ? 'rotate-180 text-amber-400' : ''}`} /> 
-                    <span>Toque para virar</span>
-                  </span>
-                </div>
+              <div className="w-full flip-perspective my-2 select-none">
+                <div 
+                  onClick={() => setFlashcardVirado(!flashcardVirado)}
+                  className={`flip-card-inner min-h-[300px] sm:min-h-[340px] cursor-pointer ${
+                    flashcardVirado ? 'is-flipped' : ''
+                  }`}
+                >
+                  {/* FACE 1: FRENTE DO FLASHCARD */}
+                  <div className="flip-face absolute inset-0 w-full h-full rounded-3xl border border-amber-500/40 bg-gradient-to-b from-amber-950/40 via-[#180a10]/95 to-[#120409] p-6 sm:p-8 flex flex-col justify-between shadow-2xl shadow-amber-950/30 hover:border-amber-400/70 transition-colors">
+                    <div className="flex items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
+                      <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-amber-400 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30">
+                        FRENTE · CONCEITO
+                      </span>
+                      <span className="text-xs text-amber-200/80 font-medium flex items-center gap-1.5 hover:text-amber-300 transition">
+                        <RotateCcw className="w-4 h-4 text-amber-400" />
+                        <span>Toque para virar</span>
+                      </span>
+                    </div>
 
-                <div className="my-auto py-5 flex items-center justify-center">
-                  {flashcardVirado ? (
-                    <div 
-                      className="text-base sm:text-xl font-serif text-white leading-relaxed max-w-xl mx-auto space-y-3 [&_b]:text-[#e9cd6d] [&_strong]:text-[#e9cd6d] [&_p]:mb-2"
-                      dangerouslySetInnerHTML={{ __html: slideAtual.verso || '' }}
-                    />
-                  ) : (
-                    <p className="text-lg sm:text-2xl font-serif font-bold text-white leading-relaxed max-w-xl mx-auto">
-                      {slideAtual.frente}
-                    </p>
-                  )}
-                </div>
+                    <div className="my-auto py-6 flex items-center justify-center text-center">
+                      <div 
+                        className="text-lg sm:text-2xl font-serif font-bold text-white leading-relaxed max-w-xl mx-auto [&_b]:text-[#e9cd6d] [&_strong]:text-[#e9cd6d]"
+                        dangerouslySetInnerHTML={{ __html: slideAtual.frente || '' }}
+                      />
+                    </div>
 
-                <div className="border-t border-white/10 pt-3">
-                  <p className="text-[11px] sm:text-xs text-zinc-400 font-medium">
-                    {flashcardVirado 
-                      ? '✓ Resposta revelada · Toque novamente para virar à frente' 
-                      : '💡 Teste sua memória e tente responder antes de virar'}
-                  </p>
+                    <div className="border-t border-white/10 pt-3 text-center">
+                      <p className="text-[11px] sm:text-xs text-zinc-400 font-medium flex items-center justify-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Teste sua memória antes de virar o cartão</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* FACE 2: VERSO DO FLASHCARD (FLIP DE 180 GRAUS) */}
+                  <div className="flip-face flip-face-back absolute inset-0 w-full h-full rounded-3xl border border-emerald-500/45 bg-gradient-to-b from-[#0b2918]/60 via-[#140810]/95 to-[#120409] p-6 sm:p-8 flex flex-col justify-between shadow-2xl shadow-emerald-950/40 hover:border-emerald-400/70 transition-colors">
+                    <div className="flex items-center justify-between gap-2 border-b border-emerald-500/20 pb-3">
+                      <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-emerald-400 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30">
+                        VERSO · RESPOSTA
+                      </span>
+                      <span className="text-xs text-emerald-200/80 font-medium flex items-center gap-1.5 hover:text-emerald-300 transition">
+                        <RotateCcw className="w-4 h-4 text-emerald-400" />
+                        <span>Toque para voltar à frente</span>
+                      </span>
+                    </div>
+
+                    <div className="my-auto py-6 flex items-center justify-center text-center overflow-y-auto max-h-[220px]">
+                      <div 
+                        className="text-base sm:text-xl font-serif text-white leading-relaxed max-w-xl mx-auto space-y-3 [&_b]:text-[#e9cd6d] [&_strong]:text-[#e9cd6d] [&_p]:mb-2"
+                        dangerouslySetInnerHTML={{ __html: slideAtual.verso || '' }}
+                      />
+                    </div>
+
+                    <div className="border-t border-white/10 pt-3 text-center">
+                      <p className="text-[11px] sm:text-xs text-emerald-300 font-medium flex items-center justify-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>Resposta revelada · Toque para virar novamente</span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -1046,27 +1127,27 @@ export function PlayerAulaNativo({
                       <div
                         key={fi}
                         onClick={() => {
-                          if (audioRef.current && duracao > 0 && frasesNarr.length > 0) {
-                            audioRef.current.currentTime = (fi / frasesNarr.length) * duracao;
+                          if (audioRef.current && duracao > 0 && faixasKaraoke[fi]) {
+                            audioRef.current.currentTime = faixasKaraoke[fi].start * duracao;
                             if (!tocando) {
                               audioRef.current.play().then(() => setTocando(true)).catch(() => {});
                             }
                           }
                         }}
-                        className={`p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 active:scale-[0.99] ${
+                        className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 cursor-pointer flex items-start gap-3.5 active:scale-[0.99] ${
                           isAtiva
-                            ? 'border-amber-400/90 bg-amber-500/20 shadow-lg shadow-amber-500/15 ring-1 ring-amber-400/50 scale-[1.01]'
-                            : 'border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300'
+                            ? 'border-amber-400/90 bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent shadow-xl shadow-amber-500/10 ring-1 ring-amber-400/60 translate-x-1'
+                            : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06] text-zinc-300'
                         }`}
                       >
                         <span 
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5 ${
-                            isAtiva ? 'bg-amber-400 text-black' : 'bg-white/10 text-zinc-400'
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5 transition-colors ${
+                            isAtiva ? 'bg-amber-400 text-black shadow-md shadow-amber-400/50' : 'bg-white/10 text-zinc-400'
                           }`}
                         >
                           {fi + 1}
                         </span>
-                        <p className={`text-sm sm:text-base leading-relaxed ${isAtiva ? 'text-amber-200 font-bold' : 'text-zinc-200'}`}>
+                        <p className={`text-sm sm:text-base leading-relaxed transition-colors ${isAtiva ? 'text-amber-200 font-bold' : 'text-zinc-200'}`}>
                           {frase}
                         </p>
                       </div>
