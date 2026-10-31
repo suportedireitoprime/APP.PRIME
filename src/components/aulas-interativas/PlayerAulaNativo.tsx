@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   ArrowLeft, Play, Pause, Check, CheckCircle2, 
   RotateCcw, Sparkles, BookOpen, Volume2, VolumeX,
-  ChevronRight, ChevronLeft, Award
+  ChevronRight, ChevronLeft, Award, HelpCircle, XCircle
 } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { AulaData, SlideItem } from '@/types/aulaInterativa';
@@ -64,6 +64,7 @@ export function PlayerAulaNativo({
   const [duracao, setDuracao] = useState(0);
   const [karaIdx, setKaraIdx] = useState(-1);
   const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(null);
+  const [respostaConfirmada, setRespostaConfirmada] = useState(false);
   const [flashcardVirado, setFlashcardVirado] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -138,6 +139,8 @@ export function PlayerAulaNativo({
   const slides = aulaData?.slides || [];
   const total = slides.length || 1;
   const slideAtual: SlideItem | undefined = slides[idx];
+  const isQuestao = slideAtual?.tipo === 'Questão' || slideAtual?.tipo === 'Questão de banca' || Boolean(slideAtual?.opcoes);
+  const isFlashcard = slideAtual?.tipo === 'Flashcard';
 
   // URL do áudio da etapa atual (se houver gravação no R2)
   const currentAudioSrc = useMemo(() => {
@@ -175,6 +178,7 @@ export function PlayerAulaNativo({
     setDuracao(0);
     setKaraIdx(-1);
     setRespostaSelecionada(null);
+    setRespostaConfirmada(false);
     setFlashcardVirado(false);
 
     // Se temos áudio MP3 gravado no R2
@@ -342,6 +346,21 @@ export function PlayerAulaNativo({
     >
       {/* Estilos CSS da Tipografia Padrão do HTML e Grifo Leve */}
       <style>{`
+        @keyframes imgZoomInSlow {
+          0% {
+            transform: scale(1.15);
+            opacity: 0.88;
+          }
+          100% {
+            transform: scale(1.0);
+            opacity: 1;
+          }
+        }
+        .img-zoom-in {
+          animation: imgZoomInSlow 2.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          will-change: transform, opacity;
+        }
+
         .aula-html-tipografia {
           font-family: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
           color: #f8edef;
@@ -651,14 +670,18 @@ export function PlayerAulaNativo({
         preload="auto"
       />
 
-      {/* HEADER SUPERIOR NATIVO COM PALETA DINÂMICA E SAFE AREA INSET */}
+      {/* HEADER SUPERIOR NATIVO DINÂMICO (COMPACTO EM QUESTÕES/FLASHCARDS PARA MÁXIMO ESPAÇO) */}
       <header 
-        className="flex items-center justify-between px-3 sm:px-6 border-b shrink-0 z-30 backdrop-blur-md shadow-lg shadow-black/60"
+        className={`flex items-center justify-between px-3 sm:px-6 border-b shrink-0 z-30 backdrop-blur-md shadow-lg shadow-black/60 transition-all ${
+          isQuestao || isFlashcard ? 'py-2 sm:py-2.5' : 'py-3 sm:py-3.5'
+        }`}
         style={{
           background: tema.headerBg,
           borderColor: tema.headerBorder,
-          paddingTop: 'calc(1rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
-          paddingBottom: '0.85rem'
+          paddingTop: isQuestao || isFlashcard 
+            ? 'calc(0.65rem + var(--sai-top, env(safe-area-inset-top, 0px)))' 
+            : 'calc(1rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+          paddingBottom: isQuestao || isFlashcard ? '0.55rem' : '0.85rem'
         }}
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -722,7 +745,7 @@ export function PlayerAulaNativo({
       {/* ÁREA CENTRAL DE CONTEÚDO (ROLAGEM SUAVE SEM SCROLLBAR VISÍVEL COM PADDING SEGURO NO RODAPÉ) */}
       <main className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 pb-44 sm:pb-48 max-w-3xl mx-auto scroll-smooth">
         {slideAtual && (
-          <div className="space-y-4 sm:space-y-5 animate-in fade-in duration-300">
+          <div key={idx} className="space-y-4 sm:space-y-5 animate-in fade-in duration-300">
             {/* Tag / Kicker da Etapa idêntico ao HTML (.kicker com ◆ dourado) */}
             <div className="flex items-center justify-between gap-2">
               <span 
@@ -737,13 +760,14 @@ export function PlayerAulaNativo({
               </span>
             </div>
 
-            {/* Imagem Cinematográfica em Alta Resolução (Altura Generosa 16:9.5 sem cortes) */}
-            {imagemUrl && (
-              <div className="relative w-full aspect-[16/10] sm:aspect-[16/9.5] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-[#250d14] group">
+            {/* Imagem Cinematográfica com Altura Otimizada e Efeito de Zoom Suave "pra dentro" (Oculta em Questões/Flashcards para máximo espaço) */}
+            {imagemUrl && !isQuestao && !isFlashcard && (
+              <div className="relative w-full aspect-[16/8] sm:aspect-[16/7.5] max-h-[190px] sm:max-h-[230px] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-[#250d14] group">
                 <img
+                  key={`${idx}-${imagemUrl}`}
                   src={imagemUrl}
                   alt={slideAtual.alt || slideAtual.titulo || aula.titulo}
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover object-center img-zoom-in group-hover:scale-105 transition-transform duration-700"
                   loading="eager"
                   fetchPriority="high"
                 />
@@ -767,29 +791,57 @@ export function PlayerAulaNativo({
               style={{ background: `linear-gradient(90deg, ${tema.destaque}, #d4af37)` }}
             />
 
-            {/* Bloco de Questão Prática (se for slide de questão) */}
-            {(slideAtual.tipo === 'Questão' || slideAtual.tipo === 'Questão de banca' || slideAtual.opcoes) && (
-              <div className="rounded-2xl border border-white/15 p-4 sm:p-5 bg-[#250d14] space-y-3 mt-4">
+            {/* Bloco de Questão Prática com Seleção -> Botão Responder -> Comentário com feedback */}
+            {isQuestao && (
+              <div className="rounded-3xl border border-white/15 p-5 sm:p-6 bg-gradient-to-b from-[#2e1219]/90 to-[#1d0810]/95 shadow-2xl space-y-4 animate-in fade-in zoom-in-[0.98] duration-300">
+                {/* Header da questão com ícone de destaque */}
+                <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+                  <span 
+                    className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5"
+                    style={{ color: tema.destaque }}
+                  >
+                    <HelpCircle className="w-3.5 h-3.5" />
+                    <span>Fixação Ativa · Questão</span>
+                  </span>
+                  <span className="text-[11px] font-bold text-zinc-400">
+                    {respostaConfirmada ? 'Gabarito e Comentário' : 'Selecione e confirme'}
+                  </span>
+                </div>
+
                 {slideAtual.intro && (
-                  <p className="text-xs sm:text-sm text-zinc-300 italic">{slideAtual.intro}</p>
+                  <p 
+                    className="text-xs sm:text-sm text-zinc-300 italic leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: slideAtual.intro }}
+                  />
                 )}
+
                 {slideAtual.questao && (
-                  <p className="text-sm sm:text-base font-bold text-white leading-relaxed">{slideAtual.questao}</p>
+                  <h3 className="text-base sm:text-lg font-bold text-white leading-relaxed font-serif">
+                    {slideAtual.questao}
+                  </h3>
                 )}
+
                 {slideAtual.opcoes && (
-                  <div className="space-y-2 pt-2">
+                  <div className="space-y-2.5 pt-1">
                     {slideAtual.opcoes.map((opcao, oi) => {
                       const letras = ['A', 'B', 'C', 'D', 'E'];
                       const isSelected = respostaSelecionada === oi;
-                      const isCorreta = oi === (slideAtual.correta ?? 0);
-                      const showFeedback = respostaSelecionada !== null;
+                      const corretaIdx = slideAtual.correta ?? slideAtual.certa ?? 0;
+                      const isCorreta = oi === corretaIdx;
 
                       let btnStyle = 'border-white/15 bg-white/5 hover:bg-white/10 text-zinc-200';
-                      if (showFeedback) {
+                      
+                      if (!respostaConfirmada) {
+                        if (isSelected) {
+                          btnStyle = 'border-amber-400 bg-amber-400/15 text-white font-bold ring-1 ring-amber-400/40 shadow-md scale-[1.01]';
+                        }
+                      } else {
                         if (isCorreta) {
-                          btnStyle = 'border-emerald-500 bg-emerald-500/20 text-emerald-200 font-bold';
-                        } else if (isSelected) {
-                          btnStyle = 'border-red-500 bg-red-500/20 text-red-200';
+                          btnStyle = 'border-emerald-500 bg-emerald-500/25 text-emerald-200 font-bold ring-1 ring-emerald-500/50 shadow-md';
+                        } else if (isSelected && !isCorreta) {
+                          btnStyle = 'border-red-500 bg-red-500/25 text-red-200 font-bold ring-1 ring-red-500/50 shadow-md';
+                        } else {
+                          btnStyle = 'border-white/5 bg-white/[0.02] text-zinc-500 opacity-40';
                         }
                       }
 
@@ -797,32 +849,110 @@ export function PlayerAulaNativo({
                         <button
                           key={oi}
                           type="button"
+                          disabled={respostaConfirmada}
                           onClick={() => setRespostaSelecionada(oi)}
-                          className={`w-full p-3 rounded-xl border text-left flex items-start gap-3 transition-all active:scale-[0.99] ${btnStyle}`}
+                          className={`w-full p-3.5 sm:p-4 rounded-2xl border text-left flex items-start gap-3 transition-all active:scale-[0.99] cursor-pointer ${btnStyle}`}
                         >
-                          <span className="w-6 h-6 rounded-lg bg-white/10 flex items-center justify-center text-xs font-black shrink-0">
+                          <span 
+                            className={`w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black shrink-0 transition-colors ${
+                              respostaConfirmada && isCorreta
+                                ? 'bg-emerald-500 text-white'
+                                : respostaConfirmada && isSelected && !isCorreta
+                                ? 'bg-red-500 text-white'
+                                : isSelected
+                                ? 'bg-amber-400 text-black font-black'
+                                : 'bg-white/10 text-zinc-300'
+                            }`}
+                          >
                             {letras[oi]}
                           </span>
-                          <span className="text-xs sm:text-sm leading-relaxed">{opcao}</span>
+                          <span className="text-xs sm:text-sm leading-relaxed pt-0.5">{opcao}</span>
                         </button>
                       );
                     })}
                   </div>
                 )}
+
+                {/* Botão Responder: surge assim que o aluno escolhe uma alternativa */}
+                {slideAtual.opcoes && respostaSelecionada !== null && !respostaConfirmada && (
+                  <div className="pt-2 animate-in fade-in duration-200">
+                    <button
+                      type="button"
+                      onClick={() => setRespostaConfirmada(true)}
+                      className="w-full py-3.5 sm:py-4 px-4 rounded-2xl font-black text-sm uppercase tracking-wider text-white shadow-xl flex items-center justify-center gap-2 transition active:scale-98 cursor-pointer"
+                      style={{ background: tema.accentGradient }}
+                    >
+                      <Check className="w-5 h-5 stroke-[3]" />
+                      <span>Responder</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Card de Comentário / Justificativa que sobe após responder */}
+                {respostaConfirmada && (
+                  <div 
+                    className="rounded-2xl border p-4 sm:p-5 mt-3 space-y-2.5 animate-in slide-in-from-bottom-3 fade-in duration-300 shadow-xl"
+                    style={{
+                      backgroundColor: respostaSelecionada === (slideAtual.correta ?? slideAtual.certa ?? 0)
+                        ? 'rgba(6, 78, 59, 0.4)'
+                        : 'rgba(127, 29, 29, 0.4)',
+                      borderColor: respostaSelecionada === (slideAtual.correta ?? slideAtual.certa ?? 0)
+                        ? 'rgba(52, 211, 153, 0.45)'
+                        : 'rgba(248, 113, 113, 0.45)'
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      {respostaSelecionada === (slideAtual.correta ?? slideAtual.certa ?? 0) ? (
+                        <>
+                          <CheckCircle2 className="w-5 h-5 text-emerald-400 stroke-[2.5]" />
+                          <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-emerald-300">
+                            Excelente! Resposta Correta!
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <XCircle className="w-5 h-5 text-red-400 stroke-[2.5]" />
+                          <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-red-300">
+                            Resposta Incorreta! Veja a explicação:
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="text-xs sm:text-sm leading-relaxed text-zinc-200 pt-2 border-t border-white/10">
+                      <p className="font-bold text-white mb-1">
+                        Comentário do Professor / Gabarito Comentado:
+                      </p>
+                      <p>
+                        {slideAtual.feedback || slideAtual.explicacao || slideAtual.comentario || (
+                          `A alternativa correta é a letra ${['A', 'B', 'C', 'D', 'E'][slideAtual.correta ?? slideAtual.certa ?? 0]}.`
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* Bloco de Flashcard Interativo (se for slide de Flashcard) */}
-            {slideAtual.tipo === 'Flashcard' && (
+            {/* Bloco de Flashcard Interativo com Destaque e Efeito de Virar */}
+            {isFlashcard && (
               <div 
                 onClick={() => setFlashcardVirado(!flashcardVirado)}
-                className="cursor-pointer rounded-3xl border border-amber-500/40 bg-gradient-to-b from-amber-950/30 to-black/60 p-6 sm:p-8 text-center transition-all duration-300 hover:border-amber-400 active:scale-98 shadow-xl shadow-amber-950/20"
+                className="cursor-pointer rounded-3xl border border-amber-500/40 bg-gradient-to-b from-amber-950/40 via-black/80 to-[#1d0810] p-6 sm:p-9 text-center transition-all duration-300 hover:border-amber-400 active:scale-98 shadow-2xl shadow-amber-950/30 group animate-in fade-in zoom-in-[0.98] duration-300"
               >
-                <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 block mb-3">
-                  {flashcardVirado ? 'RESPOSTA DO FLASHCARD' : 'TOQUE PARA VIRAR O CARTÃO'}
-                </span>
-                <p className="text-base sm:text-lg font-serif font-bold text-white leading-relaxed">
+                <div className="flex items-center justify-between gap-2 mb-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30">
+                    {flashcardVirado ? 'VERSO · RESPOSTA' : 'FRENTE · CONCEITO'}
+                  </span>
+                  <span className="text-xs text-zinc-400 font-medium flex items-center gap-1.5 group-hover:text-amber-300 transition">
+                    <RotateCcw className="w-4 h-4" /> Toque para virar
+                  </span>
+                </div>
+                <p className="text-lg sm:text-2xl font-serif font-bold text-white leading-relaxed my-4">
                   {flashcardVirado ? slideAtual.verso : slideAtual.frente}
+                </p>
+                <p className="text-[11px] text-zinc-500 mt-2">
+                  {flashcardVirado ? 'Toque novamente para voltar à frente' : 'Teste sua memória antes de virar o cartão'}
                 </p>
               </div>
             )}
