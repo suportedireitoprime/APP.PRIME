@@ -11,6 +11,10 @@ import { ModalRevisarFlashcards } from '@/components/aulas-interativas/ModalRevi
 import { ModalPraticarQuestoes } from '@/components/aulas-interativas/ModalPraticarQuestoes';
 import adminCover from '@/assets/biblioteca/areas/direito-administrativo.webp';
 import themisHero from '@/assets/jurisprudencia-hero-themis.webp';
+import capaAdminOrigens from '@/assets/aulas-interativas/direito-administrativo/capa-aula-01-origens.webp';
+import capaAdminDefinicoes from '@/assets/aulas-interativas/direito-administrativo/capa-aula-02-definicoes.webp';
+import aula01HtmlRaw from '@/assets/aulas-interativas/direito-administrativo/aula-01.html?raw';
+import aula02HtmlRaw from '@/assets/aulas-interativas/direito-administrativo/aula-02.html?raw';
 
 interface AulaItem {
   id: string;
@@ -26,6 +30,7 @@ interface AulaItem {
   status: 'pronto' | 'pendente';
   disciplinaId: string;
   materiaId: string;
+  htmlConteudoRaw?: string;
 }
 
 interface MateriaItem {
@@ -69,7 +74,7 @@ const DISCIPLINAS_CATALOGO: DisciplinaItem[] = [
     nome: 'DIREITO ADMINISTRATIVO',
     subtitulo: 'ÁREA DO CONHECIMENTO',
     descricao: 'Origens históricas na França revolucionária, consolidação do Estado de Direito, critérios de definição e regime jurídico-administrativo.',
-    capaHeroUrl: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/capa-aula-01-origens.webp',
+    capaHeroUrl: capaAdminOrigens,
     corDestaque: '#d9a00a',
     corGradientRing: ['#ffe38a', '#d9a00a'],
     corFundoCard: 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)',
@@ -95,7 +100,7 @@ const MATERIAS_CATALOGO: MateriaItem[] = [
     titulo: 'Origens e Definições do Direito Administrativo',
     subtitulo: 'Gênese histórica, Estado de Direito e critérios conceituais',
     descricao: 'Estudo da formação do Direito Administrativo na França pós-revolucionária, superação do patrimonialismo pela burocracia, Lei de 1872, caso Blanco e critérios definidores.',
-    capaUrl: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/capa-aula-01-origens.webp'
+    capaUrl: capaAdminOrigens
   }
 ];
 
@@ -141,9 +146,10 @@ const AULAS_CATALOGO: AulaItem[] = [
     etapas: 38,
     audioQtd: 38,
     imagensQtd: 38,
-    urlHtmlR2: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01.html',
-    capaUrl: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/capa-aula-01-origens.webp',
-    status: 'pronto'
+    urlHtmlR2: '/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01.html',
+    capaUrl: capaAdminOrigens,
+    status: 'pronto',
+    htmlConteudoRaw: aula01HtmlRaw
   },
   {
     id: 'admin-01-02',
@@ -156,9 +162,10 @@ const AULAS_CATALOGO: AulaItem[] = [
     etapas: 38,
     audioQtd: 38,
     imagensQtd: 38,
-    urlHtmlR2: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02.html',
-    capaUrl: '/assets/aulas-interativas/direito-administrativo/01-origens-e-definicoes/capa-aula-02-definicoes.webp',
-    status: 'pronto'
+    urlHtmlR2: '/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02.html',
+    capaUrl: capaAdminDefinicoes,
+    status: 'pronto',
+    htmlConteudoRaw: aula02HtmlRaw
   }
 ];
 
@@ -434,13 +441,14 @@ export default function AdminAulasInterativas() {
           </div>
         </header>
 
-        {/* Iframe 100% Tela Cheia */}
+        {/* Iframe 100% Tela Cheia com suporte a srcDoc para carregamento instantâneo offline */}
         <div 
           className="flex-1 w-full h-full relative overflow-hidden"
           style={{ backgroundColor: iframeBg }}
         >
           <iframe
-            src={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
+            srcDoc={aulaAtiva.htmlConteudoRaw || undefined}
+            src={!aulaAtiva.htmlConteudoRaw ? `${aulaAtiva.urlHtmlR2}?t=${Date.now()}` : undefined}
             title={aulaAtiva.titulo}
             className="w-full h-full border-0 absolute inset-0"
             allow="autoplay; clipboard-write; fullscreen"
