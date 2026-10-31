@@ -343,7 +343,7 @@ const iniciarAula = (aula: AulaItem) => {
     return (
       <div 
         className="fixed inset-0 z-[100] flex flex-col w-screen h-screen overflow-hidden"
-        style={{ backgroundColor: iframeBg }}
+        style={{ backgroundColor: iframeBg, paddingBottom: "calc(var(--sai-bottom, env(safe-area-inset-bottom, 0px)))" }}
       >
         {/* Cabeçalho Superior Temático Adaptado à Paleta Real com Safe Area Inset Top */}
         <header
@@ -537,7 +537,7 @@ const iniciarAula = (aula: AulaItem) => {
   );
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-white pb-20 relative">
+    <div className="min-h-screen bg-[#0D0D0D] text-white pb-[calc(7.5rem+env(safe-area-inset-bottom,24px))] relative">
       {/* Toast Flutuante de Alerta */}
       {toastAviso && (
         <div className="fixed top-5 inset-x-4 max-w-md mx-auto z-[150] animate-in fade-in slide-in-from-top-4 duration-300">

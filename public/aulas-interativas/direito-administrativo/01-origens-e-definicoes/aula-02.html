@@ -110,11 +110,12 @@
       /* Rodapé FIXO na base da tela */
       footer{
         flex:0 0 auto !important;
-        padding:12px 14px calc(24px + env(safe-area-inset-bottom, 24px)) !important;
+        padding:14px 16px max(34px, calc(28px + env(safe-area-inset-bottom, 24px))) !important;
+        min-height:96px !important;
         border-top:1px solid rgba(217,160,10,.3) !important;
-        background:rgba(20,14,2,.98) !important;
-        backdrop-filter:blur(18px);
-        -webkit-backdrop-filter:blur(18px);
+        background:rgba(18,13,2,.98) !important;
+        backdrop-filter:blur(22px);
+        -webkit-backdrop-filter:blur(22px);
         width:100% !important;
         max-width:100% !important;
         overflow:hidden !important;
@@ -273,16 +274,33 @@
         .atime{font-size:9.5px !important}
       }
       .banner{
-        width:100%;aspect-ratio:5/2;object-fit:cover;display:block;
-        border-radius:14px;border:1px solid var(--line);
-        margin-bottom:16px;background:#251a0a;
+        width:100%;
+        min-height:220px;
+        max-height:360px;
+        aspect-ratio:16/10;
+        object-fit:cover;
+        display:block;
+        border-radius:18px;
+        border:1px solid var(--line);
+        margin-bottom:20px;
+        background:var(--panel2);
+        box-shadow:0 14px 34px rgba(0,0,0,.55),0 0 24px rgba(0,0,0,.25);
+        overflow:hidden;
       }
       /* ===== CAPA: imagem primeiro, título abaixo ===== */
       .coverimg{
-        width:100%;aspect-ratio:7/4.4;object-fit:cover;object-position:center 38%;display:block;
-        border-radius:16px;border:1px solid var(--line);
-        box-shadow:0 20px 44px rgba(0,0,0,.5),0 0 34px rgba(217,160,10,.12);
-        margin-bottom:16px;background:#251a0a;
+        width:100%;
+        min-height:240px;
+        max-height:400px;
+        aspect-ratio:16/10.5;
+        object-fit:cover;
+        object-position:center 38%;
+        display:block;
+        border-radius:18px;
+        border:1px solid var(--line);
+        box-shadow:0 22px 48px rgba(0,0,0,.6),0 0 34px rgba(217,160,10,.18);
+        margin-bottom:20px;
+        background:var(--panel2);
       }
       .covertitle{
         font-family:"Playfair Display",Georgia,serif;font-size:36px;line-height:1.12;
@@ -534,7 +552,33 @@
       .wordchip:hover{border-color:var(--gold)}
       .wordchip.used{opacity:.28;cursor:default;border-style:dashed}
       .wordchip.shake{animation:shake .35s;border-color:var(--bad)}
-      /* ===== KARAOKÊ ===== */
+      
+      /* ===== KARAOKÊ UNIVERSAL PREMIUM ===== */
+      .sent {
+        border-radius: 6px;
+        padding: 2px 4px;
+        margin: 0 1px;
+        cursor: pointer;
+        color: var(--ink);
+        transition: background 0.28s ease, color 0.28s ease, box-shadow 0.28s ease, border 0.28s ease;
+        display: inline;
+        border-bottom: 2px solid transparent;
+      }
+      .sent:hover {
+        background: rgba(255,255,255,.08);
+      }
+      .sent.on {
+        background: rgba(217, 160, 10, 0.32) !important;
+        color: #ffffff !important;
+        text-shadow: 0 0 14px rgba(255, 227, 138, 0.7) !important;
+        box-shadow: 0 2px 14px rgba(217, 160, 10, 0.3) !important;
+        border-bottom: 2px solid var(--red, #d9a00a) !important;
+        font-weight: 600 !important;
+      }
+      .sent.done {
+        color: rgba(253, 246, 227, 0.78);
+      }
+  
       .karaoke{font-size:17.5px;line-height:1.85}
       .karaoke .sent{border-radius:6px;padding:1px 3px;cursor:pointer;color:#d8bfc4;transition:background .3s,color .3s}
       .karaoke .sent.on{background:rgba(212,175,55,.28);color:#fff}
@@ -621,17 +665,32 @@
       }
 
       .banner{
-        width:100%;aspect-ratio:5/2;object-fit:cover;display:block;
-        border-radius:14px;border:1px solid var(--line);
-        margin-bottom:16px;background:#251a0a;overflow:hidden;
-        transition:transform .4s ease;
+        width:100%;
+        min-height:220px;
+        max-height:360px;
+        aspect-ratio:16/10;
+        object-fit:cover;
+        display:block;
+        border-radius:18px;
+        border:1px solid var(--line);
+        margin-bottom:20px;
+        background:var(--panel2);
+        box-shadow:0 14px 34px rgba(0,0,0,.55),0 0 24px rgba(0,0,0,.25);
+        overflow:hidden;
       }
       .coverimg{
-        width:100%;aspect-ratio:7/4.4;object-fit:cover;object-position:center 38%;display:block;
-        border-radius:16px;border:1px solid var(--line);
-        box-shadow:0 20px 44px rgba(0,0,0,.5),0 0 34px rgba(217,160,10,.12);
-        margin-bottom:16px;background:#251a0a;overflow:hidden;
-        transition:transform .4s ease;
+        width:100%;
+        min-height:240px;
+        max-height:400px;
+        aspect-ratio:16/10.5;
+        object-fit:cover;
+        object-position:center 38%;
+        display:block;
+        border-radius:18px;
+        border:1px solid var(--line);
+        box-shadow:0 22px 48px rgba(0,0,0,.6),0 0 34px rgba(217,160,10,.18);
+        margin-bottom:20px;
+        background:var(--panel2);
       }
       .vazada{
         position:relative;height:148px;border-radius:14px;overflow:hidden;
@@ -2028,74 +2087,105 @@
       });
       return fr;
     }
+    
+    function prepareKaraokeSentences(){
+      if(document.getElementById("karaokeBox")) return;
+      var textEls = scrollArea.querySelectorAll("p:not(.kicker):not(.exp):not(.opt):not(.meta):not(.etapa), .texto-bloco, .lei-box, blockquote");
+      var globalIdx = 0;
+      textEls.forEach(function(el){
+        if(el.closest(".explorebox") || el.closest(".quizbox") || el.closest(".fcbox") || el.closest("header") || el.closest("footer")) return;
+        var text = el.textContent || "";
+        if(text.trim().length < 15) return;
+        
+        var nodes = Array.from(el.childNodes);
+        nodes.forEach(function(node){
+          if(node.nodeType === 3){
+            var nodeText = node.nodeValue;
+            if(!nodeText || nodeText.trim().length < 5) return;
+            var parts = nodeText.match(/[^.!?]+[.!?]+(?:s+|$)|[^.!?]+$/g);
+            if(parts && parts.length > 0){
+              var frag = document.createDocumentFragment();
+              parts.forEach(function(p){
+                var sp = document.createElement("span");
+                sp.className = "sent";
+                sp.setAttribute("data-sent", String(globalIdx++));
+                sp.textContent = p;
+                frag.appendChild(sp);
+              });
+              node.parentNode.replaceChild(frag, node);
+            }
+          } else if(node.nodeType === 1 && !node.classList.contains("sent")){
+            var sp = document.createElement("span");
+            sp.className = "sent";
+            sp.setAttribute("data-sent", String(globalIdx++));
+            node.parentNode.insertBefore(sp, node);
+            sp.appendChild(node);
+          }
+        });
+      });
+
+      scrollArea.querySelectorAll(".sent").forEach(function(sp){
+        sp.addEventListener("click", function(e){
+          e.stopPropagation();
+          var sIdx = parseInt(sp.getAttribute("data-sent"), 10);
+          var allSpans = scrollArea.querySelectorAll(".sent");
+          var totalChars = 0;
+          for(var k = 0; k < allSpans.length; k++){
+            totalChars += allSpans[k].textContent.length;
+          }
+          if(totalChars === 0 || !player.duration) return;
+          var acc = 0;
+          for(var k = 0; k < sIdx; k++){
+            acc += allSpans[k].textContent.length;
+          }
+          player.currentTime = Math.max(0, (acc / totalChars) * player.duration);
+          karaIdx = -1;
+          karaSync();
+          unlocked = true;
+          tryPlay();
+        });
+      });
+    }
+
     function karaSync(){
-      var s = SLIDES[idx];
-      if(!s || s.tipo !== "Karaokê" || !player.duration) return;
-      var box = document.getElementById("karaokeBox");
+      if(!player.duration) return;
+      var box = document.getElementById("karaokeBox") || scrollArea;
       if(!box) return;
-      var fr = karaFracs(s);
+      var spans = box.querySelectorAll(".sent");
+      if(!spans || spans.length === 0) return;
+
+      var totalChars = 0;
+      for(var i = 0; i < spans.length; i++){
+        totalChars += spans[i].textContent.length;
+      }
+      if(totalChars === 0) return;
+
       var pos = player.currentTime / player.duration;
+      var acc = 0;
       var cur = 0;
-      for(var i = 0; i < fr.length; i++){ if(pos >= fr[i][0]) cur = i; }
+      for(var i = 0; i < spans.length; i++){
+        var frac = acc / totalChars;
+        acc += spans[i].textContent.length;
+        if(pos >= frac) cur = i;
+      }
+
       if(cur === karaIdx) return;
       karaIdx = cur;
-      var spans = box.querySelectorAll(".sent");
-      spans.forEach(function(sp, si){
-        sp.classList.toggle("on", si === cur);
-        sp.classList.toggle("done", si < cur);
-      });
-      var el = spans[cur];
-      if(el) el.scrollIntoView({behavior:"smooth", block:"nearest"});
-    }
-    function karaSeek(fi){
-      var s = SLIDES[idx];
-      if(!s || s.tipo !== "Karaokê" || !player.duration) return;
-      var fr = karaFracs(s);
-      player.currentTime = Math.max(0, fr[fi][0] * player.duration - 0.05);
-      karaIdx = -1;
-      karaSync();
-      unlocked = true;
-      tryPlay();
-    }
 
-    var BLOCKS = [[6, "Bloco 1 de 5 · Por que definir é difícil"], [12, "Bloco 2 de 5 · Os critérios clássicos"], [21, "Bloco 3 de 5 · Mais critérios em disputa"], [28, "Bloco 4 de 5 · O critério adotado no Brasil"], [36, "Bloco 5 de 5 · Revisão e desafio"], [37, "Fechamento"]];
-    function blockLabel(i){
-      for(var b = 0; b < BLOCKS.length; b++){ if(i <= BLOCKS[b][0]) return BLOCKS[b][1]; }
-      return "Fechamento";
-    }
-
-    function show(i, autoplay){
-      idx = Math.max(0, Math.min(total - 1, i));
-      var s = SLIDES[idx];
-      karaIdx = -1;
-      scrollArea.innerHTML = slideHTML(s);
-      scrollArea.scrollTop = 0; try { window.scrollTo({ top: 0, behavior: "instant" }); document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch(e){}
-      scrollArea.classList.remove("enter");
-      void scrollArea.offsetWidth;
-      scrollArea.classList.add("enter");
-      var h1El = document.querySelector("header h1");
-      if(h1El) h1El.style.display = idx === 0 ? "none" : "";
-      var seal = document.getElementById("blockSeal");
-      if(seal) seal.textContent = blockLabel(idx);
-      etapaLabel.innerHTML = "Etapa <b>" + (idx + 1) + " de " + total + "</b> · " + s.tipo + (s.titulo ? ": " + s.titulo : "");
-      progressFill.style.width = ((idx + 1) / total * 100) + "%";
-      btnPrev.disabled = idx === 0;
-      btnNext.innerHTML = idx === total - 1 ? "↺ Voltar ao início" : "Próximo →";
-      bindInteractions(s);
-      player.pause();
-      player.src = audioSrc(idx);
-      player.load();
-      if(autoplay && unlocked){ tryPlay(); }
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({
-            type: "AULA_INTERATIVA_PROGRESSO",
-            etapaAtual: idx + 1,
-            totalEtapas: total,
-            aulaId: "admin-01-02"
-          }, "*");
+      for(var i = 0; i < spans.length; i++){
+        var sp = spans[i];
+        var isCur = (i === cur);
+        var isDone = (i < cur);
+        sp.classList.toggle("on", isCur);
+        sp.classList.toggle("done", isDone);
+        if(isCur){
+          try {
+            sp.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+          } catch(e){}
         }
-      } catch (err) {}
+      }
+    }
+   catch (err) {}
     }
 
     btnPrev.addEventListener("click", function(){ show(idx - 1, true); });
