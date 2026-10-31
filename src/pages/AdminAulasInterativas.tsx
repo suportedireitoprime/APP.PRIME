@@ -117,59 +117,62 @@ export default function AdminAulasInterativas() {
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white pb-20">
-      {/* Cabeçalho Temático de Direito Penal para o Catálogo */}
-      <header
-        className="sticky top-0 z-40 flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-[rgba(226,62,87,0.3)] shadow-lg shadow-black/50 backdrop-blur-md"
-        style={{
-          background: 'linear-gradient(180deg, rgba(38,6,15,0.96) 0%, rgba(20,4,9,0.96) 100%)',
-          paddingTop: 'calc(1rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
-        }}
-      >
-        <div className="flex items-center gap-3.5 min-w-0">
+      {/* Capa Hero Cinematográfica de Direito Penal (Full Bleed com degradê e bordas arredondadas embaixo) */}
+      <div className="relative w-full h-[340px] sm:h-[400px] md:h-[440px] rounded-b-[36px] sm:rounded-b-[44px] overflow-hidden border-b border-[rgba(226,62,87,0.35)] shadow-2xl shadow-black/90">
+        {/* Imagem de Fundo (Cena do Perito Criminal / Direito Penal) */}
+        <img
+          src="https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+          alt="Direito Penal"
+          className="w-full h-full object-cover object-center scale-[1.02] transform-gpu"
+          fetchPriority="high"
+          loading="eager"
+        />
+
+        {/* Degradê escuro de baixo para cima */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(20,4,9,0.15) 35%, rgba(13,13,13,0.85) 75%, #0D0D0D 100%)'
+          }}
+        />
+
+        {/* Topo dentro da capa: Botão de Voltar e Badge */}
+        <div
+          className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-4 sm:px-8 pointer-events-auto"
+          style={{
+            paddingTop: 'calc(1.25rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+          }}
+        >
           <button
             type="button"
             onClick={() => navigate('/admin-funcoes')}
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-[rgba(46,15,24,0.85)] border border-[rgba(226,62,87,0.4)] flex items-center justify-center shrink-0 text-[#ff8296] hover:bg-[rgba(66,20,34,1)] hover:text-white transition active:scale-95"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/60 backdrop-blur-md border border-[rgba(226,62,87,0.4)] flex items-center justify-center text-[#ff8296] hover:text-white hover:bg-[rgba(46,15,24,0.9)] hover:scale-105 active:scale-95 transition shadow-xl"
             aria-label="Voltar"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
-          <div>
-            <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#ff8296]">
-              PAINEL ADMINISTRATIVO
-            </div>
-            <h1 className="text-lg sm:text-xl font-bold tracking-wide text-white uppercase font-sans">
-              Aulas Interativas
-            </h1>
-          </div>
+
+          <span className="px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-[rgba(226,62,87,0.4)] text-[11px] font-extrabold uppercase tracking-widest text-[#ff8296] shadow-lg flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 fill-current" />
+            <span>Aulas Interativas</span>
+          </span>
         </div>
 
-        <span className="text-[11px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full bg-red-500/15 text-[#ff8296] border border-red-500/30">
-          Direito Penal
-        </span>
-      </header>
-
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {/* Banner de Apresentação com Identidade de Direito Penal */}
-        <div 
-          className="p-5 sm:p-6 rounded-3xl border border-[rgba(226,62,87,0.35)] shadow-2xl space-y-2.5"
-          style={{
-            background: 'linear-gradient(135deg, rgba(46,18,25,0.7) 0%, rgba(20,4,9,0.95) 100%)',
-            boxShadow: '0 20px 44px rgba(0,0,0,0.6), 0 0 34px rgba(226,62,87,0.15)'
-          }}
-        >
-          <div className="flex items-center gap-2 text-[#ff8296] font-extrabold text-xs uppercase tracking-[2.4px]">
-            <Sparkles className="w-4 h-4 fill-current" />
-            <span>Direito Penal · Aulas Prontas</span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-bold font-serif text-white">
-            Ambiente de Aulas Interativas
-          </h2>
-          <p className="text-xs sm:text-sm text-[#f8edef] leading-relaxed max-w-2xl">
-            Aulas com layout original preservado: tipografias Playfair Display e Source Sans 3, paleta vermelho com dourado, player de narração centralizado no rodapé, sem barra de rolagem e responsivo para qualquer tela.
+        {/* Parte inferior da capa: Título DIREITO PENAL sobre o degradê */}
+        <div className="absolute bottom-0 inset-x-0 z-20 px-5 sm:px-8 pb-7 sm:pb-9 max-w-4xl mx-auto w-full pointer-events-none">
+          <span className="inline-block text-[11px] sm:text-xs font-black uppercase tracking-[3px] text-[#ff8296] mb-1 drop-shadow">
+            ÁREA DO CONHECIMENTO
+          </span>
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)] font-sans leading-none">
+            DIREITO PENAL
+          </h1>
+          <p className="text-xs sm:text-sm text-[#f8edef]/85 max-w-lg mt-2 leading-relaxed drop-shadow">
+            Imersão com narrativa interativa, casos reais, fixação ativa e áudios gravados por especialistas.
           </p>
         </div>
+      </div>
 
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
         {/* Catálogo de Aulas */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
