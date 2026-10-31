@@ -136,6 +136,10 @@ export default function AdminAulasInterativas() {
   const [materiaSelecionadaId, setMateriaSelecionadaId] = useState<string | null>(null);
   const [aulaAtiva, setAulaAtiva] = useState<AulaItem | null>(null);
   const [aulaPendenteModal, setAulaPendenteModal] = useState<AulaItem | null>(null);
+  // Sempre rolar para o topo instantaneamente ao selecionar matéria ou disciplina
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [disciplinaSelecionadaId, materiaSelecionadaId, aulaAtiva]);
 
   // Estados de progresso
   const [progressoMap, setProgressoMap] = useState<Record<string, { etapaAtual: number }>>(() => getStoredProgresso());
@@ -705,14 +709,6 @@ export default function AdminAulasInterativas() {
                   <span>Matérias de {disciplinaAtual.nome} ({materiasDaDisc.length})</span>
                 </h3>
 
-                <button
-                  type="button"
-                  onClick={() => setDisciplinaSelecionadaId(null)}
-                  className="text-xs font-bold text-zinc-400 hover:text-white flex items-center gap-1.5 transition"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Todas as Disciplinas</span>
-                </button>
               </div>
 
               {/* Lista de Matérias */}
@@ -806,35 +802,55 @@ export default function AdminAulasInterativas() {
 
         return (
           <>
-            {renderCapaHero(
-              disciplinaAtual.capaHeroUrl,
-              materiaAtual.numeroMateria,
-              disciplinaAtual.nome,
-              materiaAtual.descricao,
-              pctMat,
-              `${totalAulasMat} ${totalAulasMat === 1 ? 'Aula' : 'Aulas'}`,
-              ciclosCompletosMat > 0 ? `${ciclosCompletosMat}/${totalAulasMat} concluídas 100%` : 'Aula · Flashcard · Prática',
-              disciplinaAtual.corGradientRing,
-              disciplinaAtual.corDestaque
-            )}
+            {/* Header Limpo de Topo com Risquinho e Título (Sem Capa Hero Conforme Solicitado) */}
+            <div 
+              className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3.5 transition-all shadow-xl"
+              style={{
+                paddingTop: 'calc(0.85rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+              }}
+            >
+              <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <button
+                    type="button"
+                    onClick={handleVoltar}
+                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
+                    aria-label="Voltar para matérias"
+                  >
+                    <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
+                  </button>
 
-            <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" style={{ color: disciplinaAtual.corDestaque }} />
-                  <span>Aulas Disponíveis ({aulasDaMateria.length})</span>
-                </h3>
+                  {/* Risquinho vertical com a cor temática da disciplina */}
+                  <div 
+                    className="w-1.5 h-8 sm:h-9 rounded-full shrink-0 shadow-sm"
+                    style={{ backgroundColor: disciplinaAtual.corDestaque }}
+                  />
 
-                <button
-                  type="button"
-                  onClick={() => setMateriaSelecionadaId(null)}
-                  className="text-xs font-bold text-zinc-400 hover:text-white flex items-center gap-1.5 transition"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Outras Matérias</span>
-                </button>
+                  {/* Título e Subtítulo da Matéria */}
+                  <div className="min-w-0">
+                    <span 
+                      className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest block truncate"
+                      style={{ color: disciplinaAtual.corDestaque }}
+                    >
+                      {disciplinaAtual.nome} · {materiaAtual.numeroMateria}
+                    </span>
+                    <h2 className="text-sm sm:text-base md:text-lg font-black text-white font-serif leading-tight truncate">
+                      {materiaAtual.titulo}
+                    </h2>
+                  </div>
+                </div>
+
+                {/* Badge do total de aulas disponíveis */}
+                <div className="shrink-0 hidden xs:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                  <BookOpen className="w-3.5 h-3.5" style={{ color: disciplinaAtual.corDestaque }} />
+                  <span className="text-[11px] font-bold text-zinc-300">
+                    {totalAulasMat} {totalAulasMat === 1 ? 'Aula' : 'Aulas'}
+                  </span>
+                </div>
               </div>
+            </div>
 
+            <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8 space-y-6">
               {/* Grid de Aulas da Matéria */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
                 {aulasDaMateria.map((aula) => {

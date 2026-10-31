@@ -6082,7 +6082,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 32,
     "audioQtd": 32,
     "imagensQtd": 30,
-    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/aula.html",
+    "urlHtmlR2": "/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01.html",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/capa-3x4.webp",
     "status": "pronto"
   },
@@ -6097,7 +6097,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 32,
     "audioQtd": 32,
     "imagensQtd": 30,
-    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-02-induzimento-a-erro-essencial/aula.html",
+    "urlHtmlR2": "/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-02.html",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-02-induzimento-a-erro-essencial/capa-3x4.webp",
     "status": "pronto"
   },
@@ -8317,7 +8317,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 38,
     "audioQtd": 38,
     "imagensQtd": 38,
-    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/aula.html",
+    "urlHtmlR2": "/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01.html",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp",
     "status": "pronto"
   },
@@ -8332,7 +8332,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 38,
     "audioQtd": 38,
     "imagensQtd": 38,
-    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02-definicoes/aula.html",
+    "urlHtmlR2": "/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-02.html",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_02_-_definicoes.webp",
     "status": "pronto"
   },
@@ -11317,7 +11317,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 38,
     "imagensQtd": 17,
-    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/aula.html",
+    "urlHtmlR2": "/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01.html",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp",
     "status": "pronto"
   },
@@ -14977,7 +14977,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "etapas": 30,
     "audioQtd": 39,
     "imagensQtd": 12,
-    "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/aula.html",
+    "urlHtmlR2": "/aulas-interativas/direito-do-trabalho/01-introducao/aula-01.html",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp",
     "status": "pronto"
   },
