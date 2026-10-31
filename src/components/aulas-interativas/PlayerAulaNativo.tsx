@@ -220,6 +220,42 @@ export function PlayerAulaNativo({
     return highlightFraseInHtml(slideAtual.corpo, frasesNarr[karaIdx]);
   }, [slideAtual?.corpo, tocando, karaIdx, frasesNarr]);
 
+  // Formatação inteligente do Kicker para eliminar redundâncias visuais
+  const kickerFormatado = useMemo(() => {
+    if (!slideAtual) return '';
+    const raw = (slideAtual.kicker || '').trim();
+    if (!raw) {
+      if (isQuestao) return 'Fixação Ativa';
+      if (isFlashcard) return 'Memorização Ativa';
+      return `Etapa ${idx + 1} de ${total}`;
+    }
+
+    if (isQuestao) {
+      const temaSub = raw.replace(/^QUESTÃO\s*\d*\s*·\s*/i, '').trim();
+      return temaSub && !/^QUESTÃO/i.test(temaSub) 
+        ? `Fixação Ativa · ${temaSub}`
+        : 'Fixação Ativa';
+    }
+
+    if (isFlashcard) {
+      const temaSub = raw.replace(/^FLASHCARD\s*\d*\s*·\s*/i, '').trim();
+      return temaSub && !/^FLASHCARD/i.test(temaSub)
+        ? `Memorização Ativa · ${temaSub}`
+        : 'Memorização Ativa';
+    }
+
+    return raw;
+  }, [slideAtual, isQuestao, isFlashcard, idx, total]);
+
+  // Verificar se o H1 é redundante com o kicker (ex: 'Questão 1' ou 'Flashcard 1')
+  const isTituloRedundante = useMemo(() => {
+    if (!slideAtual?.titulo) return false;
+    const t = slideAtual.titulo.trim();
+    if (isQuestao && /^Questão\s*\d*$/i.test(t)) return true;
+    if (isFlashcard && /^Flashcard\s*\d*$/i.test(t)) return true;
+    return false;
+  }, [slideAtual?.titulo, isQuestao, isFlashcard]);
+
   // Resetar estados ao mudar de etapa e iniciar autoplay contínuo
   useEffect(() => {
     setTempoAtual(0);
@@ -848,18 +884,21 @@ export function PlayerAulaNativo({
       <main ref={mainRef} className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 pb-44 sm:pb-48 max-w-3xl mx-auto scroll-smooth">
         {slideAtual && (
           <div key={idx} className="space-y-4 sm:space-y-5 animate-page-turn">
-            {/* Tag / Kicker da Etapa idêntico ao HTML (.kicker com ◆ dourado) */}
+            {/* Tag / Kicker da Etapa limpo e elegante (Sem redundâncias de tags na direita) */}
             <div className="flex items-center justify-between gap-2">
               <span 
                 className="text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center gap-1.5"
                 style={{ color: tema.destaque }}
               >
                 <span className="text-[9px] text-[#d4af37]">◆</span>
-                {slideAtual.kicker || `Etapa ${idx + 1} de ${total} · ${slideAtual.tipo}`}
+                {kickerFormatado}
               </span>
-              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">
-                {slideAtual.tipo}
-              </span>
+              {/* Tag contextual apenas em tipos específicos (sem poluir Questões/Flashcards/Conteúdo) */}
+              {!isQuestao && !isFlashcard && slideAtual.tipo !== 'Conteúdo' && (
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10">
+                  {slideAtual.tipo}
+                </span>
+              )}
             </div>
 
             {/* Imagem Cinematográfica com Altura Otimizada e Efeito de Zoom Suave "pra dentro" (Oculta em Questões/Flashcards para máximo espaço) */}
@@ -877,33 +916,33 @@ export function PlayerAulaNativo({
               </div>
             )}
 
-            {/* Título do Slide com Playfair Display Autêntico (.covertitle / h1) */}
-            {slideAtual.titulo && (
-              <h1 
-                className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight"
-                style={{ fontFamily: '"Playfair Display", Georgia, serif' }}
-              >
-                {slideAtual.titulo}
-              </h1>
+            {/* Título do Slide: Oculta se for apenas 'Questão 1' ou 'Flashcard 1' para despoluir a tela */}
+            {slideAtual.titulo && !isTituloRedundante && (
+              <>
+                <h1 
+                  className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight"
+                  style={{ fontFamily: '"Playfair Display", Georgia, serif' }}
+                >
+                  {slideAtual.titulo}
+                </h1>
+                <div 
+                  className="h-[3px] w-20 rounded-full shadow-sm"
+                  style={{ background: `linear-gradient(90deg, ${tema.destaque}, #d4af37)` }}
+                />
+              </>
             )}
-
-            {/* Divisor sutil em gradiente idêntico ao HTML (.coverrule) */}
-            <div 
-              className="h-[3px] w-20 rounded-full shadow-sm"
-              style={{ background: `linear-gradient(90deg, ${tema.destaque}, #d4af37)` }}
-            />
 
             {/* Bloco de Questão Prática com Seleção -> Botão Responder -> Comentário com feedback */}
             {isQuestao && (
               <div className="rounded-3xl border border-white/15 p-5 sm:p-6 bg-gradient-to-b from-[#2e1219]/90 to-[#1d0810]/95 shadow-2xl space-y-4 animate-in fade-in zoom-in-[0.98] duration-300">
-                {/* Header da questão com ícone de destaque */}
+                {/* Header da questão com foco no aprendizado prático (Sem repetir 'Questão') */}
                 <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
                   <span 
                     className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5"
                     style={{ color: tema.destaque }}
                   >
                     <HelpCircle className="w-3.5 h-3.5" />
-                    <span>Fixação Ativa · Questão</span>
+                    <span>Treinamento Prático</span>
                   </span>
                   <span className="text-[11px] font-bold text-zinc-400">
                     {respostaConfirmada ? 'Gabarito e Comentário' : 'Selecione e confirme'}
