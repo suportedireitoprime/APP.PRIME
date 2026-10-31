@@ -3,9 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { 
   Sparkles, Play, CheckCircle2, BookOpen, Layers, 
-  ExternalLink, ArrowLeft, Headphones, RefreshCw 
+  ExternalLink, ArrowLeft, Headphones, RefreshCw, Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { InteractiveAulaPlayer, AulaData } from '@/components/aulas-interativas/InteractiveAulaPlayer';
+
+// Dados da Aula 01 com carregamento instantâneo a 0ms (Padrão Vacatio)
+import aula01Data from '@/data/aulas-interativas/direito-penal-aula-01.json';
 
 interface AulaItem {
   id: string;
@@ -16,8 +20,10 @@ interface AulaItem {
   audioQtd: number;
   imagensQtd: number;
   urlHtmlR2: string;
+  urlJsonR2: string;
   capaUrl: string;
   status: 'pronto' | 'pendente';
+  data: AulaData;
 }
 
 const AULAS_CATALOGO: AulaItem[] = [
@@ -30,8 +36,10 @@ const AULAS_CATALOGO: AulaItem[] = [
     audioQtd: 32,
     imagensQtd: 30,
     urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/aula.html',
+    urlJsonR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/aula.json',
     capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/capa-3x4.webp',
-    status: 'pronto'
+    status: 'pronto',
+    data: aula01Data as unknown as AulaData
   }
 ];
 
@@ -41,50 +49,16 @@ export default function AdminAulasInterativas() {
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white pb-20">
-      {/* Quando a aula estiver ativa: Modo Tela Cheia Imersivo */}
+      {/* Quando a aula estiver ativa: Player Nativo React em Tela Cheia */}
       {aulaAtiva && (
-        <div className="fixed inset-0 z-50 bg-[#0D0D0D] flex flex-col w-screen h-screen">
-          {/* Barra superior de navegação limpa e compacta */}
-          <div className="flex items-center justify-between px-3 sm:px-5 py-2.5 bg-zinc-950/95 border-b border-red-500/20 backdrop-blur-md shrink-0">
-            <div className="flex items-center gap-3 min-w-0">
-              <button
-                onClick={() => setAulaAtiva(null)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-zinc-200 hover:text-white hover:bg-white/10 transition active:scale-95"
-              >
-                <ArrowLeft className="w-4 h-4 text-red-400" />
-                <span>Voltar ao catálogo</span>
-              </button>
-              <span className="hidden md:inline-block text-xs font-bold text-zinc-300 truncate">
-                {aulaAtiva.titulo}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Servido via Cloudflare R2
-              </span>
-              <a
-                href={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
-                target="_blank"
-                rel="noreferrer"
-                className="p-1.5 rounded-xl bg-white/5 border border-white/10 text-zinc-300 hover:text-white transition hover:bg-white/10"
-                title="Abrir em nova aba"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-
-          {/* Iframe 100% Tela Cheia */}
-          <div className="flex-1 w-full h-full relative overflow-hidden bg-black">
-            <iframe
-              src={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
-              title={aulaAtiva.titulo}
-              className="w-full h-full border-0 absolute inset-0"
-              allow="autoplay; clipboard-write; fullscreen"
-            />
-          </div>
-        </div>
+        <InteractiveAulaPlayer
+          aula={aulaAtiva.data}
+          onClose={() => setAulaAtiva(null)}
+          onComplete={() => {
+            toast.success('Parabéns! Aula concluída com sucesso!');
+            setAulaAtiva(null);
+          }}
+        />
       )}
 
       <PageHeader 
@@ -93,17 +67,17 @@ export default function AdminAulasInterativas() {
       />
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {/* Lista das Matérias e Aulas */}
-        <div className="p-5 rounded-2xl bg-gradient-to-r from-red-950/40 via-zinc-900 to-zinc-900/90 border border-red-500/20 shadow-xl space-y-2">
-          <div className="flex items-center gap-2.5 text-red-400 font-bold text-xs uppercase tracking-widest">
-            <Sparkles className="w-4 h-4" />
-            <span>Direito Penal · Aulas Prontas</span>
+        {/* Banner de Apresentação */}
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-red-950/60 via-zinc-900 to-zinc-900 border border-red-500/30 shadow-2xl space-y-2.5">
+          <div className="flex items-center gap-2 text-red-400 font-extrabold text-xs uppercase tracking-widest">
+            <Zap className="w-4 h-4 fill-current" />
+            <span>Motor Nativo React · 120fps Fluidez Máxima</span>
           </div>
-          <h2 className="text-xl font-bold font-display text-white">
-            Ambiente de Aulas Interativas
+          <h2 className="text-xl sm:text-2xl font-bold font-serif text-white">
+            Aulas Interativas do Direito Prime
           </h2>
-          <p className="text-xs text-zinc-400 leading-relaxed max-w-2xl">
-            Aulas interativas completas em tela cheia com narração integrada, desafios, fixação, mapas mentais e ilustrações servidas em alta velocidade pelo Cloudflare R2.
+          <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed max-w-2xl">
+            Experiência imersiva 100% nativa sem WebViews lentas: narração fluida sincronizada com áudios no Cloudflare R2, mecânicas interativas (quiz, flashcards 3D, comparador deslizante, hotspots e mapa mental) com responsividade perfeita para mobile e desktop.
           </p>
         </div>
 
@@ -120,11 +94,11 @@ export default function AdminAulasInterativas() {
             {AULAS_CATALOGO.map((aula) => (
               <div
                 key={aula.id}
-                className="group rounded-2xl bg-zinc-900/70 border border-white/10 hover:border-red-500/40 p-4 transition-all duration-300 flex flex-col justify-between shadow-lg shadow-black/30 hover:shadow-red-500/10"
+                className="group rounded-3xl bg-zinc-900/80 border border-white/10 hover:border-red-500/40 p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between shadow-xl shadow-black/40 hover:shadow-red-500/10"
               >
                 <div className="flex gap-4">
                   {/* Capa 3x4 */}
-                  <div className="relative w-20 h-28 rounded-xl overflow-hidden shrink-0 border border-white/10 bg-zinc-950 shadow-md">
+                  <div className="relative w-20 h-28 rounded-2xl overflow-hidden shrink-0 border border-white/10 bg-zinc-950 shadow-md">
                     <img 
                       src={aula.capaUrl} 
                       alt={aula.titulo}
@@ -141,7 +115,7 @@ export default function AdminAulasInterativas() {
                     <span className="text-[11px] font-bold text-red-400 uppercase tracking-wider block truncate">
                       {aula.materia}
                     </span>
-                    <h4 className="text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-red-300 transition-colors">
+                    <h4 className="text-sm sm:text-base font-bold text-white leading-snug line-clamp-2 group-hover:text-red-300 transition-colors font-serif">
                       {aula.titulo}
                     </h4>
 
@@ -159,17 +133,17 @@ export default function AdminAulasInterativas() {
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Pronta no R2
+                  <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Motor React 100% Nativo
                   </span>
 
                   <button
                     type="button"
                     onClick={() => {
                       setAulaAtiva(aula);
-                      toast.success(`Abrindo ${aula.titulo}`);
+                      toast.success(`Iniciando ${aula.titulo}`);
                     }}
-                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-primary text-white hover:bg-primary/90 transition shadow-md shadow-primary/20 active:scale-95"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-red-600 to-rose-600 hover:brightness-110 text-white transition shadow-lg shadow-red-600/30 active:scale-95"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
                     <span>Iniciar Aula</span>
@@ -183,4 +157,3 @@ export default function AdminAulasInterativas() {
     </div>
   );
 }
-
