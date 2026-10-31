@@ -134,6 +134,7 @@ export default function AdminAulasInterativas() {
   const [disciplinaSelecionadaId, setDisciplinaSelecionadaId] = useState<string | null>(null);
   const [materiaSelecionadaId, setMateriaSelecionadaId] = useState<string | null>(null);
   const [aulaAtiva, setAulaAtiva] = useState<AulaItem | null>(null);
+  const [aulaPendenteModal, setAulaPendenteModal] = useState<AulaItem | null>(null);
 
   // Estados de progresso
   const [progressoMap, setProgressoMap] = useState<Record<string, { etapaAtual: number }>>(() => getStoredProgresso());
@@ -220,7 +221,31 @@ export default function AdminAulasInterativas() {
     ? AULAS_CATALOGO.filter(a => a.materiaId === materiaAtual.id) 
     : [];
 
-  const iniciarAula = (aula: AulaItem) => {
+    const getBotaoIniciarClass = (aula: AulaItem, aulaTerminada: boolean) => {
+    if (aula.status === 'pendente' || !aula.urlHtmlR2) {
+      return 'bg-zinc-800/80 hover:bg-zinc-700/80 text-zinc-300 border border-white/10 shadow-sm';
+    }
+    if (aulaTerminada) {
+      return 'bg-[#1b1c22] hover:bg-[#252830] text-zinc-200 border border-white/15';
+    }
+    switch (aula.disciplinaId) {
+      case 'administrativo':
+        return 'bg-gradient-to-r from-[#d9a00a] to-[#b45309] hover:from-[#f59e0b] hover:to-[#92400e] text-black font-black shadow-amber-950/50';
+      case 'constitucional':
+        return 'bg-gradient-to-r from-[#22c55e] to-[#15803d] hover:from-[#4ade80] hover:to-[#166534] text-white font-black shadow-emerald-950/50';
+      case 'trabalho':
+        return 'bg-gradient-to-r from-[#a855f7] to-[#7e22ce] hover:from-[#c084fc] hover:to-[#6b21a8] text-white font-black shadow-purple-950/50';
+      case 'penal':
+      default:
+        return 'bg-gradient-to-r from-[#e23e57] to-[#c8102e] hover:from-[#ff4d6d] hover:to-[#dc143c] text-white shadow-red-950/50';
+    }
+  };
+
+const iniciarAula = (aula: AulaItem) => {
+    if (aula.status === 'pendente' || !aula.urlHtmlR2) {
+      setAulaPendenteModal(aula);
+      return;
+    }
     if (!progressoMap[aula.id] || progressoMap[aula.id].etapaAtual === 0) {
       saveStoredProgresso(aula.id, 1);
       setProgressoMap(prev => ({ ...prev, [aula.id]: { etapaAtual: 1 } }));
@@ -933,15 +958,14 @@ export default function AdminAulasInterativas() {
                         <button
                           type="button"
                           onClick={() => iniciarAula(aula)}
-                          className={`w-full py-2.5 px-2 rounded-2xl font-black text-[11px] sm:text-xs transition flex items-center justify-center gap-1.5 shadow-md active:scale-95 ${
-                            prog.aulaTerminada 
-                              ? 'bg-[#1b1c22] hover:bg-[#252830] text-zinc-200 border border-white/15' 
-                              : aula.disciplinaId === 'administrativo'
-                                ? 'bg-gradient-to-r from-[#d9a00a] to-[#b45309] hover:from-[#f59e0b] hover:to-[#92400e] text-black font-black shadow-amber-950/50'
-                                : 'bg-gradient-to-r from-[#e23e57] to-[#c8102e] hover:from-[#ff4d6d] hover:to-[#dc143c] text-white shadow-red-950/50'
-                          }`}
+                          className={`w-full py-2.5 px-2 rounded-2xl font-black text-[11px] sm:text-xs transition flex items-center justify-center gap-1.5 shadow-md active:scale-95 ${getBotaoIniciarClass(aula, prog.aulaTerminada)}`}
                         >
-                          {prog.aulaTerminada ? (
+                          {aula.status === 'pendente' || !aula.urlHtmlR2 ? (
+                            <>
+                              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                              <span>Em Breve</span>
+                            </>
+                          ) : prog.aulaTerminada ? (
                             <>
                               <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
                               <span>Ver Aula</span>
@@ -1029,6 +1053,47 @@ export default function AdminAulasInterativas() {
             setModalQuestoesAula(null);
           }}
         />
+      )}
+          {/* Modal 3: Aula em Produção / Em Breve */}
+      {aulaPendenteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-md bg-[#131318] border border-white/15 rounded-3xl p-6 shadow-2xl overflow-hidden">
+            <div className="relative w-full h-44 rounded-2xl overflow-hidden mb-4 bg-black/40 border border-white/10">
+              <img 
+                src={aulaPendenteModal.capaUrl} 
+                alt={aulaPendenteModal.titulo}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#131318] via-transparent to-transparent" />
+              <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-black/70 backdrop-blur-md border border-white/20 text-white">
+                {aulaPendenteModal.numeroAula}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                <Sparkles className="w-3.5 h-3.5" />
+                Em Produção Multimídia
+              </span>
+            </div>
+
+            <h3 className="text-lg font-black text-white leading-tight mb-2">
+              {aulaPendenteModal.titulo}
+            </h3>
+
+            <p className="text-xs text-zinc-400 leading-relaxed mb-6">
+              Esta aula está em processo de sincronização e gravação de áudio e interações. As Aulas 01 e 02 das matérias base já estão 100% disponíveis para estudo com narração ativa agora!
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setAulaPendenteModal(null)}
+              className="w-full py-3 rounded-2xl font-black text-sm bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black shadow-lg shadow-amber-950/50 active:scale-95 transition"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
