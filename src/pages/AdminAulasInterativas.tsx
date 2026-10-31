@@ -39,58 +39,107 @@ export default function AdminAulasInterativas() {
   const navigate = useNavigate();
   const [aulaAtiva, setAulaAtiva] = useState<AulaItem | null>(null);
 
+  // Quando a aula estiver aberta: Modo Tela Cheia Imersivo 100% na Temática de Direito Penal
+  if (aulaAtiva) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-[#120409] flex flex-col w-screen h-screen overflow-hidden">
+        {/* Cabeçalho Superior Temático (Direito Penal - Vinho/Vermelho/Dourado) */}
+        <header
+          className="flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 border-b border-[rgba(226,62,87,0.35)] shrink-0 z-30 shadow-lg shadow-black/60"
+          style={{
+            background: 'linear-gradient(180deg, #280611 0%, #16040a 100%)',
+            paddingTop: 'calc(0.6rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+          }}
+        >
+          {/* Botão de Voltar Padrão Premium */}
+          <div className="flex items-center gap-3 min-w-0">
+            <button
+              type="button"
+              onClick={() => setAulaAtiva(null)}
+              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[rgba(46,15,24,0.85)] border border-[rgba(226,62,87,0.45)] flex items-center justify-center shrink-0 text-[#ff8296] hover:bg-[rgba(66,20,34,1)] hover:text-white transition active:scale-95 shadow-md shadow-black/40"
+              aria-label="Voltar ao catálogo"
+            >
+              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
+            </button>
+
+            <div className="min-w-0 flex flex-col justify-center">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#ff8296] truncate">
+                  DIREITO PENAL · AULA INTERATIVA
+                </span>
+                <span className="hidden xs:inline-block text-[10px] px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30">
+                  {aulaAtiva.etapas} Etapas
+                </span>
+              </div>
+              <h2 className="text-xs sm:text-sm font-bold text-white truncate font-serif">
+                {aulaAtiva.titulo}
+              </h2>
+            </div>
+          </div>
+
+          {/* Ações da direita: Badge R2 e Abrir em Nova Aba */}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="hidden sm:inline-flex text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/30 items-center gap-1.5 shadow-sm">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Servido via R2
+            </span>
+            <a
+              href={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
+              target="_blank"
+              rel="noreferrer"
+              className="p-2 sm:p-2.5 rounded-xl border border-[rgba(226,62,87,0.35)] bg-[rgba(46,15,24,0.7)] text-[#ff8296] hover:text-white transition hover:bg-[rgba(66,20,34,0.9)] active:scale-95"
+              title="Abrir em nova aba"
+            >
+              <ExternalLink className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+            </a>
+          </div>
+        </header>
+
+        {/* Iframe 100% Tela Cheia Sem Sobreposições e Sem Scrollbars */}
+        <div className="flex-1 w-full h-full relative overflow-hidden bg-[#120409]">
+          <iframe
+            src={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
+            title={aulaAtiva.titulo}
+            className="w-full h-full border-0 absolute inset-0"
+            allow="autoplay; clipboard-write; fullscreen"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white pb-20">
-      {/* Quando a aula estiver ativa: Modo Tela Cheia Imersivo com o HTML Exato Original */}
-      {aulaAtiva && (
-        <div className="fixed inset-0 z-50 bg-[#120409] flex flex-col w-screen h-screen">
-          {/* Barra superior de navegação discreta */}
-          <div className="flex items-center justify-between px-3 sm:px-5 py-2 bg-[#140409]/95 border-b border-[rgba(226,62,87,0.25)] backdrop-blur-md shrink-0">
-            <div className="flex items-center gap-3 min-w-0">
-              <button
-                onClick={() => setAulaAtiva(null)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[rgba(226,62,87,0.3)] bg-[rgba(46,15,24,0.6)] text-xs font-bold text-[#f8edef] hover:bg-[rgba(56,18,30,0.8)] transition active:scale-95"
-              >
-                <ArrowLeft className="w-4 h-4 text-[#ff8296]" />
-                <span>Voltar ao catálogo</span>
-              </button>
-              <span className="hidden md:inline-block text-xs font-bold text-[#f8edef] truncate font-serif">
-                {aulaAtiva.titulo}
-              </span>
+      {/* Cabeçalho Temático de Direito Penal para o Catálogo */}
+      <header
+        className="sticky top-0 z-40 flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-[rgba(226,62,87,0.3)] shadow-lg shadow-black/50 backdrop-blur-md"
+        style={{
+          background: 'linear-gradient(180deg, rgba(38,6,15,0.96) 0%, rgba(20,4,9,0.96) 100%)',
+          paddingTop: 'calc(1rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+        }}
+      >
+        <div className="flex items-center gap-3.5 min-w-0">
+          <button
+            type="button"
+            onClick={() => navigate('/admin-funcoes')}
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-[rgba(46,15,24,0.85)] border border-[rgba(226,62,87,0.4)] flex items-center justify-center shrink-0 text-[#ff8296] hover:bg-[rgba(66,20,34,1)] hover:text-white transition active:scale-95"
+            aria-label="Voltar"
+          >
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+          </button>
+          <div>
+            <div className="text-[10px] font-extrabold uppercase tracking-widest text-[#ff8296]">
+              PAINEL ADMINISTRATIVO
             </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Servido via Cloudflare R2
-              </span>
-              <a
-                href={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
-                target="_blank"
-                rel="noreferrer"
-                className="p-1.5 rounded-xl border border-[rgba(226,62,87,0.3)] bg-[rgba(46,15,24,0.6)] text-[#ff8296] hover:text-white transition hover:bg-[rgba(56,18,30,0.8)]"
-                title="Abrir em nova aba"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
-          </div>
-
-          {/* Iframe 100% Tela Cheia */}
-          <div className="flex-1 w-full h-full relative overflow-hidden bg-[#120409]">
-            <iframe
-              src={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
-              title={aulaAtiva.titulo}
-              className="w-full h-full border-0 absolute inset-0"
-              allow="autoplay; clipboard-write; fullscreen"
-            />
+            <h1 className="text-lg sm:text-xl font-bold tracking-wide text-white uppercase font-sans">
+              Aulas Interativas
+            </h1>
           </div>
         </div>
-      )}
 
-      <PageHeader 
-        title="Aulas Interativas" 
-        onBack={() => navigate('/admin-funcoes')} 
-      />
+        <span className="text-[11px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full bg-red-500/15 text-[#ff8296] border border-red-500/30">
+          Direito Penal
+        </span>
+      </header>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Banner de Apresentação com Identidade de Direito Penal */}

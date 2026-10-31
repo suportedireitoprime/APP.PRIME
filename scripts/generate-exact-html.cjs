@@ -98,37 +98,40 @@ const newCSSLayout = `body{
         border-radius:0;border:none;box-shadow:none;
       }
       header{
-        padding:10px 16px 8px;
-        border-bottom:1px solid rgba(226,62,87,.2);
-        background:rgba(20,4,9,.88);
+        padding:14px 14px 10px !important;
+        border-bottom:1px solid rgba(226,62,87,.25) !important;
+        background:rgba(20,4,9,.96) !important;
         backdrop-filter:blur(14px);
         -webkit-backdrop-filter:blur(14px);
-        flex:0 0 auto;
-        width:100%;
+        flex:0 0 auto !important;
+        width:100% !important;
+        box-sizing:border-box !important;
         z-index:20;
       }
       .header-wrap{
         max-width:860px;
         margin:0 auto;
         width:100%;
+        box-sizing:border-box !important;
       }
-      .hrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-      .subject{color:var(--red2);font-weight:700;font-size:11px;letter-spacing:2.2px}
-      .design{color:var(--muted);font-size:10.5px;letter-spacing:1.2px;font-weight:600;white-space:nowrap}
-      h1{font-family:"Playfair Display",Georgia,serif;font-size:19px;line-height:1.2;margin:3px 0 2px;font-weight:800}
+      .hrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px}
+      .subject{color:var(--red2);font-weight:800;font-size:11px;letter-spacing:2px;text-transform:uppercase}
+      .design{color:var(--gold);font-size:10px;letter-spacing:1px;font-weight:700;white-space:nowrap;background:rgba(212,175,55,.12);padding:2px 6px;border-radius:6px;border:1px solid rgba(212,175,55,.25)}
+      h1{font-family:"Playfair Display",Georgia,serif;font-size:19px;line-height:1.25;margin:4px 0 3px;font-weight:800;color:#fff}
       .etapa{color:var(--muted);font-size:12px;margin:0 0 6px}
       .etapa b{color:var(--ink);font-weight:600}
-      .track{height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-bottom:6px}
+      .track{height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-bottom:4px}
       .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
 
       /* Área de leitura centralizada SEM barra de scroll */
       .scroll{
         flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
-        padding:16px 16px 24px;
+        padding:16px 14px 24px;
         scrollbar-width:none;
         -ms-overflow-style:none;
         overscroll-behavior:contain;
         width:100%;
+        box-sizing:border-box !important;
       }
       .scroll::-webkit-scrollbar{
         display:none;width:0;height:0;
@@ -137,17 +140,21 @@ const newCSSLayout = `body{
         max-width:860px;
         margin-left:auto;
         margin-right:auto;
+        box-sizing:border-box !important;
       }
 
-      /* Rodapé com Player Centralizado */
+      /* Rodapé com Player Centralizado 100% Responsivo */
       footer{
-        padding:8px 12px calc(8px + env(safe-area-inset-bottom)) !important;
-        border-top:1px solid rgba(226,62,87,.22) !important;
-        background:rgba(20,4,9,.95) !important;
-        backdrop-filter:blur(14px);
-        -webkit-backdrop-filter:blur(14px);
+        padding:8px 8px calc(8px + env(safe-area-inset-bottom)) !important;
+        border-top:1px solid rgba(226,62,87,.25) !important;
+        background:rgba(20,4,9,.97) !important;
+        backdrop-filter:blur(16px);
+        -webkit-backdrop-filter:blur(16px);
         flex:0 0 auto !important;
         width:100% !important;
+        max-width:100% !important;
+        overflow:hidden !important;
+        box-sizing:border-box !important;
         z-index:30;
       }
       .footer-wrap{
@@ -156,19 +163,19 @@ const newCSSLayout = `body{
         display:flex;
         align-items:center;
         justify-content:space-between;
-        gap:8px;
+        gap:6px;
         width:100%;
+        box-sizing:border-box !important;
       }
       .navbtn{
         flex:0 0 auto !important;
         width:auto !important;
-        min-width:80px !important;
-        max-width:96px !important;
-        height:44px !important;
-        font-size:13px !important;
+        min-width:64px !important;
+        height:42px !important;
+        font-size:12px !important;
         font-weight:700 !important;
-        padding:0 10px !important;
-        border-radius:12px !important;
+        padding:0 8px !important;
+        border-radius:10px !important;
         cursor:pointer;
         display:inline-flex !important;
         align-items:center;
@@ -178,6 +185,7 @@ const newCSSLayout = `body{
         color:var(--ink) !important;
         white-space:nowrap !important;
         transition:all .15s ease;
+        box-sizing:border-box !important;
       }
       .navbtn:hover{background:rgba(56,18,30,.9) !important}
       .navbtn:active{transform:scale(0.96)}
@@ -194,23 +202,25 @@ const newCSSLayout = `body{
       .audio{
         flex:1 1 auto !important;
         min-width:0 !important;
-        height:44px !important;
+        height:42px !important;
         margin:0 !important;
         background:linear-gradient(90deg,rgba(46,15,24,.92),rgba(33,10,17,.96)) !important;
         border:1px solid rgba(226,62,87,.45) !important;
-        border-radius:12px !important;
-        padding:4px 10px !important;
+        border-radius:10px !important;
+        padding:3px 8px !important;
         cursor:pointer;
         display:flex !important;
         flex-direction:row !important;
         align-items:center !important;
-        gap:8px !important;
+        gap:6px !important;
         box-shadow:0 4px 14px rgba(0,0,0,.4);
+        box-sizing:border-box !important;
+        overflow:hidden !important;
       }
       .playbtn{
-        flex:0 0 32px !important;
-        width:32px !important;
-        height:32px !important;
+        flex:0 0 30px !important;
+        width:30px !important;
+        height:30px !important;
         border-radius:50% !important;
         background:linear-gradient(135deg,#ff7a8a,#c8102e) !important;
         border:1px solid rgba(255,255,255,.25) !important;
@@ -224,7 +234,7 @@ const newCSSLayout = `body{
       }
       .playbtn:hover{transform:scale(1.08)}
       .playbtn:active{transform:scale(0.92)}
-      .playbtn svg{width:14px;height:14px;fill:#fff}
+      .playbtn svg{width:13px;height:13px;fill:#fff}
 
       .acontrol{
         flex:1 1 auto !important;
@@ -232,8 +242,9 @@ const newCSSLayout = `body{
         display:flex !important;
         flex-direction:column !important;
         justify-content:center !important;
-        gap:3px !important;
-        width:calc(100% - 40px) !important;
+        gap:2px !important;
+        overflow:hidden !important;
+        box-sizing:border-box !important;
       }
       .arow{
         display:flex !important;
@@ -241,31 +252,39 @@ const newCSSLayout = `body{
         justify-content:space-between !important;
         align-items:center !important;
         width:100% !important;
+        min-width:0 !important;
         margin:0 !important;
-        line-height:1.2 !important;
+        line-height:1.1 !important;
+        gap:4px !important;
       }
       .alabel{
         color:var(--red2) !important;
-        font-size:9.5px !important;
+        font-size:9px !important;
         font-weight:700 !important;
-        letter-spacing:1.2px !important;
+        letter-spacing:1px !important;
         white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
         text-transform:uppercase;
+        flex:1 1 auto !important;
+        min-width:0 !important;
       }
       .atime{
         color:var(--muted) !important;
-        font-size:10.5px !important;
+        font-size:10px !important;
         font-variant-numeric:tabular-nums !important;
         font-weight:600 !important;
         white-space:nowrap !important;
+        flex:0 0 auto !important;
+        margin-left:auto !important;
       }
       .atrack{
         position:relative;
         width:100% !important;
         height:4px !important;
-        border-radius:99px;
+        border-radius:99px !important;
         background:rgba(255,255,255,.14) !important;
-        overflow:hidden;
+        overflow:hidden !important;
         cursor:pointer;
         margin:0 !important;
       }
@@ -273,15 +292,21 @@ const newCSSLayout = `body{
         height:100% !important;
         width:0%;
         background:linear-gradient(90deg,var(--red),var(--gold)) !important;
-        border-radius:99px;
+        border-radius:99px !important;
+        transition:width .1s linear;
       }
 
       @media (max-width:480px){
-        .navbtn{min-width:74px !important;font-size:12px !important;padding:0 6px !important}
-        .alabel{font-size:8.5px !important;letter-spacing:0.8px !important}
+        header{padding:12px 10px 8px !important}
+        h1{font-size:16px !important}
+        .etapa{font-size:11px !important}
+        .footer-wrap{gap:4px !important}
+        .navbtn{min-width:60px !important;font-size:11px !important;padding:0 6px !important;height:38px !important}
+        .audio{padding:2px 6px !important;height:38px !important}
+        .playbtn{flex:0 0 28px !important;width:28px !important;height:28px !important}
+        .playbtn svg{width:11px !important;height:11px !important}
+        .alabel{font-size:8px !important;letter-spacing:0.5px !important}
         .atime{font-size:9.5px !important}
-        header{padding:8px 12px 6px}
-        h1{font-size:17px}
       }
       .banner{`;
 
