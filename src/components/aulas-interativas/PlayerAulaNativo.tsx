@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   ArrowLeft, Play, Pause, Check, CheckCircle2, 
   RotateCcw, Sparkles, BookOpen, Volume2, VolumeX,
-  ChevronRight, ChevronLeft, Award, HelpCircle, XCircle
+  ChevronRight, ChevronLeft, Award, HelpCircle, XCircle,
+  Clock, GitBranch, Link2, CheckSquare
 } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { AulaData, SlideItem } from '@/types/aulaInterativa';
@@ -66,8 +67,14 @@ export function PlayerAulaNativo({
   const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(null);
   const [respostaConfirmada, setRespostaConfirmada] = useState(false);
   const [flashcardVirado, setFlashcardVirado] = useState(false);
+  const [vfRespostas, setVfRespostas] = useState<Record<number, boolean | null>>({});
+  const [cartasReveladas, setCartasReveladas] = useState<Record<number, boolean>>({});
+  const [pontoAtivo, setPontoAtivo] = useState<number>(0);
+  const [parSelecionadoL, setParSelecionadoL] = useState<number | null>(null);
+  const [paresConectados, setParesConectados] = useState<Record<number, number>>({});
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mainRef = useRef<HTMLElement | null>(null);
   const touchStartXRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
 
@@ -141,6 +148,18 @@ export function PlayerAulaNativo({
   const slideAtual: SlideItem | undefined = slides[idx];
   const isQuestao = slideAtual?.tipo === 'Questão' || slideAtual?.tipo === 'Questão de banca' || Boolean(slideAtual?.opcoes);
   const isFlashcard = slideAtual?.tipo === 'Flashcard';
+  const isInterativo = Boolean(
+    isQuestao || 
+    isFlashcard || 
+    slideAtual?.tipo === 'Karaokê' || 
+    slideAtual?.tipo === 'Ligar termos' || 
+    slideAtual?.tipo === 'Verdadeiro ou falso' || 
+    slideAtual?.tipo === 'Completar' || 
+    slideAtual?.tipo === 'Desafio' ||
+    slideAtual?.tipo === 'Explorar' ||
+    slideAtual?.tipo === 'Toque e revele' ||
+    Boolean(slideAtual?.frases && slideAtual.frases.length > 0)
+  );
 
   // URL do áudio da etapa atual (se houver gravação no R2)
   const currentAudioSrc = useMemo(() => {
@@ -157,11 +176,14 @@ export function PlayerAulaNativo({
 
   // Sentenças da narração para sincronizar o karaokê
   const frasesNarr = useMemo(() => {
+    if (slideAtual?.frases && slideAtual.frases.length > 0) {
+      return slideAtual.frases;
+    }
     const text = slideAtual?.narr || '';
     if (!text) return [];
     const matches = text.match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g);
     return matches && matches.length > 0 ? matches.map(s => s.trim()) : [text.trim()];
-  }, [slideAtual?.narr]);
+  }, [slideAtual?.narr, slideAtual?.frases]);
 
   // HTML com o Grifo Leve por cima na frase ativa
   const htmlComGrifo = useMemo(() => {
@@ -180,6 +202,18 @@ export function PlayerAulaNativo({
     setRespostaSelecionada(null);
     setRespostaConfirmada(false);
     setFlashcardVirado(false);
+    setVfRespostas({});
+    setCartasReveladas({});
+    setPontoAtivo(0);
+    setParSelecionadoL(null);
+    setParesConectados({});
+
+    // SEMPRE rolar para o topo absoluto do conteúdo ao passar a página
+    if (mainRef.current) {
+      mainRef.current.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      mainRef.current.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
 
     // Se temos áudio MP3 gravado no R2
     if (currentAudioSrc && audioRef.current) {
@@ -201,15 +235,15 @@ export function PlayerAulaNativo({
       utter.onstart = () => setTocando(true);
       utter.onend = () => {
         setTocando(false);
-        // Autoplay contínuo: avançar automaticamente ao terminar narração
-        if (idx < total - 1) {
+        // Autoplay contínuo: avançar automaticamente apenas em conteúdo puro
+        if (!isInterativo && idx < total - 1) {
           setIdx(prev => prev + 1);
         }
       };
       utter.onerror = () => setTocando(false);
       window.speechSynthesis.speak(utter);
     }
-  }, [idx, currentAudioSrc, slideAtual?.narr, total]);
+  }, [idx, currentAudioSrc, slideAtual?.narr, total, isInterativo]);
 
   // Sincronização do Karaokê em tempo real
   const handleTimeUpdate = () => {
@@ -228,8 +262,9 @@ export function PlayerAulaNativo({
 
   const handleAudioEnded = () => {
     setTocando(false);
-    // Autoplay contínuo: ao terminar áudio, avança automaticamente para a próxima etapa
-    if (idx < total - 1) {
+    // Em etapas interativas (Flashcards, Questões, Karaokê, etc.), JAMAIS avança sozinho!
+    // O aluno decide quando quer avançar clicando em "Próximo".
+    if (!isInterativo && idx < total - 1) {
       setIdx(prev => prev + 1);
     }
   };
@@ -358,6 +393,21 @@ export function PlayerAulaNativo({
         }
         .img-zoom-in {
           animation: imgZoomInSlow 2.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          will-change: transform, opacity;
+        }
+
+        @keyframes pageTurnSmooth {
+          0% {
+            opacity: 0;
+            transform: translateX(20px) scale(0.985);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0) scale(1.0);
+          }
+        }
+        .animate-page-turn {
+          animation: pageTurnSmooth 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
           will-change: transform, opacity;
         }
 
@@ -743,9 +793,9 @@ export function PlayerAulaNativo({
       </div>
 
       {/* ÁREA CENTRAL DE CONTEÚDO (ROLAGEM SUAVE SEM SCROLLBAR VISÍVEL COM PADDING SEGURO NO RODAPÉ) */}
-      <main className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 pb-44 sm:pb-48 max-w-3xl mx-auto scroll-smooth">
+      <main ref={mainRef} className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 pb-44 sm:pb-48 max-w-3xl mx-auto scroll-smooth">
         {slideAtual && (
-          <div key={idx} className="space-y-4 sm:space-y-5 animate-in fade-in duration-300">
+          <div key={idx} className="space-y-4 sm:space-y-5 animate-page-turn">
             {/* Tag / Kicker da Etapa idêntico ao HTML (.kicker com ◆ dourado) */}
             <div className="flex items-center justify-between gap-2">
               <span 
@@ -934,26 +984,245 @@ export function PlayerAulaNativo({
               </div>
             )}
 
-            {/* Bloco de Flashcard Interativo com Destaque e Efeito de Virar */}
+            {/* Bloco de Flashcard Interativo com Altura Mínima Estável (Sem picar) e Suporte HTML no Verso */}
             {isFlashcard && (
               <div 
                 onClick={() => setFlashcardVirado(!flashcardVirado)}
-                className="cursor-pointer rounded-3xl border border-amber-500/40 bg-gradient-to-b from-amber-950/40 via-black/80 to-[#1d0810] p-6 sm:p-9 text-center transition-all duration-300 hover:border-amber-400 active:scale-98 shadow-2xl shadow-amber-950/30 group animate-in fade-in zoom-in-[0.98] duration-300"
+                className="cursor-pointer min-h-[290px] sm:min-h-[330px] rounded-3xl border border-amber-500/40 bg-gradient-to-b from-amber-950/40 via-black/80 to-[#1d0810] p-6 sm:p-8 flex flex-col justify-between text-center transition-all duration-300 hover:border-amber-400 active:scale-[0.99] shadow-2xl shadow-amber-950/30 group animate-in fade-in zoom-in-[0.98] duration-300"
               >
-                <div className="flex items-center justify-between gap-2 mb-4">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30">
+                <div className="flex items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
+                  <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-amber-400 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30">
                     {flashcardVirado ? 'VERSO · RESPOSTA' : 'FRENTE · CONCEITO'}
                   </span>
-                  <span className="text-xs text-zinc-400 font-medium flex items-center gap-1.5 group-hover:text-amber-300 transition">
-                    <RotateCcw className="w-4 h-4" /> Toque para virar
+                  <span className="text-xs text-amber-200/80 font-medium flex items-center gap-1.5 group-hover:text-amber-300 transition">
+                    <RotateCcw className={`w-4 h-4 transition-transform duration-500 ${flashcardVirado ? 'rotate-180 text-amber-400' : ''}`} /> 
+                    <span>Toque para virar</span>
                   </span>
                 </div>
-                <p className="text-lg sm:text-2xl font-serif font-bold text-white leading-relaxed my-4">
-                  {flashcardVirado ? slideAtual.verso : slideAtual.frente}
-                </p>
-                <p className="text-[11px] text-zinc-500 mt-2">
-                  {flashcardVirado ? 'Toque novamente para voltar à frente' : 'Teste sua memória antes de virar o cartão'}
-                </p>
+
+                <div className="my-auto py-5 flex items-center justify-center">
+                  {flashcardVirado ? (
+                    <div 
+                      className="text-base sm:text-xl font-serif text-white leading-relaxed max-w-xl mx-auto space-y-3 [&_b]:text-[#e9cd6d] [&_strong]:text-[#e9cd6d] [&_p]:mb-2"
+                      dangerouslySetInnerHTML={{ __html: slideAtual.verso || '' }}
+                    />
+                  ) : (
+                    <p className="text-lg sm:text-2xl font-serif font-bold text-white leading-relaxed max-w-xl mx-auto">
+                      {slideAtual.frente}
+                    </p>
+                  )}
+                </div>
+
+                <div className="border-t border-white/10 pt-3">
+                  <p className="text-[11px] sm:text-xs text-zinc-400 font-medium">
+                    {flashcardVirado 
+                      ? '✓ Resposta revelada · Toque novamente para virar à frente' 
+                      : '💡 Teste sua memória e tente responder antes de virar'}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Bloco de Karaokê Interativo: Frases Reais da Narração com Grifo Sincronizado */}
+            {(slideAtual.tipo === 'Karaokê' || (!slideAtual.corpo && slideAtual.frases && slideAtual.frases.length > 0)) && (
+              <div className="rounded-3xl border border-white/15 p-5 sm:p-6 bg-gradient-to-b from-[#2e1219]/90 to-[#1d0810]/95 shadow-2xl space-y-4 animate-in fade-in zoom-in-[0.98] duration-300">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <span 
+                    className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5"
+                    style={{ color: tema.destaque }}
+                  >
+                    <Volume2 className="w-4 h-4" />
+                    <span>Recapitulação · Siga a Narração</span>
+                  </span>
+                  <span className="text-[11px] font-bold text-zinc-400">
+                    Toque em uma frase para ouvir
+                  </span>
+                </div>
+
+                <div className="space-y-2.5 pt-1">
+                  {(slideAtual.frases || frasesNarr).map((frase, fi) => {
+                    const isAtiva = tocando && karaIdx === fi;
+                    return (
+                      <div
+                        key={fi}
+                        onClick={() => {
+                          if (audioRef.current && duracao > 0 && frasesNarr.length > 0) {
+                            audioRef.current.currentTime = (fi / frasesNarr.length) * duracao;
+                            if (!tocando) {
+                              audioRef.current.play().then(() => setTocando(true)).catch(() => {});
+                            }
+                          }
+                        }}
+                        className={`p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 active:scale-[0.99] ${
+                          isAtiva
+                            ? 'border-amber-400/90 bg-amber-500/20 shadow-lg shadow-amber-500/15 ring-1 ring-amber-400/50 scale-[1.01]'
+                            : 'border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300'
+                        }`}
+                      >
+                        <span 
+                          className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5 ${
+                            isAtiva ? 'bg-amber-400 text-black' : 'bg-white/10 text-zinc-400'
+                          }`}
+                        >
+                          {fi + 1}
+                        </span>
+                        <p className={`text-sm sm:text-base leading-relaxed ${isAtiva ? 'text-amber-200 font-bold' : 'text-zinc-200'}`}>
+                          {frase}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Bloco de Ligar Termos Interativo */}
+            {slideAtual.pares && slideAtual.pares.length > 0 && (
+              <div className="rounded-3xl border border-white/15 p-5 sm:p-6 bg-gradient-to-b from-[#2e1219]/90 to-[#1d0810]/95 shadow-2xl space-y-4">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <span className="text-xs font-black uppercase tracking-widest text-[#d4af37] flex items-center gap-1.5">
+                    <Link2 className="w-4 h-4" />
+                    <span>Ligue os Termos Corretos</span>
+                  </span>
+                  <span className="text-[11px] font-bold text-zinc-400">
+                    Toque no termo e depois na definição
+                  </span>
+                </div>
+
+                <div className="space-y-3 pt-2">
+                  {slideAtual.pares.map(([termo, def], pi) => {
+                    const isConectado = paresConectados[pi] !== undefined;
+                    const isSelected = parSelecionadoL === pi;
+
+                    return (
+                      <div 
+                        key={pi}
+                        onClick={() => {
+                          if (isConectado) return;
+                          if (parSelecionadoL === null) {
+                            setParSelecionadoL(pi);
+                          } else if (parSelecionadoL === pi) {
+                            setParSelecionadoL(null);
+                          } else {
+                            // Conectar
+                            setParesConectados(prev => ({ ...prev, [parSelecionadoL]: pi }));
+                            setParSelecionadoL(null);
+                          }
+                        }}
+                        className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+                          isConectado
+                            ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-200'
+                            : isSelected
+                            ? 'border-amber-400 bg-amber-400/20 text-white ring-1 ring-amber-400 shadow-md'
+                            : 'border-white/10 bg-white/5 hover:bg-white/10 text-zinc-200'
+                        }`}
+                      >
+                        <span className="font-bold text-sm sm:text-base text-amber-300">{termo}</span>
+                        <span className="text-xs sm:text-sm text-zinc-300 sm:text-right">{def}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Bloco de Toque e Revele (Cartas com Perguntas e Respostas) */}
+            {slideAtual.cartas && slideAtual.cartas.length > 0 && (
+              <div className="space-y-3 pt-1">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+                  <span className="text-xs font-black uppercase tracking-widest text-[#d4af37] flex items-center gap-1.5">
+                    <CheckSquare className="w-4 h-4" />
+                    <span>Toque, Pense e Revele</span>
+                  </span>
+                  <span className="text-[11px] font-bold text-zinc-400">
+                    Toque em cada carta para virar
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {slideAtual.cartas.map((carta: any, ci: number) => {
+                    const revelada = Boolean(cartasReveladas[ci]);
+                    return (
+                      <div
+                        key={ci}
+                        onClick={() => setCartasReveladas(prev => ({ ...prev, [ci]: !prev[ci] }))}
+                        className={`p-4 sm:p-5 rounded-2xl border min-h-[140px] flex flex-col justify-between transition-all cursor-pointer shadow-lg ${
+                          revelada
+                            ? 'border-amber-400/50 bg-[#2e1219]'
+                            : 'border-white/10 bg-white/5 hover:bg-white/10'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-amber-400 mb-2">
+                          <span>Carta {ci + 1}</span>
+                          <span className="text-zinc-400 flex items-center gap-1">
+                            <RotateCcw className="w-3 h-3" /> {revelada ? 'Ocultar' : 'Revelar'}
+                          </span>
+                        </div>
+                        {revelada ? (
+                          <div 
+                            className="text-xs sm:text-sm text-emerald-200 leading-relaxed font-serif my-auto [&_b]:text-[#e9cd6d]"
+                            dangerouslySetInnerHTML={{ __html: carta.r }}
+                          />
+                        ) : (
+                          <p className="text-xs sm:text-sm text-white font-bold leading-relaxed my-auto font-serif">
+                            {carta.p}
+                          </p>
+                        )}
+                        <span className="text-[10px] text-zinc-500 mt-2">
+                          {revelada ? '✓ Resposta correta' : 'Toque para checar a resposta'}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Bloco de Explorar Hotspots na Imagem */}
+            {slideAtual.pontos && slideAtual.pontos.length > 0 && (
+              <div className="space-y-4 pt-1">
+                <div className="relative w-full rounded-2xl overflow-hidden border border-white/15 shadow-xl bg-black/50 aspect-[16/9]">
+                  {imagemUrl && (
+                    <img 
+                      src={imagemUrl} 
+                      alt="Cena interativa" 
+                      className="w-full h-full object-cover" 
+                    />
+                  )}
+                  {slideAtual.pontos.map((ponto: any, pi: number) => {
+                    const isAtivo = pontoAtivo === pi;
+                    return (
+                      <button
+                        key={pi}
+                        type="button"
+                        onClick={() => setPontoAtivo(pi)}
+                        style={{ left: `${ponto.x}%`, top: `${ponto.y}%` }}
+                        className={`absolute w-8 h-8 -ml-4 -mt-4 rounded-full flex items-center justify-center font-black text-xs transition-all shadow-xl ${
+                          isAtivo
+                            ? 'bg-amber-400 text-black ring-4 ring-amber-400/40 scale-125 z-10'
+                            : 'bg-black/80 text-amber-400 border border-amber-400/60 hover:scale-110'
+                        }`}
+                      >
+                        {pi + 1}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {slideAtual.pontos[pontoAtivo] && (
+                  <div className="p-4 sm:p-5 rounded-2xl border border-amber-500/30 bg-[#250d14] space-y-2 animate-in fade-in duration-200 shadow-xl">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px] font-black">
+                        {pontoAtivo + 1}
+                      </span>
+                      <h4 className="font-bold text-white text-sm sm:text-base font-serif">
+                        {slideAtual.pontos[pontoAtivo].titulo}
+                      </h4>
+                    </div>
+                    <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                      {slideAtual.pontos[pontoAtivo].texto}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -963,6 +1232,15 @@ export function PlayerAulaNativo({
                 className="aula-html-tipografia pt-1"
                 dangerouslySetInnerHTML={{ __html: htmlComGrifo }}
               />
+            )}
+
+            {/* Fallback de Conteúdo de Texto caso não haja corpo HTML e não seja interativo */}
+            {!slideAtual.corpo && slideAtual.texto && !isQuestao && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !slideAtual.frases && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && (
+              <div className="aula-html-tipografia pt-1 space-y-3">
+                <p className="text-base sm:text-lg leading-relaxed text-zinc-200">
+                  {slideAtual.texto}
+                </p>
+              </div>
             )}
           </div>
         )}
