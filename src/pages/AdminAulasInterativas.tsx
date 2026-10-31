@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Sparkles, Play, CheckCircle2, BookOpen, Layers, 
-  ExternalLink, ArrowLeft, Headphones, Clock, Check
+  ArrowLeft, Clock, Check, Lock, HelpCircle, Award, 
+  RotateCcw, AlertCircle, Unlock
 } from 'lucide-react';
+import { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
+import { ModalRevisarFlashcards } from '@/components/aulas-interativas/ModalRevisarFlashcards';
+import { ModalPraticarQuestoes } from '@/components/aulas-interativas/ModalPraticarQuestoes';
 
 interface AulaItem {
   id: string;
@@ -52,6 +56,8 @@ const AULAS_CATALOGO: AulaItem[] = [
 ];
 
 const PROGRESSO_STORAGE_KEY = 'aulas_interativas_progresso_v1';
+const FLASHCARDS_STORAGE_KEY = 'aulas_interativas_flashcards_v1';
+const QUESTOES_STORAGE_KEY = 'aulas_interativas_questoes_v1';
 
 function getStoredProgresso(): Record<string, { etapaAtual: number }> {
   try {
@@ -70,10 +76,42 @@ function saveStoredProgresso(aulaId: string, etapaAtual: number) {
   } catch {}
 }
 
+function getStoredBooleanMap(key: string): Record<string, boolean> {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function setStoredBoolean(key: string, id: string, val: boolean) {
+  try {
+    const obj = getStoredBooleanMap(key);
+    obj[id] = val;
+    localStorage.setItem(key, JSON.stringify(obj));
+  } catch {}
+}
+
 export default function AdminAulasInterativas() {
   const navigate = useNavigate();
   const [aulaAtiva, setAulaAtiva] = useState<AulaItem | null>(null);
   const [progressoMap, setProgressoMap] = useState<Record<string, { etapaAtual: number }>>(() => getStoredProgresso());
+  const [flashcardsConcluidos, setFlashcardsConcluidos] = useState<Record<string, boolean>>(() => getStoredBooleanMap(FLASHCARDS_STORAGE_KEY));
+  const [questoesConcluidas, setQuestoesConcluidas] = useState<Record<string, boolean>>(() => getStoredBooleanMap(QUESTOES_STORAGE_KEY));
+
+  // Estados dos Modais Interativos
+  const [modalFlashcardsAula, setModalFlashcardsAula] = useState<AulaItem | null>(null);
+  const [modalQuestoesAula, setModalQuestoesAula] = useState<AulaItem | null>(null);
+  const [toastAviso, setToastAviso] = useState<string | null>(null);
+  const [modoLivreTeste, setModoLivreTeste] = useState(false);
+
+  // Auto-dismiss do Toast
+  useEffect(() => {
+    if (!toastAviso) return;
+    const timer = setTimeout(() => setToastAviso(null), 3500);
+    return () => clearTimeout(timer);
+  }, [toastAviso]);
 
   // Listener para capturar avanço de etapa dentro do iframe da aula
   useEffect(() => {
@@ -112,8 +150,50 @@ export default function AdminAulasInterativas() {
     setAulaAtiva(aula);
   };
 
+  const concluirAulaManual = (aulaId: string, totalEtapas: number) => {
+    saveStoredProgresso(aulaId, totalEtapas);
+    setProgressoMap(prev => ({ ...prev, [aulaId]: { etapaAtual: totalEtapas } }));
+    setToastAviso('Aula marcada como 100% concluída! Módulo de Revisar (Flashcards) liberado.');
+  };
+
+  const abrirRevisarFlashcards = (aula: AulaItem) => {
+    const prog = calcularProgressoAula(aula);
+    const aulaConcluida = prog.porcentagem === 100 || prog.etapaAtual >= aula.etapas || modoLivreTeste;
+
+    if (!aulaConcluida) {
+      setToastAviso('Complete a aula primeiro para liberar os Flashcards de revisão!');
+      return;
+    }
+
+    setModalFlashcardsAula(aula);
+  };
+
+  const concluirFlashcards = (aulaId: string) => {
+    setStoredBoolean(FLASHCARDS_STORAGE_KEY, aulaId, true);
+    setFlashcardsConcluidos(prev => ({ ...prev, [aulaId]: true }));
+  };
+
+  const abrirPraticarQuestoes = (aula: AulaItem) => {
+    const fcOk = flashcardsConcluidos[aula.id] || modoLivreTeste;
+
+    if (!fcOk) {
+      setToastAviso('Conclua os Flashcards de revisão primeiro para liberar as Questões práticas!');
+      return;
+    }
+
+    setModalQuestoesAula(aula);
+  };
+
+  const concluirQuestoes = (aulaId: string) => {
+    setStoredBoolean(QUESTOES_STORAGE_KEY, aulaId, true);
+    setQuestoesConcluidas(prev => ({ ...prev, [aulaId]: true }));
+  };
+
   // Quando a aula estiver aberta: Modo Tela Cheia Imersivo 100% na Temática de Direito Penal
   if (aulaAtiva) {
+    const progAula = calcularProgressoAula(aulaAtiva);
+    const isConcluida = progAula.porcentagem === 100;
+
     return (
       <div className="fixed inset-0 z-[100] bg-[#120409] flex flex-col w-screen h-screen overflow-hidden">
         {/* Cabeçalho Superior Temático (Direito Penal - Vinho/Vermelho/Dourado) */}
@@ -150,9 +230,24 @@ export default function AdminAulasInterativas() {
             </div>
           </div>
 
-          {/* Ações da direita: Badge R2 */}
+          {/* Ações da direita: Marcar Concluída e Badge R2 */}
           <div className="flex items-center gap-2 shrink-0">
-            <span className="hidden sm:inline-flex text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/30 items-center gap-1.5 shadow-sm">
+            {!isConcluida ? (
+              <button
+                type="button"
+                onClick={() => concluirAulaManual(aulaAtiva.id, aulaAtiva.etapas)}
+                className="px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-[11px] font-bold text-emerald-300 transition flex items-center gap-1.5 shadow-sm active:scale-95"
+              >
+                <Check className="w-3.5 h-3.5 stroke-[3]" />
+                <span className="hidden xs:inline">Concluir Aula</span>
+              </button>
+            ) : (
+              <span className="px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300 text-[10px] font-bold border border-emerald-500/30 flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Concluída
+              </span>
+            )}
+
+            <span className="hidden md:inline-flex text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/30 items-center gap-1.5 shadow-sm">
               <CheckCircle2 className="w-3.5 h-3.5" /> Servido via R2
             </span>
           </div>
@@ -172,7 +267,17 @@ export default function AdminAulasInterativas() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-white pb-20">
+    <div className="min-h-screen bg-[#0D0D0D] text-white pb-20 relative">
+      {/* Toast Notificador Flutuante de Bloqueio */}
+      {toastAviso && (
+        <div className="fixed top-5 inset-x-4 max-w-md mx-auto z-[150] animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="rounded-2xl bg-black/90 backdrop-blur-md border border-[rgba(226,62,87,0.6)] p-3.5 shadow-2xl flex items-center gap-3 text-white">
+            <AlertCircle className="w-5 h-5 text-[#ff8296] shrink-0" />
+            <p className="text-xs font-medium leading-snug flex-1">{toastAviso}</p>
+          </div>
+        </div>
+      )}
+
       {/* Capa Hero Cinematográfica de Direito Penal (Full Bleed com degradê e bordas arredondadas embaixo) */}
       <div className="relative w-full h-[350px] sm:h-[410px] md:h-[450px] rounded-b-[36px] sm:rounded-b-[44px] overflow-hidden border-b border-[rgba(226,62,87,0.35)] shadow-2xl shadow-black/90">
         {/* Imagem de Fundo (Cena do Perito Criminal / Direito Penal) */}
@@ -214,7 +319,6 @@ export default function AdminAulasInterativas() {
             {/* Gráfico Circular Progress Ring */}
             <div className="relative w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0">
               <svg className="w-full h-full -rotate-90 transform-gpu" viewBox="0 0 44 44">
-                {/* Track cinza translúcido */}
                 <circle
                   cx="22"
                   cy="22"
@@ -222,27 +326,25 @@ export default function AdminAulasInterativas() {
                   className="stroke-[rgba(255,255,255,0.12)] fill-none"
                   strokeWidth="3.6"
                 />
-                {/* Anel preenchido com gradiente de Direito Penal */}
                 <circle
                   cx="22"
                   cy="22"
                   r="18"
                   className="fill-none transition-all duration-700 ease-out"
-                  stroke="url(#progressRingGradient)"
+                  stroke="url(#progressRingGradientHero)"
                   strokeWidth="3.6"
                   strokeDasharray={113.1}
                   strokeDashoffset={113.1 - (113.1 * Math.min(100, Math.max(0, porcentagemGeral))) / 100}
                   strokeLinecap="round"
                 />
                 <defs>
-                  <linearGradient id="progressRingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient id="progressRingGradientHero" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#ff8296" />
                     <stop offset="100%" stopColor="#c8102e" />
                   </linearGradient>
                 </defs>
               </svg>
 
-              {/* Porcentagem no centro do círculo */}
               <span className="absolute text-[11px] sm:text-xs font-black text-white font-sans tracking-tighter">
                 {porcentagemGeral}%
               </span>
@@ -285,13 +387,38 @@ export default function AdminAulasInterativas() {
               <BookOpen className="w-4 h-4 text-[#ff8296]" />
               <span>Matérias e Aulas Disponíveis ({AULAS_CATALOGO.length})</span>
             </h3>
+
+            {/* Toggle discreto de Modo Livre para Testes do Desenvolvedor */}
+            <button
+              type="button"
+              onClick={() => {
+                setModoLivreTeste(!modoLivreTeste);
+                setToastAviso(!modoLivreTeste ? 'Modo Livre Ativado: Todas as etapas desbloqueadas para teste.' : 'Modo Padrão Ativado: Travas progressivas ativadas.');
+              }}
+              className={`text-[10px] font-bold px-2.5 py-1 rounded-full border transition flex items-center gap-1.5 ${
+                modoLivreTeste 
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
+                  : 'bg-white/5 text-zinc-400 border-white/10 hover:text-white'
+              }`}
+            >
+              {modoLivreTeste ? <Unlock className="w-3 h-3 text-amber-300" /> : <Lock className="w-3 h-3" />}
+              <span>{modoLivreTeste ? 'Modo Livre Ativo' : 'Destravar para Teste'}</span>
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {AULAS_CATALOGO.map((aula) => {
               const progresso = calcularProgressoAula(aula);
               const jaIniciada = progresso.etapaAtual > 0;
-              const concluida = progresso.porcentagem === 100;
+              const aulaConcluida = progresso.porcentagem === 100 || progresso.etapaAtual >= aula.etapas || modoLivreTeste;
+              const flashcardsLiberados = aulaConcluida || modoLivreTeste;
+              const fcOk = flashcardsConcluidos[aula.id] || false;
+              const questoesLiberadas = (flashcardsLiberados && fcOk) || modoLivreTeste;
+              const qOk = questoesConcluidas[aula.id] || false;
+
+              const conteudo = CONTEUDO_AULAS[aula.id];
+              const totalCards = conteudo?.flashcards.length || 10;
+              const totalQuestoes = conteudo?.questoes.length || 6;
 
               return (
                 <div
@@ -316,9 +443,16 @@ export default function AdminAulasInterativas() {
                       </div>
 
                       <div className="min-w-0 flex-1 space-y-1.5">
-                        <span className="text-[11px] font-bold uppercase tracking-wider block truncate text-[#ff8296]">
-                          {aula.materia}
-                        </span>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-[11px] font-bold uppercase tracking-wider block truncate text-[#ff8296]">
+                            {aula.materia}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-[10px] text-[#e9cd6d] font-semibold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 shrink-0">
+                            <Clock className="w-3 h-3 text-[#e9cd6d]" />
+                            <span>{aula.duracaoMedia}</span>
+                          </span>
+                        </div>
+
                         <h4 className="text-sm sm:text-base font-bold text-white leading-snug line-clamp-1 group-hover:text-[#ff8296] transition-colors font-serif">
                           {aula.titulo}
                         </h4>
@@ -336,7 +470,7 @@ export default function AdminAulasInterativas() {
                         <span className="text-[#c9a7ad] font-semibold flex items-center gap-1.5">
                           <span 
                             className={`w-1.5 h-1.5 rounded-full ${
-                              concluida ? 'bg-emerald-400' : jaIniciada ? 'bg-[#ff8296]' : 'bg-zinc-600'
+                              aulaConcluida ? 'bg-emerald-400' : jaIniciada ? 'bg-[#ff8296]' : 'bg-zinc-600'
                             }`} 
                           />
                           <span>Progresso da Aula</span>
@@ -352,7 +486,7 @@ export default function AdminAulasInterativas() {
                           className="h-full rounded-full transition-all duration-500 ease-out"
                           style={{
                             width: `${Math.max(progresso.porcentagem, jaIniciada ? 3 : 0)}%`,
-                            background: concluida
+                            background: aulaConcluida
                               ? 'linear-gradient(90deg, #10b981 0%, #34d399 100%)'
                               : 'linear-gradient(90deg, #c8102e 0%, #ff8296 100%)',
                             boxShadow: jaIniciada ? '0 0 8px rgba(226,62,87,0.4)' : 'none'
@@ -362,41 +496,100 @@ export default function AdminAulasInterativas() {
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-[rgba(226,62,87,0.2)] flex items-center justify-between">
-                    {/* Tempo médio da aula */}
-                    <span className="inline-flex items-center gap-1.5 text-xs text-[#e9cd6d] font-semibold bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
-                      <Clock className="w-3.5 h-3.5 text-[#e9cd6d]" />
-                      <span>{aula.duracaoMedia}</span>
-                    </span>
-
+                  {/* ─────────────────────────────────────────────────────────────
+                      NOVA BARRA DE AÇÕES: 3 BOTÕES (AULA, REVISAR, PRATICAR)
+                      Botão Iniciar Aula À ESQUERDA
+                  ───────────────────────────────────────────────────────────── */}
+                  <div className="mt-4 pt-3.5 border-t border-[rgba(226,62,87,0.2)] grid grid-cols-3 gap-2">
+                    {/* Botão 1: Iniciar Aula (À Esquerda) */}
                     <button
                       type="button"
                       onClick={() => iniciarAula(aula)}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white transition active:scale-95 shadow-lg"
+                      className="py-2.5 px-2 rounded-xl text-xs font-bold text-white transition active:scale-95 shadow-md flex items-center justify-center gap-1.5"
                       style={{
-                        background: concluida 
-                          ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                        background: aulaConcluida
+                          ? 'linear-gradient(135deg, #2d1017 0%, #1a080d 100%)'
                           : 'linear-gradient(135deg, #ff7a8a 0%, #c8102e 100%)',
-                        boxShadow: concluida 
-                          ? '0 4px 14px rgba(16,185,129,0.4)'
-                          : '0 4px 14px rgba(226,62,87,0.4)',
-                        border: '1px solid rgba(255,255,255,0.2)'
+                        border: '1px solid rgba(226,62,87,0.5)',
+                        boxShadow: aulaConcluida ? 'none' : '0 2px 10px rgba(226,62,87,0.3)'
                       }}
                     >
-                      {concluida ? (
+                      {aulaConcluida ? (
                         <>
-                          <Check className="w-3.5 h-3.5 stroke-[3]" />
-                          <span>Revisar Aula</span>
+                          <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
+                          <span className="truncate">Ver Aula</span>
                         </>
                       ) : jaIniciada ? (
                         <>
                           <Play className="w-3.5 h-3.5 fill-current" />
-                          <span>Continuar Aula</span>
+                          <span className="truncate">Continuar</span>
                         </>
                       ) : (
                         <>
                           <Play className="w-3.5 h-3.5 fill-current" />
-                          <span>Iniciar Aula</span>
+                          <span className="truncate">Iniciar</span>
+                        </>
+                      )}
+                    </button>
+
+                    {/* Botão 2: Revisar (Flashcards) - Liberado após terminar a aula */}
+                    <button
+                      type="button"
+                      onClick={() => abrirRevisarFlashcards(aula)}
+                      className={`py-2.5 px-2 rounded-xl text-xs font-bold transition active:scale-95 flex items-center justify-center gap-1.5 shadow-md ${
+                        flashcardsLiberados
+                          ? fcOk
+                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
+                            : 'bg-gradient-to-r from-amber-600 to-amber-700 text-white border border-amber-400/40 shadow-amber-950/40'
+                          : 'bg-black/40 text-zinc-500 border border-white/5 cursor-not-allowed opacity-60'
+                      }`}
+                      title={!flashcardsLiberados ? 'Conclua a aula para liberar' : 'Revisar flashcards'}
+                    >
+                      {!flashcardsLiberados ? (
+                        <>
+                          <Lock className="w-3 h-3 text-zinc-500" />
+                          <span className="truncate">Revisar</span>
+                        </>
+                      ) : fcOk ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
+                          <span className="truncate">Revisar ({totalCards})</span>
+                        </>
+                      ) : (
+                        <>
+                          <Layers className="w-3.5 h-3.5" />
+                          <span className="truncate">Revisar ({totalCards})</span>
+                        </>
+                      )}
+                    </button>
+
+                    {/* Botão 3: Praticar (Questões) - Liberado após terminar os flashcards */}
+                    <button
+                      type="button"
+                      onClick={() => abrirPraticarQuestoes(aula)}
+                      className={`py-2.5 px-2 rounded-xl text-xs font-bold transition active:scale-95 flex items-center justify-center gap-1.5 shadow-md ${
+                        questoesLiberadas
+                          ? qOk
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
+                            : 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border border-emerald-400/40 shadow-emerald-950/40'
+                          : 'bg-black/40 text-zinc-500 border border-white/5 cursor-not-allowed opacity-60'
+                      }`}
+                      title={!questoesLiberadas ? 'Conclua os flashcards para liberar' : 'Praticar questões'}
+                    >
+                      {!questoesLiberadas ? (
+                        <>
+                          <Lock className="w-3 h-3 text-zinc-500" />
+                          <span className="truncate">Praticar</span>
+                        </>
+                      ) : qOk ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
+                          <span className="truncate">Praticar ({totalQuestoes})</span>
+                        </>
+                      ) : (
+                        <>
+                          <HelpCircle className="w-3.5 h-3.5" />
+                          <span className="truncate">Praticar ({totalQuestoes})</span>
                         </>
                       )}
                     </button>
@@ -407,6 +600,26 @@ export default function AdminAulasInterativas() {
           </div>
         </div>
       </div>
+
+      {/* Modal Interativo de Flashcards (Revisar) */}
+      {modalFlashcardsAula && (
+        <ModalRevisarFlashcards
+          tituloAula={modalFlashcardsAula.titulo}
+          flashcards={CONTEUDO_AULAS[modalFlashcardsAula.id]?.flashcards || []}
+          onFechar={() => setModalFlashcardsAula(null)}
+          onConcluir={() => concluirFlashcards(modalFlashcardsAula.id)}
+        />
+      )}
+
+      {/* Modal Interativo de Questões (Praticar) */}
+      {modalQuestoesAula && (
+        <ModalPraticarQuestoes
+          tituloAula={modalQuestoesAula.titulo}
+          questoes={CONTEUDO_AULAS[modalQuestoesAula.id]?.questoes || []}
+          onFechar={() => setModalQuestoesAula(null)}
+          onConcluir={() => concluirQuestoes(modalQuestoesAula.id)}
+        />
+      )}
     </div>
   );
 }
