@@ -35,6 +35,20 @@ const AULAS_CATALOGO: AulaItem[] = [
     urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/aula.html',
     capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/capa-3x4.webp',
     status: 'pronto'
+  },
+  {
+    id: 'penal-01-02',
+    materia: '01. Crimes Contra a Família',
+    titulo: 'Aula 02 - Induzimento a Erro Essencial e Ocultação de Impedimento',
+    descricao: 'Análise do art. 236 do CP: condutas de erro essencial e impedimento oculto, anulação no cível e condição de procedibilidade.',
+    duracaoMedia: '~25 min de aula',
+    slug: 'aula-02-induzimento-a-erro-essencial',
+    etapas: 32,
+    audioQtd: 32,
+    imagensQtd: 30,
+    urlHtmlR2: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-02-induzimento-a-erro-essencial/aula.html',
+    capaUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-02-induzimento-a-erro-essencial/capa-3x4.webp',
+    status: 'pronto'
   }
 ];
 
