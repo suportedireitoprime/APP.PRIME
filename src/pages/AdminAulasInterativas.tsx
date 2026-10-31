@@ -77,20 +77,11 @@ export default function AdminAulasInterativas() {
             </div>
           </div>
 
-          {/* Ações da direita: Badge R2 e Abrir em Nova Aba */}
+          {/* Ações da direita: Badge R2 */}
           <div className="flex items-center gap-2 shrink-0">
             <span className="hidden sm:inline-flex text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-bold border border-emerald-500/30 items-center gap-1.5 shadow-sm">
               <CheckCircle2 className="w-3.5 h-3.5" /> Servido via R2
             </span>
-            <a
-              href={`${aulaAtiva.urlHtmlR2}?t=${Date.now()}`}
-              target="_blank"
-              rel="noreferrer"
-              className="p-2 sm:p-2.5 rounded-xl border border-[rgba(226,62,87,0.35)] bg-[rgba(46,15,24,0.7)] text-[#ff8296] hover:text-white transition hover:bg-[rgba(66,20,34,0.9)] active:scale-95"
-              title="Abrir em nova aba"
-            >
-              <ExternalLink className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
-            </a>
           </div>
         </header>
 

@@ -20,12 +20,7 @@ const newBody = `<body>
     <div class="phone" id="phone">
       <header>
         <div class="header-wrap">
-          <div class="hrow">
-            <span class="subject">DIREITO PENAL</span>
-            <span class="design">TEMA VERMELHO</span>
-          </div>
-          <h1>Crimes Contra a Família</h1>
-          <p class="etapa" id="etapaLabel">Etapa 1 de 32</p>
+          <p class="etapa" id="etapaLabel">Etapa 1 de 32 · Crimes Contra a Família</p>
           <div class="track"><div class="fill" id="progressFill" style="width:3.13%"></div></div>
           <div class="sealrow"><span class="blockseal" id="blockSeal">Bloco 1 de 3 · O terreno da família</span></div>
         </div>
@@ -44,7 +39,7 @@ const newBody = `<body>
             </button>
             <div class="acontrol">
               <div class="arow">
-                <span class="alabel">NARRAÇÃO · VOZ FEMININA</span>
+                <span class="alabel">NARRAÇÃO</span>
                 <span class="atime" id="aTime">0:00 / 0:00</span>
               </div>
               <div class="atrack" id="aTrack"><div class="afill" id="aFill"></div></div>
@@ -98,7 +93,7 @@ const newCSSLayout = `body{
         border-radius:0;border:none;box-shadow:none;
       }
       header{
-        padding:14px 14px 10px !important;
+        padding:8px 12px 6px !important;
         border-bottom:1px solid rgba(226,62,87,.25) !important;
         background:rgba(20,4,9,.96) !important;
         backdrop-filter:blur(14px);
@@ -114,13 +109,9 @@ const newCSSLayout = `body{
         width:100%;
         box-sizing:border-box !important;
       }
-      .hrow{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:3px}
-      .subject{color:var(--red2);font-weight:800;font-size:11px;letter-spacing:2px;text-transform:uppercase}
-      .design{color:var(--gold);font-size:10px;letter-spacing:1px;font-weight:700;white-space:nowrap;background:rgba(212,175,55,.12);padding:2px 6px;border-radius:6px;border:1px solid rgba(212,175,55,.25)}
-      h1{font-family:"Playfair Display",Georgia,serif;font-size:19px;line-height:1.25;margin:4px 0 3px;font-weight:800;color:#fff}
-      .etapa{color:var(--muted);font-size:12px;margin:0 0 6px}
-      .etapa b{color:var(--ink);font-weight:600}
-      .track{height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-bottom:4px}
+      .etapa{color:var(--muted);font-size:12px;margin:0 0 5px;font-weight:600}
+      .etapa b{color:var(--ink);font-weight:700}
+      .track{height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-bottom:5px}
       .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
 
       /* Área de leitura centralizada SEM barra de scroll */
