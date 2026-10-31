@@ -12,6 +12,16 @@ serve(async (req) => {
   }
 
   try {
+    let targetEmail = 'tudoakiimoveis@gmail.com';
+    try {
+      const body = await req.json();
+      if (body && body.email) {
+        targetEmail = body.email.trim();
+      }
+    } catch (_) {
+      // Usar targetEmail padrão
+    }
+
     const dbUrl = Deno.env.get('SUPABASE_DB_URL') ?? '';
     if (!dbUrl) throw new Error('SUPABASE_DB_URL is not set');
 
@@ -24,13 +34,30 @@ serve(async (req) => {
         SELECT u.id, u.email, u.created_at, p.is_premium
         FROM auth.users u
         LEFT JOIN public.profiles p ON p.id = u.id
-        WHERE u.email ILIKE '%batatais%'
-           OR u.email = 'tgbatatais@gmail.com'
-           OR u.email = 'batatais.tg02047@gmail.com'
-           OR u.id = '23852c99-2429-4164-8c82-7ea4fc2e618f'
+        WHERE u.email ILIKE ${targetEmail}
+           OR u.email = ${targetEmail}
       `;
 
-      const users = result.rows;
+      const users = result.rows as Array<{ id: string; email: string; created_at: string; is_premium: boolean }>;
+
+      if (!users || users.length === 0) {
+        // Tentar buscar por substring caso haja espaço ou variação
+        const fuzzyResult = await connection.queryObject`
+          SELECT u.id, u.email, u.created_at, p.is_premium
+          FROM auth.users u
+          LEFT JOIN public.profiles p ON p.id = u.id
+          WHERE u.email ILIKE '%tudoaki%'
+             OR u.email ILIKE '%imoveis%'
+        `;
+        return new Response(JSON.stringify({
+          success: false,
+          message: 'Usuário exato não encontrado',
+          targetEmail,
+          fuzzyMatches: fuzzyResult.rows
+        }, null, 2), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
 
       const actionsDone = [];
 
@@ -49,10 +76,10 @@ serve(async (req) => {
             user_id, asaas_customer_id, asaas_subscription_id, plano, status, origem, started_at, expires_at, updated_at
           )
           VALUES (
-            ${u.id}, 'cus_000178665530', 'pay_nuiej7kbmxufj2gw', 'vitalicio', 'ACTIVE', 'asaas', '2026-05-27 00:00:00+00', NULL, NOW()
+            ${u.id}, 'manual_admin', 'vitalicio_manual', 'vitalicio', 'ACTIVE', 'admin', NOW(), NULL, NOW()
           )
           ON CONFLICT (user_id) DO UPDATE
-          SET plano = 'vitalicio', status = 'ACTIVE', origem = 'asaas', expires_at = NULL, updated_at = NOW()
+          SET plano = 'vitalicio', status = 'ACTIVE', origem = 'admin', expires_at = NULL, updated_at = NOW()
         `;
 
         actionsDone.push({
@@ -62,16 +89,13 @@ serve(async (req) => {
         });
       }
 
-      // Buscar status final dos perfis
+      // Buscar status final para verificação
       const verify = await connection.queryObject`
         SELECT u.id, u.email, p.is_premium, s.plano, s.status, s.expires_at
         FROM auth.users u
         LEFT JOIN public.profiles p ON p.id = u.id
         LEFT JOIN public.asaas_subscriptions s ON s.user_id = u.id
-        WHERE u.email ILIKE '%batatais%'
-           OR u.email = 'tgbatatais@gmail.com'
-           OR u.email = 'batatais.tg02047@gmail.com'
-           OR u.id = '23852c99-2429-4164-8c82-7ea4fc2e618f'
+        WHERE u.email ILIKE ${targetEmail}
       `;
 
       return new Response(JSON.stringify({
