@@ -4,12 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
+    <base href="/" />
     <link rel="icon" href="data:," />
-    <title>Definições · Direito Administrativo</title>
+    <title>Definições do Direito Administrativo · Direito Administrativo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
     <style>
+
       :root{
         --bg:#140e02;
         --phone:#1d1508;
@@ -27,96 +29,255 @@
         color-scheme:dark;
       }
       *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-      html,body{height:100%}
-      body{
+      html,body{
         margin:0;
+        padding:0;
         font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
         background:
-          radial-gradient(900px 500px at 15% -10%, #3a2c0f 0%, transparent 60%),
-          radial-gradient(800px 500px at 110% 110%, #2b1a08 0%, transparent 55%),
+          radial-gradient(1100px 600px at 20% -10%, #3a2808 0%, transparent 60%),
+          radial-gradient(900px 500px at 100% 100%, #2b1d06 0%, transparent 55%),
           var(--bg);
         color:var(--ink);
-        display:flex;flex-direction:column;align-items:center;justify-content:center;
-        gap:12px;padding:12px;
-        min-height:100dvh;
+        display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
+        width:100vw;
+        height:100vh;
+        height:100dvh;
+        overflow:hidden;
+        scrollbar-width:none;
+        -ms-overflow-style:none;
+      }
+      body::-webkit-scrollbar, html::-webkit-scrollbar{
+        display:none;width:0;height:0;
       }
       .stage{
-        display:flex;flex-direction:row;align-items:stretch;justify-content:center;
-        gap:12px;width:min(574px,100%);flex:1 1 auto;min-height:0;
+        display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
+        width:100%;height:100%;flex:1 1 auto;min-height:0;
       }
       .phone{
         position:relative;
-        width:auto;max-width:430px;min-width:0;
-        flex:1 1 auto;min-height:0;
-        background:linear-gradient(180deg,#26150a 0%,var(--phone) 30%);
+        width:100%;max-width:100%;min-width:0;
+        height:100%;flex:1 1 auto;min-height:0;
+        background:linear-gradient(180deg,#261c06 0%,var(--phone) 30%);
         display:flex;flex-direction:column;
         overflow:hidden;
-        border-radius:26px;
-      }
-      @media (min-width:520px){
-        .phone{
-          max-height:880px;
-          border-radius:38px;
-          border:1px solid rgba(217,160,10,.5);
-          box-shadow:0 30px 80px rgba(0,0,0,.65),0 0 0 8px #0d0206,0 0 60px rgba(217,160,10,.1);
-        }
+        border-radius:0;border:none;box-shadow:none;
       }
       header{
-        padding:16px 20px 10px;
-        border-bottom:1px solid rgba(217,160,10,.18);
-        background:rgba(20,4,9,.55);
-        flex:0 0 auto;
+        flex:0 0 auto !important;
+        padding:8px 12px 6px !important;
+        border-bottom:1px solid rgba(217,160,10,.25) !important;
+        background:rgba(20,14,2,.97) !important;
+        backdrop-filter:blur(14px);
+        -webkit-backdrop-filter:blur(14px);
+        width:100% !important;
+        box-sizing:border-box !important;
+        z-index:40 !important;
       }
-      .hrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-      .subject{color:var(--red2);font-weight:700;font-size:11.5px;letter-spacing:2.4px}
-      .design{color:var(--muted);font-size:11px;letter-spacing:1.4px;font-weight:600;white-space:nowrap}
-      h1{font-family:"Playfair Display",Georgia,serif;font-size:21px;line-height:1.15;margin:6px 0 2px;font-weight:800}
-      .etapa{color:var(--muted);font-size:13.5px;margin:0 0 10px}
-      .etapa b{color:var(--ink);font-weight:600}
-      .track{height:6px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
-      .fill{height:100%;background:linear-gradient(90deg,#8a6308,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
-      .playerdock{
-        flex:0 0 132px;width:132px;
-        display:flex;flex-direction:column;justify-content:center;
-        background:linear-gradient(180deg,#2e2210,#211305);
-        border:1px solid rgba(217,160,10,.5);
-        border-radius:18px;
-        padding:18px 14px;
-        box-shadow:0 14px 34px rgba(0,0,0,.5);
+      .header-wrap{
+        max-width:860px;
+        margin:0 auto;
+        width:100%;
+        box-sizing:border-box !important;
       }
-      .playerdock .audio{margin:0;border:none;background:transparent;padding:0;width:100%;display:flex;flex-direction:column;gap:14px}
-      .playerdock .audio .arow{flex-direction:column;align-items:flex-start;gap:6px;margin-bottom:0}
-      .playerdock .audio .alabel{line-height:1.55}
-      .playerdock .audio .acontrol{flex-direction:column;align-items:center;gap:14px}
-      .playerdock .playbtn{width:56px;height:56px}
-      .playerdock .playbtn svg{width:24px;height:24px}
-      .playerdock .audio .atrack{flex:0 0 auto;width:100%}
-      @media (max-width:560px){
-        .stage{gap:10px}
-        .playerdock{flex-basis:102px;width:102px;padding:14px 10px;border-radius:16px}
-        .playerdock .audio .alabel{font-size:10px;letter-spacing:1.2px}
-        .playerdock .audio .atime{font-size:11.5px}
-        .playerdock .playbtn{width:50px;height:50px}
-        header{padding:14px 15px 10px}
-        .covertitle{font-size:28px}
-        .scroll{padding:16px 15px 22px}
-        footer{padding:12px 14px calc(12px + env(safe-area-inset-bottom))}
-        .navbtn{font-size:15px;padding:14px 6px}
-      }
+      .etapa{color:var(--muted);font-size:12px;margin:0 0 5px;font-weight:600}
+      .etapa b{color:var(--ink);font-weight:700}
+      .track{height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-bottom:5px}
+      .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
+
+      /* Área de leitura com rolagem independente suave (Sem barra de scroll) */
       .scroll{
-        flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
-        padding:18px 20px 26px;
-        scrollbar-width:thin;scrollbar-color:rgba(217,160,10,.6) rgba(255,255,255,.04);
+        flex:1 1 auto !important;
+        min-height:0 !important;
+        overflow-y:auto !important;
+        overflow-x:hidden !important;
+        padding:16px 14px 20px;
+        width:100%;
+        box-sizing:border-box !important;
+        scrollbar-width:none;
+        -ms-overflow-style:none;
         overscroll-behavior:contain;
       }
-      .scroll::-webkit-scrollbar{width:5px}
-      .scroll::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:99px}
-      .scroll::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--red),#7a5806);border-radius:99px}
+      .scroll::-webkit-scrollbar{
+        display:none;width:0;height:0;
+      }
+      .scroll > *{
+        max-width:860px;
+        margin-left:auto;
+        margin-right:auto;
+        box-sizing:border-box !important;
+      }
+
+      /* Rodapé FIXO na base da tela */
+      footer{
+        flex:0 0 auto !important;
+        padding:8px 8px calc(8px + env(safe-area-inset-bottom)) !important;
+        border-top:1px solid rgba(217,160,10,.25) !important;
+        background:rgba(20,14,2,.97) !important;
+        backdrop-filter:blur(16px);
+        -webkit-backdrop-filter:blur(16px);
+        width:100% !important;
+        max-width:100% !important;
+        overflow:hidden !important;
+        box-sizing:border-box !important;
+        z-index:40 !important;
+      }
+      .footer-wrap{
+        max-width:860px;
+        margin:0 auto;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:6px;
+        width:100%;
+        box-sizing:border-box !important;
+      }
+      .navbtn{
+        flex:0 0 auto !important;
+        width:auto !important;
+        min-width:64px !important;
+        height:42px !important;
+        font-size:12px !important;
+        font-weight:700 !important;
+        padding:0 8px !important;
+        border-radius:10px !important;
+        cursor:pointer;
+        display:inline-flex !important;
+        align-items:center;
+        justify-content:center;
+        border:1px solid rgba(217,160,10,.3) !important;
+        background:rgba(46,36,16,.75) !important;
+        color:var(--ink) !important;
+        white-space:nowrap !important;
+        transition:all .15s ease;
+        box-sizing:border-box !important;
+      }
+      .navbtn:hover{background:rgba(56,44,20,.9) !important}
+      .navbtn:active{transform:scale(0.96)}
+      .navbtn.next{
+        background:linear-gradient(135deg,#ffe38a,#d9a00a) !important;
+        border:1px solid rgba(255,255,255,.25) !important;
+        color:#140e02 !important;
+        font-weight:800 !important;
+        box-shadow:0 4px 14px rgba(217,160,10,.4) !important;
+      }
+      .navbtn.next:hover{filter:brightness(1.1) !important}
+      .navbtn:disabled{opacity:.35 !important;pointer-events:none}
+
+      /* Player Centralizado Responsivo */
+      .audio{
+        flex:1 1 auto !important;
+        min-width:0 !important;
+        height:42px !important;
+        margin:0 !important;
+        background:linear-gradient(90deg,rgba(46,36,16,.92),rgba(33,24,10,.96)) !important;
+        border:1px solid rgba(217,160,10,.45) !important;
+        border-radius:10px !important;
+        padding:3px 8px !important;
+        cursor:pointer;
+        display:flex !important;
+        flex-direction:row !important;
+        align-items:center !important;
+        gap:6px !important;
+        box-shadow:0 4px 14px rgba(0,0,0,.4);
+        box-sizing:border-box !important;
+        overflow:hidden !important;
+      }
+      .playbtn{
+        flex:0 0 30px !important;
+        width:30px !important;
+        height:30px !important;
+        border-radius:50% !important;
+        background:linear-gradient(135deg,#ffe38a,#d9a00a) !important;
+        border:1px solid rgba(255,255,255,.25) !important;
+        cursor:pointer;
+        display:flex !important;
+        align-items:center;
+        justify-content:center;
+        box-shadow:0 3px 10px rgba(217,160,10,.45);
+        transition:transform .15s ease;
+        padding:0 !important;
+      }
+      .playbtn:hover{transform:scale(1.08)}
+      .playbtn:active{transform:scale(0.92)}
+      .playbtn svg{width:13px;height:13px;fill:#140e02 !important}
+
+      .acontrol{
+        flex:1 1 auto !important;
+        min-width:0 !important;
+        display:flex !important;
+        flex-direction:column !important;
+        justify-content:center !important;
+        gap:2px !important;
+        overflow:hidden !important;
+        box-sizing:border-box !important;
+      }
+      .arow{
+        display:flex !important;
+        flex-direction:row !important;
+        justify-content:space-between !important;
+        align-items:center !important;
+        width:100% !important;
+        min-width:0 !important;
+        margin:0 !important;
+        line-height:1.1 !important;
+        gap:4px !important;
+      }
+      .alabel{
+        color:var(--red2) !important;
+        font-size:9px !important;
+        font-weight:700 !important;
+        letter-spacing:1px !important;
+        white-space:nowrap !important;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;
+        text-transform:uppercase;
+        flex:1 1 auto !important;
+        min-width:0 !important;
+      }
+      .atime{
+        color:var(--muted) !important;
+        font-size:10px !important;
+        font-variant-numeric:tabular-nums !important;
+        font-weight:600 !important;
+        white-space:nowrap !important;
+        flex:0 0 auto !important;
+        margin-left:auto !important;
+      }
+      .atrack{
+        position:relative;
+        width:100% !important;
+        height:4px !important;
+        border-radius:99px !important;
+        background:rgba(255,255,255,.14) !important;
+        overflow:hidden !important;
+        cursor:pointer;
+        margin:0 !important;
+      }
+      .afill{
+        height:100% !important;
+        width:0%;
+        background:linear-gradient(90deg,var(--red),var(--gold)) !important;
+        border-radius:99px !important;
+        transition:width .1s linear;
+      }
+
+      @media (max-width:480px){
+        header{padding:8px 10px 5px !important}
+        .etapa{font-size:11px !important}
+        .footer-wrap{gap:4px !important}
+        .navbtn{min-width:60px !important;font-size:11px !important;padding:0 6px !important;height:38px !important}
+        .audio{padding:2px 6px !important;height:38px !important}
+        .playbtn{flex:0 0 28px !important;width:28px !important;height:28px !important}
+        .playbtn svg{width:11px !important;height:11px !important}
+        .alabel{font-size:8px !important;letter-spacing:0.5px !important}
+        .atime{font-size:9.5px !important}
+      }
       .banner{
         width:100%;aspect-ratio:5/2;object-fit:cover;display:block;
         border-radius:14px;border:1px solid var(--line);
         margin-bottom:16px;background:#251a0a;
       }
+      /* ===== CAPA: imagem primeiro, título abaixo ===== */
       .coverimg{
         width:100%;aspect-ratio:7/4.4;object-fit:cover;object-position:center 38%;display:block;
         border-radius:16px;border:1px solid var(--line);
@@ -124,13 +285,14 @@
         margin-bottom:16px;background:#251a0a;
       }
       .covertitle{
-        font-family:"Playfair Display",Georgia,serif;font-size:34px;line-height:1.12;
+        font-family:"Playfair Display",Georgia,serif;font-size:36px;line-height:1.12;
         font-weight:800;margin:0 0 6px;
       }
       .coverrule{
         height:3px;width:72px;border-radius:99px;margin:12px 0 16px;
         background:linear-gradient(90deg,var(--red),var(--gold));
       }
+      /* ===== IMAGEM VAZADA NO MEIO DO TEXTO ===== */
       .vazada{
         position:relative;height:138px;border-radius:14px;overflow:hidden;
         margin:16px 0;border:1px solid rgba(212,175,55,.2);background:#251a0a;
@@ -141,19 +303,22 @@
       }
       .vazada::after{
         content:"";position:absolute;inset:0;pointer-events:none;
-        background:linear-gradient(180deg,rgba(8,29,16,.72),rgba(8,29,16,0) 38%,rgba(8,29,16,0) 62%,rgba(8,29,16,.72));
+        background:linear-gradient(180deg,rgba(29,8,16,.72),rgba(29,8,16,0) 38%,rgba(29,8,16,0) 62%,rgba(29,8,16,.72));
       }
       .scroll.enter{animation:fadein .32s ease}
       @keyframes fadein{from{opacity:.25}to{opacity:1}}
+      /* ===== TERMO TÉCNICO EM DESTAQUE ===== */
       .term{color:var(--red2);font-weight:700}
       p b.term, ul.tight li b.term, .box p b.term{color:var(--red2)}
+      /* ===== FRASE-CHAVE ===== */
       .frasechave{
         background:linear-gradient(160deg,rgba(217,160,10,.17),rgba(217,160,10,.05));
         border:1px solid rgba(217,160,10,.45);border-radius:14px;
         padding:14px 16px;margin:16px 0;
       }
       .frasechave .flabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:1.8px;margin:0 0 6px;display:flex;align-items:center}
-      .frasechave p.fq2{font-family:"Playfair Display",Georgia,serif;font-size:19px;line-height:1.45;margin:0;color:#fffdf0}
+      .frasechave p.fq2{font-family:"Playfair Display",Georgia,serif;font-size:19px;line-height:1.45;margin:0;color:#fdf3f4}
+      /* ===== CARTÃO DE FECHAMENTO DE BLOCO ===== */
       .fimbloco{
         background:var(--panel);border:1px solid var(--line);border-radius:14px;
         padding:14px 16px;margin:16px 0 4px;
@@ -164,8 +329,10 @@
       .fimbloco li:last-child{border-bottom:none}
       .fimbloco li::before{content:"◆";position:absolute;left:2px;top:10px;font-size:8px;color:var(--gold)}
       .fimbloco li b{color:var(--gold2);font-weight:700}
+      /* ===== ÍCONES DOS BLOCOS ESPECIAIS ===== */
       .bic{display:inline-flex;vertical-align:-2px;margin-right:7px;flex:0 0 auto}
       .bic svg{width:14px;height:14px;display:block}
+      /* ===== SELO DE PROGRESSO POR BLOCO ===== */
       .sealrow{margin-top:9px}
       .blockseal{
         display:inline-block;font-size:11px;font-weight:700;letter-spacing:1.6px;
@@ -176,7 +343,7 @@
       .kicker::before{content:"◆";font-size:8px;vertical-align:2px;margin-right:7px;color:var(--gold)}
       h2{font-family:"Playfair Display",Georgia,serif;font-size:25px;line-height:1.22;margin:0 0 12px;font-weight:700}
       p{font-size:16.5px;line-height:1.62;margin:0 0 12px;color:var(--ink)}
-      p.lead{font-size:17.5px;color:#fffdf0}
+      p.lead{font-size:17.5px;color:#fdf3f4}
       ul.tight{list-style:none;margin:4px 0 14px;padding:0}
       ul.tight li{
         position:relative;font-size:16.5px;line-height:1.55;
@@ -192,7 +359,6 @@
       .box .blabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:1.8px;margin:0 0 6px}
       .box p{margin:0;font-size:15.5px}
       .box p + p{margin-top:8px}
-      .box.lei p{font-family:"Playfair Display",Georgia,serif;font-size:16.5px;line-height:1.55;font-style:italic}
       .box.exemplo{position:relative;overflow:hidden}
       .box.exemplo .wm{
         position:absolute;top:0;right:0;width:74%;height:100%;object-fit:cover;
@@ -212,23 +378,7 @@
       .viarow p{margin:0;font-size:15px;color:var(--muted);line-height:1.5}
       .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
       .chip{border:1px solid var(--line);color:var(--gold2);border-radius:99px;padding:6px 12px;font-size:13.5px;font-weight:600;background:rgba(212,175,55,.07)}
-      .audio{
-        margin:0 0 16px;background:#2c1c0f;border:1px solid rgba(217,160,10,.4);
-        border-radius:16px;padding:13px 15px 12px;cursor:pointer;
-      }
-      .audio .arow{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
-      .audio .alabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:1.8px}
-      .audio .atime{color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
-      .audio .acontrol{display:flex;align-items:center;gap:12px}
-      .playbtn{
-        flex:0 0 auto;width:46px;height:46px;border-radius:50%;
-        background:linear-gradient(180deg,#ffdf6b,#c9920e);
-        border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
-        box-shadow:0 4px 14px rgba(217,160,10,.4);
-      }
-      .playbtn svg{width:20px;height:20px;fill:#fff}
-      .atrack{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden;cursor:pointer}
-      .afill{height:100%;width:0%;background:linear-gradient(90deg,var(--red),var(--gold))}
+      /* .audio original migrado */
       .qtext{font-size:17.5px;line-height:1.6;margin-bottom:14px}
       .opt{
         display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;
@@ -262,8 +412,8 @@
         position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
         border-radius:18px;padding:22px 20px;display:flex;flex-direction:column;justify-content:center;
       }
-      .face.front{background:linear-gradient(160deg,#33270f,#201503);border:1.5px solid var(--line);text-align:center;align-items:center}
-      .face.back{background:linear-gradient(160deg,#3d3010,#2a1f0a);border:1.5px solid var(--red);transform:rotateY(180deg)}
+      .face.front{background:linear-gradient(160deg,#33121b,#200a10);border:1.5px solid var(--line);text-align:center;align-items:center}
+      .face.back{background:linear-gradient(160deg,#3d1620,#2a0e16);border:1.5px solid var(--red);transform:rotateY(180deg)}
       .face .flabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:2px;margin-bottom:12px}
       .face.front .fq{font-family:"Playfair Display",serif;font-size:21px;line-height:1.4}
       .face.back p{font-size:16px;line-height:1.6;margin:0}
@@ -278,14 +428,14 @@
         cursor:pointer;text-align:left;transition:border-color .15s,background .15s;
       }
       .mbtn.sel{border-color:var(--red);background:rgba(217,160,10,.16)}
-      .mbtn.done{border-color:var(--ok);background:rgba(62,207,122,.12);color:#f7ecc0;cursor:default}
+      .mbtn.done{border-color:var(--ok);background:rgba(62,207,122,.12);color:#c9f2da;cursor:default}
       .mbtn.shake{animation:shake .35s}
       @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
       .matchdone{display:none;margin-top:14px;background:rgba(62,207,122,.13);border:1px solid rgba(62,207,122,.5);border-radius:13px;padding:13px 15px;font-size:15.5px}
       .matchdone.show{display:block}
       table.cmp{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:14px}
       table.cmp th{
-        background:#33270f;color:var(--gold2);text-align:left;padding:10px 9px;
+        background:#33121b;color:var(--gold2);text-align:left;padding:10px 9px;
         font-size:13px;letter-spacing:.4px;border-bottom:2px solid var(--red);
       }
       table.cmp td{padding:10px 9px;border-bottom:1px solid rgba(255,255,255,.09);line-height:1.45;vertical-align:top}
@@ -294,7 +444,7 @@
       .explorebox img{width:100%;display:block}
       .hotspot{
         position:absolute;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;
-        background:rgba(20,4,9,.85);border:2px solid var(--gold);color:var(--gold2);
+        background:rgba(20,14,2,.85);border:2px solid var(--gold);color:var(--gold2);
         font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;z-index:2;
         display:flex;align-items:center;justify-content:center;
       }
@@ -303,9 +453,9 @@
         border:2px solid rgba(212,175,55,.8);animation:pulse 1.8s ease-out infinite;pointer-events:none;
       }
       @keyframes pulse{0%{transform:scale(1);opacity:.9}70%{transform:scale(1.7);opacity:0}100%{transform:scale(1.7);opacity:0}}
-      .hotspot.active{background:linear-gradient(180deg,#ffdf6b,#c9920e);border-color:#fff;color:#fff}
+      .hotspot.active{background:linear-gradient(180deg,#ff7a8a,#c8102e);border-color:#fff;color:#fff}
       .hotspot.active::after{display:none}
-      .hotspot.seen{background:var(--gold);color:#2a1f0a;border-color:var(--gold2)}
+      .hotspot.seen{background:var(--gold);color:#2a0e16;border-color:var(--gold2)}
       .hotspot.seen::after{animation:none;opacity:0}
       .explorecount{color:var(--muted);font-size:14.5px;margin:0 0 10px}
       .explorecount b{color:var(--gold2)}
@@ -315,7 +465,7 @@
       .explorehint{color:var(--muted);font-size:15px;margin:0}
       .revealcard{
         display:block;width:100%;text-align:left;cursor:pointer;color:var(--ink);font-family:inherit;
-        background:linear-gradient(160deg,#33270f,#201503);border:1.5px solid var(--line);
+        background:linear-gradient(160deg,#33121b,#200a10);border:1.5px solid var(--line);
         border-radius:14px;padding:15px 16px;margin:10px 0;
       }
       .revealcard .rlabel{color:var(--red2);font-size:11.5px;font-weight:700;letter-spacing:1.8px;margin:0 0 6px}
@@ -323,8 +473,9 @@
       .revealcard .rbody b{color:var(--gold2)}
       .revealcard .rhint{color:var(--muted);font-size:13px;margin:8px 0 0}
       .revealcard.open{border-color:var(--red)}
-      .revealcard.done{border-color:var(--gold);background:linear-gradient(160deg,#3a2c10,#2a1f0a);cursor:default}
+      .revealcard.done{border-color:var(--gold);background:linear-gradient(160deg,#3a1420,#2a0e16);cursor:default}
       .revealcard.done .rlabel{color:var(--gold2)}
+      /* ===== LINHA DO TEMPO ===== */
       .timeline{position:relative;margin:8px 0 4px;padding-left:30px}
       .timeline::before{content:"";position:absolute;left:12px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--gold),var(--red))}
       .tlitem{position:relative;margin-bottom:10px}
@@ -335,7 +486,7 @@
       }
       .tlbtn::before{
         content:"";position:absolute;left:-24px;top:16px;width:11px;height:11px;border-radius:50%;
-        background:#1d1508;border:2.5px solid var(--gold);
+        background:#1d0810;border:2.5px solid var(--gold);
       }
       .tlbtn.open{border-color:var(--gold)}
       .tlbtn.open::before{background:var(--gold)}
@@ -344,9 +495,10 @@
       .tlbody{display:none;background:var(--panel);border:1px solid var(--line);border-radius:0 0 12px 12px;border-top:none;padding:4px 13px 12px;margin-top:-6px}
       .tlbody.show{display:block}
       .tlbody p{font-size:15px;margin:6px 0 2px}
+      /* ===== VERDADEIRO OU FALSO ===== */
       .vfstage{position:relative;margin:6px 0 4px;touch-action:pan-y}
       .vfcard{
-        background:linear-gradient(160deg,#33270f,#201503);border:1.5px solid var(--line);border-radius:16px;
+        background:linear-gradient(160deg,#33121b,#200a10);border:1.5px solid var(--line);border-radius:16px;
         padding:20px 18px;min-height:150px;display:flex;flex-direction:column;justify-content:center;
         cursor:grab;user-select:none;-webkit-user-select:none;position:relative;
       }
@@ -365,6 +517,7 @@
       }
       .vfbtn.f:hover{border-color:var(--bad);color:var(--bad)}
       .vfbtn.v:hover{border-color:var(--ok);color:var(--ok)}
+      /* ===== COMPLETAR A FRASE ===== */
       .filltext{font-size:17.5px;line-height:1.9;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin:6px 0 12px}
       .blank{
         display:inline-block;min-width:88px;text-align:center;border-bottom:2.5px solid var(--gold);
@@ -381,15 +534,17 @@
       .wordchip:hover{border-color:var(--gold)}
       .wordchip.used{opacity:.28;cursor:default;border-style:dashed}
       .wordchip.shake{animation:shake .35s;border-color:var(--bad)}
+      /* ===== KARAOKÊ ===== */
       .karaoke{font-size:17.5px;line-height:1.85}
-      .karaoke .sent{border-radius:6px;padding:1px 3px;cursor:pointer;color:#e3d3a0;transition:background .3s,color .3s}
+      .karaoke .sent{border-radius:6px;padding:1px 3px;cursor:pointer;color:#d8bfc4;transition:background .3s,color .3s}
       .karaoke .sent.on{background:rgba(212,175,55,.28);color:#fff}
       .karaoke .sent.done{color:var(--ink)}
+      /* ===== COMPARADOR ===== */
       .cmpbox{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);aspect-ratio:4/4.6;margin:6px 0 12px;background:#251a0a;touch-action:none}
       .cmpbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
       .cmpbox .cmpafter{clip-path:inset(0 0 0 50%)}
       .cmplabel{
-        position:absolute;top:10px;z-index:3;background:rgba(20,4,9,.78);color:var(--gold2);
+        position:absolute;top:10px;z-index:3;background:rgba(20,14,2,.78);color:var(--gold2);
         font-size:12px;font-weight:700;letter-spacing:1.4px;border:1px solid var(--line);
         border-radius:99px;padding:5px 11px;pointer-events:none;
       }
@@ -400,13 +555,14 @@
       }
       .cmphandle::after{
         content:"◂ ▸";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-        background:linear-gradient(180deg,#ffdf6b,#c9920e);color:#fff;font-size:13px;font-weight:700;
+        background:linear-gradient(180deg,#ff7a8a,#c8102e);color:#fff;font-size:13px;font-weight:700;
         border-radius:99px;padding:7px 11px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.5);
       }
       input.cmprange{width:100%;margin:2px 0 12px;accent-color:var(--gold);height:28px;cursor:pointer}
+      /* ===== MAPA MENTAL ===== */
       .mindcenter{
         text-align:center;font-family:"Playfair Display",serif;font-size:19px;font-weight:800;
-        background:linear-gradient(160deg,#3d3010,#2a1f0a);border:1.5px solid var(--gold);color:var(--gold2);
+        background:linear-gradient(160deg,#3d1620,#2a0e16);border:1.5px solid var(--gold);color:var(--gold2);
         border-radius:14px;padding:14px 12px;margin:6px 0 12px;
       }
       .mindbranch{margin-bottom:9px}
@@ -420,92 +576,88 @@
       .mindbody{display:none;background:var(--panel);border:1px solid var(--line);border-top:none;border-radius:0 0 12px 12px;padding:12px 14px 6px;margin-top:-5px}
       .mindbody.show{display:block}
       .mindbody p{font-size:15px;margin:0 0 8px}
+      /* ===== DESAFIO ===== */
       .scorebar{
         display:flex;justify-content:space-between;align-items:center;background:var(--panel);
         border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:6px 0 12px;
         font-size:15px;color:var(--muted);
       }
       .scorebar .pts{color:var(--gold2);font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
-      .goldtag{
-        display:inline-block;font-size:12px;font-weight:800;letter-spacing:1.6px;color:#2a1f0a;
-        background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:99px;
-        padding:5px 12px;margin:0 0 10px;
-      }
       .finalscore{
-        text-align:center;background:linear-gradient(160deg,#3d3010,#2a1f0a);border:1.5px solid var(--gold);
+        text-align:center;background:linear-gradient(160deg,#3d1620,#2a0e16);border:1.5px solid var(--gold);
         border-radius:16px;padding:20px 16px;margin:8px 0;
       }
       .finalscore .big{font-family:"Playfair Display",serif;font-size:38px;font-weight:800;color:var(--gold2);margin:4px 0}
       .finalscore p{margin:0;font-size:15.5px}
       .againbtn{
-        margin-top:14px;background:linear-gradient(180deg,#ffdf6b,#c9920e);color:#fff;border:none;
+        margin-top:14px;background:linear-gradient(180deg,#ff7a8a,#c8102e);color:#fff;border:none;
         border-radius:12px;padding:12px 22px;font-size:15.5px;font-weight:700;font-family:inherit;cursor:pointer;
       }
-      footer{
-        flex:0 0 auto;display:flex;gap:12px;padding:13px 20px calc(13px + env(safe-area-inset-bottom));
-        border-top:1px solid rgba(217,160,10,.18);background:rgba(20,4,9,.7);
-      }
-      .navbtn{
-        flex:1;padding:15px 10px;border-radius:14px;font-size:16.5px;font-weight:700;
-        font-family:inherit;cursor:pointer;border:1.5px solid rgba(255,255,255,.2);
-        background:transparent;color:var(--ink);transition:opacity .15s,transform .1s;
-      }
-      .navbtn:active{transform:scale(.98)}
-      .navbtn.next{background:linear-gradient(180deg,#ffdf6b,#c9920e);color:#fff;border-color:transparent}
-      .navbtn:disabled{opacity:.35;cursor:default}
+      /* footer original migrado */
       @media (prefers-reduced-motion:reduce){
         .flash{transition:none}.fill{transition:none}.hotspot::after{animation:none}
         .scroll.enter{animation:none}
       }
+    
     </style>
   </head>
   <body>
     <div class="stage">
     <div class="phone" id="phone">
       <header>
-        <div class="hrow">
-          <span class="subject">DIREITO ADMINISTRATIVO</span>
-          <span class="design">TEMA VERMELHO</span>
+        <div class="header-wrap">
+          <p class="etapa" id="etapaLabel">Etapa 1 · Definições do Direito Administrativo</p>
+          <div class="track"><div class="fill" id="progressFill" style="width:2.6%"></div></div>
+          <div class="sealrow"><span class="blockseal" id="blockSeal">Bloco 1 de 5 · Por que definir é difícil</span></div>
         </div>
-        <h1>Definições</h1>
-        <p class="etapa" id="etapaLabel">Etapa 1 de 39</p>
-        <div class="track"><div class="fill" id="progressFill" style="width:2.56%"></div></div>
-        <div class="sealrow"><span class="blockseal" id="blockSeal">Bloco 1 de 5 · Por que definir é difícil</span></div>
       </header>
+      
       <div class="scroll" id="scrollArea" tabindex="0"></div>
+
       <footer>
-        <button class="navbtn" id="btnPrev" type="button">← Anterior</button>
-        <button class="navbtn next" id="btnNext" type="button">Próximo →</button>
+        <div class="footer-wrap">
+          <button class="navbtn" id="btnPrev" type="button">← Anterior</button>
+
+          <!-- Player Centralizado no Rodapé -->
+          <div class="audio" id="audioBox" title="Ouvir a narração desta etapa">
+            <button class="playbtn" id="playBtn" type="button" aria-label="Ouvir ou pausar a narração">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+            </button>
+            <div class="acontrol">
+              <div class="arow">
+                <span class="alabel">NARRAÇÃO</span>
+                <span class="atime" id="aTime">0:00 / 0:00</span>
+              </div>
+              <div class="atrack" id="aTrack"><div class="afill" id="aFill"></div></div>
+            </div>
+          </div>
+
+          <button class="navbtn next" id="btnNext" type="button">Próximo →</button>
+        </div>
       </footer>
     </div>
-    <div class="playerdock">
-      <div class="audio" id="audioBox" title="Ouvir a narração desta etapa">
-        <div class="arow"><span class="alabel">NARRAÇÃO · VOZ FEMININA</span><span class="atime" id="aTime">0:00 / 0:00</span></div>
-        <div class="acontrol"><button class="playbtn" id="playBtn" type="button" aria-label="Ouvir ou pausar a narração"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg></button><div class="atrack" id="aTrack"><div class="afill" id="aFill"></div></div></div>
-      </div>
     </div>
-    </div>
-
-    <script>
+  <script>
+    var AULA_ID = "admin-01-02";
     var IMG = {
-  "capa": "assets/img/capa.webp",
-  "roteiro": "assets/img/roteiro.webp",
-  "questao": "assets/img/questao.webp",
-  "flashcards": "assets/img/flashcards.webp",
-  "ligar": "assets/img/ligar.webp",
-  "timeline": "assets/img/timeline.webp",
-  "explorar": "assets/img/explorar.webp",
-  "definicao": "assets/img/definicao.webp",
-  "criterios": "assets/img/criterios.webp",
-  "puissance": "assets/img/puissance.webp",
-  "service": "assets/img/service.webp",
-  "executivo": "assets/img/executivo.webp",
-  "relacoes": "assets/img/relacoes.webp",
-  "teleologico": "assets/img/teleologico.webp",
-  "residual": "assets/img/residual.webp",
-  "adotado": "assets/img/adotado.webp",
-  "objetivo": "assets/img/objetivo.webp",
-  "subjetivo": "assets/img/subjetivo.webp"
+  "capa": "/assets/img/capa-aula-02.webp",
+  "roteiro": "/assets/img/roteiro.webp",
+  "questao": "/assets/img/questao.webp",
+  "flashcards": "/assets/img/flashcards.webp",
+  "ligar": "/assets/img/ligar.webp",
+  "timeline": "/assets/img/timeline.webp",
+  "explorar": "/assets/img/explorar.webp",
+  "definicao": "/assets/img/definicao.webp",
+  "criterios": "/assets/img/criterios.webp",
+  "puissance": "/assets/img/puissance.webp",
+  "service": "/assets/img/service.webp",
+  "executivo": "/assets/img/executivo.webp",
+  "relacoes": "/assets/img/relacoes.webp",
+  "teleologico": "/assets/img/teleologico.webp",
+  "residual": "/assets/img/residual.webp",
+  "adotado": "/assets/img/adotado.webp",
+  "objetivo": "/assets/img/objetivo.webp",
+  "subjetivo": "/assets/img/subjetivo.webp"
 };
     var SLIDES = [
   {
@@ -1196,8 +1348,6 @@
     "narr": "O que você leva desta aula. Você agora sabe por que definir o Direito Administrativo é uma disputa, e não uma frase decorada. Cada critério é uma lente: a puissance publique amplia o poder, o service public amplia o serviço, o Poder Executivo amplia o órgão, as relações jurídicas ampliam o encontro com o cidadão, o teleológico amplia os fins e o residual define pelo que sobra. E você sabe, de cada lente, o que ela deixa fora do quadro. E guarda o destino do percurso: no Brasil, a maioria dos administrativistas adota o critério da Administração Pública, com o sentido objetivo, funcional ou material, e o sentido subjetivo, estrutural ou orgânico, voltados a satisfazer as necessidades da sociedade e a viabilizar o funcionamento do Estado. Na próxima aula, seguimos para a constitucionalização do Direito Administrativo."
   }
 ];
-
-
     var total = SLIDES.length;
     var idx = 0;
     var unlocked = false;
@@ -1230,9 +1380,13 @@
       h = h.split('<p class="blabel">PENSE ASSIM</p>').join('<p class="blabel">' + BIC.bulb + 'PENSE ASSIM</p>');
       h = h.split('<p class="blabel">OLHE COM CUIDADO</p>').join('<p class="blabel">' + BIC.eye + 'OLHE COM CUIDADO</p>');
       h = h.split('<p class="blabel">CONTRASTE RÁPIDO</p>').join('<p class="blabel">' + BIC.contrast + 'CONTRASTE RÁPIDO</p>');
+      h = h.split('<p class="blabel">OS PRINCÍPIOS DA NOVA DEFESA SOCIAL</p>').join('<p class="blabel">' + BIC.list + 'OS PRINCÍPIOS DA NOVA DEFESA SOCIAL</p>');
       h = h.replace(/(<p class="blabel">)(PEGADINHA)/g, '$1' + BIC.warn + '$2');
       h = h.split('<p class="flabel">FRASE-CHAVE</p>').join('<p class="flabel">' + BIC.key + 'FRASE-CHAVE</p>');
       h = h.split('<p class="flabel">NESSE BLOCO VOCÊ VIU</p>').join('<p class="flabel">' + BIC.check + 'NESSE BLOCO VOCÊ VIU</p>');
+      h = h.split('<p class="blabel">O TEXTO DA LEI</p>').join('<p class="blabel">' + BIC.book + 'O TEXTO DA LEI</p>');
+      h = h.replace(/(<p class="blabel">)(CASO REAL)/g, '$1' + BIC.eye + '$2');
+      h = h.split('<p class="flabel">NESTE BLOCO VOCÊ VIU</p>').join('<p class="flabel">' + BIC.check + 'NESTE BLOCO VOCÊ VIU</p>');
       h = h.split('<p class="flabel">PONTOS PRINCIPAIS DA AULA</p>').join('<p class="flabel">' + BIC.check + 'PONTOS PRINCIPAIS DA AULA</p>');
       return h;
     }
@@ -1243,7 +1397,7 @@
       t = Math.max(0, Math.floor(t));
       return Math.floor(t/60) + ":" + pad(t%60);
     }
-    function audioSrc(i){ return "assets/audio/s" + pad(i+1) + ".mp3"; }
+    function audioSrc(i){ return "/assets/audio/s" + pad(i+1) + ".mp3"; }
 
     function hotPanelHTML(s, es){
       if(es.cur === null || es.cur === undefined){
@@ -1251,8 +1405,8 @@
       }
       var pt = s.pontos[es.cur];
       var h = '<h3>' + pt.titulo + '</h3><p>' + pt.texto + '</p>';
-      if(es.count === s.pontos.length && s.fimTexto){
-        h += '<p style="margin-top:10px"><b>Viagem completa!</b> ' + s.fimTexto + '</p>';
+      if(es.count === s.pontos.length){
+        h += '<p style="margin-top:10px"><b>Exploração completa!</b> Você descobriu os cinco pontos da imagem: cada cena guarda uma regra da bigamia.</p>';
       }
       return h;
     }
@@ -1264,7 +1418,7 @@
         hc += '<h2 class="covertitle">' + s.titulo + '</h2>';
         hc += '<div class="coverrule"></div>';
         hc += s.corpo;
-        return iconize(hc);
+        return hc;
       }
       if(s.tipo === "Encerramento"){
         var hf = '<img class="coverimg" src="' + IMG[s.img] + '" alt="' + s.alt + '">';
@@ -1272,11 +1426,12 @@
         hf += '<h2 class="covertitle">' + s.titulo + '</h2>';
         hf += '<div class="coverrule"></div>';
         hf += s.corpo;
-        if(s.pontos && s.pontos.length){
-          hf += '<div class="fimbloco"><p class="flabel">PONTOS PRINCIPAIS DA AULA</p><ul>';
-          s.pontos.forEach(function(pt){ hf += '<li>' + pt + '</li>'; });
-          hf += '</ul></div>';
-        }
+        hf += '<div class="fimbloco"><p class="flabel">PONTOS PRINCIPAIS DA AULA</p><ul>'
+          + '<li><b>Clássica:</b> razão, legalidade e livre-arbítrio, com um freio no Estado.</li>'
+          + '<li><b>Positiva:</b> ciência e determinismo, com os olhos na pessoa que delinque.</li>'
+          + '<li><b>Correcionalismo:</b> corrigir a vontade em vez de castigar.</li>'
+          + '<li><b>Técnico-Jurídica:</b> método próprio e autonomia da ciência penal.</li>'
+          + '<li><b>Defesa Social:</b> proteger a sociedade sem perder a pessoa.</li></ul></div>';
         return iconize(hf);
       }
       var h = '<img class="banner" src="' + IMG[s.img] + '" alt="' + s.alt + '">';
@@ -1307,7 +1462,7 @@
           h += '<button class="mbtn def' + (st.done[pi] ? ' done' : '') + '" type="button" data-def="' + pi + '" style="display:block;width:100%;margin-bottom:9px">' + s.pares[pi][1] + '</button>';
         });
         h += '</div></div>';
-        h += '<div class="matchdone' + (st.count === s.pares.length ? ' show' : '') + '" id="matchDone">' + (s.feedbackFinal || '<b>Muito bem!</b> Todos os pares foram ligados corretamente.') + '</div>';
+        h += '<div class="matchdone' + (st.count === s.pares.length ? ' show' : '') + '" id="matchDone"><b>Muito bem!</b> Todos os pares foram ligados corretamente.</div>';
       } else if(s.tipo === "Explorar"){
         var es = state[idx] || (state[idx] = {seen:{}, cur:null, count:0});
         h = '<p class="kicker">' + s.kicker + '</p>';
@@ -1363,10 +1518,10 @@
         h += '<div class="cmpbox" id="cmpBox">'
           + '<img src="' + IMG[s.img] + '" alt="">'
           + '<img class="cmpafter" id="cmpTop" src="' + IMG[s.img2] + '" alt="">'
-          + '<span class="cmplabel l">' + (s.labelL || "ANTES") + '</span><span class="cmplabel r">' + (s.labelR || "DEPOIS") + '</span>'
+          + '<span class="cmplabel l">' + s.rotuloL + '</span><span class="cmplabel r">' + s.rotuloR + '</span>'
           + '<div class="cmphandle" id="cmpHandle"></div>'
           + '</div>';
-        h += '<input class="cmprange" id="cmpRange" type="range" min="0" max="100" value="50" aria-label="Arraste para comparar os dois critérios">';
+        h += '<input class="cmprange" id="cmpRange" type="range" min="0" max="100" value="50" aria-label="Arraste para comparar as duas escolas">';
       } else if(s.tipo === "Completar"){
         var cs = state[idx] || (state[idx] = {filled:0, used:{}});
         h += '<h2>' + s.titulo + '</h2>';
@@ -1386,7 +1541,7 @@
           h += '<button class="wordchip' + (cs.used[wi] ? ' used' : '') + '" type="button" data-word="' + wi + '">' + w + '</button>';
         });
         h += '</div>';
-        h += '<div class="matchdone' + (cs.filled === s.respostas.length ? ' show' : '') + '" id="fillDone">' + (s.feedbackFinal || '<b>Frase completa!</b>') + '</div>';
+        h += '<div class="matchdone' + (cs.filled === s.respostas.length ? ' show' : '') + '" id="fillDone"><b>Frase completa!</b> ' + s.feedbackFinal + '</div>';
       } else if(s.tipo === "Karaokê"){
         h = '<p class="kicker">' + s.kicker + '</p>';
         h += '<h2>' + s.titulo + '</h2>';
@@ -1402,7 +1557,7 @@
         h += '<h2>' + s.titulo + '</h2>';
         h += '<p>' + s.intro + '</p>';
         h += '<p class="explorecount">Ramos abertos: <b id="mindCount">' + ms.count + ' de ' + s.ramos.length + '</b></p>';
-        h += '<div class="mindcenter">' + (s.centro || "MAPA DA AULA") + '</div>';
+        h += '<div class="mindcenter">' + s.centro + '</div>';
         s.ramos.forEach(function(r, ri){
           var open = !!ms.open[ri];
           h += '<div class="mindbranch"><button class="mindbtn' + (open ? ' open' : '') + '" type="button" data-mind="' + ri + '"><span>' + r.nome + '</span><span class="marr">' + (open ? '▾ aberto' : '▸ tocar') + '</span></button>'
@@ -1424,21 +1579,31 @@
       var playBtn = document.getElementById("playBtn");
       var box = document.getElementById("audioBox");
       var track = document.getElementById("aTrack");
-      playBtn.addEventListener("click", function(ev){
-        ev.stopPropagation();
+
+      function onPlayToggle(ev){
+        if(ev){ ev.stopPropagation(); ev.preventDefault(); }
         unlocked = true;
         togglePlay();
-      });
-      track.addEventListener("click", function(ev){
-        ev.stopPropagation();
+      }
+
+      playBtn.addEventListener("click", onPlayToggle);
+      playBtn.addEventListener("touchend", onPlayToggle);
+
+      function onSeek(ev){
+        if(ev){ ev.stopPropagation(); }
         var r = track.getBoundingClientRect();
-        if(player.duration){
-          player.currentTime = player.duration * ((ev.clientX - r.left) / r.width);
+        var clientX = ev.clientX;
+        if(clientX === undefined && ev.touches && ev.touches[0]){
+          clientX = ev.touches[0].clientX;
         }
-      });
-      box.addEventListener("mouseenter", function(){
-        if(player.paused){ tryPlay(); }
-      });
+        if(player.duration && r.width > 0 && clientX !== undefined){
+          var pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+          player.currentTime = player.duration * pct;
+        }
+      }
+
+      track.addEventListener("click", onSeek);
+      track.addEventListener("touchstart", onSeek);
     }
 
     function tryPlay(){
@@ -1461,12 +1626,12 @@
       var f = document.getElementById("aFill");
       var t = document.getElementById("aTime");
       if(f && player.duration) f.style.width = (100 * player.currentTime / player.duration) + "%";
-      if(t) t.textContent = fmt(player.currentTime) + " / " + fmt(player.duration);
+      if(t && player.duration) t.textContent = fmt(player.currentTime) + " / " + fmt(player.duration);
       karaSync();
     });
     player.addEventListener("loadedmetadata", function(){
       var t = document.getElementById("aTime");
-      if(t) t.textContent = "0:00 / " + fmt(player.duration);
+      if(t && player.duration) t.textContent = "0:00 / " + fmt(player.duration);
     });
     player.addEventListener("ended", function(){
       var f = document.getElementById("aFill");
@@ -1608,7 +1773,7 @@
         var vfArea = document.getElementById("vfArea");
         function renderVF(){
           if(vst.done){
-            vfArea.innerHTML = '<div class="finalscore"><p>Você acertou</p><p class="big">' + vst.score + ' de ' + s.afirmacoes.length + '</p><p>' + (vst.score === s.afirmacoes.length ? "Perfeito! Nenhuma armadilha te derrubou." : vst.score >= 3 ? "Muito bem! O homem de trás já não se esconde de você." : "Bom treino! Volte às cartas com calma depois de rever as explicações das etapas.") + '</p></div>';
+            vfArea.innerHTML = '<div class="finalscore"><p>Você acertou</p><p class="big">' + vst.score + ' de ' + s.afirmacoes.length + '</p><p>' + (vst.score === s.afirmacoes.length ? "Perfeito! Nenhuma pegadinha te derrubou." : vst.score >= 3 ? "Muito bem! O seu raciocínio está ficando afiado." : "Bom treino! Volte às cartas com calma depois de rever as explicações das etapas.") + '</p></div>';
             return;
           }
           var a = s.afirmacoes[vst.cur];
@@ -1761,11 +1926,9 @@
         var dst = state[idx];
         var dArea = document.getElementById("desafioArea");
         var dLetters = ["A","B","C","D","E"];
-        var maxPts = 0;
-        s.perguntas.forEach(function(pq){ maxPts += (pq.pts || 100); });
         function renderDesafio(){
           if(dst.finished){
-            var msg = dst.pts >= maxPts ? "Pontuação máxima! Você dominou esta aula do início ao fim." : dst.pts >= maxPts * 0.6 ? "Muito bem! Os conceitos principais desta aula já estão na sua mão." : "Bom começo! Refaça as questões e os flashcards da aula e tente de novo: o placar sobe rápido.";
+            var msg = dst.pts >= 500 ? "Pontuação máxima! Você dominou esta aula de ponta a ponta." : dst.pts >= 300 ? "Muito bem! O raciocínio da bigamia já está na sua mão." : "Bom começo! Refaça as questões e os flashcards da aula e tente de novo: o placar sobe rápido.";
             dArea.innerHTML = '<div class="finalscore"><p>SEU PLACAR FINAL</p><p class="big">' + dst.pts + ' pontos</p><p>' + msg + '</p><button class="againbtn" type="button" id="desafioAgain">Jogar de novo</button></div>';
             document.getElementById("desafioAgain").addEventListener("click", function(){
               dst.q = 0; dst.pts = 0; dst.answered = false; dst.chosen = null; dst.finished = false;
@@ -1774,9 +1937,7 @@
             return;
           }
           var pq = s.perguntas[dst.q];
-          var val = pq.pts || 100;
           var h = '<div class="scorebar"><span>Pergunta <b>' + (dst.q + 1) + ' de ' + s.perguntas.length + '</b></span><span class="pts">' + dst.pts + ' pts</span></div>';
-          if(pq.ouro) h += '<p><span class="goldtag">PERGUNTA DE OURO · VALE 200 PONTOS</span></p>';
           h += '<p class="qtext">' + pq.q + '</p>';
           pq.ops.forEach(function(op, oi){
             var cls = "opt";
@@ -1787,7 +1948,7 @@
             h += '<button class="' + cls + '" type="button" data-dopt="' + oi + '"' + (dst.answered ? ' disabled' : '') + '><span class="letter">' + dLetters[oi] + '</span><span>' + op + '</span></button>';
           });
           if(dst.answered){
-            h += '<div class="feedback show ' + (dst.chosen === pq.certa ? 'good' : 'bad') + '"><b>' + (dst.chosen === pq.certa ? ("Resposta certa! +" + val + " pontos") : "Não foi dessa vez.") + '</b>' + pq.exp + '</div>';
+            h += '<div class="feedback show ' + (dst.chosen === pq.certa ? 'good' : 'bad') + '"><b>' + (dst.chosen === pq.certa ? "Resposta certa! +100 pontos" : "Não foi dessa vez.") + '</b>' + pq.exp + '</div>';
             h += '<button class="againbtn" type="button" id="desafioNext" style="width:100%">' + (dst.q === s.perguntas.length - 1 ? "Ver meu placar" : "Próxima pergunta →") + '</button>';
           }
           dArea.innerHTML = h;
@@ -1797,7 +1958,7 @@
               var oi = parseInt(o.getAttribute("data-dopt"), 10);
               dst.answered = true;
               dst.chosen = oi;
-              if(oi === pq.certa) dst.pts += val;
+              if(oi === pq.certa) dst.pts += 100;
               renderDesafio();
             });
           });
@@ -1864,7 +2025,7 @@
       var s = SLIDES[idx];
       karaIdx = -1;
       scrollArea.innerHTML = slideHTML(s);
-      scrollArea.scrollTop = 0;
+      scrollArea.scrollTop = 0; try { window.scrollTo({ top: 0, behavior: "instant" }); document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch(e){}
       scrollArea.classList.remove("enter");
       void scrollArea.offsetWidth;
       scrollArea.classList.add("enter");
@@ -1881,6 +2042,16 @@
       player.src = audioSrc(idx);
       player.load();
       if(autoplay && unlocked){ tryPlay(); }
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({
+            type: "AULA_INTERATIVA_PROGRESSO",
+            etapaAtual: idx + 1,
+            totalEtapas: total,
+            aulaId: "admin-01-02"
+          }, "*");
+        }
+      } catch (err) {}
     }
 
     btnPrev.addEventListener("click", function(){ show(idx - 1, true); });
@@ -1915,6 +2086,6 @@
 
     bindAudio();
     show(0, false);
-    </script>
-  </body>
+    
+  </script>
 </html>
