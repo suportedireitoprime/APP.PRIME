@@ -70,9 +70,10 @@ const newCSSLayout = `body{
         color:var(--ink);
         display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
         width:100vw;
-        height:100vh;
-        height:100dvh;
-        overflow:hidden;
+        min-height:100vh;
+        min-height:100dvh;
+        overflow-x:hidden;
+        overflow-y:auto;
         scrollbar-width:none;
         -ms-overflow-style:none;
       }
@@ -81,27 +82,28 @@ const newCSSLayout = `body{
       }
       .stage{
         display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;
-        width:100%;height:100%;flex:1 1 auto;min-height:0;
+        width:100%;min-height:100%;flex:1 0 auto;
       }
       .phone{
         position:relative;
         width:100%;max-width:100%;min-width:0;
-        flex:1 1 auto;height:100%;min-height:0;
+        min-height:100%;flex:1 0 auto;
         background:linear-gradient(180deg,#26060f 0%,var(--phone) 30%);
         display:flex;flex-direction:column;
-        overflow:hidden;
+        overflow-x:hidden;
         border-radius:0;border:none;box-shadow:none;
       }
       header{
+        position:sticky !important;
+        top:0 !important;
         padding:8px 12px 6px !important;
         border-bottom:1px solid rgba(226,62,87,.25) !important;
-        background:rgba(20,4,9,.96) !important;
+        background:rgba(20,4,9,.97) !important;
         backdrop-filter:blur(14px);
         -webkit-backdrop-filter:blur(14px);
-        flex:0 0 auto !important;
         width:100% !important;
         box-sizing:border-box !important;
-        z-index:20;
+        z-index:50 !important;
       }
       .header-wrap{
         max-width:860px;
@@ -114,18 +116,12 @@ const newCSSLayout = `body{
       .track{height:4px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden;margin-bottom:5px}
       .fill{height:100%;background:linear-gradient(90deg,#8f1020,var(--red),var(--gold));border-radius:99px;transition:width .45s ease}
 
-      /* Área de leitura centralizada SEM barra de scroll */
+      /* Área de leitura no fluxo natural da página inteira */
       .scroll{
-        flex:1 1 auto;overflow-y:auto;overflow-x:hidden;
-        padding:16px 14px 24px;
-        scrollbar-width:none;
-        -ms-overflow-style:none;
-        overscroll-behavior:contain;
+        flex:1 0 auto;
+        padding:16px 14px 20px;
         width:100%;
         box-sizing:border-box !important;
-      }
-      .scroll::-webkit-scrollbar{
-        display:none;width:0;height:0;
       }
       .scroll > *{
         max-width:860px;
@@ -134,14 +130,14 @@ const newCSSLayout = `body{
         box-sizing:border-box !important;
       }
 
-      /* Rodapé com Player Centralizado 100% Responsivo */
+      /* Rodapé no final do conteúdo (rola junto com a tela toda) */
       footer{
-        padding:8px 8px calc(8px + env(safe-area-inset-bottom)) !important;
+        margin-top:auto !important;
+        padding:16px 8px calc(24px + env(safe-area-inset-bottom)) !important;
         border-top:1px solid rgba(226,62,87,.25) !important;
         background:rgba(20,4,9,.97) !important;
         backdrop-filter:blur(16px);
         -webkit-backdrop-filter:blur(16px);
-        flex:0 0 auto !important;
         width:100% !important;
         max-width:100% !important;
         overflow:hidden !important;
@@ -288,8 +284,7 @@ const newCSSLayout = `body{
       }
 
       @media (max-width:480px){
-        header{padding:12px 10px 8px !important}
-        h1{font-size:16px !important}
+        header{padding:8px 10px 5px !important}
         .etapa{font-size:11px !important}
         .footer-wrap{gap:4px !important}
         .navbtn{min-width:60px !important;font-size:11px !important;padding:0 6px !important;height:38px !important}
@@ -380,6 +375,12 @@ const newBindAudio = `function bindAudio(){
     player.addEventListener("ended"`;
 
 html = html.replace(oldBindAudio, newBindAudio);
+
+// 6. Ao trocar de etapa, rolar a página inteira para o topo
+html = html.replace(
+  /scrollArea\.scrollTop\s*=\s*0;/,
+  'scrollArea.scrollTop = 0; try { window.scrollTo({ top: 0, behavior: "instant" }); document.documentElement.scrollTop = 0; document.body.scrollTop = 0; } catch(e){}'
+);
 
 fs.writeFileSync('scratch/aula01_exata.html', html, 'utf8');
 fs.copyFileSync('scratch/aula01_exata.html', 'scratch/aula01_standalone_r2.html');
