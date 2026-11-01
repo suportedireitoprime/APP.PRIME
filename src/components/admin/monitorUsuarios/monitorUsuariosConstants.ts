@@ -76,8 +76,6 @@ export const STATIC_ROUTES: Record<string, string> = {
   '/assinatura': 'Assinatura',
   '/compartilhado': 'Compartilhado',
   '/grafo-artigos': 'Grafo de Artigos',
-  '/tematica-juridica': 'Temática Jurídica',
-  '/gerador-post': 'Gerador de Post',
   '/legislacao-estadual': 'Legislação Estadual',
   '/admin-funcoes': 'Admin · Funções',
   '/admin-monitor': 'Admin · Monitor',

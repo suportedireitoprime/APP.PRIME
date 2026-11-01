@@ -8,8 +8,6 @@ import { useAuth } from '@/hooks/useAuth';
 import brasaoAsset from '@/assets/brasao-republica.webp';
 import horusAsset from '@/assets/horus/horus-owl.webp';
 import tecladoSfx from '@/assets/teclado.mp3';
-import { loadObras } from '@/lib/tematicaStore';
-import { montarAgenda } from '@/lib/tematicaRecomendacoes';
 import { lazyWithRetry } from '@/utils/lazyWithRetry';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
@@ -165,7 +163,7 @@ export default function NovidadesRadarOverlay() {
       const meta = user?.user_metadata as Record<string, any>;
       if (meta?.radar_last_seen_date === todayISO) return;
 
-      const [rawRadar, resBoletins, obras] = await Promise.all([
+      const [rawRadar, resBoletins] = await Promise.all([
         resenhaSelect<any>({
           select: 'id,tipo_ato,numero_ato,ementa,data_dou,created_at',
           created_at: `gt.${lastSeen}`,
@@ -179,7 +177,6 @@ export default function NovidadesRadarOverlay() {
           .gte('created_at', lastSeen)
           .order('created_at', { ascending: false })
           .limit(5),
-        now.getDay() === 5 ? loadObras() : Promise.resolve([])
       ]);
 
       const list: OverlayItem[] = [];
@@ -227,26 +224,7 @@ export default function NovidadesRadarOverlay() {
         }
       }
 
-      // 3) Recomendação (Sexta-feira)
-      if (now.getDay() === 5 && obras.length > 0) {
-        const agenda = montarAgenda(obras as any, 1, now);
-        const recHoje = agenda[0];
-        if (recHoje && recHoje.obra) {
-          const recId = `rec-${recHoje.obra.id}-${todayISO}`;
-          const recTopicKey = `Temática Jurídica::${todayISO}`;
-          if (!seen.has(recId) && !seenTopics.has(recTopicKey)) {
-            list.push({
-              id: recId,
-              origem: 'recomendacao',
-              tipo_label: 'Temática Jurídica',
-              ementa: `Recomendação da semana: ${recHoje.obra.titulo}`,
-              data_ref: todayISO,
-              url: `/tematica-juridica?tab=recomendacoes`,
-              imagem_capa: (recHoje.obra as any).poster_url || undefined,
-            });
-          }
-        }
-      }
+
 
       if (list.length > 0 && isMounted) {
         setItems(list);

@@ -14,7 +14,6 @@ const RULES: { test: RegExp; label: string; grupo: string }[] = [
   { test: /^\/resumos/, label: 'Resumos Jurídicos', grupo: 'Estudo' },
   { test: /^\/jurisprudencia/, label: 'Jurisprudência', grupo: 'Pesquisa' },
   { test: /^\/dicionario|^\/termo/, label: 'Dicionário Jurídico', grupo: 'Pesquisa' },
-  { test: /^\/tematica-juridica/, label: 'Temática Jurídica', grupo: 'Pesquisa' },
   { test: /^\/biblioteca-offline|^\/modo-offline/, label: 'Modo Offline', grupo: 'Biblioteca' },
   { test: /^\/biblioteca|^\/bibliotecas/, label: 'Biblioteca', grupo: 'Biblioteca' },
   { test: /^\/noticias|^\/boletins|^\/blog|^\/opiniao|^\/novidades/, label: 'Notícias e Boletins', grupo: 'Conteúdo' },

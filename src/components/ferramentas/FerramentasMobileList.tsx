@@ -1,7 +1,6 @@
 import React from 'react';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 import { FerramentasPrimaryGrid } from './FerramentasPrimaryGrid';
-import TematicaCarrossel from './TematicaCarrossel';
 import { FerramentasSecondaryList } from './FerramentasSecondaryList';
 
 interface FerramentasMobileListProps {
@@ -19,10 +18,6 @@ export const FerramentasMobileList: React.FC<FerramentasMobileListProps> = ({ on
       </div>
 
       <FerramentasPrimaryGrid onToolClick={onToolClick} />
-
-      <section className="mt-2 -mx-2">
-        <TematicaCarrossel />
-      </section>
 
       <FerramentasSecondaryList onToolClick={onToolClick} />
     </div>

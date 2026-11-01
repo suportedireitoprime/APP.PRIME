@@ -6,15 +6,15 @@ import { AnimatedDivider } from '@/components/ui/AnimatedDivider';
 import { haptic } from '@/lib/nativeHaptics';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PilulasDeck3D } from './components/PilulasDeck3D';
-import { CODIGOS_ITEMS, MINISTROS_ITEMS, CLASSICOS_ITEMS, type PillGalleryItem } from './data/galleryItems';
-import { navigateToCodigoByItem, navigateToMinistros } from './utils/pilulasNavigation';
+import { CODIGOS_ITEMS, CLASSICOS_ITEMS, type PillGalleryItem } from './data/galleryItems';
+import { navigateToCodigoByItem } from './utils/pilulasNavigation';
 
-type TabType = 'Todos' | 'Pílulas Rápidas' | 'Só Pílulas' | 'Códigos' | 'Ministros';
+type TabType = 'Todos' | 'Pílulas Rápidas' | 'Só Pílulas' | 'Códigos';
 
 export default function PilulasHome() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('Todos');
-  const tabs: TabType[] = ['Todos', 'Pílulas Rápidas', 'Só Pílulas', 'Códigos', 'Ministros'];
+  const tabs: TabType[] = ['Todos', 'Pílulas Rápidas', 'Só Pílulas', 'Códigos'];
   
   usePilulasWarmup();
 
@@ -33,15 +33,9 @@ export default function PilulasHome() {
     navigateToCodigoByItem(item, navigate);
   }, [navigate]);
 
-  const handleMinistroClick = useCallback(() => {
-    haptic.selection();
-    navigateToMinistros(navigate);
-  }, [navigate]);
-
   const showRapidas = activeTab === 'Todos' || activeTab === 'Pílulas Rápidas';
   const showSoPilulas = activeTab === 'Todos' || activeTab === 'Só Pílulas';
   const showCodigos = activeTab === 'Todos' || activeTab === 'Pílulas Rápidas' || activeTab === 'Códigos';
-  const showMinistros = activeTab === 'Todos' || activeTab === 'Só Pílulas' || activeTab === 'Ministros';
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] overflow-x-hidden pb-20">
@@ -123,38 +117,7 @@ export default function PilulasHome() {
           )}
 
           {/* Divider com texto */}
-          {(showSoPilulas || showMinistros) && (
-            <AnimatedDivider text="Pílulas de Análise" />
-          )}
 
-          {/* Pílulas dos Ministros */}
-          {showMinistros && (
-            <div className="space-y-4 mb-8">
-              <div className="flex items-start justify-between px-1 mb-4 gap-4">
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-[22px] font-black text-white uppercase tracking-widest mb-1">Pílulas dos Ministros do STF</h2>
-                  <p className="text-[13px] text-zinc-400 truncate">
-                    Principais posicionamentos e histórico dos Ministros do STF.
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => { haptic.selection(); navigate('/pilulas/lista?tipo=ministros'); }}
-                  className="shrink-0 flex items-center justify-center h-[38px] px-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-xs font-semibold whitespace-nowrap transition-all active:scale-[0.98]"
-                >
-                  Ver em lista
-                </button>
-              </div>
-
-              <div className="-mx-4">
-                <PilulasDeck3D
-                  items={MINISTROS_ITEMS}
-                  onItemClick={handleMinistroClick}
-                  defaultBorderColor="#D4AF37"
-                />
-              </div>
-            </div>
-          )}
 
           {showSoPilulas && (
             <div className="space-y-4 mb-8">

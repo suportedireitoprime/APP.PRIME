@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Search, Headphones } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -6,19 +6,15 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { prefetchImages } from '@/lib/coverLoader';
-import { CODIGOS_ITEMS, MINISTROS_ITEMS, type PillGalleryItem } from './data/galleryItems';
-import { navigateToCodigoByItem, navigateToMinistros } from './utils/pilulasNavigation';
+import { CODIGOS_ITEMS, type PillGalleryItem } from './data/galleryItems';
+import { navigateToCodigoByItem } from './utils/pilulasNavigation';
 import { PrimeImage } from '@/components/ui/PrimeImage';
 
 export default function PilulasLista() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const tipo = searchParams.get('tipo') || 'codigos';
   const [searchTerm, setSearchTerm] = useState('');
 
-  const baseItems = useMemo(() => {
-    return tipo === 'ministros' ? MINISTROS_ITEMS : CODIGOS_ITEMS;
-  }, [tipo]);
+  const baseItems = CODIGOS_ITEMS;
 
   const filteredItems = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -29,7 +25,7 @@ export default function PilulasLista() {
     );
   }, [baseItems, searchTerm]);
 
-  const title = tipo === 'ministros' ? 'Pílulas dos Ministros do STF' : 'Pílulas de Códigos';
+  const title = 'Pílulas de Códigos';
 
   useEffect(() => {
     const urlsToPrefetch = baseItems.map(item => item.image);
@@ -38,11 +34,7 @@ export default function PilulasLista() {
 
   const handleItemClick = (item: PillGalleryItem) => {
     haptic.selection();
-    if (tipo === 'ministros') {
-      navigateToMinistros(navigate);
-    } else {
-      navigateToCodigoByItem(item, navigate);
-    }
+    navigateToCodigoByItem(item, navigate);
   };
 
   return (

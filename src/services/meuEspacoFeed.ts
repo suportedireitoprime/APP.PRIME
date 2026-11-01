@@ -6,7 +6,7 @@ import { buildMinhasLeis } from '@/lib/minhasLeis';
 
 export type MeuEspacoFeedItem = {
   id: string;
-  kind: 'anotacao' | 'grifo' | 'artigo' | 'lei' | 'livro' | 'jurisprudencia' | 'tematica';
+  kind: 'anotacao' | 'grifo' | 'artigo' | 'lei' | 'livro' | 'jurisprudencia';
   title: string;
   subtitle?: string;
   ts: number;
@@ -25,13 +25,12 @@ export const MEU_ESPACO_FEED_KEY = (uid: string | null | undefined) =>
   ['meu-espaco-feed', uid ?? 'anon'] as const;
 
 export async function fetchMeuEspacoFeed(userId: string): Promise<MeuEspacoFeed> {
-  const [favArtigos, anot, grifos, favLivros, favJuris, favTematica, progLivros] = await Promise.all([
+  const [favArtigos, anot, grifos, favLivros, favJuris, progLivros] = await Promise.all([
     supabase.from('artigos_favoritos').select('id,tabela_codigo,numero_artigo,artigo_id,created_at').eq('user_id', userId).order('created_at', { ascending: false }).limit(200),
     supabase.from('artigos_anotacoes').select('id,tabela_codigo,numero_artigo,artigo_id,anotacao,updated_at').eq('user_id', userId).order('updated_at', { ascending: false }).limit(60),
     supabase.from('artigos_grifos').select('id,tabela_codigo,numero_artigo,artigo_id,updated_at').eq('user_id', userId).order('updated_at', { ascending: false }).limit(60),
     supabase.from('biblioteca_favoritos').select('id,livro_key,categoria,created_at').eq('user_id', userId).order('created_at', { ascending: false }).limit(60),
     supabase.from('jurisprudencia_favoritos').select('id,titulo,categoria,slug_local,created_at').eq('user_id', userId).order('created_at', { ascending: false }).limit(60),
-    supabase.from('tematica_favoritos').select('obra_id,created_at').eq('user_id', userId).order('created_at', { ascending: false }).limit(60),
     supabase.from('biblioteca_leitura_progresso').select('livro_id,updated_at').eq('user_id', userId).order('updated_at', { ascending: false }).limit(60),
   ]);
 
@@ -70,13 +69,6 @@ export async function fetchMeuEspacoFeed(userId: string): Promise<MeuEspacoFeed>
     ts: new Date(r.created_at).getTime(),
     path: '/jurisprudencia',
   }));
-  (favTematica.data ?? []).forEach((r: any) => items.push({
-    id: `tm-${r.obra_id}`, kind: 'tematica',
-    title: 'Obra temática',
-    subtitle: 'Favorita',
-    ts: new Date(r.created_at).getTime(),
-    path: '/tematica-juridica',
-  }));
   getRecentes().slice(0, 15).forEach((r) => items.push({
     id: `lr-${r.leiId}`, kind: 'lei',
     title: r.nome,
@@ -88,8 +80,7 @@ export async function fetchMeuEspacoFeed(userId: string): Promise<MeuEspacoFeed>
   const favTotal =
     (favArtigos.data?.length ?? 0) +
     (favLivros.data?.length ?? 0) +
-    (favJuris.data?.length ?? 0) +
-    (favTematica.data?.length ?? 0);
+    (favJuris.data?.length ?? 0);
 
   // Contadores para o topo do Meu Espaço — mesma fonte da tela /pessoal/leis.
   const minhasLeis = buildMinhasLeis((favArtigos.data ?? []).map((r: any) => String(r.tabela_codigo || '')));

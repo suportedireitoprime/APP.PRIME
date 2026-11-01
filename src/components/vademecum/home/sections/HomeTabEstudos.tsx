@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import HomeCard from '@/components/vademecum/home/HomeCard';
-import HomeTresPoderes from './HomeTresPoderes';
 import HomeApresentacoesTimeline from './HomeApresentacoesTimeline';
 import { toast } from '@/hooks/use-toast';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
@@ -243,7 +242,6 @@ const HomeTabEstudos = ({
 
       {/* SeÃ§Ã£o TrÃªs Poderes */}
       <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
-        <HomeTresPoderes />
       </div>
 
       {/* Linha do Tempo de ApresentaÃ§Ãµes (Logo apÃ³s TrÃªs Poderes) */}

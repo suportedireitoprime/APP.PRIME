@@ -5,7 +5,7 @@ import { BackButton } from "@/components/ui/BackButton";
 import {
   ChevronLeft, ChevronRight, Camera, Pencil, Check,
   StickyNote, Highlighter, Star, BookMarked,
-  Scale, FileText, Film, Gavel, BookOpen, Sparkles, Calendar,
+  Scale, FileText, Gavel, BookOpen, Sparkles, Calendar,
   NotebookPen, Video, Database, Trash2, Mic, Monitor, Layers, Brain, BellRing
 } from "lucide-react";
 import { toast } from "sonner";
@@ -44,12 +44,11 @@ const KIND_LABEL: Record<MeuEspacoFeedItem['kind'], string> = {
   lei: 'Lei acessada',
   livro: 'Livro favorito',
   jurisprudencia: 'Jurisprudência',
-  tematica: 'Temática',
 };
 
 const KIND_ICON: Record<MeuEspacoFeedItem['kind'], any> = {
   anotacao: StickyNote, grifo: Highlighter, artigo: Star,
-  lei: Scale, livro: BookMarked, jurisprudencia: Gavel, tematica: Film,
+  lei: Scale, livro: BookMarked, jurisprudencia: Gavel,
 };
 
 // ---------- Calendar helpers ----------

@@ -26,9 +26,4 @@ export function navigateToCodigoByItem(item: PillGalleryItem, navigate: Navigate
   return false;
 }
 
-/**
- * Navega para a página de biografias dos Ministros do STF.
- */
-export function navigateToMinistros(navigate: NavigateFunction): void {
-  navigate('/ferramentas/stf/biografias');
-}
+

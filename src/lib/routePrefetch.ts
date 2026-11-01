@@ -15,7 +15,6 @@ export const routePrefetch = {
   chatJuridico: () => import("@/pages/ChatJuridico.tsx"),
   resumosJuridicos: () => import("@/pages/resumos-juridicos/ResumosJuridicosAreas.tsx"),
   modoOffline: () => import("@/pages/ModoOffline.tsx"),
-  tematica: () => import("@/pages/TematicaJuridica.tsx"),
   estudos: () => import("@/pages/Estudar.tsx"),
   ferramentas: () => import("@/pages/Ferramentas.tsx"),
   perfil: () => import("@/pages/Perfil.tsx"),

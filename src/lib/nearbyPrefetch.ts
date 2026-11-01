@@ -7,14 +7,14 @@ import { routePrefetch, type PrefetchKey } from './routePrefetch';
 
 // Map: current path prefix -> keys likely to be visited next.
 const NEARBY: Array<[RegExp, PrefetchKey[]]> = [
-  [/^\/$/,                    ['ferramentas', 'estudos', 'biblioteca', 'blog', 'noticias', 'questoes', 'flashcards', 'pilulas', 'vademecum', 'assistenteHorus', 'aprender', 'tematica', 'resumosJuridicos', 'resumosJuridicosTemas', 'audioaulas', 'videoaulas', 'videoaulasCatalogo', 'perfil', 'leiSeca', 'meExplique']],
+  [/^\/$/,                    ['ferramentas', 'estudos', 'biblioteca', 'blog', 'noticias', 'questoes', 'flashcards', 'pilulas', 'vademecum', 'assistenteHorus', 'aprender', 'resumosJuridicos', 'resumosJuridicosTemas', 'audioaulas', 'videoaulas', 'videoaulasCatalogo', 'perfil', 'leiSeca', 'meExplique']],
   [/^\/legislacao\//,         ['assistenteHorus', 'ferramentas', 'vademecum']],
   [/^\/ferramentas/,          ['estudos', 'perfil', 'pilulas', 'blog']],
   [/^\/blog/,                 ['noticias', 'boletins', 'ferramentas']],
   [/^\/biblioteca/,           ['modoOffline', 'pessoal', 'bibliotecaCategoria', 'bibliotecaOffline']],
-  [/^\/aprender/,             ['estudos', 'tematica']],
+  [/^\/aprender/,             ['estudos']],
   [/^\/radar/,                ['radares', 'boletins']],
-  [/^\/estudos/,              ['tematica', 'resumosJuridicos', 'questoes', 'flashcards']],
+  [/^\/estudos/,              ['resumosJuridicos', 'questoes', 'flashcards']],
   [/^\/perfil/,               ['pessoal']],
   [/^\/resumos-juridicos$/,   ['resumosJuridicosTemas', 'resumosJuridicosSubtemas', 'resumosJuridicosLista']],
   [/^\/resumos-juridicos\//,  ['resumosJuridicos', 'resumosJuridicosTemas', 'resumosJuridicosSubtemas', 'resumosJuridicosLista']],
@@ -22,7 +22,6 @@ const NEARBY: Array<[RegExp, PrefetchKey[]]> = [
   [/^\/audioaulas/,           ['videoaulas', 'videoaulasCatalogo', 'resumosJuridicos']],
   [/^\/bibliotecas?/,         ['bibliotecaCategoria', 'bibliotecaOffline', 'modoOffline', 'blog']],
   [/^\/ferramentas\/dicionario/, ['ferramentas', 'biblioteca']],
-  [/^\/tematica-juridica/,    ['blog', 'biblioteca', 'videoaulas']],
   [/^\/videoaulas$/,          ['videoaulasCatalogo', 'videoaulasArea', 'videoaulasCategorias', 'videoaulasTrilhas', 'videoaulasLista', 'videoaulaView']],
   [/^\/videoaulas\//,         ['videoaulas', 'videoaulasCatalogo', 'videoaulasArea', 'videoaulaView', 'videoaulasLista']],
 ];

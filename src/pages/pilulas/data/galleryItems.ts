@@ -56,23 +56,6 @@ export const CODIGOS_ITEMS: PillGalleryItem[] = [
   },
 ];
 
-/**
- * Itens de ministros do STF para galeria e lista.
- * Compartilhado entre PilulasHome e PilulasLista.
- */
-export const MINISTROS_ITEMS: PillGalleryItem[] = [
-  { id: 'moraes', image: "/pilulas/ministros/moraes.webp", text: "Moraes", fullName: "Alexandre de Moraes", descricao: 'Ministro do STF • Direito Constitucional e Eleitoral', borderColor: '#D4AF37' },
-  { id: 'mendonca', image: "/pilulas/ministros/mendonca.webp", text: "Mendonça", fullName: "André Mendonça", descricao: 'Ministro do STF • Advocacia Pública e Estado', borderColor: '#D4AF37' },
-  { id: 'carmen', image: "/pilulas/ministros/carmen.webp", text: "Cármen", fullName: "Cármen Lúcia", descricao: 'Ministra do STF • Jurisdição Constitucional', borderColor: '#D4AF37' },
-  { id: 'zanin', image: "/pilulas/ministros/zanin.webp", text: "Zanin", fullName: "Cristiano Zanin", descricao: 'Ministro do STF • Garantias Fundamentais e Processo', borderColor: '#D4AF37' },
-  { id: 'toffoli', image: "/pilulas/ministros/toffoli.webp", text: "Toffoli", fullName: "Dias Toffoli", descricao: 'Ministro do STF • Ordem Institucional e Econômica', borderColor: '#D4AF37' },
-  { id: 'fachin', image: "/pilulas/ministros/fachin.webp", text: "Fachin", fullName: "Edson Fachin", descricao: 'Ministro do STF • Direito Civil e Direitos Humanos', borderColor: '#D4AF37' },
-  { id: 'dino', image: "/pilulas/ministros/dino.webp", text: "Dino", fullName: "Flávio Dino", descricao: 'Ministro do STF • Direito Público e Administrativo', borderColor: '#D4AF37' },
-  { id: 'mendes', image: "/pilulas/ministros/mendes.webp", text: "Mendes", fullName: "Gilmar Mendes", descricao: 'Ministro do STF • Controle de Constitucionalidade', borderColor: '#D4AF37' },
-  { id: 'fux', image: "/pilulas/ministros/fux.webp", text: "Fux", fullName: "Luiz Fux", descricao: 'Ministro do STF • Teoria Geral do Processo Civil', borderColor: '#D4AF37' },
-  { id: 'marques', image: "/pilulas/ministros/marques.webp", text: "Marques", fullName: "Nunes Marques", descricao: 'Ministro do STF • Direito Constitucional e Tributário', borderColor: '#D4AF37' },
-  { id: 'barroso', image: "/pilulas/ministros/barroso.webp", text: "Barroso", fullName: "Roberto Barroso", descricao: 'Presidente do STF • Neoconstitucionalismo e Jurisdição', borderColor: '#D4AF37' },
-];
 
 /**
  * Itens de clássicos do direito para galeria.

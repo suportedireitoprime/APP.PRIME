@@ -299,7 +299,7 @@ const FlashcardsRevisar = () => {
                       key={c.id}
                       onClick={() => {
                         haptic.selection();
-                        navigate(`/flashcards/cornell?cardId=${c.id}`);
+                        navigate(`/flashcards/estudo?cardId=${c.id}`);
                       }}
                       variants={{
                         hidden: { opacity: 0, y: 15 },
