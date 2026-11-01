@@ -1,12 +1,15 @@
 import { getAulaFallbackHtml } from '@/utils/getAulaFallbackHtml';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ShapeGrid from '@/components/ui/ShapeGrid';
+import { cn } from '@/lib/utils';
 import { 
   Sparkles, Play, CheckCircle2, BookOpen, Layers, 
   ArrowLeft, Check, Lock, HelpCircle, Award, 
   RotateCcw, AlertCircle, Unlock, ChevronRight, GraduationCap,
-  ShieldCheck, Compass
+  ShieldCheck, Compass, Search
 } from 'lucide-react';
+import { HERO_ILLUSTRATIONS } from '@/components/aprender/chunks/aprenderConstants';
 import { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
 import { ModalRevisarFlashcards } from '@/components/aulas-interativas/ModalRevisarFlashcards';
 import { ModalPraticarQuestoes } from '@/components/aulas-interativas/ModalPraticarQuestoes';
@@ -159,6 +162,15 @@ export default function AdminAulasInterativas() {
     document.body.scrollTop = 0;
   }, [materiaSelecionadaId, disciplinaSelecionadaId]);
   const [modoLivreTeste, setModoLivreTeste] = useState(false);
+  const [heroIdx, setHeroIdx] = useState(0);
+
+  // Rotação suave da ilustração no banner hero
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIdx(i => (i + 1) % (HERO_ILLUSTRATIONS.length || 1));
+    }, 4500);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (!toastAviso) return;
@@ -337,124 +349,38 @@ export default function AdminAulasInterativas() {
     );
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // RENDERIZADOR DO HERO CINEMATOGRÁFICO UNIFICADO
-  // ─────────────────────────────────────────────────────────────────────────────
-  const renderCapaHero = (
-    imagem: string,
-    tag: string,
-    titulo: string,
-    subtitulo: string,
-    porcentagem: number,
-    totalItensRotulo: string,
-    subrotuloProgresso: string,
-    gradienteRoda: [string, string],
-    corTag: string
-  ) => (
-    <div className="relative w-full h-[350px] sm:h-[410px] md:h-[450px] rounded-b-[36px] sm:rounded-b-[44px] overflow-hidden border-b border-white/10 shadow-2xl shadow-black/90">
-      <img
-        src={imagem}
-        alt={titulo}
-        className="w-full h-full object-cover object-center scale-[1.02] transform-gpu"
-        fetchPriority="high"
-        loading="eager"
-      />
-
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.72) 0%, rgba(13,13,13,0.22) 35%, rgba(13,13,13,0.88) 75%, #0D0D0D 100%)'
-        }}
-      />
-
-      {/* Topo dentro da capa: Botão Voltar e Gráfico Circular */}
-      <div
-        className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-4 sm:px-8 pointer-events-auto"
-        style={{
-          paddingTop: 'calc(1.25rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
-        }}
-      >
-        <button
-          type="button"
-          onClick={handleVoltar}
-          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:scale-105 active:scale-95 transition shadow-xl"
-          aria-label="Voltar"
-        >
-          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-        </button>
-
-        {/* Gráfico Circular de Progresso */}
-        <div className="flex items-center gap-2.5 sm:gap-3 bg-black/65 backdrop-blur-md border border-white/15 pl-2.5 pr-3.5 py-1.5 sm:py-2 rounded-2xl sm:rounded-3xl shadow-2xl">
-          <div className="relative w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0">
-            <svg className="w-full h-full -rotate-90 transform-gpu" viewBox="0 0 44 44">
-              <circle
-                cx="22"
-                cy="22"
-                r="18"
-                className="stroke-[rgba(255,255,255,0.12)] fill-none"
-                strokeWidth="3.6"
-              />
-              <circle
-                cx="22"
-                cy="22"
-                r="18"
-                className="fill-none transition-all duration-700 ease-out"
-                stroke={`url(#progressRingGrad_${tag.replace(/[^a-zA-Z0-9]/g, '_')})`}
-                strokeWidth="3.6"
-                strokeDasharray={113.1}
-                strokeDashoffset={113.1 - (113.1 * Math.min(100, Math.max(0, porcentagem))) / 100}
-                strokeLinecap="round"
-              />
-              <defs>
-                <linearGradient id={`progressRingGrad_${tag.replace(/[^a-zA-Z0-9]/g, '_')}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor={gradienteRoda[0]} />
-                  <stop offset="100%" stopColor={gradienteRoda[1]} />
-                </linearGradient>
-              </defs>
-            </svg>
-
-            <span className="absolute text-[11px] sm:text-xs font-black text-white font-sans tracking-tighter">
-              {porcentagem}%
-            </span>
-          </div>
-
-          <div className="flex flex-col text-left">
-            <span 
-              className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-widest leading-none"
-              style={{ color: corTag }}
-            >
-              CICLO COMPLETO
-            </span>
-            <span className="text-xs sm:text-sm font-black text-white tracking-tight mt-1 leading-none">
-              {totalItensRotulo}
-            </span>
-            <span className="text-[9px] text-zinc-300 font-semibold leading-none mt-1">
-              {subrotuloProgresso}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Parte inferior da capa */}
-      <div className="absolute bottom-0 inset-x-0 z-20 px-5 sm:px-8 pb-7 sm:pb-9 max-w-4xl mx-auto w-full pointer-events-none">
-        <span 
-          className="inline-block text-[11px] sm:text-xs font-black uppercase tracking-[3px] mb-1 drop-shadow"
-          style={{ color: corTag }}
-        >
-          {tag}
-        </span>
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.9)] font-sans leading-none">
-          {titulo}
-        </h1>
-        <p className="text-xs sm:text-sm text-zinc-200/90 max-w-lg mt-2 leading-relaxed drop-shadow">
-          {subtitulo}
-        </p>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-white pb-[calc(7.5rem+env(safe-area-inset-bottom,24px))] relative">
+    <div className="min-h-screen bg-[#0D0D0D] text-white pb-[calc(7.5rem+env(safe-area-inset-bottom,24px))] relative overflow-x-hidden">
+      {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]">
+        <ShapeGrid
+          speed={0.5}
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(255, 255, 255, 0.04)"
+          hoverFillColor="rgba(255, 255, 255, 0.08)"
+          shape="square"
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      {/* ── Imagem Majestosa da Deusa Têmis Vazada no Fundo Central da Trilha ── */}
+      <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
+        <img
+          src="/images/gamificacao/deusa_temis_vazada.webp"
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-20 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.25)] pointer-events-none"
+          style={{
+            maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+          }}
+        />
+      </div>
+
       {/* Toast Flutuante de Alerta */}
       {toastAviso && (
         <div className="fixed top-5 inset-x-4 max-w-md mx-auto z-[150] animate-in fade-in slide-in-from-top-4 duration-300">
@@ -470,121 +396,397 @@ export default function AdminAulasInterativas() {
          ══════════════════════════════════════════════════════════════════════════ */}
       {!disciplinaSelecionadaId && (
         <>
-          {renderCapaHero(
-            themisHero,
-            'PLATAFORMA DE ENSINO JURÍDICO',
-            'AULAS INTERATIVAS',
-            'Selecione uma disciplina para acessar matérias temáticas com narrativa imersiva, 18 flashcards de retenção e 12 questões práticas comentadas.',
-            porcentagemGeral,
-            `${totalAulasGeral} Aulas`,
-            ciclosGeralCompletos > 0 ? `${ciclosGeralCompletos}/${totalAulasGeral} concluídas 100%` : 'Aula · Flashcard · Prática',
-            ['#f59e0b', '#d97706'],
-            '#fbbf24'
-          )}
+          {/* Top Bar Fixa de Navegação (Padrão Oficial Aprender - Screenshot 2) */}
+          <div 
+            className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3 transition-all shadow-xl"
+            style={{
+              paddingTop: 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+            }}
+          >
+            <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <button
+                  type="button"
+                  onClick={handleVoltar}
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
+                  aria-label="Voltar"
+                >
+                  <ArrowLeft className="w-5 h-5 sm:w-5.5 sm:h-5.5" strokeWidth={2.4} />
+                </button>
 
-          <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-amber-400" />
-                <span>Disciplinas e Ramos do Direito ({DISCIPLINAS_CATALOGO.length})</span>
-              </h3>
+                <div className="min-w-0">
+                  <h1 className="text-base sm:text-lg font-black text-white font-sans tracking-wider uppercase truncate">
+                    APRENDER
+                  </h1>
+                  <p className="text-[10px] sm:text-[11px] text-zinc-400 font-medium truncate">
+                    Aulas Dinâmicas em Trilhas
+                  </p>
+                </div>
+              </div>
 
-              {/* Destravar para Teste */}
+              {/* Botão de Destravar para Teste */}
               <button
                 type="button"
                 onClick={() => {
                   setModoLivreTeste(!modoLivreTeste);
-                  setToastAviso(!modoLivreTeste ? 'Modo Livre Ativado: Todas as fases liberadas para teste.' : 'Modo Padrão Ativado: Travas progressivas ativadas.');
+                  setToastAviso(!modoLivreTeste ? 'Modo Livre Ativado: Todas as fases liberadas.' : 'Modo Padrão Ativado: Travas progressivas ativadas.');
                 }}
-                className={`text-[10px] font-bold px-2.5 py-1 rounded-full border transition flex items-center gap-1.5 ${
+                className={cn(
+                  "text-[10px] sm:text-[11px] font-bold px-3 py-1.5 rounded-full border transition flex items-center gap-1.5 shadow-sm shrink-0",
                   modoLivreTeste 
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' 
-                    : 'bg-white/5 text-zinc-400 border-white/10 hover:text-white'
-                }`}
+                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40" 
+                    : "bg-white/5 text-zinc-400 border-white/10 hover:text-white"
+                )}
               >
-                {modoLivreTeste ? <Unlock className="w-3 h-3 text-amber-300" /> : <Lock className="w-3 h-3" />}
-                <span>{modoLivreTeste ? 'Modo Livre Ativo' : 'Destravar para Teste'}</span>
+                {modoLivreTeste ? <Unlock className="w-3.5 h-3.5 text-amber-300" /> : <Lock className="w-3.5 h-3.5" />}
+                <span className="hidden xs:inline">{modoLivreTeste ? 'Modo Livre Ativo' : 'Destravar Teste'}</span>
               </button>
             </div>
+          </div>
 
-            {/* Grid de Disciplinas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
-              {DISCIPLINAS_CATALOGO.map((disc) => {
-                const aulasDaDisc = AULAS_CATALOGO.filter(a => a.disciplinaId === disc.id);
-                const totalAulasDisc = aulasDaDisc.length;
-                const somaPct = aulasDaDisc.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
-                const pctDisc = totalAulasDisc > 0 ? Math.round(somaPct / totalAulasDisc) : 0;
-                const materiasDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disc.id);
+          <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
+            {/* Banner Hero Majestoso Estilo AprenderHeroProgress (Screenshot 2) */}
+            <section
+              className="relative isolate overflow-hidden rounded-2xl border border-amber-500/25 shadow-xl transition-all"
+              style={{
+                background: 'linear-gradient(135deg, #1f1a0b 0%, #171206 55%, #0d0a02 100%)',
+              }}
+            >
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_60%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.25),transparent_65%)]" />
 
-                return (
-                  <div
-                    key={disc.id}
-                    onClick={() => {
-                      setDisciplinaSelecionadaId(disc.id);
-                      setMateriaSelecionadaId(null);
-                    }}
-                    className="group cursor-pointer rounded-3xl border border-white/10 hover:border-white/30 p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between h-full shadow-2xl shadow-black/50 hover:shadow-black/80 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden"
-                    style={{ background: disc.corFundoCard }}
-                  >
-                    {/* Imagem de Fundo Suave no Card */}
-                    <div className="absolute top-0 right-0 w-36 h-36 opacity-15 pointer-events-none overflow-hidden rounded-full blur-[1px]">
-                      <img src={disc.capaHeroUrl} alt="" className="w-full h-full object-cover" />
+              {/* Personagem Animado no Canto Direito */}
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-[42%] sm:w-[34%] overflow-hidden" aria-hidden="true">
+                {HERO_ILLUSTRATIONS.map((url, i) => (
+                  <img
+                    key={url}
+                    src={url}
+                    alt=""
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    className="absolute inset-y-0 right-0 h-full w-auto object-contain object-right transition-opacity duration-[1400ms] ease-in-out"
+                    style={{ opacity: i === heroIdx ? 1 : 0 }}
+                  />
+                ))}
+                <div className="absolute inset-0 opacity-60 mix-blend-overlay" style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.45) 0%, transparent 100%)' }} />
+                <div className="absolute inset-y-0 left-0 w-2/3" style={{ background: 'linear-gradient(to right, #1f1a0b, transparent)' }} />
+              </div>
+
+              <div className="relative p-4 sm:p-5">
+                <div className="flex items-start gap-3.5">
+                  {/* Anel Circular de Progresso SVG */}
+                  <div className="relative shrink-0 w-[72px] h-[72px]">
+                    <svg width={72} height={72} className="-rotate-90">
+                      <circle cx={36} cy={36} r={32.5} stroke="rgba(255,255,255,0.15)" strokeWidth={7} fill="none" />
+                      <circle
+                        cx={36}
+                        cy={36}
+                        r={32.5}
+                        stroke="#fbbf24"
+                        strokeWidth={7}
+                        strokeLinecap="round"
+                        fill="none"
+                        strokeDasharray={204.2}
+                        strokeDashoffset={204.2 - (204.2 * Math.min(100, Math.max(0, porcentagemGeral))) / 100}
+                        style={{ transition: 'stroke-dashoffset 600ms ease' }}
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span className="text-sm font-black text-white leading-none">{porcentagemGeral}%</span>
+                      <span className="text-[8px] uppercase tracking-wider text-amber-400 font-bold leading-none mt-0.5">PROGRESSO</span>
                     </div>
+                  </div>
 
-                    <div className="space-y-4 relative z-10 flex-1 flex flex-col">
-                      <div className="flex items-center justify-between">
-                        <span 
-                          className="text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/10 border border-white/15"
-                          style={{ color: disc.corDestaque }}
+                  {/* Textos Informativos */}
+                  <div className="min-w-0 flex-1 pr-16 sm:pr-24">
+                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-amber-400 block">
+                      SUA TRILHA DE APRENDIZADO
+                    </span>
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white leading-tight font-sans tracking-wide mt-0.5">
+                      AULAS <span className="italic text-amber-400">EM TRILHAS</span>
+                    </h2>
+                    <p className="text-xs text-zinc-300 mt-1 line-clamp-2 max-w-md leading-relaxed">
+                      Slides interativos narrados, flashcards de retenção e questões por matéria.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Métricas do Rodapé do Hero */}
+                <div className="mt-4 pt-3 border-t border-white/10 grid grid-cols-3 gap-2 text-center">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Disciplinas</span>
+                    <span className="text-sm sm:text-base font-black text-white mt-0.5">{DISCIPLINAS_CATALOGO.length}</span>
+                  </div>
+                  <div className="flex flex-col border-x border-white/10">
+                    <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Aulas</span>
+                    <span className="text-sm sm:text-base font-black text-white mt-0.5">{totalAulasGeral}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Concluídas</span>
+                    <span className="text-sm sm:text-base font-black text-amber-400 mt-0.5">{ciclosGeralCompletos}/{totalAulasGeral}</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Cabeçalho da Seção de Disciplinas */}
+            <div className="flex items-center justify-between pt-2">
+              <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-amber-400" />
+                <span>DISCIPLINAS ({DISCIPLINAS_CATALOGO.length})</span>
+              </h3>
+            </div>
+
+            {/* Trilha Serpenteante em Linha do Tempo das Disciplinas */}
+            <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
+              <div className="w-full min-w-0 relative z-[2] flex flex-col">
+                {DISCIPLINAS_CATALOGO.map((disc, i) => {
+                  const isLeft = i % 2 === 0;
+                  const aulasDaDisc = AULAS_CATALOGO.filter(a => a.disciplinaId === disc.id);
+                  const totalAulasDisc = aulasDaDisc.length;
+                  const somaPct = aulasDaDisc.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
+                  const pctDisc = totalAulasDisc > 0 ? Math.round(somaPct / totalAulasDisc) : 0;
+                  const materiasDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disc.id);
+
+                  return (
+                    <div key={disc.id} className="w-full flex flex-col">
+                      <div
+                        className={cn(
+                          "relative z-10 flex w-full items-center justify-between gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
+                          isLeft ? "flex-row" : "flex-row-reverse"
+                        )}
+                      >
+                        {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA DISCIPLINA */}
+                        <div
+                          onClick={() => {
+                            setDisciplinaSelecionadaId(disc.id);
+                            setMateriaSelecionadaId(null);
+                          }}
+                          className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                         >
-                          {disc.subtitulo}
-                        </span>
-                        <span className="text-[11px] font-bold text-zinc-400">
-                          {materiasDaDisc.length} {materiasDaDisc.length === 1 ? 'Matéria' : 'Matérias'} · {totalAulasDisc} {totalAulasDisc === 1 ? 'Aula' : 'Aulas'}
-                        </span>
-                      </div>
+                          {/* Carta 1 (Fundo) */}
+                          <div
+                            className={cn(
+                              "absolute inset-0 rounded-2xl border border-white/10 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                              isLeft
+                                ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
+                                : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
+                            )}
+                            style={{
+                              background: disc.corFundoCard,
+                              boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
+                            }}
+                          >
+                            <div className="absolute inset-0 bg-black/50 pointer-events-none z-[1]" />
+                            <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
+                              <Layers className="w-5 h-5 text-white/30" />
+                            </div>
+                          </div>
 
-                      <div className="flex-1">
-                        <h2 className="text-xl sm:text-2xl font-black text-white font-sans tracking-wide group-hover:text-amber-300 transition-colors">
-                          {disc.nome}
-                        </h2>
-                        <p className="text-xs sm:text-sm text-zinc-300/85 mt-2 leading-relaxed">
-                          {disc.descricao}
-                        </p>
-                      </div>
+                          {/* Carta 2 (Meio) */}
+                          <div
+                            className={cn(
+                              "absolute inset-0 rounded-2xl border border-white/15 opacity-75 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                              isLeft
+                                ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
+                                : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
+                            )}
+                            style={{
+                              background: disc.corFundoCard,
+                              boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
+                            }}
+                          >
+                            <div className="absolute inset-0 bg-black/25 pointer-events-none z-[1]" />
+                            <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
+                              <Layers className="w-5 h-5 text-white/40" />
+                            </div>
+                          </div>
 
-                      {/* Barra de Progresso da Disciplina */}
-                      <div className="pt-2">
-                        <div className="flex items-center justify-between text-[11px] font-bold text-zinc-400 mb-1.5">
-                          <span>Progresso da Disciplina</span>
-                          <span style={{ color: disc.corDestaque }}>{pctDisc}%</span>
+                          {/* Carta 3 (Frontal Principal com Capa) */}
+                          <div
+                            className={cn(
+                              "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 transition-all duration-300 origin-bottom",
+                              isLeft
+                                ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
+                                : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
+                            )}
+                            style={{
+                              background: disc.corFundoCard,
+                              borderColor: `${disc.corDestaque}50`
+                            }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
+                            <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
+
+                            <img
+                              src={disc.capaHeroUrl}
+                              alt={disc.nome}
+                              loading="lazy"
+                              decoding="async"
+                              className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
+
+                            {/* Play Button Central */}
+                            <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
+                              <div className="relative flex items-center justify-center">
+                                <div
+                                  className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
+                                  style={{ backgroundColor: `${disc.corDestaque}60` }}
+                                />
+                                <div className="relative w-11 h-11 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/95 shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_24px_rgba(245,158,11,0.65)]">
+                                  <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current translate-x-0.5 transition-colors" />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Rodapé da Carta: Progresso e Estatísticas */}
+                            <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
+                              <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-normal text-white/95 mb-1 sm:mb-1.5">
+                                <span className="truncate">
+                                  {totalAulasDisc} aulas
+                                </span>
+                                <span className="font-semibold font-sans ml-1" style={{ color: disc.corDestaque }}>
+                                  {pctDisc}%
+                                </span>
+                              </div>
+                              <div className="w-full bg-black/50 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
+                                <div
+                                  className="h-full rounded-full transition-all duration-500"
+                                  style={{
+                                    width: `${Math.max(pctDisc, totalAulasDisc > 0 ? 8 : 0)}%`,
+                                    backgroundColor: disc.corDestaque,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="w-full h-2 rounded-full bg-black/40 border border-white/10 overflow-hidden">
-                          <div 
-                            className="h-full rounded-full transition-all duration-700 ease-out"
-                            style={{ 
-                              width: `${pctDisc}%`,
-                              backgroundColor: disc.corDestaque
+
+                        {/* LINHA CONECTORA E TÍTULO NO LADO OPOSTO */}
+                        <div
+                          onClick={() => {
+                            setDisciplinaSelecionadaId(disc.id);
+                            setMateriaSelecionadaId(null);
+                          }}
+                          className={cn(
+                            "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
+                            isLeft ? "flex-row pl-1.5 xs:pl-2 sm:pl-3" : "flex-row-reverse pr-1.5 xs:pr-2 sm:pr-3"
+                          )}
+                        >
+                          {/* Linha Fina Conectora com Degradê */}
+                          <div
+                            className={cn(
+                              "flex items-center shrink-0 w-6 xs:w-8 sm:w-12 md:w-16",
+                              isLeft ? "flex-row" : "flex-row-reverse"
+                            )}
+                          >
+                            <div
+                              className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
+                              style={{
+                                backgroundColor: disc.corDestaque,
+                                boxShadow: `0 0 8px ${disc.corDestaque}`,
+                              }}
+                            />
+                            <div
+                              className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
+                              style={{
+                                background: isLeft
+                                  ? `linear-gradient(to right, ${disc.corDestaque}, rgba(255,255,255,0.3), transparent)`
+                                  : `linear-gradient(to left, ${disc.corDestaque}, rgba(255,255,255,0.3), transparent)`,
+                              }}
+                            />
+                          </div>
+
+                          {/* Nome e Detalhes da Disciplina */}
+                          <div
+                            className={cn(
+                              "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
+                              isLeft ? "items-start text-left" : "items-end text-right"
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "flex items-center gap-1.5 mb-1 opacity-80",
+                                isLeft ? "justify-start" : "justify-end"
+                              )}
+                            >
+                              <span
+                                className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
+                                style={{ color: disc.corDestaque }}
+                              >
+                                {disc.subtitulo}
+                              </span>
+                              <span className="w-1 h-1 rounded-full bg-white/25" />
+                              <span className="text-[10px] sm:text-[12px] font-light text-zinc-400">
+                                {materiasDaDisc.length} {materiasDaDisc.length === 1 ? 'Matéria' : 'Matérias'}
+                              </span>
+                            </div>
+
+                            <h3 className="font-sans font-medium text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-2">
+                              {disc.nome}
+                            </h3>
+
+                            {disc.descricao && (
+                              <p className="text-xs text-zinc-300/80 mt-1.5 line-clamp-2 max-w-md leading-relaxed hidden xs:block">
+                                {disc.descricao}
+                              </p>
+                            )}
+
+                            <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">
+                              <span>Explorar Matérias</span>
+                              <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" style={{ color: disc.corDestaque }} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* SVG S-Curve Connector */}
+                      {i < DISCIPLINAS_CATALOGO.length - 1 && (
+                        <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
+                          <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <defs>
+                              <filter id={`trail-glow-disc-${i}`} x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feMerge>
+                                  <feMergeNode in="blur" />
+                                  <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                              </filter>
+                            </defs>
+                            <path
+                              d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                              fill="none"
+                              stroke="rgba(255, 255, 255, 0.08)"
+                              strokeWidth="4"
+                              strokeLinecap="round"
+                              vectorEffect="non-scaling-stroke"
+                            />
+                            <path
+                              d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                              fill="none"
+                              stroke={disc.corDestaque}
+                              strokeWidth="2.5"
+                              strokeDasharray="5 7"
+                              strokeLinecap="round"
+                              vectorEffect="non-scaling-stroke"
+                              filter={`url(#trail-glow-disc-${i})`}
+                            />
+                          </svg>
+                          <div
+                            className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+                            style={{
+                              left: '50%',
+                              top: '50%',
+                              boxShadow: `0 0 10px ${disc.corDestaque}`,
                             }}
                           />
                         </div>
-                      </div>
+                      )}
                     </div>
-
-                    <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between relative z-10">
-                      <span className="text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">
-                        Explorar matérias
-                      </span>
-                      <div 
-                        className="w-10 h-10 rounded-full flex items-center justify-center transition-transform group-hover:translate-x-1"
-                        style={{ backgroundColor: `${disc.corDestaque}25`, color: disc.corDestaque }}
-                      >
-                        <ChevronRight className="w-5 h-5 stroke-[2.5]" />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </>
@@ -602,101 +804,285 @@ export default function AdminAulasInterativas() {
 
         return (
           <>
-            {renderCapaHero(
-              disciplinaAtual.capaHeroUrl,
-              disciplinaAtual.subtitulo,
-              disciplinaAtual.nome,
-              disciplinaAtual.descricao,
-              pctDisc,
-              `${totalAulasDisc} ${totalAulasDisc === 1 ? 'Aula' : 'Aulas'}`,
-              `${materiasDaDisc.length} ${materiasDaDisc.length === 1 ? 'Matéria' : 'Matérias'} disponíveis`,
-              disciplinaAtual.corGradientRing,
-              disciplinaAtual.corDestaque
-            )}
+            {/* Top Bar Fixa de Navegação da Disciplina (Padrão Screenshot 3) */}
+            <div 
+              className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3 transition-all shadow-xl"
+              style={{
+                paddingTop: 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+              }}
+            >
+              <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <button
+                    type="button"
+                    onClick={handleVoltar}
+                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
+                    aria-label="Voltar para disciplinas"
+                  >
+                    <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
+                  </button>
 
-            <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+                  <div className="min-w-0">
+                    <h1 className="text-base sm:text-lg md:text-xl font-black text-white font-serif uppercase tracking-wider truncate">
+                      {disciplinaAtual.nome}
+                    </h1>
+                    <p className="text-[10px] sm:text-[11px] text-zinc-400 font-medium truncate">
+                      Trilha de Aprendizado
+                    </p>
+                  </div>
+                </div>
+
+                {/* Badge do total de aulas */}
+                <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                  <BookOpen className="w-3.5 h-3.5" style={{ color: disciplinaAtual.corDestaque }} />
+                  <span className="text-[11px] font-bold text-zinc-300">
+                    {totalAulasDisc} {totalAulasDisc === 1 ? 'Aula' : 'Aulas'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
+              {/* Header da Seção: Selecione o Módulo */}
               <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400 flex items-center gap-2">
-                  <Layers className="w-4 h-4" style={{ color: disciplinaAtual.corDestaque }} />
-                  <span>Matérias de {disciplinaAtual.nome} ({materiasDaDisc.length})</span>
+                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" style={{ color: disciplinaAtual.corDestaque }} />
+                  <span>SELECIONE O MÓDULO ({materiasDaDisc.length})</span>
                 </h3>
-
               </div>
 
-              {/* Lista de Matérias */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
-                {materiasDaDisc.map((mat) => {
-                  const aulasDaMat = AULAS_CATALOGO.filter(a => a.materiaId === mat.id);
-                  const totalAulasMat = aulasDaMat.length;
-                  const somaPctMat = aulasDaMat.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
-                  const pctMat = totalAulasMat > 0 ? Math.round(somaPctMat / totalAulasMat) : 0;
+              {/* Trilha Serpenteante em Linha do Tempo das Matérias */}
+              <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
+                <div className="w-full min-w-0 relative z-[2] flex flex-col">
+                  {materiasDaDisc.map((mat, i) => {
+                    const isLeft = i % 2 === 0;
+                    const aulasDaMat = AULAS_CATALOGO.filter(a => a.materiaId === mat.id);
+                    const totalAulasMat = aulasDaMat.length;
+                    const somaPctMat = aulasDaMat.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
+                    const pctMat = totalAulasMat > 0 ? Math.round(somaPctMat / totalAulasMat) : 0;
 
-                  return (
-                    <div
-                      key={mat.id}
-                      onClick={() => setMateriaSelecionadaId(mat.id)}
-                      className="group cursor-pointer rounded-3xl border border-white/10 hover:border-white/30 p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between h-full shadow-2xl shadow-black/50 hover:shadow-black/80 hover:scale-[1.01] active:scale-[0.99] relative overflow-hidden"
-                      style={{ background: disciplinaAtual.corFundoCard }}
-                    >
-                      <div className="space-y-4 relative z-10 flex-1 flex flex-col">
-                        <div className="flex items-start gap-4">
-                          <img
-                            src={mat.capaUrl}
-                            alt={mat.titulo}
-                            className="w-16 h-20 sm:w-20 sm:h-24 rounded-2xl object-cover shrink-0 border border-white/15 shadow-lg group-hover:scale-105 transition-transform"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <span 
-                              className="text-[10px] font-extrabold uppercase tracking-widest leading-none block mb-1"
-                              style={{ color: disciplinaAtual.corDestaque }}
+                    return (
+                      <div key={mat.id} className="w-full flex flex-col">
+                        <div
+                          className={cn(
+                            "relative z-10 flex w-full items-center justify-between gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
+                            isLeft ? "flex-row" : "flex-row-reverse"
+                          )}
+                        >
+                          {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA MATÉRIA */}
+                          <div
+                            onClick={() => setMateriaSelecionadaId(mat.id)}
+                            className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                          >
+                            {/* Carta 1 (Fundo) */}
+                            <div
+                              className={cn(
+                                "absolute inset-0 rounded-2xl border border-white/10 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                                isLeft
+                                  ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
+                                  : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
+                              )}
+                              style={{
+                                background: disciplinaAtual.corFundoCard,
+                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
+                              }}
                             >
-                              {mat.numeroMateria}
-                            </span>
-                            <h2 className="text-base sm:text-lg font-bold text-white font-serif leading-snug group-hover:text-amber-200 transition-colors">
-                              {mat.titulo}
-                            </h2>
-                            <span className="text-[11px] text-zinc-400 font-semibold mt-1 block">
-                              {mat.subtitulo}
-                            </span>
+                              <div className="absolute inset-0 bg-black/50 pointer-events-none z-[1]" />
+                              <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
+                                <Layers className="w-5 h-5 text-white/30" />
+                              </div>
+                            </div>
+
+                            {/* Carta 2 (Meio) */}
+                            <div
+                              className={cn(
+                                "absolute inset-0 rounded-2xl border border-white/15 opacity-75 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                                isLeft
+                                  ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
+                                  : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
+                              )}
+                              style={{
+                                background: disciplinaAtual.corFundoCard,
+                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
+                              }}
+                            >
+                              <div className="absolute inset-0 bg-black/25 pointer-events-none z-[1]" />
+                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
+                                <Layers className="w-5 h-5 text-white/40" />
+                              </div>
+                            </div>
+
+                            {/* Carta 3 (Frontal Principal com Capa) */}
+                            <div
+                              className={cn(
+                                "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 transition-all duration-300 origin-bottom",
+                                isLeft
+                                  ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
+                                  : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
+                              )}
+                              style={{
+                                background: disciplinaAtual.corFundoCard,
+                                borderColor: `${disciplinaAtual.corDestaque}50`
+                              }}
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
+                              <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
+
+                              <img
+                                src={mat.capaUrl}
+                                alt={mat.titulo}
+                                loading="lazy"
+                                decoding="async"
+                                className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
+
+                              {/* Play Button Central */}
+                              <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
+                                <div className="relative flex items-center justify-center">
+                                  <div
+                                    className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
+                                    style={{ backgroundColor: `${disciplinaAtual.corDestaque}60` }}
+                                  />
+                                  <div
+                                    className="relative w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/90 shadow-xl transition-all duration-300 group-hover:scale-110"
+                                    style={{ borderColor: disciplinaAtual.corDestaque }}
+                                  >
+                                    <Play className="w-5 h-5 fill-current translate-x-0.5" style={{ color: disciplinaAtual.corDestaque }} />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Rodapé da Carta com Progresso */}
+                              <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
+                                <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-normal text-white/95 mb-1 sm:mb-1.5">
+                                  <span className="truncate">{totalAulasMat} {totalAulasMat === 1 ? 'aula' : 'aulas'}</span>
+                                  <span className="font-semibold font-sans">{pctMat}%</span>
+                                </div>
+                                <div className="w-full bg-black/50 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
+                                  <div
+                                    className="h-full rounded-full transition-all duration-500 shadow-sm"
+                                    style={{
+                                      width: `${Math.max(pctMat, totalAulasMat > 0 ? 8 : 0)}%`,
+                                      backgroundColor: disciplinaAtual.corDestaque,
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* LINHA FINA CONECTORA E TÍTULO NO LADO OPOSTO */}
+                          <div
+                            onClick={() => setMateriaSelecionadaId(mat.id)}
+                            className={cn(
+                              "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
+                              isLeft ? "flex-row pl-2 sm:pl-4" : "flex-row-reverse pr-2 sm:pr-4"
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "flex items-center shrink-0 w-6 xs:w-8 sm:w-12 md:w-16",
+                                isLeft ? "flex-row" : "flex-row-reverse"
+                              )}
+                            >
+                              <div
+                                className="w-2 h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
+                                style={{
+                                  backgroundColor: disciplinaAtual.corDestaque,
+                                  boxShadow: `0 0 10px ${disciplinaAtual.corDestaque}`,
+                                }}
+                              />
+                              <div
+                                className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
+                                style={{
+                                  background: isLeft
+                                    ? `linear-gradient(to right, ${disciplinaAtual.corDestaque}, rgba(255,255,255,0.3), transparent)`
+                                    : `linear-gradient(to left, ${disciplinaAtual.corDestaque}, rgba(255,255,255,0.3), transparent)`,
+                                }}
+                              />
+                            </div>
+
+                            <div
+                              className={cn(
+                                "flex-1 min-w-0 flex flex-col justify-center px-2 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
+                                isLeft ? "items-start text-left" : "items-end text-right"
+                              )}
+                            >
+                              <div className={cn("flex items-center gap-1.5 mb-1 opacity-80", isLeft ? "justify-start" : "justify-end")}>
+                                <span className="text-[11px] sm:text-[13px] font-bold uppercase tracking-wider" style={{ color: disciplinaAtual.corDestaque }}>
+                                  {mat.numeroMateria}
+                                </span>
+                                <span className="w-1 h-1 rounded-full bg-white/25" />
+                                <span className="text-[10px] sm:text-[11px] text-zinc-400">
+                                  {totalAulasMat} {totalAulasMat === 1 ? 'aula' : 'aulas'}
+                                </span>
+                              </div>
+
+                              <h3 className="font-serif font-bold text-[17px] xs:text-[19px] sm:text-[22px] md:text-[24px] leading-tight text-white group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-3">
+                                {mat.titulo}
+                              </h3>
+
+                              {mat.descricao && (
+                                <p className="text-xs text-zinc-300/80 mt-1.5 line-clamp-2 max-w-md leading-relaxed hidden xs:block">
+                                  {mat.descricao}
+                                </p>
+                              )}
+
+                              <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">
+                                <span>Explorar Matéria</span>
+                                <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" style={{ color: disciplinaAtual.corDestaque }} />
+                              </div>
+                            </div>
                           </div>
                         </div>
 
-                        <p className="text-xs text-zinc-300/80 leading-relaxed flex-1">
-                          {mat.descricao}
-                        </p>
-
-                        {/* Barra de Progresso da Matéria */}
-                        <div className="pt-2">
-                          <div className="flex items-center justify-between text-[11px] font-bold text-zinc-400 mb-1.5">
-                            <span>Progresso da Matéria</span>
-                            <span style={{ color: disciplinaAtual.corDestaque }}>{pctMat}%</span>
-                          </div>
-                          <div className="w-full h-2 rounded-full bg-black/40 border border-white/10 overflow-hidden">
-                            <div 
-                              className="h-full rounded-full transition-all duration-700 ease-out"
-                              style={{ 
-                                width: `${pctMat}%`,
-                                backgroundColor: disciplinaAtual.corDestaque
+                        {/* SVG S-Curve Connector */}
+                        {i < materiasDaDisc.length - 1 && (
+                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
+                            <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
+                              <defs>
+                                <filter id={`trail-glow-mat-${i}`} x="-20%" y="-20%" width="140%" height="140%">
+                                  <feGaussianBlur stdDeviation="3" result="blur" />
+                                  <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                  </feMerge>
+                                </filter>
+                              </defs>
+                              <path
+                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                                fill="none"
+                                stroke="rgba(255, 255, 255, 0.08)"
+                                strokeWidth="4"
+                                strokeLinecap="round"
+                                vectorEffect="non-scaling-stroke"
+                              />
+                              <path
+                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                                fill="none"
+                                stroke={disciplinaAtual.corDestaque}
+                                strokeWidth="2.5"
+                                strokeDasharray="5 7"
+                                strokeLinecap="round"
+                                vectorEffect="non-scaling-stroke"
+                                filter={`url(#trail-glow-mat-${i})`}
+                              />
+                            </svg>
+                            <div
+                              className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+                              style={{
+                                left: '50%',
+                                top: '50%',
+                                boxShadow: `0 0 10px ${disciplinaAtual.corDestaque}`,
                               }}
                             />
                           </div>
-                        </div>
+                        )}
                       </div>
-
-                      <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between relative z-10">
-                        <span className="text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">
-                          Ver {totalAulasMat} {totalAulasMat === 1 ? 'aula disponível' : 'aulas disponíveis'}
-                        </span>
-                        <div 
-                          className="w-10 h-10 rounded-full flex items-center justify-center transition-transform group-hover:translate-x-1"
-                          style={{ backgroundColor: `${disciplinaAtual.corDestaque}25`, color: disciplinaAtual.corDestaque }}
-                        >
-                          <ChevronRight className="w-5 h-5 stroke-[2.5]" />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </>
@@ -762,191 +1148,362 @@ export default function AdminAulasInterativas() {
               </div>
             </div>
 
-            <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8 space-y-6">
-              {/* Grid de Aulas da Matéria */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
-                {aulasDaMateria.map((aula) => {
-                  const prog = calcularProgressoCiclo(aula);
-                  const flashcardsLiberados = prog.aulaTerminada || modoLivreTeste;
-                  const questoesLiberadas = (prog.aulaTerminada && prog.fcOk) || modoLivreTeste;
+            <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
+              {/* Header da Seção: Selecione a Aula */}
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" style={{ color: disciplinaAtual.corDestaque }} />
+                  <span>SELECIONE A AULA ({totalAulasMat})</span>
+                </h3>
+                {pctMat > 0 && (
+                  <span className="text-xs font-bold text-zinc-400">
+                    Progresso da Matéria: <span style={{ color: disciplinaAtual.corDestaque }}>{pctMat}%</span>
+                  </span>
+                )}
+              </div>
 
-                  const conteudo = CONTEUDO_AULAS[aula.id];
-                  const totalCards = conteudo?.flashcards.length || 18;
-                  const totalQuestoes = conteudo?.questoes.length || 12;
+              {/* Trilha Serpenteante em Linha do Tempo das Aulas */}
+              <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
+                <div className="w-full min-w-0 relative z-[2] flex flex-col">
+                  {aulasDaMateria.map((aula, i) => {
+                    const isLeft = i % 2 === 0;
+                    const prog = calcularProgressoCiclo(aula);
+                    const flashcardsLiberados = prog.aulaTerminada || modoLivreTeste;
+                    const questoesLiberadas = (prog.aulaTerminada && prog.fcOk) || modoLivreTeste;
+                    const conteudo = CONTEUDO_AULAS[aula.id];
+                    const totalCards = conteudo?.flashcards.length || 18;
+                    const totalQuestoes = conteudo?.questoes.length || 12;
 
-                  return (
-                    <div
-                      key={aula.id}
-                      className="group rounded-3xl border border-white/10 hover:border-white/25 p-4 sm:p-5 transition-all duration-300 flex flex-col justify-between h-full shadow-xl shadow-black/40 hover:shadow-red-500/10"
-                      style={{ background: disciplinaAtual.corFundoCard }}
-                    >
-                      <div className="space-y-3.5 flex-1 flex flex-col">
-                        {/* Cabeçalho do Card: NÚMERO DA AULA | TÍTULO DO TEMA (SEM DIREITO PENAL) E STATUS FINALIZADO */}
-                        <div className="flex items-center justify-between pb-2 border-b border-white/10 gap-2">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span 
-                              className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white/10 border border-white/15 shrink-0"
-                              style={{ color: disciplinaAtual.corDestaque }}
-                            >
-                              {aula.numeroAula}
-                            </span>
-                            <span className="text-zinc-500 text-xs font-light select-none">|</span>
-                            <span 
-                              className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest truncate"
-                              style={{ color: disciplinaAtual.corDestaque }}
-                            >
-                              {materiaAtual.titulo}
-                            </span>
-                          </div>
-
-                          {/* Se a pessoa completar toda a aula (100%), exibe a badge "Finalizado" */}
-                          {prog.cicloCompleto ? (
-                            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] sm:text-[11px] font-black uppercase tracking-wider border border-emerald-500/40 flex items-center gap-1.5 shadow-sm shadow-emerald-950/30 shrink-0 animate-in fade-in duration-300">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
-                              <span>Finalizado</span>
-                            </span>
-                          ) : (
-                            <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider shrink-0">
-                              {prog.porcentagemTotal > 0 ? `${prog.porcentagemTotal}%` : '0%'}
-                            </span>
+                    return (
+                      <div key={aula.id} className="w-full flex flex-col">
+                        <div
+                          className={cn(
+                            "relative z-10 flex w-full items-center justify-between gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
+                            isLeft ? "flex-row" : "flex-row-reverse"
                           )}
-                        </div>
-
-                        {/* Bloco Capa + Título + Descrição */}
-                        <div className="flex gap-3.5 sm:gap-4 items-start flex-1">
-                          <div className="relative shrink-0 w-24 sm:w-28 aspect-[3/4] rounded-2xl overflow-hidden border border-white/15 shadow-md group-hover:scale-105 transition-transform duration-300">
-                            <img
-                              src={aula.capaUrl}
-                              alt={aula.titulo}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-
-                            <span className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-extrabold text-white border border-white/20">
-                              {aula.etapas}p
-                            </span>
-
-                            {prog.cicloCompleto && (
-                              <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-emerald-500/90 text-[9px] font-black uppercase tracking-wider text-white shadow-md flex items-center gap-1">
-                                <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                <span>100%</span>
+                        >
+                          {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA AULA */}
+                          <div
+                            onClick={() => iniciarAula(aula)}
+                            className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                          >
+                            {/* Carta 1 (Fundo) */}
+                            <div
+                              className={cn(
+                                "absolute inset-0 rounded-2xl border border-white/10 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                                isLeft
+                                  ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
+                                  : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
+                              )}
+                              style={{
+                                background: disciplinaAtual.corFundoCard,
+                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
+                              }}
+                            >
+                              <div className="absolute inset-0 bg-black/50 pointer-events-none z-[1]" />
+                              <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
+                                <Layers className="w-5 h-5 text-white/30" />
                               </div>
-                            )}
+                            </div>
+
+                            {/* Carta 2 (Meio) */}
+                            <div
+                              className={cn(
+                                "absolute inset-0 rounded-2xl border border-white/15 opacity-75 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                                isLeft
+                                  ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
+                                  : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
+                              )}
+                              style={{
+                                background: disciplinaAtual.corFundoCard,
+                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
+                              }}
+                            >
+                              <div className="absolute inset-0 bg-black/25 pointer-events-none z-[1]" />
+                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
+                                <Layers className="w-5 h-5 text-white/40" />
+                              </div>
+                            </div>
+
+                            {/* Carta 3 (Frontal Principal com Capa da Aula) */}
+                            <div
+                              className={cn(
+                                "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 transition-all duration-300 origin-bottom",
+                                isLeft
+                                  ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
+                                  : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
+                              )}
+                              style={{
+                                background: disciplinaAtual.corFundoCard,
+                                borderColor: `${disciplinaAtual.corDestaque}50`
+                              }}
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
+                              <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
+
+                              <img
+                                src={aula.capaUrl}
+                                alt={aula.titulo}
+                                loading="lazy"
+                                decoding="async"
+                                className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
+
+                              {/* Topo da Carta: Número da Aula e Status */}
+                              <div className="relative z-10 flex items-center justify-between w-full">
+                                <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-black/80 backdrop-blur-md border border-white/20 text-white shadow-sm">
+                                  {aula.numeroAula}
+                                </span>
+                                {prog.cicloCompleto ? (
+                                  <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-emerald-500/90 text-white shadow-sm flex items-center gap-1">
+                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                                    <span>100%</span>
+                                  </span>
+                                ) : (
+                                  <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider bg-black/70 backdrop-blur-md border border-white/15 text-zinc-300">
+                                    {aula.etapas}p
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* Play Button Central */}
+                              <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
+                                <div className="relative flex items-center justify-center">
+                                  <div
+                                    className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
+                                    style={{ backgroundColor: `${disciplinaAtual.corDestaque}60` }}
+                                  />
+                                  <div className="relative w-11 h-11 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/95 shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_24px_rgba(245,158,11,0.65)]">
+                                    <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current translate-x-0.5 transition-colors" />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Rodapé da Carta: Progresso Ponderado */}
+                              <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
+                                <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-white/95 mb-1">
+                                  <span className="truncate">
+                                    {prog.cicloCompleto ? 'Finalizado' : `${prog.fasesConcluidasCount} de 3 fases`}
+                                  </span>
+                                  <span className="font-semibold font-sans ml-1" style={{ color: disciplinaAtual.corDestaque }}>
+                                    {prog.porcentagemTotal}%
+                                  </span>
+                                </div>
+                                <div className="w-full bg-black/60 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
+                                  <div
+                                    className={cn(
+                                      "h-full rounded-full transition-all duration-500",
+                                      prog.cicloCompleto ? "bg-emerald-500" : "bg-gradient-to-r from-red-500 to-amber-500"
+                                    )}
+                                    style={{
+                                      width: `${Math.max(prog.porcentagemTotal, 8)}%`,
+                                      backgroundColor: prog.cicloCompleto ? '#10b981' : disciplinaAtual.corDestaque,
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
                           </div>
 
-                          <div className="flex-1 min-w-0 flex flex-col justify-between h-full">
-                            <div>
-                              <h4 className="text-sm sm:text-base font-bold text-white font-serif leading-snug">
-                                {aula.titulo}
-                              </h4>
+                          {/* LINHA CONECTORA E INFORMAÇÕES + 3 BOTÕES NO LADO OPOSTO */}
+                          <div
+                            className={cn(
+                              "flex-1 min-w-0 flex items-center select-none py-2 transition-all",
+                              isLeft ? "flex-row pl-1.5 xs:pl-2 sm:pl-3" : "flex-row-reverse pr-1.5 xs:pr-2 sm:pr-3"
+                            )}
+                          >
+                            {/* Linha Conectora com Degradê */}
+                            <div
+                              className={cn(
+                                "flex items-center shrink-0 w-5 xs:w-7 sm:w-10 md:w-14",
+                                isLeft ? "flex-row" : "flex-row-reverse"
+                              )}
+                            >
+                              <div
+                                className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
+                                style={{
+                                  backgroundColor: disciplinaAtual.corDestaque,
+                                  boxShadow: `0 0 8px ${disciplinaAtual.corDestaque}`,
+                                }}
+                              />
+                              <div
+                                className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
+                                style={{
+                                  background: isLeft
+                                    ? `linear-gradient(to right, ${disciplinaAtual.corDestaque}, rgba(255,255,255,0.3), transparent)`
+                                    : `linear-gradient(to left, ${disciplinaAtual.corDestaque}, rgba(255,255,255,0.3), transparent)`,
+                                }}
+                              />
+                            </div>
 
-                              <p className="text-[11px] sm:text-xs text-zinc-300/85 mt-1.5 leading-relaxed">
-                                {aula.descricao}
-                              </p>
+                            {/* Informações da Aula e 3 Ações Interativas */}
+                            <div
+                              className={cn(
+                                "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
+                                isLeft ? "items-start text-left" : "items-end text-right"
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "flex items-center gap-1.5 mb-1 opacity-90",
+                                  isLeft ? "justify-start" : "justify-end"
+                                )}
+                              >
+                                <span
+                                  className="text-[11px] sm:text-[13px] font-black uppercase tracking-wider"
+                                  style={{ color: disciplinaAtual.corDestaque }}
+                                >
+                                  {aula.numeroAula}
+                                </span>
+                                <span className="w-1 h-1 rounded-full bg-white/30" />
+                                <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400">
+                                  {aula.etapas} SLIDES INTERATIVOS
+                                </span>
+                              </div>
+
+                              <h3 
+                                onClick={() => iniciarAula(aula)}
+                                className="font-serif font-bold text-[15px] xs:text-[17px] sm:text-[19px] md:text-[21px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md cursor-pointer"
+                              >
+                                {aula.titulo}
+                              </h3>
+
+                              {aula.descricao && (
+                                <p className="text-[11px] sm:text-xs text-zinc-300/80 mt-1 line-clamp-2 sm:line-clamp-3 leading-relaxed">
+                                  {aula.descricao}
+                                </p>
+                              )}
+
+                              {/* OS 3 BOTÕES DE AÇÃO: INICIAR AULA | REVISAR FLASHCARDS | PRATICAR QUESTÕES */}
+                              <div 
+                                className={cn(
+                                  "flex flex-wrap items-center gap-1.5 sm:gap-2 mt-3 pt-2.5 border-t border-white/10 w-full",
+                                  isLeft ? "justify-start" : "justify-end"
+                                )}
+                              >
+                                {/* 1. Iniciar Aula */}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    iniciarAula(aula);
+                                  }}
+                                  className={cn(
+                                    "px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 active:scale-95 shadow-md",
+                                    prog.aulaTerminada
+                                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30"
+                                      : "bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white border border-red-400/40 shadow-red-950/40"
+                                  )}
+                                >
+                                  {prog.aulaTerminada ? (
+                                    <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
+                                  ) : (
+                                    <Play className="w-3 h-3 fill-current" />
+                                  )}
+                                  <span>{prog.aulaTerminada ? 'Ver Aula' : 'Iniciar'}</span>
+                                </button>
+
+                                {/* 2. Revisar Flashcards (18) */}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    abrirRevisarFlashcards(aula);
+                                  }}
+                                  className={cn(
+                                    "px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 active:scale-95 border",
+                                    prog.fcOk
+                                      ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                                      : flashcardsLiberados
+                                        ? "bg-amber-600/80 hover:bg-amber-500 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
+                                        : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
+                                  )}
+                                  title={!flashcardsLiberados ? 'Conclua a aula para destravar' : 'Revisar com 18 Flashcards'}
+                                >
+                                  {flashcardsLiberados ? (
+                                    <Layers className="w-3 h-3 text-amber-300" />
+                                  ) : (
+                                    <Lock className="w-3 h-3 text-zinc-500" />
+                                  )}
+                                  <span>Flashcards ({totalCards})</span>
+                                </button>
+
+                                {/* 3. Praticar Questões (12) */}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    abrirPraticarQuestoes(aula);
+                                  }}
+                                  className={cn(
+                                    "px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 active:scale-95 border",
+                                    prog.questoesOk
+                                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
+                                      : questoesLiberadas
+                                        ? "bg-emerald-600/80 hover:bg-emerald-500 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
+                                        : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
+                                  )}
+                                  title={!questoesLiberadas ? 'Conclua os flashcards para destravar' : 'Praticar 12 Questões comentadas'}
+                                >
+                                  {questoesLiberadas ? (
+                                    <HelpCircle className="w-3 h-3 text-emerald-300" />
+                                  ) : (
+                                    <Lock className="w-3 h-3 text-zinc-500" />
+                                  )}
+                                  <span>Questões ({totalQuestoes})</span>
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
 
-                        {/* Barra de Progresso Ponderado da Aula */}
-                        <div className="pt-2">
-                          <div className="flex items-center justify-between text-[11px] font-bold text-zinc-300 mb-1.5">
-                            <span className="flex items-center gap-1.5">
-                              <span 
-                                className="w-2 h-2 rounded-full inline-block" 
-                                style={{ backgroundColor: prog.porcentagemTotal > 0 ? (prog.cicloCompleto ? '#10b981' : disciplinaAtual.corDestaque) : '#71717a' }} 
+                        {/* SVG S-Curve Connector */}
+                        {i < aulasDaMateria.length - 1 && (
+                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
+                            <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
+                              <defs>
+                                <filter id={`trail-glow-aula-${i}`} x="-20%" y="-20%" width="140%" height="140%">
+                                  <feGaussianBlur stdDeviation="3" result="blur" />
+                                  <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                  </feMerge>
+                                </filter>
+                              </defs>
+                              <path
+                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                                fill="none"
+                                stroke="rgba(255, 255, 255, 0.08)"
+                                strokeWidth="4"
+                                strokeLinecap="round"
+                                vectorEffect="non-scaling-stroke"
                               />
-                              Progresso da Aula
-                            </span>
-                            <span className={prog.cicloCompleto ? 'text-emerald-400 font-black flex items-center gap-1' : 'text-zinc-300 font-black'}>
-                              {prog.cicloCompleto ? (
-                                <>
-                                  <Check className="w-3.5 h-3.5 stroke-[3] text-emerald-400" />
-                                  <span>100% · Finalizado</span>
-                                </>
-                              ) : (
-                                `${prog.porcentagemTotal}% · ${prog.fasesConcluidasCount} de 3 fases`
-                              )}
-                            </span>
-                          </div>
-
-                          <div className="w-full h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden">
+                              <path
+                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                                fill="none"
+                                stroke={disciplinaAtual.corDestaque}
+                                strokeWidth="2.5"
+                                strokeDasharray="5 7"
+                                strokeLinecap="round"
+                                vectorEffect="non-scaling-stroke"
+                                filter={`url(#trail-glow-aula-${i})`}
+                              />
+                            </svg>
                             <div
-                              className={`h-full rounded-full transition-all duration-700 ease-out ${
-                                prog.cicloCompleto ? 'bg-emerald-500' : 'bg-gradient-to-r from-red-500 to-amber-500'
-                              }`}
-                              style={{ width: `${prog.porcentagemTotal}%` }}
+                              className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+                              style={{
+                                left: '50%',
+                                top: '50%',
+                                boxShadow: `0 0 10px ${disciplinaAtual.corDestaque}`,
+                              }}
                             />
                           </div>
-                        </div>
+                        )}
                       </div>
-
-                      {/* OS 3 BOTÕES EM LINHA: INICIAR À ESQUERDA, REVISAR AO MEIO, PRATICAR À DIREITA */}
-                      <div className="grid grid-cols-3 gap-2 mt-4 pt-3.5 border-t border-white/10">
-                        {/* 1. Iniciar Aula */}
-                        <button
-                          type="button"
-                          onClick={() => iniciarAula(aula)}
-                          className={`w-full py-2.5 px-2 rounded-2xl font-black text-[11px] sm:text-xs transition flex items-center justify-center gap-1.5 shadow-md active:scale-95 ${getBotaoIniciarClass(aula, prog.aulaTerminada)}`}
-                        >
-                          {prog.aulaTerminada ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
-                              <span>Ver Aula</span>
-                            </>
-                          ) : (
-                            <>
-                              <Play className="w-3.5 h-3.5 fill-current" />
-                              <span>Iniciar</span>
-                            </>
-                          )}
-                        </button>
-
-                        {/* 2. Revisar Flashcards (18) */}
-                        <button
-                          type="button"
-                          onClick={() => abrirRevisarFlashcards(aula)}
-                          className={`w-full py-2.5 px-1.5 rounded-2xl font-black text-[11px] sm:text-xs transition flex items-center justify-center gap-1.5 shadow-md active:scale-95 border ${
-                            prog.fcOk
-                              ? 'bg-amber-500/15 text-amber-300 border-amber-500/40 hover:bg-amber-500/25'
-                              : flashcardsLiberados
-                                ? 'bg-[#d97706] hover:bg-[#f59e0b] text-white border-amber-400/50 shadow-amber-950/40'
-                                : 'bg-white/5 text-zinc-500 border-white/10 cursor-not-allowed opacity-60'
-                          }`}
-                          title={!flashcardsLiberados ? 'Conclua a aula para destravar' : 'Revisar conteúdo da aula com 18 Flashcards'}
-                        >
-                          {flashcardsLiberados ? (
-                            <Layers className="w-3.5 h-3.5" />
-                          ) : (
-                            <Lock className="w-3.5 h-3.5" />
-                          )}
-                          <span>Revisar ({totalCards})</span>
-                        </button>
-
-                        {/* 3. Praticar Questões (12) */}
-                        <button
-                          type="button"
-                          onClick={() => abrirPraticarQuestoes(aula)}
-                          className={`w-full py-2.5 px-1.5 rounded-2xl font-black text-[11px] sm:text-xs transition flex items-center justify-center gap-1.5 shadow-md active:scale-95 border ${
-                            prog.questoesOk
-                              ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/25'
-                              : questoesLiberadas
-                                ? 'bg-[#059669] hover:bg-[#10b981] text-white border-emerald-400/50 shadow-emerald-950/40'
-                                : 'bg-white/5 text-zinc-500 border-white/10 cursor-not-allowed opacity-60'
-                          }`}
-                          title={!questoesLiberadas ? 'Conclua a revisão para destravar' : 'Praticar 12 Questões com casos práticos e pegadinhas'}
-                        >
-                          {questoesLiberadas ? (
-                            <HelpCircle className="w-3.5 h-3.5" />
-                          ) : (
-                            <Lock className="w-3.5 h-3.5" />
-                          )}
-                          <span>Praticar ({totalQuestoes})</span>
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </>
