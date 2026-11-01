@@ -31,4 +31,5 @@ export interface AulaData {
   slides: SlideItem[];
   imagens: Record<string, string>;
   audioBaseUrl?: string;
+  urlHtmlR2?: string;
 }

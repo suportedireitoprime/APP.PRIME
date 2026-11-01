@@ -13618,5 +13618,5705 @@ export const AULAS_CONTEUDO_REAL: Record<string, AulaData> = {
       "regulamento": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-02-fontes-autonomas/imagens/regulamento.webp"
     },
     "audioBaseUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-02-fontes-autonomas/audio/s"
-  }
+  },
+  "penal-06-01": {
+  "aulaId": "penal-06-01",
+  "titulo": "Princípios Penais: Introdução ao Tema",
+  "disciplinaId": "penal",
+  "totalEtapas": 28,
+  "slides": [
+    {
+      "tipo": "Capa",
+      "img": "capa",
+      "alt": "Constituição aberta sobre uma mesa de tribunal, com escudo dourado, bússola e balança da Justiça em luz vermelha e dourada",
+      "kicker": "Direito Penal · Princípios Penais",
+      "titulo": "Princípios Penais: Introdução ao Tema",
+      "corpo": "<p class=\"lead\">Antes de punir, o Estado precisa de réguas. E a primeira delas é esta: <b>ninguém perde a liberdade por capricho de quem governa</b>. Existe um sistema de <b>direitos e garantias</b> desenhado para proteger a pessoa, inclusive contra o próprio Estado.</p><p>Nesta aula, eu vou te apresentar a base de tudo o que vem depois: a diferença entre <b class=\"term\">direitos</b> e <b class=\"term\">garantias</b>, a diferença entre <b>regras</b> e <b>princípios</b> e o sistema que protege os direitos fundamentais no Brasil, da Constituição aos tratados internacionais. Sem essa base, cada princípio das próximas aulas vira uma frase solta para decorar. Com ela, cada um ganha o seu lugar no mapa.</p><div class=\"chips\"><span class=\"chip\">Direitos e garantias</span><span class=\"chip\">Normas, regras e princípios</span><span class=\"chip\">Tratados de direitos humanos</span></div>",
+      "narr": "Antes de punir, o Estado precisa de réguas. E a primeira delas é esta: ninguém perde a liberdade por capricho de quem governa. Existe um sistema de direitos e garantias desenhado para proteger a pessoa, inclusive contra o próprio Estado. Nesta aula, eu vou te apresentar a base de tudo o que vem depois: a diferença entre direitos e garantias, a diferença entre regras e princípios e o sistema que protege os direitos fundamentais no Brasil, da Constituição aos tratados internacionais. Sem essa base, cada princípio das próximas aulas vira uma frase solta para decorar. Com ela, cada um ganha o seu lugar no mapa."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "caminhos",
+      "alt": "Encruzilhada antiga com caminhos passando por arcos de pedra",
+      "kicker": "Roteiro da aula",
+      "titulo": "O caminho desta aula",
+      "corpo": "<p>Antes de entrar no conteúdo, deixa eu te mostrar o <b>caminho que vamos percorrer juntas</b>. A aula está organizada em <b>três blocos</b>:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>Direitos e garantias</h3><p>O que a Constituição declara e o que ela assegura, com o exemplo do habeas corpus.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>Normas, regras e princípios</h3><p>O gênero, as duas espécies e o que acontece quando elas entram em conflito.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>O sistema de proteção</h3><p>O artigo 5º, a Convenção Americana e a força dos tratados de direitos humanos no Brasil.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/caminhos.webp\" alt=\"\"></div><p>O conteúdo vem em <b>texto corrido</b>, e a prática fica concentrada no <b>fim de cada bloco</b>: questões, flashcards e atividades para fixar cada parte antes de seguir. No meio do caminho, uma página de <b>exploração</b> com cinco pontos para descobrir. Vamos ao primeiro bloco!</p>",
+      "narr": "O caminho desta aula. Antes de entrar no conteúdo, deixa eu te mostrar o caminho que vamos percorrer juntas. A aula está organizada em três blocos. Bloco um: direitos e garantias. O que a Constituição declara e o que ela assegura, com o exemplo do habeas corpus. Bloco dois: normas, regras e princípios. O gênero, as duas espécies e o que acontece quando elas entram em conflito. Bloco três: o sistema de proteção. O artigo quinto, a Convenção Americana e a força dos tratados de direitos humanos no Brasil. O conteúdo vem em texto corrido, e a prática fica concentrada no fim de cada bloco: questões, flashcards e atividades para fixar cada parte antes de seguir. No meio do caminho, uma página de exploração com cinco pontos para descobrir. Vamos ao primeiro bloco!"
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "escudo",
+      "alt": "Escudo dourado protegendo pessoas diante das colunas de um tribunal",
+      "kicker": "Direitos e garantias",
+      "titulo": "O Título II: a casa dos direitos fundamentais",
+      "corpo": "<p>Os <b class=\"term\">direitos e garantias fundamentais</b> têm endereço certo na Constituição: eles moram no <b>Título II</b>, que se chama, justamente, <b>Dos Direitos e Garantias Fundamentais</b>.</p><p>É nesse título que estão os comandos que colocam a pessoa no centro da proteção e limitam o poder do Estado, inclusive o poder de punir. Por isso, antes de estudar qualquer princípio penal isolado, eu preciso que você enxergue o alicerce onde todos eles se apoiam.</p><p>E já repare num detalhe que vai guiar a próxima etapa: o nome do título traz <b>duas palavras juntas, direitos e garantias</b>. Elas andam lado a lado, mas <b>não são sinônimas</b>. Cada uma tem uma função própria, e confundi-las é um erro clássico de prova.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/escudo.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Pense no Título II como o <b>alicerce de um prédio</b>. Ele fica embaixo, quase ninguém vê, mas é ele que sustenta todos os andares. Cada princípio penal das próximas aulas é um andar apoiado nesse alicerce: se o alicerce é firme, o prédio inteiro fica de pé.</p></div></div>",
+      "narr": "O Título dois: a casa dos direitos fundamentais. Os direitos e garantias fundamentais têm endereço certo na Constituição: eles moram no Título dois, que se chama, justamente, Dos Direitos e Garantias Fundamentais. É nesse título que estão os comandos que colocam a pessoa no centro da proteção e limitam o poder do Estado, inclusive o poder de punir. Por isso, antes de estudar qualquer princípio penal isolado, eu preciso que você enxergue o alicerce onde todos eles se apoiam. E já repare num detalhe que vai guiar a próxima etapa: o nome do título traz duas palavras juntas, direitos e garantias. Elas andam lado a lado, mas não são sinônimas. Cada uma tem uma função própria, e confundi-las é um erro clássico de prova. Pense assim: pense no Título dois como o alicerce de um prédio. Ele fica embaixo, quase ninguém vê, mas é ele que sustenta todos os andares. Cada princípio penal das próximas aulas é um andar apoiado nesse alicerce: se o alicerce é firme, o prédio inteiro fica de pé."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "habeas",
+      "alt": "Pessoa caminhando livre por um portão aberto ao amanhecer, com um documento dourado nas mãos",
+      "kicker": "Direitos e garantias",
+      "titulo": "Direitos declaram, garantias asseguram",
+      "corpo": "<p>Vamos separar as duas palavras com calma. <b>Direitos</b> são <b class=\"term\">conteúdos declaratórios</b> que asseguram um interesse ao indivíduo, pois <b>conferem vantagens</b>. São exemplos: o direito à vida, o direito à saúde e o direito à liberdade de expressão.</p><p>Já as <b>garantias</b> apresentam <b>natureza assecuratória</b>. Traduzindo: é por meio delas que os direitos são exercidos e protegidos. O direito é a vantagem declarada; a garantia é o instrumento que entra em cena quando essa vantagem é ameaçada.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/habeas.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Todos têm o <b>direito de ir e vir</b>. Contudo, se alguém sofre uma <b>restrição</b>, ou uma <b>ameaça de restrição</b>, a esse direito em razão de <b>ilegalidade ou abuso de poder</b>, a Constituição confere a <b>garantia do habeas corpus</b> para proteger esse direito. Viu a divisão de trabalho? O direito declara a liberdade de locomoção; a garantia assegura essa liberdade quando alguém tenta tirá-la sem direito.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Direito é a vantagem que você tem; garantia é o escudo que protege essa vantagem.</p></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Direitos e garantias fundamentais moram no Título II da Constituição.</li><li>Direitos são declaratórios e conferem vantagens: vida, saúde, liberdade de expressão.</li><li>Garantias são assecuratórias: o habeas corpus protege o direito de ir e vir.</li></ul></div>",
+      "narr": "Direitos declaram, garantias asseguram. Vamos separar as duas palavras com calma. Direitos são conteúdos declaratórios que asseguram um interesse ao indivíduo, pois conferem vantagens. São exemplos: o direito à vida, o direito à saúde e o direito à liberdade de expressão. Já as garantias apresentam natureza assecuratória. Traduzindo: é por meio delas que os direitos são exercidos e protegidos. O direito é a vantagem declarada; a garantia é o instrumento que entra em cena quando essa vantagem é ameaçada. Exemplo prático: todos têm o direito de ir e vir. Contudo, se alguém sofre uma restrição, ou uma ameaça de restrição, a esse direito em razão de ilegalidade ou abuso de poder, a Constituição confere a garantia do habeas corpus para proteger esse direito. Viu a divisão de trabalho? O direito declara a liberdade de locomoção; a garantia assegura essa liberdade quando alguém tenta tirá-la sem direito."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever e selo dourado",
+      "kicker": "Questão 1 · Direitos e garantias",
+      "titulo": "Questão 1",
+      "intro": "Hora de treinar! Pense na diferença entre <b>direitos</b> e <b>garantias</b> e responda:",
+      "questao": "Quando uma pessoa sofre restrição ilegal ao seu direito de ir e vir, o habeas corpus atua como:",
+      "opcoes": [
+        "Um direito declaratório, que confere uma vantagem ao indivíduo",
+        "Uma garantia, de natureza assecuratória, que protege o exercício do direito",
+        "Uma regra de organização interna do Poder Judiciário",
+        "Um princípio que deve ser ponderado com outros princípios"
+      ],
+      "certa": 1,
+      "feedback": "Isso mesmo! O direito, no exemplo, é o ir e vir. O habeas corpus é a garantia: tem natureza assecuratória e entra em cena quando o direito sofre restrição ou ameaça de restrição por ilegalidade ou abuso de poder.",
+      "narr": "Questão um: direitos e garantias. Hora de treinar! Pense na diferença entre direitos e garantias e responda: quando uma pessoa sofre restrição ilegal ao seu direito de ir e vir, o habeas corpus atua como o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha",
+      "kicker": "Flashcard 1 · Direitos e garantias",
+      "titulo": "Flashcard 1",
+      "frente": "Qual é a diferença entre direitos e garantias fundamentais?",
+      "verso": "<p>Os <b>direitos</b> são conteúdos <b>declaratórios</b>: asseguram interesses e conferem vantagens, como a vida, a saúde e a liberdade de expressão.</p><p style='margin-top:10px'>As <b>garantias</b> têm natureza <b>assecuratória</b>: são o meio pelo qual os direitos são exercidos e protegidos, como o <b>habeas corpus</b> para o direito de ir e vir.</p>",
+      "narr": "Flashcard um: direitos e garantias. Qual é a diferença entre direitos e garantias fundamentais? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "genero",
+      "alt": "Grande guarda-chuva dourado aberto protegendo duas figuras que representam princípios e regras",
+      "kicker": "Normas, regras e princípios",
+      "titulo": "Norma: o gênero que abraça duas espécies",
+      "corpo": "<p>Agora mudamos de lente. Daqui para frente, você vai ouvir falar o tempo todo em normas, regras e princípios, e eu quero essas três palavras organizadas na sua cabeça desde já.</p><p>A <b class=\"term\">norma</b> é o <b>gênero</b>, a palavra guarda-chuva. Dentro dela estão abarcadas as duas <b>espécies</b>: os <b>princípios</b> e as <b>regras</b>. Quando alguém diz que algo é uma norma, ainda não disse quase nada: é preciso saber de qual espécie estamos falando.</p><p>E isso não é capricho de vocabulário. As duas espécies funcionam com <b>lógicas diferentes</b>: têm estruturas distintas e, principalmente, <b>reagem de formas opostas quando entram em conflito</b>. É essa diferença que as próximas etapas vão abrir, uma espécie de cada vez.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/genero.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Norma é como o <b>sobrenome de uma família</b>. Princípios e regras são dois irmãos com o mesmo sobrenome e personalidades bem diferentes: um aponta a direção da casa inteira; o outro organiza as tarefas do dia a dia. Quem confunde os irmãos, erra a família inteira na prova.</p></div></div>",
+      "narr": "Norma: o gênero que abraça duas espécies. Agora mudamos de lente. Daqui para frente, você vai ouvir falar o tempo todo em normas, regras e princípios, e eu quero essas três palavras organizadas na sua cabeça desde já. A norma é o gênero, a palavra guarda-chuva. Dentro dela estão abarcadas as duas espécies: os princípios e as regras. Quando alguém diz que algo é uma norma, ainda não disse quase nada: é preciso saber de qual espécie estamos falando. E isso não é capricho de vocabulário. As duas espécies funcionam com lógicas diferentes: têm estruturas distintas e, principalmente, reagem de formas opostas quando entram em conflito. É essa diferença que as próximas etapas vão abrir, uma espécie de cada vez. Pense assim: norma é como o sobrenome de uma família. Princípios e regras são dois irmãos com o mesmo sobrenome e personalidades bem diferentes: um aponta a direção da casa inteira; o outro organiza as tarefas do dia a dia. Quem confunde os irmãos, erra a família inteira na prova."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "norte",
+      "alt": "Bússola dourada antiga apontando para o norte sobre um mapa de estrelas",
+      "kicker": "Normas, regras e princípios",
+      "titulo": "Princípios: o norte do ordenamento",
+      "corpo": "<p>Os <b class=\"term\">princípios</b> são o <b>norte seguido por um ordenamento</b>. Eles estão no plano de desenvolvimento de uma sociedade, na busca de que direitos sejam <b>implementados e assegurados</b> dentro das <b>possibilidades jurídicas reais e existentes</b>.</p><p>Leia essa ideia devagar, porque ela é o coração desta aula. Um princípio não entrega uma resposta pronta e fechada para cada caso, como faz uma regra. Ele fixa uma <b>direção</b> e um <b>compromisso</b>: o sistema inteiro deve andar naquela direção, realizando direitos na maior medida que as possibilidades reais e jurídicas permitirem.</p><p>É por isso que os princípios penais que você vai estudar neste livro têm tanta força. Cada um deles, legalidade, culpabilidade, humanidade, é um norte: uma direção que limita o poder de punir e orienta a criação e a aplicação de todas as regras penais.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/norte.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Uma <b>bússola</b> não te diz em qual rua virar: ela mostra onde fica o norte, o tempo todo, e você ajusta o caminho a cada passo. O princípio funciona assim. Ele não resolve o caso sozinho, mas nenhum caso pode ser resolvido andando na direção contrária à dele.</p></div></div>",
+      "narr": "Princípios: o norte do ordenamento. Os princípios são o norte seguido por um ordenamento. Eles estão no plano de desenvolvimento de uma sociedade, na busca de que direitos sejam implementados e assegurados dentro das possibilidades jurídicas reais e existentes. Leia essa ideia devagar, porque ela é o coração desta aula. Um princípio não entrega uma resposta pronta e fechada para cada caso, como faz uma regra. Ele fixa uma direção e um compromisso: o sistema inteiro deve andar naquela direção, realizando direitos na maior medida que as possibilidades reais e jurídicas permitirem. É por isso que os princípios penais que você vai estudar neste livro têm tanta força. Cada um deles, legalidade, culpabilidade, humanidade, é um norte: uma direção que limita o poder de punir e orienta a criação e a aplicação de todas as regras penais. Pense assim: uma bússola não te diz em qual rua virar: ela mostra onde fica o norte, o tempo todo, e você ajusta o caminho a cada passo. O princípio funciona assim. Ele não resolve o caso sozinho, mas nenhum caso pode ser resolvido andando na direção contrária à dele."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "ponderacao",
+      "alt": "Balança de dois pratos dourados sendo equilibrada com cuidado por duas mãos",
+      "kicker": "Normas, regras e princípios",
+      "titulo": "Quando dois princípios se encontram",
+      "corpo": "<p>Como os princípios apontam direções, dois deles podem puxar para lados diferentes dentro do mesmo caso concreto. Um caso pode envolver, ao mesmo tempo, a proteção da liberdade de uma pessoa e a proteção de outro direito igualmente importante. E agora, qual princípio vence?</p><p>A resposta é a marca registrada dos princípios: no conflito entre eles, <b>não existe aniquilação</b>. Nenhum princípio é apagado do ordenamento nem declarado inválido. O que existe é o <b class=\"term\">juízo de ponderação</b>: o momento em que se observa <b>qual princípio deve prevalecer no caso concreto</b>.</p><p>Repare na consequência elegante disso: o princípio que não prevaleceu naquele caso continua vivo e inteiro, pronto para prevalecer no próximo caso, quando as circunstâncias forem outras. A ponderação decide <b>naquele caso</b>, e não para sempre.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/ponderacao.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É o trabalho de uma <b>balança de dois pratos</b>. Ponderar é olhar os dois pratos naquele caso e ver para qual lado o peso inclina. O prato que subiu não desaparece da balança: na pesagem seguinte, com pesos diferentes, ele pode ser o que desce.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Princípio não se aniquila: princípio se pondera, caso a caso.</p></div>",
+      "narr": "Quando dois princípios se encontram. Como os princípios apontam direções, dois deles podem puxar para lados diferentes dentro do mesmo caso concreto. Um caso pode envolver, ao mesmo tempo, a proteção da liberdade de uma pessoa e a proteção de outro direito igualmente importante. E agora, qual princípio vence? A resposta é a marca registrada dos princípios: no conflito entre eles, não existe aniquilação. Nenhum princípio é apagado do ordenamento nem declarado inválido. O que existe é o juízo de ponderação: o momento em que se observa qual princípio deve prevalecer no caso concreto. Repare na consequência elegante disso: o princípio que não prevaleceu naquele caso continua vivo e inteiro, pronto para prevalecer no próximo caso, quando as circunstâncias forem outras. A ponderação decide naquele caso, e não para sempre. Pense assim: é o trabalho de uma balança de dois pratos. Ponderar é olhar os dois pratos naquele caso e ver para qual lado o peso inclina. O prato que subiu não desaparece da balança: na pesagem seguinte, com pesos diferentes, ele pode ser o que desce."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "regras",
+      "alt": "Trilho de trem dourado em linha reta atravessando um vale ao entardecer",
+      "kicker": "Normas, regras e princípios",
+      "titulo": "Regras: o tudo ou nada",
+      "corpo": "<p>As <b class=\"term\">regras</b> têm outra estrutura. Elas são feitas para serem <b>aplicadas no caso concreto</b>, pois possuem a finalidade de <b>regular condutas</b> praticadas pelas pessoas físicas e jurídicas em uma sociedade.</p><p>E a lógica da regra é binária: ela <b>é aplicável ou não é aplicável</b>, e <b>não existe uma terceira opção</b>. Se o caso se encaixa na regra, ela se aplica por inteiro; se não se encaixa, ela simplesmente não se aplica. Não há meio termo, e não há ponderação.</p><p>E quando <b>duas regras</b> entram em conflito? Aí o intérprete se vale de três critérios clássicos: o da <b>hierarquia</b>, pelo qual a norma superior prevalece; o da <b>especialidade</b>, pelo qual a norma especial prevalece sobre a geral; e o da <b>cronologia</b>, pelo qual a norma mais recente prevalece sobre a mais antiga.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/regras.webp\" alt=\"\"></div><p>Guarde o contraste, porque ele resume o bloco inteiro: conflito entre <b>princípios</b> se resolve por <b>ponderação</b>, sem aniquilar nenhum dos dois; conflito entre <b>regras</b> se resolve por <b>hierarquia, especialidade ou cronologia</b>, e uma delas fica de fora daquele caso.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Norma é o gênero; princípios e regras são as espécies.</li><li>Princípios são o norte do ordenamento; o conflito entre eles se resolve por ponderação.</li><li>Regras regulam condutas: aplicáveis ou não. Conflito entre regras: hierarquia, especialidade e cronologia.</li></ul></div>",
+      "narr": "Regras: o tudo ou nada. As regras têm outra estrutura. Elas são feitas para serem aplicadas no caso concreto, pois possuem a finalidade de regular condutas praticadas pelas pessoas físicas e jurídicas em uma sociedade. E a lógica da regra é binária: ela é aplicável ou não é aplicável, e não existe uma terceira opção. Se o caso se encaixa na regra, ela se aplica por inteiro; se não se encaixa, ela simplesmente não se aplica. Não há meio termo, e não há ponderação. E quando duas regras entram em conflito? Aí o intérprete se vale de três critérios clássicos: o da hierarquia, pelo qual a norma superior prevalece; o da especialidade, pelo qual a norma especial prevalece sobre a geral; e o da cronologia, pelo qual a norma mais recente prevalece sobre a mais antiga. Guarde o contraste, porque ele resume o bloco inteiro: conflito entre princípios se resolve por ponderação, sem aniquilar nenhum dos dois; conflito entre regras se resolve por hierarquia, especialidade ou cronologia, e uma delas fica de fora daquele caso."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com lupa e pena de escrever",
+      "kicker": "Questão 2 · Princípios e regras",
+      "titulo": "Questão 2",
+      "intro": "Mais um treino, agora sobre o <b>conflito entre princípios</b>:",
+      "questao": "Dois princípios apontam para resultados diferentes no mesmo caso concreto. Segundo a lógica dos princípios, o caminho correto é:",
+      "opcoes": [
+        "Declarar um dos princípios inválido e eliminá-lo do ordenamento",
+        "Aplicar o critério da cronologia e ficar com o princípio mais recente",
+        "Fazer um juízo de ponderação e verificar qual princípio prevalece naquele caso",
+        "Deixar de aplicar os dois princípios, por estarem em conflito"
+      ],
+      "certa": 2,
+      "feedback": "Perfeito! No conflito entre princípios, não existe aniquilação: existe ponderação, observando qual princípio deve prevalecer no caso concreto. Hierarquia, especialidade e cronologia são os critérios do conflito entre regras.",
+      "narr": "Questão dois: princípios e regras. Mais um treino, agora sobre o conflito entre princípios. Dois princípios apontam para resultados diferentes no mesmo caso concreto. Segundo a lógica dos princípios, o caminho correto é qual? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Karaokê",
+      "img": "norte",
+      "alt": "Bússola dourada sobre um mapa de estrelas ao entardecer",
+      "kicker": "Karaokê · Siga a narração",
+      "titulo": "Recapitule com a narração",
+      "frases": [
+        "Vamos recapitular a diferença entre regras e princípios, acompanhando a narração pela tela.",
+        "Norma é o gênero: dentro dela moram os princípios e as regras.",
+        "Os princípios são o norte do ordenamento: buscam implementar direitos dentro das possibilidades jurídicas reais e existentes.",
+        "Quando dois princípios conflitam, não há aniquilação: há ponderação no caso concreto.",
+        "As regras regulam condutas e são aplicáveis ou não, sem terceira opção.",
+        "E o conflito entre regras se resolve por hierarquia, especialidade e cronologia."
+      ],
+      "narr": "Vamos recapitular a diferença entre regras e princípios, acompanhando a narração pela tela. Norma é o gênero: dentro dela moram os princípios e as regras. Os princípios são o norte do ordenamento: buscam implementar direitos dentro das possibilidades jurídicas reais e existentes. Quando dois princípios conflitam, não há aniquilação: há ponderação no caso concreto. As regras regulam condutas e são aplicáveis ou não, sem terceira opção. E o conflito entre regras se resolve por hierarquia, especialidade e cronologia."
+    },
+    {
+      "tipo": "Explorar",
+      "img": "explorar",
+      "alt": "Imagem vertical em cinco cenas: escudo dourado, pessoa caminhando livre, bússola apontando ao norte, trilho em linha reta e globo das Américas com documento dourado",
+      "kicker": "Exploração · Toque nos pontos",
+      "titulo": "Explore a imagem: o sistema de proteção em cinco cenas",
+      "intro": "Esta imagem grande reúne o coração da aula em cinco cenas empilhadas. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "pontos": [
+        {
+          "x": 50,
+          "y": 8,
+          "titulo": "Direitos: o que a Constituição declara",
+          "texto": "No topo, o escudo com as declarações. Direitos são conteúdos declaratórios que asseguram interesses e conferem vantagens: a vida, a saúde, a liberdade de expressão."
+        },
+        {
+          "x": 32,
+          "y": 30,
+          "titulo": "Garantias: o escudo em ação",
+          "texto": "A segunda cena mostra a pessoa caminhando livre pelo portão. É a garantia em cena: natureza assecuratória, como o habeas corpus protegendo o direito de ir e vir contra ilegalidade ou abuso de poder."
+        },
+        {
+          "x": 66,
+          "y": 50,
+          "titulo": "Princípios: o norte",
+          "texto": "A terceira cena é a bússola. Os princípios são o norte do ordenamento, e o conflito entre eles se resolve por ponderação no caso concreto, sem aniquilação."
+        },
+        {
+          "x": 40,
+          "y": 70,
+          "titulo": "Regras: o tudo ou nada",
+          "texto": "A quarta cena é o trilho em linha reta. A regra é aplicável ou não é, sem terceira opção; e o conflito entre regras se resolve por hierarquia, especialidade e cronologia."
+        },
+        {
+          "x": 58,
+          "y": 90,
+          "titulo": "Tratados: a proteção que vem de fora",
+          "texto": "Na base, o globo das Américas com o documento. Os tratados de direitos humanos reforçam a proteção interna: com força de emenda, quando aprovados pelo rito qualificado, ou com hierarquia supralegal."
+        }
+      ],
+      "narr": "Explore a imagem: o sistema de proteção em cinco cenas. Esta imagem grande reúne o coração da aula em cinco cenas empilhadas. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir."
+    },
+    {
+      "tipo": "Comparador",
+      "img": "compprincipio",
+      "img2": "compregra",
+      "alt": "Comparador de duas cenas: uma bússola em um jardim de caminhos possíveis, e um trilho único e reto sob um céu rígido",
+      "kicker": "Comparador · Arraste a barra",
+      "titulo": "Ponderar, ou aplicar: os dois irmãos lado a lado",
+      "intro": "Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, o princípio: a bússola em meio a vários caminhos, apontando o norte e admitindo ajustes de rota, porque no conflito ele se pondera. Do outro, a regra: um trilho único e reto, por onde se passa ou não se passa, porque ela é aplicável ou não é aplicável. Mesma família, a norma; lógicas opostas de funcionamento.",
+      "narr": "Ponderar, ou aplicar: os dois irmãos lado a lado. Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, o princípio: a bússola em meio a vários caminhos, apontando o norte e admitindo ajustes de rota, porque no conflito ele se pondera. Do outro, a regra: um trilho único e reto, por onde se passa ou não se passa, porque ela é aplicável ou não é aplicável. Mesma família, a norma; lógicas opostas de funcionamento."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "art5",
+      "alt": "Livro grande da Constituição aberto em uma página iluminada, com marcador dourado",
+      "kicker": "O sistema de proteção",
+      "titulo": "O art. 5º: a grande lista de proteção",
+      "corpo": "<p>Chegamos ao terceiro bloco: como o Brasil organiza, na prática, a proteção dos direitos fundamentais. A primeira peça do sistema você já conhece de vista: a Constituição prevê uma série de direitos e garantias no <b>extenso rol do seu art. 5º</b>.</p><p>É desse artigo que saem as garantias que mais interessam ao Direito Penal: é ele que diz, por exemplo, que ninguém será punido sem lei anterior e que ninguém cumprirá pena além da sua própria conduta. O art. 5º é a <b>lista matriz</b> da proteção da pessoa no Brasil.</p><p>Mas repare: a proteção <b>não mora só dentro da Constituição</b>. O Brasil faz parte de um sistema maior de proteção, construído também por tratados internacionais de direitos humanos. É esse sistema completo que as próximas etapas vão montar, peça por peça.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/art5.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Imagine a proteção dos direitos como uma casa com <b>duas camadas de telhado</b>. A primeira camada é a Constituição, com o rol do art. 5º. A segunda é formada pelos tratados internacionais. Chuva forte de verdade, a que ameaça direitos fundamentais, precisa furar as duas camadas para molhar quem está dentro.</p></div></div>",
+      "narr": "O artigo quinto: a grande lista de proteção. Chegamos ao terceiro bloco: como o Brasil organiza, na prática, a proteção dos direitos fundamentais. A primeira peça do sistema você já conhece de vista: a Constituição prevê uma série de direitos e garantias no extenso rol do seu artigo quinto. É desse artigo que saem as garantias que mais interessam ao Direito Penal: é ele que diz, por exemplo, que ninguém será punido sem lei anterior e que ninguém cumprirá pena além da sua própria conduta. O artigo quinto é a lista matriz da proteção da pessoa no Brasil. Mas repare: a proteção não mora só dentro da Constituição. O Brasil faz parte de um sistema maior de proteção, construído também por tratados internacionais de direitos humanos. É esse sistema completo que as próximas etapas vão montar, peça por peça. Pense assim: imagine a proteção dos direitos como uma casa com duas camadas de telhado. A primeira camada é a Constituição, com o rol do artigo quinto. A segunda é formada pelos tratados internacionais. Chuva forte de verdade, a que ameaça direitos fundamentais, precisa furar as duas camadas para molhar quem está dentro."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "convencao",
+      "alt": "Mapa dourado das Américas sobre veludo vermelho, com um tratado antigo e uma pena ao lado",
+      "kicker": "O sistema de proteção",
+      "titulo": "A Convenção Americana: a proteção regional",
+      "corpo": "<p>A segunda peça do sistema é a <b class=\"term\">Convenção Americana de Direitos Humanos</b>: um tratado internacional celebrado em <b>1969</b> pelos países membros da <b>Organização dos Estados Americanos</b>, a OEA, com a finalidade de regular o tema dos direitos humanos de forma <b>regionalizada</b>.</p><p>Regionalizada é a palavra que explica a existência dela. Em vez de um único tratado para o planeta inteiro, os países das Américas construíram um instrumento próprio, pensado para a realidade do continente. O tratado foi <b>ratificado no Brasil apenas em 1992</b>, mais de vinte anos depois da sua celebração.</p><p>E grave a natureza dele, porque ela cai em prova: a Convenção tem natureza <b>subsidiária e suplementar</b>. Ela não substitui a proteção da nossa Constituição: ela a <b>complementa</b>, como um reforço que se soma ao sistema interno de proteção dos direitos fundamentais.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/convencao.webp\" alt=\"\"></div>",
+      "narr": "A Convenção Americana: a proteção regional. A segunda peça do sistema é a Convenção Americana de Direitos Humanos: um tratado internacional celebrado em mil novecentos e sessenta e nove pelos países membros da Organização dos Estados Americanos, a OEA, com a finalidade de regular o tema dos direitos humanos de forma regionalizada. Regionalizada é a palavra que explica a existência dela. Em vez de um único tratado para o planeta inteiro, os países das Américas construíram um instrumento próprio, pensado para a realidade do continente. O tratado foi ratificado no Brasil apenas em mil novecentos e noventa e dois, mais de vinte anos depois da sua celebração. E grave a natureza dele, porque ela cai em prova: a Convenção tem natureza subsidiária e suplementar. Ela não substitui a proteção da nossa Constituição: ela a complementa, como um reforço que se soma ao sistema interno de proteção dos direitos fundamentais."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "emenda",
+      "alt": "Plenário de congresso em semicírculo com luz dourada, e um documento solene em primeiro plano",
+      "kicker": "O sistema de proteção",
+      "titulo": "Tratado com força de emenda constitucional",
+      "corpo": "<p>Agora a pergunta que organiza tudo: com que força um tratado de direitos humanos entra no nosso sistema? A resposta depende do <b>rito de aprovação</b>, e a Constituição desenha um caminho especial.</p><p>Os tratados e convenções internacionais sobre direitos humanos que forem aprovados, em <b>cada Casa do Congresso Nacional</b>, em <b>dois turnos</b>, por <b>três quintos dos votos</b> dos respectivos membros, serão <b>equivalentes às emendas constitucionais</b>.</p><p>É o que prevê o <b class=\"term\">art. 5º, § 3º, da Constituição</b>, dispositivo incluído pela <b>Emenda Constitucional 45, de 2004</b>. Repare no desenho: o rito é propositalmente difícil, com duas votações em cada Casa e maioria qualificada, porque o prêmio é o maior possível: o tratado passa a valer como se fosse texto da própria Constituição.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/emenda.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Imagine o prédio do Direito brasileiro, com a Constituição no andar mais alto. A maioria dos tratados mora nos andares de baixo. O tratado de direitos humanos aprovado por esse rito especial recebe a <b>chave do andar mais alto</b>: passa a ter a força de uma emenda constitucional.</p></div></div>",
+      "narr": "Tratado com força de emenda constitucional. Agora a pergunta que organiza tudo: com que força um tratado de direitos humanos entra no nosso sistema? A resposta depende do rito de aprovação, e a Constituição desenha um caminho especial. Os tratados e convenções internacionais sobre direitos humanos que forem aprovados, em cada Casa do Congresso Nacional, em dois turnos, por três quintos dos votos dos respectivos membros, serão equivalentes às emendas constitucionais. É o que prevê o artigo quinto, parágrafo terceiro, da Constituição, dispositivo incluído pela Emenda Constitucional quarenta e cinco, de dois mil e quatro. Repare no desenho: o rito é propositalmente difícil, com duas votações em cada Casa e maioria qualificada, porque o prêmio é o maior possível: o tratado passa a valer como se fosse texto da própria Constituição. Pense assim: imagine o prédio do Direito brasileiro, com a Constituição no andar mais alto. A maioria dos tratados mora nos andares de baixo. O tratado de direitos humanos aprovado por esse rito especial recebe a chave do andar mais alto: passa a ter a força de uma emenda constitucional."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "supralegal",
+      "alt": "Pirâmide de pedra em três níveis iluminados, com a Constituição no topo e tratados no nível do meio",
+      "kicker": "O sistema de proteção",
+      "titulo": "A virada de 2008: a hierarquia supralegal",
+      "corpo": "<p>E os tratados de direitos humanos que <b>não</b> passaram pelo rito qualificado do parágrafo terceiro? A história deles tem duas fases, e a virada entre uma e outra é uma das datas mais cobradas deste tema.</p><p>Na primeira fase, os tratados e convenções <b>não aprovados até 2008</b> foram considerados pelo Supremo Tribunal Federal com o <b>status de lei ordinária</b>: valiam como uma lei comum, nem mais, nem menos.</p><p>A partir de <b>2008</b>, o Supremo reconheceu a <b class=\"term\">hierarquia supralegal</b> dos tratados internacionais de direitos humanos. Eles estão, portanto, <b>abaixo da Constituição Federal</b> e <b>acima da legislação infraconstitucional</b> brasileira.</p><p>Na prática, o Supremo criou um <b>andar intermediário</b> no prédio: uma lei comum não pode passar por cima de um tratado de direitos humanos, mas o tratado continua abaixo da Constituição, que segue no topo. Sistema completo: Constituição no topo; logo abaixo, os tratados supralegais; e, com força de emenda, os tratados aprovados pelo rito do parágrafo terceiro dividem o topo com ela.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Supralegal: abaixo da Constituição, acima de todas as leis comuns.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/supralegal.webp\" alt=\"\"></div>",
+      "narr": "A virada de dois mil e oito: a hierarquia supralegal. E os tratados de direitos humanos que não passaram pelo rito qualificado do parágrafo terceiro? A história deles tem duas fases, e a virada entre uma e outra é uma das datas mais cobradas deste tema. Na primeira fase, os tratados e convenções não aprovados até dois mil e oito foram considerados pelo Supremo Tribunal Federal com o status de lei ordinária: valiam como uma lei comum, nem mais, nem menos. A partir de dois mil e oito, o Supremo reconheceu a hierarquia supralegal dos tratados internacionais de direitos humanos. Eles estão, portanto, abaixo da Constituição Federal e acima da legislação infraconstitucional brasileira. Na prática, o Supremo criou um andar intermediário no prédio: uma lei comum não pode passar por cima de um tratado de direitos humanos, mas o tratado continua abaixo da Constituição, que segue no topo. Sistema completo: Constituição no topo; logo abaixo, os tratados supralegais; e, com força de emenda, os tratados aprovados pelo rito do parágrafo terceiro dividem o topo com ela."
+    },
+    {
+      "tipo": "Toque e revele",
+      "img": "revelar",
+      "alt": "Cartas douradas viradas sobre veludo vermelho, uma se levantando sob a luz",
+      "kicker": "Toque e revele",
+      "titulo": "Toque, pense e revele",
+      "intro": "Quatro cartas escondem quatro perguntas rápidas sobre o sistema de proteção. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "cartas": [
+        {
+          "p": "Onde moram os direitos e garantias fundamentais na Constituição?",
+          "r": "No <b>Título II</b>, chamado <b>Dos Direitos e Garantias Fundamentais</b>."
+        },
+        {
+          "p": "Qual é o gênero que abrange princípios e regras?",
+          "r": "A <b>norma</b>. Princípios e regras são as duas espécies do gênero norma."
+        },
+        {
+          "p": "Em que ano o Brasil ratificou a Convenção Americana de Direitos Humanos?",
+          "r": "Em <b>1992</b>. O tratado é de 1969 e tem natureza <b>subsidiária e suplementar</b>."
+        },
+        {
+          "p": "Qual é a hierarquia do tratado de direitos humanos sem o rito do § 3º?",
+          "r": "<b>Supralegal</b>: abaixo da Constituição e acima da legislação infraconstitucional, como reconheceu o STF a partir de 2008."
+        }
+      ],
+      "narr": "Toque, pense e revele. Quatro cartas escondem quatro perguntas rápidas sobre o sistema de proteção. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar."
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "martelo",
+      "alt": "Martelo de juiz sobre livro de leis aberto com marcador dourado",
+      "kicker": "Questão de banca · Tratados de direitos humanos",
+      "titulo": "Questão de banca",
+      "intro": "Questão no estilo das bancas, sobre a <b>força dos tratados de direitos humanos</b>. Leia com atenção:",
+      "questao": "Os tratados internacionais de direitos humanos aprovados em cada Casa do Congresso Nacional, em dois turnos, por três quintos dos votos dos respectivos membros, terão status de:",
+      "opcoes": [
+        "Lei ordinária",
+        "Lei complementar",
+        "Emendas constitucionais",
+        "Normas supralegais, acima da legislação comum"
+      ],
+      "certa": 2,
+      "feedback": "Exatamente! É o art. 5º, § 3º, da Constituição, incluído pela EC 45/2004. Sem esse rito qualificado, o tratado de direitos humanos tem hierarquia supralegal, como o STF reconheceu a partir de 2008.",
+      "narr": "Questão de banca: tratados de direitos humanos. Questão no estilo das bancas, sobre a força dos tratados de direitos humanos. Os tratados internacionais de direitos humanos aprovados em cada Casa do Congresso Nacional, em dois turnos, por três quintos dos votos dos respectivos membros, terão status de quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Ligar termos",
+      "img": "ligar",
+      "alt": "Chaves douradas antigas e cadeados sobre veludo vermelho",
+      "kicker": "Ligar termos",
+      "titulo": "Ligue cada termo à sua ideia",
+      "intro": "Toque em um termo da coluna da esquerda e, em seguida, na definição que combina com ele na coluna da direita. Acerte os cinco pares para concluir.",
+      "instrucao": "Toque em um termo e depois na definição correspondente.",
+      "pares": [
+        [
+          "Direitos",
+          "Conteúdos declaratórios que conferem vantagens"
+        ],
+        [
+          "Garantias",
+          "Meio assecuratório de exercício dos direitos"
+        ],
+        [
+          "Princípios",
+          "Norte do ordenamento, resolvidos por ponderação"
+        ],
+        [
+          "Regras",
+          "Aplicáveis ou não, sem terceira opção"
+        ],
+        [
+          "Supralegalidade",
+          "Abaixo da Constituição e acima das leis comuns"
+        ]
+      ],
+      "ordemDefs": [
+        2,
+        4,
+        0,
+        3,
+        1
+      ],
+      "narr": "Ligue cada termo à sua ideia. Toque em um termo da coluna da esquerda e, em seguida, na definição que combina com ele na coluna da direita. Acerte os cinco pares para concluir."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "pegadinhas",
+      "alt": "Alvo dourado com flechas e lupa revelando armadilhas sobre um pergaminho",
+      "kicker": "Pegadinhas de prova",
+      "titulo": "As trocas que a banca adora fazer",
+      "corpo": "<p>Antes de fechar o bloco, eu vou te vacinar contra as <b>trocas clássicas</b> que aparecem nas alternativas deste tema. São quatro confusões que derrubam muita gente boa:</p><div class=\"box\"><p class=\"blabel\">PEGADINHA 1</p><p>Dizer que direitos e garantias são <b>sinônimos</b>. Direitos <b>declaram</b> e conferem vantagens; garantias <b>asseguram</b> o exercício dos direitos.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 2</p><p>Afirmar que, no conflito entre princípios, um deles é <b>aniquilado</b>. Não há aniquilação: há <b>ponderação</b> no caso concreto.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 3</p><p>Trocar os critérios de conflito: <b>hierarquia, especialidade e cronologia</b> resolvem conflito entre <b>regras</b>, e não entre princípios.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 4</p><p>Dizer que <b>todo</b> tratado de direitos humanos equivale a emenda constitucional. Só o aprovado em <b>dois turnos, por três quintos em cada Casa</b>. Sem esse rito, ele é <b>supralegal</b>.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pegadinhas.webp\" alt=\"\"></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Art. 5º: o extenso rol constitucional de direitos e garantias.</li><li>Convenção Americana: 1969, ratificada pelo Brasil em 1992, subsidiária e suplementar.</li><li>Tratados: força de emenda com o rito do art. 5º, § 3º; sem ele, hierarquia supralegal desde 2008.</li></ul></div>",
+      "narr": "As trocas que a banca adora fazer. Antes de fechar o bloco, eu vou te vacinar contra as trocas clássicas que aparecem nas alternativas deste tema. São quatro confusões que derrubam muita gente boa. Pegadinha um: dizer que direitos e garantias são sinônimos. Direitos declaram e conferem vantagens; garantias asseguram o exercício dos direitos. Pegadinha dois: afirmar que, no conflito entre princípios, um deles é aniquilado. Não há aniquilação: há ponderação no caso concreto. Pegadinha três: trocar os critérios de conflito: hierarquia, especialidade e cronologia resolvem conflito entre regras, e não entre princípios. Pegadinha quatro: dizer que todo tratado de direitos humanos equivale a emenda constitucional. Só o aprovado em dois turnos, por três quintos em cada Casa. Sem esse rito, ele é supralegal."
+    },
+    {
+      "tipo": "Linha do tempo",
+      "img": "panorama",
+      "alt": "Linha do tempo dourada atravessando uma cidade ao entardecer",
+      "kicker": "Linha do tempo · Toque nos passos",
+      "titulo": "A construção do sistema de proteção",
+      "intro": "O sistema de proteção dos direitos fundamentais não nasceu pronto: ele foi construído em camadas, ao longo de décadas. Toque em cada marco dourado para abrir a explicação: são cinco datas que você precisa guardar.",
+      "marcos": [
+        {
+          "ano": "1969",
+          "titulo": "Nasce a Convenção Americana",
+          "texto": "Os países membros da Organização dos Estados Americanos celebram o tratado para regular os direitos humanos de forma regionalizada."
+        },
+        {
+          "ano": "1988",
+          "titulo": "A Constituição brasileira",
+          "texto": "O Título II reúne os direitos e garantias fundamentais, com o extenso rol de direitos e garantias do art. 5º."
+        },
+        {
+          "ano": "1992",
+          "titulo": "O Brasil ratifica a Convenção",
+          "texto": "O tratado passa a valer para o Brasil, com natureza subsidiária e suplementar à proteção constitucional."
+        },
+        {
+          "ano": "2004",
+          "titulo": "A Emenda Constitucional 45",
+          "texto": "O art. 5º, § 3º, passa a prever que o tratado de direitos humanos aprovado em dois turnos, por três quintos em cada Casa, equivale a emenda constitucional."
+        },
+        {
+          "ano": "2008",
+          "titulo": "O STF reconhece a supralegalidade",
+          "texto": "Tratados de direitos humanos sem o rito qualificado ficam abaixo da Constituição e acima da legislação infraconstitucional."
+        }
+      ],
+      "narr": "A construção do sistema de proteção. O sistema de proteção dos direitos fundamentais não nasceu pronto: ele foi construído em camadas, ao longo de décadas. Toque em cada marco dourado para abrir a explicação: são cinco datas que você precisa guardar."
+    },
+    {
+      "tipo": "Completar",
+      "img": "lacuna",
+      "alt": "Pergaminho com espaços dourados vazios e peças de palavras ao lado",
+      "kicker": "Completar · Toque nas palavras",
+      "titulo": "Complete a frase",
+      "intro": "Um resumo importante da aula apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "partes": [
+        "A ",
+        " é o gênero que abrange os princípios e as ",
+        ". No conflito entre princípios, faz-se um juízo de ",
+        "; já os tratados de direitos humanos sem o rito qualificado ganharam hierarquia ",
+        "."
+      ],
+      "respostas": [
+        "norma",
+        "regras",
+        "ponderação",
+        "supralegal"
+      ],
+      "banco": [
+        "supralegal",
+        "ponderação",
+        "norma",
+        "aniquilação",
+        "regras",
+        "lei ordinária"
+      ],
+      "narr": "Complete a frase. Um resumo importante da aula apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima."
+    },
+    {
+      "tipo": "Verdadeiro ou falso",
+      "img": "cartasvf",
+      "alt": "Duas pilhas de cartas antigas sobre veludo vermelho, com símbolos de certo e errado em dourado",
+      "kicker": "Verdadeiro ou falso · Arraste a carta",
+      "titulo": "Verdadeiro ou falso: arraste e decida",
+      "intro": "Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "afirmacoes": [
+        {
+          "t": "Direitos e garantias são palavras sinônimas na Constituição.",
+          "v": false,
+          "exp": "Direitos são declaratórios e conferem vantagens; garantias têm natureza assecuratória e protegem os direitos."
+        },
+        {
+          "t": "No conflito entre princípios, um deles é aniquilado e some do ordenamento.",
+          "v": false,
+          "exp": "Não há aniquilação: há juízo de ponderação, e o princípio que não prevalece continua válido para outros casos."
+        },
+        {
+          "t": "A regra é aplicável ou não é aplicável, sem terceira opção.",
+          "v": true,
+          "exp": "Isso mesmo: a lógica da regra é binária, diferente da ponderação dos princípios."
+        },
+        {
+          "t": "Todo tratado de direitos humanos equivale a uma emenda constitucional.",
+          "v": false,
+          "exp": "Só o aprovado em dois turnos, por três quintos em cada Casa. Sem esse rito, a hierarquia é supralegal."
+        },
+        {
+          "t": "A Convenção Americana de Direitos Humanos tem natureza subsidiária e suplementar.",
+          "v": true,
+          "exp": "Correto: celebrada em 1969 pelos países da OEA e ratificada pelo Brasil em 1992."
+        }
+      ],
+      "narr": "Verdadeiro ou falso: arraste e decida. Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou."
+    },
+    {
+      "tipo": "Mapa mental",
+      "img": "panorama",
+      "alt": "Mapa mental com os direitos fundamentais no centro e ramos ao redor",
+      "kicker": "Mapa mental · Toque nos ramos",
+      "titulo": "Mapa mental da aula",
+      "intro": "Para amarrar o conteúdo, um mapa da aula inteira. No centro está a proteção dos direitos fundamentais; em volta, os ramos que estudamos. Toque em cada ramo para abrir o resumo dele.",
+      "centro": "Direitos fundamentais protegidos",
+      "ramos": [
+        {
+          "nome": "Direitos e garantias",
+          "texto": "Direitos são declaratórios e conferem vantagens; garantias são assecuratórias e protegem os direitos, como o habeas corpus. Tudo no Título II da Constituição.",
+          "chips": [
+            "Título II",
+            "Declaratórios",
+            "Habeas corpus"
+          ]
+        },
+        {
+          "nome": "Normas",
+          "texto": "A norma é o gênero que abrange as duas espécies: princípios e regras, cada uma com a sua lógica de funcionamento.",
+          "chips": [
+            "Gênero",
+            "Princípios",
+            "Regras"
+          ]
+        },
+        {
+          "nome": "Princípios e regras",
+          "texto": "Princípios são o norte e o conflito entre eles se resolve por ponderação. Regras são tudo ou nada, e o conflito entre elas se resolve por hierarquia, especialidade e cronologia.",
+          "chips": [
+            "Ponderação",
+            "Tudo ou nada",
+            "Três critérios"
+          ]
+        },
+        {
+          "nome": "Sistema de proteção",
+          "texto": "Art. 5º na Constituição, Convenção Americana como reforço regional, tratados com força de emenda pelo rito do § 3º e hierarquia supralegal sem ele.",
+          "chips": [
+            "Art. 5º",
+            "Convenção Americana",
+            "Supralegalidade"
+          ]
+        }
+      ],
+      "narr": "Mapa mental da aula. Para amarrar o conteúdo, um mapa da aula inteira. No centro está a proteção dos direitos fundamentais; em volta, os ramos que estudamos. Toque em cada ramo para abrir o resumo dele."
+    },
+    {
+      "tipo": "Desafio",
+      "img": "martelo",
+      "alt": "Martelo de juiz e placar dourado sobre livro de leis aberto",
+      "kicker": "Desafio final · Vale pontos",
+      "titulo": "Desafio final: o placar da professora",
+      "intro": "Chegou a hora do desafio que fecha a aula! São seis perguntas sobre tudo o que vimos, e a última é a pergunta de ouro. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!",
+      "perguntas": [
+        {
+          "q": "Os direitos fundamentais são conteúdos:",
+          "ops": [
+            "Assecuratórios",
+            "Declaratórios, que conferem vantagens",
+            "Subsidiários e suplementares",
+            "Supralegais"
+          ],
+          "certa": 1,
+          "exp": "Declaratórios: asseguram interesses e conferem vantagens, como vida, saúde e liberdade de expressão. Assecuratórias são as garantias."
+        },
+        {
+          "q": "O conflito entre dois princípios se resolve por:",
+          "ops": [
+            "Anulação do princípio mais antigo",
+            "Critério da especialidade",
+            "Juízo de ponderação no caso concreto",
+            "Sorteio entre os princípios"
+          ],
+          "certa": 2,
+          "exp": "Ponderação: nenhum princípio é aniquilado; observa-se qual prevalece naquele caso concreto."
+        },
+        {
+          "q": "São critérios do conflito entre regras:",
+          "ops": [
+            "Ponderação, equidade e analogia",
+            "Hierarquia, especialidade e cronologia",
+            "Maioria de votos e dois turnos",
+            "Subsidiariedade e suplementariedade"
+          ],
+          "certa": 1,
+          "exp": "Hierarquia, especialidade e cronologia: o trio clássico para o conflito entre regras."
+        },
+        {
+          "q": "A Convenção Americana de Direitos Humanos foi celebrada em:",
+          "ops": [
+            "1988",
+            "1992",
+            "1969",
+            "2004"
+          ],
+          "certa": 2,
+          "exp": "1969, pelos países membros da OEA. O Brasil a ratificou apenas em 1992."
+        },
+        {
+          "q": "Hierarquia supralegal significa que o tratado está:",
+          "ops": [
+            "Acima da Constituição e acima das leis",
+            "Abaixo da Constituição e abaixo das leis comuns",
+            "Abaixo da Constituição e acima da legislação infraconstitucional",
+            "No mesmo nível de uma lei ordinária"
+          ],
+          "certa": 2,
+          "exp": "Abaixo da Constituição Federal e acima da legislação infraconstitucional: o andar intermediário reconhecido pelo STF a partir de 2008."
+        },
+        {
+          "q": "PERGUNTA DE OURO: qual frase resume a arquitetura inteira desta aula?",
+          "ops": [
+            "Punir bem é punir com o máximo de rigor",
+            "A regra certa sempre vence o princípio",
+            "Direito é o que a Constituição declara, garantia é o escudo que o protege e princípio é o norte que o sistema segue",
+            "Tratado internacional sempre vale mais que a Constituição"
+          ],
+          "certa": 2,
+          "exp": "É a aula em uma frase: declarar, proteger e orientar. Quem guarda essa frase, guarda a base de todos os princípios penais."
+        }
+      ],
+      "narr": "Desafio final: o placar da professora. Chegou a hora do desafio que fecha a aula! São seis perguntas sobre tudo o que vimos, e a última é a pergunta de ouro. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!"
+    },
+    {
+      "tipo": "Encerramento",
+      "img": "fim",
+      "alt": "Estrada dourada saindo de um tribunal em direção ao nascer do sol sobre uma cidade protegida por um escudo de luz",
+      "kicker": "Fechamento",
+      "titulo": "O que você leva desta aula",
+      "corpo": "<p>Chegamos ao fim, e eu quero que você perceba o tamanho do alicerce que acabou de construir. A partir de agora, nenhum princípio penal será uma frase solta para você: cada um tem endereço, família e função.</p><p>Você sabe que <b>direitos</b> declaram vantagens e <b>garantias</b> asseguram essas vantagens, como o habeas corpus protege o ir e vir. Sabe que a <b>norma</b> é o gênero de duas espécies com lógicas opostas: os <b>princípios</b>, norte que se pondera, e as <b>regras</b>, tudo ou nada que se resolve por hierarquia, especialidade e cronologia. E sabe como o Brasil protege tudo isso: o rol do <b>art. 5º</b>, a <b>Convenção Americana</b> como reforço regional e os tratados de direitos humanos com força de <b>emenda</b> ou hierarquia <b>supralegal</b>.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/fim.webp\" alt=\"\"></div><p>Na próxima aula, vamos subir o primeiro andar desse prédio: o princípio da reserva legal, ou da estrita legalidade, o mais famoso de todos. Com o alicerce firme, ele vai fazer muito mais sentido. Parabéns por chegar até aqui. <b>Bons estudos!</b></p>",
+      "narr": "O que você leva desta aula. Chegamos ao fim, e eu quero que você perceba o tamanho do alicerce que acabou de construir. A partir de agora, nenhum princípio penal será uma frase solta para você: cada um tem endereço, família e função. Você sabe que direitos declaram vantagens e garantias asseguram essas vantagens, como o habeas corpus protege o ir e vir. Sabe que a norma é o gênero de duas espécies com lógicas opostas: os princípios, norte que se pondera, e as regras, tudo ou nada que se resolve por hierarquia, especialidade e cronologia. E sabe como o Brasil protege tudo isso: o rol do artigo quinto, a Convenção Americana como reforço regional e os tratados de direitos humanos com força de emenda ou hierarquia supralegal. Na próxima aula, vamos subir o primeiro andar desse prédio: o princípio da reserva legal, ou da estrita legalidade, o mais famoso de todos. Com o alicerce firme, ele vai fazer muito mais sentido. Parabéns por chegar até aqui. Bons estudos!"
+    }
+  ],
+  "imagens": {
+    "capa": "assets/img/capa.webp",
+    "caminhos": "assets/img/caminhos.webp",
+    "escudo": "assets/img/escudo.webp",
+    "habeas": "assets/img/habeas.webp",
+    "genero": "assets/img/genero.webp",
+    "norte": "assets/img/norte.webp",
+    "ponderacao": "assets/img/ponderacao.webp",
+    "regras": "assets/img/regras.webp",
+    "explorar": "assets/img/explorar.webp",
+    "compprincipio": "assets/img/compprincipio.webp",
+    "compregra": "assets/img/compregra.webp",
+    "art5": "assets/img/art5.webp",
+    "convencao": "assets/img/convencao.webp",
+    "emenda": "assets/img/emenda.webp",
+    "supralegal": "assets/img/supralegal.webp",
+    "questao": "assets/img/questao.webp",
+    "flashcards": "assets/img/flashcards.webp",
+    "revelar": "assets/img/revelar.webp",
+    "ligar": "assets/img/ligar.webp",
+    "lacuna": "assets/img/lacuna.webp",
+    "cartasvf": "assets/img/cartasvf.webp",
+    "panorama": "assets/img/panorama.webp",
+    "pegadinhas": "assets/img/pegadinhas.webp",
+    "martelo": "assets/img/martelo.webp",
+    "fim": "assets/img/fim.webp"
+  },
+  "audioBaseUrl": "assets/audio/s",
+  "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-01-principios-penais-introducao-ao-tema/aula.html"
+},
+  "penal-06-02": {
+  "aulaId": "penal-06-02",
+  "titulo": "Princípio da Reserva Legal ou da Estrita Legalidade",
+  "disciplinaId": "penal",
+  "totalEtapas": 31,
+  "slides": [
+    {
+      "tipo": "Capa",
+      "img": "capa",
+      "alt": "Tribunal neoclássico com cortinas vermelhas, a balança dourada da Justiça e um livro de leis aberto",
+      "kicker": "Direito Penal · Princípios Penais",
+      "titulo": "Princípio da Reserva Legal ou da Estrita Legalidade",
+      "corpo": "<p class=\"lead\">Só a lei pode criar crime e pena. Essa frase curta guarda uma das maiores conquistas da liberdade humana: ninguém pode ser punido pela vontade de um governante, de um juiz ou de uma autoridade qualquer.</p><p>Pensa comigo: o Estado tem o poder mais pesado que existe, o poder de tirar a liberdade de uma pessoa. O <b class=\"term\">princípio da reserva legal</b>, também chamado de princípio da estrita legalidade, existe para colocar um limite firme nesse poder: crime e pena só nascem de lei, criada pelo Congresso Nacional, que representa o povo.</p><p>Nesta aula, eu vou te explicar esse princípio por inteiro: o conceito, a origem na Carta Magna de 1215, a formulação de Feuerbach, o fundamento jurídico da taxatividade, o fundamento político da liberdade, a diferença entre legalidade ampla e reserva legal e, por fim, a polêmica das medidas provisórias no Direito Penal.</p><div class=\"chips\"><span class=\"chip\">Conceito</span><span class=\"chip\">Origem</span><span class=\"chip\">Taxatividade</span><span class=\"chip\">Legalidade × Reserva</span><span class=\"chip\">Medidas Provisórias</span></div><p>E repare: esse não é um princípio decorativo. Ele aparece no artigo 5º da Constituição Federal e no artigo 1º do Código Penal, e decide, todos os dias, quem pode e quem não pode ser punido no Brasil.</p>",
+      "narr": "Só a lei pode criar crime e pena. Essa frase curta guarda uma das maiores conquistas da liberdade humana: ninguém pode ser punido pela vontade de um governante, de um juiz ou de uma autoridade qualquer. Pensa comigo: o Estado tem o poder mais pesado que existe, o poder de tirar a liberdade de uma pessoa. O princípio da reserva legal, também chamado de princípio da estrita legalidade, existe para colocar um limite firme nesse poder: crime e pena só nascem de lei, criada pelo Congresso Nacional, que representa o povo. Nesta aula, eu vou te explicar esse princípio por inteiro: o conceito, a origem na Carta Magna de mil duzentos e quinze, a formulação de Feuerbach, o fundamento jurídico da taxatividade, o fundamento político da liberdade, a diferença entre legalidade ampla e reserva legal e, por fim, a polêmica das medidas provisórias no Direito Penal. E repare: esse não é um princípio decorativo. Ele aparece no artigo quinto da Constituição Federal e no artigo primeiro do Código Penal, e decide, todos os dias, quem pode e quem não pode ser punido no Brasil."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "roteiro",
+      "alt": "Encruzilhada antiga com cinco caminhos passando por arcos de pedra e faixas vermelhas",
+      "kicker": "Roteiro da aula",
+      "titulo": "O caminho desta aula",
+      "corpo": "<p>Antes de entrar no conteúdo, deixa eu te mostrar o <b>caminho que vamos percorrer juntas</b>. A aula está organizada em <b>cinco blocos</b>, e eu vou te acompanhar em cada um deles:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>O ponto de partida</h3><p>O conceito da <span class=\"term\">reserva legal</span> e os dois textos em que ela está escrita: a Constituição e o Código Penal.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>Origem e fundamentos</h3><p>Da Carta Magna de 1215 à fórmula de Feuerbach, e os dois fundamentos do princípio: o jurídico e o político.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>Reserva legal × legalidade</h3><p>Lei em sentido amplo ou só a lei em sentido estrito? A diferença que as bancas mais cobram neste tema.</p></div></div><div class=\"viarow\"><div class=\"vianum\">4</div><div><h3>Medidas provisórias</h3><p>Elas podem entrar no Direito Penal? A resposta do Supremo Tribunal Federal, com um caso concreto.</p></div></div><div class=\"viarow\"><div class=\"vianum\">5</div><div><h3>Revisão e fechamento</h3><p>Linha do tempo, mapa mental, pegadinhas, verdadeiro ou falso e o desafio final com a pergunta de ouro.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/roteiro.webp\" alt=\"\"></div><p>O conteúdo vem em <b>texto corrido</b>, seguindo a ordem do tema, e a prática fica concentrada no <b>fim de cada bloco</b>: questões, flashcards e atividades para fixar cada parte antes de seguir. Vamos ao primeiro bloco!</p>",
+      "narr": "O caminho desta aula. Antes de entrar no conteúdo, deixa eu te mostrar o caminho que vamos percorrer juntas. A aula está organizada em cinco blocos, e eu vou te acompanhar em cada um deles. Bloco um: o ponto de partida. O conceito da reserva legal e os dois textos em que ela está escrita: a Constituição e o Código Penal. Bloco dois: origem e fundamentos. Da Carta Magna de mil duzentos e quinze à fórmula de Feuerbach, e os dois fundamentos do princípio: o jurídico e o político. Bloco três: reserva legal e legalidade. Lei em sentido amplo ou só a lei em sentido estrito? A diferença que as bancas mais cobram neste tema. Bloco quatro: medidas provisórias. Elas podem entrar no Direito Penal? A resposta do Supremo Tribunal Federal, com um caso concreto. Bloco cinco: revisão e fechamento. Linha do tempo, mapa mental, pegadinhas, verdadeiro ou falso e o desafio final com a pergunta de ouro. O conteúdo vem em texto corrido, seguindo a ordem do tema, e a prática fica concentrada no fim de cada bloco, com questões, flashcards e atividades para fixar cada parte antes de seguir. Vamos ao primeiro bloco!"
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "conceito",
+      "alt": "Livro de leis antigo aberto com correntes de luz vermelha e dourada e uma chave dourada ao lado",
+      "kicker": "Conceito",
+      "titulo": "Só a lei pode criar crime e pena",
+      "corpo": "<p class=\"lead\">A reserva legal é, na essência, uma <b>exclusividade</b>. Guarde essa palavra, porque ela resolve metade das questões sobre o tema.</p><p>Exclusividade da lei para a criação de <b>delitos</b>, de <b>contravenções penais</b> e para a <b>cominação de penas</b>. Traduzindo: só a lei pode dizer o que é crime, só a lei pode dizer o que é contravenção penal e só a lei pode fixar a pena de cada um. Decreto não pode, portaria não pode, costume não pode, e o juiz, por mais convencido que esteja, também não pode.</p><p>E esse princípio tem <b class=\"term\">dimensão democrática</b>: a lei é elaborada pelo <b>Congresso Nacional</b>, formado por representantes eleitos pelo povo. Ou seja, no fundo, é o próprio povo, por meio de seus representantes, quem aceita e define aquilo que será tratado como crime. Punir alguém é uma decisão tão grave que ela só pode nascer da vontade coletiva organizada em lei.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/conceito.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como a <b>chave de uma casa</b>. Só quem tem a chave pode abrir a porta. No Direito Penal, a chave de criar crimes e penas tem um único dono: a <b>lei</b>, feita pelo Congresso. Qualquer outra pessoa tentando abrir essa porta está invadindo.</p></div></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/conceito.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Imagine um prefeito que, incomodado com uma conduta na cidade, baixa um decreto dizendo que aquilo passa a ser crime, com pena de prisão. Esse decreto <b>não vale nada</b> em matéria penal: prefeito não tem a chave. Sem uma lei criada pelo Congresso Nacional definindo aquela conduta como crime, <b>ninguém pode ser punido</b> por ela.</p></div></div>",
+      "narr": "Só a lei pode criar crime e pena. A reserva legal é, na essência, uma exclusividade. Guarde essa palavra, porque ela resolve metade das questões sobre o tema. Exclusividade da lei para a criação de delitos, de contravenções penais e para a cominação de penas. Traduzindo: só a lei pode dizer o que é crime, só a lei pode dizer o que é contravenção penal e só a lei pode fixar a pena de cada um. Decreto não pode, portaria não pode, costume não pode, e o juiz, por mais convencido que esteja, também não pode. E esse princípio tem dimensão democrática: a lei é elaborada pelo Congresso Nacional, formado por representantes eleitos pelo povo. Ou seja, no fundo, é o próprio povo, por meio de seus representantes, quem aceita e define aquilo que será tratado como crime. Punir alguém é uma decisão tão grave que ela só pode nascer da vontade coletiva organizada em lei. Pense assim: é como a chave de uma casa. Só quem tem a chave pode abrir a porta. No Direito Penal, a chave de criar crimes e penas tem um único dono: a lei, feita pelo Congresso. Qualquer outra pessoa tentando abrir essa porta está invadindo. Exemplo prático: imagine um prefeito que, incomodado com uma conduta na cidade, baixa um decreto dizendo que aquilo passa a ser crime, com pena de prisão. Esse decreto não vale nada em matéria penal: prefeito não tem a chave. Sem uma lei criada pelo Congresso Nacional definindo aquela conduta como crime, ninguém pode ser punido por ela."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "textos",
+      "alt": "Dois livros solenes abertos lado a lado, um de capa verde e outro de capa vermelha, com uma balança dourada entre eles",
+      "kicker": "Onde o princípio está escrito",
+      "titulo": "Os dois textos que guardam o princípio",
+      "corpo": "<p>Eu quero que você veja o princípio <b>escrito</b>, porque ele mora em dois lugares ao mesmo tempo, e os dois dizem a mesma coisa com palavras quase iguais:</p><div class=\"box\"><p class=\"blabel\">CONSTITUIÇÃO FEDERAL · ART. 5º, XXXIX</p><p>“Não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal.”</p></div><div class=\"box\"><p class=\"blabel\">CÓDIGO PENAL · ART. 1º</p><p>“Não há crime sem lei anterior que o defina. Não há pena sem prévia cominação legal.”</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/textos.webp\" alt=\"\"></div><p>Repare na arquitetura: a <b>Constituição</b> coloca a reserva legal entre os <b>direitos e garantias fundamentais</b>, no artigo 5º, o coração dos direitos do cidadão. E o <b>Código Penal</b> repete a mesma regra logo no seu artigo 1º, abrindo o código com ela. Não é coincidência: é o sistema inteiro dizendo, duas vezes, que <b>punir sem lei anterior não é opção</b>.</p><p>Dessa frase nascem duas exigências que você vai encontrar em qualquer prova: primeiro, a lei precisa ser <b>anterior</b> ao fato, existir antes de a conduta acontecer. Segundo, a pena precisa estar <b>cominada</b>, isto é, prevista na própria lei. Sem lei anterior definindo o crime e sem pena prévia cominada, não há punição legítima.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Exclusividade da lei para criar crimes, contravenções penais e cominar penas.</li><li>Dimensão democrática: quem cria a lei é o Congresso Nacional, que representa o povo.</li><li>Os dois textos: artigo 5º, XXXIX, da Constituição e artigo 1º do Código Penal.</li></ul></div>",
+      "narr": "Os dois textos que guardam o princípio. Eu quero que você veja o princípio escrito, porque ele mora em dois lugares ao mesmo tempo, e os dois dizem a mesma coisa com palavras quase iguais. Constituição Federal, artigo quinto, inciso trinta e nove: não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal. Código Penal, artigo primeiro: não há crime sem lei anterior que o defina. Não há pena sem prévia cominação legal. Repare na arquitetura: a Constituição coloca a reserva legal entre os direitos e garantias fundamentais, no artigo quinto, o coração dos direitos do cidadão. E o Código Penal repete a mesma regra logo no seu artigo primeiro, abrindo o código com ela. Não é coincidência: é o sistema inteiro dizendo, duas vezes, que punir sem lei anterior não é opção. Dessa frase nascem duas exigências que você vai encontrar em qualquer prova: primeiro, a lei precisa ser anterior ao fato, existir antes de a conduta acontecer. Segundo, a pena precisa estar cominada, isto é, prevista na própria lei. Sem lei anterior definindo o crime e sem pena prévia cominada, não há punição legítima."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Questão 1 · Conceito",
+      "titulo": "Questão 1",
+      "intro": "Hora de treinar! Pense no que eu te expliquei sobre o <b>conceito</b> da reserva legal e responda:",
+      "questao": "O princípio da reserva legal significa que crimes, contravenções penais e penas só podem ser criados por:",
+      "opcoes": [
+        "Qualquer ato do Poder Executivo, como decretos e portarias",
+        "Lei, elaborada pelo Congresso Nacional",
+        "Decisão do juiz, conforme o caso concreto",
+        "Costume e jurisprudência dos tribunais"
+      ],
+      "certa": 1,
+      "feedback": "Isso mesmo! A reserva legal é a exclusividade da lei, elaborada pelo Congresso Nacional, que representa o povo, daí a sua dimensão democrática. Decreto, portaria, decisão judicial, costume e jurisprudência não criam crime nem cominam pena.",
+      "narr": "Questão um: conceito. Hora de treinar! Pense no que eu te expliquei sobre o conceito da reserva legal e responda: o princípio da reserva legal significa que crimes, contravenções penais e penas só podem ser criados por quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Dois cartões de estudo em pé, frente e verso, ligados por uma fita vermelha",
+      "kicker": "Flashcard 1 · Conceito",
+      "titulo": "Flashcard 1",
+      "frente": "Qual é o conceito do princípio da reserva legal, e onde ele está previsto?",
+      "verso": "<p>É a <b>exclusividade da lei</b> para criar delitos, contravenções penais e cominar penas, com <b>dimensão democrática</b>, porque a lei nasce no Congresso Nacional, que representa o povo.</p><p style='margin-top:10px'>Previsão: <b>art. 5º, XXXIX, da Constituição Federal</b> e <b>art. 1º do Código Penal</b>: não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal.</p>",
+      "narr": "Flashcard um: conceito. Qual é o conceito do princípio da reserva legal, e onde ele está previsto? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "origem",
+      "alt": "Rei medieval selando uma grande carta de pergaminho diante de barões, no ano de 1215",
+      "kicker": "Origem",
+      "titulo": "1215: a Carta Magna e o primeiro freio no rei",
+      "corpo": "<p class=\"lead\">A ideia que resume o princípio inteiro cabe numa frase em latim: <b class=\"term\">nullum crimen, nulla poena sine lege</b>. Em português claro: sem lei, não há crime; sem lei, não há pena. Somente a lei pode criar crimes e cominar penas.</p><p>A origem dessa ideia está na <b>Inglaterra</b>, em <b>1215</b>, com o advento da <b>Carta Magna</b>. Naquela época, o rei punia por vontade própria: não gostou, mandou prender, mandou executar. A Carta Magna foi o primeiro grande documento a estabelecer que <b>nenhum homem livre poderia ser submetido à pena sem prévia lei em vigor</b>.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/origem.webp\" alt=\"\"></div><p>Perceba a força disso: pela primeira vez, o poder de punir deixava de ser um capricho pessoal do soberano e passava a depender de uma <b>lei anterior</b>, conhecida e igual para todos. O rei continuava rei, mas, para punir, ele precisava apontar a lei que já existia antes do fato.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/origem.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Antes da Carta Magna, punir era como um jogo em que o rei <b>inventava a regra depois da jogada</b>, só para prejudicar quem ele queria. A reserva legal nasceu para acabar com isso: <b>a regra precisa existir antes do jogo começar</b>.</p></div></div>",
+      "narr": "Mil duzentos e quinze: a Carta Magna e o primeiro freio no rei. A ideia que resume o princípio inteiro cabe numa frase em latim: nullum crimen, nulla poena sine lege. Em português claro: sem lei, não há crime; sem lei, não há pena. Somente a lei pode criar crimes e cominar penas. A origem dessa ideia está na Inglaterra, em mil duzentos e quinze, com o advento da Carta Magna. Naquela época, o rei punia por vontade própria: não gostou, mandou prender, mandou executar. A Carta Magna foi o primeiro grande documento a estabelecer que nenhum homem livre poderia ser submetido à pena sem prévia lei em vigor. Perceba a força disso: pela primeira vez, o poder de punir deixava de ser um capricho pessoal do soberano e passava a depender de uma lei anterior, conhecida e igual para todos. O rei continuava rei, mas, para punir, ele precisava apontar a lei que já existia antes do fato. Pense assim: antes da Carta Magna, punir era como um jogo em que o rei inventava a regra depois da jogada, só para prejudicar quem ele queria. A reserva legal nasceu para acabar com isso: a regra precisa existir antes do jogo começar."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "feuerbach",
+      "alt": "Jurista alemão do século XVIII escrevendo à luz de velas, com a sombra de uma balança dourada na parede",
+      "kicker": "Origem · Feuerbach",
+      "titulo": "Feuerbach e a coação psicológica",
+      "corpo": "<p>A semente inglesa germinou séculos depois, na Alemanha. O princípio foi desenvolvido por <b class=\"term\">Paul Johan Anselm Ritter von Feuerbach</b>, um dos maiores nomes da história do Direito Penal, a partir da sua <b>Teoria da Coação Psicológica</b>.</p><p>A lógica de Feuerbach é elegante: toda imposição de pena pressupõe uma <b>lei penal</b>. E somente a <b>ameaça de um mal por meio da lei</b> fundamenta a noção e a possibilidade jurídica da pena. Em outras palavras: a pena só existe juridicamente porque, <b>antes</b>, a lei ameaçou quem praticasse aquela conduta.</p><p>Repare no mecanismo psicológico: a lei conhecida por todos funciona como um <b>aviso prévio</b>. A pessoa sabe, de antemão, que determinada conduta é crime e qual é a pena. Esse conhecimento a <b>coage psicologicamente</b> a não praticar o ato. Se, mesmo avisada, ela pratica, aí sim a ameaça se cumpre e a pena se aplica.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Somente a ameaça de um mal por meio da lei fundamenta a noção e a possibilidade jurídica da pena.</p></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/feuerbach.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>É como a placa <b>“proibido nadar: área de risco”</b> numa praia. Ela só pode cobrar comportamento de quem chegou <b>depois</b> de a placa existir e pôde lê-la. Punir quem nadou ali <b>antes</b> de qualquer aviso seria absurdo: faltou justamente a ameaça prévia da lei, que é o fundamento da pena para Feuerbach.</p></div></div>",
+      "narr": "Feuerbach e a coação psicológica. A semente inglesa germinou séculos depois, na Alemanha. O princípio foi desenvolvido por Paul Johan Anselm Ritter von Feuerbach, um dos maiores nomes da história do Direito Penal, a partir da sua Teoria da Coação Psicológica. A lógica de Feuerbach é elegante: toda imposição de pena pressupõe uma lei penal. E somente a ameaça de um mal por meio da lei fundamenta a noção e a possibilidade jurídica da pena. Em outras palavras: a pena só existe juridicamente porque, antes, a lei ameaçou quem praticasse aquela conduta. Repare no mecanismo psicológico: a lei conhecida por todos funciona como um aviso prévio. A pessoa sabe, de antemão, que determinada conduta é crime e qual é a pena. Esse conhecimento a coage psicologicamente a não praticar o ato. Se, mesmo avisada, ela pratica, aí sim a ameaça se cumpre e a pena se aplica. Exemplo prático: é como a placa proibido nadar, área de risco, numa praia. Ela só pode cobrar comportamento de quem chegou depois de a placa existir e pôde lê-la. Punir quem nadou ali antes de qualquer aviso seria absurdo: faltou justamente a ameaça prévia da lei, que é o fundamento da pena para Feuerbach."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "taxatividade",
+      "alt": "Lupa dourada examinando as linhas gravadas de uma tábua de pedra da lei, com régua e compasso ao lado",
+      "kicker": "Fundamento jurídico",
+      "titulo": "Taxatividade: a lei escrita com precisão",
+      "corpo": "<p class=\"lead\">O fundamento jurídico da reserva legal tem nome próprio: <b class=\"term\">taxatividade</b>, também chamada de <b>certeza</b> ou <b>determinação</b>.</p><p>Não basta existir uma lei qualquer. É necessária a <b>determinação precisa</b>, ainda que mínima, do conteúdo do <b>tipo penal</b> (a descrição da conduta proibida) e da <b>sanção penal</b> a ser aplicada (a pena correspondente). A lei precisa dizer, com clareza suficiente, <b>o que é proibido</b> e <b>qual é a consequência</b> de fazer aquilo.</p><p>E da taxatividade nasce um desdobramento lógico que cai muito em prova: a <b>não tolerância à analogia in malam partem</b>. Se os crimes e as penas devem estar expressos na lei, é <b>vedada</b> a utilização da analogia em prejuízo do sujeito. O juiz não pode pegar uma conduta parecida com a descrita na lei e puni-la “por semelhança”.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/taxatividade.webp\" alt=\"\"></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/taxatividade.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>A lei define um crime com palavras precisas. Surge um caso <b>parecido</b>, mas que não se encaixa naquelas palavras. Por mais que a conduta pareça reprovável, o juiz <b>não pode esticar</b> o tipo penal por analogia para alcançar aquele caso, porque isso prejudicaria o réu. Ou a conduta está <b>descrita na lei</b>, ou não há crime: é a taxatividade trabalhando.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">O que não está escrito na lei, não pode ser esticado contra o réu.</p></div>",
+      "narr": "Taxatividade: a lei escrita com precisão. O fundamento jurídico da reserva legal tem nome próprio: taxatividade, também chamada de certeza ou determinação. Não basta existir uma lei qualquer. É necessária a determinação precisa, ainda que mínima, do conteúdo do tipo penal, a descrição da conduta proibida, e da sanção penal a ser aplicada, a pena correspondente. A lei precisa dizer, com clareza suficiente, o que é proibido e qual é a consequência de fazer aquilo. E da taxatividade nasce um desdobramento lógico que cai muito em prova: a não tolerância à analogia in malam partem. Se os crimes e as penas devem estar expressos na lei, é vedada a utilização da analogia em prejuízo do sujeito. O juiz não pode pegar uma conduta parecida com a descrita na lei e puni-la por semelhança. Exemplo prático: a lei define um crime com palavras precisas. Surge um caso parecido, mas que não se encaixa naquelas palavras. Por mais que a conduta pareça reprovável, o juiz não pode esticar o tipo penal por analogia para alcançar aquele caso, porque isso prejudicaria o réu. Ou a conduta está descrita na lei, ou não há crime: é a taxatividade trabalhando."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "escudo",
+      "alt": "Escudo dourado monumental protegendo cidadãos de uma figura autoritária sombria",
+      "kicker": "Fundamento político",
+      "titulo": "Um escudo contra o arbítrio do Estado",
+      "corpo": "<p>Se o fundamento jurídico olha para a <b>forma</b> da lei, o fundamento político olha para a <b>pessoa</b>. A reserva legal é, politicamente, a <b>proteção do ser humano em face do arbítrio do poder de punir do Estado</b>.</p><p>Pense no tamanho desse poder: o Estado pode processar, condenar e prender. Sem a reserva legal, esse poder seria exercido por <b>vontade</b>: pune-se quem desagrada, pelo motivo que se inventar. Com a reserva legal, o Estado só pode punir quando a lei, criada antes e pelo povo, autorizar. O princípio funciona como um <b class=\"term\">escudo</b> entre o cidadão e o arbítrio.</p><p>Por isso, a reserva legal se enquadra entre os <b>direitos fundamentais de primeira geração</b>, também conhecidos como <b>direitos de liberdade</b>. Eles foram conquistados no final do século XVIII e no início do século XIX e se referem às liberdades civis e políticas, como a liberdade de expressão, a liberdade de imprensa, o direito à vida, à liberdade e à propriedade.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/escudo.webp\" alt=\"\"></div><p>Esses direitos foram registrados em documentos históricos que mudaram o mundo: a <b>Declaração de Independência dos Estados Unidos, de 1776</b>, e a <b>Declaração dos Direitos do Homem e do Cidadão, de 1789</b>. E eles influenciaram diretamente a elaboração da nossa <b>Constituição de 1988</b>, que guardou a reserva legal justamente no artigo 5º, o artigo dos direitos fundamentais.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Origem: Carta Magna de 1215 e a fórmula desenvolvida por Feuerbach.</li><li>Fundamento jurídico: a taxatividade, sem analogia contra o réu.</li><li>Fundamento político: escudo da liberdade contra o arbítrio do poder de punir.</li></ul></div>",
+      "narr": "Um escudo contra o arbítrio do Estado. Se o fundamento jurídico olha para a forma da lei, o fundamento político olha para a pessoa. A reserva legal é, politicamente, a proteção do ser humano em face do arbítrio do poder de punir do Estado. Pense no tamanho desse poder: o Estado pode processar, condenar e prender. Sem a reserva legal, esse poder seria exercido por vontade: pune-se quem desagrada, pelo motivo que se inventar. Com a reserva legal, o Estado só pode punir quando a lei, criada antes e pelo povo, autorizar. O princípio funciona como um escudo entre o cidadão e o arbítrio. Por isso, a reserva legal se enquadra entre os direitos fundamentais de primeira geração, também conhecidos como direitos de liberdade. Eles foram conquistados no final do século dezoito e no início do século dezenove e se referem às liberdades civis e políticas, como a liberdade de expressão, a liberdade de imprensa, o direito à vida, à liberdade e à propriedade. Esses direitos foram registrados em documentos históricos que mudaram o mundo: a Declaração de Independência dos Estados Unidos, de mil setecentos e setenta e seis, e a Declaração dos Direitos do Homem e do Cidadão, de mil setecentos e oitenta e nove. E eles influenciaram diretamente a elaboração da nossa Constituição de mil novecentos e oitenta e oito, que guardou a reserva legal justamente no artigo quinto, o artigo dos direitos fundamentais."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Questão 2 · Origem e fundamentos",
+      "titulo": "Questão 2",
+      "intro": "Mais um treino, agora sobre a <b>origem</b> e os <b>fundamentos</b> do princípio. Vá com calma:",
+      "questao": "Sobre a origem e os fundamentos do princípio da reserva legal, é correto afirmar que:",
+      "opcoes": [
+        "O princípio surgiu com o Código Penal brasileiro de 1940",
+        "A taxatividade é o seu fundamento político, ligado aos direitos de liberdade",
+        "A analogia in malam partem é admitida quando a conduta é parecida com a do tipo penal",
+        "O princípio teve origem na Carta Magna de 1215 e foi desenvolvido por Feuerbach"
+      ],
+      "certa": 3,
+      "feedback": "Perfeito! A origem está na Carta Magna inglesa de 1215, e o desenvolvimento, em Feuerbach e sua Teoria da Coação Psicológica. A taxatividade é o fundamento jurídico, não o político; a analogia in malam partem é vedada; e o Código Penal de 1940 apenas repetiu um princípio muito mais antigo.",
+      "narr": "Questão dois: origem e fundamentos. Mais um treino, agora sobre a origem e os fundamentos do princípio. Vá com calma: sobre a origem e os fundamentos do princípio da reserva legal, é correto afirmar o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Dois cartões de estudo em pé, frente e verso, ligados por uma fita vermelha",
+      "kicker": "Flashcard 2 · Fundamentos",
+      "titulo": "Flashcard 2",
+      "frente": "Quais são os dois fundamentos do princípio da reserva legal?",
+      "verso": "<p><b>Fundamento jurídico: a taxatividade</b> (certeza ou determinação). A lei deve descrever com precisão o tipo penal e a sanção, e é vedada a analogia in malam partem.</p><p style='margin-top:8px'><b>Fundamento político: a liberdade.</b> O princípio protege o ser humano do arbítrio do poder de punir do Estado, como direito fundamental de primeira geração.</p><p style='margin-top:10px'>Truque de memória: <b>jurídico é a forma da lei; político é a pessoa protegida</b>.</p>",
+      "narr": "Flashcard dois: fundamentos. Quais são os dois fundamentos do princípio da reserva legal? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Karaokê",
+      "img": "conceito",
+      "alt": "Livro de leis antigo aberto com correntes de luz vermelha e dourada",
+      "kicker": "Karaokê · Siga a narração",
+      "titulo": "Recapitule com a narração",
+      "frases": [
+        "Chegou a hora de recapitular a reserva legal, acompanhando a narração pela tela.",
+        "Só a lei pode criar crimes, contravenções penais e cominar penas: essa é a exclusividade da reserva legal.",
+        "O princípio nasceu na Carta Magna, em mil duzentos e quinze, e ganhou fórmula com Feuerbach: sem lei, não há crime nem pena.",
+        "No fundamento jurídico, manda a taxatividade: o tipo penal e a sanção precisam estar descritos com precisão.",
+        "Da taxatividade nasce uma proibição clara: nada de analogia em prejuízo do réu.",
+        "No fundamento político, o princípio é um escudo: protege a liberdade contra o arbítrio do poder de punir.",
+        "Se você gravou exclusividade, taxatividade e liberdade, você gravou a reserva legal."
+      ],
+      "narr": "Chegou a hora de recapitular a reserva legal, acompanhando a narração pela tela. Só a lei pode criar crimes, contravenções penais e cominar penas: essa é a exclusividade da reserva legal. O princípio nasceu na Carta Magna, em mil duzentos e quinze, e ganhou fórmula com Feuerbach: sem lei, não há crime nem pena. No fundamento jurídico, manda a taxatividade: o tipo penal e a sanção precisam estar descritos com precisão. Da taxatividade nasce uma proibição clara: nada de analogia em prejuízo do réu. No fundamento político, o princípio é um escudo: protege a liberdade contra o arbítrio do poder de punir. Se você gravou exclusividade, taxatividade e liberdade, você gravou a reserva legal."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "amplo",
+      "alt": "Leque de documentos oficiais de vários formatos abertos sobre uma mesa escura",
+      "kicker": "Reserva legal × legalidade",
+      "titulo": "Legalidade: a lei em sentido amplo",
+      "corpo": "<p class=\"lead\">Agora eu preciso separar dois irmãos que vivem sendo confundidos: <b>legalidade</b> e <b>reserva legal</b>. Começo pelo mais largo deles.</p><p>Quando se fala em <b class=\"term\">princípio da legalidade</b>, enquadram-se <b>quaisquer espécies normativas</b> previstas no <b>artigo 59 da Constituição Federal</b>. A legalidade adota o conceito de <b>lei em sentido amplo</b>: é qualquer ordem emanada do poder público. Veja o rol do artigo 59:</p><ul class=\"tight\"><li><b>I:</b> emendas à Constituição;</li><li><b>II:</b> leis complementares;</li><li><b>III:</b> leis ordinárias;</li><li><b>IV:</b> leis delegadas;</li><li><b>V:</b> medidas provisórias;</li><li><b>VI:</b> decretos legislativos;</li><li><b>VII:</b> resoluções.</li></ul><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/amplo.webp\" alt=\"\"></div><p>Perceba: na legalidade ampla, a pergunta é simples: <b>a norma veio do poder público, por um dos caminhos do artigo 59?</b> Se veio, ela integra o mundo da legalidade. É um conceito <b>generoso</b>, que abraça sete espécies normativas diferentes.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/amplo.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>A legalidade é como um <b>guarda-chuva grande</b>: debaixo dele cabem emendas, leis, medidas provisórias, decretos legislativos e resoluções. Tudo o que o poder público produz com força normativa fica protegido pelo guarda-chuva. A reserva legal, que você verá a seguir, é bem mais <b>estreita</b>.</p></div></div>",
+      "narr": "Legalidade: a lei em sentido amplo. Agora eu preciso separar dois irmãos que vivem sendo confundidos: legalidade e reserva legal. Começo pelo mais largo deles. Quando se fala em princípio da legalidade, enquadram-se quaisquer espécies normativas previstas no artigo cinquenta e nove da Constituição Federal. A legalidade adota o conceito de lei em sentido amplo: é qualquer ordem emanada do poder público. Veja o rol do artigo cinquenta e nove. Um: emendas à Constituição. Dois: leis complementares. Três: leis ordinárias. Quatro: leis delegadas. Cinco: medidas provisórias. Seis: decretos legislativos. Sete: resoluções. Perceba: na legalidade ampla, a pergunta é simples: a norma veio do poder público, por um dos caminhos do artigo cinquenta e nove? Se veio, ela integra o mundo da legalidade. É um conceito generoso, que abraça sete espécies normativas diferentes. Pense assim: a legalidade é como um guarda-chuva grande: debaixo dele cabem emendas, leis, medidas provisórias, decretos legislativos e resoluções. Tudo o que o poder público produz com força normativa fica protegido pelo guarda-chuva. A reserva legal, que você verá a seguir, é bem mais estreita."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "estrito",
+      "alt": "Palácio do Congresso ao entardecer, com luz dourada nas janelas e um pergaminho erguido em primeiro plano",
+      "kicker": "Reserva legal × legalidade",
+      "titulo": "Reserva: só a lei em sentido estrito",
+      "corpo": "<p class=\"lead\">A <b class=\"term\">reserva legal</b> é mais exigente do que a legalidade. Ela não aceita qualquer norma do poder público: ela <b>determina a espécie normativa</b> que vai reger a matéria.</p><p>Reservar uma matéria à lei significa exigir que ela seja tratada por <b>lei ordinária ou lei complementar</b>, e por nenhuma outra espécie. No Direito Penal, é exatamente isso que acontece: crime e pena são matéria <b>reservada à lei</b>, e é por isso que falamos em reserva legal, ou estrita legalidade.</p><p>Essa exigência tem duas faces, e eu quero que você grave as duas. A lei precisa ser lei em <b>sentido formal</b>: criada de acordo com o <b>processo legislativo</b> previsto na Constituição Federal, debatida e votada pelo Congresso. E precisa ser lei em <b>sentido material</b>: tratar de conteúdo constitucionalmente reservado às leis, como é o caso dos crimes e das penas.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Legalidade é qualquer norma do poder público; reserva legal é só a lei em sentido estrito.</p></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/estrito.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>A legalidade pergunta: <b>“veio do poder público?”</b>. A reserva pergunta mais: <b>“veio da lei certa, feita do jeito certo?”</b>. É como um evento com dois controles: no primeiro, qualquer convidado entra; no segundo, só quem está na <b>lista especial</b> e passou pelo <b>credenciamento completo</b>.</p></div></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Legalidade: lei em sentido amplo, todas as espécies do artigo 59 da Constituição.</li><li>Reserva: lei ordinária ou complementar, em sentido formal e material.</li><li>Em matéria penal, quem manda é a reserva: só a lei em sentido estrito cria crime e pena.</li></ul></div>",
+      "narr": "Reserva: só a lei em sentido estrito. A reserva legal é mais exigente do que a legalidade. Ela não aceita qualquer norma do poder público: ela determina a espécie normativa que vai reger a matéria. Reservar uma matéria à lei significa exigir que ela seja tratada por lei ordinária ou lei complementar, e por nenhuma outra espécie. No Direito Penal, é exatamente isso que acontece: crime e pena são matéria reservada à lei, e é por isso que falamos em reserva legal, ou estrita legalidade. Essa exigência tem duas faces, e eu quero que você grave as duas. A lei precisa ser lei em sentido formal: criada de acordo com o processo legislativo previsto na Constituição Federal, debatida e votada pelo Congresso. E precisa ser lei em sentido material: tratar de conteúdo constitucionalmente reservado às leis, como é o caso dos crimes e das penas. Pense assim: a legalidade pergunta: veio do poder público? A reserva pergunta mais: veio da lei certa, feita do jeito certo? É como um evento com dois controles: no primeiro, qualquer convidado entra; no segundo, só quem está na lista especial e passou pelo credenciamento completo."
+    },
+    {
+      "tipo": "Comparador",
+      "img": "amplo",
+      "img2": "estrito",
+      "alt": "Comparador de duas cenas: o leque de normas da legalidade ampla e o palácio do Congresso da reserva estrita",
+      "kicker": "Comparador · Arraste a barra",
+      "titulo": "Amplo × estrito: duas larguras de lei",
+      "intro": "Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, a legalidade: o leque aberto de todas as espécies normativas do artigo 59 da Constituição. Do outro, a reserva legal: o Congresso, de onde só sai a lei em sentido estrito, debatida e votada. Repare como a mesma palavra, lei, muda de largura conforme o princípio.",
+      "narr": "Amplo e estrito: duas larguras de lei. Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, a legalidade: o leque aberto de todas as espécies normativas do artigo cinquenta e nove da Constituição. Do outro, a reserva legal: o Congresso, de onde só sai a lei em sentido estrito, debatida e votada. Repare como a mesma palavra, lei, muda de largura conforme o princípio."
+    },
+    {
+      "tipo": "Explorar",
+      "img": "explorar",
+      "alt": "Imagem vertical em cinco cenas empilhadas: rei medieval selando uma carta, jurista escrevendo à luz de velas, lupa dourada sobre tábua de pedra, palácio do Congresso ao entardecer e escudo dourado protegendo cidadãos ao amanhecer",
+      "kicker": "Exploração · Toque nos pontos",
+      "titulo": "Explore a imagem: o princípio em cinco cenas",
+      "intro": "Esta imagem grande resume a nossa aula, de baixo para cima: do rei que punia por vontade até o escudo que protege a liberdade. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "pontos": [
+        {
+          "x": 50,
+          "y": 90,
+          "titulo": "1215: a Carta Magna freia o rei",
+          "texto": "Na base da imagem, o rei selando a carta. Em 1215, na Inglaterra, a Carta Magna estabeleceu que nenhum homem livre poderia ser submetido à pena sem prévia lei em vigor. Nascia ali a ideia que resume o princípio: nullum crimen, nulla poena sine lege, sem lei, não há crime nem pena."
+        },
+        {
+          "x": 32,
+          "y": 69,
+          "titulo": "Feuerbach: a lei como aviso prévio",
+          "texto": "O jurista escrevendo à luz de velas é Feuerbach, que desenvolveu o princípio com a Teoria da Coação Psicológica. Para ele, toda pena pressupõe uma lei penal: somente a ameaça de um mal por meio da lei fundamenta a noção e a possibilidade jurídica da pena. A lei avisa, e o aviso coage."
+        },
+        {
+          "x": 50,
+          "y": 50,
+          "titulo": "Taxatividade: a lupa sobre a lei",
+          "texto": "A lupa dourada sobre a tábua de pedra é o fundamento jurídico da reserva legal: a taxatividade, ou determinação. O tipo penal e a sanção precisam estar descritos com precisão, ainda que mínima. E o desdobramento é direto: é vedada a analogia in malam partem, a analogia em prejuízo do réu."
+        },
+        {
+          "x": 50,
+          "y": 30,
+          "titulo": "O Congresso: onde a lei de verdade nasce",
+          "texto": "O palácio ao entardecer representa a reserva legal em ação. Crime e pena são matéria reservada à lei ordinária ou complementar, lei em sentido formal, criada pelo processo legislativo da Constituição, e em sentido material, com conteúdo reservado às leis. É a dimensão democrática do princípio."
+        },
+        {
+          "x": 50,
+          "y": 11,
+          "titulo": "O escudo: a liberdade protegida",
+          "texto": "No topo, o escudo dourado protege os cidadãos sob o amanhecer. É o fundamento político da reserva legal: proteger o ser humano do arbítrio do poder de punir do Estado. Um direito de liberdade, de primeira geração, ao lado da vida, da propriedade e da liberdade de expressão."
+        }
+      ],
+      "narr": "Explore a imagem: o princípio em cinco cenas. Esta imagem grande resume a nossa aula, de baixo para cima: do rei que punia por vontade até o escudo que protege a liberdade. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Questão 3 · Reserva × legalidade",
+      "titulo": "Questão 3",
+      "intro": "Treino rápido sobre a diferença entre os dois princípios:",
+      "questao": "A diferença entre o princípio da legalidade e o princípio da reserva legal está em que:",
+      "opcoes": [
+        "A legalidade exige lei em sentido estrito, e a reserva admite qualquer espécie normativa",
+        "A legalidade abrange todas as espécies normativas do art. 59 da Constituição, e a reserva exige lei em sentido estrito",
+        "A reserva legal trata apenas das penas, e a legalidade apenas dos crimes",
+        "A legalidade vale só para o Direito Penal, e a reserva para os demais ramos"
+      ],
+      "certa": 1,
+      "feedback": "Exatamente! Legalidade é lei em sentido amplo: qualquer ordem emanada do poder público, entre as espécies do artigo 59. Reserva legal é lei em sentido estrito: a matéria fica reservada à lei ordinária ou complementar, em sentido formal e material.",
+      "narr": "Questão três: reserva e legalidade. Treino rápido sobre a diferença entre os dois princípios: a diferença entre o princípio da legalidade e o princípio da reserva legal está em quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Toque e revele",
+      "img": "revelar",
+      "alt": "Quatro cartas douradas viradas para baixo sobre veludo vermelho, uma se levantando sob a luz de uma vela",
+      "kicker": "Toque e revele",
+      "titulo": "Toque, pense e revele",
+      "intro": "Quatro cartas escondem quatro perguntas rápidas sobre o que você estudou até aqui. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "cartas": [
+        {
+          "p": "Quem pode criar crimes e cominar penas?",
+          "r": "<b>Só a lei</b>, elaborada pelo Congresso Nacional. É a exclusividade da reserva legal, com dimensão democrática."
+        },
+        {
+          "p": "O que é a taxatividade?",
+          "r": "É o <b>fundamento jurídico</b> da reserva legal: a exigência de determinação precisa, ainda que mínima, do tipo penal e da sanção na lei."
+        },
+        {
+          "p": "A analogia in malam partem é permitida?",
+          "r": "<b>Não.</b> Se crimes e penas devem estar expressos na lei, é vedada a analogia em prejuízo do sujeito. Esticar a lei contra o réu, jamais."
+        },
+        {
+          "p": "O que é a lei em sentido formal?",
+          "r": "É a lei criada <b>de acordo com o processo legislativo</b> previsto na Constituição Federal: debatida e votada pelo Congresso Nacional."
+        }
+      ],
+      "narr": "Toque, pense e revele. Quatro cartas escondem quatro perguntas rápidas sobre o que você estudou até aqui. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar."
+    },
+    {
+      "tipo": "Ligar termos",
+      "img": "ligar",
+      "alt": "Chaves douradas antigas e cadeados ornamentados sobre veludo vermelho",
+      "kicker": "Ligar termos 1 · Conceitos e marcos",
+      "titulo": "Ligar termos 1",
+      "instrucao": "Ligue cada conceito ao marco ou à ideia que o define. Toque em um termo e, depois, na definição correspondente.",
+      "pares": [
+        [
+          "Reserva legal",
+          "Só a lei em sentido estrito cria crime e pena"
+        ],
+        [
+          "Legalidade",
+          "Qualquer espécie normativa do artigo 59"
+        ],
+        [
+          "Taxatividade",
+          "Determinação precisa do tipo e da sanção"
+        ],
+        [
+          "Carta Magna, 1215",
+          "Primeira origem do princípio, na Inglaterra"
+        ],
+        [
+          "Feuerbach",
+          "Teoria da Coação Psicológica"
+        ]
+      ],
+      "ordemDefs": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "narr": "Ligar termos um: conceitos e marcos. Ligue cada conceito ao marco ou à ideia que o define. Toque em um termo e, depois, na definição correspondente."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "mp",
+      "alt": "Caneta elegante assinando um documento oficial em branco sobre uma mesa presidencial, com cortinas vermelhas ao fundo",
+      "kicker": "Medidas provisórias e o Direito Penal",
+      "titulo": "Medida provisória pode entrar no Direito Penal?",
+      "corpo": "<p class=\"lead\">Chegamos à pergunta mais delicada da aula. A <b class=\"term\">medida provisória</b> está no rol do artigo 59, tem força de lei e é editada pelo Presidente da República, sem passar antes pelo Congresso. Ela pode mexer com o Direito Penal?</p><p>Repare no problema: a reserva legal exige lei nascida do <b>Congresso</b>, porque só ela tem a dimensão democrática de representar o povo. A medida provisória nasce de uma <b>caneta só</b>. Se ela pudesse <b>criar crime</b> ou <b>agravar pena</b>, a reserva legal teria uma porta dos fundos, e o Executivo passaria a punir sem o povo.</p><p>A resposta do <b>Supremo Tribunal Federal</b> é precisa e equilibrada: as medidas provisórias <b>podem</b> ser usadas no Direito Penal, <b>desde que favoráveis ao réu</b>. É o entendimento firmado no <b>RHC 117.566, de 2013</b>. A lógica é a do próprio fundamento político do princípio: tudo o que <b>amplia a liberdade</b> é bem-vindo; o que não pode é o Executivo usar o atalho para <b>restringir</b> direitos que só a lei pode restringir.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/mp.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como uma porta que <b>só abre para um lado</b>: a medida provisória só entra no Direito Penal empurrando para o lado da <b>liberdade</b>. Criar crime ou aumentar pena por medida provisória é tentar arrombar a porta, e a reserva legal não deixa.</p></div></div>",
+      "narr": "Medida provisória pode entrar no Direito Penal? Chegamos à pergunta mais delicada da aula. A medida provisória está no rol do artigo cinquenta e nove, tem força de lei e é editada pelo Presidente da República, sem passar antes pelo Congresso. Ela pode mexer com o Direito Penal? Repare no problema: a reserva legal exige lei nascida do Congresso, porque só ela tem a dimensão democrática de representar o povo. A medida provisória nasce de uma caneta só. Se ela pudesse criar crime ou agravar pena, a reserva legal teria uma porta dos fundos, e o Executivo passaria a punir sem o povo. A resposta do Supremo Tribunal Federal é precisa e equilibrada: as medidas provisórias podem ser usadas no Direito Penal, desde que favoráveis ao réu. É o entendimento firmado no RHC cento e dezessete mil, quinhentos e sessenta e seis, de dois mil e treze. A lógica é a do próprio fundamento político do princípio: tudo o que amplia a liberdade é bem-vindo; o que não pode é o Executivo usar o atalho para restringir direitos que só a lei pode restringir. Pense assim: é como uma porta que só abre para um lado: a medida provisória só entra no Direito Penal empurrando para o lado da liberdade. Criar crime ou aumentar pena por medida provisória é tentar arrombar a porta, e a reserva legal não deixa."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "stf",
+      "alt": "Sala de julgamento solene de um tribunal superior, com bancada curva de madeira e martelo sobre um livro de leis",
+      "kicker": "Medidas provisórias · O caso concreto",
+      "titulo": "O caso do STF: RHC 117.566",
+      "corpo": "<p>Quero que você veja esse entendimento <b>funcionando num caso de verdade</b>, porque é assim que ele cai em prova e é assim que ele muda vidas.</p><p>O <b>RHC 117.566, de 2013</b>, tratou de um réu <b>preso preventivamente</b>, acusado de supostamente ter praticado crimes de <b>tráfico de drogas</b> e <b>associação para o tráfico</b>. O Supremo Tribunal Federal concedeu o <b>habeas corpus</b> e determinou a <b>soltura imediata</b> do réu, com base numa medida provisória que havia alterado a Lei de Drogas, a Lei nº 11.343, de 2006.</p><p>A medida provisória do caso é a <b>MP 766, de 2017</b>, que previu a possibilidade de <b>conversão da prisão preventiva em prisão domiciliar</b> nos casos de mulheres gestantes ou com filhos de até 12 anos incompletos sob sua responsabilidade.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/stf.webp\" alt=\"\"></div><p>O STF entendeu que a medida provisória <b>era aplicável</b> ao caso: o réu era pai de uma criança com menos de 12 anos, e a sua prisão preventiva havia sido decretada <b>antes</b> da edição da medida. Como a medida <b>favorecia</b> o réu, ela pôde ser usada em matéria penal, e o réu foi solto.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/stf.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">RESUMO DO CASO</p><p><b>Regra:</b> medida provisória no Direito Penal, só a favor do réu. <b>Caso:</b> RHC 117.566, do STF. <b>Aplicação:</b> a MP 766, de 2017, permitiu trocar a prisão preventiva pela domiciliar, e o réu foi colocado em liberdade.</p></div></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Medida provisória no Direito Penal: só quando favorável ao réu.</li><li>O STF firmou esse entendimento no RHC 117.566, de 2013.</li><li>No caso, a MP 766, de 2017, permitiu trocar a prisão preventiva pela domiciliar.</li></ul></div>",
+      "narr": "O caso do STF: RHC cento e dezessete mil, quinhentos e sessenta e seis. Quero que você veja esse entendimento funcionando num caso de verdade, porque é assim que ele cai em prova e é assim que ele muda vidas. O RHC cento e dezessete mil, quinhentos e sessenta e seis, de dois mil e treze, tratou de um réu preso preventivamente, acusado de supostamente ter praticado crimes de tráfico de drogas e associação para o tráfico. O Supremo Tribunal Federal concedeu o habeas corpus e determinou a soltura imediata do réu, com base numa medida provisória que havia alterado a Lei de Drogas, a Lei número onze mil, trezentos e quarenta e três, de dois mil e seis. A medida provisória do caso é a MP setecentos e sessenta e seis, de dois mil e dezessete, que previu a possibilidade de conversão da prisão preventiva em prisão domiciliar nos casos de mulheres gestantes ou com filhos de até doze anos incompletos sob sua responsabilidade. O STF entendeu que a medida provisória era aplicável ao caso: o réu era pai de uma criança com menos de doze anos, e a sua prisão preventiva havia sido decretada antes da edição da medida. Como a medida favorecia o réu, ela pôde ser usada em matéria penal, e o réu foi solto."
+    },
+    {
+      "tipo": "Completar",
+      "img": "lacuna",
+      "alt": "Pergaminho antigo com espaços dourados vazios e peças de palavras douradas ao lado esperando para serem colocadas",
+      "kicker": "Completar · Toque nas palavras",
+      "titulo": "Complete a frase",
+      "intro": "Um resumo importante da aula apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "partes": [
+        "Só a ",
+        " em sentido estrito pode criar ",
+        " e cominar ",
+        ": é o princípio da ",
+        "."
+      ],
+      "respostas": [
+        "lei",
+        "crimes",
+        "penas",
+        "reserva legal"
+      ],
+      "banco": [
+        "penas",
+        "reserva legal",
+        "lei",
+        "decreto",
+        "crimes",
+        "costume"
+      ],
+      "narr": "Complete a frase. Um resumo importante da aula apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima."
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "martelo",
+      "alt": "Martelo de juiz sobre um livro de leis aberto com marcador dourado",
+      "kicker": "Questão 4 · Estilo de banca",
+      "titulo": "Questão 4",
+      "intro": "Questão em <b>estilo de banca</b>, sobre medidas provisórias no Direito Penal. Leia o enunciado com atenção:",
+      "questao": "Segundo o entendimento do Supremo Tribunal Federal, as medidas provisórias em matéria penal:",
+      "opcoes": [
+        "São sempre proibidas, em qualquer hipótese",
+        "Podem ser utilizadas quando favoráveis ao réu",
+        "Podem criar crimes, desde que presentes urgência e relevância",
+        "Podem agravar penas em situações de calamidade pública"
+      ],
+      "certa": 1,
+      "feedback": "Exatamente. No RHC 117.566, de 2013, o STF admitiu a medida provisória em matéria penal porque ela favorecia o réu. Criar crime ou agravar pena por medida provisória violaria a reserva legal, pois só a lei, nascida no Congresso, pode fazê-lo.",
+      "narr": "Questão quatro, em estilo de banca, sobre medidas provisórias no Direito Penal. Leia o enunciado com atenção: segundo o entendimento do Supremo Tribunal Federal, as medidas provisórias em matéria penal podem o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Ligar termos",
+      "img": "ligar",
+      "alt": "Chaves douradas antigas e cadeados ornamentados sobre veludo vermelho",
+      "kicker": "Ligar termos 2 · Aperfeiçoando",
+      "titulo": "Ligar termos 2",
+      "instrucao": "Agora ligue cada instituto à sua definição exata. Toque em um termo e, depois, na definição correspondente.",
+      "pares": [
+        [
+          "Analogia in malam partem",
+          "Vedada: não se estica a lei contra o réu"
+        ],
+        [
+          "Lei em sentido formal",
+          "Criada conforme o processo legislativo da Constituição"
+        ],
+        [
+          "Lei em sentido material",
+          "Conteúdo constitucionalmente reservado às leis"
+        ],
+        [
+          "Medida provisória benéfica",
+          "Pode ser usada no Direito Penal, segundo o STF"
+        ],
+        [
+          "Direitos de primeira geração",
+          "Direitos de liberdade contra o arbítrio do Estado"
+        ]
+      ],
+      "ordemDefs": [
+        1,
+        3,
+        0,
+        4,
+        2
+      ],
+      "narr": "Ligar termos dois: aperfeiçoando. Agora ligue cada instituto à sua definição exata. Toque em um termo e, depois, na definição correspondente."
+    },
+    {
+      "tipo": "Linha do tempo",
+      "img": "panorama",
+      "alt": "Linha do tempo dourada atravessando séculos de história, do castelo medieval ao palácio do Congresso",
+      "kicker": "Linha do tempo · Toque nos marcos",
+      "titulo": "A linha do tempo da reserva legal",
+      "intro": "Agora vamos amarrar a história numa linha só. Toque em cada marco dourado para abrir a explicação dele: são seis momentos que contam, em ordem, o caminho que percorremos nesta aula, da Inglaterra medieval ao Supremo Tribunal Federal.",
+      "marcos": [
+        {
+          "ano": "1215",
+          "titulo": "A Carta Magna, na Inglaterra",
+          "texto": "O primeiro freio no rei: nenhum homem livre pode ser submetido à pena sem prévia lei em vigor. Nasce a ideia do nullum crimen, nulla poena sine lege."
+        },
+        {
+          "ano": "1776",
+          "titulo": "Declaração de Independência dos Estados Unidos",
+          "texto": "Os direitos de liberdade ganham documento histórico: vida, liberdade e propriedade como direitos que o poder deve respeitar. É o solo em que o fundamento político da reserva legal floresce."
+        },
+        {
+          "ano": "1789",
+          "titulo": "Declaração dos Direitos do Homem e do Cidadão",
+          "texto": "A França registra os direitos de primeira geração que, junto com o documento americano, influenciariam as constituições modernas, inclusive a brasileira de 1988."
+        },
+        {
+          "ano": "Começo do séc. XIX",
+          "titulo": "Feuerbach formula o princípio",
+          "texto": "Com a Teoria da Coação Psicológica, Feuerbach desenvolve a ideia: toda pena pressupõe uma lei penal, e só a ameaça de um mal por meio da lei fundamenta a possibilidade jurídica da pena."
+        },
+        {
+          "ano": "1988",
+          "titulo": "A Constituição brasileira guarda o princípio",
+          "texto": "O artigo 5º, inciso XXXIX, da Constituição de 1988 consagra: não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal. O Código Penal repete a regra no artigo 1º."
+        },
+        {
+          "ano": "2013",
+          "titulo": "O STF e as medidas provisórias",
+          "texto": "No RHC 117.566, o Supremo Tribunal Federal admite a medida provisória em matéria penal quando favorável ao réu, entendimento aplicado com a MP 766, de 2017, no caso da prisão domiciliar."
+        }
+      ],
+      "narr": "A linha do tempo da reserva legal. Agora vamos amarrar a história numa linha só. Toque em cada marco dourado para abrir a explicação dele: são seis momentos que contam, em ordem, o caminho que percorremos nesta aula, da Inglaterra medieval ao Supremo Tribunal Federal."
+    },
+    {
+      "tipo": "Mapa mental",
+      "img": "panorama",
+      "alt": "Mapa mental com a reserva legal no centro e seis ramos ao redor",
+      "kicker": "Mapa mental · Toque nos ramos",
+      "titulo": "Mapa mental da reserva legal",
+      "intro": "Para fechar o conteúdo, um mapa da aula inteira. No centro está a reserva legal; em volta, os seis ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda.",
+      "ramos": [
+        {
+          "nome": "Conceito",
+          "texto": "Exclusividade da lei para criar delitos, contravenções penais e cominar penas, com dimensão democrática: a lei nasce no Congresso, que representa o povo.",
+          "chips": [
+            "Art. 5º, XXXIX, CF",
+            "Art. 1º, CP"
+          ]
+        },
+        {
+          "nome": "Origem",
+          "texto": "A ideia nasce na Carta Magna inglesa de 1215 e é desenvolvida por Feuerbach, com a Teoria da Coação Psicológica: sem lei, não há crime nem pena.",
+          "chips": [
+            "1215",
+            "Feuerbach",
+            "Nullum crimen"
+          ]
+        },
+        {
+          "nome": "Fundamento jurídico",
+          "texto": "A taxatividade: determinação precisa do tipo penal e da sanção. Desdobramento lógico: é vedada a analogia in malam partem, em prejuízo do réu.",
+          "chips": [
+            "Taxatividade",
+            "Sem analogia contra o réu"
+          ]
+        },
+        {
+          "nome": "Fundamento político",
+          "texto": "Proteger o ser humano do arbítrio do poder de punir do Estado. Direito fundamental de primeira geração, um direito de liberdade.",
+          "chips": [
+            "Liberdade",
+            "Antiarbítrio"
+          ]
+        },
+        {
+          "nome": "Reserva × legalidade",
+          "texto": "Legalidade é a lei em sentido amplo, com todas as espécies do artigo 59. Reserva é a lei em sentido estrito: ordinária ou complementar, formal e material.",
+          "chips": [
+            "Art. 59, CF",
+            "Sentido estrito"
+          ]
+        },
+        {
+          "nome": "Medidas provisórias",
+          "texto": "No Direito Penal, a medida provisória só entra quando favorável ao réu, como decidiu o STF no RHC 117.566, de 2013, no caso da MP 766, de 2017.",
+          "chips": [
+            "STF",
+            "RHC 117.566",
+            "Só a favor do réu"
+          ]
+        }
+      ],
+      "narr": "Mapa mental da reserva legal. Para fechar o conteúdo, um mapa da aula inteira. No centro está a reserva legal; em volta, os seis ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "pegadinhas",
+      "alt": "Alvo dourado com flechas e uma lupa revelando armadilhas sobre um pergaminho",
+      "kicker": "Pegadinhas de prova",
+      "titulo": "Não caia nessas!",
+      "corpo": "<p>Antes de encerrar, eu separei as <b>cinco confusões</b> que mais derrubam candidatos neste tema. Grave cada uma:</p><div class=\"box\"><p class=\"blabel\">PEGADINHA 1 · LEGALIDADE × RESERVA</p><p><b>Legalidade</b> é qualquer norma do artigo 59. <b>Reserva legal</b> é só a lei em sentido estrito. Se a questão disser que um decreto legislativo pode criar crime “porque está no artigo 59”, ela está errada.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 2 · MEDIDA PROVISÓRIA NÃO CRIA CRIME</p><p>Medida provisória no Direito Penal, <b>só a favor do réu</b>. Criar crime ou agravar pena por medida provisória viola a reserva legal, por mais urgente que o caso pareça.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 3 · ANALOGIA TEM LADO PROIBIDO</p><p>A vedação é da analogia <b>in malam partem</b>, em prejuízo do réu, e ela nasce da <b>taxatividade</b>. Não confunda o fundamento: taxatividade é fundamento jurídico, não político.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pegadinhas.webp\" alt=\"\"></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 4 · A ORIGEM É ANTIGA</p><p>O princípio <b>não nasceu</b> no Código Penal de 1940 nem na Constituição de 1988: eles o <b>repetiram</b>. A origem é a Carta Magna de <b>1215</b>, e o desenvolvimento é de <b>Feuerbach</b>.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 5 · QUEM CRIA É O CONGRESSO</p><p>Crime e pena nascem de lei do <b>Congresso Nacional</b>. Presidente por decreto, juiz na sentença e costume na prática: <b>nenhum deles</b> cria crime. Essa é a dimensão democrática do princípio.</p></div>",
+      "narr": "Não caia nessas! Antes de encerrar, eu separei as cinco confusões que mais derrubam candidatos neste tema. Grave cada uma. Pegadinha um, legalidade e reserva: legalidade é qualquer norma do artigo cinquenta e nove; reserva legal é só a lei em sentido estrito. Se a questão disser que um decreto legislativo pode criar crime porque está no artigo cinquenta e nove, ela está errada. Pegadinha dois, medida provisória não cria crime: medida provisória no Direito Penal, só a favor do réu. Criar crime ou agravar pena por medida provisória viola a reserva legal, por mais urgente que o caso pareça. Pegadinha três, analogia tem lado proibido: a vedação é da analogia in malam partem, em prejuízo do réu, e ela nasce da taxatividade. Não confunda o fundamento: taxatividade é fundamento jurídico, não político. Pegadinha quatro, a origem é antiga: o princípio não nasceu no Código Penal de mil novecentos e quarenta nem na Constituição de mil novecentos e oitenta e oito: eles o repetiram. A origem é a Carta Magna de mil duzentos e quinze, e o desenvolvimento é de Feuerbach. Pegadinha cinco, quem cria é o Congresso: crime e pena nascem de lei do Congresso Nacional. Presidente por decreto, juiz na sentença e costume na prática: nenhum deles cria crime. Essa é a dimensão democrática do princípio."
+    },
+    {
+      "tipo": "Verdadeiro ou falso",
+      "img": "cartasvf",
+      "alt": "Duas pilhas de cartas antigas sobre veludo vermelho, uma com símbolo de certo e outra com símbolo de errado em dourado",
+      "kicker": "Verdadeiro ou falso · Arraste a carta",
+      "titulo": "Verdadeiro ou falso: arraste e decida",
+      "intro": "Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "afirmacoes": [
+        {
+          "t": "A medida provisória pode criar um novo crime quando houver urgência e relevância.",
+          "v": false,
+          "exp": "Não pode. Segundo o STF, a medida provisória só entra no Direito Penal quando favorável ao réu. Criar crime é matéria reservada à lei do Congresso."
+        },
+        {
+          "t": "A taxatividade exige a determinação precisa, ainda que mínima, do tipo penal e da sanção.",
+          "v": true,
+          "exp": "Isso mesmo: taxatividade, certeza ou determinação é o fundamento jurídico da reserva legal."
+        },
+        {
+          "t": "Na legalidade em sentido amplo, resoluções e decretos legislativos também são espécies normativas do artigo 59 da Constituição.",
+          "v": true,
+          "exp": "Perfeito: o artigo 59 lista emendas, leis complementares, leis ordinárias, leis delegadas, medidas provisórias, decretos legislativos e resoluções."
+        },
+        {
+          "t": "O juiz pode usar a analogia para punir uma conduta parecida com a descrita na lei, ainda que isso prejudique o réu.",
+          "v": false,
+          "exp": "Jamais: a analogia in malam partem é vedada, como desdobramento lógico da taxatividade."
+        },
+        {
+          "t": "O fundamento político da reserva legal é proteger o ser humano do arbítrio do poder de punir do Estado.",
+          "v": true,
+          "exp": "Exato: é um direito fundamental de primeira geração, um direito de liberdade."
+        }
+      ],
+      "narr": "Verdadeiro ou falso: arraste e decida. Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou."
+    },
+    {
+      "tipo": "Desafio",
+      "img": "martelo",
+      "alt": "Martelo de juiz e placar dourado sobre um livro de leis aberto",
+      "kicker": "Desafio final · Vale pontos",
+      "titulo": "Desafio final: o placar da professora",
+      "intro": "Chegou a hora do desafio que fecha a aula! São seis perguntas rápidas sobre tudo o que vimos, e a última é a pergunta de ouro, a que amarra o princípio inteiro. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!",
+      "perguntas": [
+        {
+          "q": "A reserva legal é a exclusividade de quem para criar crimes e penas?",
+          "ops": [
+            "Do Poder Executivo",
+            "Da lei, feita pelo Congresso Nacional",
+            "Do Poder Judiciário",
+            "Dos costumes sociais"
+          ],
+          "certa": 1,
+          "exp": "Da lei, elaborada pelo Congresso Nacional, que representa o povo: é a dimensão democrática do princípio."
+        },
+        {
+          "q": "Quem desenvolveu o princípio com a Teoria da Coação Psicológica?",
+          "ops": [
+            "O rei da Inglaterra, em 1215",
+            "Paul von Feuerbach",
+            "O Supremo Tribunal Federal",
+            "O legislador de 1940"
+          ],
+          "certa": 1,
+          "exp": "Feuerbach: toda pena pressupõe uma lei penal, e só a ameaça de um mal por meio da lei fundamenta a pena."
+        },
+        {
+          "q": "A taxatividade, fundamento jurídico da reserva legal, exige:",
+          "ops": [
+            "Que a lei seja votada duas vezes",
+            "Determinação precisa do tipo penal e da sanção",
+            "Que o réu concorde com a pena",
+            "Aprovação do Presidente da República"
+          ],
+          "certa": 1,
+          "exp": "Determinação precisa, ainda que mínima, do conteúdo do tipo penal e da sanção a ser aplicada."
+        },
+        {
+          "q": "A lei em sentido estrito, exigida pela reserva legal, é a:",
+          "ops": [
+            "Qualquer norma do artigo 59 da Constituição",
+            "Resolução do Congresso Nacional",
+            "Lei ordinária ou complementar, formal e material",
+            "Medida provisória do Presidente"
+          ],
+          "certa": 2,
+          "exp": "Lei ordinária ou complementar, criada pelo processo legislativo (sentido formal) e com conteúdo reservado às leis (sentido material)."
+        },
+        {
+          "q": "No RHC 117.566, o STF admitiu a medida provisória em matéria penal porque ela:",
+          "ops": [
+            "Criava um crime urgente",
+            "Agravava a pena do réu",
+            "Era favorável ao réu",
+            "Tinha sido aprovada pelo Congresso"
+          ],
+          "certa": 2,
+          "exp": "Era favorável ao réu: é essa a condição para a medida provisória entrar no Direito Penal, segundo o Supremo."
+        },
+        {
+          "q": "PERGUNTA DE OURO: um juiz, diante de uma conduta muito reprovável, mas não descrita em nenhuma lei como crime, deve:",
+          "ops": [
+            "Punir por analogia, pela semelhança com um crime previsto",
+            "Criar a pena adequada no caso concreto",
+            "Não punir: não há crime sem lei anterior que o defina",
+            "Pedir ao Presidente uma medida provisória incriminadora"
+          ],
+          "certa": 2,
+          "exp": "Não punir. É a reserva legal em ação: sem lei anterior definindo a conduta como crime e cominando a pena, não existe punição legítima, por mais reprovável que a conduta pareça."
+        }
+      ],
+      "narr": "Desafio final: o placar da professora. Chegou a hora do desafio que fecha a aula! São seis perguntas rápidas sobre tudo o que vimos, e a última é a pergunta de ouro, a que amarra o princípio inteiro. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!"
+    },
+    {
+      "tipo": "Encerramento",
+      "img": "fim",
+      "alt": "Estrada dourada saindo de um tribunal neoclássico em direção ao nascer do sol",
+      "kicker": "Encerramento",
+      "titulo": "O que você leva desta aula",
+      "corpo": "<p>Chegamos ao fim, e eu quero que você perceba a linha inteira que percorreu. Começamos com uma frase simples, <b>só a lei pode criar crime e pena</b>, e vimos essa frase nascer na Inglaterra de 1215, ganhar fórmula com Feuerbach e se transformar num dos pilares do Direito Penal brasileiro.</p><p>Você viu que o princípio tem <b>dois fundamentos</b> que se completam: o <b>jurídico</b>, a taxatividade, que obriga a lei a ser precisa e proíbe a analogia contra o réu; e o <b>político</b>, a liberdade, que faz do princípio um escudo contra o arbítrio de quem detém o poder de punir.</p><p>Você aprendeu também a separar os dois irmãos: a <b>legalidade</b>, larga, que abraça todas as espécies do artigo 59, e a <b class=\"term\">reserva legal</b>, estreita, que só aceita a lei em sentido estrito. E viu que até a medida provisória, atalho do Executivo, só entra no Direito Penal quando abre a porta da <b>liberdade</b>, nunca a da punição.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/capa.webp\" alt=\"\"></div><p>A lição maior é esta: a reserva legal é a Constituição dizendo ao Estado, todos os dias, <b>“você só pune até onde a lei, feita pelo povo, deixar”</b>. Quem entende isso, entende a lógica de todos os outros princípios penais que vêm a seguir.</p><p>Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça as questões de cabeça fria e confie: princípio se aprende pelo <b>raciocínio</b>, não pela decoreba. Eu fico por aqui, e te espero na próxima aula. <b>Bons estudos!</b></p>",
+      "narr": "O que você leva desta aula. Chegamos ao fim, e eu quero que você perceba a linha inteira que percorreu. Começamos com uma frase simples, só a lei pode criar crime e pena, e vimos essa frase nascer na Inglaterra de mil duzentos e quinze, ganhar fórmula com Feuerbach e se transformar num dos pilares do Direito Penal brasileiro. Você viu que o princípio tem dois fundamentos que se completam: o jurídico, a taxatividade, que obriga a lei a ser precisa e proíbe a analogia contra o réu; e o político, a liberdade, que faz do princípio um escudo contra o arbítrio de quem detém o poder de punir. Você aprendeu também a separar os dois irmãos: a legalidade, larga, que abraça todas as espécies do artigo cinquenta e nove, e a reserva legal, estreita, que só aceita a lei em sentido estrito. E viu que até a medida provisória, atalho do Executivo, só entra no Direito Penal quando abre a porta da liberdade, nunca a da punição. A lição maior é esta: a reserva legal é a Constituição dizendo ao Estado, todos os dias, você só pune até onde a lei, feita pelo povo, deixar. Quem entende isso, entende a lógica de todos os outros princípios penais que vêm a seguir. Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça as questões de cabeça fria e confie: princípio se aprende pelo raciocínio, não pela decoreba. Eu fico por aqui, e te espero na próxima aula. Bons estudos!"
+    }
+  ],
+  "imagens": {
+    "capa": "assets/img/capa.webp",
+    "roteiro": "assets/img/roteiro.webp",
+    "conceito": "assets/img/conceito.webp",
+    "textos": "assets/img/textos.webp",
+    "origem": "assets/img/origem.webp",
+    "feuerbach": "assets/img/feuerbach.webp",
+    "taxatividade": "assets/img/taxatividade.webp",
+    "escudo": "assets/img/escudo.webp",
+    "amplo": "assets/img/amplo.webp",
+    "estrito": "assets/img/estrito.webp",
+    "explorar": "assets/img/explorar.webp",
+    "mp": "assets/img/mp.webp",
+    "stf": "assets/img/stf.webp",
+    "questao": "assets/img/questao.webp",
+    "flashcards": "assets/img/flashcards.webp",
+    "revelar": "assets/img/revelar.webp",
+    "ligar": "assets/img/ligar.webp",
+    "lacuna": "assets/img/lacuna.webp",
+    "martelo": "assets/img/martelo.webp",
+    "panorama": "assets/img/panorama.webp",
+    "pegadinhas": "assets/img/pegadinhas.webp",
+    "cartasvf": "assets/img/cartasvf.webp",
+    "fim": "assets/img/fim.webp"
+  },
+  "audioBaseUrl": "assets/audio/s",
+  "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-02-principio-da-reserva-legal-ou-da-estrita-legalidade/aula.html"
+},
+  "penal-06-03": {
+  "aulaId": "penal-06-03",
+  "titulo": "Princípio da Anterioridade",
+  "disciplinaId": "penal",
+  "totalEtapas": 33,
+  "slides": [
+    {
+      "tipo": "Capa",
+      "img": "capa",
+      "alt": "Relógio monumental dourado sobre um tribunal neoclássico com cortinas vermelhas, simbolizando a lei e o tempo",
+      "kicker": "Direito Penal · Princípios Penais",
+      "titulo": "Princípio da Anterioridade",
+      "corpo": "<p class=\"lead\">Pode o Estado punir você hoje por algo que você fez ontem, quando ontem aquilo <b>nem era crime</b>? A resposta do Direito Penal é um <b>não firme</b>, e é esse não que constrói a nossa aula de hoje.</p><p>Imagine a cena: uma pessoa pratica uma conduta qualquer, num dia em que nenhuma lei a proibia. Meses depois, surge uma lei nova transformando aquela conduta em crime. Seria justo alcançar aquela pessoa? O <b class=\"term\">princípio da anterioridade</b> existe para responder: não seria. A lei penal só pode alcançar os fatos praticados <b>depois</b> que ela entra em vigor.</p><p>Nesta aula, eu vou te mostrar onde esse princípio está escrito, quais são as suas características, o que acontece com os fatos praticados durante a <b>vacatio legis</b> e como o tempo trata as leis novas: a que beneficia, a que agrava e a que cria um crime que não existia.</p><div class=\"chips\"><span class=\"chip\">Art. 5º, XXXIX, da CF</span><span class=\"chip\">Art. 1º do CP</span><span class=\"chip\">Vacatio legis</span><span class=\"chip\">Lex mitior</span></div><p>É um dos princípios mais cobrados em prova, porque quase toda questão sobre lei penal no tempo passa por ele. Ao final, você vai saber olhar para qualquer caso e responder, com segurança: essa lei alcança esse fato, ou não alcança?</p>",
+      "narr": "Pode o Estado punir você hoje por algo que você fez ontem, quando ontem aquilo nem era crime? A resposta do Direito Penal é um não firme, e é esse não que constrói a nossa aula de hoje. Imagine a cena: uma pessoa pratica uma conduta qualquer, num dia em que nenhuma lei a proibia. Meses depois, surge uma lei nova transformando aquela conduta em crime. Seria justo alcançar aquela pessoa? O princípio da anterioridade existe para responder: não seria. A lei penal só pode alcançar os fatos praticados depois que ela entra em vigor. Nesta aula, eu vou te mostrar onde esse princípio está escrito, quais são as suas características, o que acontece com os fatos praticados durante a vacatio legis e como o tempo trata as leis novas: a que beneficia, a que agrava e a que cria um crime que não existia. É um dos princípios mais cobrados em prova, porque quase toda questão sobre lei penal no tempo passa por ele. Ao final, você vai saber olhar para qualquer caso e responder, com segurança: essa lei alcança esse fato, ou não alcança?"
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "roteiro",
+      "alt": "Caminho dourado atravessando um relógio antigo com quatro marcos de pedra numerados",
+      "kicker": "Roteiro da aula",
+      "titulo": "O caminho desta aula",
+      "corpo": "<p>Antes de entrar no conteúdo, deixa eu te mostrar o <b>caminho que vamos percorrer juntas</b>. A aula está organizada em <b>quatro blocos</b> e um fechamento:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>A regra e sua base</h3><p>A ideia central da anterioridade e a previsão legal: artigo 5º, inciso XXXIX, da Constituição e artigo 1º do Código Penal.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>A lei no tempo</h3><p>As características do princípio, a vacatio legis e o que acontece com o fato praticado nesse intervalo.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>Quando a lei muda</h3><p>As três leis novas: a que beneficia o réu, a que agrava a situação dele e a que cria um crime novo.</p></div></div><div class=\"viarow\"><div class=\"vianum\">4</div><div><h3>Prática e fixação</h3><p>Verdadeiro ou falso, linha do tempo, mapa mental, pegadinhas e questões em estilo de banca.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/roteiro.webp\" alt=\"\"></div><p>O conteúdo vem em <b>texto corrido</b>, como uma conversa, e a prática fica concentrada no <b>fim de cada bloco</b>: questões, flashcards e atividades para fixar cada parte antes de seguir. No fim, o desafio final com placar e a pergunta de ouro. Vamos ao primeiro bloco!</p>",
+      "narr": "O caminho desta aula. Antes de entrar no conteúdo, deixa eu te mostrar o caminho que vamos percorrer juntas. A aula está organizada em quatro blocos e um fechamento. Bloco um: a regra e sua base. A ideia central da anterioridade e a previsão legal: artigo quinto, inciso trinta e nove, da Constituição e artigo primeiro do Código Penal. Bloco dois: a lei no tempo. As características do princípio, a vacatio legis e o que acontece com o fato praticado nesse intervalo. Bloco três: quando a lei muda. As três leis novas: a que beneficia o réu, a que agrava a situação dele e a que cria um crime novo. Bloco quatro: prática e fixação. Verdadeiro ou falso, linha do tempo, mapa mental, pegadinhas e questões em estilo de banca. O conteúdo vem em texto corrido, como uma conversa, e a prática fica concentrada no fim de cada bloco: questões, flashcards e atividades para fixar cada parte antes de seguir. No fim, o desafio final com placar e a pergunta de ouro. Vamos ao primeiro bloco!"
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "relogio",
+      "alt": "Relógio dourado antigo sobre pergaminhos de lei, com engrenagens visíveis e luz vermelha ao fundo",
+      "kicker": "A ideia central",
+      "titulo": "O relógio da lei penal",
+      "corpo": "<p>Eu gosto de explicar a <b class=\"term\">anterioridade</b> com uma imagem simples: a lei penal funciona como um <b>relógio que só anda para frente</b>. Ela nasce, entra em vigor e, a partir daí, passa a alcançar os fatos que acontecem. O que ficou para trás, antes dela existir em vigor, ela simplesmente <b>não alcança</b>.</p><p>Pensa comigo no porquê disso. A função mais básica de uma lei que cria um crime é <b>avisar</b>: a partir de agora, quem fizer isso responde por crime. Se a pessoa praticou a conduta antes do aviso existir, puni-la seria punir alguém por desobedecer a uma regra que <b>ainda não existia</b> para ela. Não há desobediência possível contra uma lei que não estava em vigor.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/relogio.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como um <b>jogo com regras novas</b>. O campeonato pode mudar a regra para a próxima temporada, e todos jogam sabendo dela. Mas ninguém aceitaria punir um jogador por uma jogada que ele fez no campeonato passado, quando aquela regra nem existia. Com a lei penal, funciona do mesmo jeito: <b>primeiro a regra, depois o fato</b>.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Primeiro a regra, depois o fato: nunca o contrário.</p></div><p>Repare que a anterioridade protege uma coisa preciosa: a <b>confiança</b>. Cada pessoa organiza a própria vida olhando para as leis que estão em vigor hoje. Se o Estado pudesse voltar no tempo e punir pelo passado, ninguém viveria com segurança jurídica, porque qualquer conduta de hoje poderia virar crime amanhã, com efeitos para trás.</p>",
+      "narr": "O relógio da lei penal. Eu gosto de explicar a anterioridade com uma imagem simples: a lei penal funciona como um relógio que só anda para frente. Ela nasce, entra em vigor e, a partir daí, passa a alcançar os fatos que acontecem. O que ficou para trás, antes dela existir em vigor, ela simplesmente não alcança. Pensa comigo no porquê disso. A função mais básica de uma lei que cria um crime é avisar: a partir de agora, quem fizer isso responde por crime. Se a pessoa praticou a conduta antes do aviso existir, puni-la seria punir alguém por desobedecer a uma regra que ainda não existia para ela. Não há desobediência possível contra uma lei que não estava em vigor. Pense assim: é como um jogo com regras novas. O campeonato pode mudar a regra para a próxima temporada, e todos jogam sabendo dela. Mas ninguém aceitaria punir um jogador por uma jogada que ele fez no campeonato passado, quando aquela regra nem existia. Com a lei penal, funciona do mesmo jeito: primeiro a regra, depois o fato. Repare que a anterioridade protege uma coisa preciosa: a confiança. Cada pessoa organiza a própria vida olhando para as leis que estão em vigor hoje. Se o Estado pudesse voltar no tempo e punir pelo passado, ninguém viveria com segurança jurídica, porque qualquer conduta de hoje poderia virar crime amanhã, com efeitos para trás."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "constituicao",
+      "alt": "Livro solene da Constituição aberto sobre uma mesa de tribunal, com luz dourada sobre as páginas",
+      "kicker": "Previsão legal",
+      "titulo": "Onde o princípio está escrito",
+      "corpo": "<p>Princípio que se preza tem endereço, e o da anterioridade tem dois. Ele <b>decorre, também</b>, do artigo 5º, inciso XXXIX, da Constituição Federal e do artigo 1º do Código Penal. Eu digo também porque esse mesmo dispositivo é a casa do princípio da reserva legal, que você estudou na aula anterior: os dois princípios moram no mesmo texto, como irmãos.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/constituicao.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">O TEXTO DA LEI</p><p><b>Constituição Federal, art. 5º, XXXIX:</b> não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal.</p><p style=\"margin-top:8px\"><b>Código Penal, art. 1º:</b> não há crime sem lei anterior que o defina. Não há pena sem prévia cominação legal.</p></div></div><p>Preste atenção na palavra que faz toda a diferença: <b>anterior</b>. A reserva legal olha para o <b>quem</b> e para o <b>o quê</b>: só a lei, em sentido estrito, pode criar crime e pena. A anterioridade olha para o <b>quando</b>: essa lei precisa ser <b>anterior ao fato</b>. Sem lei anterior definindo a conduta, não há crime. E sem cominação prévia, isto é, sem a pena prevista antes, não há pena a aplicar.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/constituicao.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como um <b>edital de concurso</b>. As regras do jogo precisam estar publicadas antes da prova: ninguém pode ser eliminado por um critério criado depois que a prova acabou. No Direito Penal, a prova é a vida real, e o edital é a lei em vigor no dia do fato.</p></div></div>",
+      "narr": "Onde o princípio está escrito. Princípio que se preza tem endereço, e o da anterioridade tem dois. Ele decorre, também, do artigo quinto, inciso trinta e nove, da Constituição Federal e do artigo primeiro do Código Penal. Eu digo também porque esse mesmo dispositivo é a casa do princípio da reserva legal, que você estudou na aula anterior: os dois princípios moram no mesmo texto, como irmãos. O texto da lei. Constituição Federal, artigo quinto, inciso trinta e nove: não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal. Código Penal, artigo primeiro: não há crime sem lei anterior que o defina. Não há pena sem prévia cominação legal. Preste atenção na palavra que faz toda a diferença: anterior. A reserva legal olha para o quem e para o o quê: só a lei, em sentido estrito, pode criar crime e pena. A anterioridade olha para o quando: essa lei precisa ser anterior ao fato. Sem lei anterior definindo a conduta, não há crime. E sem cominação prévia, isto é, sem a pena prevista antes, não há pena a aplicar. Pense assim: é como um edital de concurso. As regras do jogo precisam estar publicadas antes da prova: ninguém pode ser eliminado por um critério criado depois que a prova acabou. No Direito Penal, a prova é a vida real, e o edital é a lei em vigor no dia do fato."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "balanca",
+      "alt": "Balança dourada perfeitamente equilibrada com um pergaminho de lei em cada prato",
+      "kicker": "As duas metades da regra",
+      "titulo": "Duas garantias num só princípio",
+      "corpo": "<p>Olhe de novo para o texto constitucional e repare: ele tem <b>duas metades</b>, e cada uma guarda uma garantia diferente. A primeira metade diz: não há crime sem <b>lei anterior que o defina</b>. A segunda diz: não há pena sem <b>prévia cominação legal</b>. Juntas, elas fecham as duas portas por onde o Estado poderia surpreender o cidadão.</p><ul class=\"tight\"><li><b class=\"term\">Anterioridade do crime:</b> a conduta só é crime se, no dia em que foi praticada, já existia lei em vigor definindo aquela conduta como crime.</li><li><b>Anterioridade da pena:</b> a punição só pode ser aquela que a lei já previa para o fato, na época do fato. Nem a espécie da pena, nem a sua medida podem ser criadas ou aumentadas depois, com efeitos para trás.</li></ul><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/balanca.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Imagine que, em janeiro, uma conduta era punida com pena de um a quatro anos. Em julho, uma lei nova sobe essa pena para dois a oito anos. Quem praticou o fato em janeiro responde pela <b>medida de janeiro</b>, porque era aquela a cominação prévia, a que existia quando ele agiu. A pena nova, mais pesada, só alcança os fatos praticados de julho em diante.</p></div></div><p>Guarde a estrutura: fato de um lado, lei do outro, e uma pergunta de tempo ligando os dois: <b>a lei já estava em vigor quando o fato aconteceu?</b> Se a resposta for não, a história termina aí: aquela lei não alcança aquele fato.</p><div class=\"fimbloco\"><p class=\"flabel\">NESTE BLOCO VOCÊ VIU</p><ul><li>A anterioridade decorre do art. 5º, XXXIX, da CF e do art. 1º do CP, o mesmo endereço da reserva legal.</li><li>São duas garantias: lei anterior definindo o crime e prévia cominação legal da pena.</li><li>A pergunta de ouro do tema: a lei já estava em vigor no dia do fato?</li></ul></div>",
+      "narr": "Duas garantias num só princípio. Olhe de novo para o texto constitucional e repare: ele tem duas metades, e cada uma guarda uma garantia diferente. A primeira metade diz: não há crime sem lei anterior que o defina. A segunda diz: não há pena sem prévia cominação legal. Juntas, elas fecham as duas portas por onde o Estado poderia surpreender o cidadão. Anterioridade do crime: a conduta só é crime se, no dia em que foi praticada, já existia lei em vigor definindo aquela conduta como crime. Anterioridade da pena: a punição só pode ser aquela que a lei já previa para o fato, na época do fato. Nem a espécie da pena, nem a sua medida podem ser criadas ou aumentadas depois, com efeitos para trás. Exemplo prático: imagine que, em janeiro, uma conduta era punida com pena de um a quatro anos. Em julho, uma lei nova sobe essa pena para dois a oito anos. Quem praticou o fato em janeiro responde pela medida de janeiro, porque era aquela a cominação prévia, a que existia quando ele agiu. A pena nova, mais pesada, só alcança os fatos praticados de julho em diante. Guarde a estrutura: fato de um lado, lei do outro, e uma pergunta de tempo ligando os dois: a lei já estava em vigor quando o fato aconteceu? Se a resposta for não, a história termina aí: aquela lei não alcança aquele fato."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Questão 1 · A base do princípio",
+      "titulo": "Questão 1",
+      "intro": "Hora de treinar! Pense no que eu te expliquei sobre a <b>base do princípio da anterioridade</b> e responda:",
+      "questao": "Sobre o princípio da anterioridade, é correto afirmar que:",
+      "opcoes": [
+        "Ele decorre do art. 5º, XXXIX, da Constituição Federal e do art. 1º do Código Penal, exigindo lei anterior ao fato definindo o crime e prévia cominação da pena",
+        "Ele permite punir fato anterior à lei, desde que a lei já estivesse publicada no Diário Oficial",
+        "Ele exige lei anterior apenas para a pena, e não para a definição do crime",
+        "Ele autoriza o juiz a criar a pena no momento da sentença, quando a lei for omissa"
+      ],
+      "certa": 0,
+      "feedback": "Isso mesmo! A anterioridade tem previsão no art. 5º, XXXIX, da Constituição e no art. 1º do Código Penal, e ela é dupla: lei anterior definindo o crime e prévia cominação legal da pena. Publicação sozinha não basta, como você vai ver na vacatio legis; e o juiz não cria crime nem pena, porque isso é tarefa exclusiva da lei.",
+      "narr": "Questão um: a base do princípio. Hora de treinar! Pense no que eu te expliquei sobre a base do princípio da anterioridade e responda: sobre o princípio da anterioridade, é correto afirmar o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha sobre uma mesa escura",
+      "kicker": "Flashcard 1 · Previsão legal",
+      "titulo": "Flashcard 1",
+      "frente": "Qual é a previsão legal do princípio da anterioridade?",
+      "verso": "<p>Ele decorre do <b>art. 5º, XXXIX, da Constituição Federal</b> e do <b>art. 1º do Código Penal</b>.</p><p style='margin-top:10px'>Texto para guardar: <b>não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal</b>.</p>",
+      "narr": "Flashcard um: previsão legal. Qual é a previsão legal do princípio da anterioridade? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Karaokê",
+      "img": "relogio",
+      "alt": "Relógio dourado antigo sobre pergaminhos de lei",
+      "kicker": "Karaokê · Siga a narração",
+      "titulo": "Recapitule com a narração",
+      "frases": [
+        "Chegou a hora de recapitular a base do princípio, acompanhando a narração pela tela.",
+        "A anterioridade diz que a lei penal só alcança o fato praticado depois que ela entra em vigor.",
+        "A previsão legal está no artigo quinto, inciso trinta e nove, da Constituição, e no artigo primeiro do Código Penal.",
+        "Não há crime sem lei anterior que o defina: a conduta precisa estar definida como crime no dia do fato.",
+        "E não há pena sem prévia cominação legal: a punição precisa estar prevista antes do fato acontecer.",
+        "Primeiro a regra, depois o fato: é essa ordem que protege a sua confiança nas leis de hoje."
+      ],
+      "narr": "Chegou a hora de recapitular a base do princípio, acompanhando a narração pela tela. A anterioridade diz que a lei penal só alcança o fato praticado depois que ela entra em vigor. A previsão legal está no artigo quinto, inciso trinta e nove, da Constituição, e no artigo primeiro do Código Penal. Não há crime sem lei anterior que o defina: a conduta precisa estar definida como crime no dia do fato. E não há pena sem prévia cominação legal: a punição precisa estar prevista antes do fato acontecer. Primeiro a regra, depois o fato: é essa ordem que protege a sua confiança nas leis de hoje."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "sol",
+      "alt": "Sol nascendo sobre uma cidade com um tribunal ao fundo, marcando o começo de um novo dia",
+      "kicker": "Características",
+      "titulo": "A lei só vale do nascimento para frente",
+      "corpo": "<p>Agora vamos às <b>características</b> do princípio, que são o coração desta aula. A primeira é a mais importante: <b>a lei só produz efeitos a partir da data em que entra em vigor</b>. Antes dessa data, para o mundo do Direito Penal, é como se ela ainda não existisse: nenhum efeito, nenhuma punição, nenhum alcance sobre a vida das pessoas.</p><p>Daí nasce a segunda característica, que é a face mais conhecida do princípio: <b class=\"term\">a lei penal não retroage</b>. Retroagir seria a lei andar para trás e alcançar fatos que aconteceram antes da sua vigência. A regra é que isso não acontece: o passado está fora do alcance da lei nova.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">A lei penal olha para frente; só volta atrás para ajudar.</p></div><p>E repare na segunda metade da frase, porque ela é a terceira característica: <b>salvo se beneficiar o réu</b>. A própria Constituição, no artigo 5º, inciso XL, completa a regra com essas palavras: a lei penal não retroagirá, salvo para beneficiar o réu. Ou seja, a volta no tempo é proibida quando prejudica, mas é <b>bem-vinda</b> quando favorece a pessoa acusada ou condenada. Essa exceção generosa tem nome e sobrenome, e eu te apresento a ela no terceiro bloco: é a <b>lex mitior</b>.</p>",
+      "narr": "A lei só vale do nascimento para frente. Agora vamos às características do princípio, que são o coração desta aula. A primeira é a mais importante: a lei só produz efeitos a partir da data em que entra em vigor. Antes dessa data, para o mundo do Direito Penal, é como se ela ainda não existisse: nenhum efeito, nenhuma punição, nenhum alcance sobre a vida das pessoas. Daí nasce a segunda característica, que é a face mais conhecida do princípio: a lei penal não retroage. Retroagir seria a lei andar para trás e alcançar fatos que aconteceram antes da sua vigência. A regra é que isso não acontece: o passado está fora do alcance da lei nova. E repare na frase: a lei penal olha para frente; só volta atrás para ajudar. A segunda metade dessa frase é a terceira característica: salvo se beneficiar o réu. A própria Constituição, no artigo quinto, inciso quarenta, completa a regra com essas palavras: a lei penal não retroagirá, salvo para beneficiar o réu. Ou seja, a volta no tempo é proibida quando prejudica, mas é bem-vinda quando favorece a pessoa acusada ou condenada. Essa exceção generosa tem nome e sobrenome, e eu te apresento a ela no terceiro bloco: é a lex mitior."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "ampulheta",
+      "alt": "Ampulheta dourada com areia caindo sobre um pergaminho com o calendário de uma lei",
+      "kicker": "Anterioridade e vacatio legis",
+      "titulo": "Publicada, mas ainda sem efeitos: a vacatio legis",
+      "corpo": "<p>Agora eu te apresento o ponto em que as provas mais gostam de pegar o candidato desprevenido. Nem toda lei começa a produzir efeitos no dia em que aparece no Diário Oficial. Muitas leis nascem com um <b>intervalo de espera</b> antes de entrar em vigor, e esse intervalo tem nome em latim: <b class=\"term\">vacatio legis</b>.</p><p>A lógica desse intervalo é bonita: a lei é <b>publicada</b> primeiro, para todo mundo conhecer o texto, se preparar, ajustar a vida. Só depois de passado o prazo da vacatio é que ela <b>entra em vigor</b> e passa a produzir efeitos de verdade. Publicação é o nascimento no papel; entrada em vigor é o nascimento para o mundo real.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/ampulheta.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como o <b>anúncio de uma regra nova no condomínio</b>: a assembleia aprova em março, o aviso é afixado no mural, mas a regra só passa a valer em junho, para todos se adaptarem. Em abril, ninguém pode ser multado por ela: ela já foi anunciada, mas <b>ainda não está valendo</b>.</p></div></div><p>Guarde a distinção com carinho, porque ela decide questões inteiras: <b>lei publicada não é sinônimo de lei em vigor</b>. Entre um momento e outro pode existir a vacatio, e, durante ela, a lei existe como texto, mas não alcança fato nenhum. É exatamente esse o assunto da próxima etapa.</p>",
+      "narr": "Publicada, mas ainda sem efeitos: a vacatio legis. Agora eu te apresento o ponto em que as provas mais gostam de pegar o candidato desprevenido. Nem toda lei começa a produzir efeitos no dia em que aparece no Diário Oficial. Muitas leis nascem com um intervalo de espera antes de entrar em vigor, e esse intervalo tem nome em latim: vacatio legis. A lógica desse intervalo é bonita: a lei é publicada primeiro, para todo mundo conhecer o texto, se preparar, ajustar a vida. Só depois de passado o prazo da vacatio é que ela entra em vigor e passa a produzir efeitos de verdade. Publicação é o nascimento no papel; entrada em vigor é o nascimento para o mundo real. Pense assim: é como o anúncio de uma regra nova no condomínio: a assembleia aprova em março, o aviso é afixado no mural, mas a regra só passa a valer em junho, para todos se adaptarem. Em abril, ninguém pode ser multado por ela: ela já foi anunciada, mas ainda não está valendo. Guarde a distinção com carinho, porque ela decide questões inteiras: lei publicada não é sinônimo de lei em vigor. Entre um momento e outro pode existir a vacatio, e, durante ela, a lei existe como texto, mas não alcança fato nenhum. É exatamente esse o assunto da próxima etapa."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "portao",
+      "alt": "Portão de ferro fechado com correntes diante de um tribunal ao amanhecer, ainda sem abrir",
+      "kicker": "O fato durante a vacatio",
+      "titulo": "E se o fato acontece durante a vacatio?",
+      "corpo": "<p>Chegou a pergunta que amarra este bloco: o fato típico está previsto na lei, a lei já foi publicada, mas ela se encontra em <b>vacatio legis</b>, e é justamente nesse período que o fato é praticado. Essa lei pode ser aplicada a esse fato? A resposta é direta: <b>não pode</b>. É <b>proibida</b> a aplicação da lei penal aos fatos praticados durante o período da vacatio.</p><p>O raciocínio é o mesmo da anterioridade, só que empurrado um passo adiante: embora publicada, a lei <b>ainda não entrou em vigor</b>, então ela ainda não produz efeito nenhum. Quem age durante a vacatio age sob o império das leis que estavam em vigor naquele dia, e é por elas, e só por elas, que a conduta será julgada.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/portao.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Uma lei publicada em <b>10 de março</b> cria um crime novo e avisa: esta lei entra em vigor em <b>10 de junho</b>. No dia <b>20 de abril</b>, durante a vacatio, uma pessoa pratica exatamente a conduta descrita na lei nova. Resultado: ela <b>não responde</b> por esse crime novo, porque em abril a lei ainda não estava em vigor. Se a mesma conduta for praticada em <b>15 de junho</b>, aí sim: a lei já vigora, e o fato é alcançado por inteiro.</p></div></div><p>Perceba a elegância do sistema: a vacatio não é um detalhe burocrático. Ela é a anterioridade trabalhando na prática, garantindo que ninguém seja surpreendido por uma lei que foi anunciada, mas que o próprio legislador decidiu que só valeria depois.</p><div class=\"fimbloco\"><p class=\"flabel\">NESTE BLOCO VOCÊ VIU</p><ul><li>A lei só produz efeitos a partir da entrada em vigor; em regra, não retroage, salvo para beneficiar o réu.</li><li>Vacatio legis é o intervalo entre a publicação e a entrada em vigor da lei.</li><li>Fato praticado durante a vacatio não pode ser alcançado pela lei nova: aplicação proibida.</li></ul></div>",
+      "narr": "E se o fato acontece durante a vacatio? Chegou a pergunta que amarra este bloco: o fato típico está previsto na lei, a lei já foi publicada, mas ela se encontra em vacatio legis, e é justamente nesse período que o fato é praticado. Essa lei pode ser aplicada a esse fato? A resposta é direta: não pode. É proibida a aplicação da lei penal aos fatos praticados durante o período da vacatio. O raciocínio é o mesmo da anterioridade, só que empurrado um passo adiante: embora publicada, a lei ainda não entrou em vigor, então ela ainda não produz efeito nenhum. Quem age durante a vacatio age sob o império das leis que estavam em vigor naquele dia, e é por elas, e só por elas, que a conduta será julgada. Exemplo prático: uma lei publicada em dez de março cria um crime novo e avisa: esta lei entra em vigor em dez de junho. No dia vinte de abril, durante a vacatio, uma pessoa pratica exatamente a conduta descrita na lei nova. Resultado: ela não responde por esse crime novo, porque em abril a lei ainda não estava em vigor. Se a mesma conduta for praticada em quinze de junho, aí sim: a lei já vigora, e o fato é alcançado por inteiro. Perceba a elegância do sistema: a vacatio não é um detalhe burocrático. Ela é a anterioridade trabalhando na prática, garantindo que ninguém seja surpreendido por uma lei que foi anunciada, mas que o próprio legislador decidiu que só valeria depois."
+    },
+    {
+      "tipo": "Explorar",
+      "img": "explorar",
+      "alt": "Imagem vertical em cinco cenas empilhadas: um jornal oficial aberto sobre uma mesa, uma ampulheta gigante sobre um calendário, um portão dourado se abrindo ao amanhecer, uma silhueta protegida por um escudo translúcido diante de um portão fechado e uma luz dourada voltando sobre um caminho já percorrido",
+      "kicker": "Exploração · Toque nos pontos",
+      "titulo": "Explore a imagem: a vida de uma lei penal",
+      "intro": "Esta imagem grande conta a vida inteira de uma lei penal, de baixo para cima: do nascimento no papel até a única volta no tempo que o sistema permite. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "pontos": [
+        {
+          "x": 50,
+          "y": 90,
+          "titulo": "A publicação: a lei nasce no papel",
+          "texto": "Na base da imagem, o jornal oficial aberto: é o dia da publicação. A lei já existe como texto, todos podem lê-la, mas ela ainda não produz efeito nenhum. Nascer no papel é só o primeiro passo da vida de uma lei."
+        },
+        {
+          "x": 42,
+          "y": 68,
+          "titulo": "A vacatio legis: o relógio corre, a lei espera",
+          "texto": "A ampulheta sobre o calendário é a vacatio legis: o intervalo entre a publicação e a entrada em vigor. Nesse período, a sociedade se prepara, mas a lei não alcança fato nenhum. Fato praticado aqui dentro está fora do alcance dela, para sempre."
+        },
+        {
+          "x": 55,
+          "y": 47,
+          "titulo": "A entrada em vigor: o portão se abre",
+          "texto": "O portão dourado se abrindo ao amanhecer marca a entrada em vigor. É a partir deste instante, e só dele, que a lei passa a produzir efeitos: os fatos praticados daqui em diante são alcançados por ela, por inteiro."
+        },
+        {
+          "x": 38,
+          "y": 27,
+          "titulo": "O fato anterior: intocável",
+          "texto": "A silhueta protegida pelo escudo, diante do portão ainda fechado, representa o fato praticado antes da vigência. A anterioridade é esse escudo: a lei nova pode ser severa, pode ser detalhada, mas aquele fato ela não toca. Ele será julgado, se for o caso, pelas leis do seu próprio tempo."
+        },
+        {
+          "x": 58,
+          "y": 10,
+          "titulo": "A lei benéfica: a única volta permitida",
+          "texto": "No topo, a luz dourada voltando sobre o caminho já percorrido é a lex mitior. Se uma lei nova beneficiar o réu, ela pode, e deve, voltar no tempo: alcança fatos antigos e até casos já julgados. É a única viagem ao passado que o princípio da anterioridade autoriza."
+        }
+      ],
+      "narr": "Explore a imagem: a vida de uma lei penal. Esta imagem grande conta a vida inteira de uma lei penal, de baixo para cima: do nascimento no papel até a única volta no tempo que o sistema permite. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir."
+    },
+    {
+      "tipo": "Comparador",
+      "img": "compvacatio",
+      "img2": "compvigor",
+      "alt": "Comparador de duas cenas: um portão fechado sob um céu de entardecer, durante a vacatio, e o mesmo portão aberto sob o sol da manhã, depois da entrada em vigor",
+      "kicker": "Comparador · Arraste a barra",
+      "titulo": "O mesmo fato, dois destinos",
+      "intro": "Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, o fato praticado durante a vacatio legis: a lei publicada, mas o portão ainda fechado, e o fato fica de fora. Do outro, o mesmo fato praticado depois da entrada em vigor: o portão aberto, e a lei alcança a conduta por inteiro. Repare: a conduta é idêntica; o que muda é apenas o dia em que ela acontece.",
+      "narr": "O mesmo fato, dois destinos. Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, o fato praticado durante a vacatio legis: a lei publicada, mas o portão ainda fechado, e o fato fica de fora. Do outro, o mesmo fato praticado depois da entrada em vigor: o portão aberto, e a lei alcança a conduta por inteiro. Repare: a conduta é idêntica; o que muda é apenas o dia em que ela acontece."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Questão 2 · Vacatio legis",
+      "titulo": "Questão 2",
+      "intro": "Mais um treino, agora com um <b>caso prático</b> sobre a vacatio legis. Leia com calma:",
+      "questao": "Uma lei que cria um crime novo é publicada em 10 de março e estabelece que entrará em vigor em 10 de junho. Em 20 de abril, uma pessoa pratica exatamente a conduta descrita na lei nova. Nesse caso:",
+      "opcoes": [
+        "A pessoa responde pelo crime novo, porque a lei já estava publicada quando ela agiu",
+        "A pessoa responde pelo crime novo, porque a publicação torna a lei conhecida de todos",
+        "A pessoa não responde pelo crime novo, porque o fato foi praticado durante a vacatio legis, período em que a lei ainda não estava em vigor",
+        "A pessoa responde pelo crime novo, desde que o processo comece depois de 10 de junho"
+      ],
+      "certa": 2,
+      "feedback": "Perfeito! É proibida a aplicação da lei penal aos fatos praticados durante a vacatio legis. A lei estava publicada, mas ainda não estava em vigor, e é a entrada em vigor que liga os efeitos da lei. Nem mesmo um processo iniciado depois de junho muda isso: o que manda é a lei do dia do fato.",
+      "narr": "Questão dois: vacatio legis. Mais um treino, agora com um caso prático sobre a vacatio legis. Leia com calma: uma lei que cria um crime novo é publicada em dez de março e estabelece que entrará em vigor em dez de junho. Em vinte de abril, uma pessoa pratica exatamente a conduta descrita na lei nova. Nesse caso, o que acontece? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Dois cartões de estudo em pé, frente e verso, ligados por uma fita vermelha",
+      "kicker": "Flashcard 2 · Vacatio legis",
+      "titulo": "Flashcard 2",
+      "frente": "O que é vacatio legis, e o fato praticado nesse período pode ser punido pela lei nova?",
+      "verso": "<p><b>Vacatio legis</b> é o intervalo entre a <b>publicação</b> da lei e a sua <b>entrada em vigor</b>.</p><p style='margin-top:10px'>E a resposta é <b>não</b>: é proibida a aplicação da lei penal aos fatos praticados durante a vacatio, porque a lei, embora publicada, ainda não está em vigor e não produz efeitos.</p>",
+      "narr": "Flashcard dois: vacatio legis. O que é vacatio legis, e o fato praticado nesse período pode ser punido pela lei nova? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Toque e revele",
+      "img": "revelar",
+      "alt": "Quatro cartas douradas viradas para baixo sobre veludo vermelho, uma se levantando sob a luz de uma vela",
+      "kicker": "Toque e revele",
+      "titulo": "Toque, pense e revele",
+      "intro": "Quatro cartas escondem quatro perguntas rápidas sobre o que você estudou até aqui. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "cartas": [
+        {
+          "p": "A lei publicada já pode punir os fatos praticados a partir da publicação?",
+          "r": "<b>Não necessariamente.</b> Se houver vacatio legis, a lei só produz efeitos a partir da entrada em vigor. Publicado não é sinônimo de em vigor."
+        },
+        {
+          "p": "Qual é a única hipótese em que a lei penal volta no tempo?",
+          "r": "Quando a lei nova <b>beneficia o réu</b>: é a lex mitior, que retroage e alcança até os casos já julgados."
+        },
+        {
+          "p": "Quais são as duas garantias do princípio da anterioridade?",
+          "r": "<b>Lei anterior definindo o crime</b> e <b>prévia cominação legal da pena</b>: art. 5º, XXXIX, da CF e art. 1º do CP."
+        },
+        {
+          "p": "O fato praticado durante a vacatio pode ser alcançado depois que a lei entrar em vigor?",
+          "r": "<b>Não.</b> É proibida a aplicação da lei aos fatos do período da vacatio. O que manda é a lei em vigor no dia do fato."
+        }
+      ],
+      "narr": "Toque, pense e revele. Quatro cartas escondem quatro perguntas rápidas sobre o que você estudou até aqui. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar."
+    },
+    {
+      "tipo": "Karaokê",
+      "img": "timeline",
+      "alt": "Linha do tempo dourada com marcos de uma lei penal",
+      "kicker": "Karaokê · Siga a narração",
+      "titulo": "Recapitule com a narração",
+      "frases": [
+        "Vamos recapitular a lei no tempo, acompanhando a narração pela tela.",
+        "A lei só produz efeitos a partir da data em que entra em vigor, e, em regra, não retroage.",
+        "A exceção é generosa: se a lei nova beneficiar o réu, ela pode voltar no tempo.",
+        "Vacatio legis é o intervalo entre a publicação da lei e a sua entrada em vigor.",
+        "Durante a vacatio, a lei existe no papel, mas não alcança fato nenhum: aplicação proibida.",
+        "Publicada não é em vigor: quem confunde os dois momentos erra a questão inteira."
+      ],
+      "narr": "Vamos recapitular a lei no tempo, acompanhando a narração pela tela. A lei só produz efeitos a partir da data em que entra em vigor, e, em regra, não retroage. A exceção é generosa: se a lei nova beneficiar o réu, ela pode voltar no tempo. Vacatio legis é o intervalo entre a publicação da lei e a sua entrada em vigor. Durante a vacatio, a lei existe no papel, mas não alcança fato nenhum: aplicação proibida. Publicada não é em vigor: quem confunde os dois momentos erra a questão inteira."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "relogio",
+      "alt": "Relógio dourado antigo com duas leis representadas como pergaminhos de épocas diferentes lado a lado",
+      "kicker": "A sucessão de leis no tempo",
+      "titulo": "E quando a lei muda depois do fato?",
+      "corpo": "<p>Até aqui, nós olhamos para a lei que nasce. Agora muda o cenário: o fato já aconteceu, estava tudo certo com a lei da época, e, <b>depois</b>, o legislador edita uma lei nova mexendo naquele mesmo assunto. A pergunta é inevitável: essa lei nova alcança o fato antigo?</p><p>A resposta depende de <b>o que a lei nova faz</b> com a situação de quem praticou o fato. Na linguagem da doutrina, toda lei penal nova que substitui uma anterior se chama <b class=\"term\">novatio legis</b>, e ela aparece em três versões, que você precisa separar sem hesitar:</p><ul class=\"tight\"><li><b>Novatio legis in mellius:</b> a lei nova favorece o réu. É a famosa <b>lex mitior</b>.</li><li><b>Novatio legis in pejus:</b> a lei nova agrava a situação de quem responde por um crime que já existia.</li><li><b>Novatio legis incriminadora:</b> a lei nova cria um tipo penal que não existia no ordenamento.</li></ul><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/relogio.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Imagine <b>três cartas</b> que chegam pelo correio depois que o jogo já foi jogado. Uma traz uma <b>boa notícia</b>: um desconto na sua punição. Outra traz uma <b>má notícia</b>: a punição ficou mais pesada. E a terceira inventa uma <b>infração nova</b>, que não existia no regulamento da época. A boa notícia pode ser aproveitada; as outras duas, nunca contra quem jogou antes.</p></div></div><p>Nas próximas três etapas, eu destrincho cada uma dessas cartas, na ordem: primeiro a boa notícia, depois as duas más. E já te adianto o mapa: <b>só a primeira viaja no tempo</b>.</p>",
+      "narr": "E quando a lei muda depois do fato? Até aqui, nós olhamos para a lei que nasce. Agora muda o cenário: o fato já aconteceu, estava tudo certo com a lei da época, e, depois, o legislador edita uma lei nova mexendo naquele mesmo assunto. A pergunta é inevitável: essa lei nova alcança o fato antigo? A resposta depende de o que a lei nova faz com a situação de quem praticou o fato. Na linguagem da doutrina, toda lei penal nova que substitui uma anterior se chama novatio legis, e ela aparece em três versões, que você precisa separar sem hesitar. Novatio legis in mellius: a lei nova favorece o réu; é a famosa lex mitior. Novatio legis in pejus: a lei nova agrava a situação de quem responde por um crime que já existia. Novatio legis incriminadora: a lei nova cria um tipo penal que não existia no ordenamento. Pense assim: imagine três cartas que chegam pelo correio depois que o jogo já foi jogado. Uma traz uma boa notícia: um desconto na sua punição. Outra traz uma má notícia: a punição ficou mais pesada. E a terceira inventa uma infração nova, que não existia no regulamento da época. A boa notícia pode ser aproveitada; as outras duas, nunca contra quem jogou antes. Nas próximas três etapas, eu destrincho cada uma dessas cartas, na ordem: primeiro a boa notícia, depois as duas más. E já te adianto o mapa: só a primeira viaja no tempo."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "primavera",
+      "alt": "Caminho dourado se abrindo entre flores ao amanhecer, com uma porta de luz ao fundo",
+      "kicker": "Novatio legis in mellius",
+      "titulo": "Lex mitior: a lei nova que favorece o réu",
+      "corpo": "<p>A primeira carta é a boa notícia. <b class=\"term\">Novatio legis in mellius</b> é a nova lei que, <b>de qualquer modo, favorece o réu</b>. Ela é tão querida pelo sistema que ganhou apelido próprio em latim: <b>lex mitior</b>, a lei mais branda, a lei mais favorável.</p><p>Repare numa precisão que a banca adora: o favor <b>não exige</b> que a conduta deixe de ser crime. A lei nova é benéfica <b>mesmo que o delito continue tipificado</b>. Se ela reduz a pena, se ela torna o tratamento do fato mais leve de qualquer forma, ela já é uma lex mitior para aquele caso. O critério é um só: comparando a lei antiga com a nova, a situação do réu <b>melhora</b>? Se melhora, é in mellius.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/primavera.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Um crime era punido com pena de <b>dois a seis anos</b>. Anos depois, uma lei nova reduz essa pena para <b>um a quatro anos</b>, sem mudar mais nada: o crime continua existindo, com o mesmo nome e a mesma descrição. Para quem praticou o fato na época da pena maior, a lei nova é uma <b>lex mitior</b>: ela favorece o réu, ainda que o delito continue tipificado.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Melhorou para o réu, é lex mitior, ainda que o crime continue existindo.</p></div><p>E o que acontece quando a lei é uma lex mitior? Ela ganha um superpoder que nenhuma outra lei penal tem: ela <b>retroage</b>. É esse superpoder que eu te explico na próxima etapa.</p>",
+      "narr": "Lex mitior: a lei nova que favorece o réu. A primeira carta é a boa notícia. Novatio legis in mellius é a nova lei que, de qualquer modo, favorece o réu. Ela é tão querida pelo sistema que ganhou apelido próprio em latim: lex mitior, a lei mais branda, a lei mais favorável. Repare numa precisão que a banca adora: o favor não exige que a conduta deixe de ser crime. A lei nova é benéfica mesmo que o delito continue tipificado. Se ela reduz a pena, se ela torna o tratamento do fato mais leve de qualquer forma, ela já é uma lex mitior para aquele caso. O critério é um só: comparando a lei antiga com a nova, a situação do réu melhora? Se melhora, é in mellius. Exemplo prático: um crime era punido com pena de dois a seis anos. Anos depois, uma lei nova reduz essa pena para um a quatro anos, sem mudar mais nada: o crime continua existindo, com o mesmo nome e a mesma descrição. Para quem praticou o fato na época da pena maior, a lei nova é uma lex mitior: ela favorece o réu, ainda que o delito continue tipificado. E o que acontece quando a lei é uma lex mitior? Ela ganha um superpoder que nenhuma outra lei penal tem: ela retroage. É esse superpoder que eu te explico na próxima etapa."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "martelo",
+      "alt": "Martelo de juiz dourado sobre um relógio cujos ponteiros giram para trás, em fundo vermelho escuro",
+      "kicker": "Os efeitos da lex mitior",
+      "titulo": "Retroage sozinha, até em caso já julgado",
+      "corpo": "<p>Quando a lei nova é benéfica ao réu, ela pode <b>retroagir</b>: gera efeitos sobre fatos praticados <b>antes</b> de sua vigência, alcançando situações que nasceram sob a lei antiga. É a exceção que você já conhece desde o artigo 5º, inciso XL, da Constituição, agora com nome próprio e efeitos completos.</p><p>O alcance dessa volta no tempo é largo, e eu quero que você grave os dois pontos que as provas cobram. Primeiro: a lei benéfica alcança <b>até os casos já julgados</b> antes de sua vigência. Nem mesmo a sentença definitiva, com trânsito em julgado, segura a lex mitior do lado de fora: se a lei nova favorece o condenado, ela entra e melhora a situação dele.</p><p>Segundo ponto: essa retroatividade é <b class=\"term\">automática</b>. Ela dispensa cláusula expressa nesse sentido. A lei nova não precisa escrever “esta lei retroage para beneficiar o réu” para produzir esse efeito: a retroatividade benéfica <b>nasce com ela</b>, porque é a própria Constituição quem a ordena.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/martelo.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Um réu foi condenado, com sentença já definitiva, a cumprir pena calculada pela lei antiga, mais severa. Entra em vigor uma lei nova reduzindo a pena daquele crime. Mesmo com o caso encerrado e julgado, a situação dele deve ser <b>revista</b> à luz da lei nova, mais favorável. A boa notícia chega <b>sem precisar de convite</b>: retroage automaticamente.</p></div></div>",
+      "narr": "Retroage sozinha, até em caso já julgado. Quando a lei nova é benéfica ao réu, ela pode retroagir: gera efeitos sobre fatos praticados antes de sua vigência, alcançando situações que nasceram sob a lei antiga. É a exceção que você já conhece desde o artigo quinto, inciso quarenta, da Constituição, agora com nome próprio e efeitos completos. O alcance dessa volta no tempo é largo, e eu quero que você grave os dois pontos que as provas cobram. Primeiro: a lei benéfica alcança até os casos já julgados antes de sua vigência. Nem mesmo a sentença definitiva, com trânsito em julgado, segura a lex mitior do lado de fora: se a lei nova favorece o condenado, ela entra e melhora a situação dele. Segundo ponto: essa retroatividade é automática. Ela dispensa cláusula expressa nesse sentido. A lei nova não precisa escrever esta lei retroage para beneficiar o réu para produzir esse efeito: a retroatividade benéfica nasce com ela, porque é a própria Constituição quem a ordena. Exemplo prático: um réu foi condenado, com sentença já definitiva, a cumprir pena calculada pela lei antiga, mais severa. Entra em vigor uma lei nova reduzindo a pena daquele crime. Mesmo com o caso encerrado e julgado, a situação dele deve ser revista à luz da lei nova, mais favorável. A boa notícia chega sem precisar de convite: retroage automaticamente."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "tempestade",
+      "alt": "Nuvens escuras de tempestade sobre um muro alto de pedra com uma balança ao fundo",
+      "kicker": "Novatio legis in pejus",
+      "titulo": "A lei que piora: essa não volta no tempo",
+      "corpo": "<p>A segunda carta é a má notícia. <b class=\"term\">Novatio legis in pejus</b> é a nova lei que <b>agrava a situação do acusado</b> de um crime que <b>já era tipificado</b>. O crime já existia, com sua pena; a lei nova chega e torna tudo mais pesado para quem responde por ele: pena maior é o exemplo clássico.</p><p>E a regra para ela é a mais simples da aula: a novatio legis in pejus <b>jamais alcança fatos ocorridos antes de sua vigência</b>. Jamais, sem exceção, sem meio-termo. Ela só produz efeitos para frente, sobre os fatos praticados depois que ela entra em vigor. O fato antigo continua sendo julgado pela lei do seu tempo, mesmo que a lei nova seja mais severa.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/tempestade.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Um crime tinha pena de <b>um a quatro anos</b>. Uma lei nova sobe a pena para <b>três a oito anos</b>. Quem praticou o fato <b>antes</b> da vigência da lei nova responde pela medida antiga, de um a quatro anos. Quem praticar <b>depois</b> responde pela nova. A tempestade só molha quem estiver na rua <b>depois</b> que ela começa: ninguém é molhado retroativamente.</p></div></div><p>Repare na simetria do sistema: o mesmo princípio que abre a porta para a lei boa entrar no passado fecha a porta, com cadeado, para a lei ruim. Proteger o réu contra a piora retroativa é a <b>própria razão de existir</b> da anterioridade.</p>",
+      "narr": "A lei que piora: essa não volta no tempo. A segunda carta é a má notícia. Novatio legis in pejus é a nova lei que agrava a situação do acusado de um crime que já era tipificado. O crime já existia, com sua pena; a lei nova chega e torna tudo mais pesado para quem responde por ele: pena maior é o exemplo clássico. E a regra para ela é a mais simples da aula: a novatio legis in pejus jamais alcança fatos ocorridos antes de sua vigência. Jamais, sem exceção, sem meio-termo. Ela só produz efeitos para frente, sobre os fatos praticados depois que ela entra em vigor. O fato antigo continua sendo julgado pela lei do seu tempo, mesmo que a lei nova seja mais severa. Exemplo prático: um crime tinha pena de um a quatro anos. Uma lei nova sobe a pena para três a oito anos. Quem praticou o fato antes da vigência da lei nova responde pela medida antiga, de um a quatro anos. Quem praticar depois responde pela nova. A tempestade só molha quem estiver na rua depois que ela começa: ninguém é molhado retroativamente. Repare na simetria do sistema: o mesmo princípio que abre a porta para a lei boa entrar no passado fecha a porta, com cadeado, para a lei ruim. Proteger o réu contra a piora retroativa é a própria razão de existir da anterioridade."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "cadeado",
+      "alt": "Cadeado dourado novo sendo colocado em uma porta de pedra que antes estava aberta",
+      "kicker": "Novatio legis incriminadora",
+      "titulo": "A lei que cria um crime que não existia",
+      "corpo": "<p>A terceira carta é a que inventa uma infração nova. <b class=\"term\">Novatio legis incriminadora</b> é a norma que <b>cria um novo tipo penal</b>, até então <b>inexistente</b> no ordenamento jurídico. Antes dela, aquela conduta simplesmente não era crime; depois dela, passa a ser.</p><p>Não confunda as duas más notícias, porque a banca vive dessa confusão: a <b>in pejus</b> agrava um crime que <b>já existia</b>; a <b>incriminadora</b> cria um crime que <b>não existia</b>. Uma mexe no peso da pena; a outra mexe na própria existência do crime.</p><p>E o destino temporal da incriminadora é o mesmo da in pejus: ela <b>jamais alcança fatos ocorridos antes de sua vigência</b>. Pensando bem, é a aplicação mais pura da frase que você decorou no primeiro bloco: não há crime sem lei anterior que o defina. Quem praticou a conduta quando ela nem era crime não pode ser alcançado pela lei que a criminalizou depois, ainda que a conduta seja exatamente igual.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/cadeado.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Durante anos, uma conduta qualquer era praticada livremente, sem nenhuma lei a proibindo. Uma lei nova a transforma em crime. Todas as condutas praticadas <b>antes</b> da vigência dessa lei continuam <b>fora do Direito Penal</b>: não viram crime pelo caminho. Só responde quem praticar a conduta <b>depois</b> que a lei entrar em vigor.</p></div></div>",
+      "narr": "A lei que cria um crime que não existia. A terceira carta é a que inventa uma infração nova. Novatio legis incriminadora é a norma que cria um novo tipo penal, até então inexistente no ordenamento jurídico. Antes dela, aquela conduta simplesmente não era crime; depois dela, passa a ser. Não confunda as duas más notícias, porque a banca vive dessa confusão: a in pejus agrava um crime que já existia; a incriminadora cria um crime que não existia. Uma mexe no peso da pena; a outra mexe na própria existência do crime. E o destino temporal da incriminadora é o mesmo da in pejus: ela jamais alcança fatos ocorridos antes de sua vigência. Pensando bem, é a aplicação mais pura da frase que você decorou no primeiro bloco: não há crime sem lei anterior que o defina. Quem praticou a conduta quando ela nem era crime não pode ser alcançado pela lei que a criminalizou depois, ainda que a conduta seja exatamente igual. Exemplo prático: durante anos, uma conduta qualquer era praticada livremente, sem nenhuma lei a proibindo. Uma lei nova a transforma em crime. Todas as condutas praticadas antes da vigência dessa lei continuam fora do Direito Penal: não viram crime pelo caminho. Só responde quem praticar a conduta depois que a lei entrar em vigor."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "portas",
+      "alt": "Três portas de pedra lado a lado: uma aberta com luz dourada, uma fechada com correntes e uma ainda em construção",
+      "kicker": "Comparativo",
+      "titulo": "As três leis novas, lado a lado",
+      "corpo": "<p>Hora de organizar as três <b>novatio legis</b> numa tabela só, do jeito que a banca gosta de misturar. Grave linha por linha:</p><table class=\"cmp\"><tr><th>Lei nova</th><th>O que ela faz</th><th>Alcança fatos anteriores?</th></tr><tr><td class=\"t\">In mellius (lex mitior)</td><td>Favorece o réu de qualquer modo, mesmo que o crime continue tipificado</td><td>Sim: retroage, automaticamente, até em casos já julgados</td></tr><tr><td class=\"t\">In pejus</td><td>Agrava a situação do acusado de um crime que já existia</td><td>Não: jamais alcança fatos anteriores à sua vigência</td></tr><tr><td class=\"t\">Incriminadora</td><td>Cria um tipo penal que não existia no ordenamento</td><td>Não: jamais alcança fatos anteriores à sua vigência</td></tr></table><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/portas.webp\" alt=\"\"></div><p>Resumo de bolso: a lei nova que <b>ajuda</b> volta no tempo; a lei nova que <b>piora</b> ou que <b>inventa crime</b> só anda para frente. Se você guardar essa frase, resolve a maior parte das questões de sucessão de leis penais.</p><div class=\"fimbloco\"><p class=\"flabel\">NESTE BLOCO VOCÊ VIU</p><ul><li>Lex mitior: favorece o réu de qualquer modo, mesmo com o delito ainda tipificado, e retroage automaticamente, até em casos julgados.</li><li>In pejus: agrava a situação do acusado de crime já existente, e nunca retroage.</li><li>Incriminadora: cria tipo penal novo, e nunca retroage.</li></ul></div>",
+      "narr": "As três leis novas, lado a lado. Hora de organizar as três novatio legis numa tabela só, do jeito que a banca gosta de misturar. Grave linha por linha. In mellius, a lex mitior: favorece o réu de qualquer modo, mesmo que o crime continue tipificado; alcança fatos anteriores? Sim: retroage, automaticamente, até em casos já julgados. In pejus: agrava a situação do acusado de um crime que já existia; alcança fatos anteriores? Não: jamais alcança fatos anteriores à sua vigência. Incriminadora: cria um tipo penal que não existia no ordenamento; alcança fatos anteriores? Não: jamais alcança fatos anteriores à sua vigência. Resumo de bolso: a lei nova que ajuda volta no tempo; a lei nova que piora ou que inventa crime só anda para frente. Se você guardar essa frase, resolve a maior parte das questões de sucessão de leis penais."
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "martelo",
+      "alt": "Martelo de juiz sobre um livro de leis aberto com marcador dourado",
+      "kicker": "Questão 3 · Estilo de banca",
+      "titulo": "Questão 3",
+      "intro": "Questão em <b>estilo de banca</b>, sobre a lex mitior e os casos já julgados. Leia o enunciado com atenção:",
+      "questao": "Um réu foi condenado por sentença transitada em julgado, com base na lei vigente à época do fato. Posteriormente, entra em vigor lei nova que reduz a pena daquele crime. Nesse caso, a lei nova:",
+      "opcoes": [
+        "Não se aplica ao réu, porque a sentença já transitou em julgado",
+        "Aplica-se ao réu apenas se a lei nova trouxer cláusula expressa de retroatividade",
+        "Aplica-se ao réu, porque a lei benéfica retroage automaticamente, alcançando até os casos já julgados",
+        "Aplica-se ao réu somente se ele ainda não tiver começado a cumprir a pena"
+      ],
+      "certa": 2,
+      "feedback": "Exatamente. A novatio legis in mellius, a lex mitior, retroage e gera efeitos sobre casos julgados antes de sua vigência. E essa retroatividade é automática: dispensa cláusula expressa nesse sentido, porque é a própria Constituição, no art. 5º, XL, quem manda beneficiar o réu.",
+      "narr": "Questão três, em estilo de banca, sobre a lex mitior e os casos já julgados. Leia o enunciado com atenção: um réu foi condenado por sentença transitada em julgado, com base na lei vigente à época do fato. Posteriormente, entra em vigor lei nova que reduz a pena daquele crime. Nesse caso, a lei nova faz o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Ligar termos",
+      "img": "ligar",
+      "alt": "Chaves douradas antigas e cadeados ornamentados sobre veludo vermelho",
+      "kicker": "Ligar termos · Os nomes do tema",
+      "titulo": "Ligar termos",
+      "instrucao": "Ligue cada nome técnico à sua explicação. Toque em um nome e, depois, na explicação correspondente.",
+      "pares": [
+        [
+          "Anterioridade",
+          "A lei precisa ser anterior ao fato para alcançá-lo"
+        ],
+        [
+          "Vacatio legis",
+          "Intervalo entre a publicação e a entrada em vigor"
+        ],
+        [
+          "Lex mitior",
+          "A lei nova que favorece o réu e retroage"
+        ],
+        [
+          "Novatio legis in pejus",
+          "A lei nova que agrava a situação do acusado"
+        ],
+        [
+          "Novatio legis incriminadora",
+          "A lei nova que cria um tipo penal inexistente"
+        ]
+      ],
+      "ordemDefs": [
+        2,
+        4,
+        0,
+        3,
+        1
+      ],
+      "narr": "Ligar termos: os nomes do tema. Ligue cada nome técnico à sua explicação. Toque em um nome e, depois, na explicação correspondente."
+    },
+    {
+      "tipo": "Completar",
+      "img": "lacuna",
+      "alt": "Pergaminho antigo com espaços dourados vazios e peças de palavras douradas ao lado esperando para serem colocadas",
+      "kicker": "Completar · Toque nas palavras",
+      "titulo": "Complete a frase",
+      "intro": "Um resumo importante da aula apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "partes": [
+        "A ",
+        " legis in mellius é a lei nova que ",
+        " o réu e, por isso, ",
+        " até os casos já ",
+        "."
+      ],
+      "respostas": [
+        "novatio",
+        "favorece",
+        "retroage",
+        "julgados"
+      ],
+      "banco": [
+        "agrava",
+        "retroage",
+        "incriminadora",
+        "favorece",
+        "julgados",
+        "novatio"
+      ],
+      "narr": "Complete a frase. Um resumo importante da aula apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima."
+    },
+    {
+      "tipo": "Verdadeiro ou falso",
+      "img": "cartasvf",
+      "alt": "Duas pilhas de cartas antigas sobre veludo vermelho, uma com símbolo de certo e outra com símbolo de errado em dourado",
+      "kicker": "Verdadeiro ou falso · Arraste a carta",
+      "titulo": "Verdadeiro ou falso: arraste e decida",
+      "intro": "Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "afirmacoes": [
+        {
+          "t": "A lei penal pode ser aplicada ao fato praticado antes de sua entrada em vigor, desde que ela já estivesse publicada.",
+          "v": false,
+          "exp": "Publicação não basta: se a lei está em vacatio legis, ela ainda não está em vigor, e é proibida a sua aplicação aos fatos desse período."
+        },
+        {
+          "t": "A lex mitior retroage automaticamente, dispensando cláusula expressa de retroatividade.",
+          "v": true,
+          "exp": "Isso mesmo: a retroatividade da lei benéfica nasce com ela, por ordem da Constituição, e alcança até os casos já julgados."
+        },
+        {
+          "t": "A novatio legis in pejus alcança os fatos praticados antes de sua vigência, se a pena nova for apenas um pouco maior.",
+          "v": false,
+          "exp": "Jamais alcança, nem um pouco: a lei que agrava a situação do acusado só produz efeitos para frente, sobre fatos posteriores à sua vigência."
+        },
+        {
+          "t": "A lei nova benéfica alcança inclusive os casos já julgados antes de sua vigência.",
+          "v": true,
+          "exp": "Perfeito: nem o trânsito em julgado impede a lex mitior de melhorar a situação do condenado."
+        },
+        {
+          "t": "A novatio legis incriminadora agrava a pena de um crime que já existia.",
+          "v": false,
+          "exp": "Quem agrava crime existente é a novatio legis in pejus. A incriminadora cria um tipo penal novo, que não existia no ordenamento."
+        }
+      ],
+      "narr": "Verdadeiro ou falso: arraste e decida. Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou."
+    },
+    {
+      "tipo": "Linha do tempo",
+      "img": "timeline",
+      "alt": "Linha do tempo dourada com marcos da vida de uma lei penal e de um caso prático",
+      "kicker": "Linha do tempo · Toque nos marcos",
+      "titulo": "A linha do tempo de um caso",
+      "intro": "Agora vamos amarrar tudo numa história só: a vida de uma lei e de um fato, do nascimento da lei à chegada de uma lei nova. Toque em cada marco dourado para abrir a explicação dele: são seis momentos, em ordem, e cada um usa uma regra desta aula.",
+      "marcos": [
+        {
+          "ano": "10 de março",
+          "titulo": "A lei é publicada",
+          "texto": "Uma lei que cria um crime novo aparece no Diário Oficial. Ela já existe como texto, todos podem conhecê-la, mas anuncia: só entro em vigor em 10 de junho. Nasce aqui a vacatio legis."
+        },
+        {
+          "ano": "20 de abril",
+          "titulo": "O fato acontece durante a vacatio",
+          "texto": "Uma pessoa pratica exatamente a conduta descrita na lei nova. Como a lei ainda não está em vigor, é proibida a sua aplicação a esse fato: a pessoa não responde pelo crime novo."
+        },
+        {
+          "ano": "10 de junho",
+          "titulo": "A lei entra em vigor",
+          "texto": "Termina a vacatio e a lei passa a produzir efeitos. Daqui em diante, ela alcança os fatos que forem praticados: é a anterioridade funcionando, com a lei anterior ao fato."
+        },
+        {
+          "ano": "15 de junho",
+          "titulo": "O mesmo fato, agora alcançado",
+          "texto": "Outra pessoa pratica a mesma conduta, cinco dias depois da entrada em vigor. Para ela, a resposta muda por completo: a lei já vigora, é anterior ao fato, e o crime se configura normalmente."
+        },
+        {
+          "ano": "Ano seguinte",
+          "titulo": "Chega uma lei mais favorável",
+          "texto": "Uma lei nova reduz a pena daquele crime. Como é uma lex mitior, ela retroage automaticamente e alcança os fatos anteriores, inclusive os casos já julgados, melhorando a situação dos condenados."
+        },
+        {
+          "ano": "E se fosse o contrário?",
+          "titulo": "Uma lei nova mais severa não alcançaria ninguém do passado",
+          "texto": "Se, em vez de reduzir, a lei nova aumentasse a pena (in pejus) ou criasse outro crime (incriminadora), ela jamais alcançaria os fatos ocorridos antes de sua vigência. Só andaria para frente."
+        }
+      ],
+      "narr": "A linha do tempo de um caso. Agora vamos amarrar tudo numa história só: a vida de uma lei e de um fato, do nascimento da lei à chegada de uma lei nova. Toque em cada marco dourado para abrir a explicação dele: são seis momentos, em ordem, e cada um usa uma regra desta aula."
+    },
+    {
+      "tipo": "Mapa mental",
+      "img": "timeline",
+      "alt": "Mapa mental com o princípio da anterioridade no centro e cinco ramos ao redor",
+      "kicker": "Mapa mental · Toque nos ramos",
+      "titulo": "Mapa mental da anterioridade",
+      "intro": "Para fechar o conteúdo, um mapa da aula inteira. No centro está o princípio da anterioridade; em volta, os cinco ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda.",
+      "ramos": [
+        {
+          "nome": "Previsão legal",
+          "texto": "A anterioridade decorre do art. 5º, XXXIX, da Constituição Federal e do art. 1º do Código Penal: não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal.",
+          "chips": [
+            "CF, art. 5º, XXXIX",
+            "CP, art. 1º"
+          ]
+        },
+        {
+          "nome": "Características",
+          "texto": "A lei só produz efeitos a partir da entrada em vigor. Em regra, não retroage; a única volta no tempo permitida é para beneficiar o réu.",
+          "chips": [
+            "Irretroatividade",
+            "Exceção benéfica"
+          ]
+        },
+        {
+          "nome": "Vacatio legis",
+          "texto": "É o intervalo entre a publicação e a entrada em vigor. Durante a vacatio, a lei existe no papel, mas não alcança fato nenhum: aplicação proibida.",
+          "chips": [
+            "Publicação ≠ vigor",
+            "Fato da vacatio protegido"
+          ]
+        },
+        {
+          "nome": "Lex mitior",
+          "texto": "A novatio legis in mellius favorece o réu de qualquer modo, mesmo com o delito ainda tipificado. Ela retroage automaticamente, alcançando até casos já julgados.",
+          "chips": [
+            "In mellius",
+            "Retroatividade automática"
+          ]
+        },
+        {
+          "nome": "Leis que nunca retroagem",
+          "texto": "A novatio legis in pejus agrava a situação do acusado de crime já existente; a incriminadora cria um tipo penal novo. Nenhuma das duas alcança fatos anteriores.",
+          "chips": [
+            "In pejus",
+            "Incriminadora"
+          ]
+        }
+      ],
+      "narr": "Mapa mental da anterioridade. Para fechar o conteúdo, um mapa da aula inteira. No centro está o princípio da anterioridade; em volta, os cinco ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "pegadinhas",
+      "alt": "Alvo dourado com flechas e uma lupa revelando armadilhas sobre um pergaminho",
+      "kicker": "Pegadinhas de prova",
+      "titulo": "Não caia nessas!",
+      "corpo": "<p>Antes do desafio final, eu separei as <b>cinco confusões</b> que mais derrubam candidatos neste tema. Grave cada uma:</p><div class=\"box\"><p class=\"blabel\">PEGADINHA 1 · PUBLICADA NÃO É EM VIGOR</p><p>Se a questão disser que a lei já pode punir porque foi <b>publicada</b>, desconfie: havendo vacatio legis, os efeitos só começam na <b>entrada em vigor</b>. Fato da vacatio, jamais alcançado.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 2 · COISA JULGADA NÃO SEGURA A LEX MITIOR</p><p>Afirmar que a lei benéfica não alcança o réu porque a sentença <b>transitou em julgado</b> é erro clássico: a lex mitior alcança, sim, os casos já julgados.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 3 · BENÉFICA NÃO PRECISA DE CLÁUSULA</p><p>A retroatividade da lei que favorece o réu é <b>automática</b>: dispensa cláusula expressa. Se a alternativa exigir uma frase na lei autorizando a retroação, ela está errada.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pegadinhas.webp\" alt=\"\"></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 4 · IN PEJUS × INCRIMINADORA</p><p><b>In pejus</b> agrava crime que <b>já existia</b>; <b>incriminadora</b> cria crime que <b>não existia</b>. A banca troca um conceito pelo outro esperando que você não perceba.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 5 · BENÉFICA MESMO COM O CRIME EXISTINDO</p><p>A lex mitior <b>não precisa</b> apagar o crime do mapa: basta favorecer o réu <b>de qualquer modo</b>, ainda que o delito continue tipificado, como na redução da pena.</p></div>",
+      "narr": "Não caia nessas! Antes do desafio final, eu separei as cinco confusões que mais derrubam candidatos neste tema. Grave cada uma. Pegadinha um, publicada não é em vigor: se a questão disser que a lei já pode punir porque foi publicada, desconfie: havendo vacatio legis, os efeitos só começam na entrada em vigor; fato da vacatio, jamais alcançado. Pegadinha dois, coisa julgada não segura a lex mitior: afirmar que a lei benéfica não alcança o réu porque a sentença transitou em julgado é erro clássico: a lex mitior alcança, sim, os casos já julgados. Pegadinha três, benéfica não precisa de cláusula: a retroatividade da lei que favorece o réu é automática, dispensa cláusula expressa; se a alternativa exigir uma frase na lei autorizando a retroação, ela está errada. Pegadinha quatro, in pejus e incriminadora: in pejus agrava crime que já existia; incriminadora cria crime que não existia; a banca troca um conceito pelo outro esperando que você não perceba. Pegadinha cinco, benéfica mesmo com o crime existindo: a lex mitior não precisa apagar o crime do mapa: basta favorecer o réu de qualquer modo, ainda que o delito continue tipificado, como na redução da pena."
+    },
+    {
+      "tipo": "Desafio",
+      "img": "martelo",
+      "alt": "Martelo de juiz e placar dourado sobre um livro de leis aberto",
+      "kicker": "Desafio final · Vale pontos",
+      "titulo": "Desafio final: o placar da professora",
+      "intro": "Chegou a hora do desafio que fecha a parte de fixação! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!",
+      "perguntas": [
+        {
+          "q": "Qual é a previsão legal do princípio da anterioridade?",
+          "ops": [
+            "Art. 5º, XXXIX, da CF e art. 1º do CP",
+            "Art. 5º, XL, da CF e art. 2º do CP",
+            "Art. 1º da CF e art. 5º do CP",
+            "Art. 93, IX, da CF e art. 1º do CP"
+          ],
+          "certa": 0,
+          "exp": "Art. 5º, XXXIX, da Constituição e art. 1º do Código Penal: não há crime sem lei anterior que o defina, nem pena sem prévia cominação legal."
+        },
+        {
+          "q": "O fato praticado durante a vacatio legis de uma lei incriminadora:",
+          "ops": [
+            "É punido pela lei nova, porque ela já estava publicada",
+            "Não é alcançado pela lei nova, porque ela ainda não estava em vigor",
+            "É punido se o processo começar após a vigência",
+            "É punido com a pena reduzida pela metade"
+          ],
+          "certa": 1,
+          "exp": "É proibida a aplicação da lei penal aos fatos praticados durante a vacatio: publicada, a lei ainda não estava em vigor."
+        },
+        {
+          "q": "A retroatividade da lex mitior é:",
+          "ops": [
+            "Proibida em qualquer caso",
+            "Permitida só com cláusula expressa na lei nova",
+            "Automática, dispensando cláusula expressa",
+            "Permitida apenas antes do trânsito em julgado"
+          ],
+          "certa": 2,
+          "exp": "Automática: dispensa cláusula expressa e alcança até os casos já julgados, por ordem do art. 5º, XL, da Constituição."
+        },
+        {
+          "q": "A novatio legis incriminadora é a lei nova que:",
+          "ops": [
+            "Reduz a pena de um crime existente",
+            "Cria um tipo penal até então inexistente",
+            "Agrava a situação do acusado de crime já tipificado",
+            "Favorece o réu de qualquer modo"
+          ],
+          "certa": 1,
+          "exp": "Cria um tipo penal novo, inexistente no ordenamento. Agravar crime existente é a in pejus; favorecer o réu é a in mellius."
+        },
+        {
+          "q": "A novatio legis in pejus alcança fatos anteriores à sua vigência?",
+          "ops": [
+            "Sim, sempre",
+            "Sim, se a pena nova for menor no caso concreto",
+            "Não, jamais alcança fatos anteriores",
+            "Sim, apenas nos casos já julgados"
+          ],
+          "certa": 2,
+          "exp": "Jamais: a lei que agrava a situação do acusado só produz efeitos para frente, sobre fatos posteriores à vigência."
+        }
+      ],
+      "narr": "Desafio final: o placar da professora. Chegou a hora do desafio que fecha a parte de fixação! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!"
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "ouro",
+      "alt": "Medalha de ouro reluzente sobre veludo vermelho com um pergaminho de lei ao fundo",
+      "kicker": "Pergunta de ouro · O caso completo",
+      "titulo": "Pergunta de ouro",
+      "intro": "Esta é a pergunta mais valiosa da aula, porque ela costura <b>tudo</b>: vacatio, lei incriminadora e lex mitior, num caso só. Respire e monte a linha do tempo:",
+      "questao": "Uma lei é publicada em 10 de março criando um crime novo, com entrada em vigor em 10 de junho. Maria pratica a conduta em 20 de abril. João pratica a mesma conduta em 15 de junho e é condenado por sentença transitada em julgado. No ano seguinte, lei nova reduz a pena desse crime. Assinale a conclusão correta:",
+      "opcoes": [
+        "Maria e João respondem pelo crime novo, e nenhum dos dois pode aproveitar a redução da pena",
+        "Maria não responde pelo crime novo, porque o fato dela é da vacatio; João responde, mas não pode aproveitar a redução, porque sua sentença já transitou em julgado",
+        "Maria responde pelo crime novo, porque a lei já estava publicada; João não responde, porque a lei ainda estava em vacatio para ele",
+        "Maria não responde pelo crime novo, porque o fato dela é da vacatio; João responde pelo crime e pode aproveitar a redução da pena, porque a lex mitior retroage automaticamente, alcançando até casos já julgados"
+      ],
+      "certa": 3,
+      "feedback": "Gabarito completo, e é assim que se fecha a aula: Maria agiu em 20 de abril, durante a vacatio legis, e é proibida a aplicação da lei nova ao fato dela. João agiu em 15 de junho, com a lei já em vigor e anterior ao fato dele, então responde pelo crime. E, quando a lei nova reduz a pena, ela é uma lex mitior: retroage automaticamente, sem precisar de cláusula expressa, e alcança inclusive o caso de João, já julgado. Vacatio protege Maria; anterioridade alcança João; lex mitior beneficia João. Três regras, um caso só.",
+      "narr": "Pergunta de ouro. Esta é a pergunta mais valiosa da aula, porque ela costura tudo: vacatio, lei incriminadora e lex mitior, num caso só. Respire e monte a linha do tempo. Uma lei é publicada em dez de março criando um crime novo, com entrada em vigor em dez de junho. Maria pratica a conduta em vinte de abril. João pratica a mesma conduta em quinze de junho e é condenado por sentença transitada em julgado. No ano seguinte, lei nova reduz a pena desse crime. Assinale a conclusão correta. Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Encerramento",
+      "img": "fim",
+      "alt": "Estrada dourada saindo de um tribunal neoclássico em direção ao nascer do sol, com um grande relógio ao fundo",
+      "kicker": "Encerramento",
+      "titulo": "O que você leva desta aula",
+      "corpo": "<p>Chegamos ao fim, e eu quero que você perceba a <b>simplicidade elegante</b> do que estudamos. O princípio da anterioridade é uma promessa do Estado para você: <b>ninguém será punido por uma regra que não existia quando agiu</b>.</p><p>Vimos que essa promessa está escrita no artigo 5º, inciso XXXIX, da Constituição e no artigo 1º do Código Penal, com duas garantias dentro dela: lei anterior definindo o crime e prévia cominação da pena. Vimos que a lei só produz efeitos da entrada em vigor para frente, e que a <b>vacatio legis</b>, esse intervalo entre publicar e vigorar, protege todos os fatos praticados dentro dele. E vimos o destino das leis que mudam depois do fato: a <b>lex mitior</b> volta no tempo para beneficiar, automaticamente e até em casos julgados; a <b>in pejus</b> e a <b>incriminadora</b> jamais voltam.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/capa.webp\" alt=\"\"></div><p>Daqui em diante, diante de qualquer questão de lei penal no tempo, faça a pergunta que organiza tudo: <b>a lei já estava em vigor no dia do fato?</b> E, se a lei for nova, a segunda pergunta: <b>ela ajuda ou prejudica o réu?</b> Com essas duas perguntas, você desmonta o tema inteiro.</p><p>Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça o desafio de cabeça fria e confie: anterioridade se aprende pelo <b>raciocínio do tempo</b>, não pela decoreba. Eu fico por aqui, e te espero na próxima aula. <b>Bons estudos!</b></p>",
+      "narr": "O que você leva desta aula. Chegamos ao fim, e eu quero que você perceba a simplicidade elegante do que estudamos. O princípio da anterioridade é uma promessa do Estado para você: ninguém será punido por uma regra que não existia quando agiu. Vimos que essa promessa está escrita no artigo quinto, inciso trinta e nove, da Constituição e no artigo primeiro do Código Penal, com duas garantias dentro dela: lei anterior definindo o crime e prévia cominação da pena. Vimos que a lei só produz efeitos da entrada em vigor para frente, e que a vacatio legis, esse intervalo entre publicar e vigorar, protege todos os fatos praticados dentro dele. E vimos o destino das leis que mudam depois do fato: a lex mitior volta no tempo para beneficiar, automaticamente e até em casos julgados; a in pejus e a incriminadora jamais voltam. Daqui em diante, diante de qualquer questão de lei penal no tempo, faça a pergunta que organiza tudo: a lei já estava em vigor no dia do fato? E, se a lei for nova, a segunda pergunta: ela ajuda ou prejudica o réu? Com essas duas perguntas, você desmonta o tema inteiro. Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça o desafio de cabeça fria e confie: anterioridade se aprende pelo raciocínio do tempo, não pela decoreba. Eu fico por aqui, e te espero na próxima aula. Bons estudos!"
+    }
+  ],
+  "imagens": {
+    "capa": "assets/img/capa.webp",
+    "roteiro": "assets/img/roteiro.webp",
+    "relogio": "assets/img/relogio.webp",
+    "constituicao": "assets/img/constituicao.webp",
+    "balanca": "assets/img/balanca.webp",
+    "questao": "assets/img/questao.webp",
+    "flashcards": "assets/img/flashcards.webp",
+    "sol": "assets/img/sol.webp",
+    "ampulheta": "assets/img/ampulheta.webp",
+    "portao": "assets/img/portao.webp",
+    "explorar": "assets/img/explorar.webp",
+    "compvacatio": "assets/img/compvacatio.webp",
+    "compvigor": "assets/img/compvigor.webp",
+    "revelar": "assets/img/revelar.webp",
+    "primavera": "assets/img/primavera.webp",
+    "martelo": "assets/img/martelo.webp",
+    "tempestade": "assets/img/tempestade.webp",
+    "cadeado": "assets/img/cadeado.webp",
+    "portas": "assets/img/portas.webp",
+    "ligar": "assets/img/ligar.webp",
+    "lacuna": "assets/img/lacuna.webp",
+    "cartasvf": "assets/img/cartasvf.webp",
+    "timeline": "assets/img/timeline.webp",
+    "pegadinhas": "assets/img/pegadinhas.webp",
+    "ouro": "assets/img/ouro.webp",
+    "fim": "assets/img/fim.webp"
+  },
+  "audioBaseUrl": "assets/audio/s",
+  "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-03-principio-da-anterioridade/aula.html"
+},
+  "penal-06-04": {
+  "aulaId": "penal-06-04",
+  "titulo": "Princípios da Alteridade e da Confiança",
+  "disciplinaId": "penal",
+  "totalEtapas": 30,
+  "slides": [
+    {
+      "alt": "Duas silhuetas humanas frente a frente, separadas por uma balança dourada luminosa, sobre fundo vermelho escuro",
+      "corpo": "<p class=\"lead\">Posso ser punido por algo que só aconteceu dentro da minha cabeça? E por um mal que causei apenas a mim mesmo? E quando eu ajo confiando que todos ao redor vão seguir as regras, o que acontece se alguém não seguir?</p><p>Essas perguntas têm dono: são dois princípios que funcionam como freios e bússolas do poder de punir. O <b>princípio da alteridade</b>, desenvolvido por <b>Claus Roxin</b>, e o <b>princípio da confiança</b>, difundido pelo Direito Penal espanhol.</p><p>Nesta aula, eu te mostro os dois com calma: o que cada um proíbe, em que fundamento cada um se apoia e como eles aparecem nos exemplos que as bancas adoram, do <b>consumo de drogas</b> ao caso da <b>arma de fogo</b> comprada dentro da lei.</p><div class=\"chips\"><span class=\"chip\">Claus Roxin</span><span class=\"chip\">Alteridade</span><span class=\"chip\">Autolesão</span><span class=\"chip\">Confiança</span><span class=\"chip\">Fato típico</span></div>",
+      "img": "capa",
+      "kicker": "Direito Penal · Princípios Penais",
+      "narr": "Posso ser punido por algo que só aconteceu dentro da minha cabeça? E por um mal que causei apenas a mim mesmo? E quando eu ajo confiando que todos ao redor vão seguir as regras, o que acontece se alguém não seguir? Essas perguntas têm dono: são dois princípios que funcionam como freios e bússolas do poder de punir. O princípio da alteridade, desenvolvido por Claus Roxin, e o princípio da confiança, difundido pelo Direito Penal espanhol. Nesta aula, eu te mostro os dois com calma: o que cada um proíbe, em que fundamento cada um se apoia e como eles aparecem nos exemplos que as bancas adoram, do consumo de drogas ao caso da arma de fogo comprada dentro da lei.",
+      "tipo": "Capa",
+      "titulo": "Princípios da Alteridade e da Confiança"
+    },
+    {
+      "alt": "Mapa antigo em pergaminho com dois selos dourados e uma bússola de latão",
+      "corpo": "<p>Antes de mergulhar no conteúdo, deixa eu te mostrar o <b>caminho que vamos percorrer</b>. A aula está organizada em <b>três blocos</b> e um fechamento:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>Alteridade: o outro como limite</h3><p>O princípio de Claus Roxin: pensamento, conduta interna, autolesão e o exemplo do consumo de drogas.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>Confiança: poder confiar no outro</h3><p>A origem espanhola, o fato típico, as regras da experiência e o caso da arma de fogo.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>Prática e fixação</h3><p>Verdadeiro ou falso, linha do tempo de um caso, mapa mental, pegadinhas e questão de banca.</p></div></div><div class=\"viarow\"><div class=\"vianum\">4</div><div><h3>Fechamento</h3><p>Desafio final com placar e a pergunta de ouro, a mais valiosa da aula.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/mapa.webp\" alt=\"\"></div><p>O conteúdo vem em <b>texto corrido</b>, como uma conversa, e a prática fica concentrada no <b>fim de cada bloco</b>: questões, flashcards e atividades para fixar cada parte antes de seguir. Vamos ao primeiro bloco!</p>",
+      "img": "mapa",
+      "kicker": "Roteiro da aula",
+      "narr": "O caminho desta aula. Antes de mergulhar no conteúdo, deixa eu te mostrar o caminho que vamos percorrer. A aula está organizada em três blocos e um fechamento. Bloco um: alteridade, o outro como limite. O princípio de Claus Roxin: pensamento, conduta interna, autolesão e o exemplo do consumo de drogas. Bloco dois: confiança, poder confiar no outro. A origem espanhola, o fato típico, as regras da experiência e o caso da arma de fogo. Bloco três: prática e fixação. Verdadeiro ou falso, linha do tempo de um caso, mapa mental, pegadinhas e questão de banca. Fechamento: desafio final com placar e a pergunta de ouro, a mais valiosa da aula. O conteúdo vem em texto corrido, como uma conversa, e a prática fica concentrada no fim de cada bloco: questões, flashcards e atividades para fixar cada parte antes de seguir. Vamos ao primeiro bloco!",
+      "tipo": "Conteúdo",
+      "titulo": "O caminho desta aula"
+    },
+    {
+      "alt": "Uma pessoa olhando para outra através de um feixe de luz dourada, em salão escuro de tons vermelhos",
+      "corpo": "<p>A palavra alteridade vem de <i>alter</i>, que em latim significa <b>o outro</b>. Guarde bem essa pista, porque ela entrega o princípio inteiro: para o Direito Penal, o que importa é sempre o outro, a pessoa além de mim.</p><p>O <b class=\"term\">princípio da alteridade</b> foi desenvolvido por <b>Claus Roxin</b>. Ele proíbe a incriminação de três coisas: a <b>conduta meramente interna</b> do agente, o <b>pensamento</b> e a <b>conduta moralmente censurável</b> que é incapaz de invadir o <b>patrimônio jurídico alheio</b>.</p><p>Repare na lógica de cada proibição. O pensamento não sai da cabeça de quem pensa: ninguém fora dela é atingido. A conduta interna é da mesma família: acontece por dentro e não alcança ninguém. E a conduta moralmente censurável pode até desagradar, pode até ser reprovada por muita gente, mas, se ela é incapaz de invadir o patrimônio jurídico de outra pessoa, ela simplesmente <b>não é assunto do Direito Penal</b>.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/alteridade.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Imagine alguém que passa o dia inteiro imaginando prejudicar um desafeto, desenhando o plano nos mínimos detalhes, mas nunca move um dedo. Por mais feio que esse pensamento seja, ele ficou <b>dentro da cabeça</b>: não invadiu bem jurídico de ninguém, e o Direito Penal não tem o que fazer ali.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Sem atingir o outro, não há crime: o Direito Penal não pune o que ficou só dentro da pessoa.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/alteridade.webp\" alt=\"\"></div><p>Na próxima etapa, eu te mostro o fundamento que sustenta tudo isso: a impossibilidade de punir a <b>autolesão</b>.</p>",
+      "img": "alteridade",
+      "kicker": "Princípio da alteridade",
+      "narr": "Alteridade: o outro no centro. A palavra alteridade vem de alter, que em latim significa o outro. Guarde bem essa pista, porque ela entrega o princípio inteiro: para o Direito Penal, o que importa é sempre o outro, a pessoa além de mim. O princípio da alteridade foi desenvolvido por Claus Roxin. Ele proíbe a incriminação de três coisas: a conduta meramente interna do agente, o pensamento e a conduta moralmente censurável que é incapaz de invadir o patrimônio jurídico alheio. Repare na lógica de cada proibição. O pensamento não sai da cabeça de quem pensa: ninguém fora dela é atingido. A conduta interna é da mesma família: acontece por dentro e não alcança ninguém. E a conduta moralmente censurável pode até desagradar, pode até ser reprovada por muita gente, mas, se ela é incapaz de invadir o patrimônio jurídico de outra pessoa, ela simplesmente não é assunto do Direito Penal. Exemplo prático: imagine alguém que passa o dia inteiro imaginando prejudicar um desafeto, desenhando o plano nos mínimos detalhes, mas nunca move um dedo. Por mais feio que esse pensamento seja, ele ficou dentro da cabeça: não invadiu bem jurídico de ninguém, e o Direito Penal não tem o que fazer ali. Sem atingir o outro, não há crime: o Direito Penal não pune o que ficou só dentro da pessoa. Na próxima etapa, eu te mostro o fundamento que sustenta tudo isso: a impossibilidade de punir a autolesão.",
+      "tipo": "Conteúdo",
+      "titulo": "Alteridade: o outro no centro"
+    },
+    {
+      "alt": "Figura solitária dentro de um círculo de luz dourada que protege apenas a ela, sobre fundo vermelho escuro",
+      "corpo": "<p>O fundamento do princípio da alteridade é direto e você precisa gravá-lo com precisão: ele está na <b>impossibilidade da punição da </b><b class=\"term\">autolesão</b>. Em outras palavras: <b>ninguém pode ser punido por causar mal apenas a si próprio</b>.</p><p>Perceba como isso amarra o princípio inteiro. O Direito Penal existe para proteger bens jurídicos de pessoas contra ataques vindos de fora. Quando o único atingido pela conduta é o <b>próprio agente</b>, falta exatamente a peça que a alteridade exige: o outro. Sem um patrimônio jurídico alheio invadido, não há matéria para o crime nascer.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/autolesao.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Pense no Direito Penal como um <b>árbitro de uma partida</b>. Ele entra em campo quando um jogador atinge o outro: a falta, a agressão, o lance que prejudica o adversário. Mas, se um jogador tropeça sozinho e machuca a própria perna, o árbitro não apita crime nenhum: ele chama o atendimento e o jogo segue. No Direito Penal, a lógica é a mesma: sem um outro atingido, não há o que punir.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/autolesao.webp\" alt=\"\"></div><p>É esse fundamento que explica o exemplo mais famoso do tema, aquele que as bancas repetem sem cansar: o do <b>consumo de drogas</b>. É ele que eu destrincho na próxima etapa.</p>",
+      "img": "autolesao",
+      "kicker": "Alteridade · O fundamento",
+      "narr": "O fundamento: a autolesão não se pune. O fundamento do princípio da alteridade é direto e você precisa gravá-lo com precisão: ele está na impossibilidade da punição da autolesão. Em outras palavras: ninguém pode ser punido por causar mal apenas a si próprio. Perceba como isso amarra o princípio inteiro. O Direito Penal existe para proteger bens jurídicos de pessoas contra ataques vindos de fora. Quando o único atingido pela conduta é o próprio agente, falta exatamente a peça que a alteridade exige: o outro. Sem um patrimônio jurídico alheio invadido, não há matéria para o crime nascer. Pense assim: pense no Direito Penal como um árbitro de uma partida. Ele entra em campo quando um jogador atinge o outro: a falta, a agressão, o lance que prejudica o adversário. Mas, se um jogador tropeça sozinho e machuca a própria perna, o árbitro não apita crime nenhum: ele chama o atendimento e o jogo segue. No Direito Penal, a lógica é a mesma: sem um outro atingido, não há o que punir. É esse fundamento que explica o exemplo mais famoso do tema, aquele que as bancas repetem sem cansar: o do consumo de drogas. É ele que eu destrincho na próxima etapa.",
+      "tipo": "Conteúdo",
+      "titulo": "O fundamento: a autolesão não se pune"
+    },
+    {
+      "alt": "Escudo dourado com símbolo de saúde protegendo uma cidade ao fundo, com frascos na sombra em primeiro plano",
+      "corpo": "<p>Observe comigo a conduta de <b>consumir drogas</b>. Quem consome atinge, em regra, o <b>próprio corpo</b>: é uma forma de autolesão, um mal que a pessoa causa apenas a si mesma. Por isso, pelo princípio da alteridade, essa conduta é considerada <b>atípica</b>: ela não se encaixa em crime nenhum.</p><div class=\"box\"><p class=\"blabel\">O ARTIGO EM FOCO</p><p>Art. 28 da Lei nº 11.343/2006, a Lei de Drogas: quando a lei trata das condutas ligadas às drogas para consumo pessoal, a objetividade jurídica do tipo é a <b>saúde pública</b>, um bem que pertence a todos, e não o corpo de quem consome.</p></div><p>Perceba a diferença fina que a banca explora. O bem jurídico em jogo no artigo 28 é a <b>saúde pública</b>, algo coletivo. Já o simples ato de consumir, que só alcança o próprio agente, fica fora da punição, justamente porque falta ali o outro atingido que a alteridade exige para o Direito Penal entrar em cena.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Consumir atinge só o próprio corpo: é autolesão, e autolesão não se pune.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/drogas.webp\" alt=\"\"></div><p>Guarde o trio deste bloco até aqui: <b>Roxin</b>, <b>patrimônio jurídico alheio</b> e <b>autolesão</b>. Com ele, você já resolve a maior parte das questões sobre alteridade.</p>",
+      "img": "drogas",
+      "kicker": "Alteridade · O exemplo clássico",
+      "narr": "O exemplo das drogas e o artigo vinte e oito. Observe comigo a conduta de consumir drogas. Quem consome atinge, em regra, o próprio corpo: é uma forma de autolesão, um mal que a pessoa causa apenas a si mesma. Por isso, pelo princípio da alteridade, essa conduta é considerada atípica: ela não se encaixa em crime nenhum. O artigo em foco: artigo vinte e oito da Lei número onze mil trezentos e quarenta e três, de dois mil e seis, a Lei de Drogas: quando a lei trata das condutas ligadas às drogas para consumo pessoal, a objetividade jurídica do tipo é a saúde pública, um bem que pertence a todos, e não o corpo de quem consome. Perceba a diferença fina que a banca explora. O bem jurídico em jogo no artigo vinte e oito é a saúde pública, algo coletivo. Já o simples ato de consumir, que só alcança o próprio agente, fica fora da punição, justamente porque falta ali o outro atingido que a alteridade exige para o Direito Penal entrar em cena. Consumir atinge só o próprio corpo: é autolesão, e autolesão não se pune. Guarde o trio deste bloco até aqui: Roxin, patrimônio jurídico alheio e autolesão. Com ele, você já resolve a maior parte das questões sobre alteridade.",
+      "tipo": "Conteúdo",
+      "titulo": "O exemplo das drogas e o artigo 28"
+    },
+    {
+      "alt": "Pergaminho de prova com pena dourada, selo e ampulheta",
+      "certa": 1,
+      "feedback": "Isso mesmo! A alteridade proíbe incriminar a conduta meramente interna, o pensamento e a conduta moralmente censurável incapaz de invadir o patrimônio jurídico alheio. E a autolesão não se pune: ninguém responde por causar mal apenas a si próprio.",
+      "img": "questao",
+      "intro": "Hora de treinar! Pense no que eu te expliquei sobre o <b>princípio da alteridade</b> e responda:",
+      "kicker": "Questão 1 · Alteridade",
+      "narr": "Questão um: alteridade. Hora de treinar! Pense no que eu te expliquei sobre o princípio da alteridade e responda: segundo o princípio da alteridade, desenvolvido por Claus Roxin, é correto afirmar o quê? Leia as alternativas e escolha a correta.",
+      "opcoes": [
+        "O pensamento pode ser punido quando for moralmente muito censurável.",
+        "É proibida a incriminação de conduta meramente interna, do pensamento e de conduta incapaz de invadir o patrimônio jurídico alheio.",
+        "Quem causa mal apenas a si próprio pode ser punido, porque a autolesão também é crime.",
+        "A conduta moralmente censurável é crime sempre que desagrada à maioria da sociedade."
+      ],
+      "questao": "Segundo o princípio da alteridade, desenvolvido por Claus Roxin, é correto afirmar que:",
+      "tipo": "Questão",
+      "titulo": "Questão 1"
+    },
+    {
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha sobre uma mesa escura",
+      "frente": "O que o princípio da alteridade proíbe?",
+      "img": "flashcards",
+      "kicker": "Flashcard 1 · Alteridade",
+      "narr": "Flashcard um: alteridade. O que o princípio da alteridade proíbe? Toque no cartão para ver a resposta.",
+      "tipo": "Flashcard",
+      "titulo": "Flashcard 1",
+      "verso": "<p>Ele proíbe a incriminação da <b>conduta meramente interna</b>, do <b>pensamento</b> e da <b>conduta moralmente censurável</b> incapaz de invadir o <b>patrimônio jurídico alheio</b>.</p><p style='margin-top:10px'>Em resumo: ninguém pode ser punido por causar mal <b>apenas a si próprio</b>.</p>"
+    },
+    {
+      "alt": "Escudo dourado com símbolo de saúde protegendo uma cidade ao fundo",
+      "frases": [
+        "Vamos recapitular o princípio da alteridade, acompanhando a narração pela tela.",
+        "Alteridade vem de alter, o outro: foi Claus Roxin quem desenvolveu o princípio.",
+        "Ele proíbe punir a conduta meramente interna e o pensamento, que não saem da cabeça de quem pensa.",
+        "Também proíbe punir a conduta moralmente censurável que não invade o patrimônio jurídico alheio.",
+        "O fundamento é a autolesão: ninguém pode ser punido por causar mal apenas a si próprio.",
+        "Por isso, consumir drogas é conduta atípica: o artigo vinte e oito da Lei de Drogas protege a saúde pública."
+      ],
+      "img": "drogas",
+      "kicker": "Karaokê · Siga a narração",
+      "narr": "Vamos recapitular o princípio da alteridade, acompanhando a narração pela tela. Alteridade vem de alter, o outro: foi Claus Roxin quem desenvolveu o princípio. Ele proíbe punir a conduta meramente interna e o pensamento, que não saem da cabeça de quem pensa. Também proíbe punir a conduta moralmente censurável que não invade o patrimônio jurídico alheio. O fundamento é a autolesão: ninguém pode ser punido por causar mal apenas a si próprio. Por isso, consumir drogas é conduta atípica: o artigo vinte e oito da Lei de Drogas protege a saúde pública.",
+      "tipo": "Karaokê",
+      "titulo": "Recapitule a alteridade com a narração"
+    },
+    {
+      "alt": "Comparador de duas cenas: uma pessoa sozinha dentro de um círculo de luz e uma mão ultrapassando o círculo em direção ao patrimônio de outra pessoa",
+      "img": "compfora",
+      "img2": "compdentro",
+      "intro": "Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, a conduta que atinge só o próprio agente, como a autolesão: ela fica fora do Direito Penal, porque nenhum patrimônio jurídico alheio foi invadido. Do outro, a conduta que ultrapassa a fronteira e atinge o outro: é aí que o Direito Penal pode entrar em cena. A linha que separa as duas cenas é exatamente a linha que a alteridade desenha.",
+      "kicker": "Comparador · Arraste a barra",
+      "narr": "Duas condutas, dois destinos. Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, a conduta que atinge só o próprio agente, como a autolesão: ela fica fora do Direito Penal, porque nenhum patrimônio jurídico alheio foi invadido. Do outro, a conduta que ultrapassa a fronteira e atinge o outro: é aí que o Direito Penal pode entrar em cena. A linha que separa as duas cenas é exatamente a linha que a alteridade desenha.",
+      "rotuloL": "SÓ A SI MESMO · NÃO PUNE",
+      "rotuloR": "ATINGE O OUTRO · PUNE",
+      "tipo": "Comparador",
+      "titulo": "Duas condutas, dois destinos"
+    },
+    {
+      "alt": "Imagem vertical em cinco cenas empilhadas: uma cabeça com ideias, um dedo de reprovação, uma pessoa ferindo a si mesma, um escudo de saúde sobre a cidade e duas pessoas frente a frente",
+      "img": "explorar",
+      "intro": "Esta imagem grande conta, de cima para baixo, o raciocínio inteiro do princípio da alteridade. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "kicker": "Exploração · Toque nos pontos",
+      "narr": "Explore a imagem: a alteridade em cinco cenas. Esta imagem grande conta, de cima para baixo, o raciocínio inteiro do princípio da alteridade. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "pontos": [
+        {
+          "texto": "Na primeira cena, tudo acontece por dentro: a pessoa imagina, planeja, deseja. É a conduta meramente interna e o pensamento, que a alteridade proíbe incriminar, porque não invadem o patrimônio jurídico de ninguém.",
+          "titulo": "O pensamento que não sai da cabeça",
+          "x": 50,
+          "y": 11
+        },
+        {
+          "texto": "O dedo de reprovação representa a moral: uma conduta pode ser muito censurada pela sociedade, mas, se ela é incapaz de invadir o patrimônio jurídico alheio, o Direito Penal não a transforma em crime.",
+          "titulo": "A conduta moralmente censurável",
+          "x": 50,
+          "y": 29
+        },
+        {
+          "texto": "Aqui o mal alcança apenas o próprio agente. É o fundamento do princípio: a autolesão não pode ser punida, porque falta o outro atingido que a alteridade exige.",
+          "titulo": "A autolesão",
+          "x": 42,
+          "y": 48
+        },
+        {
+          "texto": "O escudo sobre a cidade é a saúde pública, o bem jurídico do artigo 28 da Lei de Drogas. O ato de consumir, que atinge só o próprio corpo, é conduta atípica pela alteridade.",
+          "titulo": "O consumo de drogas",
+          "x": 50,
+          "y": 69
+        },
+        {
+          "texto": "Na última cena, duas pessoas estão frente a frente e uma invade o patrimônio jurídico da outra. É só aqui, quando existe um outro atingido, que o Direito Penal encontra matéria para agir.",
+          "titulo": "Quando o outro é atingido",
+          "x": 50,
+          "y": 90
+        }
+      ],
+      "tipo": "Explorar",
+      "titulo": "Explore a imagem: a alteridade em cinco cenas"
+    },
+    {
+      "alt": "Dois pilares dourados sustentando uma grande balança sobre fundo vermelho escuro",
+      "corpo": "<p>Antes de virar a página para o segundo princípio, feche comigo o raciocínio da alteridade numa sequência que você pode repetir em qualquer questão. Diante de uma conduta, pergunte em ordem: <b>ela saiu da cabeça?</b> Se ficou no pensamento ou na conduta meramente interna, a resposta é não, e aí já parou: não há crime. Depois pergunte: <b>ela atingiu o patrimônio jurídico de outra pessoa?</b> Se o mal ficou só no próprio agente, como na autolesão, também não há crime.</p><p>Só quando a conduta atravessa essa fronteira e alcança o outro é que o Direito Penal encontra espaço para agir. É por isso que o consumo de drogas, que atinge o próprio corpo, é atípico, enquanto o artigo 28 da Lei de Drogas cuida da <b>saúde pública</b>, o bem de todos que pode ser atingido pelas condutas em volta do consumo.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/sintese.webp\" alt=\"\"></div><div class=\"fimbloco\"><p class=\"flabel\">NESTE BLOCO VOCÊ VIU</p><ul><li><b>Alteridade (Claus Roxin):</b> proíbe incriminar conduta interna, pensamento e conduta moralmente censurável sem invasão do patrimônio jurídico alheio.</li><li><b>Fundamento:</b> a autolesão não se pune, porque ninguém responde por causar mal apenas a si próprio.</li><li><b>Exemplo clássico:</b> consumir drogas é atípico; o artigo 28 da Lei de Drogas protege a saúde pública.</li></ul></div>",
+      "img": "sintese",
+      "kicker": "Alteridade · Síntese do bloco",
+      "narr": "Alteridade em um raciocínio só. Antes de virar a página para o segundo princípio, feche comigo o raciocínio da alteridade numa sequência que você pode repetir em qualquer questão. Diante de uma conduta, pergunte em ordem: ela saiu da cabeça? Se ficou no pensamento ou na conduta meramente interna, a resposta é não, e aí já parou: não há crime. Depois pergunte: ela atingiu o patrimônio jurídico de outra pessoa? Se o mal ficou só no próprio agente, como na autolesão, também não há crime. Só quando a conduta atravessa essa fronteira e alcança o outro é que o Direito Penal encontra espaço para agir. É por isso que o consumo de drogas, que atinge o próprio corpo, é atípico, enquanto o artigo vinte e oito da Lei de Drogas cuida da saúde pública, o bem de todos que pode ser atingido pelas condutas em volta do consumo.",
+      "tipo": "Conteúdo",
+      "titulo": "Alteridade em um raciocínio só"
+    },
+    {
+      "alt": "Aperto de mãos firme sob um feixe de luz dourada, em ambiente escuro de tons vermelhos",
+      "corpo": "<p>O segundo princípio da aula também coloca o outro no centro, mas por um ângulo diferente. É o <b class=\"term\">princípio da confiança</b>, difundido pelo <b>Direito Penal espanhol</b>.</p><p>Ele é um <b>requisito para a existência do fato típico</b>. Traduzindo sem juridiquês: antes mesmo de discutir crime, é preciso verificar se a pessoa podia confiar que os outros agiriam corretamente. Sem levar essa confiança em conta, nem se consegue dizer se houve um fato digno da atenção do Direito Penal.</p><p>A premissa dele é simples e poderosa: <b>todos devem esperar, por parte das outras pessoas, comportamentos responsáveis e em consonância com o ordenamento jurídico</b>, buscando evitar danos a terceiros. Ninguém vive conferindo cada passo de quem está ao redor: a vida em sociedade funciona porque cada um faz a sua parte esperando que o outro faça a dele.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/confianca.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Pense num cruzamento movimentado. Você só atravessa a rua, entrega um documento, assina um contrato ou entra num elevador porque <b>confia</b> que as pessoas ao redor vão se comportar de forma responsável e dentro das regras. O princípio da confiança é o Direito Penal reconhecendo essa engrenagem.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Confiar que o outro seguirá as regras é requisito para o próprio fato típico existir.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/confianca.webp\" alt=\"\"></div>",
+      "img": "confianca",
+      "kicker": "Princípio da confiança",
+      "narr": "Confiança: poder confiar no outro. O segundo princípio da aula também coloca o outro no centro, mas por um ângulo diferente. É o princípio da confiança, difundido pelo Direito Penal espanhol. Ele é um requisito para a existência do fato típico. Traduzindo sem juridiquês: antes mesmo de discutir crime, é preciso verificar se a pessoa podia confiar que os outros agiriam corretamente. Sem levar essa confiança em conta, nem se consegue dizer se houve um fato digno da atenção do Direito Penal. A premissa dele é simples e poderosa: todos devem esperar, por parte das outras pessoas, comportamentos responsáveis e em consonância com o ordenamento jurídico, buscando evitar danos a terceiros. Ninguém vive conferindo cada passo de quem está ao redor: a vida em sociedade funciona porque cada um faz a sua parte esperando que o outro faça a dele. Exemplo prático: pense num cruzamento movimentado. Você só atravessa a rua, entrega um documento, assina um contrato ou entra num elevador porque confia que as pessoas ao redor vão se comportar de forma responsável e dentro das regras. O princípio da confiança é o Direito Penal reconhecendo essa engrenagem. Confiar que o outro seguirá as regras é requisito para o próprio fato típico existir.",
+      "tipo": "Conteúdo",
+      "titulo": "Confiança: poder confiar no outro"
+    },
+    {
+      "alt": "Cruzamento urbano ao entardecer com semáforo verde e pessoas atravessando na faixa, em tons vermelhos e dourados",
+      "corpo": "<p>Mas confiar em quê, exatamente? A resposta organiza o princípio inteiro: confia-se que o comportamento do outro se dará <b>de acordo com as regras da experiência</b>.</p><p>Regras da experiência são o <b>juízo estatístico</b> alicerçado naquilo que <b>normalmente acontece</b>. Se uma situação se repete mil vezes do mesmo jeito, é razoável esperar que ela aconteça assim de novo. Não é otimismo nem ingenuidade: é a leitura prática de como o mundo costuma funcionar.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/experiencia.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Quando o seu sinal está verde, você avança o cruzamento confiando que quem está no sinal vermelho vai parar. Você não conhece aqueles motoristas, nunca os viu na vida. Você confia na <b>regra da experiência</b>: motoristas param no vermelho, porque é isso que normalmente acontece, todos os dias, em todos os cruzamentos.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/experiencia.webp\" alt=\"\"></div><p>É sobre essa mesma confiança que foi construído o exemplo clássico do princípio, que envolve uma <b>arma de fogo</b> e uma <b>mudança na lei</b>. Prepare-se, porque ele é o favorito das bancas.</p>",
+      "img": "experiencia",
+      "kicker": "Confiança · Regras da experiência",
+      "narr": "Confiar no que normalmente acontece. Mas confiar em quê, exatamente? A resposta organiza o princípio inteiro: confia-se que o comportamento do outro se dará de acordo com as regras da experiência. Regras da experiência são o juízo estatístico alicerçado naquilo que normalmente acontece. Se uma situação se repete mil vezes do mesmo jeito, é razoável esperar que ela aconteça assim de novo. Não é otimismo nem ingenuidade: é a leitura prática de como o mundo costuma funcionar. Exemplo prático: quando o seu sinal está verde, você avança o cruzamento confiando que quem está no sinal vermelho vai parar. Você não conhece aqueles motoristas, nunca os viu na vida. Você confia na regra da experiência: motoristas param no vermelho, porque é isso que normalmente acontece, todos os dias, em todos os cruzamentos. É sobre essa mesma confiança que foi construído o exemplo clássico do princípio, que envolve uma arma de fogo e uma mudança na lei. Prepare-se, porque ele é o favorito das bancas.",
+      "tipo": "Conteúdo",
+      "titulo": "Confiar no que normalmente acontece"
+    },
+    {
+      "alt": "Arma de fogo antiga guardada em uma vitrine com documentos e um lacre dourado, em ambiente escuro",
+      "corpo": "<p>Imagine uma pessoa que, com base na legislação em vigor, adquire uma <b>arma de fogo de forma legal</b>, respeitando <b>todos os requisitos</b> exigidos pela lei. Papelada em dia, autorizações em dia, tudo feito às claras e dentro das regras do seu tempo.</p><p>Tempos depois, a legislação é alterada, e o <b>porte de arma passa a ser considerado crime</b>. Surge então a pergunta que decide o caso: essa pessoa pode ser <b>punida retroativamente</b> pelo porte da arma que ela adquiriu de forma legal, antes da mudança na legislação?</p><p>É exatamente aqui que o <b>princípio da confiança</b> entra em cena, e entra como <b>argumento de defesa</b>. A pessoa agiu de acordo com a legislação anterior e <b>confiou na sua legalidade</b>. Punir essa conduta seria punir justamente a confiança que o próprio ordenamento pede às pessoas: a de que, seguindo as regras de hoje, elas estão agindo certo.</p><div class=\"box\"><p class=\"blabel\">RESUMO DO CASO</p><p>Compra legal e com todos os requisitos, depois mudança da lei, depois a ameaça de punição retroativa. A ponte que protege essa pessoa é a confiança: ela confiou na legalidade do que fez, e essa confiança merece proteção.</p></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Quem agiu conforme a lei do seu tempo confiou na legalidade, e essa confiança merece proteção.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/arma.webp\" alt=\"\"></div>",
+      "img": "arma",
+      "kicker": "Confiança · O exemplo clássico",
+      "narr": "O caso da arma comprada dentro da lei. Imagine uma pessoa que, com base na legislação em vigor, adquire uma arma de fogo de forma legal, respeitando todos os requisitos exigidos pela lei. Papelada em dia, autorizações em dia, tudo feito às claras e dentro das regras do seu tempo. Tempos depois, a legislação é alterada, e o porte de arma passa a ser considerado crime. Surge então a pergunta que decide o caso: essa pessoa pode ser punida retroativamente pelo porte da arma que ela adquiriu de forma legal, antes da mudança na legislação? É exatamente aqui que o princípio da confiança entra em cena, e entra como argumento de defesa. A pessoa agiu de acordo com a legislação anterior e confiou na sua legalidade. Punir essa conduta seria punir justamente a confiança que o próprio ordenamento pede às pessoas: a de que, seguindo as regras de hoje, elas estão agindo certo. Resumo do caso: compra legal e com todos os requisitos, depois mudança da lei, depois a ameaça de punição retroativa. A ponte que protege essa pessoa é a confiança: ela confiou na legalidade do que fez, e essa confiança merece proteção. Quem agiu conforme a lei do seu tempo confiou na legalidade, e essa confiança merece proteção.",
+      "tipo": "Conteúdo",
+      "titulo": "O caso da arma comprada dentro da lei"
+    },
+    {
+      "alt": "Lupa dourada sobre alternativas em pergaminho escuro, com pena e tinteiro ao lado",
+      "certa": 1,
+      "feedback": "Perfeito! O princípio da confiança foi difundido pelo Direito Penal espanhol, é requisito para a existência do fato típico e se apoia na premissa de que todos devem esperar dos outros comportamentos responsáveis e conforme o ordenamento. Quem desenvolveu um princípio foi Roxin, mas foi o da alteridade. E a confiança protege quem confiou na lei anterior, nunca autoriza a punição retroativa.",
+      "img": "questao2",
+      "intro": "Segunda questão de treino, agora sobre o <b>princípio da confiança</b>. Vá com calma:",
+      "kicker": "Questão 2 · Confiança",
+      "narr": "Questão dois: confiança. Segunda questão de treino, agora sobre o princípio da confiança. Vá com calma: sobre o princípio da confiança, é correto afirmar o quê? Leia as alternativas e escolha a correta.",
+      "opcoes": [
+        "É um sentimento de simpatia entre as pessoas, sem nenhum efeito jurídico.",
+        "Difundido pelo Direito Penal espanhol, é requisito para a existência do fato típico e parte da premissa de que todos devem esperar dos outros comportamentos responsáveis, em consonância com o ordenamento jurídico.",
+        "Foi desenvolvido por Claus Roxin, junto com o princípio da alteridade.",
+        "Autoriza punir retroativamente quem confiou na legislação anterior."
+      ],
+      "questao": "Sobre o princípio da confiança, é correto afirmar que:",
+      "tipo": "Questão",
+      "titulo": "Questão 2"
+    },
+    {
+      "alt": "Dois cartões de estudo em pé, frente e verso, ligados por uma fita vermelha",
+      "frente": "Qual é a premissa do princípio da confiança?",
+      "img": "flashcards2",
+      "kicker": "Flashcard 2 · Confiança",
+      "narr": "Flashcard dois: confiança. Qual é a premissa do princípio da confiança? Toque no cartão para ver a resposta.",
+      "tipo": "Flashcard",
+      "titulo": "Flashcard 2",
+      "verso": "<p>Todos devem esperar, por parte das outras pessoas, <b>comportamentos responsáveis</b> e em <b>consonância com o ordenamento jurídico</b>, buscando evitar danos a terceiros.</p><p style='margin-top:10px'>Confia-se que o outro agirá de acordo com as <b>regras da experiência</b>.</p>"
+    },
+    {
+      "alt": "Quatro cartas douradas viradas para baixo sobre veludo vermelho, uma se levantando sob a luz",
+      "cartas": [
+        {
+          "p": "Por qual Direito Penal o princípio da confiança foi difundido?",
+          "r": "Pelo <b>Direito Penal espanhol</b>. Já a alteridade é o princípio desenvolvido por Claus Roxin."
+        },
+        {
+          "p": "A confiança é requisito para a existência de quê?",
+          "r": "Do <b>fato típico</b>. Sem considerar a confiança, nem se afirma que houve um fato digno de atenção penal."
+        },
+        {
+          "p": "O que são as regras da experiência?",
+          "r": "O <b>juízo estatístico</b> sobre o que normalmente acontece: espera-se que o outro se comporte como as pessoas normalmente se comportam."
+        },
+        {
+          "p": "No exemplo da arma comprada legalmente, o que a confiança protege?",
+          "r": "Quem agiu conforme a <b>legislação anterior</b> e confiou na sua legalidade pode invocar o princípio como <b>argumento de defesa</b> contra a punição retroativa."
+        }
+      ],
+      "img": "revelar",
+      "intro": "Quatro cartas escondem quatro perguntas rápidas sobre o princípio da confiança. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "kicker": "Toque e revele",
+      "narr": "Toque, pense e revele. Quatro cartas escondem quatro perguntas rápidas sobre o princípio da confiança. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "tipo": "Toque e revele",
+      "titulo": "Toque, pense e revele"
+    },
+    {
+      "alt": "Chaves douradas antigas e cadeados ornamentados sobre veludo vermelho",
+      "img": "ligar",
+      "instrucao": "Ligue cada termo desta aula à sua explicação. Toque em um termo e, depois, na explicação correspondente.",
+      "kicker": "Ligar termos 1 · Os dois princípios",
+      "narr": "Ligar termos um: os dois princípios. Ligue cada termo desta aula à sua explicação. Toque em um termo e, depois, na explicação correspondente.",
+      "ordemDefs": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "pares": [
+        [
+          "Alteridade",
+          "Proíbe punir o que não atinge o outro"
+        ],
+        [
+          "Autolesão",
+          "Mal causado apenas a si próprio"
+        ],
+        [
+          "Confiança",
+          "Esperar do outro conduta conforme o ordenamento"
+        ],
+        [
+          "Regras da experiência",
+          "Juízo sobre o que normalmente acontece"
+        ],
+        [
+          "Fato típico",
+          "Aquilo para cuja existência a confiança é requisito"
+        ]
+      ],
+      "tipo": "Ligar termos",
+      "titulo": "Ligar termos 1"
+    },
+    {
+      "alt": "Pergaminho antigo com espaços dourados vazios e peças douradas ao lado esperando para serem colocadas",
+      "banco": [
+        "pensamento",
+        "experiência",
+        "outro",
+        "comportamento",
+        "regras",
+        "lei"
+      ],
+      "feedbackFinal": "É a frase que resume o princípio da confiança: espera-se que o outro se comporte de acordo com as regras da experiência, o juízo sobre o que normalmente acontece.",
+      "img": "lacuna",
+      "intro": "A frase central do princípio da confiança apareceu com quatro palavras faltando. Abaixo dela estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "kicker": "Completar · Toque nas palavras",
+      "narr": "Complete a frase. A frase central do princípio da confiança apareceu com quatro palavras faltando. Abaixo dela estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "partes": [
+        "Confia-se que o ",
+        " do ",
+        " se dará de acordo com as ",
+        " da ",
+        "."
+      ],
+      "respostas": [
+        "comportamento",
+        "outro",
+        "regras",
+        "experiência"
+      ],
+      "tipo": "Completar",
+      "titulo": "Complete a frase"
+    },
+    {
+      "alt": "Balança de dois pratos com um símbolo de certo dourado de um lado e escritos antigos do outro",
+      "corpo": "<p>Hora de colocar os dois princípios <b>frente a frente</b>, para você nunca mais trocar um pelo outro na hora da prova:</p><table class=\"cmp\"><tr><th></th><th>Alteridade</th><th>Confiança</th></tr><tr><td class=\"t\">Origem</td><td>Desenvolvido por Claus Roxin</td><td>Difundido pelo Direito Penal espanhol</td></tr><tr><td class=\"t\">Ideia central</td><td>Não punir o que não atinge o outro</td><td>Esperar do outro conduta responsável e conforme o ordenamento</td></tr><tr><td class=\"t\">Base</td><td>Impossibilidade de punir a autolesão</td><td>Regras da experiência e juízo estatístico</td></tr><tr><td class=\"t\">Exemplo clássico</td><td>Consumo de drogas (art. 28 da Lei de Drogas)</td><td>Arma adquirida legalmente e mudança posterior da lei</td></tr><tr><td class=\"t\">Efeito</td><td>Conduta atípica quando só atinge o próprio agente</td><td>Requisito para a existência do fato típico</td></tr></table><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/tabela.webp\" alt=\"\"></div><p>Repare na dança dos dois: a alteridade olha para <b>quem foi atingido</b> e a confiança olha para <b>o que era razoável esperar</b>. Um limita o alcance da punição; o outro organiza o que se pode esperar das pessoas. Juntos, eles desenham um Direito Penal que só entra em cena quando há um outro de verdade envolvido.</p><div class=\"fimbloco\"><p class=\"flabel\">NESTE BLOCO VOCÊ VIU</p><ul><li><b>Confiança:</b> difundida pelo Direito Penal espanhol, é requisito para a existência do fato típico.</li><li><b>Regras da experiência:</b> confia-se que o outro agirá conforme o que normalmente acontece.</li><li><b>Caso da arma:</b> quem comprou dentro da lei invoca a confiança como defesa contra a punição retroativa.</li></ul></div>",
+      "img": "tabela",
+      "kicker": "Comparativo",
+      "narr": "Os dois princípios lado a lado. Hora de colocar os dois princípios frente a frente, para você nunca mais trocar um pelo outro na hora da prova. Origem: a alteridade foi desenvolvida por Claus Roxin; a confiança foi difundida pelo Direito Penal espanhol. Ideia central: a alteridade manda não punir o que não atinge o outro; a confiança manda esperar do outro conduta responsável e conforme o ordenamento. Base: a alteridade se apoia na impossibilidade de punir a autolesão; a confiança, nas regras da experiência e no juízo estatístico. Exemplo clássico: o consumo de drogas, do artigo vinte e oito da Lei de Drogas, para a alteridade; a arma adquirida legalmente e a mudança posterior da lei, para a confiança. Efeito: na alteridade, a conduta é atípica quando só atinge o próprio agente; na confiança, ela é requisito para a existência do fato típico. Repare na dança dos dois: a alteridade olha para quem foi atingido e a confiança olha para o que era razoável esperar. Um limita o alcance da punição; o outro organiza o que se pode esperar das pessoas. Juntos, eles desenham um Direito Penal que só entra em cena quando há um outro de verdade envolvido.",
+      "tipo": "Conteúdo",
+      "titulo": "Os dois princípios lado a lado"
+    },
+    {
+      "afirmacoes": [
+        {
+          "exp": "É o fundamento do princípio: a autolesão não pode ser punida, porque falta um outro atingido.",
+          "t": "Segundo o princípio da alteridade, ninguém pode ser punido por causar mal apenas a si próprio.",
+          "v": true
+        },
+        {
+          "exp": "Troca clássica de prova: a alteridade foi desenvolvida por Claus Roxin. Quem veio do Direito Penal espanhol foi o princípio da confiança.",
+          "t": "O princípio da alteridade foi difundido pelo Direito Penal espanhol.",
+          "v": false
+        },
+        {
+          "exp": "Isso mesmo: consumir atinge só o próprio corpo, uma autolesão, e o bem protegido pelo tipo é a saúde pública.",
+          "t": "A conduta de consumir drogas é atípica, e o artigo 28 da Lei de Drogas tem a saúde pública como objetividade jurídica.",
+          "v": true
+        },
+        {
+          "exp": "Perfeito. É exatamente essa a posição do princípio da confiança no raciocínio penal.",
+          "t": "O princípio da confiança é requisito para a existência do fato típico.",
+          "v": true
+        },
+        {
+          "exp": "Pode invocar, sim: o princípio da confiança é o argumento de defesa de quem agiu conforme a legislação anterior e confiou na sua legalidade.",
+          "t": "Quem adquiriu uma arma de fogo legalmente pode ser punido retroativamente quando a lei muda, sem nenhum argumento de defesa.",
+          "v": false
+        }
+      ],
+      "alt": "Duas pilhas de cartas antigas sobre veludo vermelho, uma com símbolo de certo e outra com símbolo de errado em dourado",
+      "img": "cartasvf",
+      "intro": "Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "kicker": "Verdadeiro ou falso · Arraste a carta",
+      "narr": "Verdadeiro ou falso: arraste e decida. Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "tipo": "Verdadeiro ou falso",
+      "titulo": "Verdadeiro ou falso: arraste e decida"
+    },
+    {
+      "alt": "Linha do tempo dourada com cinco marcos brilhantes sobre pergaminho escuro",
+      "img": "timeline",
+      "intro": "Vamos amarrar o princípio da confiança numa história só, a do caso da arma de fogo. Toque em cada marco dourado para abrir a explicação dele: são cinco momentos que mostram, em ordem, como a confiança nasce, é ameaçada e protege.",
+      "kicker": "Linha do tempo · Toque nos marcos",
+      "marcos": [
+        {
+          "ano": "Início",
+          "texto": "Com base na legislação em vigor, a pessoa adquire a arma de fogo respeitando todos os requisitos exigidos pela lei. Até aqui, a conduta é perfeitamente lícita e feita às claras.",
+          "titulo": "A aquisição dentro da lei"
+        },
+        {
+          "ano": "Mudança",
+          "texto": "Tempos depois, uma mudança na legislação faz o porte de arma passar a ser considerado crime. A regra nova nasce olhando para o futuro, mas o passado daquela pessoa fica sob tensão.",
+          "titulo": "A legislação é alterada"
+        },
+        {
+          "ano": "Acusação",
+          "texto": "Surge a tentativa de punir a pessoa pelo porte da arma comprada legalmente antes da mudança. É a confiança dela nas regras do seu tempo que está sob ataque.",
+          "titulo": "A ameaça de punição retroativa"
+        },
+        {
+          "ano": "Defesa",
+          "texto": "A defesa levanta o princípio da confiança: a pessoa agiu de acordo com a legislação anterior e confiou na sua legalidade. Punir seria punir a própria confiança que o ordenamento pede.",
+          "titulo": "A confiança é invocada"
+        },
+        {
+          "ano": "Lição",
+          "texto": "O caso mostra a força do princípio: um ordenamento que exige que as pessoas sigam as regras não pode, ao mesmo tempo, punir quem confiou nelas. A confiança é requisito do próprio fato típico.",
+          "titulo": "Confiar merece proteção"
+        }
+      ],
+      "narr": "A linha do tempo do caso da arma. Vamos amarrar o princípio da confiança numa história só, a do caso da arma de fogo. Toque em cada marco dourado para abrir a explicação dele: são cinco momentos que mostram, em ordem, como a confiança nasce, é ameaçada e protege.",
+      "tipo": "Linha do tempo",
+      "titulo": "A linha do tempo do caso da arma"
+    },
+    {
+      "alt": "Mapa mental de luz dourada com duas figuras no centro e cinco ramos ao redor",
+      "centro": "ALTERIDADE E CONFIANÇA",
+      "img": "mapamental",
+      "intro": "Para organizar tudo, um mapa da aula inteira. No centro estão os dois princípios; em volta, os cinco ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda.",
+      "kicker": "Mapa mental · Toque nos ramos",
+      "narr": "Mapa mental da aula. Para organizar tudo, um mapa da aula inteira. No centro estão os dois princípios; em volta, os cinco ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda.",
+      "ramos": [
+        {
+          "chips": [
+            "Claus Roxin",
+            "Patrimônio jurídico alheio"
+          ],
+          "nome": "Alteridade",
+          "texto": "Desenvolvida por Claus Roxin, proíbe incriminar a conduta meramente interna, o pensamento e a conduta moralmente censurável incapaz de invadir o patrimônio jurídico alheio."
+        },
+        {
+          "chips": [
+            "Só a si próprio",
+            "Não se pune"
+          ],
+          "nome": "Autolesão",
+          "texto": "É o fundamento da alteridade: ninguém pode ser punido por causar mal apenas a si próprio, porque falta o outro atingido."
+        },
+        {
+          "chips": [
+            "Lei 11.343/2006",
+            "Saúde pública"
+          ],
+          "nome": "Drogas e o artigo 28",
+          "texto": "Consumir drogas é conduta atípica pela alteridade. O artigo 28 da Lei 11.343/2006 tem como objetividade jurídica a saúde pública."
+        },
+        {
+          "chips": [
+            "Direito Penal espanhol",
+            "Fato típico"
+          ],
+          "nome": "Confiança",
+          "texto": "Difundida pelo Direito Penal espanhol, é requisito para a existência do fato típico: todos devem esperar dos outros comportamentos responsáveis e conforme o ordenamento."
+        },
+        {
+          "chips": [
+            "Normalmente acontece",
+            "Caso da arma"
+          ],
+          "nome": "Regras da experiência",
+          "texto": "Confia-se que o outro agirá conforme o juízo estatístico sobre o que normalmente acontece. É essa confiança que protege, no caso da arma, quem comprou dentro da lei."
+        }
+      ],
+      "tipo": "Mapa mental",
+      "titulo": "Mapa mental da aula"
+    },
+    {
+      "alt": "Alvo dourado com flechas e uma lupa revelando armadilhas sobre um pergaminho",
+      "corpo": "<p>Antes de fechar o conteúdo, eu separei as <b>cinco confusões</b> que mais derrubam candidatos neste tema. Grave cada uma:</p><div class=\"box\"><p class=\"blabel\">PEGADINHA 1 · TROCAR OS PAIS DOS PRINCÍPIOS</p><p>A <b>alteridade</b> foi desenvolvida por <b>Claus Roxin</b>. A <b>confiança</b> foi difundida pelo <b>Direito Penal espanhol</b>. A banca troca os dois de propósito, e essa é a pegadinha número um do tema.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 2 · PENSAMENTO NÃO É CRIME</p><p>Por mais censurável que um pensamento seja, ele não se pune. Conduta meramente interna e pensamento ficam fora do alcance do Direito Penal, pela alteridade.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 3 · MORAL NÃO É SINÔNIMO DE CRIME</p><p>Conduta moralmente censurável, mas incapaz de invadir o patrimônio jurídico alheio, <b>não</b> é crime. Reprovação moral e crime são coisas diferentes.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pegadinhas.webp\" alt=\"\"></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 4 · CONFIANÇA NÃO É SÓ SENTIMENTO</p><p>O princípio da confiança não é um clima de simpatia entre as pessoas: ele é <b>requisito para a existência do fato típico</b>, com lugar definido no raciocínio penal.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 5 · QUEM CONFIOU NA LEI TEM DEFESA</p><p>No caso da arma, a pessoa não fica desamparada diante da mudança da lei: ela invoca o princípio da confiança, porque agiu conforme a legislação anterior e confiou na sua legalidade.</p></div>",
+      "img": "pegadinhas",
+      "kicker": "Pegadinhas de prova",
+      "narr": "Não caia nessas! Antes de fechar o conteúdo, eu separei as cinco confusões que mais derrubam candidatos neste tema. Grave cada uma. Pegadinha um, trocar os pais dos princípios: a alteridade foi desenvolvida por Claus Roxin; a confiança foi difundida pelo Direito Penal espanhol. A banca troca os dois de propósito, e essa é a pegadinha número um do tema. Pegadinha dois, pensamento não é crime: por mais censurável que um pensamento seja, ele não se pune. Conduta meramente interna e pensamento ficam fora do alcance do Direito Penal, pela alteridade. Pegadinha três, moral não é sinônimo de crime: conduta moralmente censurável, mas incapaz de invadir o patrimônio jurídico alheio, não é crime. Reprovação moral e crime são coisas diferentes. Pegadinha quatro, confiança não é só sentimento: o princípio da confiança não é um clima de simpatia entre as pessoas; ele é requisito para a existência do fato típico, com lugar definido no raciocínio penal. Pegadinha cinco, quem confiou na lei tem defesa: no caso da arma, a pessoa não fica desamparada diante da mudança da lei; ela invoca o princípio da confiança, porque agiu conforme a legislação anterior e confiou na sua legalidade.",
+      "tipo": "Conteúdo",
+      "titulo": "Não caia nessas!"
+    },
+    {
+      "alt": "Martelo de juiz sobre um livro de leis aberto com marcador dourado",
+      "certa": 1,
+      "feedback": "Exatamente. Helena confia nas regras da experiência: motoristas param no vermelho porque é o que normalmente acontece, e o princípio da confiança não exige conhecer as pessoas, ele se apoia no comportamento que se espera de todos. A alteridade não é o caso aqui, porque ela trata de não punir o que não atinge o outro.",
+      "img": "martelo",
+      "intro": "Questão em <b>estilo de banca</b>, sobre a confiança no dia a dia. Leia o caso com atenção:",
+      "kicker": "Questão 3 · Estilo de banca",
+      "narr": "Questão três, em estilo de banca, sobre a confiança no dia a dia. Leia o caso com atenção: dirigindo por uma avenida com o sinal verde a seu favor, Helena avança o cruzamento na velocidade permitida, confiando que os veículos do sinal vermelho permanecerão parados, como normalmente acontece. Sobre a conduta de Helena, é correto afirmar o quê? Leia as alternativas e escolha a correta.",
+      "opcoes": [
+        "Ela age com imprudência, porque deveria presumir que todos desrespeitarão o sinal.",
+        "Ela se apoia no princípio da confiança: espera-se dos outros comportamentos responsáveis e em consonância com o ordenamento jurídico, de acordo com as regras da experiência.",
+        "Ela pratica conduta meramente interna, protegida pelo princípio da alteridade.",
+        "Ela só estaria amparada pelo princípio se conhecesse pessoalmente os outros motoristas."
+      ],
+      "questao": "Dirigindo por uma avenida com o sinal verde a seu favor, Helena avança o cruzamento na velocidade permitida, confiando que os veículos do sinal vermelho permanecerão parados, como normalmente acontece. Sobre a conduta de Helena, é correto afirmar que:",
+      "tipo": "Questão de banca",
+      "titulo": "Questão 3"
+    },
+    {
+      "alt": "Dois cartões de estudo em pé, frente e verso, ligados por uma fita vermelha",
+      "frente": "No exemplo da arma de fogo, qual princípio serve de argumento de defesa, e por quê?",
+      "img": "flashcards2",
+      "kicker": "Flashcard 3 · O caso da arma",
+      "narr": "Flashcard três: o caso da arma. No exemplo da arma de fogo, qual princípio serve de argumento de defesa, e por quê? Toque no cartão para ver a resposta.",
+      "tipo": "Flashcard",
+      "titulo": "Flashcard 3",
+      "verso": "<p>O <b>princípio da confiança</b>. A pessoa adquiriu a arma respeitando todos os requisitos da legislação então em vigor e <b>confiou na sua legalidade</b>.</p><p style='margin-top:10px'>Por isso, a confiança é invocada contra a <b>punição retroativa</b> depois da mudança da lei.</p>"
+    },
+    {
+      "alt": "Vista panorâmica de uma cidade com um tribunal e duas figuras ligadas por caminhos de luz dourada",
+      "corpo": "<p>Respira fundo e olha o <b>mapa completo</b> da nossa aula. Cada princípio responde a uma pergunta diferente, e cada um tem um exemplo que o carrega:</p><table class=\"cmp\"><tr><th>Princípio</th><th>Pergunta que ele responde</th><th>Exemplo clássico</th></tr><tr><td class=\"t\">Alteridade</td><td>A conduta atingiu outra pessoa?</td><td>Consumo de drogas (art. 28)</td></tr><tr><td class=\"t\">Confiança</td><td>Era razoável esperar que o outro seguisse as regras?</td><td>Arma legal e mudança da lei</td></tr></table><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/panorama.webp\" alt=\"\"></div><p>Se você decorar as <b>duas perguntas</b>, resolve o tema inteiro: quando a conduta não atinge ninguém além do próprio agente, a alteridade fecha a porta do Direito Penal; quando a análise depende do que se podia esperar dos outros, é a confiança que decide, como requisito do fato típico.</p><div class=\"fimbloco\"><p class=\"flabel\">NESTE BLOCO VOCÊ VIU</p><ul><li><b>Decisão rápida:</b> atingiu só o próprio agente é alteridade; dependia do comportamento esperado do outro é confiança.</li><li>As pegadinhas trocam Roxin pela Espanha e moral por crime: você já sabe separá-las.</li><li>O caso da arma, na linha do tempo, é o retrato completo do princípio da confiança.</li></ul></div>",
+      "img": "panorama",
+      "kicker": "Panorama geral",
+      "narr": "A aula em um relance. Respira fundo e olha o mapa completo da nossa aula. Cada princípio responde a uma pergunta diferente, e cada um tem um exemplo que o carrega. Alteridade: a pergunta é se a conduta atingiu outra pessoa, e o exemplo clássico é o consumo de drogas, do artigo vinte e oito. Confiança: a pergunta é se era razoável esperar que o outro seguisse as regras, e o exemplo clássico é a arma legal e a mudança da lei. Se você decorar as duas perguntas, resolve o tema inteiro: quando a conduta não atinge ninguém além do próprio agente, a alteridade fecha a porta do Direito Penal; quando a análise depende do que se podia esperar dos outros, é a confiança que decide, como requisito do fato típico.",
+      "tipo": "Conteúdo",
+      "titulo": "A aula em um relance"
+    },
+    {
+      "alt": "Martelo de juiz e placar dourado sobre um livro de leis aberto",
+      "img": "martelo",
+      "intro": "Chegou a hora do desafio que fecha a aula! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!",
+      "kicker": "Desafio final · Vale pontos",
+      "narr": "Desafio final: o placar da professora. Chegou a hora do desafio que fecha a aula! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!",
+      "perguntas": [
+        {
+          "certa": 1,
+          "exp": "Claus Roxin. O Direito Penal espanhol difundiu o outro princípio da aula, o da confiança.",
+          "ops": [
+            "O Direito Penal espanhol",
+            "Claus Roxin",
+            "O legislador da Lei de Drogas",
+            "A jurisprudência dos tribunais"
+          ],
+          "q": "Quem desenvolveu o princípio da alteridade?"
+        },
+        {
+          "certa": 2,
+          "exp": "A autolesão: ninguém pode ser punido por causar mal apenas a si próprio.",
+          "ops": [
+            "A conduta de terceiros",
+            "O arrependimento",
+            "A autolesão",
+            "O pensamento alheio"
+          ],
+          "q": "O fundamento do princípio da alteridade é a impossibilidade de punir:"
+        },
+        {
+          "certa": 2,
+          "exp": "A saúde pública, um bem de todos. O ato de consumir, que só atinge o próprio corpo, é atípico pela alteridade.",
+          "ops": [
+            "O corpo de quem consome",
+            "A moral pública",
+            "A saúde pública",
+            "O patrimônio do Estado"
+          ],
+          "q": "O artigo 28 da Lei nº 11.343/2006 tem como objetividade jurídica:"
+        },
+        {
+          "certa": 0,
+          "exp": "Do fato típico: sem considerar a confiança, nem se afirma que houve um fato digno de atenção penal.",
+          "ops": [
+            "Do fato típico",
+            "Da pena de multa",
+            "Do arrependimento",
+            "Da conduta interna"
+          ],
+          "q": "O princípio da confiança é requisito para a existência:"
+        },
+        {
+          "certa": 3,
+          "exp": "No juízo estatístico alicerçado naquilo que normalmente acontece: confia-se que o outro se comportará como as pessoas normalmente se comportam.",
+          "ops": [
+            "Na amizade entre as pessoas",
+            "Em previsões sobre o futuro distante",
+            "Na obrigação de desconfiar de todos",
+            "No juízo estatístico sobre o que normalmente acontece"
+          ],
+          "q": "As regras da experiência se apoiam:"
+        }
+      ],
+      "tipo": "Desafio",
+      "titulo": "Desafio final: o placar da professora"
+    },
+    {
+      "alt": "Medalha dourada com louros sobre um livro de leis aberto, sob luz radiante",
+      "certa": 2,
+      "feedback": "Brilhante! Você montou o caso inteiro com os dois princípios: o pensamento, por mais censurável, não se pune, porque nunca invadiu o patrimônio jurídico alheio; a autolesão não se pune, porque ninguém responde por causar mal apenas a si próprio; e, no trânsito, Marcos confiou nas regras da experiência, exatamente o comportamento que o princípio da confiança protege. É assim que uma banca espera que você raciocine.",
+      "img": "ouro",
+      "intro": "Para fechar, a <b>pergunta de ouro</b>: um caso completo, que junta os dois princípios da aula. Leia devagar, monte o quebra-cabeça e responda:",
+      "kicker": "Pergunta de Ouro · A mais valiosa da aula",
+      "narr": "Pergunta de ouro. Para fechar, a pergunta de ouro: um caso completo, que junta os dois princípios da aula. Leia devagar, monte o quebra-cabeça e responda: Marcos passou meses imaginando, em detalhes, um crime contra um vizinho, mas nunca fez nada. Depois, num ato impulsivo, feriu apenas a si próprio. Meses mais tarde, dirigindo com o sinal verde a seu favor, confiou que os veículos do sinal vermelho parariam, como normalmente acontece. Diante do caso, a conclusão correta é qual? Leia as alternativas e escolha a correta.",
+      "opcoes": [
+        "Marcos deve ser punido pelo pensamento, porque ele foi prolongado e moralmente censurável.",
+        "Marcos deve ser punido pela autolesão, porque causou um mal a si próprio e todo mal deve ser punido.",
+        "Nada do que Marcos fez é punível: o pensamento e a autolesão ficam fora do Direito Penal pelo princípio da alteridade, e, no trânsito, ele agiu amparado pelo princípio da confiança, pois seu sinal estava verde.",
+        "Marcos responde por imprudência no trânsito, porque confiar nos outros motoristas é sempre um risco proibido."
+      ],
+      "questao": "Marcos passou meses imaginando, em detalhes, um crime contra um vizinho, mas nunca fez nada. Depois, num ato impulsivo, feriu apenas a si próprio. Meses mais tarde, dirigindo com o sinal verde a seu favor, confiou que os veículos do sinal vermelho parariam, como normalmente acontece. Diante do caso, a conclusão correta é:",
+      "tipo": "Questão",
+      "titulo": "Pergunta de ouro"
+    },
+    {
+      "alt": "Estrada dourada saindo de um tribunal neoclássico em direção ao nascer do sol",
+      "corpo": "<p>Chegamos ao fim, e eu quero que você perceba o tamanho do que aprendeu com dois princípios aparentemente simples. Você descobriu que o Direito Penal tem uma <b>fronteira interna</b>: ele não entra na cabeça de ninguém, não julga a moral de ninguém e não pune quem só fez mal a si mesmo.</p><p>Você conheceu a <b>alteridade</b> de Claus Roxin, com o seu fundamento na autolesão e o exemplo do artigo 28 da Lei de Drogas, e conheceu a <b>confiança</b> vinda do Direito Penal espanhol, requisito do fato típico, apoiada nas regras da experiência e capaz de defender quem comprou uma arma dentro da lei e viu a lei mudar.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/capa.webp\" alt=\"\"></div><p>A lição maior é um método de duas perguntas: <b>a conduta atingiu outra pessoa?</b> e <b>era razoável esperar que o outro seguisse as regras?</b>. Com elas, você resolve alteridade e confiança em qualquer prova.</p><p>Parabéns por chegar até aqui! Na próxima aula, o estudo dos princípios continua com o princípio da proporcionalidade, também chamado de razoabilidade. Revisite os flashcards quando quiser e confie: princípio penal se aprende pelo <b>raciocínio</b>, não pela decoreba. Eu fico por aqui, e te espero na próxima aula. <b>Bons estudos!</b></p>",
+      "img": "fim",
+      "kicker": "Encerramento",
+      "narr": "O que você leva desta aula. Chegamos ao fim, e eu quero que você perceba o tamanho do que aprendeu com dois princípios aparentemente simples. Você descobriu que o Direito Penal tem uma fronteira interna: ele não entra na cabeça de ninguém, não julga a moral de ninguém e não pune quem só fez mal a si mesmo. Você conheceu a alteridade de Claus Roxin, com o seu fundamento na autolesão e o exemplo do artigo vinte e oito da Lei de Drogas, e conheceu a confiança vinda do Direito Penal espanhol, requisito do fato típico, apoiada nas regras da experiência e capaz de defender quem comprou uma arma dentro da lei e viu a lei mudar. A lição maior é um método de duas perguntas: a conduta atingiu outra pessoa? E era razoável esperar que o outro seguisse as regras? Com elas, você resolve alteridade e confiança em qualquer prova. Parabéns por chegar até aqui! Na próxima aula, o estudo dos princípios continua com o princípio da proporcionalidade, também chamado de razoabilidade. Revisite os flashcards quando quiser e confie: princípio penal se aprende pelo raciocínio, não pela decoreba. Eu fico por aqui, e te espero na próxima aula. Bons estudos!",
+      "pontos": [
+        "<b>Alteridade (Roxin):</b> sem atingir o outro, não há crime; pensamento e conduta interna não se punem.",
+        "<b>Autolesão:</b> ninguém é punido por causar mal apenas a si próprio.",
+        "<b>Artigo 28 da Lei de Drogas:</b> o consumo é atípico e o bem protegido é a saúde pública.",
+        "<b>Confiança (Direito Penal espanhol):</b> requisito para a existência do fato típico.",
+        "<b>Regras da experiência:</b> confia-se que o outro agirá como normalmente acontece."
+      ],
+      "tipo": "Encerramento",
+      "titulo": "O que você leva desta aula"
+    }
+  ],
+  "imagens": {
+    "capa": "assets/img/capa.webp",
+    "mapa": "assets/img/mapa.webp",
+    "alteridade": "assets/img/alteridade.webp",
+    "autolesao": "assets/img/autolesao.webp",
+    "drogas": "assets/img/drogas.webp",
+    "questao": "assets/img/questao.webp",
+    "flashcards": "assets/img/flashcards.webp",
+    "compfora": "assets/img/compfora.webp",
+    "compdentro": "assets/img/compdentro.webp",
+    "explorar": "assets/img/explorar.webp",
+    "sintese": "assets/img/sintese.webp",
+    "confianca": "assets/img/confianca.webp",
+    "experiencia": "assets/img/experiencia.webp",
+    "arma": "assets/img/arma.webp",
+    "questao2": "assets/img/questao2.webp",
+    "flashcards2": "assets/img/flashcards2.webp",
+    "revelar": "assets/img/revelar.webp",
+    "ligar": "assets/img/ligar.webp",
+    "lacuna": "assets/img/lacuna.webp",
+    "tabela": "assets/img/tabela.webp",
+    "cartasvf": "assets/img/cartasvf.webp",
+    "timeline": "assets/img/timeline.webp",
+    "mapamental": "assets/img/mapamental.webp",
+    "pegadinhas": "assets/img/pegadinhas.webp",
+    "martelo": "assets/img/martelo.webp",
+    "panorama": "assets/img/panorama.webp",
+    "ouro": "assets/img/ouro.webp",
+    "fim": "assets/img/fim.webp"
+  },
+  "audioBaseUrl": "assets/audio/s",
+  "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-04-principios-da-alteridade-e-da-confianca/aula.html"
+},
+  "penal-06-05": {
+  "aulaId": "penal-06-05",
+  "titulo": "Princípio da Proporcionalidade ou Razoabilidade",
+  "disciplinaId": "penal",
+  "totalEtapas": 30,
+  "slides": [
+    {
+      "tipo": "Capa",
+      "img": "capa",
+      "alt": "Salão de tribunal neoclássico com cortinas vermelhas e uma grande balança dourada perfeitamente equilibrada ao centro",
+      "kicker": "Direito Penal · Princípios Penais",
+      "titulo": "Princípio da Proporcionalidade ou Razoabilidade",
+      "corpo": "<p class=\"lead\">Punir tem medida. Nem castigo de menos, que deixa o bem jurídico desprotegido, nem castigo demais, que transforma a pena em abuso. No meio desses dois extremos mora o <b>princípio da proporcionalidade</b>, também chamado de <b>princípio da razoabilidade</b>.</p><p>Pensa comigo numa balança. De um lado, eu coloco o crime praticado e o bem que ele feriu. Do outro, coloco a pena que o Estado quer aplicar. Para a resposta ser justa, os dois pratos precisam conversar: a pena deve guardar <b>proporção</b> com a gravidade do fato e com a importância do bem protegido.</p><p>É esse equilíbrio que esta aula destrincha. Eu vou te mostrar que o princípio trabalha com <b>dois freios</b> ao mesmo tempo: ele proíbe o <b>excesso</b> de punição e proíbe, também, a <b>proteção insuficiente</b> dos bens jurídicos. E vou te mostrar quem são os <b>três destinatários</b> que precisam respeitar essa medida: o legislador, o juiz e os órgãos de execução penal.</p><div class=\"chips\"><span class=\"chip\">Proibição do excesso</span><span class=\"chip\">Proteção insuficiente</span><span class=\"chip\">Três destinatários</span></div><p>No caminho, você vai conhecer um caso real e famoso: o do <b>artigo 273 do Código Penal</b>, em que uma pena saltou de um a três anos para dez a quinze anos, e o Superior Tribunal de Justiça precisou dizer, com todas as letras, que aquilo era <b>inconstitucional</b>.</p>",
+      "narr": "Punir tem medida. Nem castigo de menos, que deixa o bem jurídico desprotegido, nem castigo demais, que transforma a pena em abuso. No meio desses dois extremos mora o princípio da proporcionalidade, também chamado de princípio da razoabilidade. Pensa comigo numa balança. De um lado, eu coloco o crime praticado e o bem que ele feriu. Do outro, coloco a pena que o Estado quer aplicar. Para a resposta ser justa, os dois pratos precisam conversar: a pena deve guardar proporção com a gravidade do fato e com a importância do bem protegido. É esse equilíbrio que esta aula destrincha. Eu vou te mostrar que o princípio trabalha com dois freios ao mesmo tempo: ele proíbe o excesso de punição e proíbe, também, a proteção insuficiente dos bens jurídicos. E vou te mostrar quem são os três destinatários que precisam respeitar essa medida: o legislador, o juiz e os órgãos de execução penal. No caminho, você vai conhecer um caso real e famoso: o do artigo duzentos e setenta e três do Código Penal, em que uma pena saltou de um a três anos para dez a quinze anos, e o Superior Tribunal de Justiça precisou dizer, com todas as letras, que aquilo era inconstitucional."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "roteiro",
+      "alt": "Estrada antiga de pedra com quatro caminhos passando por arcos com cortinas vermelhas em direção ao horizonte dourado",
+      "kicker": "Roteiro da aula",
+      "titulo": "O caminho desta aula",
+      "corpo": "<p>Antes de entrar no conteúdo, deixa eu te mostrar o <b>caminho que vamos percorrer juntas</b>. A aula está organizada em <b>quatro blocos</b>, e eu vou te acompanhar em cada um deles:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>A ideia central</h3><p>O que o princípio pede: pena na medida do bem jurídico protegido, nem demais, nem de menos.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>Proibição do excesso</h3><p>A primeira vertente, o garantismo negativo, e o caso do artigo 273 julgado pelo STJ.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>Proteção insuficiente</h3><p>A segunda vertente, o garantismo positivo, e o exemplo da proteção ao direito à vida.</p></div></div><div class=\"viarow\"><div class=\"vianum\">4</div><div><h3>Os três destinatários</h3><p>Legislador, juiz e execução penal: quem confere a medida em cada momento da pena.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/roteiro.webp\" alt=\"\"></div><p>O conteúdo vem em <b>texto corrido</b>, seguindo a ordem do tema, e a prática fica concentrada no <b>fim de cada bloco</b>: questões, flashcards, karaokê, comparador e atividades para fixar cada parte antes de seguir. No meio da aula, uma página de exploração com imagem grande e cinco pontos para descobrir. Vamos ao primeiro bloco!</p>",
+      "narr": "O caminho desta aula. Antes de entrar no conteúdo, deixa eu te mostrar o caminho que vamos percorrer juntas. A aula está organizada em quatro blocos, e eu vou te acompanhar em cada um deles. Bloco um: a ideia central. O que o princípio pede: pena na medida do bem jurídico protegido, nem demais, nem de menos. Bloco dois: proibição do excesso. A primeira vertente, o garantismo negativo, e o caso do artigo duzentos e setenta e três julgado pelo STJ. Bloco três: proteção insuficiente. A segunda vertente, o garantismo positivo, e o exemplo da proteção ao direito à vida. Bloco quatro: os três destinatários. Legislador, juiz e execução penal: quem confere a medida em cada momento da pena. O conteúdo vem em texto corrido, seguindo a ordem do tema, e a prática fica concentrada no fim de cada bloco, com questões, flashcards, karaokê, comparador e atividades para fixar cada parte antes de seguir. No meio da aula, uma página de exploração com imagem grande e cinco pontos para descobrir. Vamos ao primeiro bloco!"
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "conceito",
+      "alt": "Balança dourada de boticário em equilíbrio perfeito sobre mesa de mármore escura, diante de veludo vermelho",
+      "kicker": "A ideia central",
+      "titulo": "Nem demais, nem de menos",
+      "corpo": "<p>Eu explico o <b class=\"term\">princípio da proporcionalidade ou razoabilidade</b> com uma frase só: a resposta do Estado ao crime precisa caber na <b>medida</b> do bem jurídico que ele quer proteger. Ele funciona como uma <b>forte barreira</b> que impõe limites ao poder de punir: o Estado pode punir, e deve punir, mas sempre dentro de uma proporção.</p><p>Repara que os dois nomes caminham juntos nesta aula: <b>proporcionalidade</b> e <b>razoabilidade</b> são duas formas de falar da mesma exigência de equilíbrio. A pena precisa ser <b>adequada</b> ao fato praticado e <b>equilibrada</b> na sua intensidade, sem sobrar e sem faltar.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/conceito.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como a <b>dose de um remédio</b>. Dose fraca demais não cura o paciente; dose forte demais envenena. A dose certa é aquela que <b>resolve o problema sem criar outro maior</b>. Com a pena acontece exatamente a mesma coisa.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">A pena certa é a que protege o bem jurídico sem passar da medida.</p></div><p>E atenção a um detalhe que muita gente erra: esse princípio <b>não conversa só com o juiz</b> na hora da sentença. Ele fala, antes de tudo, com <b>quem escreve a lei</b>, porque é na lei que a pena nasce. Daqui a pouco você conhece os três destinatários um por um. Antes, eu quero que você sinta o princípio trabalhando nos seus <b>dois sentidos</b>.</p>",
+      "narr": "Nem demais, nem de menos. Eu explico o princípio da proporcionalidade ou razoabilidade com uma frase só: a resposta do Estado ao crime precisa caber na medida do bem jurídico que ele quer proteger. Ele funciona como uma forte barreira que impõe limites ao poder de punir: o Estado pode punir, e deve punir, mas sempre dentro de uma proporção. Repara que os dois nomes caminham juntos nesta aula: proporcionalidade e razoabilidade são duas formas de falar da mesma exigência de equilíbrio. A pena precisa ser adequada ao fato praticado e equilibrada na sua intensidade, sem sobrar e sem faltar. Pense assim: é como a dose de um remédio. Dose fraca demais não cura o paciente; dose forte demais envenena. A dose certa é aquela que resolve o problema sem criar outro maior. Com a pena acontece exatamente a mesma coisa. E atenção a um detalhe que muita gente erra: esse princípio não conversa só com o juiz na hora da sentença. Ele fala, antes de tudo, com quem escreve a lei, porque é na lei que a pena nasce. Daqui a pouco você conhece os três destinatários um por um. Antes, eu quero que você sinta o princípio trabalhando nos seus dois sentidos."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "perguntas",
+      "alt": "Balança dourada gigante desequilibrada: um prato afunda com correntes de ferro pesadas e o outro sobe quase vazio, com uma única pena branca",
+      "kicker": "A ideia central · O mapa do princípio",
+      "titulo": "Um princípio, duas perguntas",
+      "corpo": "<p>Antes de mergulhar nas vertentes, guarda este <b>mapa</b> na cabeça. O princípio da proporcionalidade nasce de <b>duas perguntas</b> que precisam ser feitas toda vez que o Estado cria ou aplica uma pena:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>O Estado está punindo demais?</h3><p>Se a resposta for sim, estamos diante do <b>excesso</b>: a pena passou do necessário para proteger o bem jurídico. É a primeira vertente do princípio.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>O Estado está protegendo de menos?</h3><p>Se a resposta for sim, estamos diante da <b>insuficiência</b>: a proteção ficou abaixo do necessário, e o bem jurídico ficou abandonado. É a segunda vertente.</p></div></div><p>As duas perguntas nascem do mesmo raciocínio: a pena é uma <b>intervenção forte</b> na vida das pessoas, e toda intervenção estatal precisa de justificativa e de medida. Punir além do necessário é <b>abuso</b>; proteger abaixo do necessário é <b>abandono</b> do bem jurídico.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/perguntas.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Imagina uma lei que previsse <b>dez anos de prisão</b> para quem atravessasse a rua fora da faixa de pedestres. Qualquer pessoa percebe, de imediato, que a resposta passou da medida. Esse incômodo que você sentiu é o <b>princípio da proporcionalidade</b> trabalhando dentro de você.</p></div></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>A proporcionalidade exige pena na <b>medida</b> do bem jurídico protegido.</li><li>O princípio trabalha em dois sentidos: contra o <b>excesso</b> e contra a <b>insuficiência</b>.</li><li>Ele é uma <b>barreira de limites</b> ao poder de punir do Estado.</li></ul></div>",
+      "narr": "Um princípio, duas perguntas. Antes de mergulhar nas vertentes, guarda este mapa na cabeça. O princípio da proporcionalidade nasce de duas perguntas que precisam ser feitas toda vez que o Estado cria ou aplica uma pena. Pergunta um: o Estado está punindo demais? Se a resposta for sim, estamos diante do excesso: a pena passou do necessário para proteger o bem jurídico; é a primeira vertente do princípio. Pergunta dois: o Estado está protegendo de menos? Se a resposta for sim, estamos diante da insuficiência: a proteção ficou abaixo do necessário, e o bem jurídico ficou abandonado; é a segunda vertente. As duas perguntas nascem do mesmo raciocínio: a pena é uma intervenção forte na vida das pessoas, e toda intervenção estatal precisa de justificativa e de medida. Punir além do necessário é abuso; proteger abaixo do necessário é abandono do bem jurídico. Exemplo prático: imagina uma lei que previsse dez anos de prisão para quem atravessasse a rua fora da faixa de pedestres. Qualquer pessoa percebe, de imediato, que a resposta passou da medida. Esse incômodo que você sentiu é o princípio da proporcionalidade trabalhando dentro de você."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova antigo com pena de escrever, selo dourado e ampulheta sobre mesa escura",
+      "kicker": "Questão 1 · A ideia central",
+      "titulo": "Questão 1",
+      "intro": "Primeiro treino, sobre a <b>ideia central</b> do princípio. Responda com calma:",
+      "questao": "O princípio da proporcionalidade ou razoabilidade, no Direito Penal, significa que:",
+      "opcoes": [
+        "A pena deve ser sempre a mais severa possível, para intimidar a sociedade",
+        "A pena deve guardar medida com o bem jurídico protegido, sem excesso e sem insuficiência",
+        "O juiz pode criar penas novas quando considerar o caso muito grave",
+        "A proteção dos bens jurídicos deve ser apenas simbólica, quase sem pena"
+      ],
+      "certa": 1,
+      "feedback": "Isso mesmo! Proporcionalidade é medida: nem punir além do necessário, nem proteger abaixo do necessário. Pena máxima automática é excesso; pena criada pelo juiz violaria a legalidade; e proteção apenas simbólica é justamente a insuficiência que a segunda vertente proíbe.",
+      "narr": "Questão um: a ideia central. Primeiro treino, sobre a ideia central do princípio. Responda com calma: o princípio da proporcionalidade ou razoabilidade, no Direito Penal, significa que quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha sobre mesa escura, ao lado de uma caneta dourada",
+      "kicker": "Flashcard 1 · As duas vertentes",
+      "titulo": "Flashcard 1",
+      "frente": "Quais são as duas vertentes do princípio da proporcionalidade?",
+      "verso": "<p><b>Proibição do excesso</b> (garantismo negativo): não punir mais do que o necessário.</p><p style='margin-top:10px'><b>Proibição da proteção insuficiente</b> (garantismo positivo): não punir menos do que o necessário para proteger o bem jurídico.</p>",
+      "narr": "Flashcard um: as duas vertentes. Quais são as duas vertentes do princípio da proporcionalidade? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "excesso",
+      "alt": "Martelo de juiz gigante caindo com força exagerada e entortando violentamente uma balança dourada, com faíscas",
+      "kicker": "Primeira vertente · Garantismo negativo",
+      "titulo": "Proibição do excesso: punir demais é proibido",
+      "corpo": "<p>Chegamos à <b>primeira vertente</b> do princípio: a <b class=\"term\">proibição do excesso</b>, também chamada de <b>garantismo negativo</b>. Ela trata da proibição de punir <b>mais do que o necessário</b>, ou seja, de forma exagerada, a proteção do bem jurídico.</p><p>O nome ajuda a guardar: é um garantismo que protege a <b>pessoa contra o Estado</b>, funcionando como um <b>escudo</b>. Quando a lei exagera na pena, ela deixa de proteger a sociedade e passa a ferir, sem necessidade, quem deveria ser punido apenas na medida do fato.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/excesso.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É o <b>freio</b> do legislador. A lei pode avançar na proteção dos bens jurídicos, mas, se passar do ponto, o freio segura: <b>pena exagerada não é proteção maior</b>, é injustiça com nome de lei.</p></div></div><p>E não pense que isso é só teoria de manual. Essa vertente já derrubou, na prática, o <b>preceito secundário</b> de um artigo do Código Penal, num julgamento do Superior Tribunal de Justiça que ficou famoso nos estudos de princípios penais. É esse caso que eu te conto nas próximas duas etapas, com todos os detalhes.</p>",
+      "narr": "Proibição do excesso: punir demais é proibido. Chegamos à primeira vertente do princípio: a proibição do excesso, também chamada de garantismo negativo. Ela trata da proibição de punir mais do que o necessário, ou seja, de forma exagerada, a proteção do bem jurídico. O nome ajuda a guardar: é um garantismo que protege a pessoa contra o Estado, funcionando como um escudo. Quando a lei exagera na pena, ela deixa de proteger a sociedade e passa a ferir, sem necessidade, quem deveria ser punido apenas na medida do fato. Pense assim: é o freio do legislador. A lei pode avançar na proteção dos bens jurídicos, mas, se passar do ponto, o freio segura: pena exagerada não é proteção maior, é injustiça com nome de lei. E não pense que isso é só teoria de manual. Essa vertente já derrubou, na prática, o preceito secundário de um artigo do Código Penal, num julgamento do Superior Tribunal de Justiça que ficou famoso nos estudos de princípios penais. É esse caso que eu te conto nas próximas duas etapas, com todos os detalhes."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "remedios",
+      "alt": "Prateleiras de um depósito escuro cheias de frascos e vidros de medicamentos sem rótulo, com um feixe de luz dourada",
+      "kicker": "O caso do art. 273 · Código Penal",
+      "titulo": "A pena que saltou de 1 a 3 para 10 a 15 anos",
+      "corpo": "<p>O <b>artigo 273 do Código Penal</b> pune quem falsifica, corrompe, adultera ou altera produto destinado a fins terapêuticos ou medicinais. É um crime contra a <b>saúde pública</b>, e a pena é pesada: <b>reclusão de dez a quinze anos, e multa</b>.</p><div class=\"box\"><p class=\"blabel\">O TEXTO DA LEI</p><p>Art. 273. Falsificar, corromper, adulterar ou alterar produto destinado a fins terapêuticos ou medicinais: pena, reclusão, de 10 (dez) a 15 (quinze) anos, e multa.</p></div><p>O <b>parágrafo 1º-B</b> do mesmo artigo estende essas penas a quem pratica as condutas do artigo em relação a produtos em situações bem específicas: sem registro, quando exigível, no órgão de vigilância sanitária; em desacordo com a fórmula constante do registro; sem as características de identidade e qualidade admitidas para a comercialização; com redução do valor terapêutico ou da atividade; <b>de procedência ignorada</b>, que é o inciso V; ou adquiridos de estabelecimento sem licença da autoridade sanitária.</p><p>Agora, o detalhe que muda tudo: <b>antes</b> da redação dada pela <b>Lei nº 9.677, de 1998</b>, a pena prevista para essas condutas era de <b>um a três anos e multa</b>. A lei nova multiplicou a reprimenda e colocou, no mesmo patamar de dez a quinze anos, condutas de <b>gravidades muito diferentes</b>.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">A mesma pena de dez a quinze anos passou a alcançar condutas de gravidades muito diferentes.</p></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/remedios.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>No caso concreto que chegou ao STJ, o réu foi condenado a <b>onze anos de reclusão</b> e ao pagamento de <b>oitenta dias-multa</b>, porque mantinha em depósito, para vender, <b>medicamentos de procedência ignorada</b>, conhecidos por serem utilizados como <b>anabolizantes</b>.</p></div></div>",
+      "narr": "A pena que saltou de um a três para dez a quinze anos. O artigo duzentos e setenta e três do Código Penal pune quem falsifica, corrompe, adultera ou altera produto destinado a fins terapêuticos ou medicinais. É um crime contra a saúde pública, e a pena é pesada: reclusão de dez a quinze anos, e multa. O texto da lei: artigo duzentos e setenta e três. Falsificar, corromper, adulterar ou alterar produto destinado a fins terapêuticos ou medicinais: pena, reclusão, de dez a quinze anos, e multa. O parágrafo primeiro B do mesmo artigo estende essas penas a quem pratica as condutas do artigo em relação a produtos em situações bem específicas: sem registro, quando exigível, no órgão de vigilância sanitária; em desacordo com a fórmula constante do registro; sem as características de identidade e qualidade admitidas para a comercialização; com redução do valor terapêutico ou da atividade; de procedência ignorada, que é o inciso cinco; ou adquiridos de estabelecimento sem licença da autoridade sanitária. Agora, o detalhe que muda tudo: antes da redação dada pela Lei número nove mil seiscentos e setenta e sete, de mil novecentos e noventa e oito, a pena prevista para essas condutas era de um a três anos e multa. A lei nova multiplicou a reprimenda e colocou, no mesmo patamar de dez a quinze anos, condutas de gravidades muito diferentes. Exemplo prático: no caso concreto que chegou ao STJ, o réu foi condenado a onze anos de reclusão e ao pagamento de oitenta dias-multa, porque mantinha em depósito, para vender, medicamentos de procedência ignorada, conhecidos por serem utilizados como anabolizantes."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "tribunal",
+      "alt": "Sala solene de tribunal superior, com juízes de toga em bancada elevada de madeira e cortinas vermelhas ao fundo",
+      "kicker": "O caso do art. 273 · O julgamento",
+      "titulo": "O STJ declara a inconstitucionalidade",
+      "corpo": "<p>O caso chegou ao <b>Superior Tribunal de Justiça</b>, e, na <b>Arguição de Inconstitucionalidade no Habeas Corpus 239.363, do Paraná</b>, o tribunal entendeu pela <b>inconstitucionalidade do preceito secundário</b> do artigo 273, parágrafo 1º-B, inciso V, do Código Penal, por ofensa aos princípios da <b>proporcionalidade</b> e da <b>razoabilidade</b>.</p><p>O raciocínio do julgamento foi o seguinte: para sustentar uma pena tão alta, seria <b>indispensável o dano concreto</b> à saúde do pretenso usuário do produto. Sem essa correspondência, evidencia-se a <b>falta de harmonia</b> entre o delito e a pena abstratamente cominada.</p><p>E o tribunal fez uma <b>comparação</b> que deixou tudo mais claro: colocou esse delito ao lado, por exemplo, do crime de <b>tráfico ilícito de drogas</b>. Quando condutas de menor gravidade recebem a mesma régua de crimes gravíssimos, alguma coisa saiu da proporção.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/tribunal.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Guardar medicamentos de procedência ignorada num depósito não pode custar, no papel, o mesmo que os crimes mais graves contra a saúde. Quando a régua da lei marca errado, é o <b>princípio da proporcionalidade</b> que corrige a medição.</p></div></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li><b>Proibição do excesso:</b> punir mais que o necessário é inconstitucional.</li><li>O caso do art. 273: pena de 10 a 15 anos declarada desproporcional pelo STJ.</li><li>Sem dano concreto à saúde, falta harmonia entre o delito e a pena.</li></ul></div>",
+      "narr": "O STJ declara a inconstitucionalidade. O caso chegou ao Superior Tribunal de Justiça, e, na Arguição de Inconstitucionalidade no Habeas Corpus duzentos e trinta e nove mil trezentos e sessenta e três, do Paraná, o tribunal entendeu pela inconstitucionalidade do preceito secundário do artigo duzentos e setenta e três, parágrafo primeiro B, inciso cinco, do Código Penal, por ofensa aos princípios da proporcionalidade e da razoabilidade. O raciocínio do julgamento foi o seguinte: para sustentar uma pena tão alta, seria indispensável o dano concreto à saúde do pretenso usuário do produto. Sem essa correspondência, evidencia-se a falta de harmonia entre o delito e a pena abstratamente cominada. E o tribunal fez uma comparação que deixou tudo mais claro: colocou esse delito ao lado, por exemplo, do crime de tráfico ilícito de drogas. Quando condutas de menor gravidade recebem a mesma régua de crimes gravíssimos, alguma coisa saiu da proporção. Pense assim: guardar medicamentos de procedência ignorada num depósito não pode custar, no papel, o mesmo que os crimes mais graves contra a saúde. Quando a régua da lei marca errado, é o princípio da proporcionalidade que corrige a medição."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao2",
+      "alt": "Lupa sobre alternativas em papel escuro, com pena e tinteiro ao lado",
+      "kicker": "Questão 2 · O caso do art. 273",
+      "titulo": "Questão 2",
+      "intro": "Agora treina com o <b>caso real</b> que você acabou de estudar:",
+      "questao": "No julgamento da Arguição de Inconstitucionalidade no HC 239.363/PR, o STJ declarou inconstitucional o preceito secundário do art. 273, § 1º-B, V, do Código Penal, porque:",
+      "opcoes": [
+        "O artigo protegia a saúde pública de forma insuficiente",
+        "A pena cominada era exagerada, sem harmonia com o delito, ofendendo a proporcionalidade",
+        "O réu era primário e tinha bons antecedentes pessoais",
+        "A lei que elevou a pena tinha sido criada por medida provisória"
+      ],
+      "certa": 1,
+      "feedback": "Perfeito! É a proibição do excesso em ação: a pena de dez a quinze anos, aplicada a condutas como manter medicamentos de procedência ignorada, foi considerada desproporcional, sem harmonia entre o delito e a reprimenda, especialmente sem dano concreto à saúde do usuário.",
+      "narr": "Questão dois: o caso do artigo duzentos e setenta e três. Agora treina com o caso real que você acabou de estudar: no julgamento da Arguição de Inconstitucionalidade no Habeas Corpus duzentos e trinta e nove mil trezentos e sessenta e três, do Paraná, o STJ declarou inconstitucional o preceito secundário do artigo duzentos e setenta e três, parágrafo primeiro B, inciso cinco, do Código Penal, por quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards2",
+      "alt": "Dois cartões de estudo em pé, frente e verso, ligados por fita vermelha sob luz dourada",
+      "kicker": "Flashcard 2 · Garantismo negativo",
+      "titulo": "Flashcard 2",
+      "frente": "O que é o garantismo negativo?",
+      "verso": "<p>É a <b>proibição do excesso</b>: o Estado não pode punir mais do que o necessário para proteger o bem jurídico.</p><p style='margin-top:10px'>Caso clássico: a inconstitucionalidade do preceito secundário do <b>art. 273, § 1º-B, V, do Código Penal</b>, declarada pelo STJ no HC 239.363/PR.</p>",
+      "narr": "Flashcard dois: garantismo negativo. O que é o garantismo negativo? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Karaokê",
+      "img": "conceito",
+      "alt": "Balança dourada de boticário em equilíbrio perfeito sobre mesa de mármore escura",
+      "kicker": "Karaokê · Siga a narração",
+      "titulo": "Recapitule com a narração",
+      "frases": [
+        "Chegou a hora de recapitular a primeira vertente, acompanhando a narração pela tela.",
+        "A proibição do excesso, o garantismo negativo, veda punir mais do que o necessário.",
+        "No caso do artigo 273, a pena saltou de um a três anos para dez a quinze anos.",
+        "O réu guardava medicamentos de procedência ignorada, usados como anabolizantes, e foi condenado a onze anos.",
+        "O STJ declarou inconstitucional o preceito secundário do artigo, por ofensa à proporcionalidade.",
+        "Faltava harmonia entre o delito e a pena, sem dano concreto à saúde do usuário.",
+        "Se você gravou excesso, desproporção e inconstitucionalidade, você gravou a primeira vertente."
+      ],
+      "narr": "Chegou a hora de recapitular a primeira vertente, acompanhando a narração pela tela. A proibição do excesso, o garantismo negativo, veda punir mais do que o necessário. No caso do artigo duzentos e setenta e três, a pena saltou de um a três anos para dez a quinze anos. O réu guardava medicamentos de procedência ignorada, usados como anabolizantes, e foi condenado a onze anos. O STJ declarou inconstitucional o preceito secundário do artigo, por ofensa à proporcionalidade. Faltava harmonia entre o delito e a pena, sem dano concreto à saúde do usuário. Se você gravou excesso, desproporção e inconstitucionalidade, você gravou a primeira vertente."
+    },
+    {
+      "tipo": "Comparador",
+      "img": "comp-excesso",
+      "img2": "comp-medida",
+      "alt": "Comparador de duas cenas: a cela com cadeado gigantesco do excesso e a balança serena e equilibrada da medida certa",
+      "kicker": "Comparador · Arraste a barra",
+      "titulo": "Excesso de um lado, medida certa do outro",
+      "intro": "Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, o excesso: o cadeado desproporcional, a pena de dez a quinze anos aplicada com a mesma régua a condutas de gravidades muito diferentes. Do outro, a medida certa: a balança calma e equilibrada, em que cada fato recebe a pena que corresponde à sua gravidade. É entre essas duas imagens que o princípio da proporcionalidade trabalha.",
+      "rotulo1": "EXCESSO",
+      "rotulo2": "MEDIDA CERTA",
+      "narr": "Excesso de um lado, medida certa do outro. Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, o excesso: o cadeado desproporcional, a pena de dez a quinze anos aplicada com a mesma régua a condutas de gravidades muito diferentes. Do outro, a medida certa: a balança calma e equilibrada, em que cada fato recebe a pena que corresponde à sua gravidade. É entre essas duas imagens que o princípio da proporcionalidade trabalha."
+    },
+    {
+      "tipo": "Explorar",
+      "img": "explorar",
+      "alt": "Imagem vertical em cinco cenas empilhadas: o legislador escrevendo a lei, prateleiras de medicamentos, a balança tombada pelo excesso, o tribunal superior julgando e a balança equilibrada ao amanhecer",
+      "kicker": "Exploração · Toque nos pontos",
+      "titulo": "Explore a imagem: o caso em cinco cenas",
+      "intro": "Esta imagem grande conta o caso do artigo 273 de baixo para cima: da caneta do legislador até a balança voltar ao equilíbrio. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "fimTexto": "Você percorreu a imagem inteira: da caneta do legislador à balança equilibrada, que é onde toda pena deveria chegar.",
+      "pontos": [
+        {
+          "x": 50,
+          "y": 89,
+          "titulo": "O legislador escreve a pena",
+          "texto": "Na base da imagem, o legislador redige a lei. É ele quem escolhe, em abstrato, quanto vale cada crime. Neste caso, foi a Lei nº 9.677, de 1998, que reescreveu a pena do artigo 273 e acendeu o problema que você vai ver nas cenas de cima."
+        },
+        {
+          "x": 56,
+          "y": 66,
+          "titulo": "O bem jurídico pede proteção",
+          "texto": "Os frascos de medicamentos representam o bem jurídico em jogo no caso: a saúde pública. É para protegê-la que a pena existe. Repare: ninguém discute que ela merece proteção; a discussão é sobre a medida dessa proteção."
+        },
+        {
+          "x": 44,
+          "y": 46,
+          "titulo": "O excesso aparece",
+          "texto": "A balança tombada, arrastada por correntes pesadas, mostra o excesso: a pena saltou de um a três anos para dez a quinze anos, e passou a alcançar, com a mesma régua, condutas de gravidades muito diferentes, como guardar produtos de procedência ignorada."
+        },
+        {
+          "x": 50,
+          "y": 27,
+          "titulo": "O tribunal corrige a medida",
+          "texto": "Na sala do tribunal, o caso é julgado. Na Arguição de Inconstitucionalidade no Habeas Corpus 239.363, do Paraná, o Superior Tribunal de Justiça declarou inconstitucional o preceito secundário do artigo 273, parágrafo 1º-B, inciso V: faltava harmonia entre o delito e a pena."
+        },
+        {
+          "x": 50,
+          "y": 10,
+          "titulo": "O equilíbrio no topo",
+          "texto": "No topo da imagem, a balança volta ao equilíbrio sob o amanhecer. É a imagem do princípio inteiro: proteger o bem jurídico com firmeza, mas sempre dentro da medida, sem excesso e sem insuficiência."
+        }
+      ],
+      "narr": "Explore a imagem: o caso em cinco cenas. Esta imagem grande conta o caso do artigo duzentos e setenta e três de baixo para cima: da caneta do legislador até a balança voltar ao equilíbrio. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "insuficiente",
+      "alt": "Escudo dourado fino e rachado protegendo com dificuldade uma chama frágil contra o vento forte",
+      "kicker": "Segunda vertente · Garantismo positivo",
+      "titulo": "Proibição da proteção insuficiente",
+      "corpo": "<p>Agora vira a moeda. A <b>segunda vertente</b> é a <b class=\"term\">proibição da proteção insuficiente de bens jurídicos</b>, também chamada de <b>garantismo positivo</b>. Nela, não se pode punir <b>menos que o necessário</b> para a proteção do bem jurídico, ou seja, de forma insuficiente.</p><p>Se o garantismo negativo é o escudo que protege a pessoa do Estado, o garantismo positivo é a <b>cobrança</b> que a sociedade faz ao Estado: proteger de verdade. Uma lei que finge proteger, com pena irrisória ou com a retirada completa da proteção, <b>abandona</b> o bem jurídico à própria sorte.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/insuficiente.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Imagina um <b>colete salva-vidas feito de papel</b>. Ele existe, está ali pendurado, mas, na hora do naufrágio, não salva ninguém. Proteção que não protege de verdade é isso: <b>insuficiência disfarçada de cuidado</b>.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Proteger de menos também fere o princípio: bem jurídico não se protege só no papel.</p></div><p>Repara na <b>simetria</b> bonita do princípio: o mesmo raciocínio que impede a pena exagerada impede, também, a pena fraca demais. O ponto certo continua sendo um só: o <b>equilíbrio</b>.</p>",
+      "narr": "Proibição da proteção insuficiente. Agora vira a moeda. A segunda vertente é a proibição da proteção insuficiente de bens jurídicos, também chamada de garantismo positivo. Nela, não se pode punir menos que o necessário para a proteção do bem jurídico, ou seja, de forma insuficiente. Se o garantismo negativo é o escudo que protege a pessoa do Estado, o garantismo positivo é a cobrança que a sociedade faz ao Estado: proteger de verdade. Uma lei que finge proteger, com pena irrisória ou com a retirada completa da proteção, abandona o bem jurídico à própria sorte. Pense assim: imagina um colete salva-vidas feito de papel. Ele existe, está ali pendurado, mas, na hora do naufrágio, não salva ninguém. Proteção que não protege de verdade é isso: insuficiência disfarçada de cuidado. Repara na simetria bonita do princípio: o mesmo raciocínio que impede a pena exagerada impede, também, a pena fraca demais. O ponto certo continua sendo um só: o equilíbrio."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "vida",
+      "alt": "Duas mãos em concha protegendo com cuidado uma mudinha de luz dourada, símbolo do direito à vida protegido",
+      "kicker": "Segunda vertente · O exemplo clássico",
+      "titulo": "O exemplo da vida: proteger é dever",
+      "corpo": "<p>O exemplo clássico dessa vertente envolve um dos bens mais importantes de todos: a <b>vida</b>. Pensa na hipótese da <b>descriminalização do aborto</b>. Ela poderia ser considerada <b>inconstitucional</b> em razão da <b>insuficiente proteção</b> ao direito fundamental à vida.</p><p>Entende o raciocínio? Se a vida é um <b>direito fundamental</b>, retirar dela a proteção penal pode significar proteger <b>menos do que o necessário</b>. Aqui, o problema não é o Estado punindo demais: é o Estado protegendo de menos, e é exatamente isso que a segunda vertente proíbe.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/vida.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Troca o exemplo para sentir a lógica: imagina uma lei que passasse a punir o homicídio com uma simples <b>multa de trânsito</b>. Todo mundo perceberia, na hora, que a proteção da vida ficou <b>insuficiente</b>, quase uma encenação. É esse o vício que o garantismo positivo combate.</p></div></div><p>E guarda a diferença prática entre as vertentes: na primeira, quem provoca o controle é o <b>exagero</b> da lei; na segunda, é a <b>falta</b> dela. Nos dois casos, o fundamento é o mesmo princípio, e o nome do erro é o mesmo: desproporção.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li><b>Garantismo positivo:</b> punir menos que o necessário também é desproporcional.</li><li>O exemplo clássico: a descriminalização do aborto e a proteção à vida.</li><li>O bem jurídico não pode ficar protegido <b>só no papel</b>.</li></ul></div>",
+      "narr": "O exemplo da vida: proteger é dever. O exemplo clássico dessa vertente envolve um dos bens mais importantes de todos: a vida. Pensa na hipótese da descriminalização do aborto. Ela poderia ser considerada inconstitucional em razão da insuficiente proteção ao direito fundamental à vida. Entende o raciocínio? Se a vida é um direito fundamental, retirar dela a proteção penal pode significar proteger menos do que o necessário. Aqui, o problema não é o Estado punindo demais: é o Estado protegendo de menos, e é exatamente isso que a segunda vertente proíbe. Exemplo prático: troca o exemplo para sentir a lógica: imagina uma lei que passasse a punir o homicídio com uma simples multa de trânsito. Todo mundo perceberia, na hora, que a proteção da vida ficou insuficiente, quase uma encenação. É esse o vício que o garantismo positivo combate. E guarda a diferença prática entre as vertentes: na primeira, quem provoca o controle é o exagero da lei; na segunda, é a falta dela. Nos dois casos, o fundamento é o mesmo princípio, e o nome do erro é o mesmo: desproporção."
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "martelo",
+      "alt": "Martelo de juiz com faixa dourada sobre um livro de leis antigo aberto, com marcador de fita vermelha",
+      "kicker": "Questão 3 · Estilo de banca",
+      "titulo": "Questão 3",
+      "intro": "Questão em <b>estilo de banca</b>, sobre a segunda vertente. Leia o enunciado com atenção:",
+      "questao": "A proibição da proteção insuficiente de bens jurídicos, vertente do princípio da proporcionalidade ou razoabilidade, é também conhecida como:",
+      "opcoes": [
+        "Garantismo negativo",
+        "Garantismo positivo",
+        "Princípio da insignificância",
+        "Princípio da reserva legal"
+      ],
+      "certa": 1,
+      "feedback": "Exatamente: garantismo positivo. É o Estado sendo cobrado a proteger os bens jurídicos de verdade, sem punir menos que o necessário. Garantismo negativo é a outra vertente, a proibição do excesso; insignificância e reserva legal são princípios diferentes, estudados em outras aulas desta série.",
+      "narr": "Questão três, em estilo de banca, sobre a segunda vertente. Leia o enunciado com atenção: a proibição da proteção insuficiente de bens jurídicos, vertente do princípio da proporcionalidade ou razoabilidade, é também conhecida como quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Toque e revele",
+      "img": "revelar",
+      "alt": "Quatro cartas douradas viradas para baixo sobre veludo vermelho, uma se levantando sob a luz de uma vela",
+      "kicker": "Toque e revele",
+      "titulo": "Toque, pense e revele",
+      "intro": "Quatro cartas escondem quatro perguntas rápidas sobre as duas vertentes. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "cartas": [
+        {
+          "p": "Qual é a diferença entre garantismo negativo e garantismo positivo?",
+          "r": "O <b>negativo</b> proíbe o excesso: punir mais que o necessário. O <b>positivo</b> proíbe a insuficiência: punir menos que o necessário para proteger o bem jurídico."
+        },
+        {
+          "p": "Qual era a pena das condutas do art. 273 antes da Lei nº 9.677/1998?",
+          "r": "De <b>um a três anos</b> e multa. A lei de 1998 elevou a reprimenda para dez a quinze anos, e foi esse salto que gerou a declaração de inconstitucionalidade pelo STJ."
+        },
+        {
+          "p": "Por que o STJ falou em dano concreto à saúde no caso do art. 273?",
+          "r": "Porque, sem <b>dano concreto</b> à saúde do pretenso usuário, faltava harmonia entre o delito e a pena abstratamente cominada: a reprimenda ficou desproporcional."
+        },
+        {
+          "p": "A proporcionalidade conversa só com o juiz da sentença?",
+          "r": "Não. Ela tem <b>três destinatários</b>: o legislador, o juiz da ação penal e os órgãos de execução penal, que você conhece no próximo bloco."
+        }
+      ],
+      "narr": "Toque, pense e revele. Quatro cartas escondem quatro perguntas rápidas sobre as duas vertentes. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar."
+    },
+    {
+      "tipo": "Ligar termos",
+      "img": "ligar",
+      "alt": "Elos de corrente dourados e cadeados antigos ornamentados sobre veludo vermelho, aguardando a ligação",
+      "kicker": "Ligar termos · Vertentes e destinatários",
+      "titulo": "Ligar termos",
+      "instrucao": "Ligue cada nome à sua definição correta. Toque em um termo e, depois, na definição correspondente.",
+      "pares": [
+        [
+          "Garantismo negativo",
+          "Proibição do excesso"
+        ],
+        [
+          "Garantismo positivo",
+          "Proibição da proteção insuficiente"
+        ],
+        [
+          "Proporcionalidade abstrata",
+          "O legislador, ao criar a pena"
+        ],
+        [
+          "Proporcionalidade concreta",
+          "O juiz, ao julgar o caso"
+        ],
+        [
+          "Proporcionalidade executória",
+          "O cumprimento da pena"
+        ]
+      ],
+      "ordemDefs": [
+        2,
+        4,
+        0,
+        3,
+        1
+      ],
+      "narr": "Ligar termos: vertentes e destinatários. Ligue cada nome à sua definição correta. Toque em um termo e, depois, na definição correspondente."
+    },
+    {
+      "tipo": "Completar",
+      "img": "lacuna",
+      "alt": "Pergaminho antigo com lacunas douradas vazias e peças de palavras douradas ao lado esperando para serem colocadas",
+      "kicker": "Completar · Toque nas palavras",
+      "titulo": "Complete a frase",
+      "intro": "Um resumo das duas vertentes apareceu com duas palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "partes": [
+        "A proporcionalidade tem duas vertentes: a proibição do ",
+        " (garantismo negativo) e a proibição da proteção ",
+        " (garantismo positivo)."
+      ],
+      "respostas": [
+        "excesso",
+        "insuficiente"
+      ],
+      "banco": [
+        "insuficiente",
+        "excesso",
+        "abuso",
+        "mínima"
+      ],
+      "conclusao": "<b>Frase completa!</b> Nem excesso, nem insuficiência: a pena certa mora exatamente no meio, na medida do bem jurídico protegido.",
+      "narr": "Complete a frase. Um resumo das duas vertentes apareceu com duas palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "sintese",
+      "alt": "Grande balança dourada segurada com firmeza por duas mãos, uma de cada lado, mantendo o equilíbrio perfeito",
+      "kicker": "Síntese do bloco",
+      "titulo": "Um princípio, dois freios",
+      "corpo": "<p>Antes de seguir para os destinatários, amarra comigo as <b>duas vertentes</b> numa imagem só, porque é assim que a banca gosta de cobrar:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>O freio do excesso</h3><p>Garantismo negativo: a lei <b>não pode passar</b> do necessário. O exemplo é o caso do artigo 273, em que o STJ declarou inconstitucional a pena exagerada.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>O freio da insuficiência</h3><p>Garantismo positivo: a lei <b>não pode ficar aquém</b> do necessário. O exemplo é a proteção ao direito fundamental à vida, que não pode ser retirada sem ferir o princípio.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/sintese.webp\" alt=\"\"></div><p>Quando você enxerga os dois freios juntos, percebe que a proporcionalidade <b>não é</b> um princípio a favor de um lado só: ela não protege apenas o réu, nem apenas a sociedade. Ela protege a <b>medida</b>, e a medida se cobra de todos os lados.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">A proporcionalidade não é a favor de um lado: ela é a favor da medida.</p></div>",
+      "narr": "Um princípio, dois freios. Antes de seguir para os destinatários, amarra comigo as duas vertentes numa imagem só, porque é assim que a banca gosta de cobrar. O freio do excesso: garantismo negativo, a lei não pode passar do necessário; o exemplo é o caso do artigo duzentos e setenta e três, em que o STJ declarou inconstitucional a pena exagerada. O freio da insuficiência: garantismo positivo, a lei não pode ficar aquém do necessário; o exemplo é a proteção ao direito fundamental à vida, que não pode ser retirada sem ferir o princípio. Quando você enxerga os dois freios juntos, percebe que a proporcionalidade não é um princípio a favor de um lado só: ela não protege apenas o réu, nem apenas a sociedade. Ela protege a medida, e a medida se cobra de todos os lados."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "destinatarios",
+      "alt": "Três figuras solenes diante de colunas de mármore: um legislador com um pergaminho, um juiz com um martelo e um agente de execução com um molho de chaves",
+      "kicker": "O princípio · Quem deve respeitar a medida",
+      "titulo": "Os três destinatários da proporcionalidade",
+      "corpo": "<p>Chegamos à parte final do princípio: saber <b>quem</b> deve respeitá-lo. O princípio da proporcionalidade possui <b class=\"term\">três destinatários</b>, e cada um confere a medida num momento diferente da vida da pena:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>O legislador: proporcionalidade abstrata</h3><p>É o momento em que são <b>eleitas as penas</b> mais apropriadas para cada infração penal, bem como as respectivas <b>gradações</b>. É aqui que o princípio funciona como forte barreira impositiva de limites: a lei penal que <b>não protege um bem jurídico</b> é ineficaz, e representa intervenção excessiva na vida dos indivíduos em geral.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>O juiz da ação penal: proporcionalidade concreta</h3><p>É o momento em que o magistrado se orienta no <b>julgamento da ação penal</b>, promovendo a <b>individualização da pena</b> adequada ao caso concreto. A régua abstrata da lei ganha, aqui, o rosto do fato real.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>Os órgãos de execução penal: proporcionalidade executória</h3><p>É quando incidem as regras inerentes ao <b>cumprimento da pena</b>, levando-se em conta as <b>condições pessoais</b> e o <b>mérito</b> do condenado.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/destinatarios.webp\" alt=\"\"></div><p>Percebe a lógica? A pena <b>nasce</b> na lei, ganha <b>rosto</b> no julgamento e é <b>cumprida</b> na execução. Em cada uma dessas três estações, alguém precisa conferir se a medida continua certa. Se qualquer um deles abandonar a régua, a desproporção aparece.</p>",
+      "narr": "Os três destinatários da proporcionalidade. Chegamos à parte final do princípio: saber quem deve respeitá-lo. O princípio da proporcionalidade possui três destinatários, e cada um confere a medida num momento diferente da vida da pena. Primeiro, o legislador, na proporcionalidade abstrata: é o momento em que são eleitas as penas mais apropriadas para cada infração penal, bem como as respectivas gradações. É aqui que o princípio funciona como forte barreira impositiva de limites: a lei penal que não protege um bem jurídico é ineficaz, e representa intervenção excessiva na vida dos indivíduos em geral. Segundo, o juiz da ação penal, na proporcionalidade concreta: é o momento em que o magistrado se orienta no julgamento da ação penal, promovendo a individualização da pena adequada ao caso concreto; a régua abstrata da lei ganha, aqui, o rosto do fato real. Terceiro, os órgãos de execução penal, na proporcionalidade executória: é quando incidem as regras inerentes ao cumprimento da pena, levando-se em conta as condições pessoais e o mérito do condenado. Percebe a lógica? A pena nasce na lei, ganha rosto no julgamento e é cumprida na execução. Em cada uma dessas três estações, alguém precisa conferir se a medida continua certa. Se qualquer um deles abandonar a régua, a desproporção aparece."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "pratos",
+      "alt": "Close dos dois pratos de uma balança dourada: um com um livro de leis pesado e o outro com um coração humano de luz, em equilíbrio",
+      "kicker": "Quadro de revisão",
+      "titulo": "O princípio num relance",
+      "corpo": "<p>Respira fundo e olha o <b>mapa completo</b> do princípio nesta tabela. Ela resume o que a banca mais cobra neste tema:</p><table class=\"cmp\"><tr><th>Ponto</th><th>Excesso</th><th>Insuficiência</th></tr><tr><td class=\"t\">Nome da vertente</td><td>Garantismo negativo</td><td>Garantismo positivo</td></tr><tr><td class=\"t\">O erro proibido</td><td>Punir mais que o necessário</td><td>Punir menos que o necessário</td></tr><tr><td class=\"t\">Caso ou exemplo</td><td>Art. 273, § 1º-B, V, no STJ</td><td>Proteção ao direito à vida</td></tr><tr><td class=\"t\">Quem é protegido</td><td>A pessoa, contra o Estado</td><td>O bem jurídico, contra o abandono</td></tr></table><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pratos.webp\" alt=\"\"></div><p>E os <b>três momentos</b> da medida, para recapitular: o <b>legislador</b> mede em abstrato, ao criar a pena; o <b>juiz</b> mede em concreto, ao julgar o caso; e a <b>execução penal</b> mede no cumprimento, olhando a pessoa e o seu mérito. Abstrata, concreta e executória: nessa ordem, você não confunde nunca mais.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Os três destinatários: <b>legislador, juiz e execução penal</b>.</li><li><b>Abstrata, concreta e executória:</b> a medida conferida em três momentos.</li><li>A lei que não protege bem jurídico é ineficaz e excessiva.</li></ul></div>",
+      "narr": "O princípio num relance. Respira fundo e olha o mapa completo do princípio nesta tabela. Ela resume o que a banca mais cobra neste tema. Nome da vertente: no excesso, garantismo negativo; na insuficiência, garantismo positivo. O erro proibido: no excesso, punir mais que o necessário; na insuficiência, punir menos que o necessário. Caso ou exemplo: no excesso, o artigo duzentos e setenta e três, parágrafo primeiro B, inciso cinco, julgado pelo STJ; na insuficiência, a proteção ao direito à vida. Quem é protegido: no excesso, a pessoa, contra o Estado; na insuficiência, o bem jurídico, contra o abandono. E os três momentos da medida, para recapitular: o legislador mede em abstrato, ao criar a pena; o juiz mede em concreto, ao julgar o caso; e a execução penal mede no cumprimento, olhando a pessoa e o seu mérito. Abstrata, concreta e executória: nessa ordem, você não confunde nunca mais."
+    },
+    {
+      "tipo": "Linha do tempo",
+      "img": "pratos",
+      "alt": "Linha do tempo dourada contando a trajetória do caso do artigo 273",
+      "kicker": "Linha do tempo · Toque nos marcos",
+      "titulo": "A trajetória do caso do art. 273",
+      "intro": "Vamos amarrar o caso numa linha só, do nascimento da lei até a correção da medida. Toque em cada marco dourado para abrir a explicação dele: são cinco momentos que contam, em ordem, a história que você estudou nesta aula.",
+      "marcos": [
+        {
+          "ano": "Antes de 1998",
+          "titulo": "A pena era de um a três anos",
+          "texto": "Para as condutas do artigo 273, a reprimenda prevista era de um a três anos e multa: a medida que o legislador da época considerava suficiente para proteger a saúde pública."
+        },
+        {
+          "ano": "1998",
+          "titulo": "A Lei nº 9.677 eleva a pena",
+          "texto": "A nova redação multiplica a reprimenda para dez a quinze anos de reclusão e multa, e estende a mesma pena a condutas de gravidades diferentes, como manter produtos de procedência ignorada."
+        },
+        {
+          "ano": "O caso",
+          "titulo": "Onze anos por medicamentos de procedência ignorada",
+          "texto": "O réu é condenado a onze anos de reclusão e ao pagamento de oitenta dias-multa, por manter em depósito, para vender, medicamentos de procedência ignorada, conhecidos por serem utilizados como anabolizantes."
+        },
+        {
+          "ano": "O julgamento",
+          "titulo": "O STJ declara a inconstitucionalidade",
+          "texto": "Na Arguição de Inconstitucionalidade no Habeas Corpus 239.363, do Paraná, o Superior Tribunal de Justiça entende que o preceito secundário do artigo 273, parágrafo 1º-B, inciso V, ofende os princípios da proporcionalidade e da razoabilidade."
+        },
+        {
+          "ano": "A lição",
+          "titulo": "A medida volta ao centro",
+          "texto": "O julgamento deixa o recado que atravessa esta aula: sem dano concreto à saúde e sem harmonia entre o delito e a pena, a lei perde a medida. E perder a medida é perder a constitucionalidade."
+        }
+      ],
+      "narr": "A trajetória do caso do artigo duzentos e setenta e três. Vamos amarrar o caso numa linha só, do nascimento da lei até a correção da medida. Toque em cada marco dourado para abrir a explicação dele: são cinco momentos que contam, em ordem, a história que você estudou nesta aula."
+    },
+    {
+      "tipo": "Mapa mental",
+      "img": "pratos",
+      "alt": "Mapa mental com o princípio da proporcionalidade no centro e cinco ramos ao redor",
+      "kicker": "Mapa mental · Toque nos ramos",
+      "titulo": "Mapa mental da proporcionalidade",
+      "centro": "PROPORCIONALIDADE",
+      "intro": "Para fechar o conteúdo, um mapa da aula inteira. No centro está o princípio da proporcionalidade; em volta, os cinco ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda.",
+      "ramos": [
+        {
+          "nome": "Proibição do excesso",
+          "texto": "Garantismo negativo: não punir mais do que o necessário para proteger o bem jurídico. Foi essa vertente que derrubou o preceito secundário do art. 273, § 1º-B, V, no STJ.",
+          "chips": [
+            "Garantismo negativo",
+            "Art. 273",
+            "STJ"
+          ]
+        },
+        {
+          "nome": "Proteção insuficiente",
+          "texto": "Garantismo positivo: não punir menos do que o necessário. O bem jurídico não pode ficar abandonado, como no exemplo da proteção ao direito fundamental à vida.",
+          "chips": [
+            "Garantismo positivo",
+            "Direito à vida"
+          ]
+        },
+        {
+          "nome": "O legislador",
+          "texto": "Proporcionalidade abstrata: elege as penas de cada infração e as suas gradações, sob a barreira de limites imposta pelo princípio.",
+          "chips": [
+            "Abstrata"
+          ]
+        },
+        {
+          "nome": "O juiz",
+          "texto": "Proporcionalidade concreta: no julgamento da ação penal, individualiza a pena adequada ao caso concreto.",
+          "chips": [
+            "Concreta"
+          ]
+        },
+        {
+          "nome": "A execução penal",
+          "texto": "Proporcionalidade executória: no cumprimento da pena, considera as condições pessoais e o mérito do condenado.",
+          "chips": [
+            "Executória"
+          ]
+        }
+      ],
+      "narr": "Mapa mental da proporcionalidade. Para fechar o conteúdo, um mapa da aula inteira. No centro está o princípio da proporcionalidade; em volta, os cinco ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "pegadinhas",
+      "alt": "Alvo dourado com flechas e uma lupa revelando armadilhas escondidas sobre um pergaminho antigo",
+      "kicker": "Pegadinhas de prova",
+      "titulo": "Não caia nessas!",
+      "corpo": "<p>Antes de encerrar, eu separei as <b>cinco confusões</b> que mais derrubam candidatos neste tema. Grave cada uma:</p><div class=\"box\"><p class=\"blabel\">PEGADINHA 1 · TROCAR AS VERTENTES</p><p><b>Negativo</b> é o excesso; <b>positivo</b> é a insuficiência. A banca adora inverter os dois nomes na mesma alternativa. Negativo lembra o escudo que <b>nega</b> o exagero do Estado.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 2 · PROPORCIONALIDADE NÃO É SÓ DO JUIZ</p><p>O <b>primeiro</b> destinatário do princípio é o <b>legislador</b>, na proporcionalidade abstrata. A questão que limita o princípio à dosimetria da pena na sentença está cortando dois dos três destinatários.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pegadinhas.webp\" alt=\"\"></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 3 · O CASO DO ART. 273</p><p>Quem declarou a inconstitucionalidade foi o <b>STJ</b>, na Arguição de Inconstitucionalidade no HC 239.363/PR, e o vício era <b>excesso</b> de pena, não insuficiência de proteção. Trocar o tribunal ou a vertente derruba a alternativa.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 4 · A MESMA RÉGUA PARA TUDO</p><p>O inciso V do parágrafo 1º-B fala de produtos de <b>procedência ignorada</b>. A desproporção nasceu justamente de aplicar a régua de dez a quinze anos a condutas de gravidades muito diferentes.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 5 · PROTEGER DE MENOS TAMBÉM É VIOLAÇÃO</p><p>Descriminalizar uma conduta pode ofender o princípio <b>pela porta da insuficiência</b>, como no exemplo da proteção ao direito à vida. Quem só enxerga o excesso perde metade do princípio.</p></div>",
+      "narr": "Não caia nessas! Antes de encerrar, eu separei as cinco confusões que mais derrubam candidatos neste tema. Grave cada uma. Pegadinha um, trocar as vertentes: negativo é o excesso; positivo é a insuficiência. A banca adora inverter os dois nomes na mesma alternativa. Negativo lembra o escudo que nega o exagero do Estado. Pegadinha dois, proporcionalidade não é só do juiz: o primeiro destinatário do princípio é o legislador, na proporcionalidade abstrata. A questão que limita o princípio à dosimetria da pena na sentença está cortando dois dos três destinatários. Pegadinha três, o caso do artigo duzentos e setenta e três: quem declarou a inconstitucionalidade foi o STJ, na Arguição de Inconstitucionalidade no Habeas Corpus duzentos e trinta e nove mil trezentos e sessenta e três, do Paraná, e o vício era excesso de pena, não insuficiência de proteção. Trocar o tribunal ou a vertente derruba a alternativa. Pegadinha quatro, a mesma régua para tudo: o inciso cinco do parágrafo primeiro B fala de produtos de procedência ignorada. A desproporção nasceu justamente de aplicar a régua de dez a quinze anos a condutas de gravidades muito diferentes. Pegadinha cinco, proteger de menos também é violação: descriminalizar uma conduta pode ofender o princípio pela porta da insuficiência, como no exemplo da proteção ao direito à vida. Quem só enxerga o excesso perde metade do princípio."
+    },
+    {
+      "tipo": "Verdadeiro ou falso",
+      "img": "cartasvf",
+      "alt": "Duas pilhas de cartas antigas sobre veludo vermelho, uma com símbolo dourado de certo e outra com símbolo dourado de errado",
+      "kicker": "Verdadeiro ou falso · Arraste a carta",
+      "titulo": "Verdadeiro ou falso: arraste e decida",
+      "intro": "Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "afirmacoes": [
+        {
+          "t": "O garantismo positivo proíbe punir mais do que o necessário.",
+          "v": false,
+          "exp": "É o contrário: quem proíbe o excesso é o garantismo negativo. O positivo proíbe a proteção insuficiente do bem jurídico."
+        },
+        {
+          "t": "Antes da Lei nº 9.677/1998, a pena das condutas do art. 273 era de um a três anos.",
+          "v": true,
+          "exp": "Isso mesmo: era de um a três anos e multa. A lei de 1998 elevou a reprimenda para dez a quinze anos de reclusão e multa."
+        },
+        {
+          "t": "A proporcionalidade concreta é tarefa do legislador, ao criar a lei.",
+          "v": false,
+          "exp": "A tarefa do legislador é a proporcionalidade abstrata. A concreta cabe ao juiz, ao individualizar a pena no julgamento da ação penal."
+        },
+        {
+          "t": "A descriminalização de uma conduta pode ser inconstitucional por proteção insuficiente do bem jurídico.",
+          "v": true,
+          "exp": "Perfeito: é a segunda vertente em ação. O exemplo clássico é a proteção ao direito fundamental à vida."
+        },
+        {
+          "t": "Na execução da pena, a proporcionalidade considera as condições pessoais e o mérito do condenado.",
+          "v": true,
+          "exp": "Isso mesmo: é a proporcionalidade executória, o terceiro momento da medida, a cargo dos órgãos de execução penal."
+        }
+      ],
+      "narr": "Verdadeiro ou falso: arraste e decida. Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou."
+    },
+    {
+      "tipo": "Desafio",
+      "img": "martelo",
+      "alt": "Martelo de juiz e placar dourado sobre um livro de leis aberto",
+      "kicker": "Desafio final · Vale pontos",
+      "titulo": "Desafio final: o placar da professora",
+      "intro": "Chegou a hora do desafio que fecha a parte de pontos da aula! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. E depois do placar ainda tem a pergunta de ouro, na próxima etapa. Boa sorte!",
+      "perguntas": [
+        {
+          "q": "A proibição do excesso também é chamada de:",
+          "ops": [
+            "Garantismo positivo",
+            "Garantismo negativo",
+            "Intervenção mínima",
+            "Adequação social"
+          ],
+          "certa": 1,
+          "exp": "Garantismo negativo: o escudo que impede o Estado de punir mais que o necessário."
+        },
+        {
+          "q": "No caso julgado pelo STJ, o réu mantinha em depósito medicamentos:",
+          "ops": [
+            "Falsificados por ele próprio",
+            "De procedência ignorada",
+            "Vencidos e adulterados",
+            "Importados legalmente"
+          ],
+          "certa": 1,
+          "exp": "De procedência ignorada, o inciso V do parágrafo 1º-B do art. 273, conhecidos por serem usados como anabolizantes."
+        },
+        {
+          "q": "Quem pratica a proporcionalidade abstrata?",
+          "ops": [
+            "O juiz da ação penal",
+            "Os órgãos de execução",
+            "O legislador",
+            "A vítima do crime"
+          ],
+          "certa": 2,
+          "exp": "O legislador, ao eleger as penas de cada infração e as respectivas gradações."
+        },
+        {
+          "q": "A proporcionalidade executória leva em conta:",
+          "ops": [
+            "A gravidade abstrata do tipo penal",
+            "As condições pessoais e o mérito do condenado",
+            "A opinião pública sobre o caso",
+            "O valor da multa aplicada"
+          ],
+          "certa": 1,
+          "exp": "As condições pessoais e o mérito do condenado, durante o cumprimento da pena."
+        },
+        {
+          "q": "O STJ declarou inconstitucional o preceito secundário do art. 273 porque faltava:",
+          "ops": [
+            "Lei anterior definindo o crime",
+            "Dano ao patrimônio público",
+            "Harmonia entre o delito e a pena cominada",
+            "Requerimento da defesa"
+          ],
+          "certa": 2,
+          "exp": "Harmonia entre o delito e a pena: sem dano concreto à saúde, a régua de dez a quinze anos ficou desproporcional."
+        }
+      ],
+      "narr": "Desafio final: o placar da professora. Chegou a hora do desafio que fecha a parte de pontos da aula! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. E depois do placar ainda tem a pergunta de ouro, na próxima etapa. Boa sorte!"
+    },
+    {
+      "tipo": "Ouro",
+      "img": "ouro",
+      "alt": "Taça dourada reluzente sobre pedestal de mármore em um salão escuro de tribunal, com louros ao lado",
+      "kicker": "Pergunta de ouro · O caso integrador",
+      "titulo": "Pergunta de ouro",
+      "intro": "Um projeto de lei propõe duas mudanças ao mesmo tempo: <b>elevar para vinte anos</b> a pena de quem vende um único frasco de medicamento sem registro e <b>descriminalizar por completo</b> uma conduta que agride gravemente o direito à vida. Uma colega sua afirma que apenas a primeira mudança fere a proporcionalidade, porque a segunda seria uma escolha livre do legislador. Pense nas duas vertentes antes de responder:",
+      "questao": "Sobre a afirmação da colega, é correto dizer que:",
+      "opcoes": [
+        "Ela está certa: somente o excesso fere o princípio",
+        "Ela está errada: as duas mudanças ferem o princípio, uma pelo excesso e outra pela proteção insuficiente",
+        "Ela está certa: descriminalizar uma conduta nunca fere a proporcionalidade",
+        "Nenhuma das duas mudanças fere o princípio"
+      ],
+      "certa": 1,
+      "feedback": "Brilhante! A proporcionalidade tem dois freios, e o caso aperta os dois: a pena de vinte anos por um único frasco repete o erro do excesso, como aconteceu no caso do artigo 273; e a descriminalização total pode deixar o direito à vida protegido abaixo do necessário, que é a proteção insuficiente. Quem enxerga os dois lados ao mesmo tempo domina o princípio de verdade.",
+      "narr": "Pergunta de ouro: o caso integrador. Um projeto de lei propõe duas mudanças ao mesmo tempo: elevar para vinte anos a pena de quem vende um único frasco de medicamento sem registro e descriminalizar por completo uma conduta que agride gravemente o direito à vida. Uma colega sua afirma que apenas a primeira mudança fere a proporcionalidade, porque a segunda seria uma escolha livre do legislador. Pense nas duas vertentes antes de responder: sobre a afirmação da colega, é correto dizer que quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Encerramento",
+      "img": "fim",
+      "alt": "Estrada dourada saindo de um tribunal neoclássico em direção ao nascer do sol, com a balança equilibrada no horizonte",
+      "kicker": "Encerramento",
+      "titulo": "O que você leva desta aula",
+      "corpo": "<p>Chegamos ao fim, e eu quero que você perceba o tamanho do que aprendeu. Começamos com uma balança e duas perguntas simples: <b>o Estado está punindo demais? O Estado está protegendo de menos?</b> E terminamos com um dos princípios mais poderosos do Direito Penal nas suas mãos.</p><p>A <b class=\"term\">proibição do excesso</b>, o garantismo negativo, te ensinou que pena exagerada é inconstitucional, e o caso do artigo 273, com a pena que saltou de um a três para dez a quinze anos e foi corrigida pelo STJ, é a prova viva disso. A <b>proibição da proteção insuficiente</b>, o garantismo positivo, te ensinou o outro lado: bem jurídico abandonado também é desproporção, como mostra o exemplo da proteção ao direito à vida.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/capa.webp\" alt=\"\"></div><p>E você conheceu os <b>três guardiões</b> da medida: o legislador, que mede em abstrato ao criar a pena; o juiz, que mede em concreto ao julgar; e a execução penal, que mede no cumprimento, olhando a pessoa e o seu mérito.</p><p>Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça as questões de cabeça fria e confie: proporcionalidade se aprende pelo <b>raciocínio da balança</b>, não pela decoreba. Eu fico por aqui, e te espero na próxima aula. <b>Bons estudos!</b></p>",
+      "pontos": [
+        "<b>Proibição do excesso:</b> garantismo negativo, com o caso do art. 273 julgado pelo STJ.",
+        "<b>Proteção insuficiente:</b> garantismo positivo, com o direito à vida como exemplo.",
+        "<b>Três destinatários:</b> legislador (abstrata), juiz (concreta) e execução (executória).",
+        "<b>A medida certa:</b> proteger o bem jurídico sem passar do ponto e sem ficar aquém."
+      ],
+      "narr": "O que você leva desta aula. Chegamos ao fim, e eu quero que você perceba o tamanho do que aprendeu. Começamos com uma balança e duas perguntas simples: o Estado está punindo demais? O Estado está protegendo de menos? E terminamos com um dos princípios mais poderosos do Direito Penal nas suas mãos. A proibição do excesso, o garantismo negativo, te ensinou que pena exagerada é inconstitucional, e o caso do artigo duzentos e setenta e três, com a pena que saltou de um a três para dez a quinze anos e foi corrigida pelo STJ, é a prova viva disso. A proibição da proteção insuficiente, o garantismo positivo, te ensinou o outro lado: bem jurídico abandonado também é desproporção, como mostra o exemplo da proteção ao direito à vida. E você conheceu os três guardiões da medida: o legislador, que mede em abstrato ao criar a pena; o juiz, que mede em concreto ao julgar; e a execução penal, que mede no cumprimento, olhando a pessoa e o seu mérito. Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça as questões de cabeça fria e confie: proporcionalidade se aprende pelo raciocínio da balança, não pela decoreba. Eu fico por aqui, e te espero na próxima aula. Bons estudos!"
+    }
+  ],
+  "imagens": {
+    "capa": "assets/img/capa.webp",
+    "roteiro": "assets/img/roteiro.webp",
+    "conceito": "assets/img/conceito.webp",
+    "perguntas": "assets/img/perguntas.webp",
+    "excesso": "assets/img/excesso.webp",
+    "remedios": "assets/img/remedios.webp",
+    "tribunal": "assets/img/tribunal.webp",
+    "questao": "assets/img/questao.webp",
+    "questao2": "assets/img/questao2.webp",
+    "flashcards": "assets/img/flashcards.webp",
+    "flashcards2": "assets/img/flashcards2.webp",
+    "comp-excesso": "assets/img/comp-excesso.webp",
+    "comp-medida": "assets/img/comp-medida.webp",
+    "explorar": "assets/img/explorar.webp",
+    "insuficiente": "assets/img/insuficiente.webp",
+    "vida": "assets/img/vida.webp",
+    "martelo": "assets/img/martelo.webp",
+    "revelar": "assets/img/revelar.webp",
+    "ligar": "assets/img/ligar.webp",
+    "lacuna": "assets/img/lacuna.webp",
+    "sintese": "assets/img/sintese.webp",
+    "destinatarios": "assets/img/destinatarios.webp",
+    "pratos": "assets/img/pratos.webp",
+    "pegadinhas": "assets/img/pegadinhas.webp",
+    "cartasvf": "assets/img/cartasvf.webp",
+    "ouro": "assets/img/ouro.webp",
+    "fim": "assets/img/fim.webp"
+  },
+  "audioBaseUrl": "assets/audio/s",
+  "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-05-principio-da-proporcionalidade-ou-razoabilidade/aula.html"
+},
+  "penal-06-06": {
+  "aulaId": "penal-06-06",
+  "titulo": "Princípio da Intervenção Mínima ou da Necessidade",
+  "disciplinaId": "penal",
+  "totalEtapas": 32,
+  "slides": [
+    {
+      "tipo": "Capa",
+      "img": "capa",
+      "alt": "Tribunal neoclássico com cortinas vermelhas, balança dourada equilibrada e espada embainhada sobre pedestal de mármore",
+      "kicker": "Direito Penal · Princípios Penais",
+      "titulo": "Princípio da Intervenção Mínima ou da Necessidade",
+      "corpo": "<p class=\"lead\">Nem tudo que é errado precisa virar crime. Nem toda conduta reprovável merece a resposta mais pesada do Estado. É exatamente para desenhar essa fronteira que existe o <b>princípio da intervenção mínima</b>, também chamado de <b>princípio da necessidade</b>.</p><p>Pensa comigo: o Direito Penal é o instrumento <b>mais forte</b> que o Estado tem nas mãos. Ele pode tirar a liberdade de uma pessoa, marcar a vida dela com uma condenação e mobilizar todo o aparato de polícia, processo e prisão. Uma ferramenta desse tamanho não pode ser usada para <b>qualquer problema</b>: ela pede critério, medida e, acima de tudo, <b>necessidade</b>.</p><p>Nesta aula, eu vou te mostrar de onde esse princípio nasceu, o que ele significa, <b>para quem</b> ele fala e quais são os dois princípios que nascem dele: a <b>fragmentariedade</b> e a <b>subsidiariedade</b>. No fim, você vai enxergar o Direito Penal como ele deve ser: a <b>última etapa</b> de proteção dos bens jurídicos, e não a primeira reação para tudo.</p><div class=\"chips\"><span class=\"chip\">Origem em 1789</span><span class=\"chip\">Dois destinatários</span><span class=\"chip\">Fragmentariedade</span><span class=\"chip\">Subsidiariedade</span></div>",
+      "narr": "Nem tudo que é errado precisa virar crime. Nem toda conduta reprovável merece a resposta mais pesada do Estado. É exatamente para desenhar essa fronteira que existe o princípio da intervenção mínima, também chamado de princípio da necessidade. Pensa comigo: o Direito Penal é o instrumento mais forte que o Estado tem nas mãos. Ele pode tirar a liberdade de uma pessoa, marcar a vida dela com uma condenação e mobilizar todo o aparato de polícia, processo e prisão. Uma ferramenta desse tamanho não pode ser usada para qualquer problema: ela pede critério, medida e, acima de tudo, necessidade. Nesta aula, eu vou te mostrar de onde esse princípio nasceu, o que ele significa, para quem ele fala e quais são os dois princípios que nascem dele: a fragmentariedade e a subsidiariedade. No fim, você vai enxergar o Direito Penal como ele deve ser: a última etapa de proteção dos bens jurídicos, e não a primeira reação para tudo."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "roteiro",
+      "alt": "Estrada dourada antiga com marcos de pedra em direção a um tribunal no alto da colina",
+      "kicker": "Roteiro da aula",
+      "titulo": "O caminho desta aula",
+      "corpo": "<p>Antes de entrar no conteúdo, deixa eu te mostrar o <b>caminho que vamos percorrer juntas</b>. A aula está organizada em <b>três blocos</b>, e eu vou te acompanhar em cada um deles:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>A ideia e a origem</h3><p>O freio no poder de punir: de onde o princípio nasceu, em 1789, o que ele significa e por que ele existe.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>Os dois destinatários</h3><p>Para quem o princípio fala: o legislador que cria a lei e o intérprete que a aplica ao caso concreto.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>Fragmentariedade e subsidiariedade</h3><p>As duas filhas do princípio: quem vigia a criação do crime e quem vigia a aplicação dele.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/roteiro.webp\" alt=\"\"></div><p>O conteúdo vem em <b>texto corrido</b>, e a prática fica concentrada no <b>fim de cada bloco</b>: questões, flashcards, karaokê e atividades para fixar cada parte antes de seguir. No fim, revisamos tudo e fechamos com um <b>desafio</b> com placar e uma <b>pergunta de ouro</b>. Vamos ao primeiro bloco!</p>",
+      "narr": "O caminho desta aula. Antes de entrar no conteúdo, deixa eu te mostrar o caminho que vamos percorrer juntas. A aula está organizada em três blocos, e eu vou te acompanhar em cada um deles. Bloco um: a ideia e a origem. O freio no poder de punir: de onde o princípio nasceu, em mil setecentos e oitenta e nove, o que ele significa e por que ele existe. Bloco dois: os dois destinatários. Para quem o princípio fala: o legislador que cria a lei e o intérprete que a aplica ao caso concreto. Bloco três: fragmentariedade e subsidiariedade. As duas filhas do princípio: quem vigia a criação do crime e quem vigia a aplicação dele. O conteúdo vem em texto corrido, e a prática fica concentrada no fim de cada bloco: questões, flashcards, karaokê e atividades para fixar cada parte antes de seguir. No fim, revisamos tudo e fechamos com um desafio com placar e uma pergunta de ouro. Vamos ao primeiro bloco!"
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "freio",
+      "alt": "Cavalo negro poderoso com arreios dourados sendo contido por rédeas firmes diante de cortinas vermelhas",
+      "kicker": "A ideia central",
+      "titulo": "Um freio para o poder de punir",
+      "corpo": "<p>Antes de conhecer a origem, eu quero que você sinta a <b>preocupação</b> que fez esse princípio nascer. Imagine um Estado sem nenhum freio na hora de punir: o legislador poderia criar <b>tipos penais iníquos</b>, criminalizando condutas sem importância, e instituir <b>penas vexatórias</b>, castigos desumanos que humilham e ferem a <b>dignidade da pessoa humana</b>.</p><p>Foi para evitar exatamente esse cenário que pensadores do século XVIII levantaram uma bandeira simples e poderosa: a lei só deve prever as <b>penas estritamente necessárias</b>. Nem uma a mais, nem um grama além do necessário.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/freio.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como o freio de um cavalo forte. O freio não existe para impedir o cavalo de andar: ele existe para que toda aquela força seja usada na <b>medida certa</b>, sem disparar e sem machucar ninguém pelo caminho. Com o poder de punir é a mesma coisa: o princípio não enfraquece o Direito Penal, ele <b>direciona</b> a força dele.</p></div></div><p>Guarde essa imagem, porque ela acompanha a aula inteira: o <span class=\"term\">princípio da intervenção mínima</span> é o freio que impede o abuso, sem tirar a força de punir de quem realmente precisa dela.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">O freio não enfraquece o poder de punir: ele impede o abuso dele.</p></div>",
+      "narr": "Um freio para o poder de punir. Antes de conhecer a origem, eu quero que você sinta a preocupação que fez esse princípio nascer. Imagine um Estado sem nenhum freio na hora de punir: o legislador poderia criar tipos penais iníquos, criminalizando condutas sem importância, e instituir penas vexatórias, castigos desumanos que humilham e ferem a dignidade da pessoa humana. Foi para evitar exatamente esse cenário que pensadores do século dezoito levantaram uma bandeira simples e poderosa: a lei só deve prever as penas estritamente necessárias. Nem uma a mais, nem um grama além do necessário. Pense assim: é como o freio de um cavalo forte. O freio não existe para impedir o cavalo de andar: ele existe para que toda aquela força seja usada na medida certa, sem disparar e sem machucar ninguém pelo caminho. Com o poder de punir é a mesma coisa: o princípio não enfraquece o Direito Penal, ele direciona a força dele. Guarde essa imagem, porque ela acompanha a aula inteira: o princípio da intervenção mínima é o freio que impede o abuso, sem tirar a força de punir de quem realmente precisa dela. Frase-chave: o freio não enfraquece o poder de punir: ele impede o abuso dele."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "origem",
+      "alt": "Assembleia francesa de 1789 erguendo um pergaminho de declaração em direção à luz dourada",
+      "kicker": "Origem do princípio",
+      "titulo": "A origem: França, 1789",
+      "corpo": "<p>A história começa na França revolucionária de <b>1789</b>. Naquele ano, a <b>Declaração dos Direitos do Homem e do Cidadão</b> colocou no papel uma ideia que mudaria para sempre a relação entre o Estado e o cidadão: o poder de punir tem <b>limite</b>, e esse limite se chama <b>necessidade</b>.</p><p>O objetivo era direto e corajoso: evitar que o legislador criasse <b>tipos penais iníquos</b> e instituísse <b>penas vexatórias</b> à dignidade da pessoa humana. Em outras palavras, a Declaração disse ao legislador: você pode criar crimes e penas, mas não pode fazer isso por capricho, por vingança ou por exagero.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/origem.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Pensa num governante que, irritado com críticas ao seu governo, decide criar um crime para quem fala mal da autoridade, com pena de prisão longa. Para a lógica de 1789, esse tipo penal nasce <b>iníquo</b>: ele não protege nenhum bem essencial da convivência, só protege o orgulho de quem manda. É contra esse tipo de abuso que o princípio se levanta.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/origem.webp\" alt=\"\"></div><p>Daquele documento nasceu o princípio da intervenção mínima, afirmando uma regra que atravessou os séculos e chegou até nós: só é legítima a intervenção penal quando ela for <b>indispensável</b>. Na próxima etapa, você vai conhecer o artigo exato que plantou essa semente.</p>",
+      "narr": "A origem: França, mil setecentos e oitenta e nove. A história começa na França revolucionária de mil setecentos e oitenta e nove. Naquele ano, a Declaração dos Direitos do Homem e do Cidadão colocou no papel uma ideia que mudaria para sempre a relação entre o Estado e o cidadão: o poder de punir tem limite, e esse limite se chama necessidade. O objetivo era direto e corajoso: evitar que o legislador criasse tipos penais iníquos e instituísse penas vexatórias à dignidade da pessoa humana. Em outras palavras, a Declaração disse ao legislador: você pode criar crimes e penas, mas não pode fazer isso por capricho, por vingança ou por exagero. Exemplo prático: pensa num governante que, irritado com críticas ao seu governo, decide criar um crime para quem fala mal da autoridade, com pena de prisão longa. Para a lógica de mil setecentos e oitenta e nove, esse tipo penal nasce iníquo: ele não protege nenhum bem essencial da convivência, só protege o orgulho de quem manda. É contra esse tipo de abuso que o princípio se levanta. Daquele documento nasceu o princípio da intervenção mínima, afirmando uma regra que atravessou os séculos e chegou até nós: só é legítima a intervenção penal quando ela for indispensável. Na próxima etapa, você vai conhecer o artigo exato que plantou essa semente."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "pergaminho",
+      "alt": "Pergaminho antigo aberto com pena dourada, selo de cera vermelha e pequena balança sobre mesa de mármore",
+      "kicker": "Origem do princípio",
+      "titulo": "O artigo 8º: penas estritamente necessárias",
+      "corpo": "<p>O coração do princípio está no <b>artigo 8º</b> da Declaração dos Direitos do Homem e do Cidadão. Eu vou te mostrar a ideia dele nas palavras que realmente importam:</p><div class=\"box\"><p class=\"blabel\">O TEXTO DA DECLARAÇÃO</p><p>A lei somente deve prever as penas <b>estritamente necessárias</b>.</p></div><p>Repara na força da palavra <b>estritamente</b>. Ela não diz que a lei pode prever penas úteis, convenientes ou populares. Ela diz <b>necessárias</b>: aquilo que não pode faltar, aquilo sem o que a proteção do bem não acontece. Tudo que passar dessa medida já nasce sob suspeita de abuso.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pergaminho.webp\" alt=\"\"></div><p>É dessa frase curta que nasce o princípio inteiro: se a pena só pode ser a estritamente necessária, então o crime também só pode ser criado quando a criminalização for <b>indispensável</b>. A pena e o crime passam pelo mesmo filtro, o filtro da necessidade.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Só o estritamente necessário: nem um grama de pena além da conta.</p></div>",
+      "narr": "O artigo oitavo: penas estritamente necessárias. O coração do princípio está no artigo oitavo da Declaração dos Direitos do Homem e do Cidadão. Eu vou te mostrar a ideia dele nas palavras que realmente importam. O texto da Declaração: a lei somente deve prever as penas estritamente necessárias. Repara na força da palavra estritamente. Ela não diz que a lei pode prever penas úteis, convenientes ou populares. Ela diz necessárias: aquilo que não pode faltar, aquilo sem o que a proteção do bem não acontece. Tudo que passar dessa medida já nasce sob suspeita de abuso. É dessa frase curta que nasce o princípio inteiro: se a pena só pode ser a estritamente necessária, então o crime também só pode ser criado quando a criminalização for indispensável. A pena e o crime passam pelo mesmo filtro, o filtro da necessidade. Frase-chave: só o estritamente necessário: nem um grama de pena além da conta."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "funil",
+      "alt": "Grande funil de pedra e ouro filtrando pedras escuras, deixando passar apenas poucas pedras douradas brilhantes",
+      "kicker": "O conceito",
+      "titulo": "O conceito: entrar só quando for indispensável",
+      "corpo": "<p>Agora eu te entrego o conceito completo, do jeito que a banca gosta: é legítima a intervenção penal <b>apenas</b> quando a criminalização de um fato constituir <b>meio indispensável</b> para a proteção de determinado <b>bem ou interesse</b>, que não possa ser tutelado por <b>outros ramos</b> do ordenamento jurídico.</p><p>Desmonta essa frase comigo, porque cada pedaço dela cai em prova. Primeiro: a palavra-chave é <b>indispensável</b>. Não basta o crime ser útil ou bem intencionado; ele precisa ser o meio sem o qual a proteção não se realiza. Segundo: existe um <b>bem ou interesse</b> a proteger, algo que realmente importa para a convivência. Terceiro: se outro ramo do Direito consegue proteger esse bem, o Direito Penal deve <b>ficar de fora</b>.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/funil.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Uma dívida não paga é um problema real, mas o Direito Civil resolve com cobrança, juros e execução. Um dano causado à coletividade pode ser enfrentado com multa e reparação por outros ramos. Só quando esses caminhos <b>não dão conta</b> de conter a conduta é que a porta do Direito Penal pode se abrir.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/funil.webp\" alt=\"\"></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Direito Penal só entra quando é indispensável: sem ele, o bem fica desprotegido.</p></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Origem em 1789: o artigo 8º da Declaração limitou a lei às penas estritamente necessárias.</li><li>Objetivo: impedir tipos penais iníquos e penas vexatórias à dignidade da pessoa humana.</li><li>Conceito: criminalizar só é legítimo quando for meio indispensável de proteger um bem.</li></ul></div>",
+      "narr": "O conceito: entrar só quando for indispensável. Agora eu te entrego o conceito completo, do jeito que a banca gosta: é legítima a intervenção penal apenas quando a criminalização de um fato constituir meio indispensável para a proteção de determinado bem ou interesse, que não possa ser tutelado por outros ramos do ordenamento jurídico. Desmonta essa frase comigo, porque cada pedaço dela cai em prova. Primeiro: a palavra-chave é indispensável. Não basta o crime ser útil ou bem intencionado; ele precisa ser o meio sem o qual a proteção não se realiza. Segundo: existe um bem ou interesse a proteger, algo que realmente importa para a convivência. Terceiro: se outro ramo do Direito consegue proteger esse bem, o Direito Penal deve ficar de fora. Exemplo prático: uma dívida não paga é um problema real, mas o Direito Civil resolve com cobrança, juros e execução. Um dano causado à coletividade pode ser enfrentado com multa e reparação por outros ramos. Só quando esses caminhos não dão conta de conter a conduta é que a porta do Direito Penal pode se abrir. Frase-chave: Direito Penal só entra quando é indispensável: sem ele, o bem fica desprotegido. Nesse bloco você viu: a origem em mil setecentos e oitenta e nove, com o artigo oitavo limitando a lei às penas estritamente necessárias; o objetivo de impedir tipos penais iníquos e penas vexatórias; e o conceito de criminalizar só quando for meio indispensável de proteger um bem."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Questão 1 · Origem e conceito",
+      "titulo": "Questão 1",
+      "intro": "Hora de treinar! Pense no que eu te expliquei sobre a <b>origem</b> e o <b>conceito</b> do princípio e responda:",
+      "questao": "O princípio da intervenção mínima surgiu com a Declaração dos Direitos do Homem e do Cidadão (1789), cujo artigo 8º estabeleceu que:",
+      "opcoes": [
+        "a lei deve prever penas exemplares, para desestimular qualquer desvio de conduta",
+        "a lei somente deve prever as penas estritamente necessárias",
+        "o legislador pode criar tipos penais sempre que entender conveniente",
+        "as penas devem ser aplicadas ainda que outro ramo do Direito resolva o conflito"
+      ],
+      "certa": 1,
+      "feedback": " Isso mesmo! O artigo 8º da Declaração de 1789 é a certidão de nascimento do princípio: a lei somente deve prever as penas estritamente necessárias. Daí nasce a ideia de que a intervenção penal só é legítima quando a criminalização for meio indispensável para proteger um bem que outros ramos não conseguem tutelar.",
+      "narr": "Questão um: origem e conceito. Hora de treinar! Pense no que eu te expliquei sobre a origem e o conceito do princípio e responda: o princípio da intervenção mínima surgiu com a Declaração dos Direitos do Homem e do Cidadão, de mil setecentos e oitenta e nove, cujo artigo oitavo estabeleceu o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha sobre uma mesa escura",
+      "kicker": "Flashcard 1 · Conceito",
+      "titulo": "Flashcard 1",
+      "frente": "Quando a intervenção do Direito Penal é legítima, segundo o princípio da intervenção mínima?",
+      "verso": "<p>Somente quando a criminalização do fato for <b>meio indispensável</b> para proteger um bem ou interesse que <b>não possa ser tutelado por outros ramos</b> do ordenamento jurídico.</p><p style='margin-top:10px'>Origem: <b>art. 8º</b> da Declaração dos Direitos do Homem e do Cidadão, de <b>1789</b>: só penas <b>estritamente necessárias</b>.</p>",
+      "narr": "Flashcard um: conceito. Quando a intervenção do Direito Penal é legítima, segundo o princípio da intervenção mínima? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Karaokê",
+      "img": "origem",
+      "alt": "Assembleia francesa de 1789 erguendo um pergaminho de declaração em direção à luz dourada",
+      "kicker": "Karaokê · Siga a narração",
+      "titulo": "Recapitule com a narração",
+      "frases": [
+        "Chegou a hora de recapitular a origem e o conceito, acompanhando a narração pela tela.",
+        "O princípio da intervenção mínima nasceu em mil setecentos e oitenta e nove, na Declaração dos Direitos do Homem e do Cidadão.",
+        "O artigo oitavo dessa Declaração afirmou que a lei somente deve prever as penas estritamente necessárias.",
+        "O objetivo era impedir tipos penais iníquos e penas vexatórias à dignidade da pessoa humana.",
+        "Por esse princípio, a intervenção penal só é legítima quando a criminalização for meio indispensável para proteger um bem.",
+        "E se outro ramo do Direito consegue proteger esse bem, o Direito Penal deve ficar de fora.",
+        "Guarde assim: indispensável é a palavra que comanda o princípio inteiro."
+      ],
+      "narr": "Chegou a hora de recapitular a origem e o conceito, acompanhando a narração pela tela. O princípio da intervenção mínima nasceu em mil setecentos e oitenta e nove, na Declaração dos Direitos do Homem e do Cidadão. O artigo oitavo dessa Declaração afirmou que a lei somente deve prever as penas estritamente necessárias. O objetivo era impedir tipos penais iníquos e penas vexatórias à dignidade da pessoa humana. Por esse princípio, a intervenção penal só é legítima quando a criminalização for meio indispensável para proteger um bem. E se outro ramo do Direito consegue proteger esse bem, o Direito Penal deve ficar de fora. Guarde assim: indispensável é a palavra que comanda o princípio inteiro."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "reservalegal",
+      "alt": "Dois grandes portões de pedra em um salão clássico, um com livro de leis e outro com uma balança dourada",
+      "kicker": "Intervenção mínima x reserva legal",
+      "titulo": "Intervenção mínima x reserva legal",
+      "corpo": "<p>Agora presta atenção numa parceria que a banca adora misturar: o princípio da intervenção mínima funciona como um <b>complemento</b> do princípio da <b>reserva legal</b>. Eles andam juntos, mas <b>não dizem a mesma coisa</b>.</p><p>A reserva legal cuida da <b>forma</b>: crime e pena só nascem de lei, criada por quem tem competência para legislar. Já a intervenção mínima cuida do <b>conteúdo</b>: mesmo nascido de lei perfeita, o tipo penal precisa ser <b>necessário</b>. É que o legislador é o titular da lei, mas <b>não pode abusar dela</b>.</p><table class=\"cmp\"><tr><th>Pergunta</th><th>Reserva legal</th><th>Intervenção mínima</th></tr><tr><td class=\"t\">O que ela controla?</td><td>A forma: só a lei cria crimes e penas</td><td>O conteúdo: o crime criado precisa ser necessário</td></tr><tr><td class=\"t\">Quem ela amarra?</td><td>Quem quer punir sem lei</td><td>O próprio legislador, titular da lei</td></tr><tr><td class=\"t\">E se for desrespeitada?</td><td>Não há crime nem pena válidos</td><td>O tipo penal existe, mas nasce abusivo</td></tr></table><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/reservalegal.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Imagina uma lei aprovada com todos os ritos certinhos, criando crime para uma conduta que uma simples multa administrativa já resolvia. A forma está impecável: a reserva legal foi respeitada. Mas o conteúdo falha: criminalizar ali não era indispensável, e a intervenção mínima foi violada.</p></div></div><p>A consequência prática é a frase que eu mais quero que você grave deste bloco: <b>todo tipo penal cumpre o princípio da reserva legal, entretanto, poderá violar o princípio da intervenção mínima</b>. A lei pode ser formalmente perfeita e, ainda assim, criar um crime que ninguém precisava ter criado.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">A reserva legal garante a forma; a intervenção mínima examina a necessidade.</p></div>",
+      "narr": "Intervenção mínima e reserva legal. Agora presta atenção numa parceria que a banca adora misturar: o princípio da intervenção mínima funciona como um complemento do princípio da reserva legal. Eles andam juntos, mas não dizem a mesma coisa. A reserva legal cuida da forma: crime e pena só nascem de lei, criada por quem tem competência para legislar. Já a intervenção mínima cuida do conteúdo: mesmo nascido de lei perfeita, o tipo penal precisa ser necessário. É que o legislador é o titular da lei, mas não pode abusar dela. Comparando: o que a reserva legal controla é a forma, só a lei cria crimes e penas; o que a intervenção mínima controla é o conteúdo, o crime criado precisa ser necessário. A reserva legal amarra quem quer punir sem lei; a intervenção mínima amarra o próprio legislador, titular da lei. Se a reserva legal for desrespeitada, não há crime nem pena válidos; se a intervenção mínima for desrespeitada, o tipo penal existe, mas nasce abusivo. Exemplo prático: imagina uma lei aprovada com todos os ritos certinhos, criando crime para uma conduta que uma simples multa administrativa já resolvia. A forma está impecável: a reserva legal foi respeitada. Mas o conteúdo falha: criminalizar ali não era indispensável, e a intervenção mínima foi violada. A consequência prática é a frase que eu mais quero que você grave deste bloco: todo tipo penal cumpre o princípio da reserva legal, entretanto, poderá violar o princípio da intervenção mínima. A lei pode ser formalmente perfeita e, ainda assim, criar um crime que ninguém precisava ter criado. Frase-chave: a reserva legal garante a forma; a intervenção mínima examina a necessidade."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "legislador",
+      "alt": "Legislador em tribuna de parlamento clássico segurando um pergaminho, entre colunas de mármore e cortinas vermelhas",
+      "kicker": "Destinatários do princípio",
+      "titulo": "Primeiro destinatário: o legislador",
+      "corpo": "<p>Todo princípio tem um endereço, e o da intervenção mínima tem <b>dois</b>. O primeiro destinatário é o <b class=\"term\">legislador</b>, a pessoa que cria as leis penais.</p><p>Para ele, a recomendação é de <b>moderação</b> no momento de eleger as condutas dignas de proteção penal. Antes de transformar um comportamento em crime, o legislador precisa se perguntar: essa conduta realmente ameaça um bem importante? E mais: os outros ramos do Direito conseguem contê-la sem precisar de prisão e de processo penal?</p><p>A regra de ouro é esta: somente podem ser castigados pelo Direito Penal aqueles comportamentos que <b>não puderem ser contidos por outros ramos do Direito</b>. Se o Civil indeniza, se o Administrativo multa e corrige, se outros mecanismos resolvem, a caneta do legislador deve <b>parar antes</b> de escrever um novo crime.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/legislador.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>O legislador é como o porteiro de uma porta pesada, a porta do Direito Penal. O trabalho dele não é abrir essa porta para todo mundo que bate: é <b>segurar a porta</b> e só deixar passar as condutas que nenhum outro caminho conseguiu resolver.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/legislador.webp\" alt=\"\"></div><p>Repara que isso não é fraqueza do legislador: é <b>responsabilidade</b>. Cada crime novo movimenta polícia, Ministério Público, Judiciário e sistema prisional. Criar crime sem necessidade é gastar a força mais pesada do Estado onde uma força menor resolveria.</p>",
+      "narr": "Primeiro destinatário: o legislador. Todo princípio tem um endereço, e o da intervenção mínima tem dois. O primeiro destinatário é o legislador, a pessoa que cria as leis penais. Para ele, a recomendação é de moderação no momento de eleger as condutas dignas de proteção penal. Antes de transformar um comportamento em crime, o legislador precisa se perguntar: essa conduta realmente ameaça um bem importante? E mais: os outros ramos do Direito conseguem contê-la sem precisar de prisão e de processo penal? A regra de ouro é esta: somente podem ser castigados pelo Direito Penal aqueles comportamentos que não puderem ser contidos por outros ramos do Direito. Se o Civil indeniza, se o Administrativo multa e corrige, se outros mecanismos resolvem, a caneta do legislador deve parar antes de escrever um novo crime. Pense assim: o legislador é como o porteiro de uma porta pesada, a porta do Direito Penal. O trabalho dele não é abrir essa porta para todo mundo que bate: é segurar a porta e só deixar passar as condutas que nenhum outro caminho conseguiu resolver. Repara que isso não é fraqueza do legislador: é responsabilidade. Cada crime novo movimenta polícia, Ministério Público, Judiciário e sistema prisional. Criar crime sem necessidade é gastar a força mais pesada do Estado onde uma força menor resolveria."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "interprete",
+      "alt": "Juiz pensativo examinando um grande código de leis aberto com uma lupa dourada",
+      "kicker": "Destinatários do princípio",
+      "titulo": "Segundo destinatário: o intérprete",
+      "corpo": "<p>O segundo destinatário é o <b class=\"term\">intérprete do Direito</b>: quem lê, interpreta e aplica a lei penal no caso concreto, como o juiz, o promotor e todos que analisam se um fato se encaixa num tipo penal.</p><p>Para o intérprete, a exigência é a seguinte: ele não deve proceder à <b>operação de tipicidade</b>, isto é, não deve enquadrar o fato como crime, quando constatar que a pendência pode ser <b>resolvida com a atuação de outro ramo</b> do sistema jurídico. E atenção ao detalhe que a banca cobra: isso vale <b>em que pese</b> a criação, pelo legislador, do tipo penal incriminador. Mesmo existindo o tipo, o intérprete continua ouvindo o princípio.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/interprete.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Chega ao juiz um conflito que, no fundo, é uma desavença patrimonial entre vizinhos, já em vias de solução no juízo cível, com acordo e reparação do dano. O intérprete atento percebe: a pendência encontra resposta <b>fora</b> do Direito Penal, e forçar o enquadramento criminal seria usar a ferramenta mais pesada sem necessidade.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/interprete.webp\" alt=\"\"></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">O legislador recebe o princípio ao criar a lei; o intérprete, ao aplicá-la.</p></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Intervenção mínima complementa a reserva legal: a forma pode estar perfeita e o conteúdo, abusivo.</li><li>Legislador: moderação ao eleger as condutas dignas de proteção penal.</li><li>Intérprete: não enquadrar como crime o que outro ramo do Direito resolve.</li></ul></div>",
+      "narr": "Segundo destinatário: o intérprete. O segundo destinatário é o intérprete do Direito: quem lê, interpreta e aplica a lei penal no caso concreto, como o juiz, o promotor e todos que analisam se um fato se encaixa num tipo penal. Para o intérprete, a exigência é a seguinte: ele não deve proceder à operação de tipicidade, isto é, não deve enquadrar o fato como crime, quando constatar que a pendência pode ser resolvida com a atuação de outro ramo do sistema jurídico. E atenção ao detalhe que a banca cobra: isso vale ainda que o legislador tenha criado o tipo penal incriminador. Mesmo existindo o tipo, o intérprete continua ouvindo o princípio. Exemplo prático: chega ao juiz um conflito que, no fundo, é uma desavença patrimonial entre vizinhos, já em vias de solução no juízo cível, com acordo e reparação do dano. O intérprete atento percebe: a pendência encontra resposta fora do Direito Penal, e forçar o enquadramento criminal seria usar a ferramenta mais pesada sem necessidade. Frase-chave: o legislador recebe o princípio ao criar a lei; o intérprete, ao aplicá-la. Nesse bloco você viu: a intervenção mínima complementa a reserva legal; o legislador deve ter moderação ao criminalizar; e o intérprete não deve enquadrar como crime o que outro ramo resolve."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Questão 2 · Destinatários",
+      "titulo": "Questão 2",
+      "intro": "Continue treinando! Agora o foco são os <b>destinatários</b> do princípio:",
+      "questao": "São destinatários do princípio da intervenção mínima:",
+      "opcoes": [
+        "apenas o legislador, que deve moderar a criação de tipos penais",
+        "apenas o juiz, que deve evitar condenações desnecessárias",
+        "o legislador, que deve ser moderado ao criminalizar, e o intérprete, que deve evitar a tipicidade quando outro ramo resolve a pendência",
+        "apenas o Ministério Público, ao decidir se oferece a denúncia"
+      ],
+      "certa": 2,
+      "feedback": " Perfeito! São dois os destinatários. O legislador recebe a recomendação de moderação ao eleger as condutas dignas de proteção penal. E o intérprete deve se recusar a fazer a operação de tipicidade quando a pendência puder ser resolvida por outro ramo do Direito, ainda que o tipo penal exista.",
+      "narr": "Questão dois: destinatários. Continue treinando! Agora o foco são os destinatários do princípio: são destinatários do princípio da intervenção mínima quem? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Explorar",
+      "img": "explorar",
+      "alt": "Imagem vertical em cinco cenas empilhadas: a assembleia de 1789 erguendo a Declaração, o legislador na tribuna, o juiz com a lupa sobre o código, o mosaico de fragmentos dourados e o guardião da última muralha ao amanhecer",
+      "kicker": "Explorar · Toque nas bolinhas",
+      "titulo": "A jornada do princípio em cinco cenas",
+      "intro": "Esta imagem conta a aula inteira em cinco cenas empilhadas, do nascimento do princípio até a última muralha de proteção. Toque em cada bolinha dourada para abrir a explicação daquela cena.",
+      "pontos": [
+        {
+          "x": 50,
+          "y": 11,
+          "titulo": "1789: nasce o freio",
+          "texto": "Na França revolucionária, a Declaração dos Direitos do Homem e do Cidadão afirma, no artigo 8º, que a lei somente deve prever as penas estritamente necessárias. É o nascimento do princípio da intervenção mínima: o poder de punir ganha um limite chamado necessidade."
+        },
+        {
+          "x": 56,
+          "y": 31,
+          "titulo": "O legislador moderado",
+          "texto": "Na tribuna, o legislador recebe o primeiro recado do princípio: moderação ao eleger as condutas dignas de proteção penal. Só deve virar crime aquilo que os outros ramos do Direito não conseguem conter."
+        },
+        {
+          "x": 34,
+          "y": 51,
+          "titulo": "O intérprete contido",
+          "texto": "Com a lupa sobre o código, o intérprete recebe o segundo recado: não fazer a operação de tipicidade quando a pendência pode ser resolvida por outro ramo do sistema jurídico, ainda que o tipo penal exista."
+        },
+        {
+          "x": 50,
+          "y": 69,
+          "titulo": "Fragmentariedade: poucos fragmentos",
+          "texto": "Do mosaico inteiro dos ilícitos, apenas alguns fragmentos viram crime: os que atentam contra os valores fundamentais da convivência. É a fragmentariedade, que atua no plano abstrato, na criação do tipo penal."
+        },
+        {
+          "x": 32,
+          "y": 89,
+          "titulo": "Subsidiariedade: a última muralha",
+          "texto": "O guardião com a lanterna vigia a última muralha: o Direito Penal como executor de reserva. Ele só é chamado no plano concreto, quando os outros ramos e os demais meios de controle social se mostram impotentes."
+        }
+      ],
+      "fimExplorar": "Você percorreu as cinco cenas da jornada: da Declaração de 1789 à última muralha de proteção do bem jurídico.",
+      "narr": "A jornada do princípio em cinco cenas. Esta imagem conta a aula inteira em cinco cenas empilhadas, do nascimento do princípio até a última muralha de proteção. Toque em cada bolinha dourada para abrir a explicação daquela cena: mil setecentos e oitenta e nove, o legislador moderado, o intérprete contido, a fragmentariedade e a subsidiariedade."
+    },
+    {
+      "tipo": "Toque e revele",
+      "img": "revelar",
+      "alt": "Cartas douradas viradas para baixo sobre veludo vermelho, uma se levantando sob a luz de uma vela",
+      "kicker": "Toque e revele · Destinatários",
+      "titulo": "Perguntas escondidas",
+      "intro": "Quatro cartas guardam perguntas sobre os destinatários do princípio. Toque numa carta para ver a pergunta, pense na resposta e toque de novo para revelar.",
+      "cartas": [
+        {
+          "p": "Quem é o primeiro destinatário do princípio da intervenção mínima?",
+          "r": "O <b>legislador</b>, que deve ter moderação ao eleger as condutas dignas de proteção penal."
+        },
+        {
+          "p": "O que o legislador deve verificar antes de criar um novo crime?",
+          "r": "Se a conduta pode ser <b>contida por outros ramos do Direito</b>. Se pode, o castigo penal não deve nascer."
+        },
+        {
+          "p": "Quem é o segundo destinatário do princípio?",
+          "r": "O <b>intérprete do Direito</b>, quem interpreta e aplica a lei penal no caso concreto."
+        },
+        {
+          "p": "O que o intérprete deve evitar quando outro ramo resolve a pendência?",
+          "r": "A <b>operação de tipicidade</b>: enquadrar o fato como crime, ainda que o tipo penal tenha sido criado pelo legislador."
+        }
+      ],
+      "narr": "Perguntas escondidas. Quatro cartas guardam perguntas sobre os destinatários do princípio. Toque numa carta para ver a pergunta, pense na resposta e toque de novo para revelar. São quatro perguntas: quem é o primeiro destinatário, o que o legislador verifica antes de criar um crime, quem é o segundo destinatário e o que o intérprete deve evitar."
+    },
+    {
+      "tipo": "Comparador",
+      "img": "compforma",
+      "img2": "compconteudo",
+      "alt": "Comparador de duas cenas: a lei sendo escrita com pena dourada e selo, e a balança pesando se a punição é necessária",
+      "kicker": "Comparador · Arraste e compare",
+      "titulo": "Forma perfeita, conteúdo abusivo",
+      "rotuloA": "RESERVA LEGAL",
+      "rotuloB": "INTERVENÇÃO MÍNIMA",
+      "intro": "Arraste a linha dourada e compare as duas cenas. De um lado, a lei sendo escrita com todos os ritos: é a reserva legal, cuidando da forma. Do outro, a balança pesando se a punição é mesmo necessária: é a intervenção mínima, cuidando do conteúdo. Um tipo penal pode passar pela porta da forma e tropeçar na balança da necessidade.",
+      "narr": "Forma perfeita, conteúdo abusivo. Arraste a linha dourada e compare as duas cenas. De um lado, a lei sendo escrita com todos os ritos: é a reserva legal, cuidando da forma. Do outro, a balança pesando se a punição é mesmo necessária: é a intervenção mínima, cuidando do conteúdo. Um tipo penal pode passar pela porta da forma e tropeçar na balança da necessidade."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha sobre uma mesa escura",
+      "kicker": "Flashcard 2 · Reserva legal",
+      "titulo": "Flashcard 2",
+      "frente": "Um tipo penal pode respeitar a reserva legal e, mesmo assim, violar a intervenção mínima?",
+      "verso": "<p><b>Sim!</b> A reserva legal cuida da <b>forma</b>: o crime nasceu de lei. A intervenção mínima cuida do <b>conteúdo</b>: criminalizar precisava ser indispensável.</p><p style='margin-top:10px'>Por isso se diz: <b>todo</b> tipo penal cumpre a reserva legal, mas pode violar a intervenção mínima, porque o legislador é titular da lei e <b>não pode abusar</b> dela.</p>",
+      "narr": "Flashcard dois: reserva legal. Um tipo penal pode respeitar a reserva legal e, mesmo assim, violar a intervenção mínima? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "divisao",
+      "alt": "Rio dourado que se divide em dois braços luminosos ao redor de um pilar de mármore, sob céu vermelho",
+      "kicker": "Fragmentariedade e subsidiariedade",
+      "titulo": "Duas filhas do mesmo princípio",
+      "corpo": "<p>Chegamos ao ponto em que o rio se divide em dois braços. Do princípio da intervenção mínima <b>decorrem dois outros princípios</b>, que eu chamo de as duas filhas dele: a <b>fragmentariedade</b> e a <b>subsidiariedade</b>.</p><p>As duas nascem da mesma ideia mãe, a de que o Direito Penal é <b>exceção</b>, e não regra. Mas cada uma vigia um momento diferente: uma olha para o momento de <b>criar</b> o tipo penal; a outra, para o momento de <b>aplicar</b> o Direito Penal ao caso concreto. Se você gravar quem vigia qual momento, nunca mais confunde as duas na prova.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/divisao.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Imagina uma peneira e um goleiro reserva. A <b>peneira</b> decide, lá no começo, o que entra no campo penal: só alguns fragmentos do ilícito. O <b>goleiro reserva</b> só entra em campo quando o time principal não dá conta. Peneira é fragmentariedade; goleiro reserva é subsidiariedade.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/divisao.webp\" alt=\"\"></div><p>Nas próximas duas etapas, eu vou te apresentar cada uma com calma: primeiro a fragmentariedade, que trabalha no <b>plano abstrato</b>; depois a subsidiariedade, que trabalha no <b>plano concreto</b>.</p>",
+      "narr": "Duas filhas do mesmo princípio. Chegamos ao ponto em que o rio se divide em dois braços. Do princípio da intervenção mínima decorrem dois outros princípios, que eu chamo de as duas filhas dele: a fragmentariedade e a subsidiariedade. As duas nascem da mesma ideia mãe, a de que o Direito Penal é exceção, e não regra. Mas cada uma vigia um momento diferente: uma olha para o momento de criar o tipo penal; a outra, para o momento de aplicar o Direito Penal ao caso concreto. Se você gravar quem vigia qual momento, nunca mais confunde as duas na prova. Pense assim: imagina uma peneira e um goleiro reserva. A peneira decide, lá no começo, o que entra no campo penal: só alguns fragmentos do ilícito. O goleiro reserva só entra em campo quando o time principal não dá conta. Peneira é fragmentariedade; goleiro reserva é subsidiariedade. Nas próximas duas etapas, eu vou te apresentar cada uma com calma: primeiro a fragmentariedade, que trabalha no plano abstrato; depois a subsidiariedade, que trabalha no plano concreto."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "fragmentos",
+      "alt": "Mosaico antigo de pedra rachada com poucos fragmentos dourados brilhando, em salão escuro com cortinas vermelhas",
+      "kicker": "As filhas do princípio · 1 de 2",
+      "titulo": "Fragmentariedade: nem todo ilícito é crime",
+      "corpo": "<p>A <b class=\"term\">fragmentariedade</b> afirma o seguinte: <b>nem todos os ilícitos configuram infrações penais</b>, mas apenas aqueles que atentam contra os <b>valores fundamentais</b> para a manutenção e o progresso do ser humano e da sociedade.</p><p>O nome entrega a imagem: o universo dos ilícitos é um mosaico enorme, e o Direito Penal recorta dele apenas <b>fragmentos</b>, os pedaços mais graves, aqueles que atingem o que a convivência tem de mais essencial. Todo o restante continua sendo ilícito, continua podendo gerar consequências, mas em <b>outros ramos</b>: indenização no Civil, sanção no Administrativo, e por aí vai.</p><p>E onde ela se manifesta? No <b>plano abstrato</b>, no momento da <b>criação do tipo penal</b>. É o legislador, caneta na mão, decidindo quais fragmentos do ilícito merecem virar crime. Em razão desse caráter fragmentário, o Direito Penal é considerado a <b>última etapa de proteção</b> do bem jurídico.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/fragmentos.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Nem toda mentira é crime, nem toda promessa quebrada é crime, nem todo prejuízo causado a alguém é crime. São ilícitos que a vida resolve com outros instrumentos. Só os ataques aos <b>valores fundamentais</b>, como a vida, a liberdade e o patrimônio atingido de forma grave, é que o legislador recorta como fragmentos penais.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Fragmentariedade: do mosaico dos ilícitos, o Direito Penal só recorta os fragmentos fundamentais.</p></div>",
+      "narr": "Fragmentariedade: nem todo ilícito é crime. A fragmentariedade afirma o seguinte: nem todos os ilícitos configuram infrações penais, mas apenas aqueles que atentam contra os valores fundamentais para a manutenção e o progresso do ser humano e da sociedade. O nome entrega a imagem: o universo dos ilícitos é um mosaico enorme, e o Direito Penal recorta dele apenas fragmentos, os pedaços mais graves, aqueles que atingem o que a convivência tem de mais essencial. Todo o restante continua sendo ilícito, continua podendo gerar consequências, mas em outros ramos: indenização no Civil, sanção no Administrativo, e por aí vai. E onde ela se manifesta? No plano abstrato, no momento da criação do tipo penal. É o legislador, caneta na mão, decidindo quais fragmentos do ilícito merecem virar crime. Em razão desse caráter fragmentário, o Direito Penal é considerado a última etapa de proteção do bem jurídico. Exemplo prático: nem toda mentira é crime, nem toda promessa quebrada é crime, nem todo prejuízo causado a alguém é crime. São ilícitos que a vida resolve com outros instrumentos. Só os ataques aos valores fundamentais, como a vida, a liberdade e o patrimônio atingido de forma grave, é que o legislador recorta como fragmentos penais. Frase-chave: fragmentariedade: do mosaico dos ilícitos, o Direito Penal só recorta os fragmentos fundamentais."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "trincheira",
+      "alt": "Última muralha de fortaleza antiga ao amanhecer, com guardião de lanterna dourada vigiando o portão final",
+      "kicker": "As filhas do princípio · 2 de 2",
+      "titulo": "Subsidiariedade: o executor de reserva",
+      "corpo": "<p>A <b class=\"term\">subsidiariedade</b> afirma o seguinte: a atuação do Direito Penal só é cabível quando os <b>outros ramos do Direito</b> e os <b>demais meios estatais de controle social</b> forem <b>impotentes</b> para o controle da ordem pública.</p><p>Por isso, o Direito Penal funciona como um <b>executor de reserva</b>. Ele fica guardado na última trincheira, pronto, mas só é chamado quando todas as outras linhas de defesa falharam. Enquanto multa, indenização, sanção administrativa e outros controles sociais dão conta, ele <b>permanece em reserva</b>.</p><p>E onde ela se manifesta? No <b>plano concreto</b>, no momento da <b>aplicação</b> do Direito Penal. Não é mais a caneta do legislador desenhando tipos em abstrato: é o caso real, na frente do intérprete, pedindo a pergunta de sempre: os outros ramos falharam aqui? Se não falharam, o executor de reserva <b>não entra em campo</b>.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/trincheira.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>A diferença das duas filhas mora no relógio. A fragmentariedade trabalha <b>antes</b>, quando o tipo penal nasce, no abstrato. A subsidiariedade trabalha <b>depois</b>, quando o caso concreto bate à porta, na aplicação.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Subsidiariedade: o Direito Penal é o executor de reserva, chamado só quando os outros ramos falham.</p></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Fragmentariedade: só os ilícitos contra valores fundamentais viram crime; plano abstrato, na criação do tipo.</li><li>Subsidiariedade: o Penal só atua quando os outros ramos e controles sociais são impotentes; plano concreto, na aplicação.</li><li>Nos dois casos, o Direito Penal aparece como a última etapa de proteção do bem jurídico.</li></ul></div>",
+      "narr": "Subsidiariedade: o executor de reserva. A subsidiariedade afirma o seguinte: a atuação do Direito Penal só é cabível quando os outros ramos do Direito e os demais meios estatais de controle social forem impotentes para o controle da ordem pública. Por isso, o Direito Penal funciona como um executor de reserva. Ele fica guardado na última trincheira, pronto, mas só é chamado quando todas as outras linhas de defesa falharam. Enquanto multa, indenização, sanção administrativa e outros controles sociais dão conta, ele permanece em reserva. E onde ela se manifesta? No plano concreto, no momento da aplicação do Direito Penal. Não é mais a caneta do legislador desenhando tipos em abstrato: é o caso real, na frente do intérprete, pedindo a pergunta de sempre: os outros ramos falharam aqui? Se não falharam, o executor de reserva não entra em campo. Pense assim: a diferença das duas filhas mora no relógio. A fragmentariedade trabalha antes, quando o tipo penal nasce, no abstrato. A subsidiariedade trabalha depois, quando o caso concreto bate à porta, na aplicação. Frase-chave: subsidiariedade: o Direito Penal é o executor de reserva, chamado só quando os outros ramos falham. Nesse bloco você viu: a fragmentariedade, no plano abstrato; a subsidiariedade, no plano concreto; e o Direito Penal como última etapa de proteção do bem jurídico."
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "martelo",
+      "alt": "Martelo de juiz sobre um livro de leis aberto com marcador dourado",
+      "kicker": "Questão de banca · As filhas do princípio",
+      "titulo": "Questão de banca",
+      "intro": "Questão no estilo de banca, para você sentir o nível da cobrança sobre <b>fragmentariedade</b> e <b>subsidiariedade</b>:",
+      "questao": "O princípio que se manifesta no plano concreto, no momento da aplicação do Direito Penal, fazendo dele um executor de reserva, é o princípio da:",
+      "opcoes": [
+        "fragmentariedade",
+        "subsidiariedade",
+        "reserva legal",
+        "anterioridade"
+      ],
+      "certa": 1,
+      "feedback": " Acertou quem marcou subsidiariedade! Ela atua no plano concreto, na aplicação: o Direito Penal só entra quando os outros ramos e os demais meios de controle social se mostram impotentes. A fragmentariedade, irmã dela, atua no plano abstrato, na criação do tipo penal. Trocar os planos é a pegadinha clássica desse tema.",
+      "narr": "Questão de banca: as filhas do princípio. Questão no estilo de banca, para você sentir o nível da cobrança sobre fragmentariedade e subsidiariedade: o princípio que se manifesta no plano concreto, no momento da aplicação do Direito Penal, fazendo dele um executor de reserva, é o princípio de quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Ligar termos",
+      "img": "ligar",
+      "alt": "Chaves douradas antigas e cadeados ornamentados sobre veludo vermelho, cada chave diante do seu cadeado",
+      "kicker": "Ligar termos · Fixação",
+      "titulo": "Ligue os pares",
+      "instrucao": "Toque em um termo da esquerda e depois na definição correspondente da direita. São cinco pares cobrindo a aula inteira.",
+      "pares": [
+        [
+          "Intervenção mínima",
+          "O Direito Penal só atua quando a sua intervenção é indispensável"
+        ],
+        [
+          "Art. 8º da Declaração de 1789",
+          "A lei somente deve prever as penas estritamente necessárias"
+        ],
+        [
+          "Fragmentariedade",
+          "Só fragmentos do ilícito viram crime; atua no plano abstrato"
+        ],
+        [
+          "Subsidiariedade",
+          "O Penal só atua quando os outros ramos falham; plano concreto"
+        ],
+        [
+          "Reserva legal",
+          "Só a lei pode criar crimes e penas; cuida da forma"
+        ]
+      ],
+      "ordemDefs": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "narr": "Ligue os pares. Toque em um termo da esquerda e depois na definição correspondente da direita. São cinco pares cobrindo a aula inteira: intervenção mínima, o artigo oitavo da Declaração, fragmentariedade, subsidiariedade e reserva legal."
+    },
+    {
+      "tipo": "Completar",
+      "img": "lacuna",
+      "alt": "Pergaminho antigo com espaços dourados vazios e peças de palavras douradas ao lado esperando para serem colocadas",
+      "kicker": "Completar a frase · Fixação",
+      "titulo": "Complete o raciocínio",
+      "intro": "Toque nas palavras do banco, na ordem certa, para completar a frase que resume as duas filhas do princípio.",
+      "partes": [
+        "O Direito Penal é a ",
+        " etapa de proteção do bem jurídico: ele só intervém quando os outros ramos se mostram ",
+        " para conter a conduta, porque nem todo ",
+        " configura uma infração penal."
+      ],
+      "respostas": [
+        "última",
+        "impotentes",
+        "ilícito"
+      ],
+      "banco": [
+        "primeira",
+        "ilícito",
+        "suficientes",
+        "impotentes",
+        "crime",
+        "última"
+      ],
+      "fecho": "Isso resume tudo: última etapa, outros ramos impotentes, nem todo ilícito é crime. Fragmentariedade e subsidiariedade trabalhando juntas.",
+      "narr": "Complete o raciocínio. Toque nas palavras do banco, na ordem certa, para completar a frase que resume as duas filhas do princípio: o Direito Penal é a última etapa de proteção do bem jurídico, ele só intervém quando os outros ramos se mostram impotentes para conter a conduta, porque nem todo ilícito configura uma infração penal."
+    },
+    {
+      "tipo": "Verdadeiro ou falso",
+      "img": "cartasvf",
+      "alt": "Duas pilhas de cartas antigas sobre veludo vermelho, uma com símbolo dourado de certo e outra com símbolo de errado",
+      "kicker": "Verdadeiro ou falso · Fixação",
+      "titulo": "Verdadeiro ou falso?",
+      "intro": "Cinco afirmações sobre a aula inteira. Toque em Verdadeiro ou Falso, ou arraste a carta para o lado da sua resposta.",
+      "afirmacoes": [
+        {
+          "t": "O princípio da intervenção mínima nasceu na Declaração dos Direitos do Homem e do Cidadão, de 1789.",
+          "v": true,
+          "exp": "O artigo 8º da Declaração afirmou que a lei somente deve prever as penas estritamente necessárias, para evitar tipos penais iníquos e penas vexatórias."
+        },
+        {
+          "t": "Todo tipo penal que respeita a reserva legal respeita, automaticamente, a intervenção mínima.",
+          "v": false,
+          "exp": "Não! Todo tipo penal cumpre a reserva legal, mas pode violar a intervenção mínima se a criminalização não for indispensável. O legislador é titular da lei, mas não pode abusar dela."
+        },
+        {
+          "t": "A fragmentariedade se manifesta no plano concreto, no momento da aplicação do Direito Penal.",
+          "v": false,
+          "exp": "Pegadinha clássica! A fragmentariedade atua no plano abstrato, na criação do tipo penal. Quem atua no plano concreto é a subsidiariedade."
+        },
+        {
+          "t": "Pela subsidiariedade, o Direito Penal funciona como um executor de reserva.",
+          "v": true,
+          "exp": "Isso mesmo! Ele só é chamado quando os outros ramos do Direito e os demais meios estatais de controle social forem impotentes para conter a conduta."
+        },
+        {
+          "t": "O intérprete deve evitar a operação de tipicidade quando a pendência pode ser resolvida por outro ramo do Direito.",
+          "v": true,
+          "exp": "Correto! Esse é o recado do princípio ao seu segundo destinatário, e vale ainda que o legislador tenha criado o tipo penal incriminador."
+        }
+      ],
+      "narr": "Verdadeiro ou falso? Cinco afirmações sobre a aula inteira. Toque em Verdadeiro ou Falso, ou arraste a carta para o lado da sua resposta. Prepare-se: tem pegadinha de plano abstrato e plano concreto no meio."
+    },
+    {
+      "tipo": "Linha do tempo",
+      "img": "panorama",
+      "alt": "Linha do tempo dourada atravessando séculos de história do Direito Penal, das tochas medievais ao amanhecer moderno",
+      "kicker": "Linha do tempo · A jornada",
+      "titulo": "A jornada do princípio",
+      "intro": "Toque em cada marco para abrir a explicação e percorrer a jornada completa, do arbítrio sem freio até a última trincheira.",
+      "marcos": [
+        {
+          "ano": "Antes de 1789",
+          "titulo": "O arbítrio sem freio",
+          "texto": "Sem um princípio limitador, o legislador podia criar tipos penais iníquos e instituir penas vexatórias, castigos que humilhavam e feriam a dignidade da pessoa humana. Era esse o cenário que precisava mudar."
+        },
+        {
+          "ano": "1789",
+          "titulo": "A Declaração dos Direitos do Homem e do Cidadão",
+          "texto": "O artigo 8º da Declaração francesa estabelece que a lei somente deve prever as penas estritamente necessárias. Nasce o princípio da intervenção mínima: punir passa a exigir necessidade."
+        },
+        {
+          "ano": "Ao criar a lei",
+          "titulo": "Fragmentariedade: a peneira do legislador",
+          "texto": "No plano abstrato, ao criar o tipo penal, o legislador seleciona apenas os fragmentos do ilícito que atentam contra os valores fundamentais da convivência. Nem todo ilícito vira crime."
+        },
+        {
+          "ano": "Ao aplicar a lei",
+          "titulo": "Subsidiariedade: o executor de reserva",
+          "texto": "No plano concreto, ao aplicar o Direito Penal, o intérprete só chama o executor de reserva quando os outros ramos e os demais meios de controle social se mostram impotentes."
+        },
+        {
+          "ano": "Hoje",
+          "titulo": "A última etapa de proteção",
+          "texto": "O resultado da jornada: o Direito Penal ocupa o lugar de última etapa de proteção do bem jurídico, acionado só quando indispensável, pelo legislador moderado e pelo intérprete contido."
+        }
+      ],
+      "narr": "A jornada do princípio. Toque em cada marco para abrir a explicação e percorrer a jornada completa, do arbítrio sem freio até a última trincheira: antes de mil setecentos e oitenta e nove, a Declaração, a fragmentariedade ao criar a lei, a subsidiariedade ao aplicar a lei e o lugar do Direito Penal hoje."
+    },
+    {
+      "tipo": "Mapa mental",
+      "img": "panorama",
+      "alt": "Linha do tempo dourada atravessando séculos de história do Direito Penal",
+      "kicker": "Mapa mental · Revisão",
+      "titulo": "O princípio no mapa",
+      "centro": "INTERVENÇÃO MÍNIMA",
+      "intro": "Toque em cada ramo para abrir o resumo daquele pedaço da aula. Abra os cinco e o mapa inteiro fica seu.",
+      "ramos": [
+        {
+          "nome": "Origem",
+          "texto": "Declaração dos Direitos do Homem e do Cidadão, de 1789: o artigo 8º limita a lei às penas estritamente necessárias, contra tipos iníquos e penas vexatórias.",
+          "chips": [
+            "1789",
+            "Art. 8º",
+            "Penas necessárias"
+          ]
+        },
+        {
+          "nome": "Conceito",
+          "texto": "A intervenção penal só é legítima quando a criminalização for meio indispensável para proteger um bem que outros ramos não conseguem tutelar.",
+          "chips": [
+            "Meio indispensável",
+            "Bem jurídico",
+            "Outros ramos"
+          ]
+        },
+        {
+          "nome": "Reserva legal",
+          "texto": "A intervenção mínima complementa a reserva legal: a forma pode estar perfeita e o conteúdo ser abusivo, pois o legislador não pode abusar da lei que titulariza.",
+          "chips": [
+            "Complemento",
+            "Forma x conteúdo"
+          ]
+        },
+        {
+          "nome": "Destinatários",
+          "texto": "O legislador, com moderação ao criminalizar; e o intérprete, que evita a tipicidade quando outro ramo resolve a pendência, mesmo existindo tipo penal.",
+          "chips": [
+            "Legislador",
+            "Intérprete"
+          ]
+        },
+        {
+          "nome": "As duas filhas",
+          "texto": "Fragmentariedade, no plano abstrato da criação do tipo; subsidiariedade, no plano concreto da aplicação, com o Penal como executor de reserva.",
+          "chips": [
+            "Fragmentariedade",
+            "Subsidiariedade"
+          ]
+        }
+      ],
+      "narr": "O princípio no mapa. Toque em cada ramo para abrir o resumo daquele pedaço da aula: origem, conceito, reserva legal, destinatários e as duas filhas do princípio. Abra os cinco e o mapa inteiro fica seu."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "pegadinhas",
+      "alt": "Alvo dourado com flechas e uma lupa revelando armadilhas escondidas sobre um pergaminho",
+      "kicker": "Revisão · Pegadinhas",
+      "titulo": "Pegadinhas e resumo final",
+      "corpo": "<p>Antes do desafio final, eu vou te mostrar as <b>armadilhas</b> que as bancas montam com este princípio. São trocas pequenas, de uma ou duas palavras, feitas para derrubar quem estudou com pressa.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pegadinhas.webp\" alt=\"\"></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 1 · A TROCA DOS PLANOS</p><p>A banca afirma que a fragmentariedade atua no plano concreto e a subsidiariedade no abstrato. É o contrário: <b>fragmentariedade é abstrata</b>, na criação do tipo; <b>subsidiariedade é concreta</b>, na aplicação.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 2 · A FORMA QUE ENGANA</p><p>A banca diz que, respeitada a reserva legal, o tipo penal está automaticamente de acordo com a intervenção mínima. Falso: a forma perfeita pode esconder um conteúdo abusivo, porque criminalizar pode não ser indispensável.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 3 · O DESTINATÁRIO ESQUECIDO</p><p>A banca reduz os destinatários ao legislador. São dois: o <b>legislador</b> e o <b>intérprete</b>, que deve evitar a tipicidade quando outro ramo resolve a pendência, ainda que o tipo penal exista.</p></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Na dúvida, pergunte: é sobre criar a lei ou sobre aplicar a lei? A resposta separa as duas filhas.</p></div>",
+      "narr": "Pegadinhas e resumo final. Antes do desafio final, eu vou te mostrar as armadilhas que as bancas montam com este princípio. São trocas pequenas, de uma ou duas palavras, feitas para derrubar quem estudou com pressa. Pegadinha um, a troca dos planos: a banca afirma que a fragmentariedade atua no plano concreto e a subsidiariedade no abstrato. É o contrário: fragmentariedade é abstrata, na criação do tipo; subsidiariedade é concreta, na aplicação. Pegadinha dois, a forma que engana: a banca diz que, respeitada a reserva legal, o tipo penal está automaticamente de acordo com a intervenção mínima. Falso: a forma perfeita pode esconder um conteúdo abusivo, porque criminalizar pode não ser indispensável. Pegadinha três, o destinatário esquecido: a banca reduz os destinatários ao legislador. São dois: o legislador e o intérprete, que deve evitar a tipicidade quando outro ramo resolve a pendência, ainda que o tipo penal exista. Frase-chave: na dúvida, pergunte: é sobre criar a lei ou sobre aplicar a lei? A resposta separa as duas filhas."
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "martelo",
+      "alt": "Martelo de juiz sobre um livro de leis aberto com marcador dourado",
+      "kicker": "Questão de banca · Caso integrador",
+      "titulo": "Questão de banca: o caso",
+      "intro": "Última questão antes do desafio, agora com um <b>caso completo</b> que junta a aula inteira:",
+      "questao": "Uma lei, aprovada com todos os ritos formais, cria crime para uma conduta que já era plenamente contida por sanções administrativas eficazes, com multa e reparação integral do bem. Sobre essa lei, é correto afirmar que ela:",
+      "opcoes": [
+        "respeita a intervenção mínima, porque nasceu de lei formal",
+        "viola a intervenção mínima, embora respeite a reserva legal, pois criminalizar não era indispensável",
+        "viola a reserva legal, porque o legislador não pode criar crimes novos",
+        "respeita ambos os princípios, porque a sanção administrativa é mais fraca que a penal"
+      ],
+      "certa": 1,
+      "feedback": " Exatamente! A forma está perfeita, então a reserva legal foi respeitada. Mas, se outro ramo já continha a conduta, a criminalização não era meio indispensável: a intervenção mínima foi violada, e a subsidiariedade confirma, pois o executor de reserva foi chamado sem necessidade.",
+      "narr": "Questão de banca: o caso. Última questão antes do desafio, agora com um caso completo que junta a aula inteira: uma lei, aprovada com todos os ritos formais, cria crime para uma conduta que já era plenamente contida por sanções administrativas eficazes, com multa e reparação integral do bem. Sobre essa lei, é correto afirmar o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha sobre uma mesa escura",
+      "kicker": "Flashcard 3 · As duas filhas",
+      "titulo": "Flashcard 3",
+      "frente": "Fragmentariedade e subsidiariedade: qual atua no plano abstrato e qual atua no plano concreto?",
+      "verso": "<p><b>Fragmentariedade: plano abstrato</b>, no momento da criação do tipo penal; só fragmentos do ilícito viram crime.</p><p style='margin-top:10px'><b>Subsidiariedade: plano concreto</b>, no momento da aplicação; o Direito Penal é o executor de reserva, chamado só quando os outros ramos falham.</p>",
+      "narr": "Flashcard três: as duas filhas. Fragmentariedade e subsidiariedade: qual atua no plano abstrato e qual atua no plano concreto? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Karaokê",
+      "img": "panorama",
+      "alt": "Linha do tempo dourada atravessando séculos de história do Direito Penal",
+      "kicker": "Karaokê final · Siga a narração",
+      "titulo": "A aula inteira em voz alta",
+      "frases": [
+        "Vamos fechar a aula recapitulando tudo, acompanhando a narração pela tela.",
+        "A intervenção mínima nasceu em mil setecentos e oitenta e nove, para limitar a lei às penas estritamente necessárias.",
+        "Ela diz que criminalizar só é legítimo quando for meio indispensável para proteger um bem jurídico.",
+        "O princípio fala com dois destinatários: o legislador moderado e o intérprete contido.",
+        "Da intervenção mínima nascem a fragmentariedade, no plano abstrato, e a subsidiariedade, no plano concreto.",
+        "No fim das contas, o Direito Penal é a última etapa de proteção do bem jurídico: o executor de reserva."
+      ],
+      "narr": "Vamos fechar a aula recapitulando tudo, acompanhando a narração pela tela. A intervenção mínima nasceu em mil setecentos e oitenta e nove, para limitar a lei às penas estritamente necessárias. Ela diz que criminalizar só é legítimo quando for meio indispensável para proteger um bem jurídico. O princípio fala com dois destinatários: o legislador moderado e o intérprete contido. Da intervenção mínima nascem a fragmentariedade, no plano abstrato, e a subsidiariedade, no plano concreto. No fim das contas, o Direito Penal é a última etapa de proteção do bem jurídico: o executor de reserva."
+    },
+    {
+      "tipo": "Desafio",
+      "img": "martelo",
+      "alt": "Martelo de juiz e placar dourado sobre um livro de leis aberto",
+      "kicker": "Desafio final · Placar",
+      "titulo": "Desafio final",
+      "intro": "Cinco perguntas valendo 100 pontos cada, cobrindo a aula inteira. A última é a pergunta de ouro, com um caso completo. Some seus pontos e veja o placar no fim!",
+      "perguntas": [
+        {
+          "q": "O princípio da intervenção mínima também é conhecido como princípio:",
+          "ops": [
+            "da legalidade",
+            "da necessidade",
+            "da anterioridade",
+            "da culpabilidade"
+          ],
+          "certa": 1,
+          "exp": "Também chamado de princípio da necessidade: a intervenção penal só acontece quando necessária e indispensável."
+        },
+        {
+          "q": "Segundo o princípio, somente podem ser castigados pelo Direito Penal os comportamentos que:",
+          "ops": [
+            "forem moralmente reprováveis",
+            "gerarem repercussão na imprensa",
+            "não puderem ser contidos por outros ramos do Direito",
+            "forem praticados com violência"
+          ],
+          "certa": 2,
+          "exp": "O filtro é a contenção pelos outros ramos: se o Civil, o Administrativo ou outro ramo contém a conduta, o castigo penal não se justifica."
+        },
+        {
+          "q": "A fragmentariedade se manifesta:",
+          "ops": [
+            "no plano concreto, na aplicação",
+            "no plano abstrato, na criação do tipo penal",
+            "apenas na execução da pena",
+            "somente nos crimes mais graves"
+          ],
+          "certa": 1,
+          "exp": "Plano abstrato: é o legislador, ao criar o tipo, selecionando os fragmentos do ilícito que atentam contra valores fundamentais."
+        },
+        {
+          "q": "Chamar o Direito Penal de executor de reserva é falar de:",
+          "ops": [
+            "fragmentariedade",
+            "reserva legal",
+            "subsidiariedade",
+            "intervenção máxima"
+          ],
+          "certa": 2,
+          "exp": "Subsidiariedade: o Penal só atua quando os outros ramos e os demais meios de controle social forem impotentes."
+        },
+        {
+          "q": "PERGUNTA DE OURO: um juiz recebe um caso em que a pendência já encontra solução completa em outro ramo do Direito, com reparação do bem, embora exista tipo penal para o fato. Pela intervenção mínima, o intérprete deve:",
+          "ops": [
+            "enquadrar o fato como crime, porque o tipo existe",
+            "aplicar a pena máxima, para dar o exemplo",
+            "evitar a operação de tipicidade, pois outro ramo resolve a pendência",
+            "ignorar o outro ramo, porque o Penal sempre prevalece"
+          ],
+          "certa": 2,
+          "exp": "Pergunta de ouro dominada! O intérprete é destinatário do princípio: se outro ramo resolve a pendência, ele não procede à operação de tipicidade, ainda que o legislador tenha criado o tipo penal."
+        }
+      ],
+      "narr": "Desafio final. Cinco perguntas valendo cem pontos cada, cobrindo a aula inteira. A última é a pergunta de ouro, com um caso completo. Some seus pontos e veja o placar no fim. Toque em uma alternativa para responder cada pergunta."
+    },
+    {
+      "tipo": "Encerramento",
+      "img": "fim",
+      "alt": "Estrada dourada saindo de um tribunal neoclássico com balança equilibrada em direção ao nascer do sol",
+      "kicker": "Encerramento",
+      "titulo": "A última etapa, na medida certa",
+      "corpo": "<p>Você chegou ao fim da jornada, e eu quero que você saia daqui com uma imagem fixa na cabeça: a do Direito Penal como a <b>última muralha</b>, forte justamente porque é <b>reservada</b> para quando nada mais funciona.</p><p>Da Declaração de 1789 ao executor de reserva, o fio é um só: <b>necessidade</b>. Pena só a estritamente necessária, crime só o indispensável, intervenção só quando os outros ramos não dão conta. Quem internaliza esse fio lê qualquer questão sobre o tema com uma pergunta automática na cabeça: <b>era mesmo preciso chamar o Direito Penal?</b></p><p>Na próxima aula, seguimos pelo mapa dos princípios penais. Até lá, revisite os flashcards e o mapa mental desta aula: são eles que transformam a explicação de hoje em ponto garantido na sua prova.</p>",
+      "pontos": [
+        "<b>Origem:</b> Declaração de 1789, artigo 8º: a lei só deve prever penas estritamente necessárias.",
+        "<b>Conceito:</b> criminalizar só é legítimo quando for meio indispensável para proteger um bem.",
+        "<b>Reserva legal:</b> a forma perfeita não salva o conteúdo abusivo; os dois princípios se complementam.",
+        "<b>Destinatários:</b> o legislador moderado e o intérprete que evita a tipicidade desnecessária.",
+        "<b>As filhas:</b> fragmentariedade no abstrato, subsidiariedade no concreto, e o Penal como executor de reserva."
+      ],
+      "narr": "A última etapa, na medida certa. Você chegou ao fim da jornada, e eu quero que você saia daqui com uma imagem fixa na cabeça: a do Direito Penal como a última muralha, forte justamente porque é reservada para quando nada mais funciona. Da Declaração de mil setecentos e oitenta e nove ao executor de reserva, o fio é um só: necessidade. Pena só a estritamente necessária, crime só o indispensável, intervenção só quando os outros ramos não dão conta. Quem internaliza esse fio lê qualquer questão sobre o tema com uma pergunta automática na cabeça: era mesmo preciso chamar o Direito Penal? Na próxima aula, seguimos pelo mapa dos princípios penais. Até lá, revisite os flashcards e o mapa mental desta aula: são eles que transformam a explicação de hoje em ponto garantido na sua prova."
+    }
+  ],
+  "imagens": {
+    "capa": "assets/img/capa.webp",
+    "roteiro": "assets/img/roteiro.webp",
+    "freio": "assets/img/freio.webp",
+    "origem": "assets/img/origem.webp",
+    "pergaminho": "assets/img/pergaminho.webp",
+    "funil": "assets/img/funil.webp",
+    "questao": "assets/img/questao.webp",
+    "flashcards": "assets/img/flashcards.webp",
+    "reservalegal": "assets/img/reservalegal.webp",
+    "legislador": "assets/img/legislador.webp",
+    "interprete": "assets/img/interprete.webp",
+    "explorar": "assets/img/explorar.webp",
+    "revelar": "assets/img/revelar.webp",
+    "compforma": "assets/img/compforma.webp",
+    "compconteudo": "assets/img/compconteudo.webp",
+    "divisao": "assets/img/divisao.webp",
+    "fragmentos": "assets/img/fragmentos.webp",
+    "trincheira": "assets/img/trincheira.webp",
+    "martelo": "assets/img/martelo.webp",
+    "ligar": "assets/img/ligar.webp",
+    "lacuna": "assets/img/lacuna.webp",
+    "cartasvf": "assets/img/cartasvf.webp",
+    "panorama": "assets/img/panorama.webp",
+    "pegadinhas": "assets/img/pegadinhas.webp",
+    "fim": "assets/img/fim.webp"
+  },
+  "audioBaseUrl": "assets/audio/s",
+  "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-06-principio-da-intervencao-minima-ou-da-necessidade/aula.html"
+},
+  "penal-06-07": {
+  "aulaId": "penal-06-07",
+  "titulo": "Intranscendência, Responsabilidade pelo Fato e Individualização da Pena",
+  "disciplinaId": "penal",
+  "totalEtapas": 29,
+  "slides": [
+    {
+      "tipo": "Capa",
+      "img": "capa",
+      "alt": "Balança dourada gigante da Justiça em salão de mármore com cortinas vermelhas, e um homem sozinho diante dela sobre uma linha de luz dourada",
+      "kicker": "Direito Penal · Princípios Penais",
+      "titulo": "Intranscendência, Responsabilidade pelo Fato e Individualização da Pena",
+      "corpo": "<p class=\"lead\">A pena de um pai pode cair sobre o filho? Uma pessoa pode ser punida pelo que ela <b>é</b>, e não pelo que ela <b>fez</b>? E duas pessoas que praticaram o mesmo crime devem receber, sempre, exatamente a mesma pena?</p><p>Essas três perguntas parecem simples, mas são elas que separam um Direito Penal <b>justo</b> de um Direito Penal <b>arbitrário</b>. E cada uma delas tem uma resposta construída por um princípio: a <b>intranscendência</b>, a <b>responsabilidade penal pelo fato</b> e a <b>individualização da pena</b>.</p><p>Nesta aula, eu explico os três com calma, um por um: o que cada princípio significa, onde ele está escrito na <b>Constituição</b>, o que o <b>Supremo Tribunal Federal</b> já disse sobre ele e como ele aparece nos casos concretos, com exemplos, questões e atividades para fixar.</p><div class=\"chips\"><span class=\"chip\">Intranscendência</span><span class=\"chip\">Responsabilidade pelo fato</span><span class=\"chip\">Individualização da pena</span></div><p>Guarde a ideia que costura os três: a pena é <b>pessoal</b>, nasce de um <b>fato</b> e deve ser <b>medida</b> para cada caso. É essa costura que nós vamos desenhar juntas, etapa por etapa.</p>",
+      "narr": "A pena de um pai pode cair sobre o filho? Uma pessoa pode ser punida pelo que ela é, e não pelo que ela fez? E duas pessoas que praticaram o mesmo crime devem receber, sempre, exatamente a mesma pena? Essas três perguntas parecem simples, mas são elas que separam um Direito Penal justo de um Direito Penal arbitrário. E cada uma delas tem uma resposta construída por um princípio: a intranscendência, a responsabilidade penal pelo fato e a individualização da pena. Nesta aula, eu explico os três com calma, um por um: o que cada princípio significa, onde ele está escrito na Constituição, o que o Supremo Tribunal Federal já disse sobre ele e como ele aparece nos casos concretos, com exemplos, questões e atividades para fixar. Guarde a ideia que costura os três: a pena é pessoal, nasce de um fato e deve ser medida para cada caso. É essa costura que nós vamos desenhar juntas, etapa por etapa."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "caminhos",
+      "alt": "Encruzilhada antiga com caminhos passando por arcos de pedra sob luz dourada",
+      "kicker": "Roteiro da aula",
+      "titulo": "O caminho desta aula",
+      "corpo": "<p>Antes de entrar no conteúdo, deixa eu te mostrar o <b>caminho que vamos percorrer</b>. A aula está organizada em <b>quatro blocos</b> e um fechamento:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>Princípio da intranscendência</h3><p>Ninguém responde por fato de outra pessoa: a pena não passa da pessoa do condenado, com uma única exceção patrimonial.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>Responsabilidade penal pelo fato</h3><p>Julga-se o fato típico e ilícito, e não quem a pessoa é: nada de Direito Penal do autor.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>Individualização da pena</h3><p>Cada caso pede a sua medida: o princípio na Constituição e os três planos em que ele se desenvolve.</p></div></div><div class=\"viarow\"><div class=\"vianum\">4</div><div><h3>Prática e fixação</h3><p>Comparador, imagem para explorar, ligar termos, verdadeiro ou falso, linha do tempo, mapa mental e pegadinhas.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/caminhos.webp\" alt=\"\"></div><p>O conteúdo vem em <b>texto corrido</b>, como uma conversa, e a prática fica concentrada no <b>fim de cada bloco</b>: questões, flashcards e atividades para fixar cada princípio antes de seguir. No fim, o <b>desafio final</b> com placar e a <b>pergunta de ouro</b>. Vamos ao primeiro bloco!</p>",
+      "narr": "O caminho desta aula. Antes de entrar no conteúdo, deixa eu te mostrar o caminho que vamos percorrer. A aula está organizada em quatro blocos e um fechamento. Bloco um: princípio da intranscendência. Ninguém responde por fato de outra pessoa: a pena não passa da pessoa do condenado, com uma única exceção patrimonial. Bloco dois: responsabilidade penal pelo fato. Julga-se o fato típico e ilícito, e não quem a pessoa é: nada de Direito Penal do autor. Bloco três: individualização da pena. Cada caso pede a sua medida: o princípio na Constituição e os três planos em que ele se desenvolve. Bloco quatro: prática e fixação. Comparador, imagem para explorar, ligar termos, verdadeiro ou falso, linha do tempo, mapa mental e pegadinhas. O conteúdo vem em texto corrido, como uma conversa, e a prática fica concentrada no fim de cada bloco: questões, flashcards e atividades para fixar cada princípio antes de seguir. No fim, o desafio final com placar e a pergunta de ouro. Vamos ao primeiro bloco!"
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "barreira",
+      "alt": "Homem dentro de um círculo de luz dourada protegido por uma barreira luminosa, com a esposa e o filho seguros do outro lado",
+      "kicker": "Princípio da Intranscendência",
+      "titulo": "A pena para na pessoa do condenado",
+      "corpo": "<p>Eu começo pelo princípio que responde à primeira pergunta da capa. O <b class=\"term\">princípio da intranscendência</b> tem um fundamento muito direto: <b>ninguém pode ser responsabilizado por fato cometido por terceira pessoa</b>. Se foi outra pessoa quem praticou o fato, a responsabilidade penal não é sua, por mais próximo que você seja dela.</p><p>A consequência é imediata: <b>a pena não pode ser passada para terceira pessoa</b>. A pena é como uma impressão digital: pertence a uma pessoa só. Ela nasce com a condenação daquela pessoa, é cumprida por aquela pessoa e se encerra com aquela pessoa. Pai não cumpre pena de filho, filho não cumpre pena de pai, cônjuge não cumpre pena de cônjuge.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/barreira.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Imagine uma <b>barreira de luz</b> em volta do condenado. A pena bate nessa barreira e <b>para ali</b>: ela não atravessa para a esposa, para os filhos, para os pais. Quem está do outro lado da barreira continua com a vida intacta, porque não praticou fato nenhum.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Ninguém responde por fato que outra pessoa cometeu.</p></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/barreira.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Um pai é condenado a quatro anos de prisão por um furto. O filho, maior de idade, se oferece para cumprir metade da pena no lugar dele, para o pai poder trabalhar. Por mais bonita que a intenção pareça, isso é <b>impossível</b>: a pena é intranscendente. E se o condenado morre durante o cumprimento, ninguém assume o lugar dele na cela: a pena simplesmente <b>se extingue</b>, porque ela nunca pôde sair daquela pessoa.</p></div></div>",
+      "narr": "A pena para na pessoa do condenado. Eu começo pelo princípio que responde à primeira pergunta da capa. O princípio da intranscendência tem um fundamento muito direto: ninguém pode ser responsabilizado por fato cometido por terceira pessoa. Se foi outra pessoa quem praticou o fato, a responsabilidade penal não é sua, por mais próximo que você seja dela. A consequência é imediata: a pena não pode ser passada para terceira pessoa. A pena é como uma impressão digital: pertence a uma pessoa só. Ela nasce com a condenação daquela pessoa, é cumprida por aquela pessoa e se encerra com aquela pessoa. Pai não cumpre pena de filho, filho não cumpre pena de pai, cônjuge não cumpre pena de cônjuge. Pense assim: imagine uma barreira de luz em volta do condenado. A pena bate nessa barreira e para ali: ela não atravessa para a esposa, para os filhos, para os pais. Quem está do outro lado da barreira continua com a vida intacta, porque não praticou fato nenhum. Frase-chave: ninguém responde por fato que outra pessoa cometeu. Exemplo prático: um pai é condenado a quatro anos de prisão por um furto. O filho, maior de idade, se oferece para cumprir metade da pena no lugar dele, para o pai poder trabalhar. Por mais bonita que a intenção pareça, isso é impossível: a pena é intranscendente. E se o condenado morre durante o cumprimento, ninguém assume o lugar dele na cela: a pena simplesmente se extingue, porque ela nunca pôde sair daquela pessoa."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "constituicao",
+      "alt": "Livro monumental da Constituição aberto sobre pedestal de mármore, com páginas em luz dourada e a balança da Justiça ao lado",
+      "kicker": "Intranscendência · Art. 5º, XLV, da Constituição",
+      "titulo": "A Constituição, palavra por palavra",
+      "corpo": "<p>Esse princípio não é só uma ideia bonita de doutrina: ele está <b>escrito na Constituição Federal</b>, no artigo 5º, inciso XLV. Leia comigo o texto, porque a banca cobra exatamente estas palavras:</p><div class=\"box\"><p class=\"blabel\">ART. 5º, XLV, DA CONSTITUIÇÃO FEDERAL</p><p>“Nenhuma pena passará da pessoa do condenado, podendo a obrigação de reparar o dano e a decretação do perdimento de bens ser, nos termos da lei, estendidas aos sucessores e contra eles executadas, até o limite do valor do patrimônio transferido.”</p></div><p>Repare que o inciso tem <b>duas partes</b>. A primeira é a regra: <b>nenhuma pena passará da pessoa do condenado</b>. É a intranscendência em uma frase. A segunda parte traz uma exceção muito bem delimitada: a <b>obrigação de reparar o dano</b> e a decretação do <b>perdimento de bens</b> podem ser estendidas aos <b>sucessores</b> do condenado, e executadas contra eles, <b>até o limite do valor do patrimônio transferido</b>.</p><p>E por que isso não fere o princípio? Porque reparar o dano e perder bens transferidos <b>não são pena</b>: são efeitos <b>patrimoniais</b> da condenação. O sucessor não vai preso, não cumpre um dia sequer de sanção. Ele responde apenas com o <b>patrimônio que recebeu</b> do condenado, e só até o valor desse patrimônio, nunca além dele, nunca com os bens que já eram dele.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">O que atravessa para os sucessores é o patrimônio, nunca a pena.</p></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/constituicao.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Um condenado morre deixando para a filha um apartamento de trezentos mil reais e uma obrigação de reparar o dano de cem mil reais à vítima. A filha <b>não</b> cumpre pena nenhuma, mas a reparação pode ser cobrada dela <b>até o limite do que ela herdou</b>. Se a dívida fosse de quinhentos mil, ela responderia só até os trezentos mil do patrimônio transferido: o restante não sai do bolso dela.</p></div></div>",
+      "narr": "A Constituição, palavra por palavra. Esse princípio não é só uma ideia bonita de doutrina: ele está escrito na Constituição Federal, no artigo quinto, inciso quarenta e cinco. Leia comigo o texto, porque a banca cobra exatamente estas palavras. Artigo quinto, inciso quarenta e cinco, da Constituição Federal: nenhuma pena passará da pessoa do condenado, podendo a obrigação de reparar o dano e a decretação do perdimento de bens ser, nos termos da lei, estendidas aos sucessores e contra eles executadas, até o limite do valor do patrimônio transferido. Repare que o inciso tem duas partes. A primeira é a regra: nenhuma pena passará da pessoa do condenado. É a intranscendência em uma frase. A segunda parte traz uma exceção muito bem delimitada: a obrigação de reparar o dano e a decretação do perdimento de bens podem ser estendidas aos sucessores do condenado, e executadas contra eles, até o limite do valor do patrimônio transferido. E por que isso não fere o princípio? Porque reparar o dano e perder bens transferidos não são pena: são efeitos patrimoniais da condenação. O sucessor não vai preso, não cumpre um dia sequer de sanção. Ele responde apenas com o patrimônio que recebeu do condenado, e só até o valor desse patrimônio, nunca além dele, nunca com os bens que já eram dele. Frase-chave: o que atravessa para os sucessores é o patrimônio, nunca a pena. Exemplo prático: um condenado morre deixando para a filha um apartamento de trezentos mil reais e uma obrigação de reparar o dano de cem mil reais à vítima. A filha não cumpre pena nenhuma, mas a reparação pode ser cobrada dela até o limite do que ela herdou. Se a dívida fosse de quinhentos mil, ela responderia só até os trezentos mil do patrimônio transferido: o restante não sai do bolso dela."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "templos",
+      "alt": "Fachada de tribunal supremo com colunas de mármore e escadaria solene sob luz dourada",
+      "kicker": "Intranscendência · A palavra do Supremo",
+      "titulo": "O Supremo e o efeito prático do princípio",
+      "corpo": "<p>O Supremo Tribunal Federal já resumiu esse princípio numa frase que vale guardar inteira. Segundo o Supremo: <b>“o postulado da intranscendência impede que sanções e restrições de ordem jurídica superem a dimensão estritamente pessoal do infrator”</b>, como registrado no AgRg no EDcl nos REsp 965.071/RS.</p><p>Traduza comigo essa frase: <b>dimensão estritamente pessoal</b> significa que toda sanção tem um endereço certo, e esse endereço é <b>uma pessoa só</b>, a que praticou o fato. Se a sanção tentar “vazar” para a família, para os herdeiros ou para qualquer terceiro, ela <b>superou</b> a dimensão permitida, e o postulado da intranscendência a barra.</p><p>E esse princípio tem um efeito prático que aparece nos processos: ele é a <b>base legal para que exista o incidente de ilegitimidade de parte</b>. Se uma pessoa é colocada no banco dos réus por um fato que, na verdade, outra pessoa praticou, ela é <b>parte ilegítima</b> naquele processo: falta a ela o requisito mais básico para responder, que é ter praticado o fato. O incidente serve justamente para retirar do processo quem nunca deveria ter entrado nele.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/templos.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Dois irmãos têm o mesmo nome quase igual, e a denúncia é oferecida contra o irmão errado, que nem estava na cidade no dia do fato. A defesa levanta o <b>incidente de ilegitimidade de parte</b>: aquele réu é ilegítimo porque o fato, se existiu, foi de outra pessoa. Por trás desse incidente, está a intranscendência trabalhando: ninguém responde por fato de terceiro.</p></div></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Ninguém pode ser responsabilizado por fato cometido por terceira pessoa: a pena é intranscendente.</li><li>A exceção do art. 5º, XLV, é só patrimonial: reparação do dano e perdimento de bens, até o limite do patrimônio transferido.</li><li>O princípio é a base legal do incidente de ilegitimidade de parte.</li></ul></div>",
+      "narr": "O Supremo e o efeito prático do princípio. O Supremo Tribunal Federal já resumiu esse princípio numa frase que vale guardar inteira. Segundo o Supremo: o postulado da intranscendência impede que sanções e restrições de ordem jurídica superem a dimensão estritamente pessoal do infrator, como registrado no AgRg no EDcl nos REsp novecentos e sessenta e cinco mil e setenta e um, do Rio Grande do Sul. Traduza comigo essa frase: dimensão estritamente pessoal significa que toda sanção tem um endereço certo, e esse endereço é uma pessoa só, a que praticou o fato. Se a sanção tentar vazar para a família, para os herdeiros ou para qualquer terceiro, ela superou a dimensão permitida, e o postulado da intranscendência a barra. E esse princípio tem um efeito prático que aparece nos processos: ele é a base legal para que exista o incidente de ilegitimidade de parte. Se uma pessoa é colocada no banco dos réus por um fato que, na verdade, outra pessoa praticou, ela é parte ilegítima naquele processo: falta a ela o requisito mais básico para responder, que é ter praticado o fato. O incidente serve justamente para retirar do processo quem nunca deveria ter entrado nele. Exemplo prático: dois irmãos têm o mesmo nome quase igual, e a denúncia é oferecida contra o irmão errado, que nem estava na cidade no dia do fato. A defesa levanta o incidente de ilegitimidade de parte: aquele réu é ilegítimo porque o fato, se existiu, foi de outra pessoa. Por trás desse incidente, está a intranscendência trabalhando: ninguém responde por fato de terceiro."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Questão 1 · Intranscendência",
+      "titulo": "Questão 1",
+      "intro": "Hora de treinar! Pense no que eu te expliquei sobre a <b>intranscendência</b> e responda:",
+      "questao": "João foi condenado por furto e, durante o cumprimento da pena, veio a falecer, deixando um filho como único herdeiro. Sobre a pena e os efeitos da condenação, é correto afirmar que:",
+      "opcoes": [
+        "O filho deverá cumprir o restante da pena de prisão do pai",
+        "A pena não passa para o filho, mas a obrigação de reparar o dano pode ser executada contra ele até o limite do valor do patrimônio transferido",
+        "O filho responderá pela reparação do dano sem nenhum limite, com todos os seus bens",
+        "A pena de João pode ser transferida ao filho se ele concordar"
+      ],
+      "certa": 1,
+      "feedback": "Isso mesmo! A pena é intranscendente: nenhuma pena passará da pessoa do condenado, nos termos do art. 5º, XLV, da Constituição. O que pode alcançar o sucessor é apenas o efeito patrimonial, a reparação do dano e o perdimento de bens, e somente até o limite do valor do patrimônio transferido. Concordância do filho não muda nada: pena não se transfere nem com consentimento.",
+      "narr": "Questão um: intranscendência. Hora de treinar! Pense no que eu te expliquei sobre a intranscendência e responda: João foi condenado por furto e, durante o cumprimento da pena, veio a falecer, deixando um filho como único herdeiro. Sobre a pena e os efeitos da condenação, é correto afirmar o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha sobre uma mesa escura",
+      "kicker": "Flashcard 1 · Intranscendência",
+      "titulo": "Flashcard 1",
+      "frente": "O que significa dizer que a pena é intranscendente? E qual é a exceção prevista na Constituição?",
+      "verso": "<p>A pena <b>não passa da pessoa do condenado</b> (art. 5º, XLV, da CF): ninguém pode ser responsabilizado por fato cometido por terceira pessoa.</p><p style='margin-top:10px'>Exceção <b>patrimonial</b>: a obrigação de reparar o dano e o perdimento de bens podem ser estendidos aos sucessores, <b>até o limite do valor do patrimônio transferido</b>.</p>",
+      "narr": "Flashcard um: intranscendência. O que significa dizer que a pena é intranscendente? E qual é a exceção prevista na Constituição? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Karaokê",
+      "img": "barreira",
+      "alt": "Homem protegido por uma barreira de luz dourada, com a família segura do outro lado",
+      "kicker": "Karaokê · Siga a narração",
+      "titulo": "Recapitule com a narração",
+      "frases": [
+        "Chegou a hora de recapitular o princípio da intranscendência, acompanhando a narração pela tela.",
+        "Ninguém pode ser responsabilizado por um fato cometido por terceira pessoa.",
+        "A pena não passa da pessoa do condenado: ela é pessoal do começo ao fim.",
+        "A Constituição só abre uma exceção patrimonial: reparar o dano e perder os bens transferidos.",
+        "Mesmo assim, o sucessor responde só até o limite do valor do patrimônio que recebeu.",
+        "O Supremo resume: nenhuma sanção pode superar a dimensão estritamente pessoal do infrator.",
+        "E é esse princípio que fundamenta o incidente de ilegitimidade de parte."
+      ],
+      "narr": "Chegou a hora de recapitular o princípio da intranscendência, acompanhando a narração pela tela. Ninguém pode ser responsabilizado por um fato cometido por terceira pessoa. A pena não passa da pessoa do condenado: ela é pessoal do começo ao fim. A Constituição só abre uma exceção patrimonial: reparar o dano e perder os bens transferidos. Mesmo assim, o sucessor responde só até o limite do valor do patrimônio que recebeu. O Supremo resume: nenhuma sanção pode superar a dimensão estritamente pessoal do infrator. E é esse princípio que fundamenta o incidente de ilegitimidade de parte."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "fato",
+      "alt": "Mesa de juiz com a luz dourada caindo apenas sobre as provas, documentos e o martelo, com a figura humana longe, na sombra",
+      "kicker": "Princípio da Responsabilidade Penal pelo Fato",
+      "titulo": "Julga-se o fato, não a pessoa",
+      "corpo": "<p>O segundo princípio muda o foco do julgamento. Pelo <b class=\"term\">princípio da responsabilidade penal pelo fato</b>, o nosso sistema <b>não admite o Direito Penal do autor</b>: admite somente o <b>Direito Penal do fato</b>, que é aquele que se preocupa com o <b>fato típico e ilícito</b> praticado pelo agente, <b>não importando quem ele seja</b>.</p><p>Pare e pense no peso dessa frase. Para o Direito Penal do fato, a pergunta central do processo é: <b>o que foi feito?</b> A conduta se encaixa na descrição de um crime? Ela é ilícita? Se a resposta for não, acabou: não há pena, ainda que a pessoa seja considerada difícil, estranha ou perigosa por quem a julga. <b>Ninguém pode ser punido por questões pessoais.</b></p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/fato.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como <b>corrigir uma prova</b>: o professor avalia o que está escrito na folha, e não quem é o aluno. Se a folha está em branco, não há nota a atribuir, ainda que o professor não goste do aluno. No processo penal, a “folha” é o <b>fato</b>: sem fato típico e ilícito, não há o que punir.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Responde-se pelo que se fez, nunca pelo que se é.</p></div><p>E repare na proteção completa que o princípio desenha: a pena se destina ao <b>agente culpável</b>, condenado <b>somente após o devido processo legal</b>, pela prática de um <b>fato típico e ilícito</b>. Três travas juntas: precisa existir um fato previsto como crime e contrário ao Direito; precisa haver culpabilidade; e precisa haver processo, com defesa e julgamento. Sem qualquer uma delas, a punição não se sustenta.</p>",
+      "narr": "Julga-se o fato, não a pessoa. O segundo princípio muda o foco do julgamento. Pelo princípio da responsabilidade penal pelo fato, o nosso sistema não admite o Direito Penal do autor: admite somente o Direito Penal do fato, que é aquele que se preocupa com o fato típico e ilícito praticado pelo agente, não importando quem ele seja. Pare e pense no peso dessa frase. Para o Direito Penal do fato, a pergunta central do processo é: o que foi feito? A conduta se encaixa na descrição de um crime? Ela é ilícita? Se a resposta for não, acabou: não há pena, ainda que a pessoa seja considerada difícil, estranha ou perigosa por quem a julga. Ninguém pode ser punido por questões pessoais. Pense assim: é como corrigir uma prova: o professor avalia o que está escrito na folha, e não quem é o aluno. Se a folha está em branco, não há nota a atribuir, ainda que o professor não goste do aluno. No processo penal, a folha é o fato: sem fato típico e ilícito, não há o que punir. Frase-chave: responde-se pelo que se fez, nunca pelo que se é. E repare na proteção completa que o princípio desenha: a pena se destina ao agente culpável, condenado somente após o devido processo legal, pela prática de um fato típico e ilícito. Três travas juntas: precisa existir um fato previsto como crime e contrário ao Direito; precisa haver culpabilidade; e precisa haver processo, com defesa e julgamento. Sem qualquer uma delas, a punição não se sustenta."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "lombroso",
+      "alt": "Cientista do século XIX examinando um homem com instrumentos de medição, como quem julga a pessoa e não o fato",
+      "kicker": "Responsabilidade pelo Fato · O outro lado",
+      "titulo": "O Direito Penal do autor: a página sombria",
+      "corpo": "<p>Para entender o que o princípio proíbe, você precisa olhar o modelo proibido de frente. O <b class=\"term\">Direito Penal do autor</b> pode ser lembrado como o da <b>Alemanha nazista</b>, no qual <b>não existiam propriamente crimes, mas, sim, criminosos</b>.</p><p>Perceba a inversão completa: num sistema assim, o Estado não espera a pessoa praticar um fato para puni-la. Ele decide, antes, <b>quem é o criminoso</b>, pelo que a pessoa é, pelo grupo a que pertence, pelo modo de vida que leva, e passa a persegui-la. O fato vira detalhe; o centro é a <b>pessoa rotulada</b>.</p><p>E não pense que esse fantasma ficou no passado distante: atualmente, o Direito Penal do autor guarda <b>sintonia com o Direito Penal do inimigo</b>, aquela lógica que separa as pessoas entre “cidadãos”, que merecem garantias, e “inimigos”, que seriam tratados pelo que supostamente são, e não pelo que fizeram. Sempre que você ouvir esse tipo de raciocínio, reconheça: é o Direito Penal do autor tentando voltar pela porta dos fundos.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/lombroso.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">OLHE COM CUIDADO</p><p>O alarme das garantias deve soar toda vez que o debate inverter a ordem das perguntas. A pergunta legítima é: “<b>o que essa pessoa fez?</b>”. A pergunta proibida é: “<b>quem é essa pessoa?</b>”, feita para punir antes de qualquer fato. Quando a segunda pergunta comanda o processo, não estamos mais no Direito Penal do fato.</p></div></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Não se admite o Direito Penal do autor: só o Direito Penal do fato, voltado ao fato típico e ilícito.</li><li>Ninguém pode ser punido por questões pessoais: a pena exige agente culpável e devido processo legal.</li><li>O Direito Penal do autor, lembrado pela Alemanha nazista, guarda sintonia com o Direito Penal do inimigo.</li></ul></div>",
+      "narr": "O Direito Penal do autor: a página sombria. Para entender o que o princípio proíbe, você precisa olhar o modelo proibido de frente. O Direito Penal do autor pode ser lembrado como o da Alemanha nazista, no qual não existiam propriamente crimes, mas, sim, criminosos. Perceba a inversão completa: num sistema assim, o Estado não espera a pessoa praticar um fato para puni-la. Ele decide, antes, quem é o criminoso, pelo que a pessoa é, pelo grupo a que pertence, pelo modo de vida que leva, e passa a persegui-la. O fato vira detalhe; o centro é a pessoa rotulada. E não pense que esse fantasma ficou no passado distante: atualmente, o Direito Penal do autor guarda sintonia com o Direito Penal do inimigo, aquela lógica que separa as pessoas entre cidadãos, que merecem garantias, e inimigos, que seriam tratados pelo que supostamente são, e não pelo que fizeram. Sempre que você ouvir esse tipo de raciocínio, reconheça: é o Direito Penal do autor tentando voltar pela porta dos fundos. Olhe com cuidado: o alarme das garantias deve soar toda vez que o debate inverter a ordem das perguntas. A pergunta legítima é: o que essa pessoa fez? A pergunta proibida é: quem é essa pessoa?, feita para punir antes de qualquer fato. Quando a segunda pergunta comanda o processo, não estamos mais no Direito Penal do fato."
+    },
+    {
+      "tipo": "Comparador",
+      "img": "compfato",
+      "img2": "positiva",
+      "alt": "Comparador de duas cenas: a balança serena sobre as provas do fato e o laboratório que examina a pessoa",
+      "kicker": "Comparador · Arraste a barra",
+      "rot1": "DO FATO",
+      "rot2": "DO AUTOR",
+      "titulo": "Dois Direitos Penais, uma só imagem",
+      "intro": "Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, o Direito Penal do fato: a balança serena, a luz sobre as provas, a pergunta “o que foi feito?”. Do outro, o Direito Penal do autor: o exame sobre a pessoa, a pergunta “quem é ele?”. Repare como a mesma cena de julgamento muda por completo quando muda a pergunta que comanda o processo.",
+      "narr": "Dois Direitos Penais, uma só imagem. Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, o Direito Penal do fato: a balança serena, a luz sobre as provas, a pergunta: o que foi feito? Do outro, o Direito Penal do autor: o exame sobre a pessoa, a pergunta: quem é ele? Repare como a mesma cena de julgamento muda por completo quando muda a pergunta que comanda o processo."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao2",
+      "alt": "Lupa sobre alternativas em papel escuro, com pena e tinteiro ao lado",
+      "kicker": "Questão 2 · Responsabilidade pelo fato",
+      "titulo": "Questão 2",
+      "intro": "Mais um treino, agora sobre a <b>responsabilidade penal pelo fato</b>. Leia com calma:",
+      "questao": "Sobre o princípio da responsabilidade penal pelo fato, é correto afirmar que:",
+      "opcoes": [
+        "O agente pode ser punido por seu modo de vida, mesmo sem praticar fato típico e ilícito",
+        "O Direito Penal do autor é admitido quando o agente é considerado perigoso",
+        "A pena se destina ao agente culpável, condenado após o devido processo legal, pela prática de um fato típico e ilícito",
+        "O que importa para a punição é quem o agente é, e não o fato que ele praticou"
+      ],
+      "certa": 2,
+      "feedback": "Perfeito! O nosso sistema admite somente o Direito Penal do fato: a preocupação é com o fato típico e ilícito praticado pelo agente, não importando quem ele seja. Ninguém é punido por questões pessoais, e a pena só alcança o agente culpável, condenado após o devido processo legal. Punir pelo modo de vida ou pela periculosidade da pessoa é linguagem do Direito Penal do autor, que o princípio rejeita.",
+      "narr": "Questão dois: responsabilidade pelo fato. Mais um treino, agora sobre a responsabilidade penal pelo fato. Leia com calma: sobre o princípio da responsabilidade penal pelo fato, é correto afirmar o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards2",
+      "alt": "Dois cartões de estudo em pé, frente e verso, ligados por uma fita vermelha",
+      "kicker": "Flashcard 2 · Fato × Autor",
+      "titulo": "Flashcard 2",
+      "frente": "Qual é a diferença entre o Direito Penal do fato e o Direito Penal do autor?",
+      "verso": "<p><b>Direito Penal do fato:</b> preocupa-se com o <b>fato típico e ilícito</b> praticado pelo agente, não importando quem ele seja. É o modelo admitido.</p><p style='margin-top:8px'><b>Direito Penal do autor:</b> pune a pessoa pelo que ela <b>é</b>. Lembrado pela Alemanha nazista, onde não havia crimes, mas criminosos; hoje, em sintonia com o Direito Penal do inimigo.</p>",
+      "narr": "Flashcard dois: fato e autor. Qual é a diferença entre o Direito Penal do fato e o Direito Penal do autor? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "alfaiate",
+      "alt": "Alfaiate medindo com fita dourada um traje sob medida, ao lado de manequins com trajes de tamanhos diferentes",
+      "kicker": "Princípio da Individualização da Pena",
+      "titulo": "Uma pena para cada caso",
+      "corpo": "<p>O terceiro princípio responde à última pergunta da capa: não, dois casos não devem receber a pena em “tamanho único”. Pelo <b class=\"term\">princípio da individualização da pena</b>, as penas devem ser <b>cominadas e executadas</b> levando-se em consideração <b>as condutas praticadas</b>, bem como <b>o agente que as executou</b>.</p><p>O objetivo é declarado: <b>evitar a padronização de sentenças</b>, pois são consideradas as <b>particularidades de cada caso</b>. Não se leva a norma penal em abstrato, mas, especialmente, os <b>aspectos subjetivos e objetivos</b> do crime: de um lado, o que aconteceu, a conduta e suas circunstâncias; do outro, quem praticou, com sua história e suas condições pessoais.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/alfaiate.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>A sentença padronizada seria uma <b>roupa de tamanho único</b>: serve mal em quase todo mundo. Individualizar é o trabalho do <b>alfaiate</b>: ele mede cada pessoa e corta o tecido na medida dela. A lei entrega o tecido e os limites da tesoura; a medida final é de cada caso.</p></div></div><p>E esse princípio também está na Constituição, no artigo 5º, inciso XLVI: <b>“a lei regulará a individualização da pena”</b> e adotará, entre outras, as seguintes penas: <b>a)</b> privação ou restrição da liberdade; <b>b)</b> perda de bens; <b>c)</b> multa; <b>d)</b> prestação social alternativa; <b>e)</b> suspensão ou interdição de direitos. Repare: a própria Constituição entrega ao legislador um leque de respostas diferentes, porque já parte da ideia de que cada caso pode pedir uma resposta diferente.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Individualizar é o contrário de padronizar.</p></div>",
+      "narr": "Uma pena para cada caso. O terceiro princípio responde à última pergunta da capa: não, dois casos não devem receber a pena em tamanho único. Pelo princípio da individualização da pena, as penas devem ser cominadas e executadas levando-se em consideração as condutas praticadas, bem como o agente que as executou. O objetivo é declarado: evitar a padronização de sentenças, pois são consideradas as particularidades de cada caso. Não se leva a norma penal em abstrato, mas, especialmente, os aspectos subjetivos e objetivos do crime: de um lado, o que aconteceu, a conduta e suas circunstâncias; do outro, quem praticou, com sua história e suas condições pessoais. Pense assim: a sentença padronizada seria uma roupa de tamanho único: serve mal em quase todo mundo. Individualizar é o trabalho do alfaiate: ele mede cada pessoa e corta o tecido na medida dela. A lei entrega o tecido e os limites da tesoura; a medida final é de cada caso. E esse princípio também está na Constituição, no artigo quinto, inciso quarenta e seis: a lei regulará a individualização da pena e adotará, entre outras, as seguintes penas: a, privação ou restrição da liberdade; b, perda de bens; c, multa; d, prestação social alternativa; e, suspensão ou interdição de direitos. Repare: a própria Constituição entrega ao legislador um leque de respostas diferentes, porque já parte da ideia de que cada caso pode pedir uma resposta diferente. Frase-chave: individualizar é o contrário de padronizar."
+    },
+    {
+      "tipo": "Explorar",
+      "img": "explorar",
+      "alt": "Imagem vertical em cinco cenas empilhadas: homem protegido por barreira de luz com a família fora, mesa com provas sob a luz, salão do legislador escrevendo a lei, juiz escrevendo a sentença e portão aberto ao amanhecer",
+      "kicker": "Exploração · Toque nos pontos",
+      "titulo": "Explore a imagem: a aula inteira em cinco cenas",
+      "intro": "Esta imagem grande resume toda a nossa aula, de baixo para cima: ela começa na pena que para na pessoa e sobe, cena a cena, até a execução que cuida de cada condenado. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "pontos": [
+        {
+          "x": 38,
+          "y": 88,
+          "titulo": "Intranscendência: a pena para na pessoa",
+          "texto": "Na base da imagem, o homem está dentro da bolha de luz e a família, fora dela, intacta. É o princípio da intranscendência: ninguém responde por fato de terceiro, e nenhuma pena passará da pessoa do condenado, como diz o art. 5º, XLV, da Constituição. Só o patrimônio atravessa: reparação do dano e perdimento de bens, até o limite do que foi transferido."
+        },
+        {
+          "x": 50,
+          "y": 66,
+          "titulo": "Responsabilidade pelo fato: a luz cai sobre o fato",
+          "texto": "A mesa com documentos e provas sob o feixe de luz é a responsabilidade penal pelo fato. O julgamento ilumina o fato típico e ilícito, e não a pessoa: ninguém é punido por questões pessoais. Quem pune pelo que a pessoa é pratica Direito Penal do autor, o modelo proibido."
+        },
+        {
+          "x": 50,
+          "y": 48,
+          "titulo": "Plano legislativo: a lei desenha a pena",
+          "texto": "No salão de colunas, escreve-se a lei: é o plano legislativo da individualização. Nele, descreve-se o tipo penal e estabelecem-se as sanções adequadas, com seus limites mínimo e máximo e as circunstâncias que podem aumentar ou diminuir a reprimenda."
+        },
+        {
+          "x": 56,
+          "y": 30,
+          "titulo": "Plano judicial: o juiz mede o caso concreto",
+          "texto": "O juiz escrevendo à mesa, com a balança ao lado, é o plano judicial. Ele complementa o plano legislativo: aplica a pena ao caso concreto usando todos os instrumentos dos autos, pelo sistema trifásico do art. 68 do Código Penal, ou pelo sistema bifásico da sanção pecuniária, do art. 49."
+        },
+        {
+          "x": 50,
+          "y": 9,
+          "titulo": "Plano administrativo: a execução cuida de cada um",
+          "texto": "No topo, o portão aberto ao amanhecer é o plano administrativo, que acontece durante a execução da pena. Nele, o Estado deve zelar pelo condenado de forma singular: a individualização continua depois da sentença, porque cada pessoa cumpre a pena de um jeito e precisa ser acompanhada de forma própria."
+        }
+      ],
+      "narr": "Explore a imagem: a aula inteira em cinco cenas. Esta imagem grande resume toda a nossa aula, de baixo para cima: ela começa na pena que para na pessoa e sobe, cena a cena, até a execução que cuida de cada condenado. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "planos",
+      "alt": "Imagem em três faixas: o palácio do legislador com o grande livro da lei, o juiz escrevendo a sentença e o corredor da execução ao amanhecer",
+      "kicker": "Individualização · Os três planos",
+      "titulo": "Os três planos da individualização",
+      "corpo": "<p>Agora eu organizo para você a engrenagem completa: a individualização da pena é desenvolvida em <b>três planos</b>, e cada plano acontece num momento diferente da vida da pena. Guarde os três como uma linha de produção da justiça:</p><div class=\"viarow\"><div class=\"vianum\">1º</div><div><h3>Plano legislativo</h3><p>É quando o legislador <b>descreve o tipo penal</b> e estabelece as <b>sanções adequadas</b>, indicando seus <b>limites, mínimo e máximo</b>, e as circunstâncias aptas a <b>aumentar ou diminuir</b> a reprimenda. Aqui, a individualização é desenhada em abstrato, para todos os casos futuros.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2º</div><div><h3>Plano judicial</h3><p>É o plano que <b>complementa</b> o legislativo, efetivado pelo <b>juiz</b> ao aplicar a pena, usando todos os instrumentos fornecidos pelos autos da ação penal. Ele obedece ao <b class=\"term\">sistema trifásico</b> delineado pelo <b>art. 68 do Código Penal</b>, ou ao <b>sistema bifásico</b> inerente à sanção pecuniária, do <b>art. 49 do Código Penal</b>.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3º</div><div><h3>Plano administrativo</h3><p>É efetuado <b>durante a execução da pena</b>, quando o Estado deve <b>zelar pelo condenado de forma singular</b>. A sentença terminou, mas a individualização continua: cada condenado é acompanhado na sua realidade própria.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/planos.webp\" alt=\"\"></div><p>Perceba a beleza do desenho: o legislador <b>abre a faixa</b> de possibilidades, o juiz <b>escolhe o ponto exato</b> dentro da faixa para aquele caso, e a execução <b>acompanha a pessoa</b> dentro da pena escolhida. Se um dos planos falhar, a individualização manca: lei sem faixas impede o juiz de medir; juiz que sentencia por modelo ignora a faixa; execução padronizada trata todos como se fossem um só.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>A individualização evita a padronização: consideram-se a conduta, o agente e as particularidades de cada caso.</li><li>O art. 5º, XLVI, da Constituição manda a lei regular a individualização e lista as penas possíveis.</li><li>Os três planos: legislativo (a lei e seus limites), judicial (o juiz, art. 68 e art. 49 do CP) e administrativo (a execução singular).</li></ul></div>",
+      "narr": "Os três planos da individualização. Agora eu organizo para você a engrenagem completa: a individualização da pena é desenvolvida em três planos, e cada plano acontece num momento diferente da vida da pena. Guarde os três como uma linha de produção da justiça. Primeiro plano, o legislativo: é quando o legislador descreve o tipo penal e estabelece as sanções adequadas, indicando seus limites, mínimo e máximo, e as circunstâncias aptas a aumentar ou diminuir a reprimenda. Aqui, a individualização é desenhada em abstrato, para todos os casos futuros. Segundo plano, o judicial: é o plano que complementa o legislativo, efetivado pelo juiz ao aplicar a pena, usando todos os instrumentos fornecidos pelos autos da ação penal. Ele obedece ao sistema trifásico delineado pelo artigo sessenta e oito do Código Penal, ou ao sistema bifásico inerente à sanção pecuniária, do artigo quarenta e nove do Código Penal. Terceiro plano, o administrativo: é efetuado durante a execução da pena, quando o Estado deve zelar pelo condenado de forma singular. A sentença terminou, mas a individualização continua: cada condenado é acompanhado na sua realidade própria. Perceba a beleza do desenho: o legislador abre a faixa de possibilidades, o juiz escolhe o ponto exato dentro da faixa para aquele caso, e a execução acompanha a pessoa dentro da pena escolhida. Se um dos planos falhar, a individualização manca: lei sem faixas impede o juiz de medir; juiz que sentencia por modelo ignora a faixa; execução padronizada trata todos como se fossem um só."
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "martelo",
+      "alt": "Martelo de juiz sobre um livro de leis aberto com marcador dourado",
+      "kicker": "Questão 3 · Estilo de banca",
+      "titulo": "Questão 3",
+      "intro": "Questão em <b>estilo de banca</b>, sobre os três planos da individualização. Leia o enunciado com atenção:",
+      "questao": "A individualização da pena é desenvolvida em três planos: legislativo, judicial e administrativo. Assinale a alternativa correta:",
+      "opcoes": [
+        "No plano legislativo, o juiz fixa a pena do caso concreto usando os autos do processo",
+        "No plano judicial, o juiz aplica a pena pelo sistema trifásico do art. 68 do Código Penal, e a sanção pecuniária segue o sistema bifásico do art. 49",
+        "No plano administrativo, descreve-se o tipo penal e indicam-se os limites mínimo e máximo da sanção",
+        "A individualização acontece somente na execução da pena, quando o Estado zela pelo condenado"
+      ],
+      "certa": 1,
+      "feedback": "Exatamente. Plano legislativo: o legislador descreve o tipo penal e estabelece as sanções, com limites mínimo e máximo e circunstâncias de aumento e diminuição. Plano judicial: o juiz complementa o legislativo e aplica a pena no caso concreto, pelo sistema trifásico (art. 68 do CP) ou bifásico, para a sanção pecuniária (art. 49 do CP). Plano administrativo: na execução, o Estado zela pelo condenado de forma singular. A banca adora trocar os planos de lugar: não caia.",
+      "narr": "Questão três, em estilo de banca, sobre os três planos da individualização. Leia o enunciado com atenção: a individualização da pena é desenvolvida em três planos: legislativo, judicial e administrativo. Assinale a alternativa correta. Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha sobre uma mesa escura",
+      "kicker": "Flashcard 3 · Os três planos",
+      "titulo": "Flashcard 3",
+      "frente": "Quais são os três planos da individualização da pena, e o que acontece em cada um?",
+      "verso": "<p><b>Legislativo:</b> a lei descreve o tipo penal e fixa as sanções, com limites mínimo e máximo.</p><p style='margin-top:8px'><b>Judicial:</b> o juiz aplica a pena no caso concreto (sistema trifásico, art. 68 do CP; bifásico para a multa, art. 49 do CP).</p><p style='margin-top:8px'><b>Administrativo:</b> na execução, o Estado zela pelo condenado de forma singular.</p>",
+      "narr": "Flashcard três: os três planos. Quais são os três planos da individualização da pena, e o que acontece em cada um? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Toque e revele",
+      "img": "revelar",
+      "alt": "Quatro cartas douradas viradas para baixo sobre veludo vermelho, uma se levantando sob a luz de uma vela",
+      "kicker": "Toque e revele",
+      "titulo": "Toque, pense e revele",
+      "intro": "Quatro cartas escondem quatro perguntas rápidas sobre os três princípios. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "cartas": [
+        {
+          "p": "Em qual inciso da Constituição está a intranscendência da pena?",
+          "r": "No <b>art. 5º, XLV</b>: “nenhuma pena passará da pessoa do condenado”."
+        },
+        {
+          "p": "Até onde vai a responsabilidade dos sucessores pela reparação do dano?",
+          "r": "Até o <b>limite do valor do patrimônio transferido</b>: o sucessor responde só com o que herdou do condenado, e nunca cumpre pena."
+        },
+        {
+          "p": "O que o Direito Penal do autor punia na Alemanha nazista?",
+          "r": "A <b>pessoa</b>, e não o fato: não existiam propriamente crimes, mas criminosos. É o modelo que o princípio da responsabilidade pelo fato proíbe."
+        },
+        {
+          "p": "Em qual plano da individualização atua o sistema trifásico do art. 68 do Código Penal?",
+          "r": "No <b>plano judicial</b>: é o juiz quem aplica a pena ao caso concreto, complementando o plano legislativo."
+        }
+      ],
+      "narr": "Toque, pense e revele. Quatro cartas escondem quatro perguntas rápidas sobre os três princípios. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar."
+    },
+    {
+      "tipo": "Ligar termos",
+      "img": "ligar",
+      "alt": "Chaves douradas antigas e cadeados ornamentados sobre veludo vermelho",
+      "kicker": "Ligar termos 1 · Princípios e planos",
+      "titulo": "Ligar termos 1",
+      "instrucao": "Ligue cada princípio ou plano à sua ideia central. Toque em um nome e, depois, na ideia correspondente.",
+      "pares": [
+        [
+          "Intranscendência",
+          "A pena não passa da pessoa do condenado"
+        ],
+        [
+          "Responsabilidade pelo fato",
+          "Julga-se o fato típico e ilícito, não a pessoa"
+        ],
+        [
+          "Individualização da pena",
+          "A pena é medida pelas particularidades de cada caso"
+        ],
+        [
+          "Plano legislativo",
+          "A lei descreve o tipo penal e os limites da sanção"
+        ],
+        [
+          "Plano judicial",
+          "O juiz aplica a pena ao caso concreto"
+        ]
+      ],
+      "ordemDefs": [
+        2,
+        4,
+        0,
+        3,
+        1
+      ],
+      "narr": "Ligar termos um: princípios e planos. Ligue cada princípio ou plano à sua ideia central. Toque em um nome e, depois, na ideia correspondente."
+    },
+    {
+      "tipo": "Completar",
+      "img": "lacuna",
+      "alt": "Pergaminho antigo com espaços dourados vazios e peças de palavras douradas ao lado esperando para serem colocadas",
+      "kicker": "Completar · Toque nas palavras",
+      "titulo": "Complete a frase",
+      "intro": "Um resumo importante da aula apareceu com três palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "partes": [
+        "A pena não passa da pessoa do condenado: é a ",
+        ". Julga-se o fato, e não a pessoa: é a responsabilidade pelo ",
+        ". E cada caso pede a sua medida: é a ",
+        " da pena."
+      ],
+      "respostas": [
+        "intranscendência",
+        "fato",
+        "individualização"
+      ],
+      "banco": [
+        "fato",
+        "individualização",
+        "padronização",
+        "intranscendência",
+        "autor"
+      ],
+      "fechamento": "Frase completa! A intranscendência segura a pena na pessoa, a responsabilidade pelo fato julga a conduta, e a individualização mede cada caso. É esse trio que a banca mais cobra.",
+      "narr": "Complete a frase. Um resumo importante da aula apareceu com três palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima."
+    },
+    {
+      "tipo": "Verdadeiro ou falso",
+      "img": "cartasvf",
+      "alt": "Duas pilhas de cartas antigas sobre veludo vermelho, uma com símbolo de certo e outra com símbolo de errado em dourado",
+      "kicker": "Verdadeiro ou falso · Arraste a carta",
+      "titulo": "Verdadeiro ou falso: arraste e decida",
+      "intro": "Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "afirmacoes": [
+        {
+          "t": "O filho do condenado pode cumprir parte da pena de prisão do pai, se a família concordar.",
+          "v": false,
+          "exp": "Falso. A pena é intranscendente: nenhuma pena passará da pessoa do condenado, nem com concordância da família."
+        },
+        {
+          "t": "A obrigação de reparar o dano pode ser estendida aos sucessores, até o limite do valor do patrimônio transferido.",
+          "v": true,
+          "exp": "Verdadeiro. É a exceção patrimonial do art. 5º, XLV, da Constituição: atravessa o patrimônio, nunca a pena."
+        },
+        {
+          "t": "No Direito Penal do fato, a pessoa pode ser punida pelo seu modo de vida.",
+          "v": false,
+          "exp": "Falso. Punir pelo modo de vida é Direito Penal do autor. O Direito Penal do fato se preocupa com o fato típico e ilícito."
+        },
+        {
+          "t": "O Direito Penal do autor guarda sintonia com o Direito Penal do inimigo.",
+          "v": true,
+          "exp": "Verdadeiro. Nos dois, o centro é a pessoa rotulada, e não o fato praticado."
+        },
+        {
+          "t": "A individualização da pena busca padronizar as sentenças, tratando todos os casos da mesma forma.",
+          "v": false,
+          "exp": "Falso, é exatamente o contrário: a individualização existe para evitar a padronização, considerando as particularidades de cada caso."
+        }
+      ],
+      "narr": "Verdadeiro ou falso: arraste e decida. Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou."
+    },
+    {
+      "tipo": "Linha do tempo",
+      "img": "panorama",
+      "alt": "Linha do tempo dourada atravessando um tribunal neoclássico ao entardecer",
+      "kicker": "Linha do tempo · Toque nos marcos",
+      "titulo": "A jornada de uma pena justa",
+      "intro": "Agora vamos amarrar os três princípios numa linha só: a jornada que uma pena percorre, do texto da Constituição até o último dia de execução. Toque em cada marco dourado para abrir a explicação dele.",
+      "marcos": [
+        {
+          "ano": "Art. 5º, XLV",
+          "titulo": "A Constituição trava a pena na pessoa",
+          "texto": "Primeiro marco: a intranscendência. Antes de qualquer julgamento, a Constituição já decidiu que a pena, quando existir, terá um único endereço: a pessoa do condenado. Nenhum familiar entra nessa conta."
+        },
+        {
+          "ano": "O fato",
+          "titulo": "Julga-se o fato típico e ilícito",
+          "texto": "Segundo marco: a responsabilidade pelo fato. Para haver pena, precisa existir um fato típico e ilícito, praticado por um agente culpável e apurado no devido processo legal. Sem fato, a jornada nem começa."
+        },
+        {
+          "ano": "Art. 5º, XLVI",
+          "titulo": "A Constituição manda individualizar",
+          "texto": "Terceiro marco: a individualização. A Constituição ordena que a lei regule a individualização da pena e oferece o leque de respostas: da privação da liberdade à prestação social alternativa."
+        },
+        {
+          "ano": "Lei e juiz",
+          "titulo": "Os planos legislativo e judicial medem o caso",
+          "texto": "Quarto marco: a lei descreve o tipo e fixa os limites mínimo e máximo; depois, o juiz escolhe a medida exata daquele caso, pelo sistema trifásico do art. 68 do Código Penal, ou bifásico, na multa, pelo art. 49."
+        },
+        {
+          "ano": "Execução",
+          "titulo": "O plano administrativo cuida de cada condenado",
+          "texto": "Quinto marco: a execução. No plano administrativo, o Estado zela pelo condenado de forma singular, até o fim da pena. A jornada termina onde começou: numa pessoa só, medida pelo seu fato e pelo seu caso."
+        }
+      ],
+      "narr": "A jornada de uma pena justa. Agora vamos amarrar os três princípios numa linha só: a jornada que uma pena percorre, do texto da Constituição até o último dia de execução. Toque em cada marco dourado para abrir a explicação dele."
+    },
+    {
+      "tipo": "Mapa mental",
+      "img": "panorama",
+      "alt": "Mapa mental com os três princípios no centro e os ramos dourados ao redor",
+      "kicker": "Mapa mental · Toque nos ramos",
+      "centro": "TRÊS PRINCÍPIOS",
+      "titulo": "Mapa mental dos três princípios",
+      "intro": "Para fechar o conteúdo, um mapa da aula inteira. No centro estão os três princípios que protegem a pessoa diante da pena; em volta, os ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda.",
+      "ramos": [
+        {
+          "nome": "Intranscendência",
+          "texto": "A pena não passa da pessoa do condenado: ninguém responde por fato de terceiro. Exceção só patrimonial: reparação do dano e perdimento de bens, até o limite do patrimônio transferido.",
+          "chips": [
+            "Art. 5º, XLV, CF",
+            "Ilegitimidade de parte"
+          ]
+        },
+        {
+          "nome": "Responsabilidade pelo fato",
+          "texto": "Julga-se o fato típico e ilícito, e não quem a pessoa é. A pena exige agente culpável e devido processo legal. O modelo proibido é o Direito Penal do autor.",
+          "chips": [
+            "Direito Penal do fato",
+            "Nada de punir a pessoa"
+          ]
+        },
+        {
+          "nome": "Individualização da pena",
+          "texto": "A pena é medida para cada caso, contra a padronização das sentenças, olhando a conduta, o agente e as particularidades do caso concreto.",
+          "chips": [
+            "Art. 5º, XLVI, CF",
+            "Conduta e agente"
+          ]
+        },
+        {
+          "nome": "Os três planos",
+          "texto": "Legislativo: a lei descreve o tipo e os limites. Judicial: o juiz aplica, pelo art. 68 ou pelo art. 49 do Código Penal. Administrativo: na execução, o Estado zela por cada condenado de forma singular.",
+          "chips": [
+            "Legislativo",
+            "Judicial",
+            "Administrativo"
+          ]
+        }
+      ],
+      "narr": "Mapa mental dos três princípios. Para fechar o conteúdo, um mapa da aula inteira. No centro estão os três princípios que protegem a pessoa diante da pena; em volta, os ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "pegadinhas",
+      "alt": "Alvo dourado com flechas e uma lupa revelando armadilhas sobre um pergaminho",
+      "kicker": "Pegadinhas de prova",
+      "titulo": "Não caia nessas!",
+      "corpo": "<p>Antes do desafio final, eu separei as <b>cinco confusões</b> que mais derrubam candidatos neste tema. Grave cada uma:</p><div class=\"box\"><p class=\"blabel\">PEGADINHA 1 · HERDEIRO NÃO CUMPRE PENA</p><p>O sucessor <b>nunca</b> cumpre pena pelo condenado. O que pode ser executado contra ele é só a reparação do dano e o perdimento de bens, e <b>até o limite</b> do patrimônio transferido.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 2 · REPARAR O DANO NÃO É PENA</p><p>A exceção do art. 5º, XLV, <b>não fere</b> a intranscendência, porque reparar o dano é efeito <b>patrimonial</b>, e não pena. Se a questão disser que a exceção “quebra” o princípio, desconfie.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 3 · FATO × AUTOR INVERTIDOS</p><p>O Direito Penal <b>do fato</b> julga a conduta; o <b>do autor</b> julga a pessoa. O Brasil admite o primeiro e <b>rejeita</b> o segundo. Questão que inverter os dois está errada.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pegadinhas.webp\" alt=\"\"></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 4 · INDIVIDUALIZAR NÃO É SÓ O JUIZ</p><p>A individualização tem <b>três planos</b>: legislativo, judicial e administrativo. Reduzir o princípio ao momento da sentença apaga dois terços dele.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 5 · TRIFÁSICO × BIFÁSICO</p><p>O sistema <b>trifásico</b> é o do art. 68 do Código Penal; o <b>bifásico</b> é o da sanção pecuniária, do art. 49. Trocar os artigos é o erro clássico das bancas neste tema.</p></div>",
+      "narr": "Não caia nessas! Antes do desafio final, eu separei as cinco confusões que mais derrubam candidatos neste tema. Grave cada uma. Pegadinha um, herdeiro não cumpre pena: o sucessor nunca cumpre pena pelo condenado. O que pode ser executado contra ele é só a reparação do dano e o perdimento de bens, e até o limite do patrimônio transferido. Pegadinha dois, reparar o dano não é pena: a exceção do artigo quinto, inciso quarenta e cinco, não fere a intranscendência, porque reparar o dano é efeito patrimonial, e não pena. Se a questão disser que a exceção quebra o princípio, desconfie. Pegadinha três, fato e autor invertidos: o Direito Penal do fato julga a conduta; o do autor julga a pessoa. O Brasil admite o primeiro e rejeita o segundo. Questão que inverter os dois está errada. Pegadinha quatro, individualizar não é só o juiz: a individualização tem três planos: legislativo, judicial e administrativo. Reduzir o princípio ao momento da sentença apaga dois terços dele. Pegadinha cinco, trifásico e bifásico: o sistema trifásico é o do artigo sessenta e oito do Código Penal; o bifásico é o da sanção pecuniária, do artigo quarenta e nove. Trocar os artigos é o erro clássico das bancas neste tema."
+    },
+    {
+      "tipo": "Ligar termos",
+      "img": "ligar2",
+      "alt": "Elos de corrente dourados frente a frente sobre veludo vermelho, aguardando a ligação",
+      "kicker": "Ligar termos 2 · Artigos e institutos",
+      "titulo": "Ligar termos 2",
+      "instrucao": "Agora ligue cada artigo ou instituto ao princípio ou função que ele carrega. Toque em um nome e, depois, na ideia correspondente.",
+      "pares": [
+        [
+          "Art. 5º, XLV, da Constituição",
+          "Intranscendência da pena"
+        ],
+        [
+          "Art. 5º, XLVI, da Constituição",
+          "Individualização da pena"
+        ],
+        [
+          "Art. 68 do Código Penal",
+          "Sistema trifásico de aplicação da pena"
+        ],
+        [
+          "Art. 49 do Código Penal",
+          "Sistema bifásico da sanção pecuniária"
+        ],
+        [
+          "Incidente de ilegitimidade de parte",
+          "Efeito prático da intranscendência"
+        ]
+      ],
+      "ordemDefs": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "narr": "Ligar termos dois: artigos e institutos. Agora ligue cada artigo ou instituto ao princípio ou função que ele carrega. Toque em um nome e, depois, na ideia correspondente."
+    },
+    {
+      "tipo": "Desafio",
+      "img": "martelo",
+      "alt": "Martelo de juiz e placar dourado sobre um livro de leis aberto",
+      "kicker": "Desafio final · Vale pontos",
+      "titulo": "Desafio final: o placar da professora",
+      "intro": "Chegou a hora do desafio que fecha a parte de treino da aula! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!",
+      "perguntas": [
+        {
+          "q": "“Nenhuma pena passará da pessoa do condenado” é o texto de qual princípio, e de qual inciso da Constituição?",
+          "ops": [
+            "Intranscendência, art. 5º, XLV",
+            "Individualização, art. 5º, XLVI",
+            "Responsabilidade pelo fato, art. 68 do CP",
+            "Adequação social, art. 5º, XLVI"
+          ],
+          "certa": 0,
+          "exp": "Intranscendência, no art. 5º, XLV: a pena é pessoal e não se transfere a ninguém."
+        },
+        {
+          "q": "O que pode ser estendido aos sucessores do condenado?",
+          "ops": [
+            "A pena de prisão que restou por cumprir",
+            "A pena de multa, sem limite de valor",
+            "A obrigação de reparar o dano e o perdimento de bens, até o limite do patrimônio transferido",
+            "A suspensão de direitos do condenado"
+          ],
+          "certa": 2,
+          "exp": "Só os efeitos patrimoniais: reparação do dano e perdimento de bens, e apenas até o limite do valor do patrimônio transferido."
+        },
+        {
+          "q": "O Direito Penal do autor é lembrado, historicamente, pelo exemplo:",
+          "ops": [
+            "Da Alemanha nazista, onde não havia crimes, mas criminosos",
+            "Do Brasil atual, que julga o fato típico e ilícito",
+            "Da Constituição de 1988, que individualiza a pena",
+            "Do sistema trifásico do art. 68 do Código Penal"
+          ],
+          "certa": 0,
+          "exp": "Da Alemanha nazista: o centro era a pessoa rotulada como criminosa, e não o fato praticado."
+        },
+        {
+          "q": "O plano administrativo da individualização acontece:",
+          "ops": [
+            "Quando o legislador descreve o tipo penal",
+            "Quando o juiz profere a sentença",
+            "Durante a execução da pena",
+            "Durante o inquérito policial"
+          ],
+          "certa": 2,
+          "exp": "Durante a execução: é nela que o Estado zela pelo condenado de forma singular."
+        },
+        {
+          "q": "O sistema bifásico, do art. 49 do Código Penal, aplica-se a qual sanção?",
+          "ops": [
+            "À privação da liberdade",
+            "À sanção pecuniária",
+            "À perda de bens",
+            "À prestação social alternativa"
+          ],
+          "certa": 1,
+          "exp": "À sanção pecuniária, a multa. O sistema trifásico, do art. 68, é o da aplicação da pena em geral."
+        }
+      ],
+      "narr": "Desafio final: o placar da professora. Chegou a hora do desafio que fecha a parte de treino da aula! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!"
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Pergunta de ouro · Caso completo",
+      "titulo": "Pergunta de ouro",
+      "intro": "Para fechar com chave de ouro, um <b>caso completo</b> que mistura os princípios da aula. Leia com atenção:",
+      "questao": "Um homem é condenado por estelionato, com pena de prisão e obrigação de reparar o dano à vítima. Ele falece durante a execução, deixando ao filho único um apartamento como herança. O filho é cobrado a (i) cumprir o restante da pena de prisão do pai e (ii) pagar a reparação do dano com o apartamento herdado. À luz dos princípios estudados, é correto afirmar que:",
+      "opcoes": [
+        "O filho deve cumprir a pena e pagar a reparação sem qualquer limite",
+        "O filho não cumpre pena alguma, mas a reparação pode ser executada contra ele até o limite do valor do patrimônio transferido",
+        "O filho não responde por nada: nem pena, nem reparação",
+        "O filho cumpre a pena de prisão, mas está livre da reparação"
+      ],
+      "certa": 1,
+      "feedback": "É isso: pergunta de ouro respondida com o art. 5º, XLV, da Constituição. A pena é intranscendente e se extingue com a morte do condenado: ninguém a cumpre por ele. Já a obrigação de reparar o dano é efeito patrimonial e pode ser executada contra o sucessor, mas somente até o limite do valor do patrimônio transferido, que, no caso, é o apartamento herdado.",
+      "narr": "Pergunta de ouro. Para fechar com chave de ouro, um caso completo que mistura os princípios da aula. Leia com atenção: um homem é condenado por estelionato, com pena de prisão e obrigação de reparar o dano à vítima. Ele falece durante a execução, deixando ao filho único um apartamento como herança. O filho é cobrado a cumprir o restante da pena de prisão do pai e a pagar a reparação do dano com o apartamento herdado. À luz dos princípios estudados, é correto afirmar o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Encerramento",
+      "img": "fim",
+      "alt": "Estrada dourada saindo de um tribunal neoclássico em direção ao nascer do sol, com uma figura caminhando com um livro",
+      "kicker": "Encerramento",
+      "titulo": "O que você leva desta aula",
+      "corpo": "<p>Chegamos ao fim, e eu quero que você perceba a arquitetura do que construímos. Começamos com três perguntas: a pena de um pode cair sobre outro? Pode-se punir pelo que a pessoa é? Casos diferentes devem receber a mesma pena? E cada princípio respondeu a uma delas.</p><p>A <b class=\"term\">intranscendência</b> respondeu à primeira: a pena é pessoal, não passa da pessoa do condenado, e só o patrimônio, reparação e perdimento de bens, atravessa para os sucessores, com limite. A <b>responsabilidade pelo fato</b> respondeu à segunda: julga-se o fato típico e ilícito, após o devido processo legal, e nunca a pessoa, porque Direito Penal do autor é a página sombria que não queremos reabrir. E a <b>individualização</b> respondeu à terceira: cada caso pede a sua medida, desenhada pelo legislador, aplicada pelo juiz e acompanhada na execução.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/capa.webp\" alt=\"\"></div><p>A lição maior é esta: esses três princípios são <b>três travas de proteção da pessoa</b> diante do poder de punir. Elas não enfraquecem a Justiça: são elas que fazem a pena ser <b>justiça</b>, e não vingança, perseguição ou sorteio.</p><p>Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça o desafio de cabeça fria e confie: princípio se aprende pelo <b>raciocínio</b>, ligando cada um à pergunta que ele responde. Eu fico por aqui, e te espero na próxima aula. <b>Bons estudos!</b></p>",
+      "narr": "O que você leva desta aula. Chegamos ao fim, e eu quero que você perceba a arquitetura do que construímos. Começamos com três perguntas: a pena de um pode cair sobre outro? Pode-se punir pelo que a pessoa é? Casos diferentes devem receber a mesma pena? E cada princípio respondeu a uma delas. A intranscendência respondeu à primeira: a pena é pessoal, não passa da pessoa do condenado, e só o patrimônio, reparação e perdimento de bens, atravessa para os sucessores, com limite. A responsabilidade pelo fato respondeu à segunda: julga-se o fato típico e ilícito, após o devido processo legal, e nunca a pessoa, porque Direito Penal do autor é a página sombria que não queremos reabrir. E a individualização respondeu à terceira: cada caso pede a sua medida, desenhada pelo legislador, aplicada pelo juiz e acompanhada na execução. A lição maior é esta: esses três princípios são três travas de proteção da pessoa diante do poder de punir. Elas não enfraquecem a Justiça: são elas que fazem a pena ser justiça, e não vingança, perseguição ou sorteio. Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça o desafio de cabeça fria e confie: princípio se aprende pelo raciocínio, ligando cada um à pergunta que ele responde. Eu fico por aqui, e te espero na próxima aula. Bons estudos!"
+    }
+  ],
+  "imagens": {
+    "capa": "assets/img/capa.webp",
+    "caminhos": "assets/img/caminhos.webp",
+    "barreira": "assets/img/barreira.webp",
+    "constituicao": "assets/img/constituicao.webp",
+    "templos": "assets/img/templos.webp",
+    "questao": "assets/img/questao.webp",
+    "flashcards": "assets/img/flashcards.webp",
+    "fato": "assets/img/fato.webp",
+    "lombroso": "assets/img/lombroso.webp",
+    "compfato": "assets/img/compfato.webp",
+    "positiva": "assets/img/positiva.webp",
+    "questao2": "assets/img/questao2.webp",
+    "flashcards2": "assets/img/flashcards2.webp",
+    "alfaiate": "assets/img/alfaiate.webp",
+    "explorar": "assets/img/explorar.webp",
+    "planos": "assets/img/planos.webp",
+    "martelo": "assets/img/martelo.webp",
+    "revelar": "assets/img/revelar.webp",
+    "ligar": "assets/img/ligar.webp",
+    "ligar2": "assets/img/ligar2.webp",
+    "lacuna": "assets/img/lacuna.webp",
+    "cartasvf": "assets/img/cartasvf.webp",
+    "panorama": "assets/img/panorama.webp",
+    "pegadinhas": "assets/img/pegadinhas.webp",
+    "fim": "assets/img/fim.webp"
+  },
+  "audioBaseUrl": "assets/audio/s",
+  "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-07-principios-da-intranscendencia-da-responsabilidade-pelo-fato/aula.html"
+},
+  "penal-06-08": {
+  "aulaId": "penal-06-08",
+  "titulo": "Adequação Social, Culpabilidade e Exclusiva Proteção ao Bem Jurídico",
+  "disciplinaId": "penal",
+  "totalEtapas": 34,
+  "slides": [
+    {
+      "alt": "Tribunal neoclássico com cortinas vermelhas, balança dourada e um escudo luminoso protegendo um livro de leis aberto",
+      "corpo": "<p class=\"lead\">Furar a orelhinha de um bebê para colocar um brinco. Pensar, com raiva, em cometer um crime, mas nunca sair do pensamento. Ser punido por um resultado que aconteceu sem dolo e sem culpa da sua parte. Três situações comuns, e o Direito Penal responde às três com um sonoro <b>“aqui, não”</b>.</p><p>Essas respostas não são improviso: elas nascem de três princípios que funcionam como <b>freios</b> do poder de punir. O princípio da <b>adequação social</b> pergunta se a sociedade realmente reprova aquela conduta. O princípio da <b>culpabilidade</b> pergunta se aquela pessoa pode ser reprovada pelo que fez. E o princípio da <b>exclusiva proteção ao bem jurídico</b> pergunta se existe, de verdade, um bem importante atingido.</p><p>Nesta aula, eu te mostro os três, um por um, com exemplos do dia a dia, e fecho comparando a exclusiva proteção com um princípio vizinho que vive sendo confundido com ela: a <b>alteridade</b>.</p><div class=\"chips\"><span class=\"chip\">Adequação social</span><span class=\"chip\">Culpabilidade</span><span class=\"chip\">Bem jurídico</span><span class=\"chip\">Alteridade</span></div><p>Ao longo de 34 etapas, você encontra explicações completas em texto corrido, exemplos práticos, questões, flashcards, karaokê, página de exploração, comparador deslizante e um desafio final com placar e pergunta de ouro.</p>",
+      "img": "capa",
+      "kicker": "Direito Penal · Princípios Penais",
+      "narr": "Furar a orelhinha de um bebê para colocar um brinco. Pensar, com raiva, em cometer um crime, mas nunca sair do pensamento. Ser punido por um resultado que aconteceu sem dolo e sem culpa da sua parte. Três situações comuns, e o Direito Penal responde às três com um sonoro: aqui, não. Essas respostas não são improviso: elas nascem de três princípios que funcionam como freios do poder de punir. O princípio da adequação social pergunta se a sociedade realmente reprova aquela conduta. O princípio da culpabilidade pergunta se aquela pessoa pode ser reprovada pelo que fez. E o princípio da exclusiva proteção ao bem jurídico pergunta se existe, de verdade, um bem importante atingido. Nesta aula, eu te mostro os três, um por um, com exemplos do dia a dia, e fecho comparando a exclusiva proteção com um princípio vizinho que vive sendo confundido com ela: a alteridade. Ao longo de trinta e quatro etapas, você encontra explicações completas em texto corrido, exemplos práticos, questões, flashcards, karaokê, página de exploração, comparador deslizante e um desafio final com placar e pergunta de ouro.",
+      "tipo": "Capa",
+      "titulo": "Adequação Social, Culpabilidade e Exclusiva Proteção ao Bem Jurídico"
+    },
+    {
+      "alt": "Estrada dourada atravessando arcos de pedra em direção a um tribunal ao amanhecer, com três marcos pelo caminho",
+      "corpo": "<p>Antes de entrar no conteúdo, deixa eu te mostrar o <b>caminho que vamos percorrer juntas</b>. A aula está organizada em <b>quatro blocos</b>, e eu te acompanho em cada um deles:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>Três freios, uma ideia</h3><p>A ideia que amarra os três princípios: o poder de punir tem limites, e cada princípio guarda um deles.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>Adequação social</h3><p>Quando a conduta está na lei, mas a sociedade não a reprova: trotes moderados, circuncisão e o furo de orelha do bebê.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>Culpabilidade</h3><p>Nullum crimen sine culpa: ninguém responde sem culpa, e a palavra culpabilidade tem três sentidos que você precisa separar.</p></div></div><div class=\"viarow\"><div class=\"vianum\">4</div><div><h3>Exclusiva proteção ao bem jurídico</h3><p>O Direito Penal protege bens jurídicos, e não pensamentos nem moral. No fim, o contraste com a alteridade.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/roteiro.webp\" alt=\"\"></div><p>O conteúdo vem em <b>texto corrido</b>, e a prática fica concentrada no <b>fim de cada bloco</b>: questão, flashcard e karaokê para fixar cada princípio antes de seguir. No meio da aula, uma <b>página de exploração</b> com imagem grande e cinco pontos para descobrir. Vamos ao primeiro bloco!</p>",
+      "img": "roteiro",
+      "kicker": "Roteiro da aula",
+      "narr": "O caminho desta aula. Antes de entrar no conteúdo, deixa eu te mostrar o caminho que vamos percorrer juntas. A aula está organizada em quatro blocos, e eu te acompanho em cada um deles. Bloco um: três freios, uma ideia. A ideia que amarra os três princípios: o poder de punir tem limites, e cada princípio guarda um deles. Bloco dois: adequação social. Quando a conduta está na lei, mas a sociedade não a reprova: trotes moderados, circuncisão e o furo de orelha do bebê. Bloco três: culpabilidade. Nullum crimen sine culpa: ninguém responde sem culpa, e a palavra culpabilidade tem três sentidos que você precisa separar. Bloco quatro: exclusiva proteção ao bem jurídico. O Direito Penal protege bens jurídicos, e não pensamentos nem moral. No fim, o contraste com a alteridade. O conteúdo vem em texto corrido, e a prática fica concentrada no fim de cada bloco: questão, flashcard e karaokê para fixar cada princípio antes de seguir. No meio da aula, uma página de exploração com imagem grande e cinco pontos para descobrir. Vamos ao primeiro bloco!",
+      "tipo": "Conteúdo",
+      "titulo": "O caminho desta aula"
+    },
+    {
+      "alt": "Três escudos dourados guardando o portão de um grande tribunal sob um céu vermelho dramático",
+      "corpo": "<p>Eu gosto de começar por uma imagem simples: o Estado tem o poder de punir, o chamado <b>ius puniendi</b>, mas esse poder não é um cheque em branco. Ele anda cercado de <b>limites</b>, e os princípios penais são justamente esses limites escritos em linguagem de Direito.</p><p>Os três princípios desta aula funcionam como <b>três portas</b> pelas quais uma acusação precisa passar antes de virar condenação. Se ela esbarrar em qualquer uma das portas, o caminho fecha:</p><ul class=\"tight\"><li><b>Primeira porta, a sociedade:</b> a conduta, mesmo descrita na lei, é realmente reprovada pelo sentimento social de justiça? É a pergunta da <span class=\"term\">adequação social</span>.</li><li><b>Segunda porta, a pessoa:</b> aquele agente, naquele caso, pode ser reprovado pelo que fez? É a pergunta da <b>culpabilidade</b>.</li><li><b>Terceira porta, o bem:</b> existe um bem jurídico importante de verdade atingido, ou estamos falando de pensamento, de moral, de modo de viver? É a pergunta da <b>exclusiva proteção ao bem jurídico</b>.</li></ul><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Antes de punir, o Direito Penal precisa passar por três portas: a sociedade, a pessoa e o bem.</p></div><p>Repare na beleza do desenho: um princípio olha para <b>fora</b>, para a sociedade; outro olha para <b>dentro</b>, para o agente; e o terceiro olha para o <b>objeto</b>, o bem que a lei existe para proteger. Juntos, eles impedem que a máquina penal puna por punir.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/freios.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como o <b>freio de um carro</b>. O motor do Estado é forte, e precisa ser forte para proteger a todos. Mas um carro sem freio não é segurança: é perigo. Os princípios são o freio que permite ao Direito Penal andar depressa <b>sem atropelar</b> ninguém.</p></div></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Os princípios penais são limites ao poder de punir do Estado.</li><li>Adequação social pergunta pela reprovação da sociedade.</li><li>Culpabilidade pergunta pela reprovação da pessoa, e o bem jurídico, pelo objeto protegido.</li></ul></div>",
+      "img": "freios",
+      "kicker": "A ideia que amarra tudo",
+      "narr": "Três freios para o poder de punir. Eu gosto de começar por uma imagem simples: o Estado tem o poder de punir, o chamado ius puniendi, mas esse poder não é um cheque em branco. Ele anda cercado de limites, e os princípios penais são justamente esses limites escritos em linguagem de Direito. Os três princípios desta aula funcionam como três portas pelas quais uma acusação precisa passar antes de virar condenação. Se ela esbarrar em qualquer uma das portas, o caminho fecha. Primeira porta, a sociedade: a conduta, mesmo descrita na lei, é realmente reprovada pelo sentimento social de justiça? É a pergunta da adequação social. Segunda porta, a pessoa: aquele agente, naquele caso, pode ser reprovado pelo que fez? É a pergunta da culpabilidade. Terceira porta, o bem: existe um bem jurídico importante de verdade atingido, ou estamos falando de pensamento, de moral, de modo de viver? É a pergunta da exclusiva proteção ao bem jurídico. Antes de punir, o Direito Penal precisa passar por três portas: a sociedade, a pessoa e o bem. Repare na beleza do desenho: um princípio olha para fora, para a sociedade; outro olha para dentro, para o agente; e o terceiro olha para o objeto, o bem que a lei existe para proteger. Juntos, eles impedem que a máquina penal puna por punir. Pense assim: é como o freio de um carro. O motor do Estado é forte, e precisa ser forte para proteger a todos. Mas um carro sem freio não é segurança: é perigo. Os princípios são o freio que permite ao Direito Penal andar depressa sem atropelar ninguém.",
+      "tipo": "Conteúdo",
+      "titulo": "Três freios para o poder de punir"
+    },
+    {
+      "alt": "Praça de cidade pequena em tarde dourada, com pessoas vivendo o cotidiano em harmonia diante de prédios neoclássicos de toldos vermelhos",
+      "corpo": "<p>Vamos ao primeiro princípio. O princípio da <b class=\"term\">adequação social</b> diz o seguinte: <b>não pode ser considerado criminoso</b> o comportamento humano que, embora tipificado em lei, <b>não afronta o sentimento social de justiça</b>.</p><p>Traduzindo: existe conduta que se encaixa na letra fria do tipo penal, mas que a sociedade inteira olha e não enxerga injustiça nenhuma nela. Ninguém se escandaliza, ninguém se sente lesado, ninguém pede punição. Se a sociedade não reprova, o Direito Penal não tem por que reprovar sozinho.</p><p>Repare na palavra mais importante do conceito: <b>sentimento social de justiça</b>. Não é a opinião de uma pessoa, nem o gosto do juiz. É o senso de justiça que vive na comunidade, aquilo que as pessoas comuns reconhecem como certo ou errado no convívio de todos os dias.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/adequacao.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É um <b>termômetro</b>. O tipo penal é o desenho no papel; o sentimento social de justiça é a temperatura real da rua. A adequação social manda o juiz medir a temperatura antes de declarar que ali existe um crime.</p></div></div><p>Isso tem uma consequência profunda: o tipo penal não pode ser lido isolado do mundo. A lei foi feita para a vida em sociedade, e é a própria sociedade quem diz, pelo seu sentimento de justiça, onde o crime de verdade começa.</p>",
+      "img": "adequacao",
+      "kicker": "Adequação social · O conceito",
+      "narr": "Quando a lei diz crime, mas a sociedade diz: tudo bem. Vamos ao primeiro princípio. O princípio da adequação social diz o seguinte: não pode ser considerado criminoso o comportamento humano que, embora tipificado em lei, não afronta o sentimento social de justiça. Traduzindo: existe conduta que se encaixa na letra fria do tipo penal, mas que a sociedade inteira olha e não enxerga injustiça nenhuma nela. Ninguém se escandaliza, ninguém se sente lesado, ninguém pede punição. Se a sociedade não reprova, o Direito Penal não tem por que reprovar sozinho. Repare na palavra mais importante do conceito: sentimento social de justiça. Não é a opinião de uma pessoa, nem o gosto do juiz. É o senso de justiça que vive na comunidade, aquilo que as pessoas comuns reconhecem como certo ou errado no convívio de todos os dias. Pense assim: é um termômetro. O tipo penal é o desenho no papel; o sentimento social de justiça é a temperatura real da rua. A adequação social manda o juiz medir a temperatura antes de declarar que ali existe um crime. Isso tem uma consequência profunda: o tipo penal não pode ser lido isolado do mundo. A lei foi feita para a vida em sociedade, e é a própria sociedade quem diz, pelo seu sentimento de justiça, onde o crime de verdade começa.",
+      "tipo": "Conteúdo",
+      "titulo": "Quando a lei diz crime, mas a sociedade diz: tudo bem"
+    },
+    {
+      "alt": "Pátio de universidade histórica em festa, com estudantes de beca rindo em um trote leve e inofensivo, confetes no ar e luz dourada",
+      "corpo": "<p>Conceito bom é conceito que a gente enxerga na vida real. Então guarda comigo os <b>três exemplos clássicos</b> da adequação social:</p><ul class=\"tight\"><li><b>Trotes acadêmicos moderados:</b> o calouro que leva uma pintura no rosto, um banho de farinha, uma brincadeira leve de recepção. Pela letra fria da lei, alguém poderia discutir constrangimento ou lesão. Mas, sendo moderado, é um rito de passagem que a sociedade aceita e até celebra.</li><li><b>Circuncisão realizada pelos judeus:</b> um corte no corpo de um bebê, que, lido friamente, pareceria lesão corporal. Mas é prática religiosa e cultural milenar, acolhida pela comunidade, sem qualquer reprovação social.</li><li><b>Furo na orelha de bebê para colocar brinco:</b> alguém fura o corpo de uma criança que nem pode consentir. E, no entanto, é gesto de cuidado e de afeto em milhões de famílias, praticado abertamente, sem que ninguém veja injustiça ali.</li></ul><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">A palavra que guarda todos os exemplos é “moderado”: passou da medida, acabou a adequação.</p></div><p>Repare no detalhe do primeiro exemplo: o trote precisa ser <b>moderado</b>. O trote que humilha, que agride, que coloca a saúde do calouro em risco afronta, sim, o sentimento social de justiça, e aí o princípio não protege ninguém. A adequação social tem medida, e a medida é a aceitação real da sociedade.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/exemplos.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Imagine dois trotes. No primeiro, os veteranos pintam o rosto dos calouros e todos terminam rindo numa foto de turma. No segundo, um calouro é obrigado a beber até passar mal e vai parar no hospital. O primeiro é <b>socialmente adequado</b>; o segundo afronta o sentimento de justiça de qualquer pessoa. A diferença não está na letra da lei: está na <b>reprovação social</b>.</p></div></div>",
+      "img": "exemplos",
+      "kicker": "Adequação social · Os exemplos",
+      "narr": "Os exemplos que explicam tudo. Conceito bom é conceito que a gente enxerga na vida real. Então guarda comigo os três exemplos clássicos da adequação social. Primeiro: trotes acadêmicos moderados. O calouro que leva uma pintura no rosto, um banho de farinha, uma brincadeira leve de recepção. Pela letra fria da lei, alguém poderia discutir constrangimento ou lesão. Mas, sendo moderado, é um rito de passagem que a sociedade aceita e até celebra. Segundo: circuncisão realizada pelos judeus. Um corte no corpo de um bebê, que, lido friamente, pareceria lesão corporal. Mas é prática religiosa e cultural milenar, acolhida pela comunidade, sem qualquer reprovação social. Terceiro: furo na orelha de bebê para colocar brinco. Alguém fura o corpo de uma criança que nem pode consentir. E, no entanto, é gesto de cuidado e de afeto em milhões de famílias, praticado abertamente, sem que ninguém veja injustiça ali. A palavra que guarda todos os exemplos é moderado: passou da medida, acabou a adequação. Repare no detalhe do primeiro exemplo: o trote precisa ser moderado. O trote que humilha, que agride, que coloca a saúde do calouro em risco afronta, sim, o sentimento social de justiça, e aí o princípio não protege ninguém. A adequação social tem medida, e a medida é a aceitação real da sociedade. Exemplo prático: imagine dois trotes. No primeiro, os veteranos pintam o rosto dos calouros e todos terminam rindo numa foto de turma. No segundo, um calouro é obrigado a beber até passar mal e vai parar no hospital. O primeiro é socialmente adequado; o segundo afronta o sentimento de justiça de qualquer pessoa. A diferença não está na letra da lei: está na reprovação social.",
+      "tipo": "Conteúdo",
+      "titulo": "Os exemplos que explicam tudo"
+    },
+    {
+      "alt": "Balança dourada em perfeito equilíbrio, com um coração luminoso de um lado e um livro de leis aberto do outro, sobre fundo vermelho escuro",
+      "corpo": "<p>Agora a pergunta de prova: qual é o <b>efeito prático</b> desse princípio? É este: a conduta que é socialmente adequada <b>não é tratada como crime</b>, ainda que o comportamento se pareça com a descrição do tipo penal. O comportamento continua existindo no mundo dos fatos, mas o Direito Penal o deixa em paz.</p><p>Eu explico a lógica em duas camadas. Na primeira, a do papel: o fato se encaixa na letra do tipo, e por isso dizemos que ele é <b>formalmente típico</b>. Na segunda, a da vida: falta a reprovação social que dá sentido à punição. Sem o sentimento de injustiça na comunidade, a engrenagem penal não se move.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/balanca.webp\" alt=\"\"></div><p>E atenção a um ponto fino: adequação social <b>não é carta branca</b> para ignorar a lei. Ela não autoriza o juiz a perdoar condutas que a sociedade reprova só porque ele, pessoalmente, acha a lei dura demais. O princípio opera no sentido contrário: é a <b>sociedade</b> quem não reprova, e o juiz apenas reconhece esse fato.</p><p>Resumo do bloco: conduta tipificada, mas socialmente aceita e sem afronta ao sentimento de justiça, está fora do crime. É a sociedade funcionando como a primeira porta do Direito Penal.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Adequação social: conduta tipificada que não afronta o sentimento social de justiça não é crime.</li><li>Exemplos clássicos: trotes moderados, circuncisão e furo de orelha de bebê.</li><li>A medida é a aceitação social: passou da medida, acabou a adequação.</li></ul></div>",
+      "img": "balanca",
+      "kicker": "Adequação social · O efeito",
+      "narr": "O que a adequação social faz com o crime. Agora a pergunta de prova: qual é o efeito prático desse princípio? É este: a conduta que é socialmente adequada não é tratada como crime, ainda que o comportamento se pareça com a descrição do tipo penal. O comportamento continua existindo no mundo dos fatos, mas o Direito Penal o deixa em paz. Eu explico a lógica em duas camadas. Na primeira, a do papel: o fato se encaixa na letra do tipo, e por isso dizemos que ele é formalmente típico. Na segunda, a da vida: falta a reprovação social que dá sentido à punição. Sem o sentimento de injustiça na comunidade, a engrenagem penal não se move. E atenção a um ponto fino: adequação social não é carta branca para ignorar a lei. Ela não autoriza o juiz a perdoar condutas que a sociedade reprova só porque ele, pessoalmente, acha a lei dura demais. O princípio opera no sentido contrário: é a sociedade quem não reprova, e o juiz apenas reconhece esse fato. Resumo do bloco: conduta tipificada, mas socialmente aceita e sem afronta ao sentimento de justiça, está fora do crime. É a sociedade funcionando como a primeira porta do Direito Penal.",
+      "tipo": "Conteúdo",
+      "titulo": "O que a adequação social faz com o crime"
+    },
+    {
+      "alt": "Pergaminho de prova antigo com pena dourada, selo de cera e ampulheta sobre mesa escura",
+      "certa": 1,
+      "feedback": "Isso mesmo! A adequação social afasta o crime quando a conduta, embora tipificada, não afronta o sentimento social de justiça, como no trote moderado, na circuncisão e no furo de orelha do bebê. Não é o gosto pessoal do juiz que decide, e o trote só é protegido quando moderado: passou da medida, acabou a adequação.",
+      "img": "questao",
+      "intro": "Hora de treinar! Pense no que eu te expliquei sobre a <b>adequação social</b> e responda:",
+      "kicker": "Questão 1 · Adequação social",
+      "narr": "Questão um: adequação social. Hora de treinar! Pense no que eu te expliquei sobre a adequação social e responda: pelo princípio da adequação social, é correto afirmar o quê? Leia as alternativas e escolha a correta.",
+      "opcoes": [
+        "Toda conduta descrita em lei é crime, ainda que a sociedade a aceite sem qualquer reprovação",
+        "Não é criminoso o comportamento que, embora tipificado em lei, não afronta o sentimento social de justiça",
+        "O juiz pode deixar de aplicar a lei sempre que considerar a pena prevista injusta",
+        "O trote acadêmico é protegido pelo princípio ainda quando humilha ou coloca o calouro em risco"
+      ],
+      "questao": "Pelo princípio da adequação social, é correto afirmar que:",
+      "tipo": "Questão",
+      "titulo": "Questão 1"
+    },
+    {
+      "alt": "Cartões de estudo elegantes com bordas douradas amarrados com fita vermelha sobre mesa escura, ao lado de uma luminária de latão",
+      "frente": "O que diz o princípio da adequação social?",
+      "img": "flashcards",
+      "kicker": "Flashcard 1 · Adequação social",
+      "narr": "Flashcard um: adequação social. O que diz o princípio da adequação social? Toque no cartão para ver a resposta.",
+      "tipo": "Flashcard",
+      "titulo": "Flashcard 1",
+      "verso": "<p>A conduta que, embora <b>tipificada em lei</b>, <b>não afronta o sentimento social de justiça</b> não pode ser considerada criminosa.</p><p style='margin-top:10px'>Exemplos: <b>trotes acadêmicos moderados</b>, <b>circuncisão</b> realizada pelos judeus e <b>furo na orelha de bebê</b> para colocar brinco.</p>"
+    },
+    {
+      "alt": "Praça de cidade em tarde dourada, com a vida cotidiana em harmonia",
+      "frases": [
+        "Chegou a hora de recapitular a adequação social, acompanhando a narração pela tela.",
+        "O princípio diz que a conduta tipificada, mas que não afronta o sentimento social de justiça, não é crime.",
+        "Não é a opinião do juiz que decide: é o senso de justiça que vive na comunidade.",
+        "Trotes acadêmicos moderados, circuncisão e furo de orelha de bebê são os exemplos clássicos.",
+        "E grave a medida: passou da moderação, a conduta volta a afrontar a sociedade e perde a proteção.",
+        "Se você gravou sentimento social de justiça, você gravou a adequação social."
+      ],
+      "img": "adequacao",
+      "kicker": "Karaokê · Siga a narração",
+      "narr": "Chegou a hora de recapitular a adequação social, acompanhando a narração pela tela. O princípio diz que a conduta tipificada, mas que não afronta o sentimento social de justiça, não é crime. Não é a opinião do juiz que decide: é o senso de justiça que vive na comunidade. Trotes acadêmicos moderados, circuncisão e furo de orelha de bebê são os exemplos clássicos. E grave a medida: passou da moderação, a conduta volta a afrontar a sociedade e perde a proteção. Se você gravou sentimento social de justiça, você gravou a adequação social.",
+      "tipo": "Karaokê",
+      "titulo": "Recapitule com a narração"
+    },
+    {
+      "alt": "Juiz solene em tribunal neoclássico examinando documentos de prova sob um feixe de luz, com a balança dourada ao fundo e cortinas vermelhas",
+      "corpo": "<p>Segundo princípio, e talvez o mais humano dos três: o princípio da <b class=\"term\">culpabilidade</b>. Em latim, ele se resume numa frase que eu quero que você grave para sempre: <b>nullum crimen sine culpa</b>, não há crime sem culpa.</p><p>O conteúdo dele é direto: <b>ninguém será considerado culpado</b> por um crime, nem sofrerá uma pena, sem que uma <b>autoridade judicial competente</b> tenha analisado as provas e proferido um <b>juízo de condenação</b>. Culpa não se presume, não se grita, não se decide no impulso: culpa se <b>prova</b> e se <b>declara</b> em processo.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Sem culpa provada e declarada em juízo, não há pena.</p></div><p>Por trás dessa frase existe uma ideia de justiça muito profunda: a pena é uma <b>reprovação</b>. E só faz sentido reprovar alguém por algo que essa pessoa podia ter evitado. Punir quem não teve culpa é tratar gente como objeto, e o Direito Penal moderno se recusa a fazer isso.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/culpabilidade.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É a diferença entre <b>tropeçar</b> e <b>empurrar</b>. Quem tropeça e derruba o vaso não merece a mesma resposta de quem empurra o vaso de propósito. O resultado é parecido, um vaso quebrado, mas a <b>culpa</b> mora na diferença entre os dois gestos.</p></div></div>",
+      "img": "culpabilidade",
+      "kicker": "Culpabilidade · O conceito",
+      "narr": "Nullum crimen sine culpa. Segundo princípio, e talvez o mais humano dos três: o princípio da culpabilidade. Em latim, ele se resume numa frase que eu quero que você grave para sempre: nullum crimen sine culpa, não há crime sem culpa. O conteúdo dele é direto: ninguém será considerado culpado por um crime, nem sofrerá uma pena, sem que uma autoridade judicial competente tenha analisado as provas e proferido um juízo de condenação. Culpa não se presume, não se grita, não se decide no impulso: culpa se prova e se declara em processo. Sem culpa provada e declarada em juízo, não há pena. Por trás dessa frase existe uma ideia de justiça muito profunda: a pena é uma reprovação. E só faz sentido reprovar alguém por algo que essa pessoa podia ter evitado. Punir quem não teve culpa é tratar gente como objeto, e o Direito Penal moderno se recusa a fazer isso. Pense assim: é a diferença entre tropeçar e empurrar. Quem tropeça e derruba o vaso não merece a mesma resposta de quem empurra o vaso de propósito. O resultado é parecido, um vaso quebrado, mas a culpa mora na diferença entre os dois gestos.",
+      "tipo": "Conteúdo",
+      "titulo": "Nullum crimen sine culpa"
+    },
+    {
+      "alt": "Pessoa diante de um grande espelho ornamentado em biblioteca escura, com o reflexo segurando um livro luminoso aberto",
+      "corpo": "<p>Aqui vem o ponto que mais cai em prova: a palavra <b>culpabilidade</b> tem <b>três acepções</b>, três sentidos diferentes, e a banca adora misturá-los. Vamos separá-los um por um, começando pelo primeiro.</p><p>Na <b>primeira acepção</b>, a culpabilidade é <b>parte do conceito de crime</b>, uma peça da estrutura do delito. Nesse sentido, ela é a <b>possibilidade de o indivíduo entender o caráter ilícito da conduta</b> e de <b>determinar as suas ações</b> conforme esse entendimento.</p><p>Repare que são duas capacidades juntas. A primeira é <b>entender</b>: a pessoa compreende que aquilo que faz é errado, é proibido, é ilícito. A segunda é <b>se determinar</b>: com esse entendimento na cabeça, ela consegue comandar a própria conduta, frear o impulso, escolher outro caminho.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/entendimento.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Imagine uma pessoa que, por uma doença mental grave, não consegue compreender que está fazendo algo ilícito, ou compreende mas não consegue se controlar. Falta nela justamente a matéria da culpabilidade: a capacidade de entender e de se determinar. Sem essa peça, o edifício do crime <b>não se completa</b> para ela.</p></div></div><p>Guarde a imagem: nesta acepção, a culpabilidade funciona como um <b>espelho interno</b>. O Direito pergunta: essa pessoa conseguia se enxergar no espelho da lei e guiar os próprios passos? Se a resposta for não, a reprovação não se sustenta.</p>",
+      "img": "entendimento",
+      "kicker": "Culpabilidade · Primeira acepção",
+      "narr": "A primeira acepção: peça do conceito de crime. Aqui vem o ponto que mais cai em prova: a palavra culpabilidade tem três acepções, três sentidos diferentes, e a banca adora misturá-los. Vamos separá-los um por um, começando pelo primeiro. Na primeira acepção, a culpabilidade é parte do conceito de crime, uma peça da estrutura do delito. Nesse sentido, ela é a possibilidade de o indivíduo entender o caráter ilícito da conduta e de determinar as suas ações conforme esse entendimento. Repare que são duas capacidades juntas. A primeira é entender: a pessoa compreende que aquilo que faz é errado, é proibido, é ilícito. A segunda é se determinar: com esse entendimento na cabeça, ela consegue comandar a própria conduta, frear o impulso, escolher outro caminho. Exemplo prático: imagine uma pessoa que, por uma doença mental grave, não consegue compreender que está fazendo algo ilícito, ou compreende mas não consegue se controlar. Falta nela justamente a matéria da culpabilidade: a capacidade de entender e de se determinar. Sem essa peça, o edifício do crime não se completa para ela. Guarde a imagem: nesta acepção, a culpabilidade funciona como um espelho interno. O Direito pergunta: essa pessoa conseguia se enxergar no espelho da lei e guiar os próprios passos? Se a resposta for não, a reprovação não se sustenta.",
+      "tipo": "Conteúdo",
+      "titulo": "A primeira acepção: peça do conceito de crime"
+    },
+    {
+      "alt": "Régua dourada antiga e pesos de balança medindo com precisão um martelo de juiz sobre mesa de mármore, com cortinas vermelhas ao fundo",
+      "corpo": "<p>Na <b>segunda acepção</b>, a culpabilidade muda de função: ela deixa de ser peça do crime e vira <b>medida da sanção</b>. Nesse sentido, o indivíduo deve receber uma pena <b>proporcional à lesão ao bem jurídico</b> que ele causou.</p><p>Eu explico com uma imagem: aqui, a culpabilidade é uma <b>régua</b>. Ela mede quanto de reprovação cabe naquele caso e impede que a pena passe do ponto. Quem causou uma lesão pequena, com pouca reprovação, não pode receber a resposta reservada a quem causou uma lesão enorme com a maior das reprovações.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">A culpabilidade é o teto da pena: ninguém pode ser punido além da própria culpa.</p></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/medida.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Dois motoristas cometem o mesmo deslize no trânsito. Um agiu com um descuido pequeno, num instante de distração. O outro dirigia em velocidade absurda, ignorando todos os sinais. O resultado pode até ser parecido, mas a <b>medida da reprovação</b> é completamente diferente, e a pena precisa enxergar essa diferença.</p></div></div><p>Perceba a elegância: a mesma palavra que decide <b>se</b> existe crime, na primeira acepção, decide <b>quanto</b> de pena cabe, na segunda. É a culpabilidade trabalhando duas vezes, na entrada e na dosagem.</p>",
+      "img": "medida",
+      "kicker": "Culpabilidade · Segunda acepção",
+      "narr": "A segunda acepção: a régua da pena. Na segunda acepção, a culpabilidade muda de função: ela deixa de ser peça do crime e vira medida da sanção. Nesse sentido, o indivíduo deve receber uma pena proporcional à lesão ao bem jurídico que ele causou. Eu explico com uma imagem: aqui, a culpabilidade é uma régua. Ela mede quanto de reprovação cabe naquele caso e impede que a pena passe do ponto. Quem causou uma lesão pequena, com pouca reprovação, não pode receber a resposta reservada a quem causou uma lesão enorme com a maior das reprovações. A culpabilidade é o teto da pena: ninguém pode ser punido além da própria culpa. Exemplo prático: dois motoristas cometem o mesmo deslize no trânsito. Um agiu com um descuido pequeno, num instante de distração. O outro dirigia em velocidade absurda, ignorando todos os sinais. O resultado pode até ser parecido, mas a medida da reprovação é completamente diferente, e a pena precisa enxergar essa diferença. Perceba a elegância: a mesma palavra que decide se existe crime, na primeira acepção, decide quanto de pena cabe, na segunda. É a culpabilidade trabalhando duas vezes, na entrada e na dosagem.",
+      "tipo": "Conteúdo",
+      "titulo": "A segunda acepção: a régua da pena"
+    },
+    {
+      "alt": "Martelo de juiz suspenso no ar, contido por correntes de luz dourada, sobre uma pessoa comum que permanece tranquila em tribunal",
+      "corpo": "<p>Na <b>terceira acepção</b>, culpabilidade é <b>sinônimo da presença de dolo ou culpa</b> na conduta do agente. É esse sentido que <b>evita a responsabilidade penal objetiva</b>.</p><p>Responsabilidade penal objetiva seria punir alguém pelo <b>resultado</b>, e só pelo resultado, sem perguntar se ele quis aquele desfecho ou se ao menos foi descuidado. Aconteceu algo ruim perto de você? Então pague. A terceira acepção diz: <b>não</b>. Sem dolo e sem culpa, não há pena, ainda que o resultado seja grave.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/alvo.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Um motorista prudente, dentro da velocidade, com o carro revisado, é surpreendido por uma pessoa que se joga de repente na frente do carro, sem qualquer chance de frear. O resultado é trágico, mas não há dolo nem culpa dele. Punir esse motorista seria responsabilidade objetiva pura: é exatamente o que a culpabilidade <b>proíbe</b>.</p></div></div><p>Fechando o bloco, o mapa completo: culpabilidade como <b>peça do crime</b> (entender e se determinar), culpabilidade como <b>medida da pena</b> (proporção com a lesão) e culpabilidade como <b>dolo ou culpa</b> (nada de responsabilidade objetiva). Três sentidos, um só coração: ninguém paga pelo que não pôde evitar.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>Nullum crimen sine culpa: sem culpa provada e declarada em juízo, não há pena.</li><li>Primeira acepção: culpabilidade como peça do crime, entender o ilícito e se determinar.</li><li>Segunda e terceira: medida proporcional da pena e presença de dolo ou culpa, sem responsabilidade objetiva.</li></ul></div>",
+      "img": "alvo",
+      "kicker": "Culpabilidade · Terceira acepção",
+      "narr": "A terceira acepção: nada de responsabilidade objetiva. Na terceira acepção, culpabilidade é sinônimo da presença de dolo ou culpa na conduta do agente. É esse sentido que evita a responsabilidade penal objetiva. Responsabilidade penal objetiva seria punir alguém pelo resultado, e só pelo resultado, sem perguntar se ele quis aquele desfecho ou se ao menos foi descuidado. Aconteceu algo ruim perto de você? Então pague. A terceira acepção diz: não. Sem dolo e sem culpa, não há pena, ainda que o resultado seja grave. Exemplo prático: um motorista prudente, dentro da velocidade, com o carro revisado, é surpreendido por uma pessoa que se joga de repente na frente do carro, sem qualquer chance de frear. O resultado é trágico, mas não há dolo nem culpa dele. Punir esse motorista seria responsabilidade objetiva pura: é exatamente o que a culpabilidade proíbe. Fechando o bloco, o mapa completo: culpabilidade como peça do crime, entender e se determinar; culpabilidade como medida da pena, proporção com a lesão; e culpabilidade como dolo ou culpa, nada de responsabilidade objetiva. Três sentidos, um só coração: ninguém paga pelo que não pôde evitar.",
+      "tipo": "Conteúdo",
+      "titulo": "A terceira acepção: nada de responsabilidade objetiva"
+    },
+    {
+      "alt": "Pergaminho de prova antigo com pena dourada, selo de cera e ampulheta sobre mesa escura",
+      "certa": 2,
+      "feedback": "Perfeito! A terceira acepção da culpabilidade é a presença de dolo ou culpa na conduta, e é ela que veda a responsabilidade penal objetiva: resultado sozinho não condena. A primeira acepção é a peça do conceito de crime (entender o ilícito e se determinar), e a segunda é a medida da sanção (pena proporcional à lesão ao bem jurídico).",
+      "img": "questao",
+      "intro": "Hora de treinar! Pense nas <b>três acepções</b> da culpabilidade e responda:",
+      "kicker": "Questão 2 · Culpabilidade",
+      "narr": "Questão dois: culpabilidade. Hora de treinar! Pense nas três acepções da culpabilidade e responda: a acepção da culpabilidade que impede a punição pelo simples resultado, sem dolo nem culpa, é qual? Leia as alternativas e escolha a correta.",
+      "opcoes": [
+        "A culpabilidade como parte do conceito de crime, ligada a entender o ilícito e se determinar",
+        "A culpabilidade como medida da sanção, ligada à proporcionalidade da pena",
+        "A culpabilidade como presença de dolo ou culpa na conduta, que veda a responsabilidade penal objetiva",
+        "A culpabilidade como sinônimo de condenação, declarada por qualquer autoridade"
+      ],
+      "questao": "A acepção da culpabilidade que impede a punição pelo simples resultado, sem dolo nem culpa, é:",
+      "tipo": "Questão",
+      "titulo": "Questão 2"
+    },
+    {
+      "alt": "Cartões de estudo elegantes com bordas douradas amarrados com fita vermelha sobre mesa escura, ao lado de uma luminária de latão",
+      "frente": "Quais são as três acepções da palavra culpabilidade?",
+      "img": "flashcards",
+      "kicker": "Flashcard 2 · Culpabilidade",
+      "narr": "Flashcard dois: culpabilidade. Quais são as três acepções da palavra culpabilidade? Toque no cartão para ver a resposta.",
+      "tipo": "Flashcard",
+      "titulo": "Flashcard 2",
+      "verso": "<p><b>1.</b> Peça do conceito de crime: poder <b>entender o ilícito</b> e se determinar. <b>2.</b> Medida da sanção: pena <b>proporcional</b> à lesão ao bem jurídico. <b>3.</b> Presença de <b>dolo ou culpa</b>: nada de responsabilidade penal objetiva.</p>"
+    },
+    {
+      "alt": "Imagem vertical em cinco cenas empilhadas separadas por faixas de luz dourada: mãe colocando brinco na orelha do bebê, estudantes em trote leve e alegre, juiz lendo provas com atenção, balança pesando um pequeno martelo e escudo luminoso protegendo um livro enquanto bolhas de pensamento se desfazem do lado de fora",
+      "img": "explorar",
+      "intro": "Esta imagem grande reúne os três princípios da aula em cinco cenas, de cima para baixo. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "kicker": "Exploração · Toque nos pontos",
+      "narr": "Explore a imagem: os três princípios em cinco cenas. Esta imagem grande reúne os três princípios da aula em cinco cenas, de cima para baixo. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "pontos": [
+        {
+          "texto": "No topo, a mãe fura a orelhinha da bebê para colocar o brinquinho. Pela letra fria da lei, alguém furou o corpo de uma criança. Mas o gesto é cuidado, afeto, prática aberta de milhões de famílias: não afronta o sentimento social de justiça. É a adequação social em sua forma mais doméstica.",
+          "titulo": "O furo de orelha: adequação social",
+          "x": 55,
+          "y": 11
+        },
+        {
+          "texto": "Logo abaixo, o trote leve: rostos pintados, confete, risada de turma. Moderado assim, é rito de passagem que a sociedade aceita. Grave a medida: se o trote humilhar ou machucar, ele passa a afrontar o sentimento de justiça e perde a proteção do princípio.",
+          "titulo": "O trote moderado: a medida da aceitação",
+          "x": 38,
+          "y": 30
+        },
+        {
+          "texto": "No centro, o juiz lê as provas com calma antes de decidir. É o coração da culpabilidade: ninguém é considerado culpado sem que a autoridade judicial competente analise as provas e profira um juízo de condenação. Culpa se prova, não se presume.",
+          "titulo": "O juiz e as provas: culpa se prova",
+          "x": 50,
+          "y": 50
+        },
+        {
+          "texto": "A balança pesa um pequeno martelo: é a culpabilidade como medida da sanção. A pena deve ser proporcional à lesão causada ao bem jurídico. Nem castigo de menos, nem castigo de mais: a culpa do agente é a régua e o teto da resposta do Estado.",
+          "titulo": "A balança: a pena na medida da culpa",
+          "x": 50,
+          "y": 69
+        },
+        {
+          "texto": "Na base, o escudo dourado protege o livro aberto enquanto as bolhas de pensamento se desfazem do lado de fora. É a exclusiva proteção ao bem jurídico: o Direito Penal guarda bens importantes da vida em sociedade, e pensamentos, intenções e modos de viver ficam fora do alcance da pena.",
+          "titulo": "O escudo: só bens jurídicos entram",
+          "x": 52,
+          "y": 88
+        }
+      ],
+      "tipo": "Explorar",
+      "titulo": "Explore a imagem: os três princípios em cinco cenas"
+    },
+    {
+      "alt": "Juiz examinando provas em tribunal neoclássico sob feixe de luz",
+      "frases": [
+        "Chegou a hora de recapitular a culpabilidade, acompanhando a narração pela tela.",
+        "Nullum crimen sine culpa: não há crime sem culpa, e culpa se prova em juízo.",
+        "Na primeira acepção, a culpabilidade é peça do crime: entender o ilícito e conseguir se determinar.",
+        "Na segunda, ela é a medida da pena: a sanção deve ser proporcional à lesão ao bem jurídico.",
+        "Na terceira, ela é a presença de dolo ou culpa, e veda a responsabilidade penal objetiva.",
+        "Resultado sozinho não condena ninguém: é preciso reprovação de verdade.",
+        "Se você gravou os três sentidos da palavra, você gravou a culpabilidade."
+      ],
+      "img": "culpabilidade",
+      "kicker": "Karaokê · Siga a narração",
+      "narr": "Chegou a hora de recapitular a culpabilidade, acompanhando a narração pela tela. Nullum crimen sine culpa: não há crime sem culpa, e culpa se prova em juízo. Na primeira acepção, a culpabilidade é peça do crime: entender o ilícito e conseguir se determinar. Na segunda, ela é a medida da pena: a sanção deve ser proporcional à lesão ao bem jurídico. Na terceira, ela é a presença de dolo ou culpa, e veda a responsabilidade penal objetiva. Resultado sozinho não condena ninguém: é preciso reprovação de verdade. Se você gravou os três sentidos da palavra, você gravou a culpabilidade.",
+      "tipo": "Karaokê",
+      "titulo": "Recapitule com a narração"
+    },
+    {
+      "alt": "Escudo dourado radiante protegendo um livro aberto luminoso e uma pequena cidade sob ele, entre colunas neoclássicas, ao amanhecer vermelho",
+      "corpo": "<p>Chegamos ao terceiro princípio, o que dá nome ao Direito Penal moderno: o princípio da <b class=\"term\">exclusiva proteção ao bem jurídico</b>. A frase que o resume é esta: o Direito Penal moderno <b>é</b> o Direito Penal do bem jurídico.</p><p>Mas o que é um bem jurídico? É aquilo que a vida em sociedade tem de mais precioso e que o Direito escolhe proteger com a sua força mais grave: a <b>vida</b>, a <b>integridade do corpo</b>, a <b>liberdade</b>, o <b>patrimônio</b>, a <b>honra</b>. O crime, nessa visão, é a conduta que lesiona ou coloca em perigo um desses bens.</p><p>A função do Direito Penal, então, fica muito clara: <b>proteger bens jurídicos fundamentais</b> para a preservação e para o desenvolvimento do indivíduo e da sociedade. Nem mais, nem menos. Ele é um escudo, e escudo só se levanta para defender o que importa.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">O Direito Penal existe para proteger bens jurídicos, e só eles justificam a pena.</p></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/escudo.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>É como o <b>segurança de um museu</b>. Ele está ali para proteger as obras, não para fiscalizar o que os visitantes pensam das pinturas, nem o gosto de cada um. Se ninguém ameaça obra alguma, o segurança não tem o que fazer. O Direito Penal funciona igual: ele guarda <b>bens</b>, não opiniões.</p></div></div>",
+      "img": "escudo",
+      "kicker": "Bem jurídico · O conceito",
+      "narr": "O Direito Penal do bem jurídico. Chegamos ao terceiro princípio, o que dá nome ao Direito Penal moderno: o princípio da exclusiva proteção ao bem jurídico. A frase que o resume é esta: o Direito Penal moderno é o Direito Penal do bem jurídico. Mas o que é um bem jurídico? É aquilo que a vida em sociedade tem de mais precioso e que o Direito escolhe proteger com a sua força mais grave: a vida, a integridade do corpo, a liberdade, o patrimônio, a honra. O crime, nessa visão, é a conduta que lesiona ou coloca em perigo um desses bens. A função do Direito Penal, então, fica muito clara: proteger bens jurídicos fundamentais para a preservação e para o desenvolvimento do indivíduo e da sociedade. Nem mais, nem menos. Ele é um escudo, e escudo só se levanta para defender o que importa. O Direito Penal existe para proteger bens jurídicos, e só eles justificam a pena. Pense assim: é como o segurança de um museu. Ele está ali para proteger as obras, não para fiscalizar o que os visitantes pensam das pinturas, nem o gosto de cada um. Se ninguém ameaça obra alguma, o segurança não tem o que fazer. O Direito Penal funciona igual: ele guarda bens, não opiniões.",
+      "tipo": "Conteúdo",
+      "titulo": "O Direito Penal do bem jurídico"
+    },
+    {
+      "alt": "Silhueta de pessoa sentada com nuvens de tempestade e imagens agitadas presas dentro de uma redoma de vidro sobre a cabeça, enquanto o mundo ao redor permanece calmo",
+      "corpo": "<p>Se o Direito Penal protege bens jurídicos, a pergunta seguinte é: o que fica <b>de fora</b> dessa proteção? E a resposta desse princípio é uma lista de exclusões que protege a sua liberdade interior.</p><p>É <b>vedado</b> ao Direito Penal preocupar-se com as <b>intenções e os pensamentos</b> das pessoas, com o seu <b>modo de viver</b> ou de <b>pensar</b>, e com as suas <b>condutas internas</b>, enquanto não exteriorizada a atividade delitiva. Pensou, desejou, imaginou? Enquanto ficar dentro da cabeça, o Direito Penal não entra.</p><p>E tem mais: o Direito Penal <b>não é utilizado</b> para resguardar questões de ordem <b>moral</b>, <b>ética</b>, <b>ideológica</b>, <b>religiosa</b> ou <b>política</b>. Achar algo feio, errado aos olhos da sua fé ou contrário às suas ideias não transforma aquilo em crime. Crime exige bem jurídico atingido.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/pensamentos.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Pense numa pessoa que sente uma inveja enorme do vizinho, imagina mil vinganças, mas nunca levanta um dedo. Ou em alguém cujo estilo de vida desagrada profundamente a moral da vizinhança. Pode haver reprovação social, sermão e fofoca, mas <b>crime, não</b>: nenhum bem jurídico foi atingido, e a conduta interna não se exteriorizou.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">O Direito Penal protege bens, não fiscaliza consciências.</p></div>",
+      "img": "pensamentos",
+      "kicker": "Bem jurídico · O que fica de fora",
+      "narr": "O que fica de fora: pensamentos e moral. Se o Direito Penal protege bens jurídicos, a pergunta seguinte é: o que fica de fora dessa proteção? E a resposta desse princípio é uma lista de exclusões que protege a sua liberdade interior. É vedado ao Direito Penal preocupar-se com as intenções e os pensamentos das pessoas, com o seu modo de viver ou de pensar, e com as suas condutas internas, enquanto não exteriorizada a atividade delitiva. Pensou, desejou, imaginou? Enquanto ficar dentro da cabeça, o Direito Penal não entra. E tem mais: o Direito Penal não é utilizado para resguardar questões de ordem moral, ética, ideológica, religiosa ou política. Achar algo feio, errado aos olhos da sua fé ou contrário às suas ideias não transforma aquilo em crime. Crime exige bem jurídico atingido. Exemplo prático: pense numa pessoa que sente uma inveja enorme do vizinho, imagina mil vinganças, mas nunca levanta um dedo. Ou em alguém cujo estilo de vida desagrada profundamente a moral da vizinhança. Pode haver reprovação social, sermão e fofoca, mas crime, não: nenhum bem jurídico foi atingido, e a conduta interna não se exteriorizou. O Direito Penal protege bens, não fiscaliza consciências.",
+      "tipo": "Conteúdo",
+      "titulo": "O que fica de fora: pensamentos e moral"
+    },
+    {
+      "alt": "Encruzilhada com dois caminhos divergentes em luz dourada: num deles, uma pessoa cuida do próprio braço; no outro, apenas névoa de pensamentos se desfazendo",
+      "corpo": "<p>Agora o contraste que a prova mais cobra neste tema. O princípio da exclusiva proteção do bem jurídico <b>não se confunde</b> com o princípio da <b class=\"term\">alteridade</b>. Eles parecem irmãos, porque nos dois o Direito Penal fica de fora, mas o motivo da saída é completamente diferente.</p><table class=\"cmp\"><tr><th>Ponto</th><th>Alteridade</th><th>Exclusiva proteção</th></tr><tr><td class=\"t\">Existe bem jurídico?</td><td>Sim, existe um bem a ser tutelado</td><td>Não há interesse legítimo a proteger pelo Direito Penal</td></tr><tr><td class=\"t\">Por que o Direito não intervém?</td><td>Porque o bem pertence exclusivamente ao próprio agente da conduta</td><td>Porque só há pensamento, moral ou modo de viver em jogo</td></tr><tr><td class=\"t\">Exemplo</td><td>A autolesão: quem fere o próprio corpo atinge um bem que é só seu</td><td>Pensar em delinquir, sem exteriorizar conduta alguma</td></tr></table><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/contraste.webp\" alt=\"\"></div><p>Eu gravo assim: na alteridade, o bem jurídico <b>existe</b>, mas está na esfera do próprio autor, e ninguém pode ser punido por causar mal apenas a si mesmo. Na exclusiva proteção, o problema é anterior: <b>não há bem jurídico</b> algum pedindo proteção, só interioridade ou moral. Um princípio fala de <b>dono</b> do bem; o outro, da <b>existência</b> do bem.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li>O Direito Penal moderno é o Direito Penal do bem jurídico: protege vida, liberdade, patrimônio e outros bens fundamentais.</li><li>Pensamentos, intenções, moral, religião e ideologia ficam fora da pena.</li><li>Alteridade: há bem jurídico, mas ele é só do agente. Exclusiva proteção: não há bem jurídico a proteger.</li></ul></div>",
+      "img": "contraste",
+      "kicker": "Bem jurídico · O contraste fino",
+      "narr": "Bem jurídico e alteridade: não confunda. Agora o contraste que a prova mais cobra neste tema. O princípio da exclusiva proteção do bem jurídico não se confunde com o princípio da alteridade. Eles parecem irmãos, porque nos dois o Direito Penal fica de fora, mas o motivo da saída é completamente diferente. Existe bem jurídico? Na alteridade, sim, existe um bem a ser tutelado. Na exclusiva proteção, não há interesse legítimo a proteger pelo Direito Penal. Por que o Direito não intervém? Na alteridade, porque o bem pertence exclusivamente ao próprio agente da conduta. Na exclusiva proteção, porque só há pensamento, moral ou modo de viver em jogo. Exemplo de alteridade: a autolesão, quem fere o próprio corpo atinge um bem que é só seu. Exemplo de exclusiva proteção: pensar em delinquir, sem exteriorizar conduta alguma. Eu gravo assim: na alteridade, o bem jurídico existe, mas está na esfera do próprio autor, e ninguém pode ser punido por causar mal apenas a si mesmo. Na exclusiva proteção, o problema é anterior: não há bem jurídico algum pedindo proteção, só interioridade ou moral. Um princípio fala de dono do bem; o outro, da existência do bem.",
+      "tipo": "Conteúdo",
+      "titulo": "Bem jurídico e alteridade: não confunda"
+    },
+    {
+      "alt": "Martelo de juiz sobre um livro de leis aberto com marcador dourado",
+      "certa": 0,
+      "feedback": "Exatamente! Essa é a fronteira exata entre os dois princípios: na alteridade, o bem jurídico existe, mas pertence exclusivamente ao responsável pela conduta, como na autolesão; na exclusiva proteção, não há interesse legítimo a ser protegido pelo Direito Penal, como no pensamento não exteriorizado. Pensamentos e moral ficam fora da pena, e quem fere só a si mesmo não invade bem jurídico alheio.",
+      "img": "questao",
+      "intro": "Questão em <b>estilo de banca</b>, sobre o contraste entre os dois princípios. Leia o enunciado com atenção:",
+      "kicker": "Questão 3 · Estilo de banca",
+      "narr": "Questão três, em estilo de banca, sobre o contraste entre os dois princípios. Leia o enunciado com atenção: sobre a distinção entre o princípio da exclusiva proteção ao bem jurídico e o princípio da alteridade, assinale a alternativa correta. Leia as alternativas e escolha a correta.",
+      "opcoes": [
+        "Na alteridade, há bem jurídico a ser tutelado, mas ele pertence exclusivamente ao agente; na exclusiva proteção, não há interesse legítimo a proteger",
+        "Na exclusiva proteção, o bem jurídico pertence ao próprio agente; na alteridade, não existe bem jurídico algum",
+        "Os dois princípios são sinônimos e tratam da punição de pensamentos e intenções",
+        "A alteridade autoriza o Direito Penal a proteger questões morais, religiosas e ideológicas"
+      ],
+      "questao": "Sobre a distinção entre o princípio da exclusiva proteção ao bem jurídico e o princípio da alteridade, assinale a alternativa correta:",
+      "tipo": "Questão de banca",
+      "titulo": "Questão 3"
+    },
+    {
+      "alt": "Cartões de estudo elegantes com bordas douradas amarrados com fita vermelha sobre mesa escura, ao lado de uma luminária de latão",
+      "frente": "Qual é a diferença entre exclusiva proteção ao bem jurídico e alteridade?",
+      "img": "flashcards",
+      "kicker": "Flashcard 3 · Bem jurídico",
+      "narr": "Flashcard três: bem jurídico. Qual é a diferença entre exclusiva proteção ao bem jurídico e alteridade? Toque no cartão para ver a resposta.",
+      "tipo": "Flashcard",
+      "titulo": "Flashcard 3",
+      "verso": "<p>Na <b>alteridade</b>, o bem jurídico <b>existe</b>, mas pertence exclusivamente ao próprio agente: por isso o Direito não intervém (exemplo: a autolesão).</p><p style='margin-top:10px'>Na <b>exclusiva proteção</b>, <b>não há</b> interesse legítimo a proteger: só há pensamento, moral ou modo de viver em jogo.</p>"
+    },
+    {
+      "alt": "Comparador de duas cenas: de um lado, uma pessoa cuidando do próprio braço; do outro, pensamentos presos numa redoma, sem nada acontecer no mundo real",
+      "img": "compalteridade",
+      "img2": "comppensamento",
+      "intro": "Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, a alteridade: a pessoa cuida do próprio braço, um bem jurídico que existe, mas é só dela, e por isso o Direito não intervém. Do outro, a exclusiva proteção: os pensamentos fervem dentro da redoma, mas nada se exterioriza, nenhum bem jurídico é atingido. Duas saídas diferentes para o Direito Penal ficar de fora.",
+      "kicker": "Comparador · Arraste a barra",
+      "narr": "Duas cenas, uma só fronteira. Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, a alteridade: a pessoa cuida do próprio braço, um bem jurídico que existe, mas é só dela, e por isso o Direito não intervém. Do outro, a exclusiva proteção: os pensamentos fervem dentro da redoma, mas nada se exterioriza, nenhum bem jurídico é atingido. Duas saídas diferentes para o Direito Penal ficar de fora.",
+      "rotuloL": "ALTERIDADE",
+      "rotuloR": "SEM BEM JURÍDICO",
+      "tipo": "Comparador",
+      "titulo": "Duas cenas, uma só fronteira"
+    },
+    {
+      "alt": "Escudo dourado protegendo um livro aberto luminoso ao amanhecer",
+      "frases": [
+        "Chegou a hora de recapitular a exclusiva proteção ao bem jurídico, acompanhando a narração pela tela.",
+        "O Direito Penal moderno é o Direito Penal do bem jurídico: ele protege vida, liberdade, patrimônio e outros bens fundamentais.",
+        "Pensamentos e intenções não exteriorizados ficam fora da pena, sempre.",
+        "Questões de moral, ética, ideologia, religião ou política também não são assunto de Direito Penal.",
+        "E não confunda: na alteridade, o bem existe, mas é só do agente; aqui, nem bem jurídico existe.",
+        "Se você gravou que a pena protege bens, e não consciências, você gravou o princípio."
+      ],
+      "img": "escudo",
+      "kicker": "Karaokê · Siga a narração",
+      "narr": "Chegou a hora de recapitular a exclusiva proteção ao bem jurídico, acompanhando a narração pela tela. O Direito Penal moderno é o Direito Penal do bem jurídico: ele protege vida, liberdade, patrimônio e outros bens fundamentais. Pensamentos e intenções não exteriorizados ficam fora da pena, sempre. Questões de moral, ética, ideologia, religião ou política também não são assunto de Direito Penal. E não confunda: na alteridade, o bem existe, mas é só do agente; aqui, nem bem jurídico existe. Se você gravou que a pena protege bens, e não consciências, você gravou o princípio.",
+      "tipo": "Karaokê",
+      "titulo": "Recapitule com a narração"
+    },
+    {
+      "alt": "Quatro cartas douradas viradas para baixo sobre veludo vermelho, uma se levantando sob a luz de uma vela",
+      "cartas": [
+        {
+          "p": "Furar a orelha de um bebê para colocar brinco é crime?",
+          "r": "<b>Não.</b> Embora a conduta se pareça com uma lesão, ela <b>não afronta o sentimento social de justiça</b>: é a <b>adequação social</b> afastando o crime."
+        },
+        {
+          "p": "Uma pessoa pode ser punida por um resultado que aconteceu sem dolo e sem culpa dela?",
+          "r": "<b>Não.</b> A <b>culpabilidade</b>, na terceira acepção, exige dolo ou culpa e <b>veda a responsabilidade penal objetiva</b>."
+        },
+        {
+          "p": "Pensar em cometer um crime, sem nunca agir, pode ser punido?",
+          "r": "<b>Não.</b> Pela <b>exclusiva proteção ao bem jurídico</b>, pensamentos e condutas internas não exteriorizadas ficam fora do Direito Penal."
+        },
+        {
+          "p": "Quem fere o próprio corpo comete crime contra a própria integridade?",
+          "r": "<b>Não.</b> É a <b>alteridade</b>: o bem jurídico existe, mas pertence exclusivamente ao próprio agente, e o Direito não intervém."
+        }
+      ],
+      "img": "revelar",
+      "intro": "Quatro cartas escondem quatro perguntas rápidas sobre os três princípios e o contraste com a alteridade. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "kicker": "Toque e revele",
+      "narr": "Toque, pense e revele. Quatro cartas escondem quatro perguntas rápidas sobre os três princípios e o contraste com a alteridade. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "tipo": "Toque e revele",
+      "titulo": "Toque, pense e revele"
+    },
+    {
+      "alt": "Chaves douradas antigas e cadeados ornamentados sobre veludo vermelho, aguardando a ligação",
+      "img": "ligar",
+      "instrucao": "Ligue cada princípio à sua ideia central. Toque em um nome e, depois, na ideia correspondente.",
+      "kicker": "Ligar termos · Princípios e ideias",
+      "narr": "Ligar termos: princípios e ideias. Ligue cada princípio à sua ideia central. Toque em um nome e, depois, na ideia correspondente.",
+      "ordemDefs": [
+        3,
+        0,
+        4,
+        1,
+        2
+      ],
+      "pares": [
+        [
+          "Adequação social",
+          "Conduta típica que a sociedade não reprova"
+        ],
+        [
+          "Culpabilidade",
+          "Nullum crimen sine culpa"
+        ],
+        [
+          "Exclusiva proteção",
+          "A pena protege bens jurídicos, não pensamentos"
+        ],
+        [
+          "Alteridade",
+          "Bem jurídico que pertence só ao próprio agente"
+        ],
+        [
+          "Responsabilidade objetiva",
+          "Punir sem dolo nem culpa: é vedada"
+        ]
+      ],
+      "tipo": "Ligar termos",
+      "titulo": "Ligar termos"
+    },
+    {
+      "alt": "Pergaminho antigo com espaços dourados vazios e peças de palavras douradas ao lado esperando para serem colocadas",
+      "banco": [
+        "alteridade",
+        "culpabilidade",
+        "bem jurídico",
+        "culpa",
+        "livre-arbítrio",
+        "adequação social"
+      ],
+      "img": "lacuna",
+      "intro": "Um resumo importante da aula apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "kicker": "Completar · Toque nas palavras",
+      "narr": "Complete a frase. Um resumo importante da aula apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "partes": [
+        "Sem ",
+        " , ninguém responde por crime: é o princípio da ",
+        ". A conduta descrita na lei, mas aceita pela sociedade, é afastada pela ",
+        ". E o Direito Penal existe para proteger o ",
+        ", e não para fiscalizar pensamentos."
+      ],
+      "respostas": [
+        "culpa",
+        "culpabilidade",
+        "adequação social",
+        "bem jurídico"
+      ],
+      "tipo": "Completar",
+      "titulo": "Complete a frase"
+    },
+    {
+      "alt": "Caminho dourado com marcos de pedra atravessando uma paisagem de colinas vermelhas em direção a um tribunal distante",
+      "img": "roteiro",
+      "intro": "Sem datas desta vez: a linha é o caminho que uma conduta percorre na análise penal, do pensamento até a pena. Toque em cada marco para abrir a explicação dele: são cinco passos, e em cada um deles um dos nossos princípios pode encerrar o caminho.",
+      "kicker": "Linha do tempo · Toque nos marcos",
+      "marcos": [
+        {
+          "ano": "Passo 1",
+          "texto": "Tudo começa dentro da cabeça: desejo, intenção, plano. Enquanto a conduta não se exterioriza, o Direito Penal não intervém. É a exclusiva proteção ao bem jurídico barrando a punição do pensamento.",
+          "titulo": "O pensamento"
+        },
+        {
+          "ano": "Passo 2",
+          "texto": "A conduta sai do mundo interno e entra no mundo real: agora existe um comportamento para o Direito olhar. Sem exteriorização, nem sequer começamos a conversa sobre crime.",
+          "titulo": "A exteriorização"
+        },
+        {
+          "ano": "Passo 3",
+          "texto": "A pergunta seguinte: a conduta se encaixa na descrição de um tipo penal? Se não se encaixa, o caminho se encerra aqui. Se se encaixa, ela é formalmente típica, mas a análise continua.",
+          "titulo": "O encaixe na lei"
+        },
+        {
+          "ano": "Passo 4",
+          "texto": "Mesmo encaixada na lei, a conduta pode ser socialmente adequada: trotes moderados, circuncisão, furo de orelha. Se ela não afronta o sentimento social de justiça, não há crime.",
+          "titulo": "O termômetro social"
+        },
+        {
+          "ano": "Passo 5",
+          "texto": "Por fim, a reprovação da pessoa: o agente entendia o ilícito, podia se determinar e agiu com dolo ou culpa? Sem culpabilidade provada e declarada em juízo, não há pena.",
+          "titulo": "O juízo de culpa"
+        }
+      ],
+      "narr": "A jornada de uma conduta. Sem datas desta vez: a linha é o caminho que uma conduta percorre na análise penal, do pensamento até a pena. Toque em cada marco para abrir a explicação dele: são cinco passos, e em cada um deles um dos nossos princípios pode encerrar o caminho.",
+      "tipo": "Linha do tempo",
+      "titulo": "A jornada de uma conduta"
+    },
+    {
+      "alt": "Mapa mental com os três princípios no centro e os ramos do contraste e da síntese ao redor",
+      "centro": "TRÊS PRINCÍPIOS, UM LIMITE",
+      "img": "roteiro",
+      "intro": "Para fechar o conteúdo, um mapa da aula inteira. No centro estão os três princípios; em volta, os ramos que estudamos, mais o contraste com a alteridade e a síntese final. Toque em cada ramo para abrir o resumo dele.",
+      "kicker": "Mapa mental · Toque nos ramos",
+      "narr": "Mapa mental dos três princípios. Para fechar o conteúdo, um mapa da aula inteira. No centro estão os três princípios; em volta, os ramos que estudamos, mais o contraste com a alteridade e a síntese final. Toque em cada ramo para abrir o resumo dele.",
+      "ramos": [
+        {
+          "chips": [
+            "Sentimento social de justiça",
+            "Trotes moderados",
+            "Circuncisão"
+          ],
+          "nome": "Adequação social",
+          "texto": "A sociedade como primeira porta. A conduta tipificada que não afronta o sentimento social de justiça não é crime: a reprovação precisa existir na comunidade, e não só no papel."
+        },
+        {
+          "chips": [
+            "Nullum crimen sine culpa",
+            "Três acepções",
+            "Sem responsabilidade objetiva"
+          ],
+          "nome": "Culpabilidade",
+          "texto": "A pessoa como segunda porta. Ninguém é culpado sem juízo de condenação: a culpabilidade é peça do crime, medida da pena e presença de dolo ou culpa."
+        },
+        {
+          "chips": [
+            "Bem jurídico",
+            "Nada de pensamentos",
+            "Nada de moral"
+          ],
+          "nome": "Exclusiva proteção ao bem jurídico",
+          "texto": "O bem como terceira porta. O Direito Penal protege bens jurídicos fundamentais, e nunca intenções, pensamentos, moral, religião ou modo de viver."
+        },
+        {
+          "chips": [
+            "Bem do próprio agente",
+            "Autolesão"
+          ],
+          "nome": "Alteridade: o contraste",
+          "texto": "O vizinho que não se confunde: na alteridade, o bem jurídico existe, mas pertence exclusivamente ao próprio agente. Na exclusiva proteção, nem bem jurídico há."
+        },
+        {
+          "chips": [
+            "Três portas",
+            "Freio do ius puniendi"
+          ],
+          "nome": "Juntos: o que eles fazem",
+          "texto": "Os três princípios são freios do poder de punir. Sociedade, pessoa e bem: se a acusação esbarra em qualquer uma das três portas, a pena não passa."
+        }
+      ],
+      "tipo": "Mapa mental",
+      "titulo": "Mapa mental dos três princípios"
+    },
+    {
+      "alt": "Alvo dourado com flechas e uma lupa revelando armadilhas escondidas sobre um pergaminho antigo",
+      "corpo": "<p>Antes do desafio final, eu separei as <b>cinco confusões</b> que mais derrubam candidatos neste tema. Grave cada uma:</p><div class=\"box\"><p class=\"blabel\">PEGADINHA 1 · TROTE SEM MEDIDA</p><p>A adequação social protege o trote <b>moderado</b>. Se o trote humilha, agride ou põe a saúde em risco, ele afronta o sentimento social de justiça e <b>não</b> está protegido.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 2 · OS TRÊS SENTIDOS DA CULPABILIDADE</p><p>Culpabilidade é, ao mesmo tempo, <b>peça do crime</b>, <b>medida da pena</b> e <b>presença de dolo ou culpa</b>. A questão que troca um sentido pelo outro está errada, por mais técnica que pareça.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 3 · RESULTADO NÃO CONDENA SOZINHO</p><p>Sem dolo e sem culpa, <b>não há pena</b>, ainda que o resultado seja grave. Punir pelo resultado puro é responsabilidade penal objetiva, e ela é vedada.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pegadinhas.webp\" alt=\"\"></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 4 · PENSAMENTO NÃO É CRIME</p><p>Intenção, desejo e modo de viver, sem conduta exteriorizada que atinja um bem jurídico, ficam <b>fora</b> do Direito Penal. Quem afirma o contrário fere a exclusiva proteção ao bem jurídico.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 5 · ALTERIDADE NÃO É EXCLUSIVA PROTEÇÃO</p><p>Na <b>alteridade</b>, há bem jurídico, mas ele pertence só ao próprio agente. Na <b>exclusiva proteção</b>, não há interesse legítimo a proteger. Inverter os dois é o erro clássico deste capítulo.</p></div>",
+      "img": "pegadinhas",
+      "kicker": "Pegadinhas de prova",
+      "narr": "Não caia nessas! Antes do desafio final, eu separei as cinco confusões que mais derrubam candidatos neste tema. Grave cada uma. Pegadinha um, trote sem medida: a adequação social protege o trote moderado. Se o trote humilha, agride ou põe a saúde em risco, ele afronta o sentimento social de justiça e não está protegido. Pegadinha dois, os três sentidos da culpabilidade: culpabilidade é, ao mesmo tempo, peça do crime, medida da pena e presença de dolo ou culpa. A questão que troca um sentido pelo outro está errada, por mais técnica que pareça. Pegadinha três, resultado não condena sozinho: sem dolo e sem culpa, não há pena, ainda que o resultado seja grave. Punir pelo resultado puro é responsabilidade penal objetiva, e ela é vedada. Pegadinha quatro, pensamento não é crime: intenção, desejo e modo de viver, sem conduta exteriorizada que atinja um bem jurídico, ficam fora do Direito Penal. Quem afirma o contrário fere a exclusiva proteção ao bem jurídico. Pegadinha cinco, alteridade não é exclusiva proteção: na alteridade, há bem jurídico, mas ele pertence só ao próprio agente. Na exclusiva proteção, não há interesse legítimo a proteger. Inverter os dois é o erro clássico deste capítulo.",
+      "tipo": "Conteúdo",
+      "titulo": "Não caia nessas!"
+    },
+    {
+      "alt": "Duas pilhas de cartas antigas sobre veludo vermelho, uma com símbolo de certo e outra com símbolo de errado em dourado",
+      "afirmacoes": [
+        {
+          "exp": "É o contrário: embora a conduta se pareça com uma lesão, ela não afronta o sentimento social de justiça. A adequação social afasta o crime.",
+          "t": "Furar a orelha de um bebê para colocar brinco é crime, porque a conduta se encaixa na letra da lei.",
+          "v": false
+        },
+        {
+          "exp": "Exato: nullum crimen sine culpa. Sem culpa, analisada e declarada pela autoridade judicial competente, ninguém sofre pena.",
+          "t": "Nullum crimen sine culpa significa que ninguém pode ser considerado culpado nem sofrer pena sem culpabilidade.",
+          "v": true
+        },
+        {
+          "exp": "Não pode. Como medida da sanção, a culpabilidade é justamente o limite: a pena deve ser proporcional à lesão ao bem jurídico causada.",
+          "t": "A culpabilidade, como medida da sanção, permite aplicar uma pena maior do que a culpa do agente.",
+          "v": false
+        },
+        {
+          "exp": "Não pode. É vedado ao Direito Penal preocupar-se com intenções e pensamentos enquanto a conduta não se exteriorizar: é a exclusiva proteção ao bem jurídico.",
+          "t": "O Direito Penal pode punir pensamentos e intenções, mesmo sem conduta exteriorizada.",
+          "v": false
+        },
+        {
+          "exp": "Existe, sim: o bem jurídico está lá, mas pertence exclusivamente ao próprio agente da conduta. É na exclusiva proteção que não há interesse legítimo a proteger.",
+          "t": "Na alteridade, não existe bem jurídico algum envolvido na conduta.",
+          "v": false
+        }
+      ],
+      "img": "cartasvf",
+      "intro": "Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "kicker": "Verdadeiro ou falso · Arraste a carta",
+      "narr": "Verdadeiro ou falso: arraste e decida. Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "tipo": "Verdadeiro ou falso",
+      "titulo": "Verdadeiro ou falso: arraste e decida"
+    },
+    {
+      "alt": "Martelo de juiz ao lado de um medalhão dourado de placar e um livro de leis aberto sobre mesa escura, em luz triunfante",
+      "img": "desafio",
+      "intro": "Chegou a hora do desafio que fecha a parte de treino da aula! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!",
+      "kicker": "Desafio final · Vale pontos",
+      "narr": "Desafio final: o placar da professora. Chegou a hora do desafio que fecha a parte de treino da aula! São cinco perguntas rápidas sobre tudo o que vimos. Cada resposta certa vale cem pontos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!",
+      "perguntas": [
+        {
+          "certa": 1,
+          "exp": "Pela adequação social: a conduta, embora tipificada, não afronta o sentimento social de justiça.",
+          "ops": [
+            "Princípio da culpabilidade",
+            "Princípio da adequação social",
+            "Exclusiva proteção ao bem jurídico",
+            "Princípio da alteridade"
+          ],
+          "q": "O furo na orelha de um bebê para colocar brinco deixa de ser crime por força de qual princípio?"
+        },
+        {
+          "certa": 2,
+          "exp": "A medida da sanção: a pena deve ser proporcional à lesão ao bem jurídico causada pelo agente.",
+          "ops": [
+            "Peça do conceito de crime",
+            "Presença de dolo ou culpa",
+            "Medida da sanção",
+            "Juízo de condenação"
+          ],
+          "q": "Quando a culpabilidade funciona como régua que limita a pena à proporção da lesão causada, ela atua como:"
+        },
+        {
+          "certa": 0,
+          "exp": "Sem dolo e sem culpa, não há pena: a terceira acepção da culpabilidade veda a responsabilidade penal objetiva.",
+          "ops": [
+            "A conduta é atípica por ausência de dolo ou culpa, e ninguém pode ser punido",
+            "Ele responde objetivamente, porque o resultado foi grave",
+            "Ele responde porque todo resultado gera dever de indenizar e de cumprir pena",
+            "Ele só escapa da pena se a vítima perdoar"
+          ],
+          "q": "Um motorista prudente, sem dolo e sem culpa, se envolve num acidente inevitável. O que diz o Direito Penal?"
+        },
+        {
+          "certa": 3,
+          "exp": "O Direito Penal protege bens jurídicos fundamentais. Moral, religião, ideologia e pensamentos ficam fora da pena.",
+          "ops": [
+            "As crenças religiosas de uma comunidade",
+            "O modo de viver de uma pessoa",
+            "As intenções que nunca se exteriorizaram",
+            "A vida e a integridade física"
+          ],
+          "q": "Qual dos itens abaixo é um bem jurídico protegido pelo Direito Penal?"
+        },
+        {
+          "certa": 1,
+          "exp": "Na alteridade, o bem existe, mas é do próprio agente. Na exclusiva proteção, não há interesse legítimo a proteger.",
+          "ops": [
+            "Na alteridade, não há bem jurídico; na exclusiva proteção, o bem é do próprio agente",
+            "Na alteridade, o bem é do próprio agente; na exclusiva proteção, não há bem jurídico a proteger",
+            "Os dois princípios tratam da medida da pena",
+            "Os dois princípios tratam do sentimento social de justiça"
+          ],
+          "q": "Alteridade e exclusiva proteção se diferenciam porque:"
+        }
+      ],
+      "tipo": "Desafio",
+      "titulo": "Desafio final: o placar da professora"
+    },
+    {
+      "alt": "Pergaminho de prova antigo com pena dourada, selo de cera e ampulheta sobre mesa escura",
+      "certa": 1,
+      "feedback": "Análise perfeita! O furo de orelha e o trote moderado são afastados pela adequação social, porque não afrontam o sentimento social de justiça. A punição sem dolo e sem culpa é barrada pela culpabilidade, que veda a responsabilidade penal objetiva. E os pensamentos e a moral do vizinho ficam fora do alcance da pena pela exclusiva proteção ao bem jurídico, pois nenhum bem jurídico foi atingido.",
+      "img": "questao",
+      "intro": "A <b>pergunta de ouro</b> junta os três princípios num caso só. Leia com atenção e responda:",
+      "kicker": "Pergunta de ouro · O caso completo",
+      "narr": "Pergunta de ouro: o caso completo. A pergunta de ouro junta os três princípios num caso só. Leia com atenção e responda: num mesmo bairro, três situações chegam ao conhecimento da autoridade. Qual é a análise correta? Leia as alternativas e escolha a correta.",
+      "opcoes": [
+        "As três situações são crimes, porque todas aparecem descritas em tipos penais ou ferem a moral do bairro",
+        "Nenhuma das três é crime: a primeira e a segunda esbarram na adequação social, a terceira na culpabilidade, e os pensamentos e a moral, na exclusiva proteção ao bem jurídico",
+        "Só os pensamentos do vizinho são crime, porque a intenção revela periculosidade",
+        "Só a punição do comerciante é indevida; o furo de orelha e o trote são crimes comuns"
+      ],
+      "questao": "Num mesmo bairro: (1) uma mãe fura a orelha da filha bebê para colocar um brinco e os veteranos da faculdade fazem um trote leve e moderado com os calouros; (2) um comerciante é acusado de um crime e se pretende puni-lo por um resultado que ocorreu sem dolo e sem culpa dele; (3) um vizinho é denunciado porque seus pensamentos e seu modo de viver desagradam a moral da rua. Qual é a análise correta?",
+      "tipo": "Questão de banca",
+      "titulo": "Pergunta de ouro"
+    },
+    {
+      "alt": "Estrada dourada saindo de um tribunal neoclássico em direção ao nascer do sol, em manhã de luz vermelha e dourada",
+      "corpo": "<p>Chegamos ao fim, e eu quero que você perceba o desenho completo do que estudamos. Começamos com três situações do dia a dia, uma orelhinha furada, um pensamento que nunca virou ato, uma punição sem culpa, e descobrimos que por trás de cada “aqui, não” do Direito Penal existe um <b>princípio</b> trabalhando.</p><p>A <b class=\"term\">adequação social</b> nos ensinou a ouvir a sociedade: conduta que não afronta o sentimento social de justiça não é crime, ainda que a letra da lei a descreva. A <b>culpabilidade</b> nos ensinou a olhar a pessoa: sem culpa provada e declarada, nas suas três acepções, não há pena que se sustente. E a <b>exclusiva proteção ao bem jurídico</b> nos ensinou a olhar o objeto: a pena protege bens fundamentais, e nunca pensamentos, moral ou modos de viver.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/capa.webp\" alt=\"\"></div><p>E ficou o contraste de ouro: na <b>alteridade</b>, o bem jurídico existe, mas pertence só ao próprio agente; na exclusiva proteção, nem bem jurídico existe. Quem separa esses dois nunca mais erra a questão clássica deste capítulo.</p><p>Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça o desafio de cabeça fria e confie: princípio penal se aprende pelo <b>raciocínio</b>, porta por porta, e não pela decoreba. Eu fico por aqui, e te espero na próxima aula. <b>Bons estudos!</b></p>",
+      "img": "fim",
+      "kicker": "Encerramento",
+      "narr": "O que você leva desta aula. Chegamos ao fim, e eu quero que você perceba o desenho completo do que estudamos. Começamos com três situações do dia a dia: uma orelhinha furada, um pensamento que nunca virou ato, uma punição sem culpa, e descobrimos que por trás de cada aqui, não, do Direito Penal existe um princípio trabalhando. A adequação social nos ensinou a ouvir a sociedade: conduta que não afronta o sentimento social de justiça não é crime, ainda que a letra da lei a descreva. A culpabilidade nos ensinou a olhar a pessoa: sem culpa provada e declarada, nas suas três acepções, não há pena que se sustente. E a exclusiva proteção ao bem jurídico nos ensinou a olhar o objeto: a pena protege bens fundamentais, e nunca pensamentos, moral ou modos de viver. E ficou o contraste de ouro: na alteridade, o bem jurídico existe, mas pertence só ao próprio agente; na exclusiva proteção, nem bem jurídico existe. Quem separa esses dois nunca mais erra a questão clássica deste capítulo. Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça o desafio de cabeça fria e confie: princípio penal se aprende pelo raciocínio, porta por porta, e não pela decoreba. Eu fico por aqui, e te espero na próxima aula. Bons estudos!",
+      "tipo": "Encerramento",
+      "titulo": "O que você leva desta aula"
+    }
+  ],
+  "imagens": {
+    "capa": "assets/img/capa.webp",
+    "roteiro": "assets/img/roteiro.webp",
+    "freios": "assets/img/freios.webp",
+    "adequacao": "assets/img/adequacao.webp",
+    "exemplos": "assets/img/exemplos.webp",
+    "balanca": "assets/img/balanca.webp",
+    "questao": "assets/img/questao.webp",
+    "flashcards": "assets/img/flashcards.webp",
+    "culpabilidade": "assets/img/culpabilidade.webp",
+    "entendimento": "assets/img/entendimento.webp",
+    "medida": "assets/img/medida.webp",
+    "alvo": "assets/img/alvo.webp",
+    "explorar": "assets/img/explorar.webp",
+    "escudo": "assets/img/escudo.webp",
+    "pensamentos": "assets/img/pensamentos.webp",
+    "contraste": "assets/img/contraste.webp",
+    "compalteridade": "assets/img/compalteridade.webp",
+    "comppensamento": "assets/img/comppensamento.webp",
+    "revelar": "assets/img/revelar.webp",
+    "ligar": "assets/img/ligar.webp",
+    "lacuna": "assets/img/lacuna.webp",
+    "pegadinhas": "assets/img/pegadinhas.webp",
+    "cartasvf": "assets/img/cartasvf.webp",
+    "desafio": "assets/img/desafio.webp",
+    "fim": "assets/img/fim.webp"
+  },
+  "audioBaseUrl": "assets/audio/s",
+  "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-08-principio-da-adequacao-social-da-culpabilidade/aula.html"
+},
+  "penal-06-09": {
+  "aulaId": "penal-06-09",
+  "titulo": "Princípio da Insignificância",
+  "disciplinaId": "penal",
+  "totalEtapas": 31,
+  "slides": [
+    {
+      "tipo": "Capa",
+      "img": "capa",
+      "alt": "Salão neoclássico de tribunal com cortinas vermelhas e uma balança dourada gigante, com um único grão minúsculo sobre um dos pratos",
+      "kicker": "Direito Penal · Princípios Penais",
+      "titulo": "Princípio da Insignificância",
+      "corpo": "<p class=\"lead\">O Direito Penal é a resposta mais pesada que o Estado tem nas mãos. Mas repare numa pergunta simples: ele deve ser acionado por <b>qualquer coisa</b>, por menor que seja?</p><p>Imagine a cena: uma pessoa furta um único bombom, de valor mínimo, numa loja. A letra da lei descreve o furto, e a descrição se encaixa. Mas será que faz sentido abrir um processo, movimentar polícia, Ministério Público e juiz, e marcar a vida de alguém com uma condenação, por algo tão pequeno que mal se percebe a lesão?</p><p>É exatamente aí que entra o <b>princípio da insignificância</b>: quando a lesão ao bem jurídico é <b>ínfima</b>, o fato nem chega a ser crime. Nesta aula, eu vou te mostrar o que é esse princípio, de onde ele veio, quais são os requisitos que o Supremo exige, a diferença entre bagatela própria e bagatela imprópria e os casos especiais em que ele pode, ou não pode, ser aplicado.</p><div class=\"chips\"><span class=\"chip\">Tipicidade material</span><span class=\"chip\">Bagatela própria</span><span class=\"chip\">Bagatela imprópria</span><span class=\"chip\">Casos especiais</span></div><p>Ao longo das trinta e uma etapas, o conteúdo vem em texto corrido e completo, e a prática fica concentrada no fim de cada bloco: questões, flashcards, um comparador, uma página de exploração e um desafio final com pergunta de ouro.</p>",
+      "narr": "O Direito Penal é a resposta mais pesada que o Estado tem nas mãos. Mas repare numa pergunta simples: ele deve ser acionado por qualquer coisa, por menor que seja? Imagine a cena: uma pessoa furta um único bombom, de valor mínimo, numa loja. A letra da lei descreve o furto, e a descrição se encaixa. Mas será que faz sentido abrir um processo, movimentar polícia, Ministério Público e juiz, e marcar a vida de alguém com uma condenação, por algo tão pequeno que mal se percebe a lesão? É exatamente aí que entra o princípio da insignificância: quando a lesão ao bem jurídico é ínfima, o fato nem chega a ser crime. Nesta aula, eu vou te mostrar o que é esse princípio, de onde ele veio, quais são os requisitos que o Supremo exige, a diferença entre bagatela própria e bagatela imprópria e os casos especiais em que ele pode, ou não pode, ser aplicado. Ao longo das trinta e uma etapas, o conteúdo vem em texto corrido e completo, e a prática fica concentrada no fim de cada bloco: questões, flashcards, um comparador, uma página de exploração e um desafio final com pergunta de ouro."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "caminhos",
+      "alt": "Encruzilhada antiga com caminhos passando por arcos de pedra",
+      "kicker": "Roteiro da aula",
+      "titulo": "O caminho desta aula",
+      "corpo": "<p>Antes de entrar no conteúdo, deixa eu te mostrar o <b>caminho que vamos percorrer juntas</b>. A aula está organizada em <b>cinco blocos</b>:</p><div class=\"viarow\"><div class=\"vianum\">1</div><div><h3>Primeiro, o terreno</h3><p>O que é o <span class=\"term\">princípio da insignificância</span>, de onde ele veio e a diferença entre tipicidade formal e tipicidade material.</p></div></div><div class=\"viarow\"><div class=\"vianum\">2</div><div><h3>A bagatela própria</h3><p>A previsão no Código Penal Militar e os quatro requisitos que o Supremo Tribunal Federal exige no caso concreto.</p></div></div><div class=\"viarow\"><div class=\"vianum\">3</div><div><h3>A bagatela imprópria</h3><p>Quando o crime existe de verdade, mas a pena se revela incabível depois do fato.</p></div></div><div class=\"viarow\"><div class=\"vianum\">4</div><div><h3>Casos especiais</h3><p>Reincidente, criminoso habitual, militares, descaminho, a vítima, violência doméstica e crimes contra a administração.</p></div></div><div class=\"viarow\"><div class=\"vianum\">5</div><div><h3>Revisão e desafio</h3><p>Linha do tempo, mapa mental, pegadinhas de prova e o desafio final com placar e pergunta de ouro.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/caminhos.webp\" alt=\"\"></div><p>A explicação vem em <b>texto corrido</b>, seguindo a ordem dos temas, e a prática fica concentrada no <b>fim de cada bloco</b>, para você fixar cada parte antes de seguir. Vamos ao primeiro bloco!</p>",
+      "narr": "O caminho desta aula. Antes de entrar no conteúdo, deixa eu te mostrar o caminho que vamos percorrer juntas. A aula está organizada em cinco blocos. Bloco um: primeiro, o terreno. O que é o princípio da insignificância, de onde ele veio e a diferença entre tipicidade formal e tipicidade material. Bloco dois: a bagatela própria. A previsão no Código Penal Militar e os quatro requisitos que o Supremo Tribunal Federal exige no caso concreto. Bloco três: a bagatela imprópria. Quando o crime existe de verdade, mas a pena se revela incabível depois do fato. Bloco quatro: casos especiais. Reincidente, criminoso habitual, militares, descaminho, a vítima, violência doméstica e crimes contra a administração. Bloco cinco: revisão e desafio. Linha do tempo, mapa mental, pegadinhas de prova e o desafio final com placar e pergunta de ouro. A explicação vem em texto corrido, seguindo a ordem dos temas, e a prática fica concentrada no fim de cada bloco, para você fixar cada parte antes de seguir. Vamos ao primeiro bloco!"
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "conceito",
+      "alt": "Balança dourada antiga sobre a mesa de um juiz, com uma migalha minúscula em um dos pratos, ao lado de um livro de leis e um martelo",
+      "kicker": "Conceito",
+      "titulo": "Quando o fato nem chega a ser crime",
+      "corpo": "<p>Vamos à definição, porque ela organiza tudo o que vem depois. O <b class=\"term\">princípio da insignificância</b>, também chamado de princípio da bagatela, é uma <b>causa excludente da tipicidade</b>: ele afasta o próprio crime, porque falta a <b>tipicidade material</b> na conduta do agente.</p><p>Traduzindo: para haver crime, não basta a conduta se encaixar na descrição da lei. É preciso que ela tenha causado uma <b>lesão, ou ao menos um perigo de lesão, de verdade</b> ao bem jurídico que a lei penal protege: a vida, o patrimônio, a liberdade, a honra. Quando essa lesão é <b>ínfima</b>, tão pequena que não se percebe ofensa real ao bem jurídico, a conduta é <b>atípica</b>: o fato nem chega a ser crime.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/conceito.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>O sistema penal é uma <b>máquina pesada e cara</b>: polícia, inquérito, processo, juiz, pena. Ligar essa máquina inteira por uma migalha não protege ninguém, só desperdiça a máquina e esmaga a pessoa. O princípio da insignificância é o <b>freio</b> que impede essa ligação sem sentido.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Lesão ínfima não movimenta a máquina penal.</p></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/conceito.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Uma pessoa furta um bombom de valor mínimo num supermercado. Pela letra fria do artigo 155 do Código Penal, subtrair coisa alheia móvel é furto. Mas a lesão ao patrimônio da loja é tão pequena, tão inexpressiva, que o Direito Penal reconhece: ali não houve ofensa material ao bem jurídico. O fato é <b>atípico</b>.</p></div></div>",
+      "narr": "Quando o fato nem chega a ser crime. Vamos à definição, porque ela organiza tudo o que vem depois. O princípio da insignificância, também chamado de princípio da bagatela, é uma causa excludente da tipicidade: ele afasta o próprio crime, porque falta a tipicidade material na conduta do agente. Traduzindo: para haver crime, não basta a conduta se encaixar na descrição da lei. É preciso que ela tenha causado uma lesão, ou ao menos um perigo de lesão, de verdade, ao bem jurídico que a lei penal protege: a vida, o patrimônio, a liberdade, a honra. Quando essa lesão é ínfima, tão pequena que não se percebe ofensa real ao bem jurídico, a conduta é atípica: o fato nem chega a ser crime. Pense assim: o sistema penal é uma máquina pesada e cara: polícia, inquérito, processo, juiz, pena. Ligar essa máquina inteira por uma migalha não protege ninguém, só desperdiça a máquina e esmaga a pessoa. O princípio da insignificância é o freio que impede essa ligação sem sentido. Exemplo prático: uma pessoa furta um bombom de valor mínimo num supermercado. Pela letra fria do artigo cento e cinquenta e cinco do Código Penal, subtrair coisa alheia móvel é furto. Mas a lesão ao patrimônio da loja é tão pequena, tão inexpressiva, que o Direito Penal reconhece: ali não houve ofensa material ao bem jurídico. O fato é atípico."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "origem",
+      "alt": "Fórum romano com colunas de mármore, um pretor de toga julgando e um pergaminho antigo com uma lupa sobre um objeto minúsculo",
+      "kicker": "Origem",
+      "titulo": "De Roma antiga a Claus Roxin",
+      "corpo": "<p>A ideia não nasceu no Direito Penal. O princípio <b>surgiu no Direito Civil</b>, derivado de um brocardo latino muito antigo: <i>de minimis non curat praetor</i>. Em tradução livre: <b>o pretor não se ocupa de coisas mínimas</b>. O pretor era o magistrado romano, o juiz da época, e o ditado já dizia que a Justiça não foi feita para perder tempo com assuntos irrelevantes.</p><p>O significado para nós é direto: o Direito Penal <b>não deve se preocupar com assuntos irrelevantes</b>, incapazes de lesar o bem jurídico legalmente tutelado. Ele é a última e mais grave resposta do Estado, e resposta grave se reserva para problema grave.</p><p>Foi <b>em 1965</b> que o princípio ganhou estrutura teórica, incorporado ao Direito Penal pelo jurista alemão <b class=\"term\">Claus Roxin</b>. A partir dele, a insignificância deixou de ser só um ditado antigo e passou a ser uma ferramenta técnica: um critério para dizer, com fundamento, quando uma conduta formalmente descrita na lei não merece o nome de crime.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/origem.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Imagine a fila do juiz: de um lado, casos enormes esperando decisão, gente presa aguardando julgamento, vítimas esperando resposta. Do outro, alguém querendo um processo inteiro por uma <b>migalha</b>. O brocardo romano é o juiz dizendo, com elegância: isso aqui não é assunto para esta casa.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">O juiz não foi feito para julgar migalhas.</p></div>",
+      "narr": "De Roma antiga a Claus Roxin. A ideia não nasceu no Direito Penal. O princípio surgiu no Direito Civil, derivado de um brocardo latino muito antigo: de minimis non curat praetor. Em tradução livre: o pretor não se ocupa de coisas mínimas. O pretor era o magistrado romano, o juiz da época, e o ditado já dizia que a Justiça não foi feita para perder tempo com assuntos irrelevantes. O significado para nós é direto: o Direito Penal não deve se preocupar com assuntos irrelevantes, incapazes de lesar o bem jurídico legalmente tutelado. Ele é a última e mais grave resposta do Estado, e resposta grave se reserva para problema grave. Foi em mil novecentos e sessenta e cinco que o princípio ganhou estrutura teórica, incorporado ao Direito Penal pelo jurista alemão Claus Roxin. A partir dele, a insignificância deixou de ser só um ditado antigo e passou a ser uma ferramenta técnica: um critério para dizer, com fundamento, quando uma conduta formalmente descrita na lei não merece o nome de crime. Pense assim: imagine a fila do juiz: de um lado, casos enormes esperando decisão, gente presa aguardando julgamento, vítimas esperando resposta. Do outro, alguém querendo um processo inteiro por uma migalha. O brocardo romano é o juiz dizendo, com elegância: isso aqui não é assunto para esta casa."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "tipicidade",
+      "alt": "Duas molduras douradas numa biblioteca jurídica: uma vazia, só a forma, e outra preenchida por uma chama viva de luz, o conteúdo",
+      "kicker": "Tipicidade",
+      "titulo": "Formal é a letra; material é a lesão",
+      "corpo": "<p>Para o princípio funcionar, eu preciso que você enxergue a <b class=\"term\">tipicidade</b> em duas camadas. Calcado em valores de política criminal, o princípio da insignificância faz uma <b>interpretação restritiva do tipo penal</b>: ele lê a descrição do crime com uma lupa, perguntando se, naquele caso concreto, houve lesão de verdade.</p><ul class=\"tight\"><li><b>Tipicidade formal:</b> é a conduta praticada pelo agente que se adéqua, perfeitamente, à descrição abstrata prevista no ordenamento penal. É o encaixe na <b>letra da lei</b>.</li><li><b>Tipicidade material:</b> é a <b>efetiva lesão, ou o perigo de lesão</b>, ao bem jurídico protegido pela lei penal. É a ofensa <b>de verdade</b>, no mundo real.</li></ul><p>Agora repare no movimento do princípio: no furto do bombom, a tipicidade formal <b>existe</b>, porque a conduta se encaixa na descrição do furto. O que falta é a tipicidade <b>material</b>: a lesão ao patrimônio é tão ínfima que não conta como ofensa. Sem as duas camadas juntas, <b>não há fato típico</b>, e sem fato típico não há crime.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/tipicidade.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>A tipicidade formal é a <b>moldura</b> do quadro: o formato bate, a medida confere. A tipicidade material é a <b>pintura</b> dentro da moldura. Se a moldura está lá, mas dentro não há pintura nenhuma, não existe quadro, por mais perfeita que a moldura seja.</p></div></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/tipicidade.webp\" alt=\"\"></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li><b>Conceito:</b> lesão ínfima ao bem jurídico exclui a tipicidade material.</li><li><b>Origem:</b> brocardo do Direito Civil, estruturado por Claus Roxin em 1965.</li><li><b>Tipicidade:</b> formal é a letra da lei; material é a lesão de verdade.</li></ul></div>",
+      "narr": "Formal é a letra; material é a lesão. Para o princípio funcionar, eu preciso que você enxergue a tipicidade em duas camadas. Calcado em valores de política criminal, o princípio da insignificância faz uma interpretação restritiva do tipo penal: ele lê a descrição do crime com uma lupa, perguntando se, naquele caso concreto, houve lesão de verdade. Tipicidade formal: é a conduta praticada pelo agente que se adéqua, perfeitamente, à descrição abstrata prevista no ordenamento penal; é o encaixe na letra da lei. Tipicidade material: é a efetiva lesão, ou o perigo de lesão, ao bem jurídico protegido pela lei penal; é a ofensa de verdade, no mundo real. Agora repare no movimento do princípio: no furto do bombom, a tipicidade formal existe, porque a conduta se encaixa na descrição do furto. O que falta é a tipicidade material: a lesão ao patrimônio é tão ínfima que não conta como ofensa. Sem as duas camadas juntas, não há fato típico, e sem fato típico não há crime. Pense assim: a tipicidade formal é a moldura do quadro: o formato bate, a medida confere. A tipicidade material é a pintura dentro da moldura. Se a moldura está lá, mas dentro não há pintura nenhuma, não existe quadro, por mais perfeita que a moldura seja."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao",
+      "alt": "Pergaminho de prova com pena de escrever, selo dourado e ampulheta",
+      "kicker": "Questão 1 · Conceito",
+      "titulo": "Questão 1",
+      "intro": "Hora de treinar! Pense no que eu te expliquei sobre o <b>conceito</b> do princípio e responda:",
+      "questao": "O princípio da insignificância atua no Direito Penal como:",
+      "opcoes": [
+        "Uma causa de diminuição da pena, aplicada na dosimetria",
+        "Uma causa excludente da tipicidade, por ausência de tipicidade material",
+        "Uma causa de extinção da punibilidade, como a prescrição",
+        "Uma circunstância atenuante genérica do agente"
+      ],
+      "certa": 1,
+      "feedback": "Isso mesmo! O princípio exclui a tipicidade: a lesão ao bem jurídico é ínfima, falta a tipicidade material e o fato é atípico. Ele não diminui pena, não extingue punibilidade e não é atenuante: ele impede que o fato seja crime desde o início.",
+      "narr": "Questão um: conceito. Hora de treinar! Pense no que eu te expliquei sobre o conceito do princípio e responda: o princípio da insignificância atua no Direito Penal como quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards",
+      "alt": "Cartões de estudo elegantes amarrados com fita vermelha sobre uma mesa escura",
+      "kicker": "Flashcard 1 · Tipicidade",
+      "titulo": "Flashcard 1",
+      "frente": "Qual é a diferença entre tipicidade formal e tipicidade material?",
+      "verso": "<p><b>Formal:</b> a conduta se adéqua à descrição abstrata da lei, o encaixe na letra.</p><p style='margin-top:10px'><b>Material:</b> a efetiva lesão, ou perigo de lesão, ao bem jurídico protegido.</p><p style='margin-top:10px'>Na insignificância, a formal existe, mas a <b>material falta</b>: por isso o fato é atípico.</p>",
+      "narr": "Flashcard um: tipicidade. Qual é a diferença entre tipicidade formal e tipicidade material? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "militar",
+      "alt": "Código militar antigo sobre uma mesa, ao lado de uma espada cerimonial e insígnias douradas",
+      "kicker": "Previsão legal",
+      "titulo": "O Código Penal Militar já conhecia a ideia",
+      "corpo": "<p>Você pode se perguntar: esse princípio está escrito em algum lugar? No Código Penal comum, a aplicação dele foi construída pela doutrina e pela jurisprudência. Mas repare: o <b>Código Penal Militar</b> traz a ideia escrita, em dois artigos que eu quero que você conheça.</p><div class=\"box\"><p class=\"blabel\">ART. 209, § 6º, DO CÓDIGO PENAL MILITAR</p><p>O artigo 209 trata de ofender a integridade corporal ou a saúde de outrem. E o parágrafo 6º diz: no caso de <b>lesões levíssimas</b>, o juiz pode considerar a infração como <b>disciplinar</b>. Ou seja: a lesão é tão leve que ela sai da esfera do crime e vira assunto de disciplina interna.</p></div><div class=\"box\"><p class=\"blabel\">ART. 240, § 1º, DO CÓDIGO PENAL MILITAR</p><p>O artigo 240 trata do furto, e o parágrafo 1º cria o chamado <b class=\"term\">furto atenuado</b>: se o agente é <b>primário</b> e é de <b>pequeno valor</b> a coisa furtada, o juiz pode substituir a pena de reclusão pela de detenção, diminuí-la de um a dois terços, ou considerar a infração como disciplinar. E a lei define o pequeno valor: o que <b>não excede a um décimo</b> da quantia mensal do mais alto salário mínimo do país.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/militar.webp\" alt=\"\"></div><p>Guarde a lógica: quando o próprio legislador trata a lesão levíssima e o furto de pequeno valor com esse cuidado, ele está reconhecendo, na prática, que <b>nem toda ofensa merece a resposta cheia do Direito Penal</b>. É o espírito da insignificância morando dentro da lei.</p>",
+      "narr": "O Código Penal Militar já conhecia a ideia. Você pode se perguntar: esse princípio está escrito em algum lugar? No Código Penal comum, a aplicação dele foi construída pela doutrina e pela jurisprudência. Mas repare: o Código Penal Militar traz a ideia escrita, em dois artigos que eu quero que você conheça. Artigo duzentos e nove, parágrafo sexto, do Código Penal Militar: o artigo duzentos e nove trata de ofender a integridade corporal ou a saúde de outrem. E o parágrafo sexto diz: no caso de lesões levíssimas, o juiz pode considerar a infração como disciplinar. Ou seja: a lesão é tão leve que ela sai da esfera do crime e vira assunto de disciplina interna. Artigo duzentos e quarenta, parágrafo primeiro, do Código Penal Militar: o artigo duzentos e quarenta trata do furto, e o parágrafo primeiro cria o chamado furto atenuado: se o agente é primário e é de pequeno valor a coisa furtada, o juiz pode substituir a pena de reclusão pela de detenção, diminuí-la de um a dois terços, ou considerar a infração como disciplinar. E a lei define o pequeno valor: o que não excede a um décimo da quantia mensal do mais alto salário mínimo do país. Guarde a lógica: quando o próprio legislador trata a lesão levíssima e o furto de pequeno valor com esse cuidado, ele está reconhecendo, na prática, que nem toda ofensa merece a resposta cheia do Direito Penal. É o espírito da insignificância morando dentro da lei."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "requisitos",
+      "alt": "Quatro pilares dourados sustentando um frontão clássico num salão de tribunal, com uma balança equilibrada ao centro",
+      "kicker": "Habeas Corpus 84.412 · STF",
+      "titulo": "Os quatro requisitos do Supremo",
+      "corpo": "<p>Agora, o coração prático do tema. No julgamento do <b>Habeas Corpus 84.412</b>, o Supremo Tribunal Federal fixou os critérios, os vetores, que devem estar presentes para o princípio da insignificância ser aplicado. São <b>quatro requisitos</b>, e eu preciso que você grave cada um:</p><ul class=\"tight\"><li><b class=\"term\">Mínima ofensividade da conduta do agente:</b> a conduta, em si, ofende muito pouco; é um gesto de baixa agressividade contra o bem jurídico.</li><li><b>Ausência de periculosidade social da ação:</b> a ação não representa perigo para a coletividade; ela não assusta nem ameaça a vida em sociedade.</li><li><b>Reduzido grau de reprovabilidade do comportamento:</b> o comportamento merece pouca reprovação; qualquer pessoa olha para o caso e percebe que a censura deve ser mínima.</li><li><b>Inexpressividade da lesão jurídica provocada:</b> o prejuízo causado ao bem jurídico é tão pequeno que mal se expressa, mal se mede.</li></ul><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Os quatro requisitos andam juntos: faltou um, caiu o princípio.</p></div><p>E atenção ao ponto que decide processo e prova: esses requisitos são lidos <b>no caso concreto</b>, com todas as circunstâncias dele. Não existe uma tabela automática de valores: o juiz examina a conduta, o agente, a vítima e o resultado, e só reconhece a insignificância quando os quatro vetores apontam na mesma direção.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/requisitos.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Uma pessoa sem qualquer registro anterior furta um pacote de balas de valor mínimo num mercado e é detida na saída. Ofensividade mínima, nenhuma periculosidade social, reprovabilidade reduzida e lesão inexpressiva: os <b>quatro pilares</b> estão de pé, e o caso é de insignificância. Se um deles ruir, por exemplo, se houver violência no furto, a construção inteira desaba.</p></div></div>",
+      "narr": "Os quatro requisitos do Supremo. Agora, o coração prático do tema. No julgamento do habeas corpus oitenta e quatro mil quatrocentos e doze, o Supremo Tribunal Federal fixou os critérios, os vetores, que devem estar presentes para o princípio da insignificância ser aplicado. São quatro requisitos, e eu preciso que você grave cada um. Mínima ofensividade da conduta do agente: a conduta, em si, ofende muito pouco; é um gesto de baixa agressividade contra o bem jurídico. Ausência de periculosidade social da ação: a ação não representa perigo para a coletividade; ela não assusta nem ameaça a vida em sociedade. Reduzido grau de reprovabilidade do comportamento: o comportamento merece pouca reprovação; qualquer pessoa olha para o caso e percebe que a censura deve ser mínima. Inexpressividade da lesão jurídica provocada: o prejuízo causado ao bem jurídico é tão pequeno que mal se expressa, mal se mede. Os quatro requisitos andam juntos: faltou um, caiu o princípio. E atenção ao ponto que decide processo e prova: esses requisitos são lidos no caso concreto, com todas as circunstâncias dele. Não existe uma tabela automática de valores: o juiz examina a conduta, o agente, a vítima e o resultado, e só reconhece a insignificância quando os quatro vetores apontam na mesma direção. Exemplo prático: uma pessoa sem qualquer registro anterior furta um pacote de balas de valor mínimo num mercado e é detida na saída. Ofensividade mínima, nenhuma periculosidade social, reprovabilidade reduzida e lesão inexpressiva: os quatro pilares estão de pé, e o caso é de insignificância. Se um deles ruir, por exemplo, se houver violência no furto, a construção inteira desaba."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "propria",
+      "alt": "Portas maciças de um tribunal fechadas com corrente dourada, diante de uma pequena chama recém-apagada",
+      "kicker": "Bagatela própria",
+      "titulo": "A bagatela própria: o próprio princípio",
+      "corpo": "<p>Chegamos ao nome técnico daquilo que estudamos até aqui. Quando a doutrina fala em <b class=\"term\">bagatela própria</b>, ela está falando do próprio princípio da insignificância.</p><p>A ideia que sustenta tudo é esta: o sistema penal <b>não deve ser acionado</b> para proteger bens jurídicos de valor ínfimo. Ele deve ser reservado apenas para os casos de lesão, ou de ameaça efetiva, a valores essenciais da sociedade. O princípio busca limitar a aplicação do Direito Penal aos casos em que haja efetiva lesão, ou perigo de lesão, a bens jurídicos relevantes, evitando a criminalização de condutas que não representam ameaça significativa.</p><p>O efeito prático é forte: o princípio deve <b>evitar o início da ação penal</b>, porque a conduta é considerada atípica e não deve ser objeto de punição. Não é um favor ao réu no fim do processo: é o reconhecimento, desde o começo, de que ali não existe crime.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/propria.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">OLHE COM CUIDADO</p><p>Cada caso deve ser analisado <b>individualmente</b>, levando em consideração todas as circunstâncias envolvidas. E é necessário que a conduta seja <b>materialmente insignificante</b>: que ela não tenha causado dano, nem risco significativo, ao bem jurídico tutelado. Valor pequeno, sozinho, sem esse exame completo, não basta.</p></div></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li><b>Previsão no CPM:</b> lesão levíssima vira infração disciplinar; furto atenuado, de pequeno valor.</li><li><b>Quatro requisitos</b> do Habeas Corpus 84.412, lidos juntos, no caso concreto.</li><li><b>Bagatela própria:</b> a conduta é atípica e a ação penal nem deve começar.</li></ul></div>",
+      "narr": "A bagatela própria: o próprio princípio. Chegamos ao nome técnico daquilo que estudamos até aqui. Quando a doutrina fala em bagatela própria, ela está falando do próprio princípio da insignificância. A ideia que sustenta tudo é esta: o sistema penal não deve ser acionado para proteger bens jurídicos de valor ínfimo. Ele deve ser reservado apenas para os casos de lesão, ou de ameaça efetiva, a valores essenciais da sociedade. O princípio busca limitar a aplicação do Direito Penal aos casos em que haja efetiva lesão, ou perigo de lesão, a bens jurídicos relevantes, evitando a criminalização de condutas que não representam ameaça significativa. O efeito prático é forte: o princípio deve evitar o início da ação penal, porque a conduta é considerada atípica e não deve ser objeto de punição. Não é um favor ao réu no fim do processo: é o reconhecimento, desde o começo, de que ali não existe crime. Olhe com cuidado: cada caso deve ser analisado individualmente, levando em consideração todas as circunstâncias envolvidas. E é necessário que a conduta seja materialmente insignificante: que ela não tenha causado dano, nem risco significativo, ao bem jurídico tutelado. Valor pequeno, sozinho, sem esse exame completo, não basta."
+    },
+    {
+      "tipo": "Karaokê",
+      "img": "balanca",
+      "alt": "Balança dourada perfeitamente equilibrada ao lado de uma espada e de um pergaminho",
+      "kicker": "Karaokê · Siga a narração",
+      "titulo": "Recapitule com a narração",
+      "frases": [
+        "Chegou a hora de recapitular a bagatela própria, acompanhando a narração pela tela.",
+        "No Código Penal Militar, a lesão levíssima pode virar infração disciplinar, e o furto atenuado, de pequeno valor e com agente primário, pode ter a pena substituída, reduzida ou também virar infração disciplinar.",
+        "Para aplicar o princípio da insignificância, o Supremo Tribunal Federal exige quatro requisitos ao mesmo tempo.",
+        "A conduta precisa ter mínima ofensividade, e a ação não pode ter periculosidade social.",
+        "O comportamento deve ter reduzido grau de reprovabilidade, e a lesão jurídica precisa ser inexpressiva.",
+        "Presentes os quatro requisitos, a conduta é atípica: é a bagatela própria, e a ação penal nem deve começar.",
+        "Guarde assim: pouca ofensa, nenhum perigo social, pouca reprovação e lesão que não se expressa."
+      ],
+      "narr": "Chegou a hora de recapitular a bagatela própria, acompanhando a narração pela tela. No Código Penal Militar, a lesão levíssima pode virar infração disciplinar, e o furto atenuado, de pequeno valor e com agente primário, pode ter a pena substituída, reduzida ou também virar infração disciplinar. Para aplicar o princípio da insignificância, o Supremo Tribunal Federal exige quatro requisitos ao mesmo tempo. A conduta precisa ter mínima ofensividade, e a ação não pode ter periculosidade social. O comportamento deve ter reduzido grau de reprovabilidade, e a lesão jurídica precisa ser inexpressiva. Presentes os quatro requisitos, a conduta é atípica: é a bagatela própria, e a ação penal nem deve começar. Guarde assim: pouca ofensa, nenhum perigo social, pouca reprovação e lesão que não se expressa."
+    },
+    {
+      "tipo": "Questão",
+      "img": "questao2",
+      "alt": "Lupa sobre alternativas em papel escuro, com pena e tinteiro ao lado",
+      "kicker": "Questão 2 · Os requisitos",
+      "titulo": "Questão 2",
+      "intro": "Mais um treino, agora sobre os <b>quatro requisitos</b> do Supremo. Vá com calma:",
+      "questao": "Segundo o Supremo Tribunal Federal, no Habeas Corpus 84.412, é requisito para a aplicação do princípio da insignificância:",
+      "opcoes": [
+        "O agente ser primário e possuir bons antecedentes",
+        "A inexpressividade da lesão jurídica provocada",
+        "A reparação integral do dano antes do oferecimento da denúncia",
+        "O valor do bem ser inferior a um salário mínimo"
+      ],
+      "certa": 1,
+      "feedback": "Perfeito: os quatro vetores do Habeas Corpus 84.412 são a mínima ofensividade da conduta, a ausência de periculosidade social da ação, o reduzido grau de reprovabilidade e a inexpressividade da lesão jurídica. Primariedade, sozinha, não é o critério do Supremo; a reparação do dano aparece como fator da bagatela imprópria; e não existe um teto automático de um salário mínimo para o princípio.",
+      "narr": "Questão dois: os requisitos. Mais um treino, agora sobre os quatro requisitos do Supremo. Vá com calma: segundo o Supremo Tribunal Federal, no habeas corpus oitenta e quatro mil quatrocentos e doze, é requisito para a aplicação do princípio da insignificância o quê? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "impropria",
+      "alt": "Sala de audiência vazia e serena, com o martelo do juiz em repouso sobre a base e um processo aberto sobre a mesa",
+      "kicker": "Bagatela imprópria",
+      "titulo": "Quando o crime existe, mas a pena perde o sentido",
+      "corpo": "<p>Agora eu te apresento a irmã mais discreta do princípio: a <b class=\"term\">bagatela imprópria</b>, a infração bagatelar imprópria. E começo pelo aviso que a prova adora: <b>não há previsão legal</b> dela no Brasil. Ela é uma construção da doutrina e da prática, não um artigo de lei.</p><p>A diferença para a bagatela própria é profunda, então acompanhe comigo. Na bagatela imprópria, o fato <b>nasce relevante</b> para o Direito Penal: ele apresenta desvalor da conduta e desvalor do resultado. O fato é <b>típico</b>, é <b>ilícito</b>, o agente é dotado de <b>culpabilidade</b> e o Estado possui o direito de punir. Existe crime, com todas as letras.</p><p>Só que, <b>depois da prática do fato</b>, a pena se revela <b>incabível</b> no caso concreto, porque diversos fatores recomendam o seu afastamento. Repare em quais são esses fatores: o sujeito com personalidade ajustada ao convívio social; a colaboração com a Justiça; a reparação do dano causado à vítima; a reduzida reprovabilidade do comportamento; o reconhecimento da culpa; e até o ônus já provocado pelo fato de ter sido processado ou preso provisoriamente.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Na própria, falta crime; na imprópria, falta necessidade de pena.</p></div><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/impropria.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Na bagatela própria, o caso é barrado <b>na porta</b> do tribunal: nem entra, porque não é crime. Na bagatela imprópria, o caso <b>entrou, andou e se provou</b>, mas, na hora de aplicar a pena, o juiz percebe que punir não acrescenta nada: o dano foi reparado, a culpa foi reconhecida e o próprio processo já pesou o bastante.</p></div></div><p>E um cuidado final: a pertinência da bagatela imprópria deve ser examinada na <b>situação fática</b>, e jamais no plano abstrato. O fato real deve ser confrontado com um princípio basilar do Direito Penal: o da <b>necessidade da pena</b>. Se a pena não é necessária naquele caso concreto, ela perde a razão de existir.</p><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li><b>Bagatela imprópria:</b> sem previsão legal; o fato é típico, ilícito e culpável.</li><li><b>O que afasta a pena:</b> reparação do dano, colaboração, reconhecimento da culpa e outros fatores posteriores.</li><li><b>Confronto central:</b> a própria exclui a tipicidade; a imprópria afasta a pena, sempre no caso concreto.</li></ul></div>",
+      "narr": "Quando o crime existe, mas a pena perde o sentido. Agora eu te apresento a irmã mais discreta do princípio: a bagatela imprópria, a infração bagatelar imprópria. E começo pelo aviso que a prova adora: não há previsão legal dela no Brasil. Ela é uma construção da doutrina e da prática, não um artigo de lei. A diferença para a bagatela própria é profunda, então acompanhe comigo. Na bagatela imprópria, o fato nasce relevante para o Direito Penal: ele apresenta desvalor da conduta e desvalor do resultado. O fato é típico, é ilícito, o agente é dotado de culpabilidade e o Estado possui o direito de punir. Existe crime, com todas as letras. Só que, depois da prática do fato, a pena se revela incabível no caso concreto, porque diversos fatores recomendam o seu afastamento. Repare em quais são esses fatores: o sujeito com personalidade ajustada ao convívio social; a colaboração com a Justiça; a reparação do dano causado à vítima; a reduzida reprovabilidade do comportamento; o reconhecimento da culpa; e até o ônus já provocado pelo fato de ter sido processado ou preso provisoriamente. Pense assim: na bagatela própria, o caso é barrado na porta do tribunal: nem entra, porque não é crime. Na bagatela imprópria, o caso entrou, andou e se provou, mas, na hora de aplicar a pena, o juiz percebe que punir não acrescenta nada: o dano foi reparado, a culpa foi reconhecida e o próprio processo já pesou o bastante. E um cuidado final: a pertinência da bagatela imprópria deve ser examinada na situação fática, e jamais no plano abstrato. O fato real deve ser confrontado com um princípio basilar do Direito Penal: o da necessidade da pena. Se a pena não é necessária naquele caso concreto, ela perde a razão de existir."
+    },
+    {
+      "tipo": "Comparador",
+      "img": "comppropria",
+      "img2": "compimpropria",
+      "alt": "Comparador de duas cenas: as portas fechadas do tribunal, da bagatela própria, e a sala de audiência aberta com o martelo em repouso, da bagatela imprópria",
+      "rotulo1": "PRÓPRIA",
+      "rotulo2": "IMPRÓPRIA",
+      "kicker": "Comparador · Arraste a barra",
+      "titulo": "Duas bagatelas, uma só imagem",
+      "intro": "Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, a bagatela própria: as portas do tribunal fechadas, porque o fato é atípico e o caso nem entra. Do outro, a bagatela imprópria: a sala de audiência aberta, o processo sobre a mesa e o martelo em repouso, porque o crime existe, mas a pena foi afastada no caso concreto. Repare: a diferença entre as duas não é de tamanho, é de momento: uma age antes, na tipicidade; a outra, depois, na necessidade da pena.",
+      "narr": "Duas bagatelas, uma só imagem. Arraste a barra dourada para um lado e para o outro e compare as duas cenas. De um lado, a bagatela própria: as portas do tribunal fechadas, porque o fato é atípico e o caso nem entra. Do outro, a bagatela imprópria: a sala de audiência aberta, o processo sobre a mesa e o martelo em repouso, porque o crime existe, mas a pena foi afastada no caso concreto. Repare: a diferença entre as duas não é de tamanho, é de momento: uma age antes, na tipicidade; a outra, depois, na necessidade da pena."
+    },
+    {
+      "tipo": "Explorar",
+      "img": "explorar",
+      "alt": "Imagem vertical em cinco cenas empilhadas: a banca do mercado onde uma mão pega um único bombom, o livro de leis aberto com o bombom sobre a página, o juiz examinando o caso com uma lupa dourada, a balança com o bombom num dos pratos e, no topo, o martelo em repouso diante das portas do tribunal",
+      "kicker": "Exploração · Toque nos pontos",
+      "titulo": "Explore a imagem: o caminho de um caso ínfimo",
+      "intro": "Esta imagem grande conta, de baixo para cima, a viagem de um caso pequeno pelo Direito Penal: ele nasce numa banca de mercado e termina numa decisão. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir.",
+      "pontos": [
+        {
+          "x": 72,
+          "y": 88,
+          "titulo": "O fato ínfimo",
+          "texto": "Na base da imagem, a mão pega um único bombom na banca do mercado. É aqui que tudo começa: uma conduta real, que a letra da lei descreve como furto, mas cuja lesão ao patrimônio é minúscula. Sem esse fato miúdo, não haveria o que discutir."
+        },
+        {
+          "x": 58,
+          "y": 66,
+          "titulo": "A letra da lei descreve a conduta",
+          "texto": "O bombom repousa sobre o livro de leis aberto: é a tipicidade formal. Subtrair coisa alheia móvel é exatamente a descrição do furto, então o encaixe na letra existe. Mas encaixar na letra é só metade do exame, e é na outra metade que o caso se decide."
+        },
+        {
+          "x": 60,
+          "y": 46,
+          "titulo": "O juiz examina o caso concreto",
+          "texto": "De lupa na mão, o juiz olha o caso de perto, porque insignificância não se decreta no abstrato. Ele verifica a ofensividade da conduta, a periculosidade social da ação, o grau de reprovabilidade do comportamento e o tamanho real da lesão provocada: os quatro requisitos do Supremo."
+        },
+        {
+          "x": 28,
+          "y": 29,
+          "titulo": "A balança quase não se move",
+          "texto": "O bombom, sozinho num prato da balança, não desequilibra nada: é a lesão jurídica inexpressiva. Sem lesão material ao bem jurídico, falta a tipicidade material, e é essa ausência que transforma o fato em atípico."
+        },
+        {
+          "x": 62,
+          "y": 12,
+          "titulo": "A decisão: o martelo descansa",
+          "texto": "No topo, o martelo repousa diante das portas do tribunal. Reconhecida a insignificância, a conduta é atípica, e a ação penal nem deve começar. O Estado guarda sua força para os casos em que a lesão é de verdade: é essa a economia que o princípio protege."
+        }
+      ],
+      "narr": "Explore a imagem: o caminho de um caso ínfimo. Esta imagem grande conta, de baixo para cima, a viagem de um caso pequeno pelo Direito Penal: ele nasce numa banca de mercado e termina numa decisão. Toque nas bolinhas douradas que ficam piscando sobre a imagem e leia a explicação de cada cena. São cinco pontos para descobrir: tente encontrar todos antes de seguir."
+    },
+    {
+      "tipo": "Flashcard",
+      "img": "flashcards2",
+      "alt": "Dois cartões de estudo em pé, frente e verso, ligados por uma fita vermelha",
+      "kicker": "Flashcard 2 · Própria × imprópria",
+      "titulo": "Flashcard 2",
+      "frente": "Qual é a diferença entre bagatela própria e bagatela imprópria?",
+      "verso": "<p><b>Própria:</b> é o próprio princípio da insignificância. A conduta é <b>atípica</b> desde o início, por falta de tipicidade material, e a ação penal nem começa.</p><p style='margin-top:10px'><b>Imprópria:</b> o fato é típico, ilícito e culpável, mas <b>a pena é afastada</b> no caso concreto, por fatores posteriores ao fato, como a reparação do dano.</p>",
+      "narr": "Flashcard dois: própria e imprópria. Qual é a diferença entre bagatela própria e bagatela imprópria? Toque no cartão para ver a resposta."
+    },
+    {
+      "tipo": "Ligar termos",
+      "img": "ligar",
+      "alt": "Chaves douradas antigas e cadeados ornamentados sobre veludo vermelho",
+      "kicker": "Ligar termos · Conceitos da aula",
+      "titulo": "Ligar termos",
+      "instrucao": "Ligue cada termo à sua explicação. Toque em um termo e, depois, na explicação correspondente.",
+      "pares": [
+        [
+          "Tipicidade formal",
+          "Adequação da conduta à descrição abstrata da lei"
+        ],
+        [
+          "Tipicidade material",
+          "Efetiva lesão, ou perigo de lesão, ao bem jurídico"
+        ],
+        [
+          "Bagatela própria",
+          "Conduta atípica: o crime não chega a nascer"
+        ],
+        [
+          "Bagatela imprópria",
+          "Crime existe, mas a pena é afastada no caso concreto"
+        ],
+        [
+          "Claus Roxin",
+          "Estruturou o princípio no Direito Penal em 1965"
+        ]
+      ],
+      "ordemDefs": [
+        2,
+        4,
+        0,
+        3,
+        1
+      ],
+      "narr": "Ligar termos: conceitos da aula. Ligue cada termo à sua explicação. Toque em um termo e, depois, na explicação correspondente."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "reincidente",
+      "alt": "Porta giratória de vidro na entrada de um tribunal, com pegadas repetidas desenhadas no mármore em frente a ela",
+      "kicker": "Parte II · Casos especiais",
+      "titulo": "Reincidente pode; habitual, em regra, não",
+      "corpo": "<p>Entramos agora nos casos especiais, aqueles em que a prova e os tribunais mais discutem. A primeira pergunta é clássica: quem já foi condenado antes pode receber o benefício da insignificância?</p><p>A resposta do Supremo, no <b>Habeas Corpus 123.108, de 2015</b>, é: <b>a reincidência não impede</b> que o juiz da causa reconheça a insignificância penal da conduta, à luz dos elementos do caso concreto. Explico o raciocínio: esse princípio envolve um <b>juízo amplo</b>, que vai além da simples aferição do resultado material da conduta. Nesse juízo entram, também, a reincidência ou a contumácia do agente, elementos que, embora <b>não determinantes</b>, devem ser considerados. Ou seja: a reincidência pesa na balança, mas não derruba a análise sozinha.</p><p>Outra história é a do <b class=\"term\">criminoso habitual</b>: tanto o Supremo Tribunal Federal quanto o Superior Tribunal de Justiça <b>negam, em regra</b>, a aplicação do princípio da insignificância para ele. O motivo é de lógica: quem faz do crime um modo de vida, repetindo condutas como padrão, mostra que, no conjunto da sua trajetória, aquelas lesões não são um episódio ínfimo e isolado.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/reincidente.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">CONTRASTE RÁPIDO</p><p><b>Reincidente</b> é quem, já condenado antes, pratica novo fato: a condenação anterior entra no exame, mas não veda o princípio. <b>Habitual</b> é quem vive da reiteração criminosa: para esse, os tribunais superiores fecham a porta, em regra.</p></div></div>",
+      "narr": "Reincidente pode; habitual, em regra, não. Entramos agora nos casos especiais, aqueles em que a prova e os tribunais mais discutem. A primeira pergunta é clássica: quem já foi condenado antes pode receber o benefício da insignificância? A resposta do Supremo, no habeas corpus cento e vinte e três mil cento e oito, de dois mil e quinze, é: a reincidência não impede que o juiz da causa reconheça a insignificância penal da conduta, à luz dos elementos do caso concreto. Explico o raciocínio: esse princípio envolve um juízo amplo, que vai além da simples aferição do resultado material da conduta. Nesse juízo entram, também, a reincidência ou a contumácia do agente, elementos que, embora não determinantes, devem ser considerados. Ou seja: a reincidência pesa na balança, mas não derruba a análise sozinha. Outra história é a do criminoso habitual: tanto o Supremo Tribunal Federal quanto o Superior Tribunal de Justiça negam, em regra, a aplicação do princípio da insignificância para ele. O motivo é de lógica: quem faz do crime um modo de vida, repetindo condutas como padrão, mostra que, no conjunto da sua trajetória, aquelas lesões não são um episódio ínfimo e isolado. Contraste rápido: reincidente é quem, já condenado antes, pratica novo fato: a condenação anterior entra no exame, mas não veda o princípio. Habitual é quem vive da reiteração criminosa: para esse, os tribunais superiores fecham a porta, em regra."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "descaminho",
+      "alt": "Posto de fronteira junto a um rio ao entardecer, com caixas e fardos aguardando inspeção e um pequeno barco atracado",
+      "kicker": "Parte II · Militares e descaminho",
+      "titulo": "No quartel, não; na fronteira, até o teto",
+      "corpo": "<p>Dois casos especiais de uma vez, porque a prova os coloca lado a lado. O primeiro é o dos <b>militares</b>: para eles, a aplicação do princípio é <b>negada</b>, em razão da violação da <b>disciplina</b> e da <b>hierarquia</b>, que são os fundamentos da atividade militar. Dentro do quartel, uma conduta pequena no valor pode ser enorme no significado, porque fere a base sobre a qual a instituição inteira se sustenta.</p><p>O segundo caso é o do <b class=\"term\">descaminho</b>, a entrada de mercadoria no país sem o pagamento dos tributos devidos. Aqui, os tribunais fixaram um teto objetivo: o Supremo e o Superior Tribunal de Justiça, este no <b>Recurso Especial 1.112.748, de 2018</b>, consideraram insignificante a sonegação que <b>não supera o valor de dez mil reais</b>. Depois, duas portarias do Ministério da Fazenda atualizaram essa quantia para <b>vinte mil reais</b>.</p><p>E de onde vem esse número? Do <b>artigo 20 da Lei n. 10.522, de 2002</b>, com a redação dada pela Lei n. 11.033, de 2004: por ele, serão arquivados, mediante requerimento do Procurador da Fazenda Nacional, os autos das execuções fiscais de débitos inscritos como Dívida Ativa da União de valor consolidado igual ou inferior a dez mil reais.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/descaminho.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">PENSE ASSIM</p><p>Se a própria Fazenda Pública nem executa judicialmente um débito desse tamanho, porque a lei manda arquivar a cobrança, seria um contrassenso o Direito Penal tratar o mesmo valor como crime sério. O teto do descaminho nasce dessa <b>coerência</b>: o penal não pode ser mais rigoroso do que o próprio credor do tributo.</p></div></div>",
+      "narr": "No quartel, não; na fronteira, até o teto. Dois casos especiais de uma vez, porque a prova os coloca lado a lado. O primeiro é o dos militares: para eles, a aplicação do princípio é negada, em razão da violação da disciplina e da hierarquia, que são os fundamentos da atividade militar. Dentro do quartel, uma conduta pequena no valor pode ser enorme no significado, porque fere a base sobre a qual a instituição inteira se sustenta. O segundo caso é o do descaminho, a entrada de mercadoria no país sem o pagamento dos tributos devidos. Aqui, os tribunais fixaram um teto objetivo: o Supremo e o Superior Tribunal de Justiça, este no recurso especial um milhão cento e doze mil setecentos e quarenta e oito, de dois mil e dezoito, consideraram insignificante a sonegação que não supera o valor de dez mil reais. Depois, duas portarias do Ministério da Fazenda atualizaram essa quantia para vinte mil reais. E de onde vem esse número? Do artigo vinte da lei número dez mil quinhentos e vinte e dois, de dois mil e dois, com a redação dada pela lei número onze mil e trinta e três, de dois mil e quatro: por ele, serão arquivados, mediante requerimento do Procurador da Fazenda Nacional, os autos das execuções fiscais de débitos inscritos como Dívida Ativa da União de valor consolidado igual ou inferior a dez mil reais. Pense assim: se a própria Fazenda Pública nem executa judicialmente um débito desse tamanho, porque a lei manda arquivar a cobrança, seria um contrassenso o Direito Penal tratar o mesmo valor como crime sério. O teto do descaminho nasce dessa coerência: o penal não pode ser mais rigoroso do que o próprio credor do tributo."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "vitima",
+      "alt": "Mãos idosas segurando com cuidado uma aliança de ouro antiga e uma fotografia de família desbotada sobre uma mesa de madeira",
+      "kicker": "Parte II · A vítima",
+      "titulo": "Quando a vítima muda a conta",
+      "corpo": "<p>Até aqui, olhamos o caso pelos olhos do agente e do bem jurídico. Agora eu quero virar a câmera: em alguns casos, é a <b>vítima</b> quem muda o resultado. A vítima pode <b>obstar</b>, isto é, pode impedir a aplicação do princípio da insignificância.</p><p>Como isso acontece? No exame do caso concreto, também podem ser analisados a <b>extensão do dano</b> e o <b>valor sentimental do bem</b>. E aqui mora uma das lições mais bonitas deste tema: o valor de um bem não se mede só pela etiqueta de preço. Um objeto pode valer quase nada no mercado e, ao mesmo tempo, ser insubstituível para quem o perdeu.</p><div class=\"box exemplo\"><img class=\"wm\" src=\"assets/img/vitima.webp\" alt=\"\" aria-hidden=\"true\"><div class=\"excontent\"><p class=\"blabel\">EXEMPLO PRÁTICO</p><p>Imagine o furto de uma aliança antiga, herdada de família, guardada por décadas. Na vitrine de uma loja, uma peça parecida custa pouco. Mas aquela aliança específica carrega a história de uma vida inteira: para a vítima, a lesão não é ínfima, é <b>enorme</b>. É por isso que o valor sentimental entra no exame e pode afastar o princípio.</p></div></div><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">O valor de um bem não se mede só na etiqueta de preço.</p></div>",
+      "narr": "Quando a vítima muda a conta. Até aqui, olhamos o caso pelos olhos do agente e do bem jurídico. Agora eu quero virar a câmera: em alguns casos, é a vítima quem muda o resultado. A vítima pode obstar, isto é, pode impedir a aplicação do princípio da insignificância. Como isso acontece? No exame do caso concreto, também podem ser analisados a extensão do dano e o valor sentimental do bem. E aqui mora uma das lições mais bonitas deste tema: o valor de um bem não se mede só pela etiqueta de preço. Um objeto pode valer quase nada no mercado e, ao mesmo tempo, ser insubstituível para quem o perdeu. Exemplo prático: imagine o furto de uma aliança antiga, herdada de família, guardada por décadas. Na vitrine de uma loja, uma peça parecida custa pouco. Mas aquela aliança específica carrega a história de uma vida inteira: para a vítima, a lesão não é ínfima, é enorme. É por isso que o valor sentimental entra no exame e pode afastar o princípio."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "domestica",
+      "alt": "Uma casa modesta à noite, com uma janela acesa, protegida por um grande escudo dourado translúcido",
+      "kicker": "Parte II · Violência doméstica",
+      "titulo": "Em violência doméstica, nunca",
+      "corpo": "<p>Este é um território onde o princípio <b>não entra</b>, e a regra vem escrita numa súmula que você precisa conhecer pelo número: a <b class=\"term\">Súmula 589 do Superior Tribunal de Justiça</b>.</p><div class=\"box\"><p class=\"blabel\">SÚMULA 589 DO STJ</p><p>É <b>inaplicável</b> o princípio da insignificância nos crimes ou contravenções penais praticados contra a mulher no âmbito das relações domésticas.</p></div><p>E a súmula vai além: nesses casos, <b>também não cabe a bagatela imprópria</b>, em razão da gravidade social gerada pelas agressões e pelas ameaças. Repare que as duas portas se fecham: nem a atipicidade da bagatela própria, nem o afastamento da pena da bagatela imprópria.</p><p>O porquê é importante, e eu quero que você entenda, não só decore: dentro de casa, uma agressão nunca é um fato isolado e miúdo. Ela costuma fazer parte de um ciclo de medo, de controle e de repetição, e cada episódio carrega o peso de todos os outros. A lesão, nesse contexto, jamais é inexpressiva, e a reprovabilidade jamais é reduzida. Por isso a régua da insignificância não se aplica aqui.</p><div class=\"frasechave\"><p class=\"flabel\">FRASE-CHAVE</p><p class=\"fq2\">Agressão dentro de casa nunca é bagatela.</p></div>",
+      "narr": "Em violência doméstica, nunca. Este é um território onde o princípio não entra, e a regra vem escrita numa súmula que você precisa conhecer pelo número: a súmula quinhentos e oitenta e nove do Superior Tribunal de Justiça. Súmula quinhentos e oitenta e nove do Superior Tribunal de Justiça: é inaplicável o princípio da insignificância nos crimes ou contravenções penais praticados contra a mulher no âmbito das relações domésticas. E a súmula vai além: nesses casos, também não cabe a bagatela imprópria, em razão da gravidade social gerada pelas agressões e pelas ameaças. Repare que as duas portas se fecham: nem a atipicidade da bagatela própria, nem o afastamento da pena da bagatela imprópria. O porquê é importante, e eu quero que você entenda, não só decore: dentro de casa, uma agressão nunca é um fato isolado e miúdo. Ela costuma fazer parte de um ciclo de medo, de controle e de repetição, e cada episódio carrega o peso de todos os outros. A lesão, nesse contexto, jamais é inexpressiva, e a reprovabilidade jamais é reduzida. Por isso a régua da insignificância não se aplica aqui."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "administracao",
+      "alt": "Prédio monumental da administração pública com colunas de pedra ao entardecer, com uma balança dourada em primeiro plano",
+      "kicker": "Parte II · Administração pública",
+      "titulo": "Contra a administração, a régua muda",
+      "corpo": "<p>Fechando os casos especiais, dois territórios vizinhos onde o Superior Tribunal de Justiça também fechou a porta, cada um por um motivo próprio.</p><div class=\"box\"><p class=\"blabel\">SÚMULA 599 DO STJ</p><p>O princípio da insignificância é <b>inaplicável aos crimes contra a administração pública</b>, em razão da <b class=\"term\">moralidade administrativa</b>. O raciocínio é que, nesses crimes, o bem jurídico não é só o dinheiro ou o bem desviado: é a confiança na administração, e essa não se mede em reais. Mas atenção à divergência: o <b>Supremo Tribunal Federal tende a ser mais flexível</b> na aplicação do princípio nesses casos. A prova adora cobrar essa diferença de postura entre os dois tribunais.</p></div><div class=\"box\"><p class=\"blabel\">SÚMULA 606 DO STJ</p><p><b>Não se aplica</b> o princípio da insignificância aos casos de <b>transmissão clandestina de sinal de internet via radiofrequência</b>, que caracteriza o fato típico previsto no artigo 183 da Lei n. 9.472, de 1997. É o serviço de internet distribuído sem autorização, por sinal de rádio: ainda que o ganho de quem transmite pareça pequeno, o entendimento consolidado é de que a bagatela não cabe aqui.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/administracao.webp\" alt=\"\"></div><div class=\"fimbloco\"><p class=\"flabel\">NESSE BLOCO VOCÊ VIU</p><ul><li><b>Reincidente pode</b> (Habeas Corpus 123.108); <b>habitual</b> e <b>militar</b>, em regra, não.</li><li><b>Descaminho:</b> insignificante até o teto atualizado de vinte mil reais.</li><li><b>Territórios proibidos:</b> violência doméstica (Súmula 589), administração pelo STJ (Súmula 599) e sinal clandestino (Súmula 606).</li></ul></div>",
+      "narr": "Contra a administração, a régua muda. Fechando os casos especiais, dois territórios vizinhos onde o Superior Tribunal de Justiça também fechou a porta cada um por um motivo próprio. Súmula quinhentos e noventa e nove do Superior Tribunal de Justiça: o princípio da insignificância é inaplicável aos crimes contra a administração pública, em razão da moralidade administrativa. O raciocínio é que, nesses crimes, o bem jurídico não é só o dinheiro ou o bem desviado: é a confiança na administração, e essa não se mede em reais. Mas atenção à divergência: o Supremo Tribunal Federal tende a ser mais flexível na aplicação do princípio nesses casos. A prova adora cobrar essa diferença de postura entre os dois tribunais. Súmula seiscentos e seis do Superior Tribunal de Justiça: não se aplica o princípio da insignificância aos casos de transmissão clandestina de sinal de internet via radiofrequência, que caracteriza o fato típico previsto no artigo cento e oitenta e três da lei número nove mil quatrocentos e setenta e dois, de mil novecentos e noventa e sete. É o serviço de internet distribuído sem autorização, por sinal de rádio: ainda que o ganho de quem transmite pareça pequeno, o entendimento consolidado é de que a bagatela não cabe aqui."
+    },
+    {
+      "tipo": "Questão de banca",
+      "img": "martelo",
+      "alt": "Martelo de juiz sobre um livro de leis aberto com marcador dourado",
+      "kicker": "Questão 3 · Estilo de banca",
+      "titulo": "Questão 3",
+      "intro": "Questão em <b>estilo de banca</b>, sobre o descaminho. Leia o enunciado com atenção:",
+      "questao": "No crime de descaminho, o Supremo Tribunal Federal e o Superior Tribunal de Justiça consideram insignificante a sonegação que não supera o valor de:",
+      "opcoes": [
+        "Mil reais, por aplicação direta dos quatro requisitos",
+        "Dez mil reais, valor que permanece sem qualquer atualização",
+        "Vinte mil reais, após a atualização feita por portarias do Ministério da Fazenda",
+        "Um salário mínimo, teto geral do princípio da insignificância"
+      ],
+      "certa": 2,
+      "feedback": "Exatamente. O ponto de partida foi o valor de dez mil reais, ligado ao artigo 20 da Lei n. 10.522, de 2002, e confirmado pelo Superior Tribunal de Justiça no Recurso Especial 1.112.748, de 2018. Depois, portarias do Ministério da Fazenda atualizaram a quantia para vinte mil reais. Quem responde só dez mil, sem a atualização, cai na pegadinha da banca.",
+      "narr": "Questão três, em estilo de banca, sobre o descaminho. Leia o enunciado com atenção: no crime de descaminho, o Supremo Tribunal Federal e o Superior Tribunal de Justiça consideram insignificante a sonegação que não supera o valor de quanto? Leia as alternativas e escolha a correta."
+    },
+    {
+      "tipo": "Toque e revele",
+      "img": "revelar",
+      "alt": "Quatro cartas douradas viradas para baixo sobre veludo vermelho, uma se levantando sob a luz de uma vela",
+      "kicker": "Toque e revele",
+      "titulo": "Toque, pense e revele",
+      "intro": "Quatro cartas escondem quatro perguntas rápidas sobre os casos especiais que você acabou de estudar. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar.",
+      "cartas": [
+        {
+          "p": "A reincidência impede a aplicação do princípio da insignificância?",
+          "r": "<b>Não impede.</b> Pelo Habeas Corpus 123.108, de 2015, do Supremo, a reincidência entra no juízo amplo do caso concreto, mas não é determinante. Quem não recebe o princípio, em regra, é o <b>criminoso habitual</b>."
+        },
+        {
+          "p": "Por que o princípio é negado aos militares?",
+          "r": "Porque a conduta, no ambiente militar, viola a <b>disciplina</b> e a <b>hierarquia</b>, que são os fundamentos da atividade militar. No quartel, o pequeno no valor pode ser enorme no significado."
+        },
+        {
+          "p": "A vítima pode impedir a aplicação do princípio?",
+          "r": "<b>Pode.</b> A vítima pode obstar a aplicação quando a <b>extensão do dano</b> e o <b>valor sentimental do bem</b> mostram que, para ela, a lesão não foi ínfima."
+        },
+        {
+          "p": "Cabe bagatela imprópria na violência doméstica contra a mulher?",
+          "r": "<b>Não cabe.</b> Pela Súmula 589 do Superior Tribunal de Justiça, é inaplicável o princípio da insignificância nesses casos, e também não cabe a bagatela imprópria, pela gravidade social das agressões e ameaças."
+        }
+      ],
+      "narr": "Toque, pense e revele. Quatro cartas escondem quatro perguntas rápidas sobre os casos especiais que você acabou de estudar. Toque em uma carta para ver a pergunta, pense na resposta com calma e toque de novo para revelar a resposta. Tente acertar as quatro antes de revelar."
+    },
+    {
+      "tipo": "Completar",
+      "img": "lacuna",
+      "alt": "Pergaminho antigo com espaços dourados vazios e peças de palavras douradas ao lado esperando para serem colocadas",
+      "kicker": "Completar · Toque nas palavras",
+      "titulo": "Complete a frase",
+      "intro": "O resumo que separa as duas bagatelas apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima.",
+      "partes": [
+        "Na bagatela ",
+        ", a conduta é atípica, porque falta a ",
+        ". Na bagatela ",
+        ", o crime existe, mas a ",
+        " se revela incabível no caso concreto."
+      ],
+      "respostas": [
+        "própria",
+        "tipicidade material",
+        "imprópria",
+        "pena"
+      ],
+      "banco": [
+        "pena",
+        "imprópria",
+        "tipicidade formal",
+        "culpabilidade",
+        "própria",
+        "tipicidade material"
+      ],
+      "fecho": "Frase completa! Na bagatela própria, falta a tipicidade material e o crime não nasce. Na bagatela imprópria, o crime nasce completo, mas a pena perde a necessidade no caso concreto. É esse contraste que a banca mais cobra.",
+      "narr": "Complete a frase. O resumo que separa as duas bagatelas apareceu com quatro palavras faltando. Abaixo dele estão as palavras embaralhadas: toque nelas na ordem certa para preencher cada lacuna. Se tocar na palavra errada, nada acontece: respire e tente a próxima."
+    },
+    {
+      "tipo": "Linha do tempo",
+      "img": "panorama",
+      "alt": "Linha do tempo dourada atravessando séculos de história do Direito Penal",
+      "kicker": "Linha do tempo · Toque nos marcos",
+      "titulo": "A linha do tempo do princípio",
+      "intro": "Agora vamos amarrar a história numa linha só. Toque em cada marco dourado para abrir a explicação dele: são seis momentos, do brocardo romano ao teto do descaminho, que contam o caminho que o princípio percorreu até virar o que você estudou nesta aula.",
+      "marcos": [
+        {
+          "ano": "Roma antiga",
+          "titulo": "O brocardo nasce no Direito Civil",
+          "texto": "De minimis non curat praetor: o pretor não se ocupa de coisas mínimas. A ideia nasce fora do Direito Penal, como sabedoria prática de quem julga: a Justiça não foi feita para migalhas."
+        },
+        {
+          "ano": "1965",
+          "titulo": "Claus Roxin estrutura o princípio",
+          "texto": "O jurista alemão incorpora a insignificância ao Direito Penal com estrutura teórica: a conduta de lesão ínfima perde a tipicidade material e deixa de ser crime."
+        },
+        {
+          "ano": "Código Penal Militar",
+          "titulo": "Lesão levíssima e furto atenuado",
+          "texto": "O artigo 209, parágrafo 6º, manda tratar a lesão levíssima como infração disciplinar, e o artigo 240, parágrafo 1º, atenua o furto de pequeno valor cometido por agente primário."
+        },
+        {
+          "ano": "HC 84.412",
+          "titulo": "O Supremo fixa os quatro requisitos",
+          "texto": "Mínima ofensividade, ausência de periculosidade social, reduzido grau de reprovabilidade e inexpressividade da lesão: os quatro vetores que passam a orientar a aplicação do princípio no caso concreto."
+        },
+        {
+          "ano": "2015",
+          "titulo": "HC 123.108: o reincidente entra no exame",
+          "texto": "O Supremo decide que a reincidência não impede o reconhecimento da insignificância: ela é um elemento do juízo amplo do caso concreto, mas não é determinante."
+        },
+        {
+          "ano": "2018",
+          "titulo": "REsp 1.112.748: o teto do descaminho",
+          "texto": "O Superior Tribunal de Justiça confirma a insignificância da sonegação de até dez mil reais no descaminho, valor depois atualizado para vinte mil por portarias do Ministério da Fazenda."
+        }
+      ],
+      "narr": "A linha do tempo do princípio. Agora vamos amarrar a história numa linha só. Toque em cada marco dourado para abrir a explicação dele: são seis momentos, do brocardo romano ao teto do descaminho, que contam o caminho que o princípio percorreu até virar o que você estudou nesta aula."
+    },
+    {
+      "tipo": "Mapa mental",
+      "img": "panorama",
+      "alt": "Mapa mental com o princípio da insignificância no centro e cinco ramos ao redor",
+      "centro": "PRINCÍPIO DA INSIGNIFICÂNCIA",
+      "kicker": "Mapa mental · Toque nos ramos",
+      "titulo": "Mapa mental do princípio",
+      "intro": "Para fechar o conteúdo, um mapa da aula inteira. No centro está o princípio da insignificância; em volta, os cinco ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda.",
+      "ramos": [
+        {
+          "nome": "Conceito e origem",
+          "texto": "Causa excludente da tipicidade: a lesão ínfima ao bem jurídico afasta a tipicidade material. Nasceu no Direito Civil, do brocardo de minimis non curat praetor, e foi estruturado por Claus Roxin em 1965.",
+          "chips": [
+            "Tipicidade material",
+            "Roxin",
+            "Brocardo"
+          ]
+        },
+        {
+          "nome": "Previsão e requisitos",
+          "texto": "No Código Penal Militar, lesão levíssima e furto atenuado. No Supremo, os quatro requisitos do Habeas Corpus 84.412, exigidos juntos e lidos no caso concreto.",
+          "chips": [
+            "CPM, arts. 209 e 240",
+            "HC 84.412"
+          ]
+        },
+        {
+          "nome": "Bagatela própria",
+          "texto": "É o próprio princípio: o sistema penal não se aciona por bens de valor ínfimo, a conduta é atípica e a ação penal nem deve começar.",
+          "chips": [
+            "Atipicidade",
+            "Sem ação penal"
+          ]
+        },
+        {
+          "nome": "Bagatela imprópria",
+          "texto": "Sem previsão legal. O fato é típico, ilícito e culpável, mas a pena é afastada no caso concreto por fatores posteriores: reparação do dano, colaboração, reconhecimento da culpa.",
+          "chips": [
+            "Pena afastada",
+            "Necessidade da pena"
+          ]
+        },
+        {
+          "nome": "Casos especiais",
+          "texto": "Reincidente pode; habitual e militar, em regra, não. Descaminho até vinte mil reais. Vítima pode obstar pelo valor sentimental. Vedação na violência doméstica, nos crimes contra a administração pelo STJ e no sinal clandestino de internet.",
+          "chips": [
+            "HC 123.108",
+            "Súmulas 589, 599 e 606"
+          ]
+        }
+      ],
+      "narr": "Mapa mental do princípio. Para fechar o conteúdo, um mapa da aula inteira. No centro está o princípio da insignificância; em volta, os cinco ramos que estudamos. Toque em cada ramo para abrir o resumo dele: em poucos minutos, você revisita a aula toda."
+    },
+    {
+      "tipo": "Conteúdo",
+      "img": "pegadinhas",
+      "alt": "Alvo dourado com flechas e uma lupa revelando armadilhas sobre um pergaminho",
+      "kicker": "Pegadinhas de prova",
+      "titulo": "Não caia nessas!",
+      "corpo": "<p>Antes do desafio final, eu separei as <b>cinco confusões</b> que mais derrubam candidatos neste tema. Grave cada uma:</p><div class=\"box\"><p class=\"blabel\">PEGADINHA 1 · REINCIDENTE × HABITUAL</p><p>A <b>reincidência não impede</b> o princípio, decidiu o Supremo no Habeas Corpus 123.108. Quem fica de fora, em regra, é o <b>criminoso habitual</b>. A banca troca um pelo outro para te derrubar.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 2 · NÃO É PERDÃO NEM DESCONTO</p><p>A bagatela própria <b>exclui a tipicidade</b>: não há crime nenhum. Ela não é diminuição de pena, não é atenuante e não é perdão judicial. Se a alternativa falar em pena menor, ela não está falando de insignificância.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 3 · VALOR SENTIMENTAL CONTA</p><p>Preço baixo não decide sozinho. Um bem de valor de mercado ínfimo pode ter <b>valor sentimental</b> enorme para a vítima, e isso pode afastar o princípio. Quem olha só a etiqueta erra o caso.</p></div><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/pegadinhas.webp\" alt=\"\"></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 4 · O TETO DO DESCAMINHO MUDOU</p><p>O valor original era <b>dez mil reais</b>, mas as portarias do Ministério da Fazenda atualizaram para <b>vinte mil reais</b>. Responder dez mil, sem mencionar a atualização, é a resposta incompleta que a banca espera de quem estudou pela metade.</p></div><div class=\"box\"><p class=\"blabel\">PEGADINHA 5 · OS DOIS TRIBUNAIS NA ADMINISTRAÇÃO</p><p>Pela <b>Súmula 599 do STJ</b>, o princípio é inaplicável aos crimes contra a administração pública. Mas o <b>Supremo tende a ser mais flexível</b>. E, na violência doméstica, a <b>Súmula 589</b> veda até a bagatela imprópria. Trocar os tribunais ou as súmulas é erro clássico.</p></div>",
+      "narr": "Não caia nessas! Antes do desafio final, eu separei as cinco confusões que mais derrubam candidatos neste tema. Grave cada uma. Pegadinha um, reincidente e habitual: a reincidência não impede o princípio, decidiu o Supremo no habeas corpus cento e vinte e três mil cento e oito. Quem fica de fora, em regra, é o criminoso habitual. A banca troca um pelo outro para te derrubar. Pegadinha dois, não é perdão nem desconto: a bagatela própria exclui a tipicidade: não há crime nenhum. Ela não é diminuição de pena, não é atenuante e não é perdão judicial. Se a alternativa falar em pena menor, ela não está falando de insignificância. Pegadinha três, valor sentimental conta: preço baixo não decide sozinho. Um bem de valor de mercado ínfimo pode ter valor sentimental enorme para a vítima, e isso pode afastar o princípio. Quem olha só a etiqueta erra o caso. Pegadinha quatro, o teto do descaminho mudou: o valor original era dez mil reais, mas as portarias do Ministério da Fazenda atualizaram para vinte mil reais. Responder dez mil, sem mencionar a atualização, é a resposta incompleta que a banca espera de quem estudou pela metade. Pegadinha cinco, os dois tribunais na administração: pela súmula quinhentos e noventa e nove do Superior Tribunal de Justiça, o princípio é inaplicável aos crimes contra a administração pública. Mas o Supremo tende a ser mais flexível. E, na violência doméstica, a súmula quinhentos e oitenta e nove veda até a bagatela imprópria. Trocar os tribunais ou as súmulas é erro clássico."
+    },
+    {
+      "tipo": "Verdadeiro ou falso",
+      "img": "cartasvf",
+      "alt": "Duas pilhas de cartas antigas sobre veludo vermelho, uma com símbolo de certo e outra com símbolo de errado em dourado",
+      "kicker": "Verdadeiro ou falso · Arraste a carta",
+      "titulo": "Verdadeiro ou falso: arraste e decida",
+      "intro": "Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou.",
+      "afirmacoes": [
+        {
+          "t": "A reincidência impede, sempre, a aplicação do princípio da insignificância.",
+          "v": false,
+          "exp": "Não impede. Pelo Habeas Corpus 123.108, de 2015, a reincidência é um elemento do juízo amplo do caso concreto, mas não é determinante. Vedação, em regra, é para o criminoso habitual."
+        },
+        {
+          "t": "Na bagatela imprópria, a conduta é atípica desde o início.",
+          "v": false,
+          "exp": "Atípica desde o início é a bagatela própria. Na imprópria, o fato é típico, ilícito e culpável: o que se afasta é a pena, no caso concreto."
+        },
+        {
+          "t": "A vítima pode obstar a aplicação do princípio, pelo valor sentimental do bem.",
+          "v": true,
+          "exp": "Isso mesmo: analisam-se a extensão do dano e o valor sentimental do bem, e a vítima pode impedir a aplicação do princípio."
+        },
+        {
+          "t": "No descaminho, considera-se insignificante a sonegação de até vinte mil reais, após a atualização do valor.",
+          "v": true,
+          "exp": "Perfeito: o valor começou em dez mil reais e foi atualizado para vinte mil por portarias do Ministério da Fazenda."
+        },
+        {
+          "t": "Pela Súmula 589 do STJ, o princípio da insignificância se aplica normalmente aos crimes contra a mulher no âmbito doméstico.",
+          "v": false,
+          "exp": "É o contrário: a Súmula 589 declara o princípio inaplicável nesses casos, e veda também a bagatela imprópria."
+        }
+      ],
+      "narr": "Verdadeiro ou falso: arraste e decida. Agora é reflexo rápido! Cinco afirmações vão aparecer, uma de cada vez. Se a afirmação for verdadeira, arraste a carta para a direita; se for falsa, arraste para a esquerda. Quem preferir pode tocar nos botões de verdadeiro ou falso. No fim, você vê quantas acertou."
+    },
+    {
+      "tipo": "Desafio",
+      "img": "martelo",
+      "alt": "Martelo de juiz e placar dourado sobre um livro de leis aberto",
+      "kicker": "Desafio final · Vale pontos",
+      "titulo": "Desafio final: o placar da professora",
+      "intro": "Chegou a hora do desafio que fecha a aula! São cinco perguntas rápidas sobre tudo o que vimos, valendo cem pontos cada, e uma pergunta de ouro no fim, valendo duzentos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!",
+      "perguntas": [
+        {
+          "q": "O princípio da insignificância exclui, no fato, a:",
+          "ops": [
+            "Ilicitude",
+            "Tipicidade material",
+            "Culpabilidade",
+            "Punibilidade"
+          ],
+          "certa": 1,
+          "exp": "A tipicidade material: a lesão ao bem jurídico é ínfima, o fato é atípico e nem chega a ser crime."
+        },
+        {
+          "q": "Qual destas alternativas NÃO é um dos quatro requisitos do Habeas Corpus 84.412?",
+          "ops": [
+            "Mínima ofensividade da conduta",
+            "Reparação do dano causado à vítima",
+            "Reduzido grau de reprovabilidade",
+            "Inexpressividade da lesão jurídica"
+          ],
+          "certa": 1,
+          "exp": "A reparação do dano é fator da bagatela imprópria. Os quatro requisitos são: mínima ofensividade, ausência de periculosidade social, reduzido grau de reprovabilidade e inexpressividade da lesão."
+        },
+        {
+          "q": "Um militar pratica, dentro do quartel, um fato de lesão ínfima. O princípio da insignificância:",
+          "ops": [
+            "Aplica-se normalmente, pelos quatro requisitos",
+            "É negado, pela violação da disciplina e da hierarquia",
+            "Depende só do valor sentimental do bem",
+            "Só se aplica se ele for reincidente"
+          ],
+          "certa": 1,
+          "exp": "É negado: disciplina e hierarquia são os fundamentos da atividade militar, e a conduta pequena no valor pode ser enorme no significado institucional."
+        },
+        {
+          "q": "A Súmula 606 do STJ trata da inaplicabilidade do princípio em casos de:",
+          "ops": [
+            "Violência doméstica contra a mulher",
+            "Crimes contra a administração pública",
+            "Transmissão clandestina de sinal de internet via radiofrequência",
+            "Descaminho de até vinte mil reais"
+          ],
+          "certa": 2,
+          "exp": "Transmissão clandestina de sinal de internet, o fato do artigo 183 da Lei n. 9.472, de 1997. Violência doméstica é a Súmula 589; administração, a Súmula 599."
+        },
+        {
+          "q": "Na bagatela imprópria, o que o juiz afasta no caso concreto?",
+          "ops": [
+            "A tipicidade do fato",
+            "A pena, por ela se revelar incabível",
+            "A ilicitude da conduta",
+            "A própria ação penal, antes de ela nascer"
+          ],
+          "certa": 1,
+          "exp": "A pena. O fato é típico, ilícito e culpável, mas fatores posteriores, como a reparação do dano e o reconhecimento da culpa, mostram que punir não é necessário."
+        },
+        {
+          "q": "PERGUNTA DE OURO: no descaminho, uma pessoa deixa de pagar dezoito mil reais em tributos na entrada de mercadorias. Pelo entendimento atual dos tribunais superiores, o caso é:",
+          "ops": [
+            "Crime punível normalmente, porque o teto é de dez mil reais",
+            "Insignificante, porque o valor não supera o teto atualizado de vinte mil reais",
+            "Insignificante apenas se a pessoa for primária e de bons antecedentes",
+            "Crime contra a administração pública, vedado pela Súmula 599"
+          ],
+          "certa": 1,
+          "valor": 200,
+          "exp": "Dezoito mil está abaixo do teto atualizado de vinte mil reais: é o entendimento do Recurso Especial 1.112.748, de 2018, com a atualização feita pelas portarias do Ministério da Fazenda sobre o valor original de dez mil."
+        }
+      ],
+      "narr": "Desafio final: o placar da professora. Chegou a hora do desafio que fecha a aula! São cinco perguntas rápidas sobre tudo o que vimos, valendo cem pontos cada, e uma pergunta de ouro no fim, valendo duzentos. Responda com calma, acompanhe o seu placar e veja, no fim, como você se saiu. Boa sorte!"
+    },
+    {
+      "tipo": "Encerramento",
+      "img": "fim",
+      "alt": "Estrada dourada saindo de um tribunal neoclássico em direção ao nascer do sol",
+      "kicker": "Encerramento",
+      "titulo": "O que você leva desta aula",
+      "corpo": "<p>Chegamos ao fim, e eu quero que você perceba o fio que costura tudo o que vimos. Começamos com uma pergunta simples: o Direito Penal deve ser acionado por qualquer coisa? E a resposta do <b class=\"term\">princípio da insignificância</b> é elegante: não. Quando a lesão ao bem jurídico é ínfima, falta a tipicidade material, e o fato nem chega a ser crime.</p><p>Você viu a ideia nascer num brocardo do Direito Civil romano, ganhar estrutura com <b>Claus Roxin</b> em 1965, aparecer escrita no Código Penal Militar e receber do Supremo, no Habeas Corpus 84.412, os seus quatro requisitos. Viu também a diferença que a banca mais cobra: a <b>bagatela própria</b>, que barra o caso na porta, e a <b>bagatela imprópria</b>, que afasta a pena de um crime que existe.</p><div class=\"vazada\" aria-hidden=\"true\"><img src=\"assets/img/capa.webp\" alt=\"\"></div><p>E guardou os territórios de atenção: o reincidente, que pode; o habitual e o militar, que em regra não podem; o descaminho, com seu teto atualizado de vinte mil reais; a vítima, que pode mudar a conta pelo valor sentimental; e as vedações das Súmulas 589, 599 e 606 do Superior Tribunal de Justiça.</p><p>Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça as questões de cabeça fria e confie: este tema se aprende pelo <b>raciocínio do caso concreto</b>, não pela decoreba de valores. Eu fico por aqui, e te espero na próxima aula. <b>Bons estudos!</b></p>",
+      "narr": "O que você leva desta aula. Chegamos ao fim, e eu quero que você perceba o fio que costura tudo o que vimos. Começamos com uma pergunta simples: o Direito Penal deve ser acionado por qualquer coisa? E a resposta do princípio da insignificância é elegante: não. Quando a lesão ao bem jurídico é ínfima, falta a tipicidade material, e o fato nem chega a ser crime. Você viu a ideia nascer num brocardo do Direito Civil romano, ganhar estrutura com Claus Roxin em mil novecentos e sessenta e cinco, aparecer escrita no Código Penal Militar e receber do Supremo, no habeas corpus oitenta e quatro mil quatrocentos e doze, os seus quatro requisitos. Viu também a diferença que a banca mais cobra: a bagatela própria, que barra o caso na porta, e a bagatela imprópria, que afasta a pena de um crime que existe. E guardou os territórios de atenção: o reincidente, que pode; o habitual e o militar, que em regra não podem; o descaminho, com seu teto atualizado de vinte mil reais; a vítima, que pode mudar a conta pelo valor sentimental; e as vedações das súmulas quinhentos e oitenta e nove, quinhentos e noventa e nove e seiscentos e seis do Superior Tribunal de Justiça. Parabéns por chegar até aqui! Revisite os flashcards quando quiser, refaça as questões de cabeça fria e confie: este tema se aprende pelo raciocínio do caso concreto, não pela decoreba de valores. Eu fico por aqui, e te espero na próxima aula. Bons estudos!"
+    }
+  ],
+  "imagens": {
+    "capa": "assets/img/capa.webp",
+    "caminhos": "assets/img/caminhos.webp",
+    "conceito": "assets/img/conceito.webp",
+    "origem": "assets/img/origem.webp",
+    "tipicidade": "assets/img/tipicidade.webp",
+    "questao": "assets/img/questao.webp",
+    "flashcards": "assets/img/flashcards.webp",
+    "militar": "assets/img/militar.webp",
+    "requisitos": "assets/img/requisitos.webp",
+    "propria": "assets/img/propria.webp",
+    "balanca": "assets/img/balanca.webp",
+    "questao2": "assets/img/questao2.webp",
+    "impropria": "assets/img/impropria.webp",
+    "comppropria": "assets/img/comppropria.webp",
+    "compimpropria": "assets/img/compimpropria.webp",
+    "explorar": "assets/img/explorar.webp",
+    "flashcards2": "assets/img/flashcards2.webp",
+    "ligar": "assets/img/ligar.webp",
+    "reincidente": "assets/img/reincidente.webp",
+    "descaminho": "assets/img/descaminho.webp",
+    "vitima": "assets/img/vitima.webp",
+    "domestica": "assets/img/domestica.webp",
+    "administracao": "assets/img/administracao.webp",
+    "martelo": "assets/img/martelo.webp",
+    "revelar": "assets/img/revelar.webp",
+    "lacuna": "assets/img/lacuna.webp",
+    "panorama": "assets/img/panorama.webp",
+    "pegadinhas": "assets/img/pegadinhas.webp",
+    "cartasvf": "assets/img/cartasvf.webp",
+    "fim": "assets/img/fim.webp"
+  },
+  "audioBaseUrl": "assets/audio/s",
+  "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-09-principio-da-insignificancia/aula.html"
+},
 };
