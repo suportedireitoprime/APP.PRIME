@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { AulaData, SlideItem } from '@/types/aulaInterativa';
-import { loadAulaData } from '@/utils/aulaDataLoader';
+import { loadAulaData, formatNarracaoParaHtml } from '@/utils/aulaDataLoader';
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
 import { getLocalAulaProgress, saveLocalAulaProgress } from '@/lib/aprenderProgressoStorage';
@@ -204,18 +204,29 @@ export function PlayerAulaNativo({
 
   // URL do áudio da etapa atual (se houver gravação no R2)
   const currentAudioSrc = useMemo(() => {
-    if (!aulaData?.audioBaseUrl) return null;
+    if (slideAtual?.audioUrl && slideAtual.audioUrl.startsWith('http')) {
+      return slideAtual.audioUrl;
+    }
+    const baseFolder = (aulaData?.urlJsonR2 || aula.urlJsonR2 || aulaData?.urlHtmlR2 || aula.urlHtmlR2 || '')
+      .replace(/\/(?:aula\.json|aula\.html).*$/, '');
+
+    if (slideAtual?.audio && baseFolder) {
+      if (slideAtual.audio.startsWith('http')) return slideAtual.audio;
+      return `${baseFolder}/${slideAtual.audio}`;
+    }
+    if (!aulaData?.audioBaseUrl) {
+      return baseFolder ? `${baseFolder}/assets/audio/s${String(idx + 1).padStart(2, '0')}.mp3` : null;
+    }
     return `${aulaData.audioBaseUrl}${String(idx + 1).padStart(2, '0')}.mp3`;
-  }, [aulaData?.audioBaseUrl, idx]);
+  }, [slideAtual?.audioUrl, slideAtual?.audio, aulaData?.audioBaseUrl, aulaData?.urlJsonR2, aulaData?.urlHtmlR2, aula.urlJsonR2, aula.urlHtmlR2, idx]);
 
   // URL da imagem cinematográfica da etapa atual
   const imagemUrl = useMemo(() => {
     if (slideAtual?.imgUrl && slideAtual.imgUrl.startsWith('http')) {
       return slideAtual.imgUrl;
     }
-    const baseFolder = aulaData?.urlJsonR2
-      ? aulaData.urlJsonR2.replace(/\/aula\.json.*$/, '')
-      : (aula.urlJsonR2 ? aula.urlJsonR2.replace(/\/aula\.json.*$/, '') : '');
+    const baseFolder = (aulaData?.urlJsonR2 || aula.urlJsonR2 || aulaData?.urlHtmlR2 || aula.urlHtmlR2 || '')
+      .replace(/\/(?:aula\.json|aula\.html).*$/, '');
 
     if (slideAtual?.imgUrl && baseFolder) {
       if (slideAtual.imgUrl.startsWith('assets/')) {
@@ -229,13 +240,14 @@ export function PlayerAulaNativo({
       if (slideAtual.img === 'capa') {
         return aula.capaUrl || `${baseFolder}/assets/img/capa.webp`;
       }
-      return `${baseFolder}/assets/img/${slideAtual.img}.webp`;
+      const cleanImg = slideAtual.img.replace(/\.(?:webp|jpg|png)$/, '');
+      return `${baseFolder}/assets/img/${cleanImg}.webp`;
     }
     if (aulaData?.imagens && slideAtual?.img && aulaData.imagens[slideAtual.img]) {
       return aulaData.imagens[slideAtual.img];
     }
     return aula.capaUrl;
-  }, [slideAtual?.imgUrl, slideAtual?.img, aulaData?.urlJsonR2, aulaData?.imagens, aula.urlJsonR2, aula.capaUrl]);
+  }, [slideAtual?.imgUrl, slideAtual?.img, aulaData?.urlJsonR2, aulaData?.urlHtmlR2, aulaData?.imagens, aula.urlJsonR2, aula.urlHtmlR2, aula.capaUrl]);
 
   // Informar progresso ao componente pai sem disparar loops de re-render
   const onProgressoRef = useRef(onProgresso);
@@ -290,12 +302,17 @@ export function PlayerAulaNativo({
 
   // HTML com o Grifo Leve e Elegante por cima na frase ativa (respeita a chavinha de ativar/desativar)
   const htmlComGrifo = useMemo(() => {
-    if (!slideAtual?.corpo) return '';
-    if (!grifoAtivo || !tocando || karaIdx < 0 || !frasesNarr[karaIdx]) {
-      return slideAtual.corpo;
+    let rawHtml = slideAtual?.corpo || '';
+    if (!rawHtml.trim() && (slideAtual?.narr || slideAtual?.intro)) {
+      rawHtml = formatNarracaoParaHtml(slideAtual?.narr || slideAtual?.intro || '', slideAtual?.titulo);
     }
-    return highlightFraseInHtml(slideAtual.corpo, frasesNarr[karaIdx]);
-  }, [slideAtual?.corpo, grifoAtivo, tocando, karaIdx, frasesNarr]);
+    if (!rawHtml.trim()) return '';
+
+    if (!grifoAtivo || !tocando || karaIdx < 0 || !frasesNarr[karaIdx]) {
+      return rawHtml;
+    }
+    return highlightFraseInHtml(rawHtml, frasesNarr[karaIdx]);
+  }, [slideAtual?.corpo, slideAtual?.narr, slideAtual?.intro, slideAtual?.titulo, grifoAtivo, tocando, karaIdx, frasesNarr]);
 
   // Verifica se o título do slide deve receber o grifo inicial quando a narração começa nele
   const isTituloAtivo = useMemo(() => {
@@ -309,9 +326,10 @@ export function PlayerAulaNativo({
   const kickerFormatado = useMemo(() => {
     if (!slideAtual) return '';
     const raw = (slideAtual.kicker || '').trim();
-    if (!raw) {
+    if (!raw || raw.toLowerCase() === 'conteúdo' || raw.toLowerCase() === 'conteudo') {
       if (isQuestao) return 'Fixação Ativa';
       if (isFlashcard) return 'Memorização Ativa';
+      if (slideAtual.bloco) return `Bloco ${slideAtual.bloco}`;
       return `Etapa ${idx + 1} de ${total}`;
     }
 
@@ -1576,7 +1594,7 @@ export function PlayerAulaNativo({
             )}
 
             {/* Conteúdo Rico da Aula: 100% Tipografia Autêntica do HTML com Grifo Leve por cima */}
-            {slideAtual.corpo && (
+            {(slideAtual.corpo || htmlComGrifo) && (
               <div 
                 className="aula-html-tipografia pt-1"
                 dangerouslySetInnerHTML={{ __html: htmlComGrifo }}
@@ -1584,10 +1602,10 @@ export function PlayerAulaNativo({
             )}
 
             {/* Fallback de Conteúdo de Texto caso não haja corpo HTML e não seja interativo */}
-            {!slideAtual.corpo && slideAtual.texto && !isQuestao && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !slideAtual.frases && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && (
+            {!slideAtual.corpo && !htmlComGrifo && (slideAtual.texto || slideAtual.narr) && !isQuestao && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !slideAtual.frases && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && (
               <div className="aula-html-tipografia pt-1 space-y-3">
                 <p className="text-base sm:text-lg leading-relaxed text-zinc-200">
-                  {slideAtual.texto}
+                  {slideAtual.texto || slideAtual.narr}
                 </p>
               </div>
             )}

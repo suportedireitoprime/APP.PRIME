@@ -26,6 +26,7 @@ import {
   MateriaItem,
   AulaItem
 } from '@/data/aulasInterativasCatalogoCompleto';
+import { AULAS_CONTEUDO_REAL } from '@/data/aulasConteudoRealData';
 
 interface DisciplinaItem {
   id: string;
@@ -1174,6 +1175,18 @@ export default function AdminAulasInterativas() {
                     const totalCards = conteudo?.flashcards.length || 18;
                     const totalQuestoes = conteudo?.questoes.length || 12;
 
+                    const conteudoReal = AULAS_CONTEUDO_REAL[aula.id];
+                    const kickersReais = conteudoReal?.slides
+                      ? new Set(
+                          conteudoReal.slides
+                            .map(s => s.kicker)
+                            .filter(k => k && !/^questão/i.test(k) && !/^flashcard/i.test(k) && !/^etapa/i.test(k) && !/^memorização/i.test(k) && !/^fixação/i.test(k))
+                        )
+                      : null;
+                    const qtdTopicos = kickersReais && kickersReais.size >= 2
+                      ? kickersReais.size
+                      : Math.max(3, Math.min(6, Math.round((aula.etapas || 32) / 8)));
+
                     return (
                       <div key={aula.id} className="w-full flex flex-col">
                         <div
@@ -1250,19 +1263,12 @@ export default function AdminAulasInterativas() {
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
 
-                              {/* Topo da Carta: Número da Aula e Status */}
-                              <div className="relative z-10 flex items-center justify-between w-full">
-                                <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-black/80 backdrop-blur-md border border-white/20 text-white shadow-sm">
-                                  {aula.numeroAula}
-                                </span>
-                                {prog.cicloCompleto ? (
+                              {/* Topo da Carta: Apenas badge de 100% concluído quando finalizado (sem poluição de tags) */}
+                              <div className="relative z-10 flex items-center justify-end w-full min-h-[20px]">
+                                {prog.cicloCompleto && (
                                   <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-emerald-500/90 text-white shadow-sm flex items-center gap-1">
                                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                                     <span>100%</span>
-                                  </span>
-                                ) : (
-                                  <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider bg-black/70 backdrop-blur-md border border-white/15 text-zinc-300">
-                                    {aula.etapas}p
                                   </span>
                                 )}
                               </div>
@@ -1357,8 +1363,8 @@ export default function AdminAulasInterativas() {
                                   {aula.numeroAula}
                                 </span>
                                 <span className="w-1 h-1 rounded-full bg-white/30" />
-                                <span className="text-[10px] sm:text-[11px] font-medium text-zinc-400">
-                                  {aula.etapas} SLIDES INTERATIVOS
+                                <span className="text-[10px] sm:text-[11px] font-bold text-amber-300/90 tracking-wide">
+                                  {qtdTopicos} {qtdTopicos === 1 ? 'Tópico' : 'Tópicos'}
                                 </span>
                               </div>
 
@@ -1369,16 +1375,17 @@ export default function AdminAulasInterativas() {
                                 {aula.titulo}
                               </h3>
 
-                              {aula.descricao && (
-                                <p className="text-[11px] sm:text-xs text-zinc-300/80 mt-1 line-clamp-2 sm:line-clamp-3 leading-relaxed">
-                                  {aula.descricao}
-                                </p>
-                              )}
+                              <p className="text-[11px] sm:text-xs text-zinc-300/80 mt-1 line-clamp-2 sm:line-clamp-3 leading-relaxed">
+                                <span className="font-semibold text-zinc-200">{qtdTopicos} tópicos essenciais abordados: </span>
+                                {aula.descricao && !aula.descricao.includes('em estruturação')
+                                  ? aula.descricao
+                                  : `Doutrina especializada, análise de casos reais e fixação ativa sobre ${aula.titulo}.`}
+                              </p>
 
-                              {/* OS 3 BOTÕES DE AÇÃO: INICIAR AULA | REVISAR FLASHCARDS | PRATICAR QUESTÕES */}
+                              {/* OS 3 BOTÕES DE AÇÃO COM MESMO TAMANHO, PROPORÇÃO E ELEVAÇÃO VISUAL */}
                               <div 
                                 className={cn(
-                                  "flex flex-wrap items-center gap-1.5 sm:gap-2 mt-3 pt-2.5 border-t border-white/10 w-full",
+                                  "grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 pt-2.5 border-t border-white/10 w-full",
                                   isLeft ? "justify-start" : "justify-end"
                                 )}
                               >
@@ -1390,21 +1397,22 @@ export default function AdminAulasInterativas() {
                                     iniciarAula(aula);
                                   }}
                                   className={cn(
-                                    "px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 active:scale-95 shadow-md",
+                                    "w-full h-10 sm:h-11 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] xs:text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 shadow-md",
                                     prog.aulaTerminada
                                       ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30"
                                       : "bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white border border-red-400/40 shadow-red-950/40"
                                   )}
+                                  title={prog.aulaTerminada ? 'Reassistir aula interativa' : 'Iniciar aula interativa'}
                                 >
                                   {prog.aulaTerminada ? (
-                                    <Check className="w-3 h-3 text-emerald-400 stroke-[3]" />
+                                    <Check className="w-3 h-3 text-emerald-400 stroke-[3] shrink-0" />
                                   ) : (
-                                    <Play className="w-3 h-3 fill-current" />
+                                    <Play className="w-3 h-3 fill-current shrink-0" />
                                   )}
-                                  <span>{prog.aulaTerminada ? 'Ver Aula' : 'Iniciar'}</span>
+                                  <span className="truncate">{prog.aulaTerminada ? 'Ver Aula' : 'Iniciar'}</span>
                                 </button>
 
-                                {/* 2. Revisar Flashcards (18) */}
+                                {/* 2. Revisar (Flashcards) */}
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -1412,24 +1420,25 @@ export default function AdminAulasInterativas() {
                                     abrirRevisarFlashcards(aula);
                                   }}
                                   className={cn(
-                                    "px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 active:scale-95 border",
+                                    "w-full h-10 sm:h-11 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] xs:text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 border",
                                     prog.fcOk
                                       ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
                                       : flashcardsLiberados
-                                        ? "bg-amber-600/80 hover:bg-amber-500 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
+                                        ? "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
                                         : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
                                   )}
-                                  title={!flashcardsLiberados ? 'Conclua a aula para destravar' : 'Revisar com 18 Flashcards'}
+                                  title={!flashcardsLiberados ? 'Conclua a aula para destravar a revisão' : `Revisar com ${totalCards} Flashcards`}
                                 >
                                   {flashcardsLiberados ? (
-                                    <Layers className="w-3 h-3 text-amber-300" />
+                                    <Layers className="w-3 h-3 text-amber-300 shrink-0" />
                                   ) : (
-                                    <Lock className="w-3 h-3 text-zinc-500" />
+                                    <Lock className="w-3 h-3 text-zinc-500 shrink-0" />
                                   )}
-                                  <span>Flashcards ({totalCards})</span>
+                                  <span className="truncate">Revisar</span>
+                                  <span className="text-[8px] sm:text-[9px] opacity-75 font-mono">({totalCards})</span>
                                 </button>
 
-                                {/* 3. Praticar Questões (12) */}
+                                {/* 3. Praticar (Questões) */}
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -1437,21 +1446,22 @@ export default function AdminAulasInterativas() {
                                     abrirPraticarQuestoes(aula);
                                   }}
                                   className={cn(
-                                    "px-2.5 sm:px-3 py-1.5 rounded-xl text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 active:scale-95 border",
+                                    "w-full h-10 sm:h-11 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] xs:text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 border",
                                     prog.questoesOk
                                       ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
                                       : questoesLiberadas
-                                        ? "bg-emerald-600/80 hover:bg-emerald-500 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
+                                        ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
                                         : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
                                   )}
-                                  title={!questoesLiberadas ? 'Conclua os flashcards para destravar' : 'Praticar 12 Questões comentadas'}
+                                  title={!questoesLiberadas ? 'Conclua a revisão para destravar o treino prático' : `Praticar ${totalQuestoes} Questões comentadas`}
                                 >
                                   {questoesLiberadas ? (
-                                    <HelpCircle className="w-3 h-3 text-emerald-300" />
+                                    <HelpCircle className="w-3 h-3 text-emerald-300 shrink-0" />
                                   ) : (
-                                    <Lock className="w-3 h-3 text-zinc-500" />
+                                    <Lock className="w-3 h-3 text-zinc-500 shrink-0" />
                                   )}
-                                  <span>Questões ({totalQuestoes})</span>
+                                  <span className="truncate">Praticar</span>
+                                  <span className="text-[8px] sm:text-[9px] opacity-75 font-mono">({totalQuestoes})</span>
                                 </button>
                               </div>
                             </div>

@@ -4,6 +4,76 @@ import { AULAS_CONTEUDO_REAL } from '@/data/aulasConteudoRealData';
 
 const aulaCache: Record<string, AulaData> = {};
 
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Converte narração bruta em parágrafos HTML elegantes com destaque visual de termos-chave,
+ * garantindo que nenhuma etapa fique com texto em branco mesmo se a fonte R2 omitir a propriedade `corpo`.
+ */
+export function formatNarracaoParaHtml(narracao?: string, titulo?: string): string {
+  if (!narracao || !narracao.trim()) return '';
+
+  let texto = narracao.trim();
+
+  // Se o texto já contém tags HTML completas, retornar direto
+  if (/<[a-z][\s\S]*>/i.test(texto)) {
+    return texto;
+  }
+
+  // Remover repetição exata do título no início da narração para evitar redundância
+  if (titulo && titulo.trim()) {
+    const t = titulo.trim();
+    const regexTitulo = new RegExp('^' + escapeRegExp(t) + '[.:\\s-]+', 'i');
+    texto = texto.replace(regexTitulo, '').trim();
+  }
+
+  // Destacar termos jurídicos, leis, princípios e marcos temporais
+  let enriched = texto
+    .replace(/\b(olho por olho, dente por dente)\b/gi, '<b>$1</b>')
+    .replace(/\b(lei de talião|talião)\b/gi, '<b class="term">$1</b>')
+    .replace(/\b(código de hamurabi|código penal|código civil|constituição federal)\b/gi, '<b class="term">$1</b>')
+    .replace(/\b(artigo\s+\d+[\w-]*|art\.\s*\d+[\w-]*)\b/gi, '<b>$1</b>')
+    .replace(/\b(\d{1,4}\s*(?:a\.C\.|d\.C\.))\b/gi, '<b>$1</b>');
+
+  // Separar em sentenças
+  const sentencas = enriched.match(/[^.!?]+[.!?]+(?:\s+|$)/g) || [enriched];
+
+  const paragrafos: string[] = [];
+  let buffer: string[] = [];
+
+  for (let i = 0; i < sentencas.length; i++) {
+    const s = sentencas[i].trim();
+    if (!s) continue;
+
+    // Detectar marcadores naturais de quebra de parágrafo
+    const isNewSection = /^(Exemplo prático|Mas não|Por outro lado|Nesse sentido|Em suma|Hoje isso|A base do|O castigo)/i.test(s);
+    if (isNewSection && buffer.length > 0) {
+      paragrafos.push(buffer.join(' '));
+      buffer = [s];
+    } else {
+      buffer.push(s);
+      if (buffer.length >= 3) {
+        paragrafos.push(buffer.join(' '));
+        buffer = [];
+      }
+    }
+  }
+
+  if (buffer.length > 0) {
+    paragrafos.push(buffer.join(' '));
+  }
+
+  if (paragrafos.length === 0) {
+    return `<p>${enriched}</p>`;
+  }
+
+  return paragrafos
+    .map((p, idx) => idx === 0 && paragrafos.length > 1 ? `<p class="lead">${p}</p>` : `<p>${p}</p>`)
+    .join('\n');
+}
+
 export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string, baseFolder?: string): AulaData {
   let imagens: Record<string, string> = {};
   const imgMatch = html.match(/var\s+IMG\s*=\s*(\{[\s\S]*?\});/);
@@ -42,7 +112,7 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
     }
   }
 
-  // Resolver URLs de imagem diretamente dentro de cada slide
+  // Resolver URLs de imagem e garantir preenchimento de texto/kicker diretamente dentro de cada slide
   slides = slides.map((s, idx) => {
     let resolvedImg = s.imgUrl;
     if (!resolvedImg && s.img && imagens[s.img]) {
@@ -51,8 +121,31 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
     if (resolvedImg && resolvedImg.startsWith('assets/') && baseFolder) {
       resolvedImg = `${baseFolder}/${resolvedImg}`;
     }
+
+    let corpo = s.corpo || '';
+    if (!corpo.trim() && (s.narr || s.intro)) {
+      corpo = formatNarracaoParaHtml(s.narr || s.intro || '', s.titulo);
+    }
+
+    let kicker = s.kicker || '';
+    if (!kicker || kicker.toLowerCase() === 'conteúdo' || kicker.toLowerCase() === 'conteudo') {
+      if (s.tipo === 'Questão' || s.tipo === 'Questão de banca' || s.opcoes) {
+        kicker = 'Fixação Ativa';
+      } else if (s.tipo === 'Flashcard' || s.frente) {
+        kicker = 'Memorização Ativa';
+      } else if (s.bloco) {
+        kicker = `Bloco ${s.bloco}`;
+      } else if (idx === 0) {
+        kicker = `${disciplinaId.toUpperCase()} · Aula`;
+      } else {
+        kicker = `Etapa ${idx + 1} de ${slides.length}`;
+      }
+    }
+
     return {
       ...s,
+      kicker,
+      corpo,
       imgUrl: resolvedImg
     };
   });
@@ -133,17 +226,98 @@ export function buildFallbackAulaData(aula: AulaItem): AulaData {
 }
 
 export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
-  // 1. Cache em memória da sessão (ignora cache se for fallback antigo <= 5 slides)
-  if (aulaCache[aula.id] && aulaCache[aula.id].totalEtapas > 5) {
+  // 1. Cache em memória da sessão (ignora cache se for fallback antigo ou slides sem texto)
+  if (
+    aulaCache[aula.id] && 
+    aulaCache[aula.id].totalEtapas > 5 && 
+    aulaCache[aula.id].slides.some(s => s.corpo && s.corpo.length > 20)
+  ) {
     return aulaCache[aula.id];
   }
 
   // Base URL da pasta desta aula no Cloudflare R2
-  const baseFolder = aula.urlJsonR2
-    ? aula.urlJsonR2.replace(/\/aula\.json.*$/, '')
-    : (aula.urlHtmlR2 ? aula.urlHtmlR2.replace(/\/aula\.html.*$/, '') : '');
+  const baseFolder = (aula.urlJsonR2 || aula.urlHtmlR2 || '')
+    .replace(/\/(?:aula\.json|aula\.html).*$/, '');
 
-  // 2. Carregar JSON estruturado do R2 (Fonte oficial completa com áudios e imagens)
+  // 2. Fonte de Altíssima Fidelidade: Conteúdo Curado Pré-Estruturado (0ms, zero latência, rico em HTML e interatividade)
+  if (AULAS_CONTEUDO_REAL[aula.id]) {
+    const rawData = AULAS_CONTEUDO_REAL[aula.id];
+    if (rawData.slides && rawData.slides.length > 0 && rawData.slides.some(s => s.corpo && s.corpo.length > 0)) {
+      const normalizedSlides = rawData.slides.map((s, idx) => {
+        let img = s.imgUrl || '';
+        if (!img && s.img && baseFolder) {
+          if (s.img === 'capa') {
+            img = aula.capaUrl || `${baseFolder}/assets/img/capa.webp`;
+          } else {
+            const cleanImg = s.img.replace(/\.(?:webp|jpg|png)$/, '');
+            img = `${baseFolder}/assets/img/${cleanImg}.webp`;
+          }
+        } else if (img && img.startsWith('assets/') && baseFolder) {
+          img = `${baseFolder}/${img}`;
+        } else if (!img && idx === 0) {
+          img = aula.capaUrl || '';
+        }
+
+        let corpo = s.corpo || '';
+        if (!corpo.trim() && (s.narr || s.intro)) {
+          corpo = formatNarracaoParaHtml(s.narr || s.intro || '', s.titulo);
+        }
+
+        let kicker = s.kicker || '';
+        if (!kicker || kicker.toLowerCase() === 'conteúdo' || kicker.toLowerCase() === 'conteudo') {
+          if (s.tipo === 'Questão' || s.tipo === 'Questão de banca' || s.opcoes) {
+            kicker = 'Fixação Ativa';
+          } else if (s.tipo === 'Flashcard' || s.frente) {
+            kicker = 'Memorização Ativa';
+          } else if (s.bloco) {
+            kicker = `Bloco ${s.bloco}`;
+          } else if (idx === 0) {
+            kicker = `${aula.disciplinaId.toUpperCase()} · ${aula.numeroAula}`;
+          } else {
+            kicker = `Etapa ${idx + 1} de ${rawData.slides.length}`;
+          }
+        }
+
+        return {
+          ...s,
+          kicker,
+          corpo,
+          imgUrl: img
+        };
+      });
+
+      const data: AulaData = {
+        ...rawData,
+        slides: normalizedSlides,
+        audioBaseUrl: rawData.audioBaseUrl || (baseFolder ? `${baseFolder}/assets/audio/s` : undefined),
+        urlJsonR2: aula.urlJsonR2,
+        urlHtmlR2: aula.urlHtmlR2
+      };
+      aulaCache[aula.id] = data;
+      return data;
+    }
+  }
+
+  // 3. Carregar via HTML no R2 (contém SLIDES compilados com corpo completo e kickers autênticos)
+  if (aula.urlHtmlR2 && aula.urlHtmlR2.startsWith('http')) {
+    try {
+      const res = await fetch(aula.urlHtmlR2);
+      if (res.ok) {
+        const html = await res.text();
+        const data = parseAulaHtml(html, aula.id, aula.disciplinaId, baseFolder);
+        if (data.slides && data.slides.length > 5 && data.slides.some(s => s.corpo && s.corpo.length > 20)) {
+          data.urlJsonR2 = aula.urlJsonR2;
+          data.urlHtmlR2 = aula.urlHtmlR2;
+          aulaCache[aula.id] = data;
+          return data;
+        }
+      }
+    } catch (e) {
+      console.warn(`Tentativa de carregar HTML do R2 para ${aula.id} falhou, tentando JSON:`, e);
+    }
+  }
+
+  // 4. Carregar via JSON no R2 (com conversão inteligente de narração para parágrafos ricos se corpo ausente)
   if (aula.urlJsonR2 && aula.urlJsonR2.startsWith('http')) {
     try {
       const res = await fetch(aula.urlJsonR2);
@@ -157,7 +331,8 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
               if (e.img === 'capa') {
                 img = aula.capaUrl || (baseFolder ? `${baseFolder}/assets/img/capa.webp` : '');
               } else if (baseFolder) {
-                img = `${baseFolder}/assets/img/${e.img}.webp`;
+                const cleanImg = e.img.replace(/\.(?:webp|jpg|png)$/, '');
+                img = `${baseFolder}/assets/img/${cleanImg}.webp`;
               }
             } else if (!img && idx === 0) {
               img = aula.capaUrl || '';
@@ -165,11 +340,31 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
               img = `${baseFolder}/${img}`;
             }
 
+            let corpo = e.corpo || (e.texto ? `<p>${e.texto}</p>` : '');
+            if (!corpo.trim() && (e.narr || e.narracao || e.intro)) {
+              corpo = formatNarracaoParaHtml(e.narr || e.narracao || e.intro || '', e.titulo);
+            }
+
+            let kicker = e.kicker || '';
+            if (!kicker || kicker.toLowerCase() === 'conteúdo' || kicker.toLowerCase() === 'conteudo') {
+              if (e.tipo === 'Questão' || e.tipo === 'Questão de banca' || e.opcoes) {
+                kicker = 'Fixação Ativa';
+              } else if (e.tipo === 'Flashcard' || e.frente) {
+                kicker = 'Memorização Ativa';
+              } else if (e.bloco) {
+                kicker = `Bloco ${e.bloco}`;
+              } else if (idx === 0) {
+                kicker = `${aula.disciplinaId.toUpperCase()} · ${aula.numeroAula}`;
+              } else {
+                kicker = `Etapa ${idx + 1} de ${rawEtapas.length}`;
+              }
+            }
+
             return {
               tipo: e.tipo || 'Conteúdo',
               titulo: e.titulo || '',
-              kicker: e.kicker || e.tipo || '',
-              corpo: e.corpo || (e.texto ? `<p>${e.texto}</p>` : ''),
+              kicker,
+              corpo,
               narr: e.narr || e.narracao || '',
               imgUrl: img,
               img: e.img,
@@ -205,53 +400,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
     }
   }
 
-  // 3. Fallback: Conteúdo Real Pré-Estruturado (Normalizando URLs relativas para a CDN R2)
-  if (AULAS_CONTEUDO_REAL[aula.id]) {
-    const rawData = AULAS_CONTEUDO_REAL[aula.id];
-    const normalizedSlides = rawData.slides.map((s, idx) => {
-      let img = s.imgUrl || '';
-      if (!img && s.img && baseFolder) {
-        img = `${baseFolder}/assets/img/${s.img}.webp`;
-      } else if (img && img.startsWith('assets/') && baseFolder) {
-        img = `${baseFolder}/${img}`;
-      } else if (!img && idx === 0) {
-        img = aula.capaUrl || '';
-      }
-      return {
-        ...s,
-        imgUrl: img
-      };
-    });
-
-    const data: AulaData = {
-      ...rawData,
-      slides: normalizedSlides,
-      audioBaseUrl: rawData.audioBaseUrl || (baseFolder ? `${baseFolder}/assets/audio/s` : undefined),
-      urlJsonR2: aula.urlJsonR2,
-      urlHtmlR2: aula.urlHtmlR2
-    };
-    aulaCache[aula.id] = data;
-    return data;
-  }
-
-  // 4. Carregar via HTML no R2 (Fallback robusto)
-  if (aula.urlHtmlR2 && aula.urlHtmlR2.startsWith('http')) {
-    try {
-      const res = await fetch(aula.urlHtmlR2);
-      if (res.ok) {
-        const html = await res.text();
-        const data = parseAulaHtml(html, aula.id, aula.disciplinaId, baseFolder);
-        if (data.slides && data.slides.length > 0) {
-          aulaCache[aula.id] = data;
-          return data;
-        }
-      }
-    } catch (e) {
-      console.warn(`Falha ao baixar HTML do R2 para ${aula.id}, usando fallback:`, e);
-    }
-  }
-
+  // 5. Fallback estruturado de contingência
   const fallback = buildFallbackAulaData(aula);
-  // Não armazena fallback em cache para permitir nova tentativa limpa caso a rede oscile
   return fallback;
 }
