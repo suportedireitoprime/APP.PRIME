@@ -971,7 +971,7 @@ export default function AdminAulasInterativas() {
 
                       {/* SVG S-Curve Connector */}
                       {i < disciplinasFiltradas.length - 1 && (
-                        <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
+                        <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-28 sm:h-36 my-2 sm:my-3 pointer-events-none z-[5] overflow-visible">
                           <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                             <defs>
                               <filter id={`trail-glow-disc-${i}`} x="-20%" y="-20%" width="140%" height="140%">
@@ -1403,7 +1403,7 @@ export default function AdminAulasInterativas() {
 
                         {/* SVG S-Curve Connector */}
                         {i < materiasFiltradas.length - 1 && (
-                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
+                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-28 sm:h-36 my-2 sm:my-3 pointer-events-none z-[5] overflow-visible">
                             <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                               <defs>
                                 <filter id={`trail-glow-mat-${i}`} x="-20%" y="-20%" width="140%" height="140%">
@@ -1941,7 +1941,7 @@ export default function AdminAulasInterativas() {
 
                         {/* SVG S-Curve Connector */}
                         {i < aulasFiltradas.length - 1 && (
-                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
+                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-28 sm:h-36 my-2 sm:my-3 pointer-events-none z-[5] overflow-visible">
                             <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                               <defs>
                                 <filter id={`trail-glow-aula-${i}`} x="-20%" y="-20%" width="140%" height="140%">
