@@ -1507,25 +1507,6 @@ export default function AdminAulasInterativas() {
                   <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
                 </button>
 
-                {/* Caminho em Setas Sempre Visível no Topo Fixo */}
-                <div className="min-w-0 flex-1 flex items-center gap-1.5 text-xs truncate">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMateriaSelecionadaId(null);
-                      resetScrollToTop();
-                    }}
-                    className="font-bold truncate hover:underline transition shrink-0"
-                    style={{ color: disciplinaAtual.corDestaque }}
-                  >
-                    {disciplinaAtual.nome}
-                  </button>
-                  <ChevronRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-                  <span className="text-white font-bold truncate">
-                    {materiaAtual.titulo}
-                  </span>
-                </div>
-
                 {/* Badge do total de aulas disponíveis */}
                 <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
                   <BookOpen className="w-3.5 h-3.5" style={{ color: disciplinaAtual.corDestaque }} />
