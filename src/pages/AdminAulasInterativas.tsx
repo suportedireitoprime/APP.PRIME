@@ -7,7 +7,7 @@ import {
   Sparkles, Play, CheckCircle2, BookOpen, Layers, 
   ArrowLeft, Check, Lock, HelpCircle, Award, 
   RotateCcw, AlertCircle, Unlock, ChevronRight, GraduationCap,
-  ShieldCheck, Compass, Search
+  ShieldCheck, Compass, Search, X
 } from 'lucide-react';
 import { HERO_ILLUSTRATIONS } from '@/components/aprender/chunks/aprenderConstants';
 import { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
@@ -222,6 +222,7 @@ export default function AdminAulasInterativas() {
   const [materiaSelecionadaId, setMateriaSelecionadaId] = useState<string | null>(null);
   const [aulaAtiva, setAulaAtiva] = useState<AulaItem | null>(null);
   const [aulaPendenteModal, setAulaPendenteModal] = useState<AulaItem | null>(null);
+  const [buscaTermo, setBuscaTermo] = useState('');
   // Função universal de reset de scroll (suporta Window, HTML, Body e #root do Desktop)
   const resetScrollToTop = () => {
     try {
@@ -238,6 +239,7 @@ export default function AdminAulasInterativas() {
   // Garante início no topo absoluto do cabeçalho em todas as transições (Mobile & Desktop)
   useEffect(() => {
     resetScrollToTop();
+    setBuscaTermo('');
   }, [disciplinaSelecionadaId, materiaSelecionadaId, aulaAtiva]);
 
   // Estados de progresso
@@ -409,6 +411,7 @@ export default function AdminAulasInterativas() {
 
   // Botão voltar hierárquico
   const handleVoltar = () => {
+    setBuscaTermo('');
     if (aulaAtiva) {
       setAulaAtiva(null);
     } else if (materiaSelecionadaId) {
@@ -420,6 +423,8 @@ export default function AdminAulasInterativas() {
     }
     resetScrollToTop();
   };
+
+  const termoBuscaNorm = buscaTermo.toLowerCase().trim();
 
   // ─────────────────────────────────────────────────────────────────────────────
   // NÍVEL 4: TELA CHEIA DA AULA INTERATIVA (PLAYER NATIVO EM REACT SEM IFRAMES)
@@ -500,8 +505,17 @@ export default function AdminAulasInterativas() {
       {/* ══════════════════════════════════════════════════════════════════════════
           NÍVEL 1: HOME GERAL DE AULAS INTERATIVAS (ESCOLHA DA DISCIPLINA)
          ══════════════════════════════════════════════════════════════════════════ */}
-      {!disciplinaSelecionadaId && (
-        <>
+      {!disciplinaSelecionadaId && (() => {
+        const disciplinasFiltradas = DISCIPLINAS_CATALOGO.filter(disc => {
+          if (!termoBuscaNorm) return true;
+          const matchNome = disc.nome.toLowerCase().includes(termoBuscaNorm);
+          const matchMateria = MATERIAS_CATALOGO.some(m => m.disciplinaId === disc.id && m.nome.toLowerCase().includes(termoBuscaNorm));
+          const matchAula = AULAS_CATALOGO.some(a => a.disciplinaId === disc.id && a.titulo.toLowerCase().includes(termoBuscaNorm));
+          return matchNome || matchMateria || matchAula;
+        });
+
+        return (
+          <>
           {/* Top Bar Fixa de Navegação (Padrão Oficial Aprender - Screenshot 2) */}
           <div 
             className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3 transition-all shadow-xl"
@@ -635,18 +649,42 @@ export default function AdminAulasInterativas() {
               </div>
             </section>
 
+            {/* Barra de Pesquisa Nível 1 */}
+            <div className="relative w-full">
+              <div className="relative flex items-center w-full bg-white/[0.04] hover:bg-white/[0.06] border border-white/10 focus-within:border-amber-400/60 focus-within:bg-white/[0.07] rounded-xl px-3.5 py-2.5 sm:py-3 transition-all shadow-lg backdrop-blur-md">
+                <Search className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-zinc-400 shrink-0 mr-2.5" />
+                <input
+                  type="text"
+                  value={buscaTermo}
+                  onChange={(e) => setBuscaTermo(e.target.value)}
+                  placeholder="Pesquisar disciplinas, matérias ou aulas..."
+                  className="bg-transparent text-xs sm:text-sm text-white placeholder-zinc-500 outline-none w-full font-medium"
+                />
+                {buscaTermo && (
+                  <button
+                    type="button"
+                    onClick={() => setBuscaTermo('')}
+                    className="p-1 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition shrink-0"
+                    aria-label="Limpar pesquisa"
+                  >
+                    <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+
             {/* Cabeçalho da Seção de Disciplinas */}
-            <div className="flex items-center justify-between pt-2">
+            <div className="flex items-center justify-between pt-1">
               <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-amber-400" />
-                <span>DISCIPLINAS ({DISCIPLINAS_CATALOGO.length})</span>
+                <span>DISCIPLINAS ({disciplinasFiltradas.length})</span>
               </h3>
             </div>
 
             {/* Trilha Serpenteante em Linha do Tempo das Disciplinas */}
             <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
               <div className="w-full min-w-0 relative z-[2] flex flex-col">
-                {DISCIPLINAS_CATALOGO.map((disc, i) => {
+                {disciplinasFiltradas.map((disc, i) => {
                   const isLeft = i % 2 === 0;
                   const aulasDaDisc = AULAS_CATALOGO.filter(a => a.disciplinaId === disc.id);
                   const totalAulasDisc = aulasDaDisc.length;
@@ -669,7 +707,7 @@ export default function AdminAulasInterativas() {
                             setMateriaSelecionadaId(null);
                             resetScrollToTop();
                           }}
-                          className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                          className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                         >
                           {/* Carta 1 (Fundo) */}
                           <div
@@ -845,7 +883,7 @@ export default function AdminAulasInterativas() {
                       </div>
 
                       {/* SVG S-Curve Connector */}
-                      {i < DISCIPLINAS_CATALOGO.length - 1 && (
+                      {i < disciplinasFiltradas.length - 1 && (
                         <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
                           <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                             <defs>
@@ -889,11 +927,28 @@ export default function AdminAulasInterativas() {
                     </div>
                   );
                 })}
+
+                {disciplinasFiltradas.length === 0 && (
+                  <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
+                    <Search className="w-9 h-9 text-zinc-600 stroke-[1.5]" />
+                    <p className="text-zinc-400 text-sm">
+                      Nenhum resultado encontrado para "<span className="text-white font-semibold">{buscaTermo}</span>"
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setBuscaTermo('')}
+                      className="text-xs text-amber-400 hover:text-amber-300 underline font-medium"
+                    >
+                      Limpar pesquisa
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </>
-      )}
+        );
+      })()}
 
       {/* ══════════════════════════════════════════════════════════════════════════
           NÍVEL 2: MATÉRIAS DA DISCIPLINA SELECIONADA
@@ -904,6 +959,12 @@ export default function AdminAulasInterativas() {
         const somaPct = aulasDaDisc.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
         const pctDisc = totalAulasDisc > 0 ? Math.round(somaPct / totalAulasDisc) : 0;
         const materiasDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disciplinaAtual.id);
+        const materiasFiltradas = materiasDaDisc.filter(mat => {
+          if (!termoBuscaNorm) return true;
+          const matchNome = mat.nome.toLowerCase().includes(termoBuscaNorm);
+          const matchAula = AULAS_CATALOGO.some(a => a.materiaId === mat.id && a.titulo.toLowerCase().includes(termoBuscaNorm));
+          return matchNome || matchAula;
+        });
 
         return (
           <>
@@ -947,18 +1008,49 @@ export default function AdminAulasInterativas() {
                   {disciplinaAtual.nome}
                 </h1>
               </div>
+
+              {/* Barra de Pesquisa Nível 2 */}
+              <div className="relative w-full">
+                <div 
+                  className="relative flex items-center w-full bg-white/[0.04] hover:bg-white/[0.06] border border-white/10 focus-within:bg-white/[0.07] rounded-xl px-3.5 py-2.5 sm:py-3 transition-all shadow-lg backdrop-blur-md"
+                  style={{ borderColor: buscaTermo ? disciplinaAtual.corDestaque : undefined }}
+                >
+                  <Search 
+                    className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-zinc-400 shrink-0 mr-2.5 transition-colors" 
+                    style={{ color: buscaTermo ? disciplinaAtual.corDestaque : undefined }}
+                  />
+                  <input
+                    type="text"
+                    value={buscaTermo}
+                    onChange={(e) => setBuscaTermo(e.target.value)}
+                    placeholder={`Pesquisar matéria em ${disciplinaAtual.nome}...`}
+                    className="bg-transparent text-xs sm:text-sm text-white placeholder-zinc-500 outline-none w-full font-medium"
+                  />
+                  {buscaTermo && (
+                    <button
+                      type="button"
+                      onClick={() => setBuscaTermo('')}
+                      className="p-1 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition shrink-0"
+                      aria-label="Limpar pesquisa"
+                    >
+                      <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
               {/* Header da Seção: Selecione o Módulo */}
               <div className="flex items-center justify-between">
                 <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
                   <BookOpen className="w-4 h-4" style={{ color: disciplinaAtual.corDestaque }} />
-                  <span>SELECIONE O MÓDULO ({materiasDaDisc.length})</span>
+                  <span>SELECIONE O MÓDULO ({materiasFiltradas.length})</span>
                 </h3>
               </div>
 
               {/* Trilha Serpenteante em Linha do Tempo das Matérias */}
               <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
                 <div className="w-full min-w-0 relative z-[2] flex flex-col">
-                  {materiasDaDisc.map((mat, i) => {
+                  {materiasFiltradas.map((mat, i) => {
                     const isLeft = i % 2 === 0;
                     const aulasDaMat = AULAS_CATALOGO.filter(a => a.materiaId === mat.id);
                     const totalAulasMat = aulasDaMat.length;
@@ -976,7 +1068,7 @@ export default function AdminAulasInterativas() {
                           {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA MATÉRIA */}
                           <div
                             onClick={() => { setMateriaSelecionadaId(mat.id); resetScrollToTop(); }}
-                            className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                            className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                           >
                             {/* Carta 1 (Fundo) */}
                             <div
@@ -1137,7 +1229,7 @@ export default function AdminAulasInterativas() {
                         </div>
 
                         {/* SVG S-Curve Connector */}
-                        {i < materiasDaDisc.length - 1 && (
+                        {i < materiasFiltradas.length - 1 && (
                           <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
                             <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                               <defs>
@@ -1181,6 +1273,23 @@ export default function AdminAulasInterativas() {
                       </div>
                     );
                   })}
+
+                  {materiasFiltradas.length === 0 && (
+                    <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
+                      <Search className="w-9 h-9 text-zinc-600 stroke-[1.5]" />
+                      <p className="text-zinc-400 text-sm">
+                        Nenhuma matéria encontrada para "<span className="text-white font-semibold">{buscaTermo}</span>"
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setBuscaTermo('')}
+                        className="text-xs font-medium underline"
+                        style={{ color: disciplinaAtual.corDestaque }}
+                      >
+                        Limpar pesquisa
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1198,6 +1307,11 @@ export default function AdminAulasInterativas() {
         const ciclosCompletosMat = aulasDaMateria.filter(a => calcularProgressoCiclo(a).cicloCompleto).length;
         const matsDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disciplinaAtual.id);
         const numMateria = matsDaDisc.findIndex(m => m.id === materiaAtual.id) + 1;
+        const aulasFiltradas = aulasDaMateria.filter(aula => {
+          if (!termoBuscaNorm) return true;
+          return aula.titulo.toLowerCase().includes(termoBuscaNorm) || 
+            (aula.descricaoBreve && aula.descricaoBreve.toLowerCase().includes(termoBuscaNorm));
+        });
 
         return (
           <>
@@ -1247,11 +1361,42 @@ export default function AdminAulasInterativas() {
                   </h1>
                 </div>
               </div>
+
+              {/* Barra de Pesquisa Nível 3 */}
+              <div className="relative w-full">
+                <div 
+                  className="relative flex items-center w-full bg-white/[0.04] hover:bg-white/[0.06] border border-white/10 focus-within:bg-white/[0.07] rounded-xl px-3.5 py-2.5 sm:py-3 transition-all shadow-lg backdrop-blur-md"
+                  style={{ borderColor: buscaTermo ? disciplinaAtual.corDestaque : undefined }}
+                >
+                  <Search 
+                    className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-zinc-400 shrink-0 mr-2.5 transition-colors" 
+                    style={{ color: buscaTermo ? disciplinaAtual.corDestaque : undefined }}
+                  />
+                  <input
+                    type="text"
+                    value={buscaTermo}
+                    onChange={(e) => setBuscaTermo(e.target.value)}
+                    placeholder={`Pesquisar aula em ${materiaAtual.titulo}...`}
+                    className="bg-transparent text-xs sm:text-sm text-white placeholder-zinc-500 outline-none w-full font-medium"
+                  />
+                  {buscaTermo && (
+                    <button
+                      type="button"
+                      onClick={() => setBuscaTermo('')}
+                      className="p-1 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition shrink-0"
+                      aria-label="Limpar pesquisa"
+                    >
+                      <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
               {/* Header da Seção: Selecione a Aula */}
               <div className="flex items-center justify-between">
                 <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
                   <BookOpen className="w-4 h-4" style={{ color: disciplinaAtual.corDestaque }} />
-                  <span>SELECIONE A AULA ({totalAulasMat})</span>
+                  <span>SELECIONE A AULA ({aulasFiltradas.length})</span>
                 </h3>
                 {pctMat > 0 && (
                   <span className="text-xs font-bold text-zinc-400">
@@ -1263,7 +1408,7 @@ export default function AdminAulasInterativas() {
               {/* Trilha Serpenteante em Linha do Tempo das Aulas */}
               <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
                 <div className="w-full min-w-0 relative z-[2] flex flex-col">
-                  {aulasDaMateria.map((aula, i) => {
+                  {aulasFiltradas.map((aula, i) => {
                     const isLeft = i % 2 === 0;
                     const prog = calcularProgressoCiclo(aula);
                     const flashcardsLiberados = prog.aulaTerminada || modoLivreTeste;
@@ -1297,7 +1442,7 @@ export default function AdminAulasInterativas() {
                           {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA AULA */}
                           <div
                             onClick={() => iniciarAula(aula)}
-                            className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                            className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                           >
                             {/* Carta 1 (Fundo) */}
                             <div
@@ -1563,7 +1708,7 @@ export default function AdminAulasInterativas() {
                         </div>
 
                         {/* SVG S-Curve Connector */}
-                        {i < aulasDaMateria.length - 1 && (
+                        {i < aulasFiltradas.length - 1 && (
                           <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
                             <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                               <defs>
@@ -1607,6 +1752,23 @@ export default function AdminAulasInterativas() {
                       </div>
                     );
                   })}
+
+                  {aulasFiltradas.length === 0 && (
+                    <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
+                      <Search className="w-9 h-9 text-zinc-600 stroke-[1.5]" />
+                      <p className="text-zinc-400 text-sm">
+                        Nenhuma aula encontrada para "<span className="text-white font-semibold">{buscaTermo}</span>"
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setBuscaTermo('')}
+                        className="text-xs font-medium underline"
+                        style={{ color: disciplinaAtual.corDestaque }}
+                      >
+                        Limpar pesquisa
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
