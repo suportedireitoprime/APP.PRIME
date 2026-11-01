@@ -208,12 +208,17 @@ export function PlayerAulaNativo({
     return `${aulaData.audioBaseUrl}${String(idx + 1).padStart(2, '0')}.mp3`;
   }, [aulaData?.audioBaseUrl, idx]);
 
-  // Informar progresso ao componente pai
+  // Informar progresso ao componente pai sem disparar loops de re-render
+  const onProgressoRef = useRef(onProgresso);
   useEffect(() => {
-    if (onProgresso && total > 0) {
-      onProgresso(idx + 1, total);
+    onProgressoRef.current = onProgresso;
+  }, [onProgresso]);
+
+  useEffect(() => {
+    if (onProgressoRef.current && total > 0) {
+      onProgressoRef.current(idx + 1, total);
     }
-  }, [idx, total, onProgresso]);
+  }, [idx, total]);
 
   // Sentenças da narração para sincronizar o karaokê
   const frasesNarr = useMemo(() => {
