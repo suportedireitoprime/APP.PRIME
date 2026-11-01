@@ -31,14 +31,14 @@ export interface MateriaItem {
 }
 
 export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
-{
+  {
     "id": "penal-mat-05",
     "disciplinaId": "penal",
     "numeroMateria": "01. NOÇÕES GERAIS DE DIREITO PENAL",
     "titulo": "Noções Gerais de Direito Penal",
     "subtitulo": "Módulo 01 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Noções Gerais de Direito Penal.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_01_-_direito_penal.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/06-nocoes-gerais-de-direito-penal/aula-01-direito-penal/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-06",
@@ -47,7 +47,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Princípios Penais",
     "subtitulo": "Módulo 02 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Princípios Penais.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/07-principios-penais/aula-01-principios-penais-introducao-ao-tema/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-07",
@@ -56,7 +56,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Interpretação e Integração da Lei Penal",
     "subtitulo": "Módulo 03 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Interpretação e Integração da Lei Penal.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-01-interpretacao-e-integracao-no-direito-penal/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-08",
@@ -65,7 +65,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Lei Penal no Espaço e no Tempo",
     "subtitulo": "Módulo 04 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Lei Penal no Espaço e no Tempo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-01-retroatividade-e-irretroatividade-da-lei-penal/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-43",
@@ -74,7 +74,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Classificação e espécie das infrações penais",
     "subtitulo": "Módulo 05 · 15 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Classificação e espécie das infrações penais.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-01-crimes-comuns-proprios-e-de-mao-propria/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-09",
@@ -83,7 +83,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Teoria Geral do Delito",
     "subtitulo": "Módulo 06 · 16 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Teoria Geral do Delito.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-01-nocoes-introdutorias/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-11",
@@ -92,7 +92,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Princípio da Insignificância",
     "subtitulo": "Módulo 07 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Princípio da Insignificância.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_09_-_principio_da_insignificancia.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/12-principio-da-insignificancia/aula-01-conceito-e-historico/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-10",
@@ -101,7 +101,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Iter Criminis",
     "subtitulo": "Módulo 08 · 12 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Iter Criminis.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-01-conceituacao-e-panorama-geral/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-12",
@@ -110,7 +110,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Teoria do Erro",
     "subtitulo": "Módulo 09 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Teoria do Erro.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-01-nocoes-introdutorias/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-13",
@@ -119,7 +119,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Imputabilidade e Concurso de Pessoas",
     "subtitulo": "Módulo 10 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Imputabilidade e Concurso de Pessoas.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-01-breve-revisao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-14",
@@ -128,7 +128,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Concurso de Pessoas e Autoria Imediata",
     "subtitulo": "Módulo 11 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Concurso de Pessoas e Autoria Imediata.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-01-concurso-de-pessoas/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-15",
@@ -137,7 +137,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Teoria da Pena",
     "subtitulo": "Módulo 12 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Teoria da Pena.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-02-cominacao-de-penas-e-classificacao-das-penas/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-16",
@@ -146,7 +146,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Funções da Pena",
     "subtitulo": "Módulo 13 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Funções da Pena.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-01-teoria-retributiva/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-17",
@@ -155,7 +155,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Concurso de Crimes",
     "subtitulo": "Módulo 14 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Concurso de Crimes.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-18",
@@ -164,7 +164,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Dosimetria da Pena",
     "subtitulo": "Módulo 15 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Dosimetria da Pena.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-01-introducao-a-dosimetria-da-pena/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-19",
@@ -173,7 +173,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Suspensão Condicional da Pena e Livramento Condicional",
     "subtitulo": "Módulo 16 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Suspensão Condicional da Pena e Livramento Condicional.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-01-suspensao-condicional-da-pena-conceito-e-requisitos/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-20",
@@ -182,7 +182,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Efeitos da Condenação e Reabilitação",
     "subtitulo": "Módulo 17 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Efeitos da Condenação e Reabilitação.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-01-efeitos-da-condenacao-efeitos-genericos/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-22",
@@ -191,7 +191,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Medidas de Segurança",
     "subtitulo": "Módulo 18 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Medidas de Segurança.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-23",
@@ -200,7 +200,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Extinção da Punibilidade e Prescrição",
     "subtitulo": "Módulo 19 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Extinção da Punibilidade e Prescrição.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-01-efeitos-e-causas-de-extincao-da-punibilidade/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-24",
@@ -209,7 +209,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Prescrição Penal",
     "subtitulo": "Módulo 20 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Prescrição Penal.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-25",
@@ -218,7 +218,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Contra a Pessoa",
     "subtitulo": "Módulo 21 · 45 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Pessoa.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-01-crimes-contra-a-pessoa-introducao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-26",
@@ -227,7 +227,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Contra a Vida",
     "subtitulo": "Módulo 22 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Vida.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-27",
@@ -236,7 +236,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Contra a Honra",
     "subtitulo": "Módulo 23 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Honra.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-01-introducao-aos-crimes-contra-a-honra/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-28",
@@ -245,7 +245,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes contra o Patrimônio",
     "subtitulo": "Módulo 24 · 25 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes contra o Patrimônio.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-35",
@@ -254,7 +254,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Contra o Sentimento Religioso",
     "subtitulo": "Módulo 25 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra o Sentimento Religioso.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-01-crimes-contra-o-sentimento-religioso/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-29",
@@ -263,7 +263,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes contra a Dignidade Sexual",
     "subtitulo": "Módulo 26 · 17 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes contra a Dignidade Sexual.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-01-introducao-ao-direito-penal-sexual/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-30",
@@ -272,7 +272,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direito Penal Sexual - Teoria Geral e Reflexos Típicos",
     "subtitulo": "Módulo 27 · 11 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito Penal Sexual - Teoria Geral e Reflexos Típicos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-01-introducao-e-metodologia/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-01",
@@ -281,7 +281,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Contra a Família",
     "subtitulo": "Módulo 28 · 11 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Família.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_01_-_crimes_contra_a_familia.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/01-crimes-contra-a-familia/aula-01-crimes-contra-a-familia/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-37",
@@ -290,7 +290,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Contra a Fé Pública",
     "subtitulo": "Módulo 29 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Fé Pública.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-01-moeda-falsa/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-31",
@@ -299,7 +299,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Contra a Organização do Trabalho",
     "subtitulo": "Módulo 30 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Organização do Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-01-nocoes-gerais/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-32",
@@ -308,7 +308,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Contra a Propriedade Imaterial",
     "subtitulo": "Módulo 31 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Propriedade Imaterial.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-01-nocoes-gerais/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-33",
@@ -317,7 +317,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes praticados por Funcionário Público contra a Administração",
     "subtitulo": "Módulo 32 · 19 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes praticados por Funcionário Público contra a Administração.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-34",
@@ -326,7 +326,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Praticados por Particular Contra a Administração em Geral e Estrangeira",
     "subtitulo": "Módulo 33 · 16 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Praticados por Particular Contra a Administração em Geral e Estrangeira.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-36",
@@ -335,7 +335,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Praticados em Licitações e Contratos Administrativos",
     "subtitulo": "Módulo 34 · 12 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Praticados em Licitações e Contratos Administrativos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-38",
@@ -344,7 +344,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crimes Contra a Administração da Justiça",
     "subtitulo": "Módulo 35 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Administração da Justiça.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-01-reingresso-de-estrangeiro-expulso-e-denunciacao-caluniosa/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-21",
@@ -353,7 +353,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "JECCRIM",
     "subtitulo": "Módulo 36 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre JECCRIM.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-01-competencia-citacao-e-intimacao/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-39",
@@ -362,7 +362,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Lei de Drogas",
     "subtitulo": "Módulo 37 · 20 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Lei de Drogas.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-01-consideracoes-gerais/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-40",
@@ -371,7 +371,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Estatuto do Desarmamento",
     "subtitulo": "Módulo 38 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Estatuto do Desarmamento.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-01-generalidades/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-41",
@@ -380,7 +380,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Legislação Penal Extravagante",
     "subtitulo": "Módulo 39 · 28 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Legislação Penal Extravagante.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-01-interceptacao-telefonica/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-42",
@@ -389,7 +389,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Responsabilidade Penal da Pessoa Jurídica",
     "subtitulo": "Módulo 40 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Responsabilidade Penal da Pessoa Jurídica.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-01-historico-e-natureza-da-pessoa-juridica/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-02",
@@ -398,7 +398,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Criminologia",
     "subtitulo": "Módulo 41 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Criminologia.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_02_-_evolucao_historica_periodo_pre-cientifico.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/02-criminologia/aula-01-periodo-pre-cientifico/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-03",
@@ -407,7 +407,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direito Penal do Inimigo",
     "subtitulo": "Módulo 42 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito Penal do Inimigo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/03-direito-penal-do-inimigo/aula-01-nocoes-gerais/assets/img/capa.webp"
   },
   {
     "id": "penal-mat-04",
@@ -416,7 +416,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Crítica ao Direito Penal do Inimigo",
     "subtitulo": "Módulo 43 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crítica ao Direito Penal do Inimigo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/04._critica_ao_direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/04-critica-ao-direito-penal-do-inimigo/aula-01-nocoes-gerais/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-01",
@@ -425,7 +425,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Origens e Definições do Direito Administrativo",
     "subtitulo": "Módulo 01 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Origens e Definições do Direito Administrativo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/01._origens_e_definicoes_do_direito_administrativo_-_aula_01_-_origens.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes-do-direito-administrativo/aula-01-origens/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-02",
@@ -434,7 +434,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Conceitos Fundamentais de Direito Administrativo",
     "subtitulo": "Módulo 02 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Conceitos Fundamentais de Direito Administrativo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/02._conceitos_fundamentais_de_direito_administrativo_-_aula_01_-_o_que_e_direito_administrativo_.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/02-conceitos-fundamentais-de-direito-administrativo/aula-01-o-que-e-direito-administrativo/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-03",
@@ -443,7 +443,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Fontes do Direito Administrativo",
     "subtitulo": "Módulo 03 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Fontes do Direito Administrativo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_01_-_panorama_geral.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/03-fontes-do-direito-administrativo/aula-01-panorama-geral/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-04",
@@ -452,7 +452,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Regime Jurídico Administrativo",
     "subtitulo": "Módulo 04 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Regime Jurídico Administrativo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/02._conceitos_fundamentais_de_direito_administrativo_-_aula_05_-_regime_juridico_administrativo.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/04-regime-juridico-administrativo/aula-01-regime-juridico-administrativo-definicoes-e-fundamentos/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-05",
@@ -461,7 +461,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Terceiro Setor",
     "subtitulo": "Módulo 05 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Terceiro Setor.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/05._terceiro_setor_-_aula_01_-_terceiro_setor_e_a_administracao_paraestatal_panorama.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/05-terceiro-setor/aula-01-terceiro-setor-e-a-administracao-paraestatal-panorama/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-06",
@@ -470,7 +470,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Poderes Administrativos",
     "subtitulo": "Módulo 06 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Poderes Administrativos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/06._poderes_administrativos_-_aula_01_-_poderes_administrativos_introducao_conceito_classificacao_e_visao_geral.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/06-poderes-administrativos/aula-01-poderes-administrativos-introducao-conceito-classificacao-e-visao-geral/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-07",
@@ -479,7 +479,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Atos Administrativos",
     "subtitulo": "Módulo 07 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Atos Administrativos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/07._atos_administrativos_-_aula_01_-_atos_administrativos_conceito.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/07-atos-administrativos/aula-01-atos-administrativos-conceito/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-08",
@@ -488,7 +488,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Administração Pública",
     "subtitulo": "Módulo 08 · 1 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Administração Pública.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/03._fontes_do_direito_administrativo_-_aula_07_-_costume_jurisprudencia_sumulas_consultas_e_orientacoes_na_administracao_publica.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/08-administracao-publica/aula-01-administracao-publica/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-09",
@@ -497,7 +497,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Controle da Administração",
     "subtitulo": "Módulo 09 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Controle da Administração.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/administrativo/10._controle_da_administracao_-_aula_01_-_controle_da_administracao_conceitos_iniciais.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/10-controle-da-administracao/aula-01-controle-da-administracao-conceitos-iniciais/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-10",
@@ -506,7 +506,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Serviços Públicos",
     "subtitulo": "Módulo 10 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Serviços Públicos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/11-servicos-publicos/aula-01-conceito-e-caracteristicas-essenciais/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-11",
@@ -515,7 +515,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Agentes Públicos",
     "subtitulo": "Módulo 11 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Agentes Públicos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/12-agentes-publicos/aula-01-conceito-e-categorias/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-12",
@@ -524,7 +524,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Contratos Administrativos",
     "subtitulo": "Módulo 12 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Contratos Administrativos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/13-contratos-administrativos/aula-01-concertacao-e-contratualizacao-na-administracao-publica/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-13",
@@ -533,7 +533,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Processo Administrativo",
     "subtitulo": "Módulo 13 · 12 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Processo Administrativo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/14-processo-administrativo/aula-01-procedimento-e-processo-administrativo/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-14",
@@ -542,7 +542,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Lei Anticorrupção",
     "subtitulo": "Módulo 14 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Lei Anticorrupção.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/15-lei-anticorrupcao/aula-01-responsabilidade-das-pessoas-juridicas-arts-1-ao-4/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-15",
@@ -551,7 +551,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Responsabilidade Civil do Estado",
     "subtitulo": "Módulo 15 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Responsabilidade Civil do Estado.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/16-responsabilidade-civil-do-estado/aula-01-responsabilidade-civil-do-estado-conceito-e-evolucao-historica/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-16",
@@ -560,7 +560,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Intervenção do Estado no Domínio Econômico",
     "subtitulo": "Módulo 16 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Intervenção do Estado no Domínio Econômico.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/18-intervencao-do-estado-no-dominio-economico/aula-01-fundamento-finalidade-e-principios-da-ordem-economica/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-17",
@@ -569,7 +569,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Improbidade Administrativa",
     "subtitulo": "Módulo 17 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Improbidade Administrativa.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/19-improbidade-administrativa/aula-01-como-serao-as-aulas-o-roteiro-de-estudo-da-improbidade-administrativa/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-18",
@@ -578,7 +578,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Intervenção Estatal na Propriedade",
     "subtitulo": "Módulo 18 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Intervenção Estatal na Propriedade.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/20-intervencao-estatal-na-propriedade/aula-01-intervencao-estatal-na-propriedade-privada/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-19",
@@ -587,7 +587,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Desapropriação",
     "subtitulo": "Módulo 19 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Desapropriação.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/21-desapropriacao/aula-01-aspectos-gerais/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-20",
@@ -596,7 +596,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Bens Públicos",
     "subtitulo": "Módulo 20 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Bens Públicos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/22-bens-publicos/aula-01-definicao-e-classificacao-de-bens-publicos/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-21",
@@ -605,7 +605,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Licitações",
     "subtitulo": "Módulo 21 · 20 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Licitações.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/23-licitacoes/aula-01-o-que-e-licitacao/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-22",
@@ -614,7 +614,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direito Sancionador na Lei de Licitações - Lei n. 14.133 - 21",
     "subtitulo": "Módulo 22 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito Sancionador na Lei de Licitações - Lei n. 14.133 - 21.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/24-direito-sancionador-na-lei-de-licitacoes-lei-n-14-133-21/aula-01-aplicabilidade-da-lei-14-133-21/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-23",
@@ -623,7 +623,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Concessões",
     "subtitulo": "Módulo 23 · 15 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Concessões.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/25-concessoes/aula-01-definicao-vantagens-e-desvantagens/assets/img/capa.webp"
   },
   {
     "id": "administrativo-mat-24",
@@ -632,7 +632,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Tópicos em Direito Administrativo",
     "subtitulo": "Módulo 24 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Tópicos em Direito Administrativo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/01-origens-e-definicoes/aula-01-origens/capa-3x4.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-administrativo/26-topicos-em-direito-administrativo/aula-01-aprovacao-tacita-na-lei-de-liberdade-economica-introducao/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-01",
@@ -641,7 +641,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "História Constitucional do Brasil",
     "subtitulo": "Módulo 01 · 12 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre História Constitucional do Brasil.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/01._historia_constitucional_do_brasil_-_aula_01_-_da_independencia_a_constituicao_de_1824.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional-do-brasil/aula-01-da-independencia-a-constituicao-de-1824/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-02",
@@ -650,7 +650,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Constitucionalismo e Classificação das Constituições",
     "subtitulo": "Módulo 02 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Constitucionalismo e Classificação das Constituições.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/02._constitucionalismo_e_classificacao_das_constituicoes_-_aula_01_-_constitucionalismo_introducao.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/02-constitucionalismo-e-classificacao-das-constituicoes/aula-01-constitucionalismo-introducao/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-03",
@@ -659,7 +659,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Introdução à Constituição Federal de 1988",
     "subtitulo": "Módulo 03 · 2 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Introdução à Constituição Federal de 1988.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/03._introducao_a_constituicao_federal_de_1988_-_aula_01_-_estrutura_da_cf_88.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/03-introducao-a-constituicao-federal-de-1988/aula-01-estrutura-da-cf-88/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-04",
@@ -668,7 +668,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Poder Constituinte",
     "subtitulo": "Módulo 04 · 13 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Poder Constituinte.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/04._poder_constituinte_-_aula_01_-_introducao.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/04-poder-constituinte/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-05",
@@ -677,7 +677,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Hermenêutica Constitucional",
     "subtitulo": "Módulo 05 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Hermenêutica Constitucional.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/05._hermeneutica_constitucional_-_aula_01_-_consideracoes_preliminares.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/05-hermeneutica-constitucional/aula-01-consideracoes-preliminares/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-06",
@@ -686,7 +686,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Teoria Geral dos Direitos Fundamentais",
     "subtitulo": "Módulo 06 · 18 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Teoria Geral dos Direitos Fundamentais.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/constitucional/06._teoria_geral_dos_direitos_fundamentais_-_aula_01_-_introducao.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/06-teoria-geral-dos-direitos-fundamentais/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-07",
@@ -695,7 +695,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direitos e Garantias Individuais",
     "subtitulo": "Módulo 07 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direitos e Garantias Individuais.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-01-art-5-caput-e-incisos-i-a-xxi/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-08",
@@ -704,7 +704,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direitos Sociais",
     "subtitulo": "Módulo 08 · 11 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direitos Sociais.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-01-arts-6-e-7-incisos-i-a-iii/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-09",
@@ -713,7 +713,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direito de Nacionalidade",
     "subtitulo": "Módulo 09 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito de Nacionalidade.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-10",
@@ -722,7 +722,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direitos Políticos",
     "subtitulo": "Módulo 10 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direitos Políticos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-01-formas-democraticas-de-organizacao-politica/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-11",
@@ -731,7 +731,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Ordem Econômica e Financeira na CF-88",
     "subtitulo": "Módulo 11 · 11 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Ordem Econômica e Financeira na CF-88.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-12",
@@ -740,7 +740,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Organização do Estado",
     "subtitulo": "Módulo 12 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Organização do Estado.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-01-federalismo/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-13",
@@ -749,7 +749,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Intervenção Federal e Estadual",
     "subtitulo": "Módulo 13 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Intervenção Federal e Estadual.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-01-federalismo-e-autonomia-dos-entes-federativos/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-14",
@@ -758,7 +758,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Organização dos Poderes",
     "subtitulo": "Módulo 14 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Organização dos Poderes.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/15-organizacao-dos-poderes/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-15",
@@ -767,7 +767,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Poder Legislativo",
     "subtitulo": "Módulo 15 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Poder Legislativo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-01-estrutura-do-poder-legislativo/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-16",
@@ -776,7 +776,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Processo Legislativo",
     "subtitulo": "Módulo 16 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Processo Legislativo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-01-introducao-ao-processo-legislativo/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-17",
@@ -785,7 +785,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Poder Executivo",
     "subtitulo": "Módulo 17 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Poder Executivo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-01-estrutura/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-18",
@@ -794,7 +794,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Poder Judiciário - Aspectos Gerais",
     "subtitulo": "Módulo 18 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Poder Judiciário - Aspectos Gerais.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-01-orgaos-do-poder-judiciario/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-19",
@@ -803,7 +803,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Poder Judiciário - Órgãos",
     "subtitulo": "Módulo 19 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Poder Judiciário - Órgãos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-01-stf-e-stj/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-20",
@@ -812,7 +812,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Controle de Constitucionalidade",
     "subtitulo": "Módulo 20 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Controle de Constitucionalidade.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-01-conceitos-preliminares/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-21",
@@ -821,7 +821,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Remédios Constitucionais",
     "subtitulo": "Módulo 21 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Remédios Constitucionais.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/22-remedios-constitucionais/aula-01-conceitos-preliminares/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-22",
@@ -830,7 +830,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Funções Essenciais à Justiça",
     "subtitulo": "Módulo 22 · 11 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Funções Essenciais à Justiça.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-01-nocoes-gerais/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-23",
@@ -839,7 +839,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Ministério Público",
     "subtitulo": "Módulo 23 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Ministério Público.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-01-historico-e-conceito/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-24",
@@ -848,7 +848,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Defensoria Pública",
     "subtitulo": "Módulo 24 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Defensoria Pública.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-25",
@@ -857,7 +857,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Defesa do Estado e das Instituições Democráticas",
     "subtitulo": "Módulo 25 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Defesa do Estado e das Instituições Democráticas.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-01-da-defesa-do-estado-e-das-instituicoes-democraticas/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-26",
@@ -866,7 +866,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Legislação em Prazos - Constituição Federal - Parte 1",
     "subtitulo": "Módulo 26 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Legislação em Prazos - Constituição Federal - Parte 1.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/29-legislacao-em-prazos-constituicao-federal-parte-1/aula-01-apresentacao/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-27",
@@ -875,7 +875,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direito Eleitoral - Propaganda Política",
     "subtitulo": "Módulo 27 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito Eleitoral - Propaganda Política.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-01-propaganda-politica-especies/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-28",
@@ -884,7 +884,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direito Eleitoral",
     "subtitulo": "Módulo 28 · 12 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito Eleitoral.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-01-direitos-politicos-alistamento-eleitoral-e-condicoes-de-elegibilidade/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-29",
@@ -893,7 +893,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Mandado de Segurança - Peça Prática",
     "subtitulo": "Módulo 29 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Mandado de Segurança - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-01-mandado-de-seguranca/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-30",
@@ -902,7 +902,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Habeas Corpus - Peça Prática",
     "subtitulo": "Módulo 30 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Habeas Corpus - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/35-habeas-corpus-peca-pratica/aula-01-apontamentos-iniciais/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-31",
@@ -911,7 +911,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Ação Civil Pública - Peça Prática",
     "subtitulo": "Módulo 31 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Ação Civil Pública - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/36-acao-civil-publica-peca-pratica/aula-01-tudo-sobre-a-peca/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-32",
@@ -920,7 +920,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Habeas Data - Peça Prática",
     "subtitulo": "Módulo 32 · 2 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Habeas Data - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/37-habeas-data-peca-pratica/aula-01-quando-tem-cabimento-e-para-que-serve/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-33",
@@ -929,7 +929,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Ação Popular - Peça Prática",
     "subtitulo": "Módulo 33 · 1 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Ação Popular - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/38-acao-popular-peca-pratica/aula-01-acao-popular/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-34",
@@ -938,7 +938,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Mandado de Injunção Individual e Coletivo - Peça Prática",
     "subtitulo": "Módulo 34 · 2 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Mandado de Injunção Individual e Coletivo - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/39-mandado-de-injuncao-individual-e-coletivo-peca-pratica/aula-01-mandado-de-injuncao-individual-e-coletivo/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-35",
@@ -947,7 +947,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Reclamação Constitucional - Peça Prática",
     "subtitulo": "Módulo 35 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Reclamação Constitucional - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/40-reclamacao-constitucional-peca-pratica/aula-01-apontamentos-iniciais/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-36",
@@ -956,7 +956,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Ação Direta de Inconstitucionalidade - Peça Prática",
     "subtitulo": "Módulo 36 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Ação Direta de Inconstitucionalidade - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-01-acao-direta-de-inconstitucionalidade/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-37",
@@ -965,7 +965,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Ação Direta de Inconstitucionalidade por Omissão - Peça Prática",
     "subtitulo": "Módulo 37 · 2 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Ação Direta de Inconstitucionalidade por Omissão - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/42-acao-direta-de-inconstitucionalidade-por-omissao-peca-pratica/aula-01-tudo-sobre-a-peca/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-38",
@@ -974,7 +974,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Arguição de Descumprimento de Preceito Fundamental - Peça Prática",
     "subtitulo": "Módulo 38 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Arguição de Descumprimento de Preceito Fundamental - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/43-arguicao-de-descumprimento-de-preceito-fundamental-peca-pratica/aula-01-tudo-sobre-a-peca/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-39",
@@ -983,7 +983,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Ação Declaratória de Constitucionalidade - Peça Prática",
     "subtitulo": "Módulo 39 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Ação Declaratória de Constitucionalidade - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-01-acao-declaratoria-de-constitucionalidade-adecon-ou-adc/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-40",
@@ -992,7 +992,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Recurso Especial - Peça Prática",
     "subtitulo": "Módulo 40 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Recurso Especial - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-41",
@@ -1001,7 +1001,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Recurso Ordinário Constitucional - Peça Prática",
     "subtitulo": "Módulo 41 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Recurso Ordinário Constitucional - Peça Prática.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/assets/img/capa.webp"
   },
   {
     "id": "constitucional-mat-42",
@@ -1010,7 +1010,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Preâmbulo Constitucional e Princípios Fundamentais",
     "subtitulo": "Módulo 42 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Preâmbulo Constitucional e Princípios Fundamentais.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-02-principios-fundamentais-e-artigo-1/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-01",
@@ -1019,7 +1019,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Introdução ao Direito do Trabalho",
     "subtitulo": "Módulo 01 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Introdução ao Direito do Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_02_-_fontes_materiais_e_formais.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao-ao-direito-do-trabalho/aula-02-fontes-materiais-e-formais/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-02",
@@ -1028,7 +1028,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Histórico do Direito do Trabalho",
     "subtitulo": "Módulo 02 · 2 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Histórico do Direito do Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/02._historico_do_direito_do_trabalho_-_aula_01_-_evolucao_do_direito_do_trabalho_no_mundo.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/02-historico-do-direito-do-trabalho/aula-01-evolucao-do-direito-do-trabalho-no-mundo/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-03",
@@ -1037,7 +1037,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Fontes e Princípios do Direito do Trabalho",
     "subtitulo": "Módulo 03 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Fontes e Princípios do Direito do Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/03._fontes_e_principios_do_direito_do_trabalho_-_aula_01_-_introducao.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/03-fontes-e-principios-do-direito-do-trabalho/aula-01-introducao/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-04",
@@ -1046,7 +1046,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Trabalho Lato Sensu",
     "subtitulo": "Módulo 04 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Trabalho Lato Sensu.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/04._trabalho_lato_sensu_-_aula_01_-_trabalho_lato_sensu.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/04-trabalho-lato-sensu/aula-01-trabalho-lato-sensu/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-05",
@@ -1055,7 +1055,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Sujeitos do Direito do Trabalho",
     "subtitulo": "Módulo 05 · 12 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Sujeitos do Direito do Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/05._sujeitos_do_direito_do_trabalho_-_aula_01_-_empregado.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/05-sujeitos-do-direito-do-trabalho/aula-01-empregado/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-06",
@@ -1064,7 +1064,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Remuneração e Salário",
     "subtitulo": "Módulo 06 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Remuneração e Salário.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/06._remuneracao_e_salario_-_aula_01_-_remuneracao.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/06-remuneracao-e-salario/aula-01-remuneracao/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-07",
@@ -1073,7 +1073,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Efeitos Conexos do Contrato de Trabalho",
     "subtitulo": "Módulo 07 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Efeitos Conexos do Contrato de Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/07-efeitos-conexos-do-contrato-de-trabalho/aula-01-efeitos-proprios-e-conexos-do-contrato-de-trabalho/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-08",
@@ -1082,7 +1082,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Acidente de Trabalho",
     "subtitulo": "Módulo 08 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Acidente de Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-01-especies/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-09",
@@ -1091,7 +1091,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Duração do Trabalho e Repousos",
     "subtitulo": "Módulo 09 · 13 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Duração do Trabalho e Repousos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-01-definicao-e-regras/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-10",
@@ -1100,7 +1100,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "FGTS",
     "subtitulo": "Módulo 10 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre FGTS.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-01-fgts-fundo-de-garantia-por-tempo-de-servico/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-11",
@@ -1109,7 +1109,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Verbas Rescisórias e Cálculos Trabalhistas",
     "subtitulo": "Módulo 11 · 2 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Verbas Rescisórias e Cálculos Trabalhistas.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/11-verbas-rescisorias-e-calculos-trabalhistas/aula-01-verbas-rescisorias-conceito/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-12",
@@ -1118,7 +1118,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Terceirização e Trabalho Temporário",
     "subtitulo": "Módulo 12 · 2 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Terceirização e Trabalho Temporário.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/12-terceirizacao-e-trabalho-temporario/aula-01-terceirizacao/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-13",
@@ -1127,7 +1127,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Estabilidades Trabalhistas",
     "subtitulo": "Módulo 13 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Estabilidades Trabalhistas.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-01-definicao/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-14",
@@ -1136,7 +1136,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Prescrição e Decadência no Direito do Trabalho",
     "subtitulo": "Módulo 14 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Prescrição e Decadência no Direito do Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-01-prescricao-e-decadencia/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-15",
@@ -1145,7 +1145,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Reforma Trabalhista",
     "subtitulo": "Módulo 15 · 18 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Reforma Trabalhista.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/01._introducao_ao_direito_do_trabalho_-_aula_10_-_eficacia_temporal_e_reforma_trabalhista.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/15-reforma-trabalhista/aula-01-principais-alteracoes-da-lei-13-467-17/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-16",
@@ -1154,7 +1154,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "LGPD nas Relações Trabalhistas",
     "subtitulo": "Módulo 16 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre LGPD nas Relações Trabalhistas.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-01-a-lgpd-se-aplica-as-relacoes-trabalhistas/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-17",
@@ -1163,7 +1163,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Greve",
     "subtitulo": "Módulo 17 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Greve.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-01-greve/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-18",
@@ -1172,7 +1172,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Negociação Coletiva",
     "subtitulo": "Módulo 18 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Negociação Coletiva.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-01-negociacao-coletiva/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-19",
@@ -1181,7 +1181,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Direito Coletivo do Trabalho",
     "subtitulo": "Módulo 19 · 12 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito Coletivo do Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-01-formacao-do-direito-coletivo-organizacao-sindical/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-20",
@@ -1190,7 +1190,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "PIS-PASEP",
     "subtitulo": "Módulo 20 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre PIS-PASEP.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-01-pis-pasep-programa-de-integracao-social-e-formacao-do-patrimonio-do-servidor-publico/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-21",
@@ -1199,7 +1199,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Seguro-Desemprego",
     "subtitulo": "Módulo 21 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Seguro-Desemprego.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-01-contexto/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-22",
@@ -1208,7 +1208,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Salário Família",
     "subtitulo": "Módulo 22 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Salário Família.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-01-conceito/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-23",
@@ -1217,7 +1217,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Salário-Maternidade",
     "subtitulo": "Módulo 23 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Salário-Maternidade.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-01-conceito-e-beneficiario/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-24",
@@ -1226,7 +1226,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Contrato de Trabalho",
     "subtitulo": "Módulo 24 · 14 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Contrato de Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/trabalho/07._efeitos_conexos_do_contrato_de_trabalho_-_aula_01_-_efeitos_proprios_e_conexos_do_contrato_de_trabalho.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/24-contrato-de-trabalho/aula-01-terminologia-e-caracteristicas/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-25",
@@ -1235,7 +1235,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Suspensão, Interrupção e Cessação do Contrato de Trabalho",
     "subtitulo": "Módulo 25 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Suspensão, Interrupção e Cessação do Contrato de Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-01-suspensao-x-interrupcao/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-26",
@@ -1244,7 +1244,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Saúde e Segurança no Trabalho",
     "subtitulo": "Módulo 26 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Saúde e Segurança no Trabalho.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-01-saude-e-seguranca-no-trabalho/assets/img/capa.webp"
   },
   {
     "id": "trabalho-mat-27",
@@ -1253,7 +1253,7 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
     "titulo": "Proteção do Trabalho da Criança e do Adolescente",
     "subtitulo": "Módulo 27 · 12 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Proteção do Trabalho da Criança e do Adolescente.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp"
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-01-o-tratamento-juridico-da-crianca-e-do-adolescente-ao-longo-da-historia/assets/img/capa.webp"
   }
 ];
 
@@ -2078,7 +2078,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-01-interpretacao-e-integracao-no-direito-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-01-interpretacao-e-integracao-no-direito-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-01-interpretacao-e-integracao-no-direito-penal/aula.json"
   },
@@ -2094,7 +2094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-02-as-diversas-modalidades-de-interpretacao-em-materia-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-02-as-diversas-modalidades-de-interpretacao-em-materia-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-02-as-diversas-modalidades-de-interpretacao-em-materia-penal/aula.json"
   },
@@ -2110,7 +2110,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-03-analogia-e-sua-aplicacao-no-direito-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-03-analogia-e-sua-aplicacao-no-direito-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-03-analogia-e-sua-aplicacao-no-direito-penal/aula.json"
   },
@@ -2126,7 +2126,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-04-a-lei-penal-e-a-norma-penal-em-branco/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-04-a-lei-penal-e-a-norma-penal-em-branco/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/08-interpretacao-e-integracao-da-lei-penal/aula-04-a-lei-penal-e-a-norma-penal-em-branco/aula.json"
   },
@@ -2142,7 +2142,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-01-retroatividade-e-irretroatividade-da-lei-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-01-retroatividade-e-irretroatividade-da-lei-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-01-retroatividade-e-irretroatividade-da-lei-penal/aula.json"
   },
@@ -2158,7 +2158,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 31,
     "imagensQtd": 31,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-02-lei-excepcional-e-lei-temporaria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-02-lei-excepcional-e-lei-temporaria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-02-lei-excepcional-e-lei-temporaria/aula.json"
   },
@@ -2174,7 +2174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-03-tempo-e-lugar-do-crime/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-03-tempo-e-lugar-do-crime/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-03-tempo-e-lugar-do-crime/aula.json"
   },
@@ -2190,7 +2190,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 34,
     "imagensQtd": 34,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-04-territorialidade-e-extraterritorialidade-da-lei-penal-brasileira/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-04-territorialidade-e-extraterritorialidade-da-lei-penal-brasileira/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/09-lei-penal-no-espaco-e-no-tempo/aula-04-territorialidade-e-extraterritorialidade-da-lei-penal-brasileira/aula.json"
   },
@@ -2206,7 +2206,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/aula.json"
   },
@@ -2222,7 +2222,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-03-teoria-tripartite-conceitos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-03-teoria-tripartite-conceitos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-03-teoria-tripartite-conceitos/aula.json"
   },
@@ -2238,7 +2238,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-04-tipicidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-04-tipicidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-04-tipicidade/aula.json"
   },
@@ -2254,7 +2254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-05-tipicidade-formal-conduta/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-05-tipicidade-formal-conduta/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-05-tipicidade-formal-conduta/aula.json"
   },
@@ -2270,7 +2270,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-06-tipicidade-formal-nexo-de-causalidade-e-adequacao-tipica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-06-tipicidade-formal-nexo-de-causalidade-e-adequacao-tipica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-06-tipicidade-formal-nexo-de-causalidade-e-adequacao-tipica/aula.json"
   },
@@ -2286,7 +2286,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-07-tipicidade-material/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-07-tipicidade-material/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-07-tipicidade-material/aula.json"
   },
@@ -2302,7 +2302,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 31,
     "imagensQtd": 31,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-08-ilicitude/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-08-ilicitude/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-08-ilicitude/aula.json"
   },
@@ -2318,7 +2318,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-09-estado-de-necessidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-09-estado-de-necessidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-09-estado-de-necessidade/aula.json"
   },
@@ -2334,7 +2334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 34,
     "imagensQtd": 34,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-10-legitima-defesa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-10-legitima-defesa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-10-legitima-defesa/aula.json"
   },
@@ -2350,7 +2350,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-11-estrito-cumprimento-do-dever-legal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-11-estrito-cumprimento-do-dever-legal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-11-estrito-cumprimento-do-dever-legal/aula.json"
   },
@@ -2366,7 +2366,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 31,
     "imagensQtd": 31,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-12-exercicio-regular-de-direito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-12-exercicio-regular-de-direito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-12-exercicio-regular-de-direito/aula.json"
   },
@@ -2398,7 +2398,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 34,
     "imagensQtd": 34,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-14-elementos-da-culpabilidade-imputabilidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-14-elementos-da-culpabilidade-imputabilidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-14-elementos-da-culpabilidade-imputabilidade/aula.json"
   },
@@ -2414,7 +2414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 34,
     "imagensQtd": 34,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-15-elementos-da-culpabilidade-potencial-consciencia-da-ilicitude/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-15-elementos-da-culpabilidade-potencial-consciencia-da-ilicitude/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-15-elementos-da-culpabilidade-potencial-consciencia-da-ilicitude/aula.json"
   },
@@ -2430,7 +2430,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-16-erro-de-proibicao-x-erro-de-tipo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-16-erro-de-proibicao-x-erro-de-tipo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-16-erro-de-proibicao-x-erro-de-tipo/aula.json"
   },
@@ -2446,7 +2446,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-17-elementos-da-culpabilidade-exigibilidade-de-conduta-diversa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-17-elementos-da-culpabilidade-exigibilidade-de-conduta-diversa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/10-teoria-geral-do-delito/aula-17-elementos-da-culpabilidade-exigibilidade-de-conduta-diversa/aula.json"
   },
@@ -2462,7 +2462,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-01-conceituacao-e-panorama-geral/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-01-conceituacao-e-panorama-geral/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-01-conceituacao-e-panorama-geral/aula.json"
   },
@@ -2478,7 +2478,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-02-cogitacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-02-cogitacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-02-cogitacao/aula.json"
   },
@@ -2494,7 +2494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 31,
     "imagensQtd": 31,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-03-preparacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-03-preparacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-03-preparacao/aula.json"
   },
@@ -2510,7 +2510,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 32,
     "imagensQtd": 32,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-04-execucao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-04-execucao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-04-execucao/aula.json"
   },
@@ -2526,7 +2526,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 32,
     "imagensQtd": 32,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-05-consumacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-05-consumacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-05-consumacao/aula.json"
   },
@@ -2542,7 +2542,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-06-exaurimento/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-06-exaurimento/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-06-exaurimento/aula.json"
   },
@@ -2558,7 +2558,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 32,
     "imagensQtd": 32,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-07-institutos-penais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-07-institutos-penais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-07-institutos-penais/aula.json"
   },
@@ -2574,7 +2574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 32,
     "imagensQtd": 32,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-08-tentativa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-08-tentativa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-08-tentativa/aula.json"
   },
@@ -2590,7 +2590,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-09-arrependimento-eficaz/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-09-arrependimento-eficaz/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-09-arrependimento-eficaz/aula.json"
   },
@@ -2606,7 +2606,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 32,
     "imagensQtd": 32,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-10-desistencia-voluntaria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-10-desistencia-voluntaria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-10-desistencia-voluntaria/aula.json"
   },
@@ -2622,7 +2622,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-11-arrependimento-posterior/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-11-arrependimento-posterior/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-11-arrependimento-posterior/aula.json"
   },
@@ -2638,7 +2638,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 34,
     "imagensQtd": 34,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-12-crime-impossivel/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-12-crime-impossivel/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/11-iter-criminis/aula-12-crime-impossivel/aula.json"
   },
@@ -2750,7 +2750,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/aula.json"
   },
@@ -2766,7 +2766,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 28,
     "imagensQtd": 28,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-02-erro-do-tipo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-02-erro-do-tipo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-02-erro-do-tipo/aula.json"
   },
@@ -2782,7 +2782,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 32,
     "imagensQtd": 32,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-03-erro-de-tipo-essencial/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-03-erro-de-tipo-essencial/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-03-erro-de-tipo-essencial/aula.json"
   },
@@ -2798,7 +2798,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-04-erro-do-tipo-acidental/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-04-erro-do-tipo-acidental/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-04-erro-do-tipo-acidental/aula.json"
   },
@@ -2814,7 +2814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-05-erro-de-proibicao-x-erro-do-tipo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-05-erro-de-proibicao-x-erro-do-tipo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/13-teoria-do-erro/aula-05-erro-de-proibicao-x-erro-do-tipo/aula.json"
   },
@@ -2830,7 +2830,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-01-breve-revisao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-01-breve-revisao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-01-breve-revisao/aula.json"
   },
@@ -2846,7 +2846,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 32,
     "imagensQtd": 32,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-02-imputabilidade-menoridade-e-paixao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-02-imputabilidade-menoridade-e-paixao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-02-imputabilidade-menoridade-e-paixao/aula.json"
   },
@@ -2862,7 +2862,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-03-responsabilidade-penal-do-menor-de-idade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-03-responsabilidade-penal-do-menor-de-idade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-03-responsabilidade-penal-do-menor-de-idade/aula.json"
   },
@@ -2878,7 +2878,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-04-i-ni-mputabilidade-por-doenca-mental/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-04-i-ni-mputabilidade-por-doenca-mental/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-04-i-ni-mputabilidade-por-doenca-mental/aula.json"
   },
@@ -2894,7 +2894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-05-periculosidade-e-consequencias-legais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-05-periculosidade-e-consequencias-legais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-05-periculosidade-e-consequencias-legais/aula.json"
   },
@@ -2926,7 +2926,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-07-imputabilidade-e-embriaguez/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-07-imputabilidade-e-embriaguez/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-07-imputabilidade-e-embriaguez/aula.json"
   },
@@ -2942,7 +2942,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-06-concurso-de-pessoas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-06-concurso-de-pessoas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-06-concurso-de-pessoas/aula.json"
   },
@@ -2958,7 +2958,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-09-circunstancias-e-elementares/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-09-circunstancias-e-elementares/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/14-imputabilidade-e-concurso-de-pessoas/aula-09-circunstancias-e-elementares/aula.json"
   },
@@ -2974,7 +2974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-06-concurso-de-pessoas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-06-concurso-de-pessoas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-06-concurso-de-pessoas/aula.json"
   },
@@ -2990,7 +2990,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-02-teoria-monista-e-requisitos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-02-teoria-monista-e-requisitos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-02-teoria-monista-e-requisitos/aula.json"
   },
@@ -3006,7 +3006,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-03-teorias-sobre-autoria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-03-teorias-sobre-autoria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-03-teorias-sobre-autoria/aula.json"
   },
@@ -3022,7 +3022,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-04-teoria-adotada-pelo-codigo-penal-brasileiro-e-autoria-mediata/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-04-teoria-adotada-pelo-codigo-penal-brasileiro-e-autoria-mediata/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-04-teoria-adotada-pelo-codigo-penal-brasileiro-e-autoria-mediata/aula.json"
   },
@@ -3038,7 +3038,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-05-coautoria-e-participacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-05-coautoria-e-participacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-05-coautoria-e-participacao/aula.json"
   },
@@ -3054,7 +3054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-07-punibilidade-da-participacao-e-cooperacao-dolosamente-distinta/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-07-punibilidade-da-participacao-e-cooperacao-dolosamente-distinta/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/16-concurso-de-pessoas-e-autoria-imediata/aula-07-punibilidade-da-participacao-e-cooperacao-dolosamente-distinta/aula.json"
   },
@@ -3070,7 +3070,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 34,
     "imagensQtd": 34,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-02-cominacao-de-penas-e-classificacao-das-penas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-02-cominacao-de-penas-e-classificacao-das-penas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-02-cominacao-de-penas-e-classificacao-das-penas/aula.json"
   },
@@ -3086,7 +3086,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-03-justica-restaurativa-e-teorias-relacionadas-as-penas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-03-justica-restaurativa-e-teorias-relacionadas-as-penas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-03-justica-restaurativa-e-teorias-relacionadas-as-penas/aula.json"
   },
@@ -3102,7 +3102,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-04-fixacao-da-pena-sistema-trifasico-e-primeira-fase/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-04-fixacao-da-pena-sistema-trifasico-e-primeira-fase/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-04-fixacao-da-pena-sistema-trifasico-e-primeira-fase/aula.json"
   },
@@ -3118,7 +3118,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-05-fixacao-da-pena-segunda-fase-aplicacao-das-atenuantes-e-agravantes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-05-fixacao-da-pena-segunda-fase-aplicacao-das-atenuantes-e-agravantes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-05-fixacao-da-pena-segunda-fase-aplicacao-das-atenuantes-e-agravantes/aula.json"
   },
@@ -3134,7 +3134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-06-reincidencia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-06-reincidencia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-06-reincidencia/aula.json"
   },
@@ -3150,7 +3150,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-07-fixacao-da-pena-terceira-fase-aplicacao-das-causas-de-diminuicao-e-aumento-da-pena/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-07-fixacao-da-pena-terceira-fase-aplicacao-das-causas-de-diminuicao-e-aumento-da-pena/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-07-fixacao-da-pena-terceira-fase-aplicacao-das-causas-de-diminuicao-e-aumento-da-pena/aula.json"
   },
@@ -3166,7 +3166,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-08-fixacao-do-regime-prisional-da-pena-privativa-de-liberdade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-08-fixacao-do-regime-prisional-da-pena-privativa-de-liberdade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-08-fixacao-do-regime-prisional-da-pena-privativa-de-liberdade/aula.json"
   },
@@ -3182,7 +3182,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-09-progressao-de-regime/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-09-progressao-de-regime/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-09-progressao-de-regime/aula.json"
   },
@@ -3198,7 +3198,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-10-pena-de-multa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-10-pena-de-multa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-10-pena-de-multa/aula.json"
   },
@@ -3214,7 +3214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-11-penas-restritivas-de-direitos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-11-penas-restritivas-de-direitos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/17-teoria-da-pena/aula-11-penas-restritivas-de-direitos/aula.json"
   },
@@ -3230,7 +3230,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-01-teoria-retributiva/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-01-teoria-retributiva/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-01-teoria-retributiva/aula.json"
   },
@@ -3246,7 +3246,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-02-teoria-da-prevencao-geral/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-02-teoria-da-prevencao-geral/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-02-teoria-da-prevencao-geral/aula.json"
   },
@@ -3262,7 +3262,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-03-teoria-da-prevencao-especial/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-03-teoria-da-prevencao-especial/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/18-funcoes-da-pena/aula-03-teoria-da-prevencao-especial/aula.json"
   },
@@ -3294,7 +3294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-01-nocoes-introdutorias/aula.json"
   },
@@ -3310,7 +3310,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-02-concurso-material/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-02-concurso-material/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-02-concurso-material/aula.json"
   },
@@ -3326,7 +3326,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-03-concurso-formal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-03-concurso-formal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-03-concurso-formal/aula.json"
   },
@@ -3342,7 +3342,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-04-continuidade-delitiva-ou-crime-continuado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-04-continuidade-delitiva-ou-crime-continuado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/19-concurso-de-crimes/aula-04-continuidade-delitiva-ou-crime-continuado/aula.json"
   },
@@ -3358,7 +3358,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-01-introducao-a-dosimetria-da-pena/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-01-introducao-a-dosimetria-da-pena/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-01-introducao-a-dosimetria-da-pena/aula.json"
   },
@@ -3374,7 +3374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-02-visao-geral-da-fixacao-da-pena-privativa-de-liberdade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-02-visao-geral-da-fixacao-da-pena-privativa-de-liberdade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-02-visao-geral-da-fixacao-da-pena-privativa-de-liberdade/aula.json"
   },
@@ -3390,7 +3390,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-03-detalhamento-das-fases/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-03-detalhamento-das-fases/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/20-dosimetria-da-pena/aula-03-detalhamento-das-fases/aula.json"
   },
@@ -3406,7 +3406,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-01-suspensao-condicional-da-pena-conceito-e-requisitos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-01-suspensao-condicional-da-pena-conceito-e-requisitos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-01-suspensao-condicional-da-pena-conceito-e-requisitos/aula.json"
   },
@@ -3422,7 +3422,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-02-suspensao-condicional-da-pena-requisitos-objetivos-e-subjetivos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-02-suspensao-condicional-da-pena-requisitos-objetivos-e-subjetivos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-02-suspensao-condicional-da-pena-requisitos-objetivos-e-subjetivos/aula.json"
   },
@@ -3438,7 +3438,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-03-suspensao-condicional-da-pena-concessao-especies-e-condicoes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-03-suspensao-condicional-da-pena-concessao-especies-e-condicoes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-03-suspensao-condicional-da-pena-concessao-especies-e-condicoes/aula.json"
   },
@@ -3454,7 +3454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-04-suspensao-condicional-da-pena-periodo-de-prova-e-fiscalizacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-04-suspensao-condicional-da-pena-periodo-de-prova-e-fiscalizacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-04-suspensao-condicional-da-pena-periodo-de-prova-e-fiscalizacao/aula.json"
   },
@@ -3470,7 +3470,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-05-suspensao-condicional-da-pena-revogacao-e-prorrogacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-05-suspensao-condicional-da-pena-revogacao-e-prorrogacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-05-suspensao-condicional-da-pena-revogacao-e-prorrogacao/aula.json"
   },
@@ -3486,7 +3486,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-06-suspensao-condicional-da-pena-suspensao-condicional-do-processo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-06-suspensao-condicional-da-pena-suspensao-condicional-do-processo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-06-suspensao-condicional-da-pena-suspensao-condicional-do-processo/aula.json"
   },
@@ -3502,7 +3502,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-07-livramento-condicional-conceito-e-requisitos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-07-livramento-condicional-conceito-e-requisitos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-07-livramento-condicional-conceito-e-requisitos/aula.json"
   },
@@ -3518,7 +3518,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-08-livramento-condicional-requisitos-objetivos-e-subjetivos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-08-livramento-condicional-requisitos-objetivos-e-subjetivos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-08-livramento-condicional-requisitos-objetivos-e-subjetivos/aula.json"
   },
@@ -3534,7 +3534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-09-livramento-condicional-rito-e-condicoes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-09-livramento-condicional-rito-e-condicoes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-09-livramento-condicional-rito-e-condicoes/aula.json"
   },
@@ -3550,7 +3550,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-10-livramento-condicional-revogacao-e-extincao-da-pena/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-10-livramento-condicional-revogacao-e-extincao-da-pena/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/21-suspensao-condicional-da-pena-e-livramento-condicional/aula-10-livramento-condicional-revogacao-e-extincao-da-pena/aula.json"
   },
@@ -3566,7 +3566,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-01-efeitos-da-condenacao-efeitos-genericos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-01-efeitos-da-condenacao-efeitos-genericos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-01-efeitos-da-condenacao-efeitos-genericos/aula.json"
   },
@@ -3582,7 +3582,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-02-efeitos-da-condenacao-efeitos-especificos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-02-efeitos-da-condenacao-efeitos-especificos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-02-efeitos-da-condenacao-efeitos-especificos/aula.json"
   },
@@ -3598,7 +3598,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-03-reabilitacao-conceito-e-efeitos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-03-reabilitacao-conceito-e-efeitos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-03-reabilitacao-conceito-e-efeitos/aula.json"
   },
@@ -3614,7 +3614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-04-reabilitacao-sigilo-na-lep/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-04-reabilitacao-sigilo-na-lep/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-04-reabilitacao-sigilo-na-lep/aula.json"
   },
@@ -3630,7 +3630,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-05-reabilitacao-utilidade-e-pressupostos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-05-reabilitacao-utilidade-e-pressupostos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-efeitos-da-condenacao-e-reabilitacao/aula-05-reabilitacao-utilidade-e-pressupostos/aula.json"
   },
@@ -3646,7 +3646,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-01-competencia-citacao-e-intimacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-01-competencia-citacao-e-intimacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-01-competencia-citacao-e-intimacao/aula.json"
   },
@@ -3662,7 +3662,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-02-fase-preliminar/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-02-fase-preliminar/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-02-fase-preliminar/aula.json"
   },
@@ -3678,7 +3678,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-03-procedimento-sumarissimo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-03-procedimento-sumarissimo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-03-procedimento-sumarissimo/aula.json"
   },
@@ -3694,7 +3694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-04-disposicoes-finais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-04-disposicoes-finais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/22-jeccrim/aula-04-disposicoes-finais/aula.json"
   },
@@ -3726,7 +3726,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-02-doenca-mental-e-codigo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-02-doenca-mental-e-codigo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-02-doenca-mental-e-codigo-penal/aula.json"
   },
@@ -3742,7 +3742,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-03-conceito-e-distincao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-03-conceito-e-distincao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-03-conceito-e-distincao/aula.json"
   },
@@ -3758,7 +3758,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-04-pressupostos-e-distincao-entre-os-agentes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-04-pressupostos-e-distincao-entre-os-agentes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-04-pressupostos-e-distincao-entre-os-agentes/aula.json"
   },
@@ -3774,7 +3774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-05-tipos-e-duracao-das-medidas-de-seguranca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-05-tipos-e-duracao-das-medidas-de-seguranca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-05-tipos-e-duracao-das-medidas-de-seguranca/aula.json"
   },
@@ -3790,7 +3790,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-06-cessacao-da-periculosidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-06-cessacao-da-periculosidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-06-cessacao-da-periculosidade/aula.json"
   },
@@ -3806,7 +3806,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-07-questoes-relacionadas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-07-questoes-relacionadas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/23-medidas-de-seguranca/aula-07-questoes-relacionadas/aula.json"
   },
@@ -3822,7 +3822,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-01-efeitos-e-causas-de-extincao-da-punibilidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-01-efeitos-e-causas-de-extincao-da-punibilidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-01-efeitos-e-causas-de-extincao-da-punibilidade/aula.json"
   },
@@ -3838,7 +3838,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-02-extincao-da-punibilidade-por-morte/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-02-extincao-da-punibilidade-por-morte/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-02-extincao-da-punibilidade-por-morte/aula.json"
   },
@@ -3854,7 +3854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-03-extincao-da-punibilidade-por-anistia-graca-ou-indulto/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-03-extincao-da-punibilidade-por-anistia-graca-ou-indulto/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-03-extincao-da-punibilidade-por-anistia-graca-ou-indulto/aula.json"
   },
@@ -3870,7 +3870,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-04-extincao-da-punibilidade-por-abolitio-criminis/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-04-extincao-da-punibilidade-por-abolitio-criminis/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-04-extincao-da-punibilidade-por-abolitio-criminis/aula.json"
   },
@@ -3886,7 +3886,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-05-extincao-da-punibilidade-por-prescricao-decadencia-ou-perempcao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-05-extincao-da-punibilidade-por-prescricao-decadencia-ou-perempcao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-05-extincao-da-punibilidade-por-prescricao-decadencia-ou-perempcao/aula.json"
   },
@@ -3902,7 +3902,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-06-extincao-da-punibilidade-por-renuncia-do-direito-de-queixa-ou-perdao-aceito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-06-extincao-da-punibilidade-por-renuncia-do-direito-de-queixa-ou-perdao-aceito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-06-extincao-da-punibilidade-por-renuncia-do-direito-de-queixa-ou-perdao-aceito/aula.json"
   },
@@ -3918,7 +3918,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-07-extincao-da-punibilidade-por-retratacao-do-agente/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-07-extincao-da-punibilidade-por-retratacao-do-agente/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-07-extincao-da-punibilidade-por-retratacao-do-agente/aula.json"
   },
@@ -3934,7 +3934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-08-extincao-da-punibilidade-por-perdao-judicial/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-08-extincao-da-punibilidade-por-perdao-judicial/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-08-extincao-da-punibilidade-por-perdao-judicial/aula.json"
   },
@@ -3950,7 +3950,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-09-extincao-da-punibilidade-por-reparacao-do-dano/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-09-extincao-da-punibilidade-por-reparacao-do-dano/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/24-extincao-da-punibilidade-e-prescricao/aula-09-extincao-da-punibilidade-por-reparacao-do-dano/aula.json"
   },
@@ -3982,7 +3982,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-02-especies-de-prescricao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-02-especies-de-prescricao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-02-especies-de-prescricao/aula.json"
   },
@@ -3998,7 +3998,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-03-especies-de-prescricao-ppp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-03-especies-de-prescricao-ppp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-03-especies-de-prescricao-ppp/aula.json"
   },
@@ -4014,7 +4014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-04-especies-de-prescricao-ppp-causas-interruptivas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-04-especies-de-prescricao-ppp-causas-interruptivas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-04-especies-de-prescricao-ppp-causas-interruptivas/aula.json"
   },
@@ -4030,7 +4030,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-05-especies-de-prescricao-ppp-causas-impeditivas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-05-especies-de-prescricao-ppp-causas-impeditivas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-05-especies-de-prescricao-ppp-causas-impeditivas/aula.json"
   },
@@ -4046,7 +4046,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-06-especies-de-prescricao-ppp-subespecies/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-06-especies-de-prescricao-ppp-subespecies/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-06-especies-de-prescricao-ppp-subespecies/aula.json"
   },
@@ -4062,7 +4062,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-07-especies-de-prescricao-ppe-pretensao-executoria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-07-especies-de-prescricao-ppe-pretensao-executoria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-07-especies-de-prescricao-ppe-pretensao-executoria/aula.json"
   },
@@ -4078,7 +4078,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-08-sumulas-stj-e-stf/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-08-sumulas-stj-e-stf/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/25-prescricao-penal/aula-08-sumulas-stj-e-stf/aula.json"
   },
@@ -4094,7 +4094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-01-crimes-contra-a-pessoa-introducao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-01-crimes-contra-a-pessoa-introducao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-01-crimes-contra-a-pessoa-introducao/aula.json"
   },
@@ -4110,7 +4110,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-02-homicidios-introducao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-02-homicidios-introducao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-02-homicidios-introducao/aula.json"
   },
@@ -4126,7 +4126,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-03-homicidio-e-tipicidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-03-homicidio-e-tipicidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-03-homicidio-e-tipicidade/aula.json"
   },
@@ -4142,7 +4142,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-04-homicidio-simples-e-privilegiado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-04-homicidio-simples-e-privilegiado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-04-homicidio-simples-e-privilegiado/aula.json"
   },
@@ -4158,7 +4158,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-05-homicidio-culposo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-05-homicidio-culposo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-05-homicidio-culposo/aula.json"
   },
@@ -4174,7 +4174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-06-homicidio-culposo-perdao-judicial/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-06-homicidio-culposo-perdao-judicial/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-06-homicidio-culposo-perdao-judicial/aula.json"
   },
@@ -4190,7 +4190,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-07-homicidio-qualificado-qualificadoras-subjetivas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-07-homicidio-qualificado-qualificadoras-subjetivas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-07-homicidio-qualificado-qualificadoras-subjetivas/aula.json"
   },
@@ -4206,7 +4206,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-08-homicidio-qualificado-qualificadoras-subjetivas-feminicidio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-08-homicidio-qualificado-qualificadoras-subjetivas-feminicidio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-08-homicidio-qualificado-qualificadoras-subjetivas-feminicidio/aula.json"
   },
@@ -4222,7 +4222,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-09-homicidio-qualificado-seguranca-publica-e-conexao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-09-homicidio-qualificado-seguranca-publica-e-conexao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-09-homicidio-qualificado-seguranca-publica-e-conexao/aula.json"
   },
@@ -4238,7 +4238,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-10-homicidio-qualificado-pelo-meio-qualificadoras-objetivas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-10-homicidio-qualificado-pelo-meio-qualificadoras-objetivas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-10-homicidio-qualificado-pelo-meio-qualificadoras-objetivas/aula.json"
   },
@@ -4254,7 +4254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-11-homicidio-doloso-circunstanciado-e-hibrido/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-11-homicidio-doloso-circunstanciado-e-hibrido/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-11-homicidio-doloso-circunstanciado-e-hibrido/aula.json"
   },
@@ -4270,7 +4270,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-12-induzimento-instigacao-ou-auxilio-a-suicidio-ou-a-automutilacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-12-induzimento-instigacao-ou-auxilio-a-suicidio-ou-a-automutilacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-12-induzimento-instigacao-ou-auxilio-a-suicidio-ou-a-automutilacao/aula.json"
   },
@@ -4286,7 +4286,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-07-infanticidio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-07-infanticidio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-07-infanticidio/aula.json"
   },
@@ -4302,7 +4302,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-14-introducao-ao-crime-de-aborto/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-14-introducao-ao-crime-de-aborto/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-14-introducao-ao-crime-de-aborto/aula.json"
   },
@@ -4318,7 +4318,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-15-aborto-e-tipicidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-15-aborto-e-tipicidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-15-aborto-e-tipicidade/aula.json"
   },
@@ -4334,7 +4334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-16-aborto-consumacao-e-tentativa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-16-aborto-consumacao-e-tentativa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-16-aborto-consumacao-e-tentativa/aula.json"
   },
@@ -4350,7 +4350,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-17-aborto-provocado-pela-gestante-ou-com-o-seu-consentimento/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-17-aborto-provocado-pela-gestante-ou-com-o-seu-consentimento/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-17-aborto-provocado-pela-gestante-ou-com-o-seu-consentimento/aula.json"
   },
@@ -4366,7 +4366,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-18-aborto-provocado-por-terceiro/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-18-aborto-provocado-por-terceiro/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-18-aborto-provocado-por-terceiro/aula.json"
   },
@@ -4382,7 +4382,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-19-aborto-circunstanciado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-19-aborto-circunstanciado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-19-aborto-circunstanciado/aula.json"
   },
@@ -4398,7 +4398,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-20-aborto-legal-ou-permitido/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-20-aborto-legal-ou-permitido/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-20-aborto-legal-ou-permitido/aula.json"
   },
@@ -4414,7 +4414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-21-antecipacao-do-parto-pela-anencefalia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-21-antecipacao-do-parto-pela-anencefalia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-21-antecipacao-do-parto-pela-anencefalia/aula.json"
   },
@@ -4430,7 +4430,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-22-lesao-corporal-introducao-e-forma-simples/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-22-lesao-corporal-introducao-e-forma-simples/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-22-lesao-corporal-introducao-e-forma-simples/aula.json"
   },
@@ -4446,7 +4446,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-23-lesao-corporal-grave-e-gravissima/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-23-lesao-corporal-grave-e-gravissima/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-23-lesao-corporal-grave-e-gravissima/aula.json"
   },
@@ -4462,7 +4462,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-24-lesao-corporal-seguida-de-morte-e-privilegiada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-24-lesao-corporal-seguida-de-morte-e-privilegiada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-24-lesao-corporal-seguida-de-morte-e-privilegiada/aula.json"
   },
@@ -4478,7 +4478,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-25-lesao-corporal-majorada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-25-lesao-corporal-majorada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-25-lesao-corporal-majorada/aula.json"
   },
@@ -4494,7 +4494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-26-lesao-corporal-por-violencia-domestica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-26-lesao-corporal-por-violencia-domestica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-26-lesao-corporal-por-violencia-domestica/aula.json"
   },
@@ -4510,7 +4510,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-27-lesao-corporal-culposa-e-acao-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-27-lesao-corporal-culposa-e-acao-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-27-lesao-corporal-culposa-e-acao-penal/aula.json"
   },
@@ -4526,7 +4526,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-28-perigos-de-contagio-venereo-de-molestia-grave-ou-para-a-vida-ou-saude-de-outrem/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-28-perigos-de-contagio-venereo-de-molestia-grave-ou-para-a-vida-ou-saude-de-outrem/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-28-perigos-de-contagio-venereo-de-molestia-grave-ou-para-a-vida-ou-saude-de-outrem/aula.json"
   },
@@ -4542,7 +4542,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-29-abandono-de-incapaz-exposicao-ou-abandono-de-recem-nascido-e-maus-tratos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-29-abandono-de-incapaz-exposicao-ou-abandono-de-recem-nascido-e-maus-tratos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-29-abandono-de-incapaz-exposicao-ou-abandono-de-recem-nascido-e-maus-tratos/aula.json"
   },
@@ -4558,7 +4558,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-30-omissao-de-socorro-condicionamento-de-atendimento-medico-hospitalar-emergencial-e-rixa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-30-omissao-de-socorro-condicionamento-de-atendimento-medico-hospitalar-emergencial-e-rixa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-30-omissao-de-socorro-condicionamento-de-atendimento-medico-hospitalar-emergencial-e-rixa/aula.json"
   },
@@ -4574,7 +4574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-01-introducao-aos-crimes-contra-a-honra/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-01-introducao-aos-crimes-contra-a-honra/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-01-introducao-aos-crimes-contra-a-honra/aula.json"
   },
@@ -4590,7 +4590,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-02-calunia-tipo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-02-calunia-tipo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-02-calunia-tipo-penal/aula.json"
   },
@@ -4606,7 +4606,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-03-calunia-formas-consumacao-e-tentativa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-03-calunia-formas-consumacao-e-tentativa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-03-calunia-formas-consumacao-e-tentativa/aula.json"
   },
@@ -4622,7 +4622,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-04-excecao-da-verdade-na-calunia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-04-excecao-da-verdade-na-calunia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-04-excecao-da-verdade-na-calunia/aula.json"
   },
@@ -4638,7 +4638,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-05-difamacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-05-difamacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-05-difamacao/aula.json"
   },
@@ -4654,7 +4654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-06-injuria-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-06-injuria-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-06-injuria-parte-i/aula.json"
   },
@@ -4670,7 +4670,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-07-sujeitos-nos-crimes-contra-a-honra/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-07-sujeitos-nos-crimes-contra-a-honra/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-07-sujeitos-nos-crimes-contra-a-honra/aula.json"
   },
@@ -4686,7 +4686,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-08-concurso-de-crimes-e-causas-de-aumento-de-pena-nos-crimes-contra-a-honra/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-08-concurso-de-crimes-e-causas-de-aumento-de-pena-nos-crimes-contra-a-honra/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-08-concurso-de-crimes-e-causas-de-aumento-de-pena-nos-crimes-contra-a-honra/aula.json"
   },
@@ -4702,7 +4702,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-09-excludentes-de-ilicitude-e-retratacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-09-excludentes-de-ilicitude-e-retratacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-09-excludentes-de-ilicitude-e-retratacao/aula.json"
   },
@@ -4718,7 +4718,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-40-pedidos-de-explicacoes-e-acao-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-40-pedidos-de-explicacoes-e-acao-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-40-pedidos-de-explicacoes-e-acao-penal/aula.json"
   },
@@ -4734,7 +4734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-41-constrangimento-ilegal-e-ameaca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-41-constrangimento-ilegal-e-ameaca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-41-constrangimento-ilegal-e-ameaca/aula.json"
   },
@@ -4750,7 +4750,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-42-perseguicao-e-violencia-psicologica-contra-a-mulher/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-42-perseguicao-e-violencia-psicologica-contra-a-mulher/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-42-perseguicao-e-violencia-psicologica-contra-a-mulher/aula.json"
   },
@@ -4766,7 +4766,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-43-sequestro-e-carcere-privado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-43-sequestro-e-carcere-privado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-43-sequestro-e-carcere-privado/aula.json"
   },
@@ -4782,7 +4782,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-44-reducao-a-condicao-analoga-a-de-escravo-e-trafico-de-pessoas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-44-reducao-a-condicao-analoga-a-de-escravo-e-trafico-de-pessoas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-44-reducao-a-condicao-analoga-a-de-escravo-e-trafico-de-pessoas/aula.json"
   },
@@ -4798,7 +4798,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-45-violacao-de-domicilio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-45-violacao-de-domicilio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/26-crimes-contra-a-pessoa/aula-45-violacao-de-domicilio/aula.json"
   },
@@ -4830,7 +4830,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-02-homicidio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-02-homicidio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-02-homicidio/aula.json"
   },
@@ -4846,7 +4846,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-03-homicidio-doloso-simples-e-privilegiado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-03-homicidio-doloso-simples-e-privilegiado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-03-homicidio-doloso-simples-e-privilegiado/aula.json"
   },
@@ -4862,7 +4862,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-04-qualificadoras-do-homicidio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-04-qualificadoras-do-homicidio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-04-qualificadoras-do-homicidio/aula.json"
   },
@@ -4878,7 +4878,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-05-homicidio-culposo-e-disposicoes-finais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-05-homicidio-culposo-e-disposicoes-finais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-05-homicidio-culposo-e-disposicoes-finais/aula.json"
   },
@@ -4894,7 +4894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-06-induzimento-instigacao-ou-auxilio-ao-suicidio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-06-induzimento-instigacao-ou-auxilio-ao-suicidio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-06-induzimento-instigacao-ou-auxilio-ao-suicidio/aula.json"
   },
@@ -4910,7 +4910,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-07-infanticidio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-07-infanticidio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-07-infanticidio/aula.json"
   },
@@ -4926,7 +4926,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-08-aborto/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-08-aborto/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/27-crimes-contra-a-vida/aula-08-aborto/aula.json"
   },
@@ -4942,7 +4942,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-01-introducao-aos-crimes-contra-a-honra/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-01-introducao-aos-crimes-contra-a-honra/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-01-introducao-aos-crimes-contra-a-honra/aula.json"
   },
@@ -4958,7 +4958,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-02-calunia-tipo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-02-calunia-tipo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-02-calunia-tipo-penal/aula.json"
   },
@@ -4974,7 +4974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-03-calunia-formas-consumacao-e-tentativa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-03-calunia-formas-consumacao-e-tentativa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-03-calunia-formas-consumacao-e-tentativa/aula.json"
   },
@@ -4990,7 +4990,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-04-excecao-da-verdade-na-calunia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-04-excecao-da-verdade-na-calunia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-04-excecao-da-verdade-na-calunia/aula.json"
   },
@@ -5006,7 +5006,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-05-difamacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-05-difamacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-05-difamacao/aula.json"
   },
@@ -5022,7 +5022,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-06-injuria-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-06-injuria-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-06-injuria-parte-i/aula.json"
   },
@@ -5038,7 +5038,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-07-sujeitos-nos-crimes-contra-a-honra/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-07-sujeitos-nos-crimes-contra-a-honra/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-07-sujeitos-nos-crimes-contra-a-honra/aula.json"
   },
@@ -5054,7 +5054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-08-concurso-de-crimes-e-causas-de-aumento-de-pena-nos-crimes-contra-a-honra/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-08-concurso-de-crimes-e-causas-de-aumento-de-pena-nos-crimes-contra-a-honra/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-08-concurso-de-crimes-e-causas-de-aumento-de-pena-nos-crimes-contra-a-honra/aula.json"
   },
@@ -5070,7 +5070,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-09-excludentes-de-ilicitude-e-retratacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-09-excludentes-de-ilicitude-e-retratacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-09-excludentes-de-ilicitude-e-retratacao/aula.json"
   },
@@ -5086,7 +5086,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-10-pedido-de-explicacoes-e-acao-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-10-pedido-de-explicacoes-e-acao-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/28-crimes-contra-a-honra/aula-10-pedido-de-explicacoes-e-acao-penal/aula.json"
   },
@@ -5118,7 +5118,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-02-do-furto/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-02-do-furto/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-02-do-furto/aula.json"
   },
@@ -5134,7 +5134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-03-do-roubo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-03-do-roubo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-03-do-roubo/aula.json"
   },
@@ -5150,7 +5150,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-04-da-extorsao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-04-da-extorsao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-04-da-extorsao/aula.json"
   },
@@ -5166,7 +5166,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-05-usurpacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-05-usurpacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-05-usurpacao/aula.json"
   },
@@ -5182,7 +5182,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-06-supressao-ou-alteracao-de-marcas-em-animais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-06-supressao-ou-alteracao-de-marcas-em-animais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-06-supressao-ou-alteracao-de-marcas-em-animais/aula.json"
   },
@@ -5198,7 +5198,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-07-do-dano/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-07-do-dano/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-07-do-dano/aula.json"
   },
@@ -5214,7 +5214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-08-da-introducao-ou-abandono-de-animais-em-propriedade-alheia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-08-da-introducao-ou-abandono-de-animais-em-propriedade-alheia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-08-da-introducao-ou-abandono-de-animais-em-propriedade-alheia/aula.json"
   },
@@ -5230,7 +5230,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-09-do-dano-em-coisa-de-valor-artistico-arqueologico-e-historico-e-da-alteracao-de-local-especialmente-protegido/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-09-do-dano-em-coisa-de-valor-artistico-arqueologico-e-historico-e-da-alteracao-de-local-especialmente-protegido/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-09-do-dano-em-coisa-de-valor-artistico-arqueologico-e-historico-e-da-alteracao-de-local-especialmente-protegido/aula.json"
   },
@@ -5246,7 +5246,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-10-da-apropriacao-indebita/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-10-da-apropriacao-indebita/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-10-da-apropriacao-indebita/aula.json"
   },
@@ -5262,7 +5262,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-11-da-apropriacao-de-coisa-havida-por-erro-caso-fortuito-ou-forca-da-natureza/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-11-da-apropriacao-de-coisa-havida-por-erro-caso-fortuito-ou-forca-da-natureza/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-11-da-apropriacao-de-coisa-havida-por-erro-caso-fortuito-ou-forca-da-natureza/aula.json"
   },
@@ -5278,7 +5278,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-12-da-apropriacao-de-tesouro-e-apropriacao-de-coisa-achada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-12-da-apropriacao-de-tesouro-e-apropriacao-de-coisa-achada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-12-da-apropriacao-de-tesouro-e-apropriacao-de-coisa-achada/aula.json"
   },
@@ -5294,7 +5294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-13-do-estelionato/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-13-do-estelionato/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-13-do-estelionato/aula.json"
   },
@@ -5310,7 +5310,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-14-da-fraude-eletronica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-14-da-fraude-eletronica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-14-da-fraude-eletronica/aula.json"
   },
@@ -5326,7 +5326,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-15-do-estelionato-previdenciario-e-do-estelionato-contra-idoso-e-vulneravel/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-15-do-estelionato-previdenciario-e-do-estelionato-contra-idoso-e-vulneravel/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-15-do-estelionato-previdenciario-e-do-estelionato-contra-idoso-e-vulneravel/aula.json"
   },
@@ -5342,7 +5342,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-16-da-duplicata-simulada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-16-da-duplicata-simulada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-16-da-duplicata-simulada/aula.json"
   },
@@ -5358,7 +5358,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-17-do-abuso-de-incapazes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-17-do-abuso-de-incapazes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-17-do-abuso-de-incapazes/aula.json"
   },
@@ -5374,7 +5374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-18-do-induzimento-a-especulacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-18-do-induzimento-a-especulacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-18-do-induzimento-a-especulacao/aula.json"
   },
@@ -5390,7 +5390,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-19-da-fraude-no-comercio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-19-da-fraude-no-comercio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-19-da-fraude-no-comercio/aula.json"
   },
@@ -5406,7 +5406,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-20-outras-fraudes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-20-outras-fraudes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-20-outras-fraudes/aula.json"
   },
@@ -5422,7 +5422,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-21-fraudes-e-abusos-na-fundacao-ou-administracao-de-sociedade-por-acoes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-21-fraudes-e-abusos-na-fundacao-ou-administracao-de-sociedade-por-acoes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-21-fraudes-e-abusos-na-fundacao-ou-administracao-de-sociedade-por-acoes/aula.json"
   },
@@ -5438,7 +5438,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-22-da-emissao-irregular-de-conhecimento-de-deposito-ou-warrant/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-22-da-emissao-irregular-de-conhecimento-de-deposito-ou-warrant/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-22-da-emissao-irregular-de-conhecimento-de-deposito-ou-warrant/aula.json"
   },
@@ -5454,7 +5454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-23-da-fraude-a-execucao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-23-da-fraude-a-execucao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-23-da-fraude-a-execucao/aula.json"
   },
@@ -5470,7 +5470,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-24-da-receptacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-24-da-receptacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-24-da-receptacao/aula.json"
   },
@@ -5486,7 +5486,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-25-disposicoes-gerais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-25-disposicoes-gerais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/29-crimes-contra-o-patrimonio/aula-25-disposicoes-gerais/aula.json"
   },
@@ -5502,7 +5502,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-01-introducao-ao-direito-penal-sexual/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-01-introducao-ao-direito-penal-sexual/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-01-introducao-ao-direito-penal-sexual/aula.json"
   },
@@ -5518,7 +5518,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-02-as-recentes-reformas-na-legislacao-brasileira-referente-aos-crimes-sexuais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-02-as-recentes-reformas-na-legislacao-brasileira-referente-aos-crimes-sexuais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-02-as-recentes-reformas-na-legislacao-brasileira-referente-aos-crimes-sexuais/aula.json"
   },
@@ -5534,7 +5534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-03-estupro/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-03-estupro/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-03-estupro/aula.json"
   },
@@ -5550,7 +5550,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-04-violacao-sexual-mediante-fraude/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-04-violacao-sexual-mediante-fraude/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-04-violacao-sexual-mediante-fraude/aula.json"
   },
@@ -5566,7 +5566,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-05-importunacao-sexual-art-215-a/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-05-importunacao-sexual-art-215-a/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-05-importunacao-sexual-art-215-a/aula.json"
   },
@@ -5582,7 +5582,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-06-crime-de-assedio-sexual/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-06-crime-de-assedio-sexual/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-06-crime-de-assedio-sexual/aula.json"
   },
@@ -5598,7 +5598,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-07-registro-nao-autorizado-da-intimidade-sexual-art-216-b/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-07-registro-nao-autorizado-da-intimidade-sexual-art-216-b/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-07-registro-nao-autorizado-da-intimidade-sexual-art-216-b/aula.json"
   },
@@ -5614,7 +5614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-08-crimes-sexuais-contra-vulneravel/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-08-crimes-sexuais-contra-vulneravel/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-08-crimes-sexuais-contra-vulneravel/aula.json"
   },
@@ -5630,7 +5630,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-09-favorecimento-de-prostituicao-ou-de-outra-forma-de-exploracao-sexual/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-09-favorecimento-de-prostituicao-ou-de-outra-forma-de-exploracao-sexual/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-09-favorecimento-de-prostituicao-ou-de-outra-forma-de-exploracao-sexual/aula.json"
   },
@@ -5646,7 +5646,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-10-divulgacao-de-cena-de-estupro-ou-cena-de-sexo-nao-autorizada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-10-divulgacao-de-cena-de-estupro-ou-cena-de-sexo-nao-autorizada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-10-divulgacao-de-cena-de-estupro-ou-cena-de-sexo-nao-autorizada/aula.json"
   },
@@ -5662,7 +5662,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-11-mediacao-para-servir-a-lascivia-de-outrem-e-rufianismo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-11-mediacao-para-servir-a-lascivia-de-outrem-e-rufianismo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-11-mediacao-para-servir-a-lascivia-de-outrem-e-rufianismo/aula.json"
   },
@@ -5678,7 +5678,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-12-crime-de-manter-casa-de-prostituicao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-12-crime-de-manter-casa-de-prostituicao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-12-crime-de-manter-casa-de-prostituicao/aula.json"
   },
@@ -5694,7 +5694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-13-trafico-de-pessoa-para-fim-de-exploracao-sexual/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-13-trafico-de-pessoa-para-fim-de-exploracao-sexual/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-13-trafico-de-pessoa-para-fim-de-exploracao-sexual/aula.json"
   },
@@ -5710,7 +5710,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-14-ultraje-publico-ao-pudor/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-14-ultraje-publico-ao-pudor/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-14-ultraje-publico-ao-pudor/aula.json"
   },
@@ -5726,7 +5726,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-15-crimes-relacionados-a-pornografia-infantil-lei-8-069-90/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-15-crimes-relacionados-a-pornografia-infantil-lei-8-069-90/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-15-crimes-relacionados-a-pornografia-infantil-lei-8-069-90/aula.json"
   },
@@ -5742,7 +5742,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-16-aspectos-processuais-de-crimes-sexuais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-16-aspectos-processuais-de-crimes-sexuais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-16-aspectos-processuais-de-crimes-sexuais/aula.json"
   },
@@ -5758,7 +5758,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-17-causas-de-aumento-de-pena-nos-crimes-sexuais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-17-causas-de-aumento-de-pena-nos-crimes-sexuais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/30-crimes-contra-a-dignidade-sexual/aula-17-causas-de-aumento-de-pena-nos-crimes-sexuais/aula.json"
   },
@@ -5774,7 +5774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-01-introducao-e-metodologia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-01-introducao-e-metodologia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-01-introducao-e-metodologia/aula.json"
   },
@@ -5790,7 +5790,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-02-regulacao-brasileira-das-obscenidades/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-02-regulacao-brasileira-das-obscenidades/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-02-regulacao-brasileira-das-obscenidades/aula.json"
   },
@@ -5806,7 +5806,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-03-desvios-sexuais-e-medidas-de-seguranca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-03-desvios-sexuais-e-medidas-de-seguranca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-03-desvios-sexuais-e-medidas-de-seguranca/aula.json"
   },
@@ -5822,7 +5822,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-04-estupro-de-vulneravel/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-04-estupro-de-vulneravel/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-04-estupro-de-vulneravel/aula.json"
   },
@@ -5838,7 +5838,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-05-corrupcao-de-menores/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-05-corrupcao-de-menores/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-05-corrupcao-de-menores/aula.json"
   },
@@ -5854,7 +5854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-06-atos-preparatorios-puniveis-no-estupro-de-vulneravel/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-06-atos-preparatorios-puniveis-no-estupro-de-vulneravel/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-06-atos-preparatorios-puniveis-no-estupro-de-vulneravel/aula.json"
   },
@@ -5870,7 +5870,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-07-exibicionismo-contra-menores/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-07-exibicionismo-contra-menores/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-07-exibicionismo-contra-menores/aula.json"
   },
@@ -5886,7 +5886,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-08-divulgacao-de-cena-de-estupro-de-vulneravel/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-08-divulgacao-de-cena-de-estupro-de-vulneravel/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-08-divulgacao-de-cena-de-estupro-de-vulneravel/aula.json"
   },
@@ -5902,7 +5902,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-09-pornografia-infantil-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-09-pornografia-infantil-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-09-pornografia-infantil-parte-i/aula.json"
   },
@@ -5918,7 +5918,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-10-tipificacao-da-pornografia-violenta/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-10-tipificacao-da-pornografia-violenta/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-10-tipificacao-da-pornografia-violenta/aula.json"
   },
@@ -5934,7 +5934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-11-regulacao-da-pornografia-adulta-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-11-regulacao-da-pornografia-adulta-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/31-direito-penal-sexual-teoria-geral-e-reflexos-tipicos/aula-11-regulacao-da-pornografia-adulta-parte-i/aula.json"
   },
@@ -5966,7 +5966,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-02-arts-198-e-199-do-codigo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-02-arts-198-e-199-do-codigo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-02-arts-198-e-199-do-codigo-penal/aula.json"
   },
@@ -5982,7 +5982,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-03-arts-200-e-201-do-codigo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-03-arts-200-e-201-do-codigo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-03-arts-200-e-201-do-codigo-penal/aula.json"
   },
@@ -5998,7 +5998,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-04-arts-202-e-203-do-codigo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-04-arts-202-e-203-do-codigo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-04-arts-202-e-203-do-codigo-penal/aula.json"
   },
@@ -6014,7 +6014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-05-arts-204-e-205-do-codigo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-05-arts-204-e-205-do-codigo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-05-arts-204-e-205-do-codigo-penal/aula.json"
   },
@@ -6030,7 +6030,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-06-arts-206-e-207-do-codigo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-06-arts-206-e-207-do-codigo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-06-arts-206-e-207-do-codigo-penal/aula.json"
   },
@@ -6046,7 +6046,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-07-crimes-contra-o-sentimento-religioso-nocoes-gerais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-07-crimes-contra-o-sentimento-religioso-nocoes-gerais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-07-crimes-contra-o-sentimento-religioso-nocoes-gerais/aula.json"
   },
@@ -6062,7 +6062,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-08-arts-209-a-212-do-codigo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-08-arts-209-a-212-do-codigo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/32-crimes-contra-a-organizacao-do-trabalho/aula-08-arts-209-a-212-do-codigo-penal/aula.json"
   },
@@ -6094,7 +6094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-02-violacao-dos-direitos-de-autores/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-02-violacao-dos-direitos-de-autores/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-02-violacao-dos-direitos-de-autores/aula.json"
   },
@@ -6110,7 +6110,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-03-classificacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-03-classificacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-03-classificacao/aula.json"
   },
@@ -6126,7 +6126,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-04-formas-qualificadas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-04-formas-qualificadas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-04-formas-qualificadas/aula.json"
   },
@@ -6142,7 +6142,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-05-procedimento-das-formas-qualificadas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-05-procedimento-das-formas-qualificadas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/33-crimes-contra-a-propriedade-imaterial/aula-05-procedimento-das-formas-qualificadas/aula.json"
   },
@@ -6174,7 +6174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-02-conceito-de-funcionario-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-02-conceito-de-funcionario-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-02-conceito-de-funcionario-publico/aula.json"
   },
@@ -6190,7 +6190,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-03-informante-do-bem/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-03-informante-do-bem/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-03-informante-do-bem/aula.json"
   },
@@ -6206,7 +6206,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-04-peculato/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-04-peculato/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-04-peculato/aula.json"
   },
@@ -6222,7 +6222,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-05-insercao-de-dados-falsos-em-sistema-de-informacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-05-insercao-de-dados-falsos-em-sistema-de-informacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-05-insercao-de-dados-falsos-em-sistema-de-informacao/aula.json"
   },
@@ -6238,7 +6238,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-06-modificacao-ou-alteracao-nao-autorizada-de-sistema-de-informacoes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-06-modificacao-ou-alteracao-nao-autorizada-de-sistema-de-informacoes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-06-modificacao-ou-alteracao-nao-autorizada-de-sistema-de-informacoes/aula.json"
   },
@@ -6254,7 +6254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-07-extravio-sonegacao-ou-inutilizacao-de-livro-ou-documento/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-07-extravio-sonegacao-ou-inutilizacao-de-livro-ou-documento/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-07-extravio-sonegacao-ou-inutilizacao-de-livro-ou-documento/aula.json"
   },
@@ -6270,7 +6270,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-08-emprego-irregular-de-verbas-ou-rendas-publicas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-08-emprego-irregular-de-verbas-ou-rendas-publicas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-08-emprego-irregular-de-verbas-ou-rendas-publicas/aula.json"
   },
@@ -6286,7 +6286,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-09-concussao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-09-concussao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-09-concussao/aula.json"
   },
@@ -6302,7 +6302,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-10-excesso-de-exacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-10-excesso-de-exacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-10-excesso-de-exacao/aula.json"
   },
@@ -6318,7 +6318,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-11-corrupcao-passiva/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-11-corrupcao-passiva/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-11-corrupcao-passiva/aula.json"
   },
@@ -6334,7 +6334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-12-facilitacao-de-contrabando-ou-descaminho/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-12-facilitacao-de-contrabando-ou-descaminho/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-12-facilitacao-de-contrabando-ou-descaminho/aula.json"
   },
@@ -6350,7 +6350,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-13-prevaricacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-13-prevaricacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-13-prevaricacao/aula.json"
   },
@@ -6366,7 +6366,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-14-condescendencia-criminosa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-14-condescendencia-criminosa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-14-condescendencia-criminosa/aula.json"
   },
@@ -6382,7 +6382,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-15-advocacia-administrativa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-15-advocacia-administrativa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-15-advocacia-administrativa/aula.json"
   },
@@ -6398,7 +6398,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-16-violencia-arbitraria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-16-violencia-arbitraria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-16-violencia-arbitraria/aula.json"
   },
@@ -6414,7 +6414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-17-abandono-de-funcao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-17-abandono-de-funcao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-17-abandono-de-funcao/aula.json"
   },
@@ -6430,7 +6430,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-18-exercicio-funcional-ilegalmente-antecipado-ou-prolongado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-18-exercicio-funcional-ilegalmente-antecipado-ou-prolongado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-18-exercicio-funcional-ilegalmente-antecipado-ou-prolongado/aula.json"
   },
@@ -6446,7 +6446,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-19-violacao-de-sigilo-funcional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-19-violacao-de-sigilo-funcional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/34-crimes-praticados-por-funcionario-publico-contra-a-administracao/aula-19-violacao-de-sigilo-funcional/aula.json"
   },
@@ -6478,7 +6478,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-02-usurpacao-de-funcao-publica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-02-usurpacao-de-funcao-publica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-02-usurpacao-de-funcao-publica/aula.json"
   },
@@ -6494,7 +6494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-03-resistencia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-03-resistencia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-03-resistencia/aula.json"
   },
@@ -6510,7 +6510,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-04-desobediencia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-04-desobediencia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-04-desobediencia/aula.json"
   },
@@ -6526,7 +6526,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-05-desacato/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-05-desacato/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-05-desacato/aula.json"
   },
@@ -6542,7 +6542,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-06-trafico-de-influencia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-06-trafico-de-influencia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-06-trafico-de-influencia/aula.json"
   },
@@ -6558,7 +6558,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-07-corrupcao-ativa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-07-corrupcao-ativa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-07-corrupcao-ativa/aula.json"
   },
@@ -6574,7 +6574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-08-descaminho/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-08-descaminho/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-08-descaminho/aula.json"
   },
@@ -6590,7 +6590,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-09-contrabando/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-09-contrabando/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-09-contrabando/aula.json"
   },
@@ -6606,7 +6606,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-10-impedimento-perturbacao-ou-fraude-de-concorrencia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-10-impedimento-perturbacao-ou-fraude-de-concorrencia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-10-impedimento-perturbacao-ou-fraude-de-concorrencia/aula.json"
   },
@@ -6622,7 +6622,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-11-inutilizacao-de-sinal-ou-edital/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-11-inutilizacao-de-sinal-ou-edital/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-11-inutilizacao-de-sinal-ou-edital/aula.json"
   },
@@ -6638,7 +6638,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-12-subtracao-ou-inutilizacao-de-livro-ou-documento/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-12-subtracao-ou-inutilizacao-de-livro-ou-documento/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-12-subtracao-ou-inutilizacao-de-livro-ou-documento/aula.json"
   },
@@ -6654,7 +6654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-13-sonegacao-de-contribuicao-previdenciaria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-13-sonegacao-de-contribuicao-previdenciaria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-13-sonegacao-de-contribuicao-previdenciaria/aula.json"
   },
@@ -6670,7 +6670,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-14-crimes-praticados-por-particular-contra-a-administracao-publica-estrangeira/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-14-crimes-praticados-por-particular-contra-a-administracao-publica-estrangeira/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-14-crimes-praticados-por-particular-contra-a-administracao-publica-estrangeira/aula.json"
   },
@@ -6686,7 +6686,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-15-corrupcao-ativa-em-transacao-comercial-internacional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-15-corrupcao-ativa-em-transacao-comercial-internacional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-15-corrupcao-ativa-em-transacao-comercial-internacional/aula.json"
   },
@@ -6702,7 +6702,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-16-trafico-de-influencia-em-transacao-comercial-internacional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-16-trafico-de-influencia-em-transacao-comercial-internacional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/35-crimes-praticados-por-particular-contra-a-administracao-em-geral-e-estrangeira/aula-16-trafico-de-influencia-em-transacao-comercial-internacional/aula.json"
   },
@@ -6718,7 +6718,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-01-crimes-contra-o-sentimento-religioso/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-01-crimes-contra-o-sentimento-religioso/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-01-crimes-contra-o-sentimento-religioso/aula.json"
   },
@@ -6734,7 +6734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-02-escarnio-de-alguem-por-motivo-de-crenca-ou-funcao-religiosa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-02-escarnio-de-alguem-por-motivo-de-crenca-ou-funcao-religiosa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-02-escarnio-de-alguem-por-motivo-de-crenca-ou-funcao-religiosa/aula.json"
   },
@@ -6750,7 +6750,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-03-impedimento-ou-perturbacao-de-cerimonia-ou-pratica-de-culto-religioso/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-03-impedimento-ou-perturbacao-de-cerimonia-ou-pratica-de-culto-religioso/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-03-impedimento-ou-perturbacao-de-cerimonia-ou-pratica-de-culto-religioso/aula.json"
   },
@@ -6766,7 +6766,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-04-vilipendio-publico-de-ato-ou-objeto-de-culto-religioso/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-04-vilipendio-publico-de-ato-ou-objeto-de-culto-religioso/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-04-vilipendio-publico-de-ato-ou-objeto-de-culto-religioso/aula.json"
   },
@@ -6782,7 +6782,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-05-aspectos-comuns-finais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-05-aspectos-comuns-finais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/36-crimes-contra-o-sentimento-religioso/aula-05-aspectos-comuns-finais/aula.json"
   },
@@ -6814,7 +6814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-02-contratacao-direta-ilegal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-02-contratacao-direta-ilegal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-02-contratacao-direta-ilegal/aula.json"
   },
@@ -6830,7 +6830,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-03-frustracao-do-carater-competitivo-de-licitacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-03-frustracao-do-carater-competitivo-de-licitacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-03-frustracao-do-carater-competitivo-de-licitacao/aula.json"
   },
@@ -6846,7 +6846,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-04-patrocinio-de-contratacao-indevida/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-04-patrocinio-de-contratacao-indevida/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-04-patrocinio-de-contratacao-indevida/aula.json"
   },
@@ -6862,7 +6862,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-05-modificacao-ou-pagamento-irregular-em-contrato-administrativo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-05-modificacao-ou-pagamento-irregular-em-contrato-administrativo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-05-modificacao-ou-pagamento-irregular-em-contrato-administrativo/aula.json"
   },
@@ -6878,7 +6878,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-06-perturbacao-de-processo-licitatorio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-06-perturbacao-de-processo-licitatorio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-06-perturbacao-de-processo-licitatorio/aula.json"
   },
@@ -6894,7 +6894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-07-violacao-de-sigilo-em-licitacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-07-violacao-de-sigilo-em-licitacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-07-violacao-de-sigilo-em-licitacao/aula.json"
   },
@@ -6910,7 +6910,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-08-afastamento-de-licitante/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-08-afastamento-de-licitante/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-08-afastamento-de-licitante/aula.json"
   },
@@ -6926,7 +6926,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-09-fraude-em-licitacao-ou-contrato/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-09-fraude-em-licitacao-ou-contrato/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-09-fraude-em-licitacao-ou-contrato/aula.json"
   },
@@ -6942,7 +6942,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-10-contratacao-inidonea/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-10-contratacao-inidonea/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-10-contratacao-inidonea/aula.json"
   },
@@ -6958,7 +6958,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-11-impedimento-indevido/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-11-impedimento-indevido/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-11-impedimento-indevido/aula.json"
   },
@@ -6974,7 +6974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-12-omissao-grave-de-dado-ou-de-informacao-por-projetista/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-12-omissao-grave-de-dado-ou-de-informacao-por-projetista/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/37-crimes-praticados-em-licitacoes-e-contratos-administrativos/aula-12-omissao-grave-de-dado-ou-de-informacao-por-projetista/aula.json"
   },
@@ -6990,7 +6990,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-01-moeda-falsa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-01-moeda-falsa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-01-moeda-falsa/aula.json"
   },
@@ -7006,7 +7006,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-02-falsificacao-de-documento-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-02-falsificacao-de-documento-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-02-falsificacao-de-documento-publico/aula.json"
   },
@@ -7022,7 +7022,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-03-falsificacao-de-documento-particular-e-falsidade-do-atestado-medico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-03-falsificacao-de-documento-particular-e-falsidade-do-atestado-medico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-03-falsificacao-de-documento-particular-e-falsidade-do-atestado-medico/aula.json"
   },
@@ -7038,7 +7038,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-04-falsidade-ideologica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-04-falsidade-ideologica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-04-falsidade-ideologica/aula.json"
   },
@@ -7054,7 +7054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-05-certidao-ou-atestado-ideologicamente-falso/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-05-certidao-ou-atestado-ideologicamente-falso/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-05-certidao-ou-atestado-ideologicamente-falso/aula.json"
   },
@@ -7070,7 +7070,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-06-uso-de-documento-falso-e-falsa-identidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-06-uso-de-documento-falso-e-falsa-identidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-06-uso-de-documento-falso-e-falsa-identidade/aula.json"
   },
@@ -7086,7 +7086,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-07-adulteracao-de-sinal-identificador-de-veiculo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-07-adulteracao-de-sinal-identificador-de-veiculo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-07-adulteracao-de-sinal-identificador-de-veiculo/aula.json"
   },
@@ -7102,7 +7102,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-08-fraudes-em-certames-de-interesse-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-08-fraudes-em-certames-de-interesse-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/38-crimes-contra-a-fe-publica/aula-08-fraudes-em-certames-de-interesse-publico/aula.json"
   },
@@ -7118,7 +7118,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-01-reingresso-de-estrangeiro-expulso-e-denunciacao-caluniosa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-01-reingresso-de-estrangeiro-expulso-e-denunciacao-caluniosa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-01-reingresso-de-estrangeiro-expulso-e-denunciacao-caluniosa/aula.json"
   },
@@ -7134,7 +7134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-02-comunicacao-falsa-e-autoacusacao-falsa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-02-comunicacao-falsa-e-autoacusacao-falsa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-02-comunicacao-falsa-e-autoacusacao-falsa/aula.json"
   },
@@ -7150,7 +7150,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-03-falso-testemunho-ou-falsa-pericia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-03-falso-testemunho-ou-falsa-pericia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-03-falso-testemunho-ou-falsa-pericia/aula.json"
   },
@@ -7166,7 +7166,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-04-corrupcao-ativa-especifica-e-coacao-do-curso-do-processo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-04-corrupcao-ativa-especifica-e-coacao-do-curso-do-processo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-04-corrupcao-ativa-especifica-e-coacao-do-curso-do-processo/aula.json"
   },
@@ -7182,7 +7182,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-05-exercicio-arbitrario-das-proprias-razoes-e-fraude-processual/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-05-exercicio-arbitrario-das-proprias-razoes-e-fraude-processual/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-05-exercicio-arbitrario-das-proprias-razoes-e-fraude-processual/aula.json"
   },
@@ -7198,7 +7198,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-06-favorecimento-pessoal-e-favorecimento-real/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-06-favorecimento-pessoal-e-favorecimento-real/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-06-favorecimento-pessoal-e-favorecimento-real/aula.json"
   },
@@ -7214,7 +7214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-07-crimes-praticados-ou-relacionados-a-presos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-07-crimes-praticados-ou-relacionados-a-presos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-07-crimes-praticados-ou-relacionados-a-presos/aula.json"
   },
@@ -7230,7 +7230,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-08-patrocinio-infiel-exploracao-de-prestigio-e-desobediencia-a-decisao-judicial-sobre-perda-ou-suspensao-de-direito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-08-patrocinio-infiel-exploracao-de-prestigio-e-desobediencia-a-decisao-judicial-sobre-perda-ou-suspensao-de-direito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/39-crimes-contra-a-administracao-da-justica/aula-08-patrocinio-infiel-exploracao-de-prestigio-e-desobediencia-a-decisao-judicial-sobre-perda-ou-suspensao-de-direito/aula.json"
   },
@@ -7246,7 +7246,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-01-consideracoes-gerais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-01-consideracoes-gerais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-01-consideracoes-gerais/aula.json"
   },
@@ -7262,7 +7262,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-02-porte-de-drogas-para-consumo-pessoal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-02-porte-de-drogas-para-consumo-pessoal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-02-porte-de-drogas-para-consumo-pessoal/aula.json"
   },
@@ -7278,7 +7278,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-03-sancoes-aplicaveis/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-03-sancoes-aplicaveis/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-03-sancoes-aplicaveis/aula.json"
   },
@@ -7294,7 +7294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-04-jurisprudencia-relevante/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-04-jurisprudencia-relevante/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-04-jurisprudencia-relevante/aula.json"
   },
@@ -7310,7 +7310,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-05-trafico-de-drogas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-05-trafico-de-drogas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-05-trafico-de-drogas/aula.json"
   },
@@ -7326,7 +7326,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-06-condutas-equiparadas-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-06-condutas-equiparadas-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-06-condutas-equiparadas-parte-i/aula.json"
   },
@@ -7342,7 +7342,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-07-trafico-privilegiado-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-07-trafico-privilegiado-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-07-trafico-privilegiado-parte-i/aula.json"
   },
@@ -7358,7 +7358,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-08-trafico-de-maquinario-para-fabricacao-de-drogas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-08-trafico-de-maquinario-para-fabricacao-de-drogas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-08-trafico-de-maquinario-para-fabricacao-de-drogas/aula.json"
   },
@@ -7374,7 +7374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-09-associacao-para-o-trafico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-09-associacao-para-o-trafico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-09-associacao-para-o-trafico/aula.json"
   },
@@ -7390,7 +7390,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-10-financiamento-ou-custeio-ao-trafico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-10-financiamento-ou-custeio-ao-trafico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-10-financiamento-ou-custeio-ao-trafico/aula.json"
   },
@@ -7406,7 +7406,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-11-informante-ou-colaborador/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-11-informante-ou-colaborador/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-11-informante-ou-colaborador/aula.json"
   },
@@ -7422,7 +7422,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-12-prescricao-ou-ministracao-culposa-de-drogas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-12-prescricao-ou-ministracao-culposa-de-drogas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-12-prescricao-ou-ministracao-culposa-de-drogas/aula.json"
   },
@@ -7438,7 +7438,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-13-conducao-de-embarcacao-ou-aeronave-sob-a-influencia-de-drogas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-13-conducao-de-embarcacao-ou-aeronave-sob-a-influencia-de-drogas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-13-conducao-de-embarcacao-ou-aeronave-sob-a-influencia-de-drogas/aula.json"
   },
@@ -7454,7 +7454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-14-fixacao-da-pena/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-14-fixacao-da-pena/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-14-fixacao-da-pena/aula.json"
   },
@@ -7470,7 +7470,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-15-causas-de-aumento-de-pena-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-15-causas-de-aumento-de-pena-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-15-causas-de-aumento-de-pena-parte-i/aula.json"
   },
@@ -7486,7 +7486,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-16-vedacoes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-16-vedacoes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-16-vedacoes/aula.json"
   },
@@ -7502,7 +7502,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-17-procedimento-penal-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-17-procedimento-penal-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-17-procedimento-penal-parte-i/aula.json"
   },
@@ -7518,7 +7518,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-18-medidas-assecuratorias/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-18-medidas-assecuratorias/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-18-medidas-assecuratorias/aula.json"
   },
@@ -7534,7 +7534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-19-destruicao-de-plantacoes-ilicitas-e-drogas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-19-destruicao-de-plantacoes-ilicitas-e-drogas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-19-destruicao-de-plantacoes-ilicitas-e-drogas/aula.json"
   },
@@ -7550,7 +7550,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-20-apreensao-e-destinacao-dos-bens-do-acusado-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-20-apreensao-e-destinacao-dos-bens-do-acusado-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/40-lei-de-drogas/aula-20-apreensao-e-destinacao-dos-bens-do-acusado-parte-i/aula.json"
   },
@@ -7566,7 +7566,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-01-generalidades/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-01-generalidades/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-01-generalidades/aula.json"
   },
@@ -7582,7 +7582,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-02-como-comprar-e-registrar-uma-arma-parte-1/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-02-como-comprar-e-registrar-uma-arma-parte-1/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-02-como-comprar-e-registrar-uma-arma-parte-1/aula.json"
   },
@@ -7598,7 +7598,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-03-estatuto-do-desarmamento-no-tempo-e-principio-da-insignificancia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-03-estatuto-do-desarmamento-no-tempo-e-principio-da-insignificancia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-03-estatuto-do-desarmamento-no-tempo-e-principio-da-insignificancia/aula.json"
   },
@@ -7614,7 +7614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-04-posse-irregular-de-arma-de-fogo-de-uso-permitido/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-04-posse-irregular-de-arma-de-fogo-de-uso-permitido/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-04-posse-irregular-de-arma-de-fogo-de-uso-permitido/aula.json"
   },
@@ -7630,7 +7630,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-05-omissao-de-cautela/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-05-omissao-de-cautela/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-05-omissao-de-cautela/aula.json"
   },
@@ -7646,7 +7646,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-06-porte-ilegal-de-arma-de-fogo-de-uso-permitido/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-06-porte-ilegal-de-arma-de-fogo-de-uso-permitido/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-06-porte-ilegal-de-arma-de-fogo-de-uso-permitido/aula.json"
   },
@@ -7662,7 +7662,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-07-disparo-de-arma-de-fogo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-07-disparo-de-arma-de-fogo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-07-disparo-de-arma-de-fogo/aula.json"
   },
@@ -7678,7 +7678,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-08-porte-ou-posse-ilegal-de-arma-de-fogo-de-uso-restrito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-08-porte-ou-posse-ilegal-de-arma-de-fogo-de-uso-restrito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-08-porte-ou-posse-ilegal-de-arma-de-fogo-de-uso-restrito/aula.json"
   },
@@ -7694,7 +7694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-09-comercio-ilegal-de-arma-de-fogo-e-trafico-internacional-de-arma-de-fogo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-09-comercio-ilegal-de-arma-de-fogo-e-trafico-internacional-de-arma-de-fogo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/41-estatuto-do-desarmamento/aula-09-comercio-ilegal-de-arma-de-fogo-e-trafico-internacional-de-arma-de-fogo/aula.json"
   },
@@ -7710,7 +7710,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-01-interceptacao-telefonica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-01-interceptacao-telefonica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-01-interceptacao-telefonica/aula.json"
   },
@@ -7726,7 +7726,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-02-interceptacao-telefonica-requisitos-e-serendipidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-02-interceptacao-telefonica-requisitos-e-serendipidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-02-interceptacao-telefonica-requisitos-e-serendipidade/aula.json"
   },
@@ -7742,7 +7742,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-03-interceptacao-telefonica-mudancas-legislativas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-03-interceptacao-telefonica-mudancas-legislativas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-03-interceptacao-telefonica-mudancas-legislativas/aula.json"
   },
@@ -7758,7 +7758,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-04-crimes-hediondos-o-rol/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-04-crimes-hediondos-o-rol/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-04-crimes-hediondos-o-rol/aula.json"
   },
@@ -7774,7 +7774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-05-crimes-hediondos-questoes-importantes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-05-crimes-hediondos-questoes-importantes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-05-crimes-hediondos-questoes-importantes/aula.json"
   },
@@ -7790,7 +7790,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-06-crimes-hediondos-crimes-equiparados/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-06-crimes-hediondos-crimes-equiparados/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-06-crimes-hediondos-crimes-equiparados/aula.json"
   },
@@ -7806,7 +7806,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-07-crimes-hediondos-consequencias-legais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-07-crimes-hediondos-consequencias-legais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-07-crimes-hediondos-consequencias-legais/aula.json"
   },
@@ -7822,7 +7822,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-08-lei-maria-da-penha-violencia-contra-a-mulher/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-08-lei-maria-da-penha-violencia-contra-a-mulher/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-08-lei-maria-da-penha-violencia-contra-a-mulher/aula.json"
   },
@@ -7838,7 +7838,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-09-lei-maria-da-penha-acao-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-09-lei-maria-da-penha-acao-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-09-lei-maria-da-penha-acao-penal/aula.json"
   },
@@ -7854,7 +7854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-10-lei-maria-da-penha-medidas-protetivas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-10-lei-maria-da-penha-medidas-protetivas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-10-lei-maria-da-penha-medidas-protetivas/aula.json"
   },
@@ -7870,7 +7870,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-11-lei-maria-da-penha-prisao-do-agressor/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-11-lei-maria-da-penha-prisao-do-agressor/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-11-lei-maria-da-penha-prisao-do-agressor/aula.json"
   },
@@ -7886,7 +7886,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-12-orcrim-conceito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-12-orcrim-conceito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-12-orcrim-conceito/aula.json"
   },
@@ -7902,7 +7902,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-13-orcrim-infiltracao-de-agentes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-13-orcrim-infiltracao-de-agentes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-13-orcrim-infiltracao-de-agentes/aula.json"
   },
@@ -7918,7 +7918,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-14-orcrim-colaboracao-premiada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-14-orcrim-colaboracao-premiada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-14-orcrim-colaboracao-premiada/aula.json"
   },
@@ -7934,7 +7934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-15-estatuto-do-desarmamento-introducao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-15-estatuto-do-desarmamento-introducao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-15-estatuto-do-desarmamento-introducao/aula.json"
   },
@@ -7950,7 +7950,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-16-estatuto-do-desarmamento-posse-irregular-de-arma-de-fogo-de-uso-permitido/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-16-estatuto-do-desarmamento-posse-irregular-de-arma-de-fogo-de-uso-permitido/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-16-estatuto-do-desarmamento-posse-irregular-de-arma-de-fogo-de-uso-permitido/aula.json"
   },
@@ -7966,7 +7966,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-17-estatuto-do-desarmamento-omissao-de-cautela/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-17-estatuto-do-desarmamento-omissao-de-cautela/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-17-estatuto-do-desarmamento-omissao-de-cautela/aula.json"
   },
@@ -7982,7 +7982,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-18-estatuto-do-desarmamento-porte-ilegal-de-arma-de-fogo-de-uso-permitido/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-18-estatuto-do-desarmamento-porte-ilegal-de-arma-de-fogo-de-uso-permitido/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-18-estatuto-do-desarmamento-porte-ilegal-de-arma-de-fogo-de-uso-permitido/aula.json"
   },
@@ -7998,7 +7998,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-19-estatuto-do-desarmamento-disparo-de-arma-de-fogo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-19-estatuto-do-desarmamento-disparo-de-arma-de-fogo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-19-estatuto-do-desarmamento-disparo-de-arma-de-fogo/aula.json"
   },
@@ -8014,7 +8014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-20-posse-ou-porte-ilegal-de-arma-de-fogo-de-uso-restrito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-20-posse-ou-porte-ilegal-de-arma-de-fogo-de-uso-restrito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-20-posse-ou-porte-ilegal-de-arma-de-fogo-de-uso-restrito/aula.json"
   },
@@ -8030,7 +8030,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-21-estatuto-do-desarmamento-comercio-ilegal-de-arma-de-fogo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-21-estatuto-do-desarmamento-comercio-ilegal-de-arma-de-fogo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-21-estatuto-do-desarmamento-comercio-ilegal-de-arma-de-fogo/aula.json"
   },
@@ -8046,7 +8046,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-22-lei-de-drogas-aspectos-gerais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-22-lei-de-drogas-aspectos-gerais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-22-lei-de-drogas-aspectos-gerais/aula.json"
   },
@@ -8062,7 +8062,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-23-lei-de-drogas-porte-ou-cultivo-para-consumo-pessoal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-23-lei-de-drogas-porte-ou-cultivo-para-consumo-pessoal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-23-lei-de-drogas-porte-ou-cultivo-para-consumo-pessoal/aula.json"
   },
@@ -8078,7 +8078,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-24-lei-de-drogas-trafico-de-drogas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-24-lei-de-drogas-trafico-de-drogas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-24-lei-de-drogas-trafico-de-drogas/aula.json"
   },
@@ -8094,7 +8094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-25-lei-de-drogas-trafico-privilegiado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-25-lei-de-drogas-trafico-privilegiado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-25-lei-de-drogas-trafico-privilegiado/aula.json"
   },
@@ -8110,7 +8110,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-26-lei-de-drogas-associacao-para-o-trafico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-26-lei-de-drogas-associacao-para-o-trafico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-26-lei-de-drogas-associacao-para-o-trafico/aula.json"
   },
@@ -8126,7 +8126,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-27-lei-de-drogas-causas-de-aumento/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-27-lei-de-drogas-causas-de-aumento/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-27-lei-de-drogas-causas-de-aumento/aula.json"
   },
@@ -8142,7 +8142,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-28-lei-de-drogas-aspectos-procedimentais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-28-lei-de-drogas-aspectos-procedimentais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/42-legislacao-penal-extravagante/aula-28-lei-de-drogas-aspectos-procedimentais/aula.json"
   },
@@ -8158,7 +8158,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-01-historico-e-natureza-da-pessoa-juridica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-01-historico-e-natureza-da-pessoa-juridica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-01-historico-e-natureza-da-pessoa-juridica/aula.json"
   },
@@ -8174,7 +8174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-02-criticas-a-possibilidade-de-responsabilizacao-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-02-criticas-a-possibilidade-de-responsabilizacao-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-02-criticas-a-possibilidade-de-responsabilizacao-penal/aula.json"
   },
@@ -8190,7 +8190,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-03-por-que-a-responsabilizacao-penal-e-necessaria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-03-por-que-a-responsabilizacao-penal-e-necessaria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-03-por-que-a-responsabilizacao-penal-e-necessaria/aula.json"
   },
@@ -8206,7 +8206,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-04-modelos-de-responsabilizacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-04-modelos-de-responsabilizacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-04-modelos-de-responsabilizacao/aula.json"
   },
@@ -8222,7 +8222,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-05-previsao-constitucional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-05-previsao-constitucional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-05-previsao-constitucional/aula.json"
   },
@@ -8238,7 +8238,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-06-lei-9-605-98/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-06-lei-9-605-98/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-06-lei-9-605-98/aula.json"
   },
@@ -8254,7 +8254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-07-novo-codigo-penal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-07-novo-codigo-penal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-07-novo-codigo-penal/aula.json"
   },
@@ -8270,7 +8270,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-08-responsabilizacao-penal-da-pessoa-juridica-em-outros-paises/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-08-responsabilizacao-penal-da-pessoa-juridica-em-outros-paises/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-08-responsabilizacao-penal-da-pessoa-juridica-em-outros-paises/aula.json"
   },
@@ -8286,7 +8286,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 30,
     "imagensQtd": 30,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-09-futuro-do-instituto/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-09-futuro-do-instituto/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/43-responsabilidade-penal-da-pessoa-juridica/aula-09-futuro-do-instituto/aula.json"
   },
@@ -8302,7 +8302,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-01-crimes-comuns-proprios-e-de-mao-propria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-01-crimes-comuns-proprios-e-de-mao-propria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-01-crimes-comuns-proprios-e-de-mao-propria/aula.json"
   },
@@ -8318,7 +8318,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-02-crimes-materiais-formais-e-de-mera-conduta/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-02-crimes-materiais-formais-e-de-mera-conduta/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-02-crimes-materiais-formais-e-de-mera-conduta/aula.json"
   },
@@ -8334,7 +8334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-03-crimes-unissubjetivos-plurissubjetivos-e-eventualmente-coletivos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-03-crimes-unissubjetivos-plurissubjetivos-e-eventualmente-coletivos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-03-crimes-unissubjetivos-plurissubjetivos-e-eventualmente-coletivos/aula.json"
   },
@@ -8350,7 +8350,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-04-crimes-instantaneos-permanentes-de-efeitos-permanentes-e-a-prazo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-04-crimes-instantaneos-permanentes-de-efeitos-permanentes-e-a-prazo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-04-crimes-instantaneos-permanentes-de-efeitos-permanentes-e-a-prazo/aula.json"
   },
@@ -8366,7 +8366,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-05-crimes-de-subjetividade-passiva-unica-e-crimes-de-dupla-subjetividade-passiva/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-05-crimes-de-subjetividade-passiva-unica-e-crimes-de-dupla-subjetividade-passiva/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-05-crimes-de-subjetividade-passiva-unica-e-crimes-de-dupla-subjetividade-passiva/aula.json"
   },
@@ -8382,7 +8382,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-06-crimes-de-dano-e-de-perigo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-06-crimes-de-dano-e-de-perigo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-06-crimes-de-dano-e-de-perigo/aula.json"
   },
@@ -8398,7 +8398,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-07-crimes-unissubsistentes-e-plurissubsistentes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-07-crimes-unissubsistentes-e-plurissubsistentes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-07-crimes-unissubsistentes-e-plurissubsistentes/aula.json"
   },
@@ -8414,7 +8414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-08-crimes-comissivos-omissivos-e-de-conduta-mista/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-08-crimes-comissivos-omissivos-e-de-conduta-mista/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-08-crimes-comissivos-omissivos-e-de-conduta-mista/aula.json"
   },
@@ -8430,7 +8430,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-09-crimes-de-forma-livre-e-de-forma-vinculada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-09-crimes-de-forma-livre-e-de-forma-vinculada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-09-crimes-de-forma-livre-e-de-forma-vinculada/aula.json"
   },
@@ -8446,7 +8446,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-10-crimes-mono-ofensivos-e-pluriofensivos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-10-crimes-mono-ofensivos-e-pluriofensivos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-10-crimes-mono-ofensivos-e-pluriofensivos/aula.json"
   },
@@ -8462,7 +8462,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-11-crimes-principais-e-acessorios/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-11-crimes-principais-e-acessorios/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-11-crimes-principais-e-acessorios/aula.json"
   },
@@ -8478,7 +8478,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-12-crimes-transeuntes-ou-de-fato-transitorio-e-crimes-a-distancia-plurilocais-ou-em-transito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-12-crimes-transeuntes-ou-de-fato-transitorio-e-crimes-a-distancia-plurilocais-ou-em-transito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-12-crimes-transeuntes-ou-de-fato-transitorio-e-crimes-a-distancia-plurilocais-ou-em-transito/aula.json"
   },
@@ -8494,7 +8494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-13-crimes-independentes-e-conexos-e-crimes-condicionados-e-incondicionados/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-13-crimes-independentes-e-conexos-e-crimes-condicionados-e-incondicionados/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-13-crimes-independentes-e-conexos-e-crimes-condicionados-e-incondicionados/aula.json"
   },
@@ -8510,7 +8510,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-14-crimes-naturais-plasticos-e-vazios-e-crimes-segundo-potencial-ofensivo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-14-crimes-naturais-plasticos-e-vazios-e-crimes-segundo-potencial-ofensivo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-14-crimes-naturais-plasticos-e-vazios-e-crimes-segundo-potencial-ofensivo/aula.json"
   },
@@ -8526,7 +8526,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-15-outras-classificacoes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-15-outras-classificacoes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/44-classificacao-e-especie-das-infracoes-penais/aula-15-outras-classificacoes/aula.json"
   },
@@ -12382,7 +12382,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-01-art-5-caput-e-incisos-i-a-xxi/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-01-art-5-caput-e-incisos-i-a-xxi/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-01-art-5-caput-e-incisos-i-a-xxi/aula.json"
   },
@@ -12398,7 +12398,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-02-art-5-incisos-xxii-a-xxxii/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-02-art-5-incisos-xxii-a-xxxii/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-02-art-5-incisos-xxii-a-xxxii/aula.json"
   },
@@ -12414,7 +12414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-03-art-5-incisos-xxxiii-a-xlv/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-03-art-5-incisos-xxxiii-a-xlv/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-03-art-5-incisos-xxxiii-a-xlv/aula.json"
   },
@@ -12430,7 +12430,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-04-art-5-xlvi-a-lxiv/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-04-art-5-xlvi-a-lxiv/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-04-art-5-xlvi-a-lxiv/aula.json"
   },
@@ -12446,7 +12446,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-05-art-5-lxv-a-lxxviii/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-05-art-5-lxv-a-lxxviii/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-05-art-5-lxv-a-lxxviii/aula.json"
   },
@@ -12462,7 +12462,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-06-art-5-1-a-4/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-06-art-5-1-a-4/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/07-direitos-e-garantias-individuais/aula-06-art-5-1-a-4/aula.json"
   },
@@ -12478,7 +12478,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-01-arts-6-e-7-incisos-i-a-iii/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-01-arts-6-e-7-incisos-i-a-iii/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-01-arts-6-e-7-incisos-i-a-iii/aula.json"
   },
@@ -12494,7 +12494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-02-art-7-incisos-iv-a-ix/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-02-art-7-incisos-iv-a-ix/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-02-art-7-incisos-iv-a-ix/aula.json"
   },
@@ -12510,7 +12510,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-03-art-7-incisos-x-a-xix/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-03-art-7-incisos-x-a-xix/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-03-art-7-incisos-x-a-xix/aula.json"
   },
@@ -12526,7 +12526,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-04-art-7-incisos-xx-a-xxv/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-04-art-7-incisos-xx-a-xxv/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-04-art-7-incisos-xx-a-xxv/aula.json"
   },
@@ -12542,7 +12542,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-05-art-7-incisos-xxvi-a-xxx/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-05-art-7-incisos-xxvi-a-xxx/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-05-art-7-incisos-xxvi-a-xxx/aula.json"
   },
@@ -12558,7 +12558,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-06-art-7-incisos-xxxi-a-xxxiv/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-06-art-7-incisos-xxxi-a-xxxiv/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-06-art-7-incisos-xxxi-a-xxxiv/aula.json"
   },
@@ -12574,7 +12574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-07-art-7-paragrafo-unico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-07-art-7-paragrafo-unico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-07-art-7-paragrafo-unico/aula.json"
   },
@@ -12590,7 +12590,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-08-art-8-caput-e-incisos-i-a-v/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-08-art-8-caput-e-incisos-i-a-v/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-08-art-8-caput-e-incisos-i-a-v/aula.json"
   },
@@ -12606,7 +12606,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-09-art-8-incisos-vi-a-viii-e-paragrafo-unico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-09-art-8-incisos-vi-a-viii-e-paragrafo-unico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-09-art-8-incisos-vi-a-viii-e-paragrafo-unico/aula.json"
   },
@@ -12622,7 +12622,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-10-arts-9-a-11/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-10-arts-9-a-11/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-10-arts-9-a-11/aula.json"
   },
@@ -12638,7 +12638,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-11-arts-12-e-13/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-11-arts-12-e-13/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/09-direitos-sociais/aula-11-arts-12-e-13/aula.json"
   },
@@ -12670,7 +12670,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-02-nacionalidade-brasileira-originaria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-02-nacionalidade-brasileira-originaria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-02-nacionalidade-brasileira-originaria/aula.json"
   },
@@ -12686,7 +12686,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-03-nacionalidade-brasileira-derivada-naturalizacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-03-nacionalidade-brasileira-derivada-naturalizacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-03-nacionalidade-brasileira-derivada-naturalizacao/aula.json"
   },
@@ -12702,7 +12702,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-04-perda-da-nacionalidade-brasileira/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-04-perda-da-nacionalidade-brasileira/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-04-perda-da-nacionalidade-brasileira/aula.json"
   },
@@ -12718,7 +12718,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-05-condicao-juridica-do-brasileiro/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-05-condicao-juridica-do-brasileiro/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-05-condicao-juridica-do-brasileiro/aula.json"
   },
@@ -12734,7 +12734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-06-condicao-juridica-do-estrangeiro/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-06-condicao-juridica-do-estrangeiro/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-06-condicao-juridica-do-estrangeiro/aula.json"
   },
@@ -12750,7 +12750,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-07-medidas-de-retirada-compulsoria-de-estrangeiro/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-07-medidas-de-retirada-compulsoria-de-estrangeiro/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-07-medidas-de-retirada-compulsoria-de-estrangeiro/aula.json"
   },
@@ -12766,7 +12766,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-08-medidas-de-protecao-humanitaria-a-estrangeiros/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-08-medidas-de-protecao-humanitaria-a-estrangeiros/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-08-medidas-de-protecao-humanitaria-a-estrangeiros/aula.json"
   },
@@ -12782,7 +12782,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-09-medidas-de-cooperacao-internacional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-09-medidas-de-cooperacao-internacional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-09-medidas-de-cooperacao-internacional/aula.json"
   },
@@ -12798,7 +12798,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-10-entrega-ao-tribunal-penal-internacional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-10-entrega-ao-tribunal-penal-internacional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/10-direito-de-nacionalidade/aula-10-entrega-ao-tribunal-penal-internacional/aula.json"
   },
@@ -12814,7 +12814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-01-formas-democraticas-de-organizacao-politica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-01-formas-democraticas-de-organizacao-politica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-01-formas-democraticas-de-organizacao-politica/aula.json"
   },
@@ -12830,7 +12830,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-02-deliberacao-politica-informacao-e-campanhas-politicas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-02-deliberacao-politica-informacao-e-campanhas-politicas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-02-deliberacao-politica-informacao-e-campanhas-politicas/aula.json"
   },
@@ -12846,7 +12846,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-03-formas-de-afericao-de-maioria-e-os-sistemas-eleitorais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-03-formas-de-afericao-de-maioria-e-os-sistemas-eleitorais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-03-formas-de-afericao-de-maioria-e-os-sistemas-eleitorais/aula.json"
   },
@@ -12862,7 +12862,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-04-sufragio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-04-sufragio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-04-sufragio/aula.json"
   },
@@ -12878,7 +12878,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-05-direitos-politicos-negativos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-05-direitos-politicos-negativos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-05-direitos-politicos-negativos/aula.json"
   },
@@ -12894,7 +12894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-06-instrumentos-de-manutencao-democratica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-06-instrumentos-de-manutencao-democratica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/11-direitos-politicos/aula-06-instrumentos-de-manutencao-democratica/aula.json"
   },
@@ -12926,7 +12926,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-02-conceitos-iniciais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-02-conceitos-iniciais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-02-conceitos-iniciais/aula.json"
   },
@@ -12942,7 +12942,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-03-fundamentos-da-ordem-economica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-03-fundamentos-da-ordem-economica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-03-fundamentos-da-ordem-economica/aula.json"
   },
@@ -12958,7 +12958,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-04-finalidades-e-principios-gerais-da-ordem-economica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-04-finalidades-e-principios-gerais-da-ordem-economica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-04-finalidades-e-principios-gerais-da-ordem-economica/aula.json"
   },
@@ -12974,7 +12974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-05-formas-de-atuacao-do-estado-na-ordem-economica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-05-formas-de-atuacao-do-estado-na-ordem-economica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-05-formas-de-atuacao-do-estado-na-ordem-economica/aula.json"
   },
@@ -12990,7 +12990,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-06-politica-urbana/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-06-politica-urbana/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-06-politica-urbana/aula.json"
   },
@@ -13006,7 +13006,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-07-funcao-social-da-propriedade-urbana/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-07-funcao-social-da-propriedade-urbana/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-07-funcao-social-da-propriedade-urbana/aula.json"
   },
@@ -13022,7 +13022,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-08-usucapiao-especial-urbana/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-08-usucapiao-especial-urbana/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-08-usucapiao-especial-urbana/aula.json"
   },
@@ -13038,7 +13038,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-09-politica-agricola-e-fundiaria-e-da-reforma-agraria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-09-politica-agricola-e-fundiaria-e-da-reforma-agraria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-09-politica-agricola-e-fundiaria-e-da-reforma-agraria/aula.json"
   },
@@ -13054,7 +13054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-10-reforma-agraria-e-desapropriacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-10-reforma-agraria-e-desapropriacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-10-reforma-agraria-e-desapropriacao/aula.json"
   },
@@ -13070,7 +13070,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-11-usucapiao-especial-rural/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-11-usucapiao-especial-rural/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/12-ordem-economica-e-financeira-na-cf-88/aula-11-usucapiao-especial-rural/aula.json"
   },
@@ -13086,7 +13086,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-01-federalismo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-01-federalismo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-01-federalismo/aula.json"
   },
@@ -13102,7 +13102,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-02-entes-federativos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-02-entes-federativos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-02-entes-federativos/aula.json"
   },
@@ -13118,7 +13118,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-03-fundamentos-da-republica-federativa-do-brasil/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-03-fundamentos-da-republica-federativa-do-brasil/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-03-fundamentos-da-republica-federativa-do-brasil/aula.json"
   },
@@ -13134,7 +13134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-04-objetivos-e-principios-nas-relacoes-internacionais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-04-objetivos-e-principios-nas-relacoes-internacionais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-04-objetivos-e-principios-nas-relacoes-internacionais/aula.json"
   },
@@ -13150,7 +13150,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-05-reparticao-de-competencias-constitucionais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-05-reparticao-de-competencias-constitucionais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/13-organizacao-do-estado/aula-05-reparticao-de-competencias-constitucionais/aula.json"
   },
@@ -13166,7 +13166,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-01-federalismo-e-autonomia-dos-entes-federativos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-01-federalismo-e-autonomia-dos-entes-federativos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-01-federalismo-e-autonomia-dos-entes-federativos/aula.json"
   },
@@ -13182,7 +13182,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-02-intervencao-federal-disposicoes-gerais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-02-intervencao-federal-disposicoes-gerais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-02-intervencao-federal-disposicoes-gerais/aula.json"
   },
@@ -13198,7 +13198,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-03-intervencao-federal-espontanea/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-03-intervencao-federal-espontanea/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-03-intervencao-federal-espontanea/aula.json"
   },
@@ -13214,7 +13214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-04-intervencao-federal-provocada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-04-intervencao-federal-provocada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-04-intervencao-federal-provocada/aula.json"
   },
@@ -13230,7 +13230,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-05-intervencao-estadual/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-05-intervencao-estadual/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/14-intervencao-federal-e-estadual/aula-05-intervencao-estadual/aula.json"
   },
@@ -13262,7 +13262,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/15-organizacao-dos-poderes/aula-02-sistema-de-freios-e-contrapesos-e-critica-a-separacao-dos-poderes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/15-organizacao-dos-poderes/aula-02-sistema-de-freios-e-contrapesos-e-critica-a-separacao-dos-poderes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/15-organizacao-dos-poderes/aula-02-sistema-de-freios-e-contrapesos-e-critica-a-separacao-dos-poderes/aula.json"
   },
@@ -13278,7 +13278,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/15-organizacao-dos-poderes/aula-03-funcoes-tipicas-e-atipicas-e-organizacao-dos-poderes-no-brasil/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/15-organizacao-dos-poderes/aula-03-funcoes-tipicas-e-atipicas-e-organizacao-dos-poderes-no-brasil/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/15-organizacao-dos-poderes/aula-03-funcoes-tipicas-e-atipicas-e-organizacao-dos-poderes-no-brasil/aula.json"
   },
@@ -13294,7 +13294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-01-estrutura-do-poder-legislativo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-01-estrutura-do-poder-legislativo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-01-estrutura-do-poder-legislativo/aula.json"
   },
@@ -13310,7 +13310,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-02-congresso-nacional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-02-congresso-nacional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-02-congresso-nacional/aula.json"
   },
@@ -13326,7 +13326,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-03-camara-dos-deputados/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-03-camara-dos-deputados/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-03-camara-dos-deputados/aula.json"
   },
@@ -13342,7 +13342,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-04-senado-federal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-04-senado-federal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-04-senado-federal/aula.json"
   },
@@ -13358,7 +13358,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-05-sessoes-legislativas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-05-sessoes-legislativas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-05-sessoes-legislativas/aula.json"
   },
@@ -13374,7 +13374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-06-comissoes-parlamentares/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-06-comissoes-parlamentares/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-06-comissoes-parlamentares/aula.json"
   },
@@ -13390,7 +13390,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-07-comissoes-parlamentares-de-inquerito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-07-comissoes-parlamentares-de-inquerito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/16-poder-legislativo/aula-07-comissoes-parlamentares-de-inquerito/aula.json"
   },
@@ -13406,7 +13406,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-01-introducao-ao-processo-legislativo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-01-introducao-ao-processo-legislativo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-01-introducao-ao-processo-legislativo/aula.json"
   },
@@ -13422,7 +13422,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-02-emendas-constitucionais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-02-emendas-constitucionais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-02-emendas-constitucionais/aula.json"
   },
@@ -13438,7 +13438,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-03-leis-complementares-e-leis-ordinarias/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-03-leis-complementares-e-leis-ordinarias/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-03-leis-complementares-e-leis-ordinarias/aula.json"
   },
@@ -13454,7 +13454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-04-medida-provisoria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-04-medida-provisoria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/17-processo-legislativo/aula-04-medida-provisoria/aula.json"
   },
@@ -13486,7 +13486,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-02-o-presidente-da-republica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-02-o-presidente-da-republica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-02-o-presidente-da-republica/aula.json"
   },
@@ -13502,7 +13502,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-03-responsabilidade-politica-do-presidente-da-republica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-03-responsabilidade-politica-do-presidente-da-republica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-03-responsabilidade-politica-do-presidente-da-republica/aula.json"
   },
@@ -13518,7 +13518,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-04-vacancia-e-impedimento/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-04-vacancia-e-impedimento/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-04-vacancia-e-impedimento/aula.json"
   },
@@ -13534,7 +13534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-05-responsabilidade-juridica-do-presidente-da-republica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-05-responsabilidade-juridica-do-presidente-da-republica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-05-responsabilidade-juridica-do-presidente-da-republica/aula.json"
   },
@@ -13550,7 +13550,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-06-outros-orgaos-do-poder-executivo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-06-outros-orgaos-do-poder-executivo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/18-poder-executivo/aula-06-outros-orgaos-do-poder-executivo/aula.json"
   },
@@ -13566,7 +13566,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-01-orgaos-do-poder-judiciario/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-01-orgaos-do-poder-judiciario/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-01-orgaos-do-poder-judiciario/aula.json"
   },
@@ -13582,7 +13582,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-02-principios-do-estatuto-da-magistratura/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-02-principios-do-estatuto-da-magistratura/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-02-principios-do-estatuto-da-magistratura/aula.json"
   },
@@ -13598,7 +13598,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-03-quinto-constitucional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-03-quinto-constitucional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-03-quinto-constitucional/aula.json"
   },
@@ -13614,7 +13614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-04-garantias-e-vedacoes-dos-juizes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-04-garantias-e-vedacoes-dos-juizes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-04-garantias-e-vedacoes-dos-juizes/aula.json"
   },
@@ -13630,7 +13630,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-05-competencia-privativa-dos-tribunais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-05-competencia-privativa-dos-tribunais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-05-competencia-privativa-dos-tribunais/aula.json"
   },
@@ -13646,7 +13646,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-06-juizados-especiais-e-justica-de-paz/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-06-juizados-especiais-e-justica-de-paz/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-06-juizados-especiais-e-justica-de-paz/aula.json"
   },
@@ -13662,7 +13662,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-07-autonomia-administrativa-e-financeira/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-07-autonomia-administrativa-e-financeira/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-07-autonomia-administrativa-e-financeira/aula.json"
   },
@@ -13678,7 +13678,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-08-pagamento-de-precatorios/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-08-pagamento-de-precatorios/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/19-poder-judiciario-aspectos-gerais/aula-08-pagamento-de-precatorios/aula.json"
   },
@@ -13694,7 +13694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-01-stf-e-stj/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-01-stf-e-stj/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-01-stf-e-stj/aula.json"
   },
@@ -13710,7 +13710,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-02-acao-de-inconstitucionalidade-e-sumula-vinculante/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-02-acao-de-inconstitucionalidade-e-sumula-vinculante/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-02-acao-de-inconstitucionalidade-e-sumula-vinculante/aula.json"
   },
@@ -13726,7 +13726,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-03-conselho-nacional-de-justica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-03-conselho-nacional-de-justica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-03-conselho-nacional-de-justica/aula.json"
   },
@@ -13742,7 +13742,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-04-justica-federal/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-04-justica-federal/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-04-justica-federal/aula.json"
   },
@@ -13758,7 +13758,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-05-justica-do-trabalho/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-05-justica-do-trabalho/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-05-justica-do-trabalho/aula.json"
   },
@@ -13774,7 +13774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 32,
     "imagensQtd": 32,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-06-justica-eleitoral/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-06-justica-eleitoral/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-06-justica-eleitoral/aula.json"
   },
@@ -13790,7 +13790,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-07-justica-militar/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-07-justica-militar/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-07-justica-militar/aula.json"
   },
@@ -13806,7 +13806,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-08-justica-estadual/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-08-justica-estadual/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/20-poder-judiciario-orgaos/aula-08-justica-estadual/aula.json"
   },
@@ -13822,7 +13822,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-01-conceitos-preliminares/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-01-conceitos-preliminares/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-01-conceitos-preliminares/aula.json"
   },
@@ -13838,7 +13838,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-02-especies/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-02-especies/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-02-especies/aula.json"
   },
@@ -13854,7 +13854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-03-controle-de-constitucionalidade-no-brasil/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-03-controle-de-constitucionalidade-no-brasil/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-03-controle-de-constitucionalidade-no-brasil/aula.json"
   },
@@ -13870,7 +13870,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-04-controle-difuso-de-constitucionalidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-04-controle-difuso-de-constitucionalidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-04-controle-difuso-de-constitucionalidade/aula.json"
   },
@@ -13886,7 +13886,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-05-controle-concentrado-de-constitucionalidade-adin/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-05-controle-concentrado-de-constitucionalidade-adin/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-05-controle-concentrado-de-constitucionalidade-adin/aula.json"
   },
@@ -13902,7 +13902,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-06-controle-concentrado-de-constitucionalidade-adc/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-06-controle-concentrado-de-constitucionalidade-adc/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-06-controle-concentrado-de-constitucionalidade-adc/aula.json"
   },
@@ -13918,7 +13918,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-07-controle-concentrado-de-constitucionalidade-adpf/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-07-controle-concentrado-de-constitucionalidade-adpf/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/21-controle-de-constitucionalidade/aula-07-controle-concentrado-de-constitucionalidade-adpf/aula.json"
   },
@@ -13934,7 +13934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-01-conceitos-preliminares/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-01-conceitos-preliminares/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-01-conceitos-preliminares/aula.json"
   },
@@ -13950,7 +13950,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-02-habeas-corpus/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-02-habeas-corpus/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-02-habeas-corpus/aula.json"
   },
@@ -13966,7 +13966,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-03-habeas-data/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-03-habeas-data/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-03-habeas-data/aula.json"
   },
@@ -13982,7 +13982,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-04-mandado-de-seguranca-e-mandado-de-seguranca-coletivo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-04-mandado-de-seguranca-e-mandado-de-seguranca-coletivo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-04-mandado-de-seguranca-e-mandado-de-seguranca-coletivo/aula.json"
   },
@@ -13998,7 +13998,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/38-acao-popular-peca-pratica/aula-01-acao-popular/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/38-acao-popular-peca-pratica/aula-01-acao-popular/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/38-acao-popular-peca-pratica/aula-01-acao-popular/aula.json"
   },
@@ -14014,7 +14014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-06-mandado-de-injuncao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-06-mandado-de-injuncao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/33-remedios-constitucionais/aula-06-mandado-de-injuncao/aula.json"
   },
@@ -14030,7 +14030,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-01-nocoes-gerais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-01-nocoes-gerais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-01-nocoes-gerais/aula.json"
   },
@@ -14046,7 +14046,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-02-historia-e-natureza-do-ministerio-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-02-historia-e-natureza-do-ministerio-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-02-historia-e-natureza-do-ministerio-publico/aula.json"
   },
@@ -14062,7 +14062,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-03-principios-do-ministerio-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-03-principios-do-ministerio-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-03-principios-do-ministerio-publico/aula.json"
   },
@@ -14078,7 +14078,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-04-ingresso-e-garantias-no-ministerio-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-04-ingresso-e-garantias-no-ministerio-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-04-ingresso-e-garantias-no-ministerio-publico/aula.json"
   },
@@ -14094,7 +14094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-05-vedacoes-no-ministerio-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-05-vedacoes-no-ministerio-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-05-vedacoes-no-ministerio-publico/aula.json"
   },
@@ -14110,7 +14110,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-06-proibicao-de-receber-auxilios-e-contribuicoes-salvo-excecoes-previstas-em-lei/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-06-proibicao-de-receber-auxilios-e-contribuicoes-salvo-excecoes-previstas-em-lei/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-06-proibicao-de-receber-auxilios-e-contribuicoes-salvo-excecoes-previstas-em-lei/aula.json"
   },
@@ -14126,7 +14126,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-07-conselho-nacional-do-ministerio-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-07-conselho-nacional-do-ministerio-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-07-conselho-nacional-do-ministerio-publico/aula.json"
   },
@@ -14142,7 +14142,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-08-funcoes-institucionais-do-mp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-08-funcoes-institucionais-do-mp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-08-funcoes-institucionais-do-mp/aula.json"
   },
@@ -14158,7 +14158,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-09-advocacia-publica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-09-advocacia-publica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-09-advocacia-publica/aula.json"
   },
@@ -14174,7 +14174,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-10-advocacia-privada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-10-advocacia-privada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-10-advocacia-privada/aula.json"
   },
@@ -14190,7 +14190,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-11-defensoria-publica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-11-defensoria-publica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/25-funcoes-essenciais-a-justica/aula-11-defensoria-publica/aula.json"
   },
@@ -14206,7 +14206,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-01-historico-e-conceito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-01-historico-e-conceito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-01-historico-e-conceito/aula.json"
   },
@@ -14222,7 +14222,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-02-organizacao-do-mp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-02-organizacao-do-mp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-02-organizacao-do-mp/aula.json"
   },
@@ -14238,7 +14238,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-03-chefia-do-mp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-03-chefia-do-mp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-03-chefia-do-mp/aula.json"
   },
@@ -14254,7 +14254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-04-classificacao-dos-orgaos-do-mp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-04-classificacao-dos-orgaos-do-mp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-04-classificacao-dos-orgaos-do-mp/aula.json"
   },
@@ -14270,7 +14270,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-05-funcoes-do-pgj/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-05-funcoes-do-pgj/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-05-funcoes-do-pgj/aula.json"
   },
@@ -14286,7 +14286,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-06-principios-e-garantias-do-mp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-06-principios-e-garantias-do-mp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-06-principios-e-garantias-do-mp/aula.json"
   },
@@ -14302,7 +14302,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-07-impedimento-dos-membros-do-mp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-07-impedimento-dos-membros-do-mp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-07-impedimento-dos-membros-do-mp/aula.json"
   },
@@ -14318,7 +14318,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-08-funcoes-institucionais-do-mp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-08-funcoes-institucionais-do-mp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-08-funcoes-institucionais-do-mp/aula.json"
   },
@@ -14334,7 +14334,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-09-conselho-nacional-do-mp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-09-conselho-nacional-do-mp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-09-conselho-nacional-do-mp/aula.json"
   },
@@ -14350,7 +14350,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-10-conselho-superior-do-mp/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-10-conselho-superior-do-mp/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/26-ministerio-publico/aula-10-conselho-superior-do-mp/aula.json"
   },
@@ -14398,7 +14398,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-03-disposicoes-gerais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-03-disposicoes-gerais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-03-disposicoes-gerais/aula.json"
   },
@@ -14414,7 +14414,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-04-funcoes-institucionais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-04-funcoes-institucionais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-04-funcoes-institucionais/aula.json"
   },
@@ -14430,7 +14430,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-05-defensoria-publica-da-uniao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-05-defensoria-publica-da-uniao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-05-defensoria-publica-da-uniao/aula.json"
   },
@@ -14446,7 +14446,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-06-defensoria-publica-do-distrito-federal-e-dos-territorios/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-06-defensoria-publica-do-distrito-federal-e-dos-territorios/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-06-defensoria-publica-do-distrito-federal-e-dos-territorios/aula.json"
   },
@@ -14462,7 +14462,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-07-defensoria-publica-dos-estados/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-07-defensoria-publica-dos-estados/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-07-defensoria-publica-dos-estados/aula.json"
   },
@@ -14478,7 +14478,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-08-lei-complementares-das-defensorias-publicas-estaduais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-08-lei-complementares-das-defensorias-publicas-estaduais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/27-defensoria-publica/aula-08-lei-complementares-das-defensorias-publicas-estaduais/aula.json"
   },
@@ -14494,7 +14494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-01-da-defesa-do-estado-e-das-instituicoes-democraticas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-01-da-defesa-do-estado-e-das-instituicoes-democraticas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-01-da-defesa-do-estado-e-das-instituicoes-democraticas/aula.json"
   },
@@ -14510,7 +14510,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-02-estado-de-defesa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-02-estado-de-defesa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-02-estado-de-defesa/aula.json"
   },
@@ -14526,7 +14526,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-03-estado-de-sitio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-03-estado-de-sitio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-03-estado-de-sitio/aula.json"
   },
@@ -14542,7 +14542,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-04-estado-de-sitio-e-estado-de-defesa-formas-de-controle/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-04-estado-de-sitio-e-estado-de-defesa-formas-de-controle/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-04-estado-de-sitio-e-estado-de-defesa-formas-de-controle/aula.json"
   },
@@ -14558,7 +14558,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-05-estado-de-defesa-e-estado-de-sitio-semelhancas-e-diferencas-14-semelhancas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-05-estado-de-defesa-e-estado-de-sitio-semelhancas-e-diferencas-14-semelhancas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-05-estado-de-defesa-e-estado-de-sitio-semelhancas-e-diferencas-14-semelhancas/aula.json"
   },
@@ -14574,7 +14574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-06-forcas-armadas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-06-forcas-armadas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-06-forcas-armadas/aula.json"
   },
@@ -14590,7 +14590,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-07-seguranca-publica/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-07-seguranca-publica/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/28-defesa-do-estado-e-das-instituicoes-democraticas/aula-07-seguranca-publica/aula.json"
   },
@@ -14606,7 +14606,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/29-legislacao-em-prazos-constituicao-federal-parte-1/aula-01-apresentacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/29-legislacao-em-prazos-constituicao-federal-parte-1/aula-01-apresentacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/29-legislacao-em-prazos-constituicao-federal-parte-1/aula-01-apresentacao/aula.json"
   },
@@ -14638,7 +14638,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/29-legislacao-em-prazos-constituicao-federal-parte-1/aula-03-prazos-da-cf/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/29-legislacao-em-prazos-constituicao-federal-parte-1/aula-03-prazos-da-cf/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/29-legislacao-em-prazos-constituicao-federal-parte-1/aula-03-prazos-da-cf/aula.json"
   },
@@ -14654,7 +14654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-01-propaganda-politica-especies/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-01-propaganda-politica-especies/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-01-propaganda-politica-especies/aula.json"
   },
@@ -14670,7 +14670,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-02-propaganda-eleitoral/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-02-propaganda-eleitoral/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-02-propaganda-eleitoral/aula.json"
   },
@@ -14686,7 +14686,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-03-momento-da-propaganda-eleitoral/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-03-momento-da-propaganda-eleitoral/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-03-momento-da-propaganda-eleitoral/aula.json"
   },
@@ -14702,7 +14702,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-04-meios-de-propaganda-eleitoral-parte-i/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-04-meios-de-propaganda-eleitoral-parte-i/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-04-meios-de-propaganda-eleitoral-parte-i/aula.json"
   },
@@ -14718,7 +14718,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-05-propaganda-na-imprensa-escrita-na-radio-e-na-tv/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-05-propaganda-na-imprensa-escrita-na-radio-e-na-tv/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-05-propaganda-na-imprensa-escrita-na-radio-e-na-tv/aula.json"
   },
@@ -14734,7 +14734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-06-propaganda-na-internet/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-06-propaganda-na-internet/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-06-propaganda-na-internet/aula.json"
   },
@@ -14750,7 +14750,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-07-debates-e-pesquisa-eleitoral/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-07-debates-e-pesquisa-eleitoral/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-07-debates-e-pesquisa-eleitoral/aula.json"
   },
@@ -14766,7 +14766,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-08-procedimento-em-caso-de-propaganda-irregular-e-direito-de-resposta/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-08-procedimento-em-caso-de-propaganda-irregular-e-direito-de-resposta/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/31-direito-eleitoral-propaganda-politica/aula-08-procedimento-em-caso-de-propaganda-irregular-e-direito-de-resposta/aula.json"
   },
@@ -14782,7 +14782,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-01-direitos-politicos-alistamento-eleitoral-e-condicoes-de-elegibilidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-01-direitos-politicos-alistamento-eleitoral-e-condicoes-de-elegibilidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-01-direitos-politicos-alistamento-eleitoral-e-condicoes-de-elegibilidade/aula.json"
   },
@@ -14798,7 +14798,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-02-inelegibilidades-constitucionais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-02-inelegibilidades-constitucionais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-02-inelegibilidades-constitucionais/aula.json"
   },
@@ -14814,7 +14814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-03-partidos-politicos-na-constituicao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-03-partidos-politicos-na-constituicao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-03-partidos-politicos-na-constituicao/aula.json"
   },
@@ -14830,7 +14830,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-04-justica-eleitoral-composicao-e-atribuicoes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-04-justica-eleitoral-composicao-e-atribuicoes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-04-justica-eleitoral-composicao-e-atribuicoes/aula.json"
   },
@@ -14846,7 +14846,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-05-partidos-politicos-funcoes-organizacao-e-financiamento/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-05-partidos-politicos-funcoes-organizacao-e-financiamento/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-05-partidos-politicos-funcoes-organizacao-e-financiamento/aula.json"
   },
@@ -14862,7 +14862,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-06-filiacao-e-fidelidade-partidaria/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-06-filiacao-e-fidelidade-partidaria/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-06-filiacao-e-fidelidade-partidaria/aula.json"
   },
@@ -14878,7 +14878,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-07-inelegibilidades-infraconstitucionais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-07-inelegibilidades-infraconstitucionais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-07-inelegibilidades-infraconstitucionais/aula.json"
   },
@@ -14894,7 +14894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-08-acoes-judiciais-eleitorais-acao-de-impugnacao-de-registro-de-candidatura-airc/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-08-acoes-judiciais-eleitorais-acao-de-impugnacao-de-registro-de-candidatura-airc/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-08-acoes-judiciais-eleitorais-acao-de-impugnacao-de-registro-de-candidatura-airc/aula.json"
   },
@@ -14910,7 +14910,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-09-acoes-judiciais-eleitorais-acao-de-investigacao-judicial-eleitoral-26-acao-de-investigacao-judicial-eleitoral/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-09-acoes-judiciais-eleitorais-acao-de-investigacao-judicial-eleitoral-26-acao-de-investigacao-judicial-eleitoral/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-09-acoes-judiciais-eleitorais-acao-de-investigacao-judicial-eleitoral-26-acao-de-investigacao-judicial-eleitoral/aula.json"
   },
@@ -14926,7 +14926,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-10-acoes-judiciais-eleitorais-acao-por-captacao-ou-gastos-ilicitos-de-recurso/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-10-acoes-judiciais-eleitorais-acao-por-captacao-ou-gastos-ilicitos-de-recurso/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-10-acoes-judiciais-eleitorais-acao-por-captacao-ou-gastos-ilicitos-de-recurso/aula.json"
   },
@@ -14942,7 +14942,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-11-acoes-judiciais-eleitorais-acao-de-impugnacao-de-mandato-eletivo-30-acao-de-impugnacao-de-mandato-eletivo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-11-acoes-judiciais-eleitorais-acao-de-impugnacao-de-mandato-eletivo-30-acao-de-impugnacao-de-mandato-eletivo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-11-acoes-judiciais-eleitorais-acao-de-impugnacao-de-mandato-eletivo-30-acao-de-impugnacao-de-mandato-eletivo/aula.json"
   },
@@ -14958,7 +14958,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-12-recurso-contra-expedicao-de-diploma/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-12-recurso-contra-expedicao-de-diploma/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/32-direito-eleitoral/aula-12-recurso-contra-expedicao-de-diploma/aula.json"
   },
@@ -14974,7 +14974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-01-mandado-de-seguranca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-01-mandado-de-seguranca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-01-mandado-de-seguranca/aula.json"
   },
@@ -14990,7 +14990,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-02-mandado-de-seguranca-coletivo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-02-mandado-de-seguranca-coletivo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-02-mandado-de-seguranca-coletivo/aula.json"
   },
@@ -15006,7 +15006,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.json"
   },
@@ -15022,7 +15022,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-04-modelo-de-mandado-de-seguranca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-04-modelo-de-mandado-de-seguranca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/34-mandado-de-seguranca-peca-pratica/aula-04-modelo-de-mandado-de-seguranca/aula.json"
   },
@@ -15038,7 +15038,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/aula.json"
   },
@@ -15054,7 +15054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-02-identificacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-02-identificacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-02-identificacao/aula.json"
   },
@@ -15070,7 +15070,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/35-habeas-corpus-peca-pratica/aula-03-modelo-de-habeas-corpus/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/35-habeas-corpus-peca-pratica/aula-03-modelo-de-habeas-corpus/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/35-habeas-corpus-peca-pratica/aula-03-modelo-de-habeas-corpus/aula.json"
   },
@@ -15086,7 +15086,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/aula.json"
   },
@@ -15102,7 +15102,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.json"
   },
@@ -15118,7 +15118,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.json"
   },
@@ -15134,7 +15134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/37-habeas-data-peca-pratica/aula-01-quando-tem-cabimento-e-para-que-serve/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/37-habeas-data-peca-pratica/aula-01-quando-tem-cabimento-e-para-que-serve/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/37-habeas-data-peca-pratica/aula-01-quando-tem-cabimento-e-para-que-serve/aula.json"
   },
@@ -15150,7 +15150,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/37-habeas-data-peca-pratica/aula-02-caracteristicas-da-acao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/37-habeas-data-peca-pratica/aula-02-caracteristicas-da-acao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/37-habeas-data-peca-pratica/aula-02-caracteristicas-da-acao/aula.json"
   },
@@ -15166,7 +15166,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/38-acao-popular-peca-pratica/aula-01-acao-popular/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/38-acao-popular-peca-pratica/aula-01-acao-popular/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/38-acao-popular-peca-pratica/aula-01-acao-popular/aula.json"
   },
@@ -15182,7 +15182,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/39-mandado-de-injuncao-individual-e-coletivo-peca-pratica/aula-01-mandado-de-injuncao-individual-e-coletivo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/39-mandado-de-injuncao-individual-e-coletivo-peca-pratica/aula-01-mandado-de-injuncao-individual-e-coletivo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/39-mandado-de-injuncao-individual-e-coletivo-peca-pratica/aula-01-mandado-de-injuncao-individual-e-coletivo/aula.json"
   },
@@ -15198,7 +15198,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/39-mandado-de-injuncao-individual-e-coletivo-peca-pratica/aula-02-casos-praticos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/39-mandado-de-injuncao-individual-e-coletivo-peca-pratica/aula-02-casos-praticos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/39-mandado-de-injuncao-individual-e-coletivo-peca-pratica/aula-02-casos-praticos/aula.json"
   },
@@ -15214,7 +15214,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/aula.json"
   },
@@ -15230,7 +15230,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/40-reclamacao-constitucional-peca-pratica/aula-02-metodo-de-identificacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/40-reclamacao-constitucional-peca-pratica/aula-02-metodo-de-identificacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/40-reclamacao-constitucional-peca-pratica/aula-02-metodo-de-identificacao/aula.json"
   },
@@ -15246,7 +15246,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/40-reclamacao-constitucional-peca-pratica/aula-03-modelo-de-reclamacao-constitucional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/40-reclamacao-constitucional-peca-pratica/aula-03-modelo-de-reclamacao-constitucional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/40-reclamacao-constitucional-peca-pratica/aula-03-modelo-de-reclamacao-constitucional/aula.json"
   },
@@ -15262,7 +15262,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-01-acao-direta-de-inconstitucionalidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-01-acao-direta-de-inconstitucionalidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-01-acao-direta-de-inconstitucionalidade/aula.json"
   },
@@ -15278,7 +15278,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-02-identificando-a-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-02-identificando-a-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-02-identificando-a-peca/aula.json"
   },
@@ -15294,7 +15294,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-03-modelo-de-acao-direta-de-inconstitucionalidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-03-modelo-de-acao-direta-de-inconstitucionalidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/41-acao-direta-de-inconstitucionalidade-peca-pratica/aula-03-modelo-de-acao-direta-de-inconstitucionalidade/aula.json"
   },
@@ -15310,7 +15310,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/aula.json"
   },
@@ -15326,7 +15326,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.json"
   },
@@ -15342,7 +15342,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/aula.json"
   },
@@ -15358,7 +15358,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.json"
   },
@@ -15374,7 +15374,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.json"
   },
@@ -15390,7 +15390,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-01-acao-declaratoria-de-constitucionalidade-adecon-ou-adc/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-01-acao-declaratoria-de-constitucionalidade-adecon-ou-adc/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-01-acao-declaratoria-de-constitucionalidade-adecon-ou-adc/aula.json"
   },
@@ -15406,7 +15406,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-02-identificacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-02-identificacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/44-acao-declaratoria-de-constitucionalidade-peca-pratica/aula-02-identificacao/aula.json"
   },
@@ -15422,7 +15422,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.json"
   },
@@ -15438,7 +15438,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-01-tudo-sobre-a-peca/aula.json"
   },
@@ -15454,7 +15454,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.json"
   },
@@ -15470,7 +15470,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-03-modelo-de-recurso-especial/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-03-modelo-de-recurso-especial/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/46-recurso-especial-peca-pratica/aula-03-modelo-de-recurso-especial/aula.json"
   },
@@ -15486,7 +15486,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-01-apontamentos-iniciais/aula.json"
   },
@@ -15502,7 +15502,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-02-identificacao-da-peca/aula.json"
   },
@@ -15518,7 +15518,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 40,
     "imagensQtd": 40,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/47-recurso-ordinario-constitucional-peca-pratica/aula-03-redacao-da-peca/aula.json"
   },
@@ -15534,7 +15534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-02-principios-fundamentais-e-artigo-1/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-02-principios-fundamentais-e-artigo-1/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-02-principios-fundamentais-e-artigo-1/aula.json"
   },
@@ -15550,7 +15550,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-03-historia-e-artigo-2/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-03-historia-e-artigo-2/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-03-historia-e-artigo-2/aula.json"
   },
@@ -15566,7 +15566,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-04-funcoes-e-poderes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-04-funcoes-e-poderes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-04-funcoes-e-poderes/aula.json"
   },
@@ -15582,7 +15582,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-05-objetivos-fundamentais-da-republica-federativa-do-brasil/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-05-objetivos-fundamentais-da-republica-federativa-do-brasil/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-05-objetivos-fundamentais-da-republica-federativa-do-brasil/aula.json"
   },
@@ -15598,7 +15598,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-06-artigo-4/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/01-historia-constitucional/aula-01-da-independencia/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-06-artigo-4/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-constitucional/48-preambulo-constitucional-e-principios-fundamentais/aula-06-artigo-4/aula.json"
   },
@@ -16494,7 +16494,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-01-especies/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-01-especies/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-01-especies/aula.json"
   },
@@ -16510,7 +16510,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-02-doencas-equiparadas-ao-acidente-de-trabalho/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-02-doencas-equiparadas-ao-acidente-de-trabalho/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-02-doencas-equiparadas-ao-acidente-de-trabalho/aula.json"
   },
@@ -16526,7 +16526,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-03-acidente-tipico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-03-acidente-tipico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-03-acidente-tipico/aula.json"
   },
@@ -16542,7 +16542,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-04-acidente-no-trajeto/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-04-acidente-no-trajeto/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-04-acidente-no-trajeto/aula.json"
   },
@@ -16558,7 +16558,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-05-beneficios-do-inss/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-05-beneficios-do-inss/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-05-beneficios-do-inss/aula.json"
   },
@@ -16574,7 +16574,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-06-deveres-do-empregador/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-06-deveres-do-empregador/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-06-deveres-do-empregador/aula.json"
   },
@@ -16590,7 +16590,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-07-responsabilidade-do-empregador/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-07-responsabilidade-do-empregador/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/08-acidente-de-trabalho/aula-07-responsabilidade-do-empregador/aula.json"
   },
@@ -16606,7 +16606,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-01-definicao-e-regras/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-01-definicao-e-regras/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-01-definicao-e-regras/aula.json"
   },
@@ -16622,7 +16622,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-02-horas-extras-e-banco-de-horas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-02-horas-extras-e-banco-de-horas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-02-horas-extras-e-banco-de-horas/aula.json"
   },
@@ -16638,7 +16638,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-03-sobreaviso-e-prontidao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-03-sobreaviso-e-prontidao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-03-sobreaviso-e-prontidao/aula.json"
   },
@@ -16654,7 +16654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-04-forca-maior-e-servico-inadiavel/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-04-forca-maior-e-servico-inadiavel/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-04-forca-maior-e-servico-inadiavel/aula.json"
   },
@@ -16670,7 +16670,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-05-jornada-do-menor-de-idade-excecoes-e-bancario/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-05-jornada-do-menor-de-idade-excecoes-e-bancario/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-05-jornada-do-menor-de-idade-excecoes-e-bancario/aula.json"
   },
@@ -16686,7 +16686,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-06-trabalho-noturno/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-06-trabalho-noturno/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-06-trabalho-noturno/aula.json"
   },
@@ -16702,7 +16702,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-07-regime-de-tempo-parcial/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-07-regime-de-tempo-parcial/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-07-regime-de-tempo-parcial/aula.json"
   },
@@ -16718,7 +16718,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-08-jornada-12-x-36/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-08-jornada-12-x-36/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-08-jornada-12-x-36/aula.json"
   },
@@ -16734,7 +16734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-09-descanso/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-09-descanso/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-09-descanso/aula.json"
   },
@@ -16750,7 +16750,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-10-descanso-semanal-remunerado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-10-descanso-semanal-remunerado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-10-descanso-semanal-remunerado/aula.json"
   },
@@ -16766,7 +16766,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-11-descanso-intra-jornada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-11-descanso-intra-jornada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-11-descanso-intra-jornada/aula.json"
   },
@@ -16782,7 +16782,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-12-intervalos-especiais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-12-intervalos-especiais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-12-intervalos-especiais/aula.json"
   },
@@ -16798,7 +16798,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-13-regime-de-teletrabalho/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-13-regime-de-teletrabalho/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/09-duracao-do-trabalho-e-repousos/aula-13-regime-de-teletrabalho/aula.json"
   },
@@ -16814,7 +16814,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-01-fgts-fundo-de-garantia-por-tempo-de-servico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-01-fgts-fundo-de-garantia-por-tempo-de-servico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-01-fgts-fundo-de-garantia-por-tempo-de-servico/aula.json"
   },
@@ -16830,7 +16830,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-02-beneficiarios/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-02-beneficiarios/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-02-beneficiarios/aula.json"
   },
@@ -16846,7 +16846,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-03-contribuicao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-03-contribuicao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-03-contribuicao/aula.json"
   },
@@ -16862,7 +16862,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-04-valor-das-aliquotas-e-administracao-do-fundo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-04-valor-das-aliquotas-e-administracao-do-fundo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-04-valor-das-aliquotas-e-administracao-do-fundo/aula.json"
   },
@@ -16878,7 +16878,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-05-hipoteses-de-saque/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-05-hipoteses-de-saque/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-05-hipoteses-de-saque/aula.json"
   },
@@ -16894,7 +16894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-06-indenizacao-do-fgts/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-06-indenizacao-do-fgts/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-06-indenizacao-do-fgts/aula.json"
   },
@@ -16910,7 +16910,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-07-prescricao-do-fgts/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-07-prescricao-do-fgts/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/10-fgts/aula-07-prescricao-do-fgts/aula.json"
   },
@@ -16926,7 +16926,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/11-verbas-rescisorias-e-calculos-trabalhistas/aula-01-verbas-rescisorias-conceito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/11-verbas-rescisorias-e-calculos-trabalhistas/aula-01-verbas-rescisorias-conceito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/11-verbas-rescisorias-e-calculos-trabalhistas/aula-01-verbas-rescisorias-conceito/aula.json"
   },
@@ -16942,7 +16942,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/11-verbas-rescisorias-e-calculos-trabalhistas/aula-02-verbas-rescisorias-em-especie/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/11-verbas-rescisorias-e-calculos-trabalhistas/aula-02-verbas-rescisorias-em-especie/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/11-verbas-rescisorias-e-calculos-trabalhistas/aula-02-verbas-rescisorias-em-especie/aula.json"
   },
@@ -16958,7 +16958,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/12-terceirizacao-e-trabalho-temporario/aula-01-terceirizacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/12-terceirizacao-e-trabalho-temporario/aula-01-terceirizacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/12-terceirizacao-e-trabalho-temporario/aula-01-terceirizacao/aula.json"
   },
@@ -16974,7 +16974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/12-terceirizacao-e-trabalho-temporario/aula-02-trabalho-temporario/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/12-terceirizacao-e-trabalho-temporario/aula-02-trabalho-temporario/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/12-terceirizacao-e-trabalho-temporario/aula-02-trabalho-temporario/aula.json"
   },
@@ -16990,7 +16990,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-01-definicao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-01-definicao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-01-definicao/aula.json"
   },
@@ -17006,7 +17006,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-02-estabilidade-por-tempo-de-servico-e-fgts/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-02-estabilidade-por-tempo-de-servico-e-fgts/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-02-estabilidade-por-tempo-de-servico-e-fgts/aula.json"
   },
@@ -17022,7 +17022,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-03-dirigente-sindical/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-03-dirigente-sindical/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-03-dirigente-sindical/aula.json"
   },
@@ -17038,7 +17038,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-04-gestantes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-04-gestantes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-04-gestantes/aula.json"
   },
@@ -17054,7 +17054,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-05-membro-da-cipa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-05-membro-da-cipa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-05-membro-da-cipa/aula.json"
   },
@@ -17070,7 +17070,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-06-empregado-acidentado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-06-empregado-acidentado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-06-empregado-acidentado/aula.json"
   },
@@ -17086,7 +17086,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-07-membro-da-ccp-e-representantes-dos-empregados/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-07-membro-da-ccp-e-representantes-dos-empregados/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-07-membro-da-ccp-e-representantes-dos-empregados/aula.json"
   },
@@ -17102,7 +17102,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-08-outras-modalidades/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-08-outras-modalidades/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-08-outras-modalidades/aula.json"
   },
@@ -17118,7 +17118,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-09-estabilidade-e-pandemia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-09-estabilidade-e-pandemia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/13-estabilidades-trabalhistas/aula-09-estabilidade-e-pandemia/aula.json"
   },
@@ -17134,7 +17134,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-04-prescricao-e-decadencia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-04-prescricao-e-decadencia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-04-prescricao-e-decadencia/aula.json"
   },
@@ -17150,7 +17150,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-02-decadencia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-02-decadencia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-02-decadencia/aula.json"
   },
@@ -17166,7 +17166,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-03-prescricao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-03-prescricao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-03-prescricao/aula.json"
   },
@@ -17182,7 +17182,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-05-resumo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-05-resumo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/14-prescricao-e-decadencia-no-direito-do-trabalho/aula-05-resumo/aula.json"
   },
@@ -17486,7 +17486,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-01-a-lgpd-se-aplica-as-relacoes-trabalhistas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-01-a-lgpd-se-aplica-as-relacoes-trabalhistas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-01-a-lgpd-se-aplica-as-relacoes-trabalhistas/aula.json"
   },
@@ -17502,7 +17502,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-02-a-quem-se-aplica-a-lgpd/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-02-a-quem-se-aplica-a-lgpd/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-02-a-quem-se-aplica-a-lgpd/aula.json"
   },
@@ -17518,7 +17518,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-03-lgpd-aplicada-as-relacoes-de-trabalho-domesticas/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-03-lgpd-aplicada-as-relacoes-de-trabalho-domesticas/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-03-lgpd-aplicada-as-relacoes-de-trabalho-domesticas/aula.json"
   },
@@ -17534,7 +17534,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-04-fundamentos-da-lgpd/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-04-fundamentos-da-lgpd/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-04-fundamentos-da-lgpd/aula.json"
   },
@@ -17550,7 +17550,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-05-tratamento-de-dados-art-5/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-05-tratamento-de-dados-art-5/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-05-tratamento-de-dados-art-5/aula.json"
   },
@@ -17566,7 +17566,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-06-tipos-de-dados/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-06-tipos-de-dados/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-06-tipos-de-dados/aula.json"
   },
@@ -17598,7 +17598,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-08-quando-podemos-tratar-dados-dos-empregados/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-08-quando-podemos-tratar-dados-dos-empregados/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-08-quando-podemos-tratar-dados-dos-empregados/aula.json"
   },
@@ -17614,7 +17614,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-09-a-questao-do-consentimento-do-empregado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-09-a-questao-do-consentimento-do-empregado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/16-lgpd-nas-relacoes-trabalhistas/aula-09-a-questao-do-consentimento-do-empregado/aula.json"
   },
@@ -17630,7 +17630,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-09-greve/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-09-greve/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-09-greve/aula.json"
   },
@@ -17646,7 +17646,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-02-interesses/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-02-interesses/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-02-interesses/aula.json"
   },
@@ -17662,7 +17662,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-03-greve-abusiva/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-03-greve-abusiva/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-03-greve-abusiva/aula.json"
   },
@@ -17678,7 +17678,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-04-direitos-e-deveres-dos-grevistas-e-greve-em-servicos-essenciais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-04-direitos-e-deveres-dos-grevistas-e-greve-em-servicos-essenciais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-04-direitos-e-deveres-dos-grevistas-e-greve-em-servicos-essenciais/aula.json"
   },
@@ -17694,7 +17694,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-05-greve-no-servico-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-05-greve-no-servico-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/17-greve/aula-05-greve-no-servico-publico/aula.json"
   },
@@ -17710,7 +17710,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-01-negociacao-coletiva/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-01-negociacao-coletiva/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-01-negociacao-coletiva/aula.json"
   },
@@ -17726,7 +17726,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-02-prevalencia-do-negociado-sobre-o-legislado/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-02-prevalencia-do-negociado-sobre-o-legislado/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-02-prevalencia-do-negociado-sobre-o-legislado/aula.json"
   },
@@ -17742,7 +17742,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-03-art-611-a-paragrafos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-03-art-611-a-paragrafos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-03-art-611-a-paragrafos/aula.json"
   },
@@ -17758,7 +17758,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-04-limites-ao-negociado-previsao-celetista/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-04-limites-ao-negociado-previsao-celetista/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-04-limites-ao-negociado-previsao-celetista/aula.json"
   },
@@ -17774,7 +17774,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-05-requisitos-da-negociacao-coletiva/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-05-requisitos-da-negociacao-coletiva/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-05-requisitos-da-negociacao-coletiva/aula.json"
   },
@@ -17790,7 +17790,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-06-mitigacao-do-principio-da-primazia-da-norma-mais-favoravel-e-dispensa-em-massa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-06-mitigacao-do-principio-da-primazia-da-norma-mais-favoravel-e-dispensa-em-massa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/18-negociacao-coletiva/aula-06-mitigacao-do-principio-da-primazia-da-norma-mais-favoravel-e-dispensa-em-massa/aula.json"
   },
@@ -17806,7 +17806,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-01-formacao-do-direito-coletivo-organizacao-sindical/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-01-formacao-do-direito-coletivo-organizacao-sindical/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-01-formacao-do-direito-coletivo-organizacao-sindical/aula.json"
   },
@@ -17822,7 +17822,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-02-principios-do-direito-coletivo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-02-principios-do-direito-coletivo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-02-principios-do-direito-coletivo/aula.json"
   },
@@ -17838,7 +17838,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-03-sindicato/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-03-sindicato/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-03-sindicato/aula.json"
   },
@@ -17854,7 +17854,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-04-categorias-e-enquadramento-sindical/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-04-categorias-e-enquadramento-sindical/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-04-categorias-e-enquadramento-sindical/aula.json"
   },
@@ -17870,7 +17870,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-05-sindicato-fundacao-e-organizacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-05-sindicato-fundacao-e-organizacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-05-sindicato-fundacao-e-organizacao/aula.json"
   },
@@ -17886,7 +17886,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-06-custeio-dos-sindicatos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-06-custeio-dos-sindicatos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-06-custeio-dos-sindicatos/aula.json"
   },
@@ -17902,7 +17902,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-07-condutas-antissindicais/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-07-condutas-antissindicais/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-07-condutas-antissindicais/aula.json"
   },
@@ -17918,7 +17918,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-08-formacao-do-direito-coletivo-negociacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-08-formacao-do-direito-coletivo-negociacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-08-formacao-do-direito-coletivo-negociacao/aula.json"
   },
@@ -17934,7 +17934,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-09-greve/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-09-greve/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-09-greve/aula.json"
   },
@@ -17950,7 +17950,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-10-greve-abusiva-e-lockout/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-10-greve-abusiva-e-lockout/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-10-greve-abusiva-e-lockout/aula.json"
   },
@@ -17966,7 +17966,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-11-comissao-de-conciliacao-previa/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-11-comissao-de-conciliacao-previa/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-11-comissao-de-conciliacao-previa/aula.json"
   },
@@ -17982,7 +17982,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-12-renuncia-e-transacao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-12-renuncia-e-transacao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/19-direito-coletivo-do-trabalho/aula-12-renuncia-e-transacao/aula.json"
   },
@@ -17998,7 +17998,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-01-pis-pasep-programa-de-integracao-social-e-formacao-do-patrimonio-do-servidor-publico/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-01-pis-pasep-programa-de-integracao-social-e-formacao-do-patrimonio-do-servidor-publico/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-01-pis-pasep-programa-de-integracao-social-e-formacao-do-patrimonio-do-servidor-publico/aula.json"
   },
@@ -18014,7 +18014,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-02-pis-pasep-na-constituicao-de-1988/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-02-pis-pasep-na-constituicao-de-1988/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-02-pis-pasep-na-constituicao-de-1988/aula.json"
   },
@@ -18030,7 +18030,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-03-contribuicoes-ao-pis-pasep/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-03-contribuicoes-ao-pis-pasep/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-03-contribuicoes-ao-pis-pasep/aula.json"
   },
@@ -18046,7 +18046,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-04-abono-anual-lei-n-7-998-1990/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-04-abono-anual-lei-n-7-998-1990/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-04-abono-anual-lei-n-7-998-1990/aula.json"
   },
@@ -18062,7 +18062,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-05-fundo-de-amparo-ao-trabalhador-fat-lei-n-7998-1990/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-05-fundo-de-amparo-ao-trabalhador-fat-lei-n-7998-1990/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/20-pis-pasep/aula-05-fundo-de-amparo-ao-trabalhador-fat-lei-n-7998-1990/aula.json"
   },
@@ -18078,7 +18078,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-01-contexto/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-01-contexto/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-01-contexto/aula.json"
   },
@@ -18094,7 +18094,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-02-fat-e-codefat/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-02-fat-e-codefat/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-02-fat-e-codefat/aula.json"
   },
@@ -18110,7 +18110,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-03-seguro-desemprego-por-desemprego-involuntario/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-03-seguro-desemprego-por-desemprego-involuntario/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-03-seguro-desemprego-por-desemprego-involuntario/aula.json"
   },
@@ -18126,7 +18126,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-04-seguro-desemprego-para-trabalhador-resgatado-de-trabalho-analogo-ao-de-escravo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-04-seguro-desemprego-para-trabalhador-resgatado-de-trabalho-analogo-ao-de-escravo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-04-seguro-desemprego-para-trabalhador-resgatado-de-trabalho-analogo-ao-de-escravo/aula.json"
   },
@@ -18142,7 +18142,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-05-bolsa-qualificacao-profissional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-05-bolsa-qualificacao-profissional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-05-bolsa-qualificacao-profissional/aula.json"
   },
@@ -18158,7 +18158,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 36,
     "imagensQtd": 36,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-06-seguro-defeso-lei-n-10-779-03/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-06-seguro-defeso-lei-n-10-779-03/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/21-seguro-desemprego/aula-06-seguro-defeso-lei-n-10-779-03/aula.json"
   },
@@ -18190,7 +18190,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-01-conceito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-01-conceito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-01-conceito/aula.json"
   },
@@ -18206,7 +18206,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-02-quem-tem-direito/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-02-quem-tem-direito/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-02-quem-tem-direito/aula.json"
   },
@@ -18222,7 +18222,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-03-data-de-inicio-renda-mensal-e-pagamento-do-beneficio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-03-data-de-inicio-renda-mensal-e-pagamento-do-beneficio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-03-data-de-inicio-renda-mensal-e-pagamento-do-beneficio/aula.json"
   },
@@ -18238,7 +18238,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-04-cessacao-e-fraude-no-recebimento-do-beneficio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-04-cessacao-e-fraude-no-recebimento-do-beneficio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/22-salario-familia/aula-04-cessacao-e-fraude-no-recebimento-do-beneficio/aula.json"
   },
@@ -18254,7 +18254,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-01-conceito-e-beneficiario/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-01-conceito-e-beneficiario/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-01-conceito-e-beneficiario/aula.json"
   },
@@ -18270,7 +18270,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-02-requisitos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-02-requisitos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-02-requisitos/aula.json"
   },
@@ -18286,7 +18286,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-03-periodo-do-beneficio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-03-periodo-do-beneficio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-03-periodo-do-beneficio/aula.json"
   },
@@ -18302,7 +18302,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-04-revogacao-do-salario-maternidade-tarifado-em-caso-de-adocao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-04-revogacao-do-salario-maternidade-tarifado-em-caso-de-adocao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-04-revogacao-do-salario-maternidade-tarifado-em-caso-de-adocao/aula.json"
   },
@@ -18318,7 +18318,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-05-renda-mensal-do-beneficio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-05-renda-mensal-do-beneficio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-05-renda-mensal-do-beneficio/aula.json"
   },
@@ -18350,7 +18350,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-07-periodo-de-carencia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-07-periodo-de-carencia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-07-periodo-de-carencia/aula.json"
   },
@@ -18366,7 +18366,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-08-aborto-nao-criminoso-e-natimorto/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-08-aborto-nao-criminoso-e-natimorto/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-08-aborto-nao-criminoso-e-natimorto/aula.json"
   },
@@ -18382,7 +18382,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-09-cumulacao-e-prescricao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-09-cumulacao-e-prescricao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-09-cumulacao-e-prescricao/aula.json"
   },
@@ -18398,7 +18398,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-10-falecimento-da-segurada/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-10-falecimento-da-segurada/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/23-salario-maternidade/aula-10-falecimento-da-segurada/aula.json"
   },
@@ -18638,7 +18638,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-01-suspensao-x-interrupcao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-01-suspensao-x-interrupcao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-01-suspensao-x-interrupcao/aula.json"
   },
@@ -18654,7 +18654,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-02-hipoteses-de-interrupcao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-02-hipoteses-de-interrupcao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-02-hipoteses-de-interrupcao/aula.json"
   },
@@ -18670,7 +18670,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-03-hipoteses-de-suspensao/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-03-hipoteses-de-suspensao/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-03-hipoteses-de-suspensao/aula.json"
   },
@@ -18686,7 +18686,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-04-cessacao-do-contrato-de-trabalho/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-04-cessacao-do-contrato-de-trabalho/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/25-suspensao-interrupcao-e-cessacao-do-contrato-de-trabalho/aula-04-cessacao-do-contrato-de-trabalho/aula.json"
   },
@@ -18702,7 +18702,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-01-saude-e-seguranca-no-trabalho/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-01-saude-e-seguranca-no-trabalho/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-01-saude-e-seguranca-no-trabalho/aula.json"
   },
@@ -18718,7 +18718,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-02-cipa-comissao-interna-de-prevencao-de-acidentes/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-02-cipa-comissao-interna-de-prevencao-de-acidentes/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-02-cipa-comissao-interna-de-prevencao-de-acidentes/aula.json"
   },
@@ -18734,7 +18734,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-03-acidente-de-trabalho/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-03-acidente-de-trabalho/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-03-acidente-de-trabalho/aula.json"
   },
@@ -18750,7 +18750,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-04-consequencias-do-acidente-de-trabalho/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-04-consequencias-do-acidente-de-trabalho/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-04-consequencias-do-acidente-de-trabalho/aula.json"
   },
@@ -18766,7 +18766,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-05-adicional-de-periculosidade-e-insalubridade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-05-adicional-de-periculosidade-e-insalubridade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-05-adicional-de-periculosidade-e-insalubridade/aula.json"
   },
@@ -18782,7 +18782,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-06-adicional-de-periculosidade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-06-adicional-de-periculosidade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-06-adicional-de-periculosidade/aula.json"
   },
@@ -18798,7 +18798,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-07-adicional-de-insalubridade/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-07-adicional-de-insalubridade/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/26-saude-e-seguranca-no-trabalho/aula-07-adicional-de-insalubridade/aula.json"
   },
@@ -18830,7 +18830,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 38,
     "imagensQtd": 38,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-01-o-tratamento-juridico-da-crianca-e-do-adolescente-ao-longo-da-historia/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-01-o-tratamento-juridico-da-crianca-e-do-adolescente-ao-longo-da-historia/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-01-o-tratamento-juridico-da-crianca-e-do-adolescente-ao-longo-da-historia/aula.json"
   },
@@ -18846,7 +18846,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-02-protecao-da-crianca-e-do-adolescente-no-plano-internacional/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-02-protecao-da-crianca-e-do-adolescente-no-plano-internacional/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-02-protecao-da-crianca-e-do-adolescente-no-plano-internacional/aula.json"
   },
@@ -18862,7 +18862,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-03-pacto-internacional-dos-direitos-civis-e-politicos-1966/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-03-pacto-internacional-dos-direitos-civis-e-politicos-1966/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-03-pacto-internacional-dos-direitos-civis-e-politicos-1966/aula.json"
   },
@@ -18878,7 +18878,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-04-convencao-sobre-os-direitos-da-crianca-1989/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-04-convencao-sobre-os-direitos-da-crianca-1989/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-04-convencao-sobre-os-direitos-da-crianca-1989/aula.json"
   },
@@ -18894,7 +18894,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-05-agenda-2030-para-o-desenvolvimento-sustentavel/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-05-agenda-2030-para-o-desenvolvimento-sustentavel/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-05-agenda-2030-para-o-desenvolvimento-sustentavel/aula.json"
   },
@@ -18910,7 +18910,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-06-organizacao-internacional-do-trabalho-oit/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-06-organizacao-internacional-do-trabalho-oit/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-06-organizacao-internacional-do-trabalho-oit/aula.json"
   },
@@ -18926,7 +18926,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 39,
     "imagensQtd": 39,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-07-trabalho-artistico-infantil/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-07-trabalho-artistico-infantil/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-07-trabalho-artistico-infantil/aula.json"
   },
@@ -18942,7 +18942,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 37,
     "imagensQtd": 37,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-08-aprendizagem-direitos-e-peculiaridades-do-aprendiz/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-08-aprendizagem-direitos-e-peculiaridades-do-aprendiz/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-08-aprendizagem-direitos-e-peculiaridades-do-aprendiz/aula.json"
   },
@@ -18958,7 +18958,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-09-estagio-conceitos-e-requisitos/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-09-estagio-conceitos-e-requisitos/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-09-estagio-conceitos-e-requisitos/aula.json"
   },
@@ -18974,7 +18974,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 35,
     "imagensQtd": 35,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-10-partes-envolvidas-no-estagio/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-10-partes-envolvidas-no-estagio/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-10-partes-envolvidas-no-estagio/aula.json"
   },
@@ -18990,7 +18990,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 34,
     "imagensQtd": 34,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-11-direitos-e-peculiaridades-do-estagiario/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-11-direitos-e-peculiaridades-do-estagiario/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-11-direitos-e-peculiaridades-do-estagiario/aula.json"
   },
@@ -19006,7 +19006,7 @@ export const AULAS_CATALOGO_COMPLETO: AulaItem[] = [
     "audioQtd": 33,
     "imagensQtd": 33,
     "urlHtmlR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-12-trabalho-educativo/aula.html",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/01-introducao/aula-01-fontes-materiais-formais/imagens/capa.webp",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-12-trabalho-educativo/assets/img/capa.webp",
     "status": "pronto",
     "urlJsonR2": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-do-trabalho/27-protecao-do-trabalho-da-crianca-e-do-adolescente/aula-12-trabalho-educativo/aula.json"
   }

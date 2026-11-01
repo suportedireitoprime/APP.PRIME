@@ -224,24 +224,20 @@ export default function AdminAulasInterativas() {
   const [aulaPendenteModal, setAulaPendenteModal] = useState<AulaItem | null>(null);
   // Função universal de reset de scroll (suporta Window, HTML, Body e #root do Desktop)
   const resetScrollToTop = () => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    if (document.documentElement) document.documentElement.scrollTop = 0;
-    if (document.body) document.body.scrollTop = 0;
-    const root = document.getElementById('root');
-    if (root) {
-      root.scrollTop = 0;
-    }
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+      const root = document.getElementById('root');
+      if (root) {
+        root.scrollTop = 0;
+      }
+    } catch {}
   };
 
   // Garante início no topo absoluto do cabeçalho em todas as transições (Mobile & Desktop)
   useEffect(() => {
     resetScrollToTop();
-    const timer = setTimeout(resetScrollToTop, 20);
-    const raf = requestAnimationFrame(resetScrollToTop);
-    return () => {
-      clearTimeout(timer);
-      cancelAnimationFrame(raf);
-    };
   }, [disciplinaSelecionadaId, materiaSelecionadaId, aulaAtiva]);
 
   // Estados de progresso
@@ -1118,9 +1114,8 @@ export default function AdminAulasInterativas() {
                             >
                               <div className={cn("flex items-center gap-1.5 mb-1 opacity-80", "justify-start")}>
                                 <span className="text-[11px] sm:text-[13px] font-bold uppercase tracking-wider" style={{ color: disciplinaAtual.corDestaque }}>
-                                  {mat.numeroMateria}
+                                  MATÉRIA {i + 1}
                                 </span>
-                                
                               </div>
 
                               <h3 className="font-serif font-bold text-[17px] xs:text-[19px] sm:text-[22px] md:text-[24px] leading-tight text-white group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-3">
@@ -1201,6 +1196,8 @@ export default function AdminAulasInterativas() {
         const somaPctMat = aulasDaMateria.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
         const pctMat = totalAulasMat > 0 ? Math.round(somaPctMat / totalAulasMat) : 0;
         const ciclosCompletosMat = aulasDaMateria.filter(a => calcularProgressoCiclo(a).cicloCompleto).length;
+        const matsDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disciplinaAtual.id);
+        const numMateria = matsDaDisc.findIndex(m => m.id === materiaAtual.id) + 1;
 
         return (
           <>
@@ -1243,7 +1240,7 @@ export default function AdminAulasInterativas() {
                     className="text-[11px] sm:text-xs font-black uppercase tracking-widest block truncate"
                     style={{ color: disciplinaAtual.corDestaque }}
                   >
-                    {disciplinaAtual.nome} · {materiaAtual.numeroMateria}
+                    {disciplinaAtual.nome} · MATÉRIA {numMateria > 0 ? numMateria : 1}
                   </span>
                   <h1 className="text-xl xs:text-2xl sm:text-3xl font-serif font-black text-white tracking-tight leading-tight mt-0.5">
                     {materiaAtual.titulo}
