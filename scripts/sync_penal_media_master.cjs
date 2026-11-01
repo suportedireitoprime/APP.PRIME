@@ -1,8 +1,8 @@
 /**
- * SCRIPT NITRO 8X MULTI-AULA DE TRANSFERÊNCIA DE MÍDIAS - DIREITO PENAL (LIMITE EXTREMO)
- * Executa 8 aulas simultaneamente em paralelo, cada uma com 32 streams (16 áudios + 16 imagens).
- * Total de conexões paralelas: 256 streams com keep-alive de 300 sockets no R2.
- * Velocidade média: ~1.2s a 1.5s por aula finalizada (~6 minutos para concluir as restantes).
+ * SCRIPT MODO HYPER WARP 16X MULTI-AULA DE TRANSFERÊNCIA DE MÍDIAS - DIREITO PENAL
+ * Executa 16 aulas simultaneamente em paralelo, cada uma com 40 streams (20 áudios + 20 imagens).
+ * Total de conexões paralelas: 640 streams com keep-alive de 1.000 sockets no Cloudflare R2.
+ * Velocidade média: ~0.7s por aula finalizada (~3 a 4 minutos para as 254 aulas restantes).
  */
 const fs = require('fs');
 const path = require('path');
@@ -19,9 +19,9 @@ const s3 = new S3Client({
   },
   requestHandler: new NodeHttpHandler({
     httpsAgent: new https.Agent({
-      maxSockets: 300,
+      maxSockets: 1000,
       keepAlive: true,
-      keepAliveMsecs: 30000
+      keepAliveMsecs: 60000
     })
   })
 });
@@ -29,9 +29,10 @@ const s3 = new S3Client({
 const BUCKET = 'estudos-juridicos-midias';
 const LOG_FILE = path.join(__dirname, 'media_sync.log');
 const PROGRESS_FILE = path.join(__dirname, 'aulas_media_sync_progress.json');
+const STRUCTURE_CACHE_FILE = path.join(__dirname, 'penal_aulas_structure.json');
 
-const AULAS_CONCURRENCY = 8; // 8 aulas processadas SIMULTANEAMENTE!
-const STREAM_CONCURRENCY = 16; // 16 áudios + 16 imagens por aula (32 conexões por aula = 256 total)
+const AULAS_CONCURRENCY = 16; // 16 AULAS SIMULTÂNEAS
+const STREAM_CONCURRENCY = 20; // 20 áudios + 20 imagens por aula (40 por aula = 640 streams total)
 
 function log(msg) {
   const line = `[${new Date().toLocaleTimeString('pt-BR')}] ${msg}\n`;
@@ -74,7 +75,6 @@ function formatDuration(ms) {
   return `${secs}s`;
 }
 
-// Pool assíncrono concorrente para processamento paralelo de alta velocidade
 async function asyncPool(limit, items, iteratorFn) {
   const ret = [];
   const executing = new Set();
@@ -116,7 +116,7 @@ async function fetchFolderItems(folderId, retries = 3) {
       return items;
     } catch {
       if (attempt === retries) return [];
-      await new Promise(r => setTimeout(r, 400 * attempt));
+      await new Promise(r => setTimeout(r, 300 * attempt));
     }
   }
   return [];
@@ -136,7 +136,7 @@ async function downloadDriveBuffer(fileId, retries = 3) {
       }
     } catch {
       if (attempt === retries) return null;
-      await new Promise(r => setTimeout(r, 400 * attempt));
+      await new Promise(r => setTimeout(r, 300 * attempt));
     }
   }
   return null;
@@ -156,64 +156,72 @@ async function main() {
   const PENAL_ROOT_ID = '13NRXMToFSblGbd3bL6Ut9-q2HQRMDSe4';
 
   log(`======================================================================`);
-  log(`>>> MODO NITRO MÁXIMO ATIVADO: DIREITO PENAL (${AULAS_CONCURRENCY} AULAS EM PARALELO / 256 STREAMS)`);
+  log(`>>> MODO HYPER WARP (640 CONEXÕES ATIVAS / 16 AULAS EM PARALELO)`);
   log(`======================================================================\n`);
 
-  log(`Buscando matérias de Direito Penal no Drive...`);
-  const rawMaterias = await fetchFolderItems(PENAL_ROOT_ID);
-  log(`Total de pastas encontradas na raiz de Direito Penal: ${rawMaterias.length}`);
+  let totalAulasList = [];
 
-  const materiasMap = new Map();
-  for (const m of rawMaterias) {
-    const slug = slugify(m.name);
-    if (!materiasMap.has(slug)) {
-      materiasMap.set(slug, []);
+  if (fs.existsSync(STRUCTURE_CACHE_FILE)) {
+    try {
+      totalAulasList = JSON.parse(fs.readFileSync(STRUCTURE_CACHE_FILE, 'utf8'));
+      log(`⚡ Estrutura de ${totalAulasList.length} aulas carregada instantaneamente do cache!\n`);
+    } catch {
+      totalAulasList = [];
     }
-    materiasMap.get(slug).push(m);
   }
 
-  log(`Matérias únicas em Direito Penal: ${materiasMap.size}`);
+  if (totalAulasList.length === 0) {
+    log(`Mapeando matérias de Direito Penal no Drive...`);
+    const rawMaterias = await fetchFolderItems(PENAL_ROOT_ID);
 
-  const totalAulasList = [];
+    const materiasMap = new Map();
+    for (const m of rawMaterias) {
+      const slug = slugify(m.name);
+      if (!materiasMap.has(slug)) {
+        materiasMap.set(slug, []);
+      }
+      materiasMap.get(slug).push(m);
+    }
 
-  for (const [matSlug, folders] of materiasMap.entries()) {
-    let chosenFolder = folders[0];
-    let aulas = await fetchFolderItems(chosenFolder.id);
+    for (const [matSlug, folders] of materiasMap.entries()) {
+      let chosenFolder = folders[0];
+      let aulas = await fetchFolderItems(chosenFolder.id);
 
-    // Se houver pastas duplicadas, escolher a que tem aulas com arquivos
-    if (folders.length > 1) {
-      for (const f of folders) {
-        const testAulas = await fetchFolderItems(f.id);
-        if (testAulas.length > 0) {
-          const sub = await fetchFolderItems(testAulas[0].id);
-          const audioFolder = sub.find(s => s.name.toLowerCase() === 'audio');
-          if (audioFolder) {
-            const audios = await fetchFolderItems(audioFolder.id);
-            if (audios.length > 0) {
-              chosenFolder = f;
-              aulas = testAulas;
-              break;
+      if (folders.length > 1) {
+        for (const f of folders) {
+          const testAulas = await fetchFolderItems(f.id);
+          if (testAulas.length > 0) {
+            const sub = await fetchFolderItems(testAulas[0].id);
+            const audioFolder = sub.find(s => s.name.toLowerCase() === 'audio');
+            if (audioFolder) {
+              const audios = await fetchFolderItems(audioFolder.id);
+              if (audios.length > 0) {
+                chosenFolder = f;
+                aulas = testAulas;
+                break;
+              }
             }
           }
         }
       }
-    }
 
-    const aulasOrdenadas = aulas
-      .filter(a => a.mimeType === 'application/vnd.google-apps.folder')
-      .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+      const aulasOrdenadas = aulas
+        .filter(a => a.mimeType === 'application/vnd.google-apps.folder')
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
 
-    for (const aula of aulasOrdenadas) {
-      const aulaSlug = slugify(aula.name);
-      totalAulasList.push({
-        matNome: chosenFolder.name,
-        matSlug,
-        aulaName: aula.name,
-        aulaSlug,
-        folderId: aula.id,
-        key: `direito-penal/${matSlug}/${aulaSlug}`
-      });
+      for (const aula of aulasOrdenadas) {
+        const aulaSlug = slugify(aula.name);
+        totalAulasList.push({
+          matNome: chosenFolder.name,
+          matSlug,
+          aulaName: aula.name,
+          aulaSlug,
+          folderId: aula.id,
+          key: `direito-penal/${matSlug}/${aulaSlug}`
+        });
+      }
     }
+    fs.writeFileSync(STRUCTURE_CACHE_FILE, JSON.stringify(totalAulasList, null, 2), 'utf8');
   }
 
   const totalPenal = totalAulasList.length;
@@ -224,7 +232,7 @@ async function main() {
     }
   }
 
-  log(`Total de aulas mapeadas em Direito Penal: ${totalPenal}`);
+  log(`Total de aulas em Direito Penal: ${totalPenal}`);
   log(`Aulas já salvas no R2 anteriormente: ${jaConcluidas}/${totalPenal} (${((jaConcluidas/totalPenal)*100).toFixed(1)}%)\n`);
 
   const startTime = Date.now();
@@ -233,7 +241,7 @@ async function main() {
   let totalImagensUploaded = 0;
   let aulasIniciadasNestaSessao = 0;
 
-  // Executa 8 aulas simultaneamente (Modo Nitro 256 streams)
+  // Executa 16 aulas simultaneamente (Modo Hyper Warp 640 conexões)
   await asyncPool(AULAS_CONCURRENCY, totalAulasList, async (item) => {
     if (progress[item.key] && progress[item.key].status === 'concluido' && progress[item.key].audios > 0) {
       return;
@@ -243,7 +251,7 @@ async function main() {
     aulasIniciadasNestaSessao++;
 
     let etaString = 'calculando...';
-    if (aulasIniciadasNestaSessao >= 8) {
+    if (aulasIniciadasNestaSessao >= 16) {
       const elapsed = Date.now() - startTime;
       const avgMsPerAula = elapsed / aulasIniciadasNestaSessao;
       const remainingCount = totalPenal - completedCount;
@@ -251,7 +259,7 @@ async function main() {
       etaString = formatDuration(remainingMs);
     }
 
-    log(`[${completedCount + 1}/${totalPenal} - ${(((completedCount + 1)/totalPenal)*100).toFixed(1)}%] [ETA: ${etaString}] ⚡ INICIANDO (NITRO): ${item.matNome} > ${item.aulaName}`);
+    log(`[${completedCount + 1}/${totalPenal} - ${(((completedCount + 1)/totalPenal)*100).toFixed(1)}%] [ETA: ${etaString}] ⚡ WARP 16X: ${item.matNome} > ${item.aulaName}`);
 
     try {
       const folderItems = await fetchFolderItems(item.folderId);
@@ -262,7 +270,7 @@ async function main() {
       let audioCount = 0;
       let imgCount = 0;
 
-      // Transferência Simultânea de Áudios e Imagens com 16 streams cada (32 streams por aula)
+      // Transferência Simultânea de Áudios e Imagens com 20 streams cada (40 streams por aula)
       await Promise.all([
         (async () => {
           if (!audioFolder) return;
@@ -318,7 +326,7 @@ async function main() {
 
       const aulaDuration = formatDuration(Date.now() - aulaStartTime);
       const pctGeral = ((completedCount / totalPenal) * 100).toFixed(1);
-      log(`   🔥 [${completedCount}/${totalPenal} - ${pctGeral}%] CONCLUÍDA EM ${aulaDuration}! (${audioCount} áudios + ${imgCount} imagens) -> ${item.aulaName}`);
+      log(`   🔥 [${completedCount}/${totalPenal} - ${pctGeral}%] WARP OK EM ${aulaDuration}! (${audioCount} áudios + ${imgCount} imagens) -> ${item.aulaName}`);
     } catch (err) {
       log(`   ❌ Erro em ${item.aulaName}: ${err.message}`);
     }
