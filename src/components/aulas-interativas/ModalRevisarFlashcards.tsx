@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, RotateCw, Award, LockOpen } from 'lucide-react';
 import type { FlashcardAula } from '@/data/aulasInterativasConteudo';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface ModalRevisarFlashcardsProps {
   tituloAula: string;
@@ -26,12 +27,14 @@ export function ModalRevisarFlashcards({
   const progressoPct = Math.round(((indexAtual + 1) / total) * 100);
 
   const handleCompreendi = () => {
+    haptic.selection();
     setVirado(false);
     setDirecao(1);
 
     if (indexAtual + 1 < total) {
       setIndexAtual(prev => prev + 1);
     } else {
+      haptic.success();
       setFinalizado(true);
       onConcluir();
     }
@@ -166,7 +169,10 @@ export function ModalRevisarFlashcards({
           >
             {/* Card com Flip 3D */}
             <div
-              onClick={() => setVirado(!virado)}
+              onClick={() => {
+                haptic.medium();
+                setVirado(!virado);
+              }}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setVirado(!virado); }}

@@ -5,6 +5,7 @@ import {
   ChevronRight, BookOpen
 } from 'lucide-react';
 import type { QuestaoAula } from '@/data/aulasInterativasConteudo';
+import { haptic } from '@/lib/nativeHaptics';
 
 interface ModalPraticarQuestoesProps {
   tituloAula: string;
@@ -34,17 +35,21 @@ export function ModalPraticarQuestoes({
 
     setRespostaSelecionada(letra);
     if (letra === questao.respostaCorreta) {
+      haptic.success();
       setAcertos(prev => [...prev, indexAtual]);
     } else {
+      haptic.error();
       setErros(prev => [...prev, indexAtual]);
     }
   };
 
   const handleProxima = () => {
+    haptic.selection();
     setRespostaSelecionada(null);
     if (indexAtual + 1 < total) {
       setIndexAtual(prev => prev + 1);
     } else {
+      haptic.success();
       setFinalizado(true);
       onConcluir();
     }

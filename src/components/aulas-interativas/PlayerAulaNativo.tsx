@@ -1521,7 +1521,10 @@ export function PlayerAulaNativo({
                     return (
                       <div
                         key={ci}
-                        onClick={() => setCartasReveladas(prev => ({ ...prev, [ci]: !prev[ci] }))}
+                        onClick={() => {
+                          haptic.medium();
+                          setCartasReveladas(prev => ({ ...prev, [ci]: !prev[ci] }));
+                        }}
                         className={`p-4 sm:p-5 rounded-2xl border min-h-[140px] flex flex-col justify-between transition-all cursor-pointer shadow-lg ${
                           revelada
                             ? 'border-amber-400/50 bg-[#2e1219]'
@@ -1571,7 +1574,10 @@ export function PlayerAulaNativo({
                       <button
                         key={pi}
                         type="button"
-                        onClick={() => setPontoAtivo(pi)}
+                        onClick={() => {
+                          haptic.selection();
+                          setPontoAtivo(pi);
+                        }}
                         style={{ left: `${ponto.x}%`, top: `${ponto.y}%` }}
                         className={`absolute w-8 h-8 -ml-4 -mt-4 rounded-full flex items-center justify-center font-black text-xs transition-all shadow-xl ${
                           isAtivo
