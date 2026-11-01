@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, RotateCw, Award, LockOpen } from 'lucide-react';
 import type { FlashcardAula } from '@/data/aulasInterativasConteudo';
+import confetti from 'canvas-confetti';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface ModalRevisarFlashcardsProps {
@@ -35,6 +36,14 @@ export function ModalRevisarFlashcards({
       setIndexAtual(prev => prev + 1);
     } else {
       haptic.success();
+      try {
+        confetti({
+          particleCount: 85,
+          spread: 75,
+          origin: { y: 0.55 },
+          colors: ['#fbbf24', '#f59e0b', '#38bdf8', '#ffffff']
+        });
+      } catch {}
       setFinalizado(true);
       onConcluir();
     }

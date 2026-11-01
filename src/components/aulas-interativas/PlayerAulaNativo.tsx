@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import { 
   ArrowLeft, Play, Pause, Check, CheckCircle2, 
   RotateCcw, BookOpen, Volume2, ChevronRight, ChevronLeft, 

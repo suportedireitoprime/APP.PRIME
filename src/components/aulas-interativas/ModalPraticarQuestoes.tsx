@@ -5,6 +5,7 @@ import {
   ChevronRight, BookOpen
 } from 'lucide-react';
 import type { QuestaoAula } from '@/data/aulasInterativasConteudo';
+import confetti from 'canvas-confetti';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface ModalPraticarQuestoesProps {
@@ -50,6 +51,14 @@ export function ModalPraticarQuestoes({
       setIndexAtual(prev => prev + 1);
     } else {
       haptic.success();
+      try {
+        confetti({
+          particleCount: 110,
+          spread: 80,
+          origin: { y: 0.55 },
+          colors: ['#10b981', '#34d399', '#fbbf24', '#ffffff']
+        });
+      } catch {}
       setFinalizado(true);
       onConcluir();
     }

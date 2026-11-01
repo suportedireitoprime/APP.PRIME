@@ -61,7 +61,7 @@ export const AulasHeroPanel: React.FC<AulasHeroPanelProps> = ({
             alt=""
             loading="eager"
             decoding="async"
-            className="absolute inset-y-0 right-0 h-full w-auto object-cover object-center opacity-85 transition-opacity duration-700"
+            className="absolute inset-y-0 right-0 h-full w-auto object-cover object-center opacity-85 transition-all duration-700 ease-out group-hover:scale-105 group-hover:-translate-x-1"
           />
         ) : (
           HERO_ILLUSTRATIONS.map((url, i) => (

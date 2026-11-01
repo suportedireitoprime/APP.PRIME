@@ -2140,3 +2140,65 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
   }
 }
 
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EIXO 2: FÍSICA INTERATIVA, FLIP 3D REAL & ACESSIBILIDADE REDUCED MOTION
+   ══════════════════════════════════════════════════════════════════════════ */
+.spring-card {
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  transition-duration: 450ms !important;
+}
+
+.flip-perspective {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.flip-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.flip-face-back {
+  transform: rotateY(180deg);
+}
+
+.hover-shimmer-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-shimmer-effect::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 100%
+  );
+  transform: skewX(-15deg);
+  pointer-events: none;
+  transition: transform 700ms ease;
+}
+
+.hover-shimmer-effect:hover::after {
+  transform: skewX(-15deg) translateX(350%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-trail-flow,
+  .animate-dot-pulse,
+  .spring-card,
+  .flip-face,
+  .hover-shimmer-effect::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}

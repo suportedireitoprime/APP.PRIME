@@ -779,12 +779,11 @@ export default function AdminAulasInterativas() {
                             setMateriaSelecionadaId(null);
                             resetScrollToTop();
                           }}
-                          className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                          className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.95] hover:-translate-y-1.5 transition-transform duration-300 ease-out"
                         >
                           {/* Carta 1 (Fundo) */}
                           <div
-                            className={cn(
-                              "absolute inset-0 rounded-2xl border border-white/10 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                            className={cn("absolute inset-0 rounded-2xl border border-white/10 opacity-40 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
                               isLeft
                                 ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
                                 : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
@@ -802,8 +801,7 @@ export default function AdminAulasInterativas() {
 
                           {/* Carta 2 (Meio) */}
                           <div
-                            className={cn(
-                              "absolute inset-0 rounded-2xl border border-white/15 opacity-75 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                            className={cn("absolute inset-0 rounded-2xl border border-white/15 opacity-75 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
                               isLeft
                                 ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
                                 : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
@@ -821,8 +819,7 @@ export default function AdminAulasInterativas() {
 
                           {/* Carta 3 (Frontal Principal com Capa) */}
                           <div
-                            className={cn(
-                              "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 transition-all duration-300 origin-bottom",
+                            className={cn("relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 spring-card transition-all origin-bottom hover-shimmer-effect",
                               isLeft
                                 ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
                                 : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
@@ -1227,12 +1224,11 @@ export default function AdminAulasInterativas() {
                           {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA MATÉRIA */}
                           <div
                             onClick={() => { setMateriaSelecionadaId(mat.id); resetScrollToTop(); }}
-                            className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                            className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.95] hover:-translate-y-1.5 transition-transform duration-300 ease-out"
                           >
                             {/* Carta 1 (Fundo) */}
                             <div
-                              className={cn(
-                                "absolute inset-0 rounded-2xl border border-white/10 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                              className={cn("absolute inset-0 rounded-2xl border border-white/10 opacity-40 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
                                 isLeft
                                   ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
                                   : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
@@ -1250,8 +1246,7 @@ export default function AdminAulasInterativas() {
 
                             {/* Carta 2 (Meio) */}
                             <div
-                              className={cn(
-                                "absolute inset-0 rounded-2xl border border-white/15 opacity-75 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                              className={cn("absolute inset-0 rounded-2xl border border-white/15 opacity-75 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
                                 isLeft
                                   ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
                                   : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
@@ -1269,8 +1264,7 @@ export default function AdminAulasInterativas() {
 
                             {/* Carta 3 (Frontal Principal com Capa) */}
                             <div
-                              className={cn(
-                                "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 transition-all duration-300 origin-bottom",
+                              className={cn("relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 spring-card transition-all origin-bottom hover-shimmer-effect",
                                 isLeft
                                   ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
                                   : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
@@ -1412,8 +1406,7 @@ export default function AdminAulasInterativas() {
                                 d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                                 fill="none"
                                 className="animate-trail-flow"
-                                stroke={disciplinaAtual.corDestaque}
-                                strokeWidth="2.5"
+                                stroke={prog.cicloCompleto ? '#fbbf24' : disciplinaAtual.corDestaque} strokeWidth={prog.cicloCompleto ? '3' : '2.5'}
                                 strokeDasharray="6 8"
                                 strokeLinecap="round"
                                 vectorEffect="non-scaling-stroke"
@@ -1644,12 +1637,11 @@ export default function AdminAulasInterativas() {
                           {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA AULA */}
                           <div
                             onClick={() => iniciarAula(aula)}
-                            className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+                            className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.95] hover:-translate-y-1.5 transition-transform duration-300 ease-out"
                           >
                             {/* Carta 1 (Fundo) */}
                             <div
-                              className={cn(
-                                "absolute inset-0 rounded-2xl border border-white/10 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                              className={cn("absolute inset-0 rounded-2xl border border-white/10 opacity-40 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
                                 isLeft
                                   ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
                                   : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
@@ -1667,8 +1659,7 @@ export default function AdminAulasInterativas() {
 
                             {/* Carta 2 (Meio) */}
                             <div
-                              className={cn(
-                                "absolute inset-0 rounded-2xl border border-white/15 opacity-75 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
+                              className={cn("absolute inset-0 rounded-2xl border border-white/15 opacity-75 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
                                 isLeft
                                   ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
                                   : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
@@ -1686,8 +1677,7 @@ export default function AdminAulasInterativas() {
 
                             {/* Carta 3 (Frontal Principal com Capa da Aula) */}
                             <div
-                              className={cn(
-                                "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 transition-all duration-300 origin-bottom",
+                              className={cn("relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 spring-card transition-all origin-bottom hover-shimmer-effect",
                                 isLeft
                                   ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
                                   : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
@@ -1875,7 +1865,7 @@ export default function AdminAulasInterativas() {
                                       abrirRevisarFlashcards(aula);
                                     }}
                                     className={cn(
-                                      "w-full h-8.5 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 border",
+                                      "w-full h-8.5 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-[0.96] transition-transform duration-100 ease-out border",
                                       prog.fcOk
                                         ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
                                         : flashcardsLiberados
@@ -1885,7 +1875,7 @@ export default function AdminAulasInterativas() {
                                     title={!flashcardsLiberados ? 'Toque para ver como destravar' : 'Revisar com Flashcards'}
                                   >
                                     {flashcardsLiberados ? (
-                                      <Layers className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                                      <Unlock className="w-3.5 h-3.5 text-amber-300 shrink-0 transition-transform group-hover/btn:rotate-12 duration-200" />
                                     ) : (
                                       <Lock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                                     )}
@@ -1904,7 +1894,7 @@ export default function AdminAulasInterativas() {
                                       abrirPraticarQuestoes(aula);
                                     }}
                                     className={cn(
-                                      "w-full h-8.5 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 border",
+                                      "w-full h-8.5 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-[0.96] transition-transform duration-100 ease-out border",
                                       prog.questoesOk
                                         ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
                                         : questoesLiberadas
@@ -1914,7 +1904,7 @@ export default function AdminAulasInterativas() {
                                     title={!questoesLiberadas ? 'Toque para ver como destravar' : 'Praticar Questões'}
                                   >
                                     {questoesLiberadas ? (
-                                      <HelpCircle className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+                                      <Unlock className="w-3.5 h-3.5 text-emerald-300 shrink-0 transition-transform group-hover/btn:rotate-12 duration-200" />
                                     ) : (
                                       <Lock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                                     )}
@@ -1951,8 +1941,7 @@ export default function AdminAulasInterativas() {
                                 d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                                 fill="none"
                                 className="animate-trail-flow"
-                                stroke={disciplinaAtual.corDestaque}
-                                strokeWidth="2.5"
+                                stroke={prog.cicloCompleto ? '#fbbf24' : disciplinaAtual.corDestaque} strokeWidth={prog.cicloCompleto ? '3' : '2.5'}
                                 strokeDasharray="6 8"
                                 strokeLinecap="round"
                                 vectorEffect="non-scaling-stroke"
