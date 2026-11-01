@@ -232,6 +232,13 @@ export default function AdminAulasInterativas() {
     };
   };
 
+  // Scroll para o topo ao trocar de tela / selecionar matéria ou disciplina
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [disciplinaSelecionadaId, materiaSelecionadaId]);
+
   // Progresso Geral da Plataforma (todas as aulas)
   const totalAulasGeral = AULAS_CATALOGO.length;
   const somaPorcentagensGeral = AULAS_CATALOGO.reduce((acc, aula) => acc + calcularProgressoCiclo(aula).porcentagemTotal, 0);
@@ -325,6 +332,7 @@ export default function AdminAulasInterativas() {
     } else {
       navigate('/admin-funcoes');
     }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -628,18 +636,17 @@ export default function AdminAulasInterativas() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
 
-                            {/* Play Button Central */}
-                            <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
-                              <div className="relative flex items-center justify-center">
-                                <div
-                                  className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
-                                  style={{ backgroundColor: `${disc.corDestaque}60` }}
-                                />
-                                <div className="relative w-11 h-11 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/95 shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_24px_rgba(245,158,11,0.65)]">
-                                  <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current translate-x-0.5 transition-colors" />
-                                </div>
+                            {/* Topo da Carta: Porcentagem Elegante no Canto Superior Esquerdo */}
+                            <div className="relative z-10 flex items-center justify-between w-full">
+                              <div className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 shadow-md flex items-center gap-1">
+                                <span className="text-[10px] sm:text-[11px] font-black tracking-tight" style={{ color: disc.corDestaque }}>
+                                  {pctDisc}%
+                                </span>
                               </div>
                             </div>
+
+                            {/* Centro da Capa Limpo (Sem Botão de Play) */}
+                            <div className="my-auto py-2 z-[1] w-full" />
 
                             {/* Rodapé da Carta: Progresso e Estatísticas */}
                             <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
@@ -708,19 +715,15 @@ export default function AdminAulasInterativas() {
                           >
                             <div
                               className={cn(
-                                "flex items-center gap-1.5 mb-1 opacity-80",
+                                "flex items-center mb-1",
                                 isLeft ? "justify-start" : "justify-end"
                               )}
                             >
                               <span
-                                className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
+                                className="text-[12px] sm:text-[14px] font-black uppercase tracking-wider"
                                 style={{ color: disc.corDestaque }}
                               >
-                                {disc.subtitulo}
-                              </span>
-                              <span className="w-1 h-1 rounded-full bg-white/25" />
-                              <span className="text-[10px] sm:text-[12px] font-light text-zinc-400">
-                                {materiasDaDisc.length} {materiasDaDisc.length === 1 ? 'Matéria' : 'Matérias'}
+                                {materiasDaDisc.length} {materiasDaDisc.length === 1 ? 'MATÉRIA' : 'MATÉRIAS'}
                               </span>
                             </div>
 
@@ -805,7 +808,7 @@ export default function AdminAulasInterativas() {
 
         return (
           <>
-            {/* Top Bar Fixa de Navegação da Disciplina (Padrão Screenshot 3) */}
+            {/* Top Bar Fixa de Navegação da Disciplina (Título agora abaixo do cabeçalho) */}
             <div 
               className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3 transition-all shadow-xl"
               style={{
@@ -813,25 +816,14 @@ export default function AdminAulasInterativas() {
               }}
             >
               <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <button
-                    type="button"
-                    onClick={handleVoltar}
-                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
-                    aria-label="Voltar para disciplinas"
-                  >
-                    <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
-                  </button>
-
-                  <div className="min-w-0">
-                    <h1 className="text-base sm:text-lg md:text-xl font-black text-white font-serif uppercase tracking-wider truncate">
-                      {disciplinaAtual.nome}
-                    </h1>
-                    <p className="text-[10px] sm:text-[11px] text-zinc-400 font-medium truncate">
-                      Trilha de Aprendizado
-                    </p>
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleVoltar}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
+                  aria-label="Voltar para disciplinas"
+                >
+                  <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
+                </button>
 
                 {/* Badge do total de aulas */}
                 <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
@@ -844,6 +836,18 @@ export default function AdminAulasInterativas() {
             </div>
 
             <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
+              {/* Título Principal Fora do Cabeçalho (Abaixo do Botão de Voltar) */}
+              <div className="flex flex-col gap-1">
+                <span 
+                  className="text-[11px] sm:text-xs font-black uppercase tracking-widest"
+                  style={{ color: disciplinaAtual.corDestaque }}
+                >
+                  TRILHA DE APRENDIZADO
+                </span>
+                <h1 className="text-2xl xs:text-3xl sm:text-4xl font-serif font-black text-white tracking-tight leading-tight">
+                  {disciplinaAtual.nome}
+                </h1>
+              </div>
               {/* Header da Seção: Selecione o Módulo */}
               <div className="flex items-center justify-between">
                 <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
@@ -938,21 +942,17 @@ export default function AdminAulasInterativas() {
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
 
-                              {/* Play Button Central */}
-                              <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
-                                <div className="relative flex items-center justify-center">
-                                  <div
-                                    className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
-                                    style={{ backgroundColor: `${disciplinaAtual.corDestaque}60` }}
-                                  />
-                                  <div
-                                    className="relative w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/90 shadow-xl transition-all duration-300 group-hover:scale-110"
-                                    style={{ borderColor: disciplinaAtual.corDestaque }}
-                                  >
-                                    <Play className="w-5 h-5 fill-current translate-x-0.5" style={{ color: disciplinaAtual.corDestaque }} />
-                                  </div>
+                              {/* Topo da Carta: Porcentagem Elegante no Canto Superior Esquerdo */}
+                              <div className="relative z-10 flex items-center justify-between w-full">
+                                <div className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 shadow-md flex items-center gap-1">
+                                  <span className="text-[10px] sm:text-[11px] font-black tracking-tight" style={{ color: disciplinaAtual.corDestaque }}>
+                                    {pctMat}%
+                                  </span>
                                 </div>
                               </div>
+
+                              {/* Centro da Capa Limpo (Sem Botão de Play) */}
+                              <div className="my-auto py-2 z-[1] w-full" />
 
                               {/* Rodapé da Carta com Progresso */}
                               <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
@@ -1101,46 +1101,25 @@ export default function AdminAulasInterativas() {
 
         return (
           <>
-            {/* Header Limpo de Topo com Risquinho e Título (Sem Capa Hero Conforme Solicitado) */}
+            {/* Header Limpo de Topo Fixo (Título agora abaixo do cabeçalho) */}
             <div 
-              className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3.5 transition-all shadow-xl"
+              className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3 transition-all shadow-xl"
               style={{
-                paddingTop: 'calc(0.85rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+                paddingTop: 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
               }}
             >
               <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <button
-                    type="button"
-                    onClick={handleVoltar}
-                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
-                    aria-label="Voltar para matérias"
-                  >
-                    <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
-                  </button>
-
-                  {/* Risquinho vertical com a cor temática da disciplina */}
-                  <div 
-                    className="w-1.5 h-8 sm:h-9 rounded-full shrink-0 shadow-sm"
-                    style={{ backgroundColor: disciplinaAtual.corDestaque }}
-                  />
-
-                  {/* Título e Subtítulo da Matéria */}
-                  <div className="min-w-0">
-                    <span 
-                      className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest block truncate"
-                      style={{ color: disciplinaAtual.corDestaque }}
-                    >
-                      {disciplinaAtual.nome} · {materiaAtual.numeroMateria}
-                    </span>
-                    <h2 className="text-sm sm:text-base md:text-lg font-black text-white font-serif leading-tight truncate">
-                      {materiaAtual.titulo}
-                    </h2>
-                  </div>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleVoltar}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
+                  aria-label="Voltar para matérias"
+                >
+                  <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
+                </button>
 
                 {/* Badge do total de aulas disponíveis */}
-                <div className="shrink-0 hidden xs:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
                   <BookOpen className="w-3.5 h-3.5" style={{ color: disciplinaAtual.corDestaque }} />
                   <span className="text-[11px] font-bold text-zinc-300">
                     {totalAulasMat} {totalAulasMat === 1 ? 'Aula' : 'Aulas'}
@@ -1150,6 +1129,24 @@ export default function AdminAulasInterativas() {
             </div>
 
             <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
+              {/* Título Principal Fora do Cabeçalho com Risquinho Temático */}
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div 
+                  className="w-1.5 sm:w-2 h-10 sm:h-12 rounded-full shrink-0 mt-1 shadow-sm"
+                  style={{ backgroundColor: disciplinaAtual.corDestaque }}
+                />
+                <div className="min-w-0 flex-1">
+                  <span 
+                    className="text-[11px] sm:text-xs font-black uppercase tracking-widest block truncate"
+                    style={{ color: disciplinaAtual.corDestaque }}
+                  >
+                    {disciplinaAtual.nome} · {materiaAtual.numeroMateria}
+                  </span>
+                  <h1 className="text-xl xs:text-2xl sm:text-3xl font-serif font-black text-white tracking-tight leading-tight mt-0.5">
+                    {materiaAtual.titulo}
+                  </h1>
+                </div>
+              </div>
               {/* Header da Seção: Selecione a Aula */}
               <div className="flex items-center justify-between">
                 <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
@@ -1183,9 +1180,11 @@ export default function AdminAulasInterativas() {
                             .filter(k => k && !/^questão/i.test(k) && !/^flashcard/i.test(k) && !/^etapa/i.test(k) && !/^memorização/i.test(k) && !/^fixação/i.test(k))
                         )
                       : null;
-                    const qtdTopicos = aula.topicosQtd || (kickersReais && kickersReais.size >= 2
-                      ? kickersReais.size
-                      : Math.max(3, Math.min(6, Math.floor((aula.etapas || 32) / 8) + (i % 3 === 0 ? 1 : 0))));
+                    const qtdTopicos = Math.min(6, Math.max(3, 
+                      aula.topicosQtd || (kickersReais && kickersReais.size >= 2
+                        ? Math.min(6, kickersReais.size)
+                        : Math.floor((aula.etapas || 32) / 8) + (i % 3 === 0 ? 1 : 0))
+                    ));
 
                     return (
                       <div key={aula.id} className="w-full flex flex-col">
@@ -1263,37 +1262,29 @@ export default function AdminAulasInterativas() {
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
 
-                              {/* Topo da Carta: Apenas badge de 100% concluído quando finalizado (sem poluição de tags) */}
-                              <div className="relative z-10 flex items-center justify-end w-full min-h-[20px]">
+                              {/* Topo da Carta: Porcentagem Elegante no Canto Superior Esquerdo */}
+                              <div className="relative z-10 flex items-center justify-between w-full">
+                                <div className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 shadow-md flex items-center gap-1">
+                                  <span className="text-[10px] sm:text-[11px] font-black tracking-tight" style={{ color: disciplinaAtual.corDestaque }}>
+                                    {prog.porcentagemTotal}%
+                                  </span>
+                                </div>
                                 {prog.cicloCompleto && (
-                                  <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-emerald-500/90 text-white shadow-sm flex items-center gap-1">
+                                  <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-white shadow-sm flex items-center gap-1">
                                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                                     <span>100%</span>
                                   </span>
                                 )}
                               </div>
 
-                              {/* Play Button Central */}
-                              <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
-                                <div className="relative flex items-center justify-center">
-                                  <div
-                                    className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
-                                    style={{ backgroundColor: `${disciplinaAtual.corDestaque}60` }}
-                                  />
-                                  <div className="relative w-11 h-11 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-full bg-black/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/95 shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_24px_rgba(245,158,11,0.65)]">
-                                    <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current translate-x-0.5 transition-colors" />
-                                  </div>
-                                </div>
-                              </div>
+                              {/* Centro da Capa Limpo (Sem Botão de Play Conforme Solicitado) */}
+                              <div className="my-auto py-2 z-[1] w-full" />
 
                               {/* Rodapé da Carta: Progresso Ponderado */}
                               <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
                                 <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-white/95 mb-1">
                                   <span className="truncate">
                                     {prog.cicloCompleto ? 'Finalizado' : `${prog.fasesConcluidasCount} de 3 fases`}
-                                  </span>
-                                  <span className="font-semibold font-sans ml-1" style={{ color: disciplinaAtual.corDestaque }}>
-                                    {prog.porcentagemTotal}%
                                   </span>
                                 </div>
                                 <div className="w-full bg-black/60 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
@@ -1375,21 +1366,20 @@ export default function AdminAulasInterativas() {
                                 {aula.titulo}
                               </h3>
 
-                              <p className="text-[11px] sm:text-xs text-zinc-300/80 mt-1 line-clamp-2 sm:line-clamp-3 leading-relaxed">
-                                <span className="font-semibold text-amber-300/90">{qtdTopicos} tópicos essenciais: </span>
-                                {aula.descricao && !aula.descricao.includes('em estruturação')
+                              <p className="text-[11px] sm:text-xs text-zinc-300/80 mt-1.5 line-clamp-3 leading-relaxed">
+                                {aula.descricao && !aula.descricao.includes('em estruturação') && !aula.descricao.startsWith('Conteúdo imersivo e multimídia com narração e ciclo de aprendizagem completo sobre')
                                   ? aula.descricao
-                                  : `Doutrina especializada, análise de casos reais e fixação ativa sobre ${aula.titulo}.`}
+                                  : `Estudo didático e aprofundado com doutrina especializada, análise de casos práticos, resolução comentada e fixação ativa sobre ${aula.titulo}.`}
                               </p>
 
-                              {/* OS 3 BOTÕES DE AÇÃO: RESPONSIVO SEM TRUNCAMENTO NO MOBILE */}
+                              {/* OS 3 BOTÕES DE AÇÃO: SEM NÚMEROS E SEM ABREVIAÇÕES */}
                               <div 
                                 className={cn(
                                   "flex flex-col sm:grid sm:grid-cols-3 gap-1.5 sm:gap-2 mt-3 pt-2.5 border-t border-white/10 w-full",
                                   isLeft ? "justify-start" : "justify-end"
                                 )}
                               >
-                                {/* 1. Iniciar Aula (Largura Total no Mobile, Coluna 1 no Desktop) */}
+                                {/* 1. Iniciar Aula */}
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -1409,12 +1399,12 @@ export default function AdminAulasInterativas() {
                                   ) : (
                                     <Play className="w-3.5 h-3.5 fill-current shrink-0" />
                                   )}
-                                  <span className="truncate">{prog.aulaTerminada ? 'Ver Aula' : 'Iniciar'}</span>
+                                  <span className="whitespace-nowrap">{prog.aulaTerminada ? 'VER AULA' : 'INICIAR'}</span>
                                 </button>
 
-                                {/* 2 & 3. Revisar + Praticar (2 colunas lado a lado no Mobile, Colunas 2 e 3 no Desktop) */}
+                                {/* 2 & 3. Revisar + Praticar */}
                                 <div className="grid grid-cols-2 sm:contents gap-1.5">
-                                  {/* 2. Revisar (Flashcards) */}
+                                  {/* 2. Revisar */}
                                   <button
                                     type="button"
                                     onClick={(e) => {
@@ -1422,25 +1412,24 @@ export default function AdminAulasInterativas() {
                                       abrirRevisarFlashcards(aula);
                                     }}
                                     className={cn(
-                                      "w-full h-8.5 sm:h-11 px-1.5 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 border",
+                                      "w-full h-8.5 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 border",
                                       prog.fcOk
                                         ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
                                         : flashcardsLiberados
                                           ? "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
                                           : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
                                     )}
-                                    title={!flashcardsLiberados ? 'Conclua a aula para destravar a revisão' : `Revisar com ${totalCards} Flashcards`}
+                                    title={!flashcardsLiberados ? 'Conclua a aula para destravar a revisão' : 'Revisar com Flashcards'}
                                   >
                                     {flashcardsLiberados ? (
-                                      <Layers className="w-3 h-3 text-amber-300 shrink-0" />
+                                      <Layers className="w-3.5 h-3.5 text-amber-300 shrink-0" />
                                     ) : (
-                                      <Lock className="w-3 h-3 text-zinc-500 shrink-0" />
+                                      <Lock className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
                                     )}
-                                    <span className="truncate">Revisar</span>
-                                    <span className="text-[8px] sm:text-[9px] opacity-75 font-mono">({totalCards})</span>
+                                    <span className="whitespace-nowrap">REVISAR</span>
                                   </button>
 
-                                  {/* 3. Praticar (Questões) */}
+                                  {/* 3. Praticar */}
                                   <button
                                     type="button"
                                     onClick={(e) => {
@@ -1448,22 +1437,21 @@ export default function AdminAulasInterativas() {
                                       abrirPraticarQuestoes(aula);
                                     }}
                                     className={cn(
-                                      "w-full h-8.5 sm:h-11 px-1.5 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 border",
+                                      "w-full h-8.5 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 border",
                                       prog.questoesOk
                                         ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
                                         : questoesLiberadas
                                           ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
                                           : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
                                     )}
-                                    title={!questoesLiberadas ? 'Conclua a revisão para destravar o treino prático' : `Praticar ${totalQuestoes} Questões comentadas`}
+                                    title={!questoesLiberadas ? 'Conclua a revisão para destravar o treino prático' : 'Praticar Questões'}
                                   >
                                     {questoesLiberadas ? (
-                                      <HelpCircle className="w-3 h-3 text-emerald-300 shrink-0" />
+                                      <HelpCircle className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
                                     ) : (
-                                      <Lock className="w-3 h-3 text-zinc-500 shrink-0" />
+                                      <Lock className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
                                     )}
-                                    <span className="truncate">Praticar</span>
-                                    <span className="text-[8px] sm:text-[9px] opacity-75 font-mono">({totalQuestoes})</span>
+                                    <span className="whitespace-nowrap">PRATICAR</span>
                                   </button>
                                 </div>
                               </div>
