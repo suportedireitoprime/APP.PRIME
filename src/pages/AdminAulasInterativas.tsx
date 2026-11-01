@@ -993,20 +993,21 @@ export default function AdminAulasInterativas() {
                             <path
                               d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
                               fill="none"
+                              className="animate-trail-flow"
                               stroke={disc.corDestaque}
                               strokeWidth="2.5"
-                              strokeDasharray="5 7"
+                              strokeDasharray="6 8"
                               strokeLinecap="round"
                               vectorEffect="non-scaling-stroke"
                               filter={`url(#trail-glow-disc-${i})`}
                             />
                           </svg>
                           <div
-                            className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+                            className="absolute w-2.5 h-2.5 rounded-full pointer-events-none border border-white/80 bg-white shadow-lg animate-dot-pulse"
                             style={{
                               left: '50%',
                               top: '50%',
-                              boxShadow: `0 0 10px ${disc.corDestaque}`,
+                              boxShadow: `0 0 14px ${disc.corDestaque}, 0 0 4px #ffffff`,
                             }}
                           />
                         </div>
@@ -1425,20 +1426,21 @@ export default function AdminAulasInterativas() {
                               <path
                                 d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
                                 fill="none"
+                                className="animate-trail-flow"
                                 stroke={disciplinaAtual.corDestaque}
                                 strokeWidth="2.5"
-                                strokeDasharray="5 7"
+                                strokeDasharray="6 8"
                                 strokeLinecap="round"
                                 vectorEffect="non-scaling-stroke"
                                 filter={`url(#trail-glow-mat-${i})`}
                               />
                             </svg>
                             <div
-                              className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+                              className="absolute w-2.5 h-2.5 rounded-full pointer-events-none border border-white/80 bg-white shadow-lg animate-dot-pulse"
                               style={{
                                 left: '50%',
                                 top: '50%',
-                                boxShadow: `0 0 10px ${disciplinaAtual.corDestaque}`,
+                                boxShadow: `0 0 14px ${disciplinaAtual.corDestaque}, 0 0 4px #ffffff`,
                               }}
                             />
                           </div>
@@ -1963,20 +1965,21 @@ export default function AdminAulasInterativas() {
                               <path
                                 d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
                                 fill="none"
+                                className="animate-trail-flow"
                                 stroke={disciplinaAtual.corDestaque}
                                 strokeWidth="2.5"
-                                strokeDasharray="5 7"
+                                strokeDasharray="6 8"
                                 strokeLinecap="round"
                                 vectorEffect="non-scaling-stroke"
                                 filter={`url(#trail-glow-aula-${i})`}
                               />
                             </svg>
                             <div
-                              className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+                              className="absolute w-2.5 h-2.5 rounded-full pointer-events-none border border-white/80 bg-white shadow-lg animate-dot-pulse"
                               style={{
                                 left: '50%',
                                 top: '50%',
-                                boxShadow: `0 0 10px ${disciplinaAtual.corDestaque}`,
+                                boxShadow: `0 0 14px ${disciplinaAtual.corDestaque}, 0 0 4px #ffffff`,
                               }}
                             />
                           </div>

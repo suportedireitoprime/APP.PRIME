@@ -2099,3 +2099,44 @@ body { background-color: #0D0F12; color: #FFFFFF; margin: 0; min-height: 100vh; 
   box-shadow: 0 0 28px rgba(244, 63, 94, 0.15) !important;
 }
 
+/* ==========================================================================
+   TRILHAS INTERATIVAS: FLUXO LUMINOSO E PULSO DA LINHA DE ZIGUE-ZAGUE
+   Aceleração GPU pura com transform / stroke-dashoffset a 60-120fps
+   ========================================================================== */
+@keyframes trailFlow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+@keyframes dotPulseGlow {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.35);
+    opacity: 1;
+  }
+}
+
+.animate-trail-flow {
+  animation: trailFlow 2.8s linear infinite;
+  will-change: stroke-dashoffset;
+}
+
+.animate-dot-pulse {
+  animation: dotPulseGlow 2.2s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-trail-flow,
+  .animate-dot-pulse {
+    animation: none !important;
+  }
+}
+
