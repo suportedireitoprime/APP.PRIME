@@ -133,6 +133,87 @@ function setStoredBoolean(key: string, id: string, val: boolean) {
   } catch {}
 }
 
+
+function formatDescricaoExata(desc?: string, titulo?: string): string {
+  let text = (desc || '').trim();
+
+  // Remove reticências se houver
+  text = text.replace(/\.{2,}$/, '').trim();
+  // Remove prefixos redundantes
+  text = text.replace(/^\d+\s+tópicos\s+essenciais(?:\s+abordados)?:\s*/i, '');
+
+  const isGeneric = !text || 
+    text.includes('em estruturação') || 
+    text.startsWith('Conteúdo imersivo') || 
+    text.startsWith('Estudo aprofundado com narrativa') ||
+    text.startsWith('Estudo didático e aprofundado');
+
+  if (isGeneric) {
+    const cleanTit = (titulo || 'o tema').replace(/^Aula\s+\d+\s*[-–:]\s*/i, '').trim();
+    const candidate = `Doutrina especializada, requisitos legais, jurisprudência e fixação ativa sobre ${cleanTit}.`;
+    if (candidate.length <= 112) {
+      text = candidate;
+    } else {
+      text = `Análise doutrinária, casos práticos e fixação ativa sobre ${cleanTit}.`;
+      if (text.length > 112) {
+        text = `Doutrina, jurisprudência atualizada e fixação prática sobre ${cleanTit}.`;
+        if (text.length > 112) {
+          text = `Estudo completo, requisitos e casos práticos de ${cleanTit}.`;
+        }
+      }
+    }
+  }
+
+  // Enxugar termos redundantes que excedem 3 linhas mantendo o sentido dogmático
+  text = text
+    .replace(/\s+aprofundada\b/gi, '')
+    .replace(/\s+especializada\b/gi, '')
+    .replace(/\s+sociológicas\b/gi, '')
+    .replace(/\s+principais\b/gi, '')
+    .replace(/\s+relevantes\b/gi, '')
+    .replace(/\s+específicos\b/gi, '')
+    .replace(/\bdo Código Penal\b/gi, 'do CP')
+    .replace(/\bdo Código Civil\b/gi, 'do CC')
+    .replace(/\bda Constituição Federal\b/gi, 'da CF/88');
+
+  // Ajustar tamanho para o intervalo ideal de 3 linhas (85 a 110 caracteres)
+  if (text.length > 110) {
+    let corte = text.substring(0, 108);
+    const lastComma = corte.lastIndexOf(',');
+    const lastSemi = corte.lastIndexOf(';');
+    const bestPunct = Math.max(lastComma, lastSemi);
+
+    if (bestPunct >= 75) {
+      corte = corte.substring(0, bestPunct);
+    } else {
+      const lastSpace = corte.lastIndexOf(' ');
+      if (lastSpace >= 75) {
+        corte = corte.substring(0, lastSpace);
+      }
+    }
+
+    corte = corte
+      .replace(/[\s,;:(\-]+$/, '')
+      .replace(/\s+(e|ou|de|da|do|das|dos|com|para|em|no|na|a|o|que|ao|aos)$/i, '');
+
+    const openParen = (corte.match(/\(/g) || []).length;
+    const closeParen = (corte.match(/\)/g) || []).length;
+    if (openParen > closeParen) {
+      const lastOpen = corte.lastIndexOf('(');
+      if (lastOpen > 50) {
+        corte = corte.substring(0, lastOpen).trim();
+      } else {
+        corte = corte + ')';
+      }
+    }
+
+    text = corte + '.';
+  }
+
+  text = text.replace(/[.,;:\s]+$/, '') + '.';
+  return text;
+}
+
 export default function AdminAulasInterativas() {
   const navigate = useNavigate();
 
@@ -1353,10 +1434,7 @@ export default function AdminAulasInterativas() {
                                 >
                                   {aula.numeroAula}
                                 </span>
-                                <span className="w-1 h-1 rounded-full bg-white/30" />
-                                <span className="text-[10px] sm:text-[11px] font-bold text-amber-300/90 tracking-wide">
-                                  {qtdTopicos} {qtdTopicos === 1 ? 'Tópico' : 'Tópicos'}
-                                </span>
+                                
                               </div>
 
                               <h3 
@@ -1366,10 +1444,8 @@ export default function AdminAulasInterativas() {
                                 {aula.titulo}
                               </h3>
 
-                              <p className="text-[11px] sm:text-xs text-zinc-300/80 mt-1.5 line-clamp-3 leading-relaxed">
-                                {aula.descricao && !aula.descricao.includes('em estruturação') && !aula.descricao.startsWith('Conteúdo imersivo e multimídia com narração e ciclo de aprendizagem completo sobre')
-                                  ? aula.descricao
-                                  : `Estudo didático e aprofundado com doutrina especializada, análise de casos práticos, resolução comentada e fixação ativa sobre ${aula.titulo}.`}
+                              <p className="text-[11px] sm:text-xs text-zinc-300/80 mt-1.5 leading-relaxed">
+                                {formatDescricaoExata(aula.descricao, aula.titulo)}
                               </p>
 
                               {/* OS 3 BOTÕES DE AÇÃO: SEM NÚMEROS E SEM ABREVIAÇÕES */}

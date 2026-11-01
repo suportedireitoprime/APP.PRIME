@@ -1653,10 +1653,10 @@ export function PlayerAulaNativo({
             <span>Anterior</span>
           </button>
 
-          {/* Player Central Ergonômico, Robusto e Alto */}
+          {/* Player Central: Apenas Botão Play/Pause e Seletor de Velocidade */}
           <div 
             onClick={toggleAudio}
-            className="flex-1 min-w-0 h-14 sm:h-[58px] px-3 sm:px-4 rounded-2xl border border-white/20 bg-white/5 hover:bg-white/10 flex items-center gap-2.5 sm:gap-3.5 cursor-pointer transition active:scale-[0.99] shadow-inner"
+            className="flex-1 min-w-0 h-14 sm:h-[58px] px-4 sm:px-6 rounded-2xl border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-between sm:justify-center sm:gap-8 cursor-pointer transition active:scale-[0.99] shadow-inner"
             title="Tocar ou pausar narração desta etapa"
           >
             <button
@@ -1672,33 +1672,15 @@ export function PlayerAulaNativo({
               )}
             </button>
 
-            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
-              <div className="flex items-center justify-between leading-none">
-                <span className="text-zinc-200 font-mono text-[11px] sm:text-xs font-bold tracking-wider">
-                  {formatTempo(tempoAtual)} / {duracao > 0 ? formatTempo(duracao) : (slideAtual?.narr ? formatTempo(Math.max(5, Math.ceil(slideAtual.narr.length / 16))) : '--:--')}
-                </span>
-                {/* Seletor de Velocidade da Narração (1x, 1.25x, 1.5x, 2x) */}
-                <button
-                  type="button"
-                  onClick={alternarVelocidade}
-                  className="px-1.5 py-0.5 rounded-md border border-white/20 bg-white/10 hover:bg-white/20 text-amber-300 font-mono text-[10px] sm:text-[11px] font-black transition active:scale-90"
-                  title="Alterar velocidade de reprodução"
-                >
-                  {velocidade}x
-                </button>
-              </div>
-
-              {/* Barra de progresso do áudio */}
-              <div className="w-full h-1.5 rounded-full bg-white/15 overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-200"
-                  style={{ 
-                    width: `${duracao > 0 ? (tempoAtual / duracao) * 100 : (tocando ? 50 : 0)}%`,
-                    backgroundColor: tema.destaque
-                  }}
-                />
-              </div>
-            </div>
+            {/* Seletor de Velocidade da Narração (1x, 1.25x, 1.5x, 2x) */}
+            <button
+              type="button"
+              onClick={alternarVelocidade}
+              className="px-3 py-1.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-amber-300 font-mono text-xs sm:text-sm font-black transition active:scale-90 shadow-sm"
+              title="Alterar velocidade de reprodução"
+            >
+              {velocidade}x
+            </button>
           </div>
 
           {/* Botão Próximo / Concluir: Alto, Destaque e Largura Segura */}
