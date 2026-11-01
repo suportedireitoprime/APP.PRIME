@@ -55,7 +55,6 @@ export const STATIC_ROUTES: Record<string, string> = {
   '/auth': 'Autenticação',
   '/onboarding': 'Onboarding',
   '/ferramentas': 'Ferramentas',
-  '/ferramentas/locais': 'Locais Jurídicos',
   '/estudos': 'Estudar',
   '/biblioteca': 'Biblioteca',
   '/bibliotecas': 'Biblioteca',

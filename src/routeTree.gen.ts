@@ -40,13 +40,11 @@ import { Route as AdminMetricasAdsRouteImport } from './routes/admin-metricas-ad
 import { Route as AdminMonitorRouteImport } from './routes/admin-monitor'
 import { Route as AdminMonitorApisRouteImport } from './routes/admin-monitor-apis'
 import { Route as AdminMonitorUsuariosRouteImport } from './routes/admin-monitor-usuarios'
-import { Route as AdminMonitoramentoRouteImport } from './routes/admin-monitoramento'
 import { Route as AdminNarracaoRouteImport } from './routes/admin-narracao'
 import { Route as AdminNarracaoLeisRouteImport } from './routes/admin-narracao-leis'
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminQuestoesRouteImport } from './routes/admin-questoes'
-import { Route as AdminRadaresLeisRouteImport } from './routes/admin-radares-leis'
 import { Route as AdminRankingFuncoesRouteImport } from './routes/admin-ranking-funcoes'
 import { Route as AdminSimuladosRouteImport } from './routes/admin-simulados'
 import { Route as AdminSuporteRouteImport } from './routes/admin-suporte'
@@ -72,7 +70,6 @@ import { Route as BoletinsRouteImport } from './routes/boletins'
 import { Route as BoletinsNoticiasRouteImport } from './routes/boletins-noticias'
 import { Route as ChatJuridicoRouteImport } from './routes/chat-juridico'
 import { Route as CompartilhadoRouteImport } from './routes/compartilhado'
-import { Route as CompressaoImagensRouteImport } from './routes/compressao-imagens'
 import { Route as ConcursosRouteImport } from './routes/concursos'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as DesktopRouteImport } from './routes/desktop'
@@ -158,8 +155,6 @@ import { Route as BoletinsIdRouteImport } from './routes/boletins.$id'
 import { Route as ConcursosRadarRouteImport } from './routes/concursos.radar'
 import { Route as DesktopLinkTokenRouteImport } from './routes/desktop-link.$token'
 import { Route as FerramentasDicionarioRouteImport } from './routes/ferramentas.dicionario'
-import { Route as FerramentasLocaisRouteImport } from './routes/ferramentas.locais'
-import { Route as FerramentasPeticaoInicialRouteImport } from './routes/ferramentas.peticao-inicial'
 import { Route as FerramentasPlanoEstudosRouteImport } from './routes/ferramentas.plano-estudos'
 import { Route as FerramentasRadarConcursosRouteImport } from './routes/ferramentas.radar-concursos'
 import { Route as FerramentasStfRouteImport } from './routes/ferramentas.stf'
@@ -183,8 +178,6 @@ import { Route as FlashcardsProgressoRouteImport } from './routes/flashcards.pro
 import { Route as FlashcardsRevisarRouteImport } from './routes/flashcards.revisar'
 import { Route as FlashcardsTermosRouteImport } from './routes/flashcards.termos'
 import { Route as FlashcardsTrilhasRouteImport } from './routes/flashcards.trilhas'
-import { Route as GamificacaoCacaPalavrasRouteImport } from './routes/gamificacao.caca-palavras'
-import { Route as GamificacaoForcaRouteImport } from './routes/gamificacao.forca'
 import { Route as GraficosAvaliacaoRouteImport } from './routes/graficos.avaliacao'
 import { Route as IrSplatRouteImport } from './routes/ir.$'
 import { Route as JurisprudenciaInformativosStfRouteImport } from './routes/jurisprudencia.informativos-stf'
@@ -278,7 +271,6 @@ import { Route as AprenderAulaAulaIdRouteImport } from './routes/aprender.aula.$
 import { Route as AprenderCategoriaCategoriaIdRouteImport } from './routes/aprender.categoria.$categoriaId'
 import { Route as AprenderModuloModuloIdRouteImport } from './routes/aprender.modulo.$moduloId'
 import { Route as BibliotecasColecaoIdAreaSlugRouteImport } from './routes/bibliotecas.$colecaoId.$areaSlug'
-import { Route as FerramentasPeticaoInicialIdRouteImport } from './routes/ferramentas.peticao-inicial.$id'
 import { Route as FerramentasStfIdRouteImport } from './routes/ferramentas.stf.$id'
 import { Route as FerramentasStfBiografiasRouteImport } from './routes/ferramentas.stf.biografias'
 import { Route as FerramentasStfNoticiasRouteImport } from './routes/ferramentas.stf.noticias'
@@ -479,11 +471,6 @@ const AdminMonitorUsuariosRoute = AdminMonitorUsuariosRouteImport.update({
   path: '/admin-monitor-usuarios',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminMonitoramentoRoute = AdminMonitoramentoRouteImport.update({
-  id: '/admin-monitoramento',
-  path: '/admin-monitoramento',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminNarracaoRoute = AdminNarracaoRouteImport.update({
   id: '/admin-narracao',
   path: '/admin-narracao',
@@ -507,11 +494,6 @@ const AdminPushRoute = AdminPushRouteImport.update({
 const AdminQuestoesRoute = AdminQuestoesRouteImport.update({
   id: '/admin-questoes',
   path: '/admin-questoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRadaresLeisRoute = AdminRadaresLeisRouteImport.update({
-  id: '/admin-radares-leis',
-  path: '/admin-radares-leis',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRankingFuncoesRoute = AdminRankingFuncoesRouteImport.update({
@@ -637,11 +619,6 @@ const ChatJuridicoRoute = ChatJuridicoRouteImport.update({
 const CompartilhadoRoute = CompartilhadoRouteImport.update({
   id: '/compartilhado',
   path: '/compartilhado',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompressaoImagensRoute = CompressaoImagensRouteImport.update({
-  id: '/compressao-imagens',
-  path: '/compressao-imagens',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConcursosRoute = ConcursosRouteImport.update({
@@ -1073,17 +1050,6 @@ const FerramentasDicionarioRoute = FerramentasDicionarioRouteImport.update({
   path: '/dicionario',
   getParentRoute: () => FerramentasRoute,
 } as any)
-const FerramentasLocaisRoute = FerramentasLocaisRouteImport.update({
-  id: '/locais',
-  path: '/locais',
-  getParentRoute: () => FerramentasRoute,
-} as any)
-const FerramentasPeticaoInicialRoute =
-  FerramentasPeticaoInicialRouteImport.update({
-    id: '/peticao-inicial',
-    path: '/peticao-inicial',
-    getParentRoute: () => FerramentasRoute,
-  } as any)
 const FerramentasPlanoEstudosRoute = FerramentasPlanoEstudosRouteImport.update({
   id: '/plano-estudos',
   path: '/plano-estudos',
@@ -1201,16 +1167,6 @@ const FlashcardsTrilhasRoute = FlashcardsTrilhasRouteImport.update({
   id: '/trilhas',
   path: '/trilhas',
   getParentRoute: () => FlashcardsRoute,
-} as any)
-const GamificacaoCacaPalavrasRoute = GamificacaoCacaPalavrasRouteImport.update({
-  id: '/gamificacao/caca-palavras',
-  path: '/gamificacao/caca-palavras',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamificacaoForcaRoute = GamificacaoForcaRouteImport.update({
-  id: '/gamificacao/forca',
-  path: '/gamificacao/forca',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const GraficosAvaliacaoRoute = GraficosAvaliacaoRouteImport.update({
   id: '/graficos/avaliacao',
@@ -1693,12 +1649,6 @@ const BibliotecasColecaoIdAreaSlugRoute =
     path: '/$areaSlug',
     getParentRoute: () => BibliotecasColecaoIdRoute,
   } as any)
-const FerramentasPeticaoInicialIdRoute =
-  FerramentasPeticaoInicialIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => FerramentasPeticaoInicialRoute,
-  } as any)
 const FerramentasStfIdRoute = FerramentasStfIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -1971,13 +1921,11 @@ export interface FileRoutesByFullPath {
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
   '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
-  '/admin-monitoramento': typeof AdminMonitoramentoRoute
   '/admin-narracao': typeof AdminNarracaoRouteWithChildren
   '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-questoes': typeof AdminQuestoesRoute
-  '/admin-radares-leis': typeof AdminRadaresLeisRoute
   '/admin-ranking-funcoes': typeof AdminRankingFuncoesRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-suporte': typeof AdminSuporteRoute
@@ -2003,7 +1951,6 @@ export interface FileRoutesByFullPath {
   '/boletins-noticias': typeof BoletinsNoticiasRouteWithChildren
   '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
-  '/compressao-imagens': typeof CompressaoImagensRoute
   '/concursos': typeof ConcursosRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRoute
   '/desktop': typeof DesktopRoute
@@ -2089,8 +2036,6 @@ export interface FileRoutesByFullPath {
   '/concursos/radar': typeof ConcursosRadarRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
   '/ferramentas/dicionario': typeof FerramentasDicionarioRoute
-  '/ferramentas/locais': typeof FerramentasLocaisRoute
-  '/ferramentas/peticao-inicial': typeof FerramentasPeticaoInicialRouteWithChildren
   '/ferramentas/plano-estudos': typeof FerramentasPlanoEstudosRoute
   '/ferramentas/radar-concursos': typeof FerramentasRadarConcursosRoute
   '/ferramentas/stf': typeof FerramentasStfRouteWithChildren
@@ -2114,8 +2059,6 @@ export interface FileRoutesByFullPath {
   '/flashcards/revisar': typeof FlashcardsRevisarRoute
   '/flashcards/termos': typeof FlashcardsTermosRoute
   '/flashcards/trilhas': typeof FlashcardsTrilhasRoute
-  '/gamificacao/caca-palavras': typeof GamificacaoCacaPalavrasRoute
-  '/gamificacao/forca': typeof GamificacaoForcaRoute
   '/graficos/avaliacao': typeof GraficosAvaliacaoRoute
   '/ir/$': typeof IrSplatRoute
   '/jurisprudencia/informativos-stf': typeof JurisprudenciaInformativosStfRoute
@@ -2209,7 +2152,6 @@ export interface FileRoutesByFullPath {
   '/aprender/categoria/$categoriaId': typeof AprenderCategoriaCategoriaIdRoute
   '/aprender/modulo/$moduloId': typeof AprenderModuloModuloIdRoute
   '/bibliotecas/$colecaoId/$areaSlug': typeof BibliotecasColecaoIdAreaSlugRoute
-  '/ferramentas/peticao-inicial/$id': typeof FerramentasPeticaoInicialIdRoute
   '/ferramentas/stf/$id': typeof FerramentasStfIdRoute
   '/ferramentas/stf/biografias': typeof FerramentasStfBiografiasRoute
   '/ferramentas/stf/noticias': typeof FerramentasStfNoticiasRoute
@@ -2287,13 +2229,11 @@ export interface FileRoutesByTo {
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
   '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
-  '/admin-monitoramento': typeof AdminMonitoramentoRoute
   '/admin-narracao': typeof AdminNarracaoRouteWithChildren
   '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-questoes': typeof AdminQuestoesRoute
-  '/admin-radares-leis': typeof AdminRadaresLeisRoute
   '/admin-ranking-funcoes': typeof AdminRankingFuncoesRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-suporte': typeof AdminSuporteRoute
@@ -2319,7 +2259,6 @@ export interface FileRoutesByTo {
   '/boletins-noticias': typeof BoletinsNoticiasRouteWithChildren
   '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
-  '/compressao-imagens': typeof CompressaoImagensRoute
   '/concursos': typeof ConcursosRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRoute
   '/desktop': typeof DesktopRoute
@@ -2405,8 +2344,6 @@ export interface FileRoutesByTo {
   '/concursos/radar': typeof ConcursosRadarRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
   '/ferramentas/dicionario': typeof FerramentasDicionarioRoute
-  '/ferramentas/locais': typeof FerramentasLocaisRoute
-  '/ferramentas/peticao-inicial': typeof FerramentasPeticaoInicialRouteWithChildren
   '/ferramentas/plano-estudos': typeof FerramentasPlanoEstudosRoute
   '/ferramentas/radar-concursos': typeof FerramentasRadarConcursosRoute
   '/ferramentas/stf': typeof FerramentasStfRouteWithChildren
@@ -2430,8 +2367,6 @@ export interface FileRoutesByTo {
   '/flashcards/revisar': typeof FlashcardsRevisarRoute
   '/flashcards/termos': typeof FlashcardsTermosRoute
   '/flashcards/trilhas': typeof FlashcardsTrilhasRoute
-  '/gamificacao/caca-palavras': typeof GamificacaoCacaPalavrasRoute
-  '/gamificacao/forca': typeof GamificacaoForcaRoute
   '/graficos/avaliacao': typeof GraficosAvaliacaoRoute
   '/ir/$': typeof IrSplatRoute
   '/jurisprudencia/informativos-stf': typeof JurisprudenciaInformativosStfRoute
@@ -2525,7 +2460,6 @@ export interface FileRoutesByTo {
   '/aprender/categoria/$categoriaId': typeof AprenderCategoriaCategoriaIdRoute
   '/aprender/modulo/$moduloId': typeof AprenderModuloModuloIdRoute
   '/bibliotecas/$colecaoId/$areaSlug': typeof BibliotecasColecaoIdAreaSlugRoute
-  '/ferramentas/peticao-inicial/$id': typeof FerramentasPeticaoInicialIdRoute
   '/ferramentas/stf/$id': typeof FerramentasStfIdRoute
   '/ferramentas/stf/biografias': typeof FerramentasStfBiografiasRoute
   '/ferramentas/stf/noticias': typeof FerramentasStfNoticiasRoute
@@ -2604,13 +2538,11 @@ export interface FileRoutesById {
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
   '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
-  '/admin-monitoramento': typeof AdminMonitoramentoRoute
   '/admin-narracao': typeof AdminNarracaoRouteWithChildren
   '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-questoes': typeof AdminQuestoesRoute
-  '/admin-radares-leis': typeof AdminRadaresLeisRoute
   '/admin-ranking-funcoes': typeof AdminRankingFuncoesRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-suporte': typeof AdminSuporteRoute
@@ -2636,7 +2568,6 @@ export interface FileRoutesById {
   '/boletins-noticias': typeof BoletinsNoticiasRouteWithChildren
   '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
-  '/compressao-imagens': typeof CompressaoImagensRoute
   '/concursos': typeof ConcursosRouteWithChildren
   '/configuracoes': typeof ConfiguracoesRoute
   '/desktop': typeof DesktopRoute
@@ -2722,8 +2653,6 @@ export interface FileRoutesById {
   '/concursos/radar': typeof ConcursosRadarRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
   '/ferramentas/dicionario': typeof FerramentasDicionarioRoute
-  '/ferramentas/locais': typeof FerramentasLocaisRoute
-  '/ferramentas/peticao-inicial': typeof FerramentasPeticaoInicialRouteWithChildren
   '/ferramentas/plano-estudos': typeof FerramentasPlanoEstudosRoute
   '/ferramentas/radar-concursos': typeof FerramentasRadarConcursosRoute
   '/ferramentas/stf': typeof FerramentasStfRouteWithChildren
@@ -2747,8 +2676,6 @@ export interface FileRoutesById {
   '/flashcards/revisar': typeof FlashcardsRevisarRoute
   '/flashcards/termos': typeof FlashcardsTermosRoute
   '/flashcards/trilhas': typeof FlashcardsTrilhasRoute
-  '/gamificacao/caca-palavras': typeof GamificacaoCacaPalavrasRoute
-  '/gamificacao/forca': typeof GamificacaoForcaRoute
   '/graficos/avaliacao': typeof GraficosAvaliacaoRoute
   '/ir/$': typeof IrSplatRoute
   '/jurisprudencia/informativos-stf': typeof JurisprudenciaInformativosStfRoute
@@ -2842,7 +2769,6 @@ export interface FileRoutesById {
   '/aprender/categoria/$categoriaId': typeof AprenderCategoriaCategoriaIdRoute
   '/aprender/modulo/$moduloId': typeof AprenderModuloModuloIdRoute
   '/bibliotecas/$colecaoId/$areaSlug': typeof BibliotecasColecaoIdAreaSlugRoute
-  '/ferramentas/peticao-inicial/$id': typeof FerramentasPeticaoInicialIdRoute
   '/ferramentas/stf/$id': typeof FerramentasStfIdRoute
   '/ferramentas/stf/biografias': typeof FerramentasStfBiografiasRoute
   '/ferramentas/stf/noticias': typeof FerramentasStfNoticiasRoute
@@ -2922,13 +2848,11 @@ export interface FileRouteTypes {
     | '/admin-monitor'
     | '/admin-monitor-apis'
     | '/admin-monitor-usuarios'
-    | '/admin-monitoramento'
     | '/admin-narracao'
     | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-questoes'
-    | '/admin-radares-leis'
     | '/admin-ranking-funcoes'
     | '/admin-simulados'
     | '/admin-suporte'
@@ -2954,7 +2878,6 @@ export interface FileRouteTypes {
     | '/boletins-noticias'
     | '/chat-juridico'
     | '/compartilhado'
-    | '/compressao-imagens'
     | '/concursos'
     | '/configuracoes'
     | '/desktop'
@@ -3040,8 +2963,6 @@ export interface FileRouteTypes {
     | '/concursos/radar'
     | '/desktop-link/$token'
     | '/ferramentas/dicionario'
-    | '/ferramentas/locais'
-    | '/ferramentas/peticao-inicial'
     | '/ferramentas/plano-estudos'
     | '/ferramentas/radar-concursos'
     | '/ferramentas/stf'
@@ -3065,8 +2986,6 @@ export interface FileRouteTypes {
     | '/flashcards/revisar'
     | '/flashcards/termos'
     | '/flashcards/trilhas'
-    | '/gamificacao/caca-palavras'
-    | '/gamificacao/forca'
     | '/graficos/avaliacao'
     | '/ir/$'
     | '/jurisprudencia/informativos-stf'
@@ -3160,7 +3079,6 @@ export interface FileRouteTypes {
     | '/aprender/categoria/$categoriaId'
     | '/aprender/modulo/$moduloId'
     | '/bibliotecas/$colecaoId/$areaSlug'
-    | '/ferramentas/peticao-inicial/$id'
     | '/ferramentas/stf/$id'
     | '/ferramentas/stf/biografias'
     | '/ferramentas/stf/noticias'
@@ -3238,13 +3156,11 @@ export interface FileRouteTypes {
     | '/admin-monitor'
     | '/admin-monitor-apis'
     | '/admin-monitor-usuarios'
-    | '/admin-monitoramento'
     | '/admin-narracao'
     | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-questoes'
-    | '/admin-radares-leis'
     | '/admin-ranking-funcoes'
     | '/admin-simulados'
     | '/admin-suporte'
@@ -3270,7 +3186,6 @@ export interface FileRouteTypes {
     | '/boletins-noticias'
     | '/chat-juridico'
     | '/compartilhado'
-    | '/compressao-imagens'
     | '/concursos'
     | '/configuracoes'
     | '/desktop'
@@ -3356,8 +3271,6 @@ export interface FileRouteTypes {
     | '/concursos/radar'
     | '/desktop-link/$token'
     | '/ferramentas/dicionario'
-    | '/ferramentas/locais'
-    | '/ferramentas/peticao-inicial'
     | '/ferramentas/plano-estudos'
     | '/ferramentas/radar-concursos'
     | '/ferramentas/stf'
@@ -3381,8 +3294,6 @@ export interface FileRouteTypes {
     | '/flashcards/revisar'
     | '/flashcards/termos'
     | '/flashcards/trilhas'
-    | '/gamificacao/caca-palavras'
-    | '/gamificacao/forca'
     | '/graficos/avaliacao'
     | '/ir/$'
     | '/jurisprudencia/informativos-stf'
@@ -3476,7 +3387,6 @@ export interface FileRouteTypes {
     | '/aprender/categoria/$categoriaId'
     | '/aprender/modulo/$moduloId'
     | '/bibliotecas/$colecaoId/$areaSlug'
-    | '/ferramentas/peticao-inicial/$id'
     | '/ferramentas/stf/$id'
     | '/ferramentas/stf/biografias'
     | '/ferramentas/stf/noticias'
@@ -3554,13 +3464,11 @@ export interface FileRouteTypes {
     | '/admin-monitor'
     | '/admin-monitor-apis'
     | '/admin-monitor-usuarios'
-    | '/admin-monitoramento'
     | '/admin-narracao'
     | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-questoes'
-    | '/admin-radares-leis'
     | '/admin-ranking-funcoes'
     | '/admin-simulados'
     | '/admin-suporte'
@@ -3586,7 +3494,6 @@ export interface FileRouteTypes {
     | '/boletins-noticias'
     | '/chat-juridico'
     | '/compartilhado'
-    | '/compressao-imagens'
     | '/concursos'
     | '/configuracoes'
     | '/desktop'
@@ -3672,8 +3579,6 @@ export interface FileRouteTypes {
     | '/concursos/radar'
     | '/desktop-link/$token'
     | '/ferramentas/dicionario'
-    | '/ferramentas/locais'
-    | '/ferramentas/peticao-inicial'
     | '/ferramentas/plano-estudos'
     | '/ferramentas/radar-concursos'
     | '/ferramentas/stf'
@@ -3697,8 +3602,6 @@ export interface FileRouteTypes {
     | '/flashcards/revisar'
     | '/flashcards/termos'
     | '/flashcards/trilhas'
-    | '/gamificacao/caca-palavras'
-    | '/gamificacao/forca'
     | '/graficos/avaliacao'
     | '/ir/$'
     | '/jurisprudencia/informativos-stf'
@@ -3792,7 +3695,6 @@ export interface FileRouteTypes {
     | '/aprender/categoria/$categoriaId'
     | '/aprender/modulo/$moduloId'
     | '/bibliotecas/$colecaoId/$areaSlug'
-    | '/ferramentas/peticao-inicial/$id'
     | '/ferramentas/stf/$id'
     | '/ferramentas/stf/biografias'
     | '/ferramentas/stf/noticias'
@@ -3871,13 +3773,11 @@ export interface RootRouteChildren {
   AdminMonitorRoute: typeof AdminMonitorRoute
   AdminMonitorApisRoute: typeof AdminMonitorApisRoute
   AdminMonitorUsuariosRoute: typeof AdminMonitorUsuariosRoute
-  AdminMonitoramentoRoute: typeof AdminMonitoramentoRoute
   AdminNarracaoRoute: typeof AdminNarracaoRouteWithChildren
   AdminNarracaoLeisRoute: typeof AdminNarracaoLeisRoute
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
   AdminQuestoesRoute: typeof AdminQuestoesRoute
-  AdminRadaresLeisRoute: typeof AdminRadaresLeisRoute
   AdminRankingFuncoesRoute: typeof AdminRankingFuncoesRoute
   AdminSimuladosRoute: typeof AdminSimuladosRoute
   AdminSuporteRoute: typeof AdminSuporteRoute
@@ -3903,7 +3803,6 @@ export interface RootRouteChildren {
   BoletinsNoticiasRoute: typeof BoletinsNoticiasRouteWithChildren
   ChatJuridicoRoute: typeof ChatJuridicoRoute
   CompartilhadoRoute: typeof CompartilhadoRoute
-  CompressaoImagensRoute: typeof CompressaoImagensRoute
   ConcursosRoute: typeof ConcursosRouteWithChildren
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   DesktopRoute: typeof DesktopRoute
@@ -3968,8 +3867,6 @@ export interface RootRouteChildren {
   AjustesSegurancaRoute: typeof AjustesSegurancaRoute
   ApresentacaoIdRoute: typeof ApresentacaoIdRoute
   DesktopLinkTokenRoute: typeof DesktopLinkTokenRoute
-  GamificacaoCacaPalavrasRoute: typeof GamificacaoCacaPalavrasRoute
-  GamificacaoForcaRoute: typeof GamificacaoForcaRoute
   GraficosAvaliacaoRoute: typeof GraficosAvaliacaoRoute
   IrSplatRoute: typeof IrSplatRoute
   LegislacaoTipoRoute: typeof LegislacaoTipoRouteWithChildren
@@ -4222,13 +4119,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMonitorUsuariosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-monitoramento': {
-      id: '/admin-monitoramento'
-      path: '/admin-monitoramento'
-      fullPath: '/admin-monitoramento'
-      preLoaderRoute: typeof AdminMonitoramentoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-narracao': {
       id: '/admin-narracao'
       path: '/admin-narracao'
@@ -4262,13 +4152,6 @@ declare module '@tanstack/react-router' {
       path: '/admin-questoes'
       fullPath: '/admin-questoes'
       preLoaderRoute: typeof AdminQuestoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-radares-leis': {
-      id: '/admin-radares-leis'
-      path: '/admin-radares-leis'
-      fullPath: '/admin-radares-leis'
-      preLoaderRoute: typeof AdminRadaresLeisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-ranking-funcoes': {
@@ -4444,13 +4327,6 @@ declare module '@tanstack/react-router' {
       path: '/compartilhado'
       fullPath: '/compartilhado'
       preLoaderRoute: typeof CompartilhadoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/compressao-imagens': {
-      id: '/compressao-imagens'
-      path: '/compressao-imagens'
-      fullPath: '/compressao-imagens'
-      preLoaderRoute: typeof CompressaoImagensRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/concursos': {
@@ -5048,20 +4924,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FerramentasDicionarioRouteImport
       parentRoute: typeof FerramentasRoute
     }
-    '/ferramentas/locais': {
-      id: '/ferramentas/locais'
-      path: '/locais'
-      fullPath: '/ferramentas/locais'
-      preLoaderRoute: typeof FerramentasLocaisRouteImport
-      parentRoute: typeof FerramentasRoute
-    }
-    '/ferramentas/peticao-inicial': {
-      id: '/ferramentas/peticao-inicial'
-      path: '/peticao-inicial'
-      fullPath: '/ferramentas/peticao-inicial'
-      preLoaderRoute: typeof FerramentasPeticaoInicialRouteImport
-      parentRoute: typeof FerramentasRoute
-    }
     '/ferramentas/plano-estudos': {
       id: '/ferramentas/plano-estudos'
       path: '/plano-estudos'
@@ -5222,20 +5084,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/flashcards/trilhas'
       preLoaderRoute: typeof FlashcardsTrilhasRouteImport
       parentRoute: typeof FlashcardsRoute
-    }
-    '/gamificacao/caca-palavras': {
-      id: '/gamificacao/caca-palavras'
-      path: '/gamificacao/caca-palavras'
-      fullPath: '/gamificacao/caca-palavras'
-      preLoaderRoute: typeof GamificacaoCacaPalavrasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gamificacao/forca': {
-      id: '/gamificacao/forca'
-      path: '/gamificacao/forca'
-      fullPath: '/gamificacao/forca'
-      preLoaderRoute: typeof GamificacaoForcaRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/graficos/avaliacao': {
       id: '/graficos/avaliacao'
@@ -5888,13 +5736,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BibliotecasColecaoIdAreaSlugRouteImport
       parentRoute: typeof BibliotecasColecaoIdRoute
     }
-    '/ferramentas/peticao-inicial/$id': {
-      id: '/ferramentas/peticao-inicial/$id'
-      path: '/$id'
-      fullPath: '/ferramentas/peticao-inicial/$id'
-      preLoaderRoute: typeof FerramentasPeticaoInicialIdRouteImport
-      parentRoute: typeof FerramentasPeticaoInicialRoute
-    }
     '/ferramentas/stf/$id': {
       id: '/ferramentas/stf/$id'
       path: '/$id'
@@ -6388,20 +6229,6 @@ const ConcursosRouteWithChildren = ConcursosRoute._addFileChildren(
   ConcursosRouteChildren,
 )
 
-interface FerramentasPeticaoInicialRouteChildren {
-  FerramentasPeticaoInicialIdRoute: typeof FerramentasPeticaoInicialIdRoute
-}
-
-const FerramentasPeticaoInicialRouteChildren: FerramentasPeticaoInicialRouteChildren =
-  {
-    FerramentasPeticaoInicialIdRoute: FerramentasPeticaoInicialIdRoute,
-  }
-
-const FerramentasPeticaoInicialRouteWithChildren =
-  FerramentasPeticaoInicialRoute._addFileChildren(
-    FerramentasPeticaoInicialRouteChildren,
-  )
-
 interface FerramentasStfRouteChildren {
   FerramentasStfIdRoute: typeof FerramentasStfIdRoute
   FerramentasStfBiografiasRoute: typeof FerramentasStfBiografiasRoute
@@ -6422,8 +6249,6 @@ const FerramentasStfRouteWithChildren = FerramentasStfRoute._addFileChildren(
 
 interface FerramentasRouteChildren {
   FerramentasDicionarioRoute: typeof FerramentasDicionarioRoute
-  FerramentasLocaisRoute: typeof FerramentasLocaisRoute
-  FerramentasPeticaoInicialRoute: typeof FerramentasPeticaoInicialRouteWithChildren
   FerramentasPlanoEstudosRoute: typeof FerramentasPlanoEstudosRoute
   FerramentasRadarConcursosRoute: typeof FerramentasRadarConcursosRoute
   FerramentasStfRoute: typeof FerramentasStfRouteWithChildren
@@ -6431,8 +6256,6 @@ interface FerramentasRouteChildren {
 
 const FerramentasRouteChildren: FerramentasRouteChildren = {
   FerramentasDicionarioRoute: FerramentasDicionarioRoute,
-  FerramentasLocaisRoute: FerramentasLocaisRoute,
-  FerramentasPeticaoInicialRoute: FerramentasPeticaoInicialRouteWithChildren,
   FerramentasPlanoEstudosRoute: FerramentasPlanoEstudosRoute,
   FerramentasRadarConcursosRoute: FerramentasRadarConcursosRoute,
   FerramentasStfRoute: FerramentasStfRouteWithChildren,
@@ -7028,13 +6851,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminMonitorRoute: AdminMonitorRoute,
   AdminMonitorApisRoute: AdminMonitorApisRoute,
   AdminMonitorUsuariosRoute: AdminMonitorUsuariosRoute,
-  AdminMonitoramentoRoute: AdminMonitoramentoRoute,
   AdminNarracaoRoute: AdminNarracaoRouteWithChildren,
   AdminNarracaoLeisRoute: AdminNarracaoLeisRoute,
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
   AdminQuestoesRoute: AdminQuestoesRoute,
-  AdminRadaresLeisRoute: AdminRadaresLeisRoute,
   AdminRankingFuncoesRoute: AdminRankingFuncoesRoute,
   AdminSimuladosRoute: AdminSimuladosRoute,
   AdminSuporteRoute: AdminSuporteRoute,
@@ -7060,7 +6881,6 @@ const rootRouteChildren: RootRouteChildren = {
   BoletinsNoticiasRoute: BoletinsNoticiasRouteWithChildren,
   ChatJuridicoRoute: ChatJuridicoRoute,
   CompartilhadoRoute: CompartilhadoRoute,
-  CompressaoImagensRoute: CompressaoImagensRoute,
   ConcursosRoute: ConcursosRouteWithChildren,
   ConfiguracoesRoute: ConfiguracoesRoute,
   DesktopRoute: DesktopRoute,
@@ -7125,8 +6945,6 @@ const rootRouteChildren: RootRouteChildren = {
   AjustesSegurancaRoute: AjustesSegurancaRoute,
   ApresentacaoIdRoute: ApresentacaoIdRoute,
   DesktopLinkTokenRoute: DesktopLinkTokenRoute,
-  GamificacaoCacaPalavrasRoute: GamificacaoCacaPalavrasRoute,
-  GamificacaoForcaRoute: GamificacaoForcaRoute,
   GraficosAvaliacaoRoute: GraficosAvaliacaoRoute,
   IrSplatRoute: IrSplatRoute,
   LegislacaoTipoRoute: LegislacaoTipoRouteWithChildren,

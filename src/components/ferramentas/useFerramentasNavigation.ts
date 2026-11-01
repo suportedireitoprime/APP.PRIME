@@ -5,13 +5,7 @@ import { DESKTOP_TOOLS_FLAT } from '@/config/desktopTools';
 export function useFerramentasNavigation() {
   const navigate = useNavigate();
   const [dicionarioOpen, setDicionarioOpen] = useState(false);
-  const [rankingOpen, setRankingOpen] = useState(false);
   const handleToolClick = useCallback((id: string, route?: string) => {
-    if (id === 'ranking') {
-      setRankingOpen(true);
-      return;
-    }
-
     if (id === 'boletins') {
       navigate('/boletins');
       return;
@@ -39,8 +33,6 @@ export function useFerramentasNavigation() {
     navigate,
     dicionarioOpen,
     setDicionarioOpen,
-    rankingOpen,
-    setRankingOpen,
     handleToolClick,
   };
 }

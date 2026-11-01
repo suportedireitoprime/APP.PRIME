@@ -619,9 +619,6 @@ export default function AdminBibliotecaLeis() {
                 {detectando ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Sparkles className="w-4 h-4 mr-1" />}
                 Detectar impactos agora
               </Button>
-              <Button variant="ghost" onClick={() => navigate('/admin-radares-leis')}>
-                Ver Radar de Leis (fonte)
-              </Button>
             </div>
 
             {impactos.length === 0 && (

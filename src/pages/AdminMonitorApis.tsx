@@ -272,7 +272,7 @@ export default function AdminMonitorApis() {
 
   return (
     <div className="min-h-dvh bg-background pb-8">
-      <PageHeader title="APIs de IA" onBack={() => navigate("/admin-monitoramento")} />
+      <PageHeader title="APIs de IA" onBack={() => navigate("/admin-funcoes")} />
 
       <div className="p-4 space-y-4">
         {/* Toggle Detalhe / Usuários */}
