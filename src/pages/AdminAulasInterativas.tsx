@@ -1183,9 +1183,9 @@ export default function AdminAulasInterativas() {
                             .filter(k => k && !/^questão/i.test(k) && !/^flashcard/i.test(k) && !/^etapa/i.test(k) && !/^memorização/i.test(k) && !/^fixação/i.test(k))
                         )
                       : null;
-                    const qtdTopicos = kickersReais && kickersReais.size >= 2
+                    const qtdTopicos = aula.topicosQtd || (kickersReais && kickersReais.size >= 2
                       ? kickersReais.size
-                      : Math.max(3, Math.min(6, Math.round((aula.etapas || 32) / 8)));
+                      : Math.max(3, Math.min(6, Math.floor((aula.etapas || 32) / 8) + (i % 3 === 0 ? 1 : 0))));
 
                     return (
                       <div key={aula.id} className="w-full flex flex-col">
@@ -1376,20 +1376,20 @@ export default function AdminAulasInterativas() {
                               </h3>
 
                               <p className="text-[11px] sm:text-xs text-zinc-300/80 mt-1 line-clamp-2 sm:line-clamp-3 leading-relaxed">
-                                <span className="font-semibold text-zinc-200">{qtdTopicos} tópicos essenciais abordados: </span>
+                                <span className="font-semibold text-amber-300/90">{qtdTopicos} tópicos essenciais: </span>
                                 {aula.descricao && !aula.descricao.includes('em estruturação')
                                   ? aula.descricao
                                   : `Doutrina especializada, análise de casos reais e fixação ativa sobre ${aula.titulo}.`}
                               </p>
 
-                              {/* OS 3 BOTÕES DE AÇÃO COM MESMO TAMANHO, PROPORÇÃO E ELEVAÇÃO VISUAL */}
+                              {/* OS 3 BOTÕES DE AÇÃO: RESPONSIVO SEM TRUNCAMENTO NO MOBILE */}
                               <div 
                                 className={cn(
-                                  "grid grid-cols-3 gap-1.5 sm:gap-2 mt-3 pt-2.5 border-t border-white/10 w-full",
+                                  "flex flex-col sm:grid sm:grid-cols-3 gap-1.5 sm:gap-2 mt-3 pt-2.5 border-t border-white/10 w-full",
                                   isLeft ? "justify-start" : "justify-end"
                                 )}
                               >
-                                {/* 1. Iniciar Aula */}
+                                {/* 1. Iniciar Aula (Largura Total no Mobile, Coluna 1 no Desktop) */}
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -1397,7 +1397,7 @@ export default function AdminAulasInterativas() {
                                     iniciarAula(aula);
                                   }}
                                   className={cn(
-                                    "w-full h-10 sm:h-11 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] xs:text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 shadow-md",
+                                    "w-full h-9 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 shadow-md",
                                     prog.aulaTerminada
                                       ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30"
                                       : "bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white border border-red-400/40 shadow-red-950/40"
@@ -1405,64 +1405,67 @@ export default function AdminAulasInterativas() {
                                   title={prog.aulaTerminada ? 'Reassistir aula interativa' : 'Iniciar aula interativa'}
                                 >
                                   {prog.aulaTerminada ? (
-                                    <Check className="w-3 h-3 text-emerald-400 stroke-[3] shrink-0" />
+                                    <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3] shrink-0" />
                                   ) : (
-                                    <Play className="w-3 h-3 fill-current shrink-0" />
+                                    <Play className="w-3.5 h-3.5 fill-current shrink-0" />
                                   )}
                                   <span className="truncate">{prog.aulaTerminada ? 'Ver Aula' : 'Iniciar'}</span>
                                 </button>
 
-                                {/* 2. Revisar (Flashcards) */}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    abrirRevisarFlashcards(aula);
-                                  }}
-                                  className={cn(
-                                    "w-full h-10 sm:h-11 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] xs:text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 border",
-                                    prog.fcOk
-                                      ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
-                                      : flashcardsLiberados
-                                        ? "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
-                                        : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
-                                  )}
-                                  title={!flashcardsLiberados ? 'Conclua a aula para destravar a revisão' : `Revisar com ${totalCards} Flashcards`}
-                                >
-                                  {flashcardsLiberados ? (
-                                    <Layers className="w-3 h-3 text-amber-300 shrink-0" />
-                                  ) : (
-                                    <Lock className="w-3 h-3 text-zinc-500 shrink-0" />
-                                  )}
-                                  <span className="truncate">Revisar</span>
-                                  <span className="text-[8px] sm:text-[9px] opacity-75 font-mono">({totalCards})</span>
-                                </button>
+                                {/* 2 & 3. Revisar + Praticar (2 colunas lado a lado no Mobile, Colunas 2 e 3 no Desktop) */}
+                                <div className="grid grid-cols-2 sm:contents gap-1.5">
+                                  {/* 2. Revisar (Flashcards) */}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      abrirRevisarFlashcards(aula);
+                                    }}
+                                    className={cn(
+                                      "w-full h-8.5 sm:h-11 px-1.5 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 border",
+                                      prog.fcOk
+                                        ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                                        : flashcardsLiberados
+                                          ? "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
+                                          : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
+                                    )}
+                                    title={!flashcardsLiberados ? 'Conclua a aula para destravar a revisão' : `Revisar com ${totalCards} Flashcards`}
+                                  >
+                                    {flashcardsLiberados ? (
+                                      <Layers className="w-3 h-3 text-amber-300 shrink-0" />
+                                    ) : (
+                                      <Lock className="w-3 h-3 text-zinc-500 shrink-0" />
+                                    )}
+                                    <span className="truncate">Revisar</span>
+                                    <span className="text-[8px] sm:text-[9px] opacity-75 font-mono">({totalCards})</span>
+                                  </button>
 
-                                {/* 3. Praticar (Questões) */}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    abrirPraticarQuestoes(aula);
-                                  }}
-                                  className={cn(
-                                    "w-full h-10 sm:h-11 px-1 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] xs:text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 border",
-                                    prog.questoesOk
-                                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
-                                      : questoesLiberadas
-                                        ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
-                                        : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
-                                  )}
-                                  title={!questoesLiberadas ? 'Conclua a revisão para destravar o treino prático' : `Praticar ${totalQuestoes} Questões comentadas`}
-                                >
-                                  {questoesLiberadas ? (
-                                    <HelpCircle className="w-3 h-3 text-emerald-300 shrink-0" />
-                                  ) : (
-                                    <Lock className="w-3 h-3 text-zinc-500 shrink-0" />
-                                  )}
-                                  <span className="truncate">Praticar</span>
-                                  <span className="text-[8px] sm:text-[9px] opacity-75 font-mono">({totalQuestoes})</span>
-                                </button>
+                                  {/* 3. Praticar (Questões) */}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      abrirPraticarQuestoes(aula);
+                                    }}
+                                    className={cn(
+                                      "w-full h-8.5 sm:h-11 px-1.5 sm:px-2 rounded-xl sm:rounded-2xl text-[9px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1 sm:gap-1.5 active:scale-95 border",
+                                      prog.questoesOk
+                                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
+                                        : questoesLiberadas
+                                          ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
+                                          : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
+                                    )}
+                                    title={!questoesLiberadas ? 'Conclua a revisão para destravar o treino prático' : `Praticar ${totalQuestoes} Questões comentadas`}
+                                  >
+                                    {questoesLiberadas ? (
+                                      <HelpCircle className="w-3 h-3 text-emerald-300 shrink-0" />
+                                    ) : (
+                                      <Lock className="w-3 h-3 text-zinc-500 shrink-0" />
+                                    )}
+                                    <span className="truncate">Praticar</span>
+                                    <span className="text-[8px] sm:text-[9px] opacity-75 font-mono">({totalQuestoes})</span>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
