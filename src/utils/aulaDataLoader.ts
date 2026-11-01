@@ -133,12 +133,7 @@ export function buildFallbackAulaData(aula: AulaItem): AulaData {
 }
 
 export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
-  // 1. Conteúdo Real Pré-Estruturado (0ms, 100% Offline, Zero CORS)
-  if (AULAS_CONTEUDO_REAL[aula.id]) {
-    return AULAS_CONTEUDO_REAL[aula.id];
-  }
-
-  // 2. Cache em memória da sessão (ignora cache se for fallback antigo <= 5 slides)
+  // 1. Cache em memória da sessão (ignora cache se for fallback antigo <= 5 slides)
   if (aulaCache[aula.id] && aulaCache[aula.id].totalEtapas > 5) {
     return aulaCache[aula.id];
   }
@@ -148,7 +143,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
     ? aula.urlJsonR2.replace(/\/aula\.json.*$/, '')
     : (aula.urlHtmlR2 ? aula.urlHtmlR2.replace(/\/aula\.html.*$/, '') : '');
 
-  // 3. Carregar JSON estruturado do R2 (0ms parsing, entrega ultra-rápida)
+  // 2. Carregar JSON estruturado do R2 (Fonte oficial completa com áudios e imagens)
   if (aula.urlJsonR2 && aula.urlJsonR2.startsWith('http')) {
     try {
       const res = await fetch(aula.urlJsonR2);
@@ -159,7 +154,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
           const slides: SlideItem[] = rawEtapas.map((e: any, idx: number) => {
             let img = e.imgUrl || e.imagem || '';
             if (!img && e.img) {
-              if (e.img === 'capa' || e.img === 'roteiro') {
+              if (e.img === 'capa') {
                 img = aula.capaUrl || (baseFolder ? `${baseFolder}/assets/img/capa.webp` : '');
               } else if (baseFolder) {
                 img = `${baseFolder}/assets/img/${e.img}.webp`;
@@ -178,6 +173,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
               narr: e.narr || e.narracao || '',
               imgUrl: img,
               img: e.img,
+              alt: e.alt,
               questao: e.questao,
               opcoes: e.opcoes,
               correta: e.certa !== undefined ? e.certa : e.correta,
@@ -207,6 +203,35 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
     } catch (e) {
       console.warn(`Falha ao baixar JSON do R2 para ${aula.id}:`, e);
     }
+  }
+
+  // 3. Fallback: Conteúdo Real Pré-Estruturado (Normalizando URLs relativas para a CDN R2)
+  if (AULAS_CONTEUDO_REAL[aula.id]) {
+    const rawData = AULAS_CONTEUDO_REAL[aula.id];
+    const normalizedSlides = rawData.slides.map((s, idx) => {
+      let img = s.imgUrl || '';
+      if (!img && s.img && baseFolder) {
+        img = `${baseFolder}/assets/img/${s.img}.webp`;
+      } else if (img && img.startsWith('assets/') && baseFolder) {
+        img = `${baseFolder}/${img}`;
+      } else if (!img && idx === 0) {
+        img = aula.capaUrl || '';
+      }
+      return {
+        ...s,
+        imgUrl: img
+      };
+    });
+
+    const data: AulaData = {
+      ...rawData,
+      slides: normalizedSlides,
+      audioBaseUrl: rawData.audioBaseUrl || (baseFolder ? `${baseFolder}/assets/audio/s` : undefined),
+      urlJsonR2: aula.urlJsonR2,
+      urlHtmlR2: aula.urlHtmlR2
+    };
+    aulaCache[aula.id] = data;
+    return data;
   }
 
   // 4. Carregar via HTML no R2 (Fallback robusto)

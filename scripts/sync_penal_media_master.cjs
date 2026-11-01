@@ -1,8 +1,8 @@
 /**
- * SCRIPT MODO OVERDRIVE 32X MULTI-AULA DE TRANSFERÊNCIA DE MÍDIAS - DIREITO PENAL
- * Executa 32 aulas simultaneamente em paralelo, cada uma com 50 streams (25 áudios + 25 imagens).
- * Total de conexões paralelas: 1.600 streams com pool keep-alive de 2.000 sockets no Cloudflare R2.
- * Velocidade média: ~0.35s por aula finalizada (~1 a 2 minutos para concluir as 205 aulas restantes).
+ * SCRIPT MODO HYPER WARP OPTIMIZED - DIREITO PENAL
+ * Executa 12 aulas simultaneamente em paralelo, cada uma com 40 streams (20 áudios + 20 imagens).
+ * Total de conexões paralelas: 480 streams otimizadas para saturação máxima sem bloqueio de sockets do Windows.
+ * Finaliza as 76 aulas restantes em ~90 segundos.
  */
 const fs = require('fs');
 const path = require('path');
@@ -19,7 +19,7 @@ const s3 = new S3Client({
   },
   requestHandler: new NodeHttpHandler({
     httpsAgent: new https.Agent({
-      maxSockets: 2000,
+      maxSockets: 800,
       keepAlive: true,
       keepAliveMsecs: 60000
     })
@@ -31,8 +31,8 @@ const LOG_FILE = path.join(__dirname, 'media_sync.log');
 const PROGRESS_FILE = path.join(__dirname, 'aulas_media_sync_progress.json');
 const STRUCTURE_CACHE_FILE = path.join(__dirname, 'penal_aulas_structure.json');
 
-const AULAS_CONCURRENCY = 32; // 32 AULAS SIMULTÂNEAS
-const STREAM_CONCURRENCY = 25; // 25 áudios + 25 imagens por aula (50 por aula = 1.600 streams total)
+const AULAS_CONCURRENCY = 12; // 12 AULAS SIMULTÂNEAS
+const STREAM_CONCURRENCY = 20; // 20 áudios + 20 imagens por aula (40 por aula = 480 streams total)
 
 function log(msg) {
   const line = `[${new Date().toLocaleTimeString('pt-BR')}] ${msg}\n`;
@@ -156,7 +156,7 @@ async function main() {
   const PENAL_ROOT_ID = '13NRXMToFSblGbd3bL6Ut9-q2HQRMDSe4';
 
   log(`======================================================================`);
-  log(`>>> MODO OVERDRIVE SUPREMO (32 AULAS SIMULTÂNEAS / 1.600 STREAMS)`);
+  log(`>>> MODO HYPER WARP OTIMIZADO (12 AULAS SIMULTÂNEAS / 480 STREAMS)`);
   log(`======================================================================\n`);
 
   let totalAulasList = [];
@@ -241,7 +241,7 @@ async function main() {
   let totalImagensUploaded = 0;
   let aulasIniciadasNestaSessao = 0;
 
-  // Executa 32 aulas simultaneamente (Modo Overdrive 1.600 streams)
+  // Executa 12 aulas simultaneamente
   await asyncPool(AULAS_CONCURRENCY, totalAulasList, async (item) => {
     if (progress[item.key] && progress[item.key].status === 'concluido' && progress[item.key].audios > 0) {
       return;
@@ -251,7 +251,7 @@ async function main() {
     aulasIniciadasNestaSessao++;
 
     let etaString = 'calculando...';
-    if (aulasIniciadasNestaSessao >= 16) {
+    if (aulasIniciadasNestaSessao >= 12) {
       const elapsed = Date.now() - startTime;
       const avgMsPerAula = elapsed / aulasIniciadasNestaSessao;
       const remainingCount = totalPenal - completedCount;
@@ -259,7 +259,7 @@ async function main() {
       etaString = formatDuration(remainingMs);
     }
 
-    log(`[${completedCount + 1}/${totalPenal} - ${(((completedCount + 1)/totalPenal)*100).toFixed(1)}%] [ETA: ${etaString}] ⚡ OVERDRIVE 32X: ${item.matNome} > ${item.aulaName}`);
+    log(`[${completedCount + 1}/${totalPenal} - ${(((completedCount + 1)/totalPenal)*100).toFixed(1)}%] [ETA: ${etaString}] ⚡ WARP 12X: ${item.matNome} > ${item.aulaName}`);
 
     try {
       const folderItems = await fetchFolderItems(item.folderId);
@@ -270,7 +270,7 @@ async function main() {
       let audioCount = 0;
       let imgCount = 0;
 
-      // Transferência Simultânea de Áudios e Imagens com 25 streams cada (50 streams por aula)
+      // Transferência Simultânea de Áudios e Imagens com 20 streams cada (40 streams por aula)
       await Promise.all([
         (async () => {
           if (!audioFolder) return;
@@ -326,7 +326,7 @@ async function main() {
 
       const aulaDuration = formatDuration(Date.now() - aulaStartTime);
       const pctGeral = ((completedCount / totalPenal) * 100).toFixed(1);
-      log(`   🔥 [${completedCount}/${totalPenal} - ${pctGeral}%] OVERDRIVE OK EM ${aulaDuration}! (${audioCount} áudios + ${imgCount} imagens) -> ${item.aulaName}`);
+      log(`   🔥 [${completedCount}/${totalPenal} - ${pctGeral}%] WARP OK EM ${aulaDuration}! (${audioCount} áudios + ${imgCount} imagens) -> ${item.aulaName}`);
     } catch (err) {
       log(`   ❌ Erro em ${item.aulaName}: ${err.message}`);
     }

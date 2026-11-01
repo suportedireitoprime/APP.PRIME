@@ -585,7 +585,33 @@ export function PlayerAulaNativo({
     );
   }
 
-  const imagemUrl = slideAtual?.imgUrl || aulaData?.imagens[slideAtual?.img || ''] || aula.capaUrl;
+  const imagemUrl = useMemo(() => {
+    if (slideAtual?.imgUrl && slideAtual.imgUrl.startsWith('http')) {
+      return slideAtual.imgUrl;
+    }
+    const baseFolder = aulaData?.urlJsonR2
+      ? aulaData.urlJsonR2.replace(/\/aula\.json.*$/, '')
+      : (aula.urlJsonR2 ? aula.urlJsonR2.replace(/\/aula\.json.*$/, '') : '');
+
+    if (slideAtual?.imgUrl && baseFolder) {
+      if (slideAtual.imgUrl.startsWith('assets/')) {
+        return `${baseFolder}/${slideAtual.imgUrl}`;
+      }
+      if (slideAtual.imgUrl.startsWith('http')) {
+        return slideAtual.imgUrl;
+      }
+    }
+    if (slideAtual?.img && baseFolder) {
+      if (slideAtual.img === 'capa') {
+        return aula.capaUrl || `${baseFolder}/assets/img/capa.webp`;
+      }
+      return `${baseFolder}/assets/img/${slideAtual.img}.webp`;
+    }
+    if (aulaData?.imagens && slideAtual?.img && aulaData.imagens[slideAtual.img]) {
+      return aulaData.imagens[slideAtual.img];
+    }
+    return aula.capaUrl;
+  }, [slideAtual?.imgUrl, slideAtual?.img, aulaData?.urlJsonR2, aulaData?.imagens, aula.urlJsonR2, aula.capaUrl]);
   const isUltimaEtapa = idx === total - 1;
 
   return (
