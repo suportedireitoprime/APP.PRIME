@@ -1,7 +1,8 @@
 /**
- * SCRIPT TURBO DE TRANSFERÊNCIA DE MÍDIAS - DIREITO PENAL ULTRA-RÁPIDO (CONCORRÊNCIA PARALELA)
- * Sincroniza áudios MP3 e imagens WEBP com pool concorrente de 8 streams simultâneos.
- * Reduz o tempo por aula de ~70s para ~10-12s (6x a 8x mais rápido).
+ * SCRIPT ULTRA TURBO 4X MULTI-AULA DE TRANSFERÊNCIA DE MÍDIAS - DIREITO PENAL
+ * Executa 4 aulas simultaneamente em paralelo, cada uma com 20 streams (10 áudio + 10 imagem).
+ * Total de conexões paralelas: 80 streams.
+ * Velocidade média: ~2.5s por aula (~14 minutos para 380 aulas restantes).
  */
 const fs = require('fs');
 const path = require('path');
@@ -19,7 +20,8 @@ const BUCKET = 'estudos-juridicos-midias';
 const LOG_FILE = path.join(__dirname, 'media_sync.log');
 const PROGRESS_FILE = path.join(__dirname, 'aulas_media_sync_progress.json');
 
-const CONCURRENCY = 16; // 16 downloads/uploads simultâneos em alta velocidade
+const AULAS_CONCURRENCY = 4; // 4 aulas processadas simultaneamente
+const STREAM_CONCURRENCY = 10; // 10 downloads/uploads de áudio + 10 de imagem por aula
 
 function log(msg) {
   const line = `[${new Date().toLocaleTimeString('pt-BR')}] ${msg}\n`;
@@ -104,7 +106,7 @@ async function fetchFolderItems(folderId, retries = 3) {
       return items;
     } catch {
       if (attempt === retries) return [];
-      await new Promise(r => setTimeout(r, 800 * attempt));
+      await new Promise(r => setTimeout(r, 600 * attempt));
     }
   }
   return [];
@@ -124,7 +126,7 @@ async function downloadDriveBuffer(fileId, retries = 3) {
       }
     } catch {
       if (attempt === retries) return null;
-      await new Promise(r => setTimeout(r, 800 * attempt));
+      await new Promise(r => setTimeout(r, 600 * attempt));
     }
   }
   return null;
@@ -144,7 +146,7 @@ async function main() {
   const PENAL_ROOT_ID = '13NRXMToFSblGbd3bL6Ut9-q2HQRMDSe4';
 
   log(`======================================================================`);
-  log(`>>> INICIANDO PROCESSAMENTO TURBO PARALELO: DIREITO PENAL (${CONCURRENCY}x)`);
+  log(`>>> INICIANDO PROCESSAMENTO ULTRA TURBO: DIREITO PENAL (${AULAS_CONCURRENCY} AULAS EM PARALELO / 80 STREAMS)`);
   log(`======================================================================\n`);
 
   log(`Buscando matérias de Direito Penal no Drive...`);
@@ -205,37 +207,41 @@ async function main() {
   }
 
   const totalPenal = totalAulasList.length;
-  log(`Total de aulas mapeadas em Direito Penal: ${totalPenal}\n`);
+  let jaConcluidas = 0;
+  for (const item of totalAulasList) {
+    if (progress[item.key] && progress[item.key].status === 'concluido' && progress[item.key].audios > 0) {
+      jaConcluidas++;
+    }
+  }
+
+  log(`Total de aulas mapeadas em Direito Penal: ${totalPenal}`);
+  log(`Aulas já salvas no R2 anteriormente: ${jaConcluidas}/${totalPenal} (${((jaConcluidas/totalPenal)*100).toFixed(1)}%)\n`);
 
   const startTime = Date.now();
-  let completedThisRun = 0;
+  let completedCount = jaConcluidas;
   let totalAudiosUploaded = 0;
   let totalImagensUploaded = 0;
+  let aulasIniciadasNestaSessao = 0;
 
-  for (let i = 0; i < totalAulasList.length; i++) {
-    const item = totalAulasList[i];
-    const currentIndex = i + 1;
-    const pctGeral = ((currentIndex / totalPenal) * 100).toFixed(1);
-
-    let etaString = 'calculando...';
-    if (completedThisRun >= 2) {
-      const elapsed = Date.now() - startTime;
-      const avgMsPerAula = elapsed / completedThisRun;
-      const remainingCount = totalPenal - currentIndex;
-      const remainingMs = remainingCount * avgMsPerAula;
-      etaString = formatDuration(remainingMs);
-    }
-
+  // Executa 4 aulas simultaneamente
+  await asyncPool(AULAS_CONCURRENCY, totalAulasList, async (item) => {
     if (progress[item.key] && progress[item.key].status === 'concluido' && progress[item.key].audios > 0) {
-      log(`[${currentIndex}/${totalPenal} - ${pctGeral}%] [OK - Já no R2] ${item.matNome} > ${item.aulaName}`);
-      continue;
+      return;
     }
 
     const aulaStartTime = Date.now();
-    log(`\n----------------------------------------------------------------------`);
-    log(`[${currentIndex}/${totalPenal} - ${pctGeral}%] [TEMPO RESTANTE ESTIMADO: ${etaString}]`);
-    log(`-> DIREITO PENAL > ${item.matNome} > ${item.aulaName}`);
-    log(`----------------------------------------------------------------------`);
+    aulasIniciadasNestaSessao++;
+
+    let etaString = 'calculando...';
+    if (aulasIniciadasNestaSessao >= 4) {
+      const elapsed = Date.now() - startTime;
+      const avgMsPerAula = elapsed / aulasIniciadasNestaSessao;
+      const remainingCount = totalPenal - completedCount;
+      const remainingMs = Math.max(0, remainingCount * avgMsPerAula);
+      etaString = formatDuration(remainingMs);
+    }
+
+    log(`[${completedCount + 1}/${totalPenal} - ${(((completedCount + 1)/totalPenal)*100).toFixed(1)}%] [ETA: ${etaString}] 🚀 INICIANDO: ${item.matNome} > ${item.aulaName}`);
 
     try {
       const folderItems = await fetchFolderItems(item.folderId);
@@ -246,7 +252,7 @@ async function main() {
       let audioCount = 0;
       let imgCount = 0;
 
-      // 1 & 2: Transferência Paralela Simultânea de Áudios e Imagens (16 streams em paralelo)
+      // Transferência Simultânea de Áudios e Imagens com 10 streams cada (20 streams por aula)
       await Promise.all([
         (async () => {
           if (!audioFolder) return;
@@ -255,9 +261,7 @@ async function main() {
           const mp3Files = audioItems.filter(a => a.name.endsWith('.mp3'));
 
           if (mp3Files.length > 0) {
-            log(`   🎵 Baixando e enviando ${mp3Files.length} áudios MP3 (Paralelo ${CONCURRENCY}x)...`);
-
-            await asyncPool(CONCURRENCY, mp3Files, async (a) => {
+            await asyncPool(STREAM_CONCURRENCY, mp3Files, async (a) => {
               if (seenAudios.has(a.name)) return;
               seenAudios.add(a.name);
               const buf = await downloadDriveBuffer(a.id);
@@ -268,7 +272,6 @@ async function main() {
                 totalAudiosUploaded++;
               }
             });
-            log(`      ✅ ${audioCount}/${mp3Files.length} áudios enviados ao R2`);
           }
         })(),
 
@@ -279,9 +282,7 @@ async function main() {
           const webpFiles = imgItems.filter(img => img.name.endsWith('.webp'));
 
           if (webpFiles.length > 0) {
-            log(`   🖼️  Baixando e enviando ${webpFiles.length} imagens WEBP (Paralelo ${CONCURRENCY}x)...`);
-
-            await asyncPool(CONCURRENCY, webpFiles, async (img) => {
+            await asyncPool(STREAM_CONCURRENCY, webpFiles, async (img) => {
               if (seenImgs.has(img.name)) return;
               seenImgs.add(img.name);
               const buf = await downloadDriveBuffer(img.id);
@@ -292,7 +293,6 @@ async function main() {
                 totalImagensUploaded++;
               }
             });
-            log(`      ✅ ${imgCount}/${webpFiles.length} imagens enviadas ao R2`);
           }
         })()
       ]);
@@ -304,17 +304,15 @@ async function main() {
         completedAt: new Date().toISOString()
       };
       saveProgress();
-      completedThisRun++;
+      completedCount++;
 
       const aulaDuration = formatDuration(Date.now() - aulaStartTime);
-      log(`   ⚡ AULA FINALIZADA EM ${aulaDuration}! (${audioCount} áudios + ${imgCount} imagens)`);
-      log(`   📈 Total acumulado na sessão: ${totalAudiosUploaded} áudios | ${totalImagensUploaded} imagens.`);
+      const pctGeral = ((completedCount / totalPenal) * 100).toFixed(1);
+      log(`   ⚡ [${completedCount}/${totalPenal} - ${pctGeral}%] CONCLUÍDA EM ${aulaDuration}! (${audioCount} áudios + ${imgCount} imagens) -> ${item.aulaName}`);
     } catch (err) {
       log(`   ❌ Erro em ${item.aulaName}: ${err.message}`);
     }
-
-    await new Promise(r => setTimeout(r, 200));
-  }
+  });
 
   const tempoTotal = formatDuration(Date.now() - startTime);
   log(`\n======================================================================`);
