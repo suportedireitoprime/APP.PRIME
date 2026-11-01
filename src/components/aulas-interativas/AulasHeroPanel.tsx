@@ -158,3 +158,4 @@ export const AulasHeroPanel: React.FC<AulasHeroPanelProps> = ({
     </section>
   );
 };
+

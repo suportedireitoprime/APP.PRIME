@@ -126,3 +126,4 @@ export const AulasTabFavoritos: React.FC<AulasTabFavoritosProps> = ({
     </div>
   );
 };
+

@@ -191,3 +191,4 @@ export const AulasTabProgresso: React.FC<AulasTabProgressoProps> = ({
     </div>
   );
 };
+

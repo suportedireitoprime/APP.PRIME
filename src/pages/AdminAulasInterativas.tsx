@@ -1037,6 +1037,7 @@ export default function AdminAulasInterativas() {
         const totalAulasDisc = aulasDaDisc.length;
         const somaPct = aulasDaDisc.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
         const pctDisc = totalAulasDisc > 0 ? Math.round(somaPct / totalAulasDisc) : 0;
+        const ciclosDiscCompletos = aulasDaDisc.filter(a => calcularProgressoCiclo(a).cicloCompleto).length;
         const materiasDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disciplinaAtual.id);
         const materiasFiltradas = materiasDaDisc.filter(mat => {
           if (!termoBuscaNorm) return true;

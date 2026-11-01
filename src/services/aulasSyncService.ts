@@ -265,3 +265,4 @@ export async function alternarFavoritoSupabase(aula: AulaItem, isFavoritoAtual: 
 
   return novoEstado;
 }
+

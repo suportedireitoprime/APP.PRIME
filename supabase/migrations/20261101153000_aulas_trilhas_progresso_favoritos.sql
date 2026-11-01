@@ -57,3 +57,4 @@ CREATE POLICY "Usuário gerencia seus favoritos de trilhas" ON public.aulas_tril
     FOR ALL
     USING (auth.uid() = user_id OR auth.uid() IS NULL)
     WITH CHECK (auth.uid() = user_id OR auth.uid() IS NULL);
+

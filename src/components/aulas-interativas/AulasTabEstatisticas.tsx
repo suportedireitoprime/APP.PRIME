@@ -333,3 +333,4 @@ export const AulasTabEstatisticas: React.FC<AulasTabEstatisticasProps> = ({
     </div>
   );
 };
+

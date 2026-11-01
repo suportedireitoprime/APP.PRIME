@@ -84,3 +84,4 @@ export const AulasMenuAlternancia: React.FC<AulasMenuAlternanciaProps> = ({
     </div>
   );
 };
+
