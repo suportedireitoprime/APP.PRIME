@@ -15,7 +15,6 @@ import { Route as AdminAssinantesRouteImport } from './routes/admin-assinantes'
 import { Route as AdminAtualizacaoRouteImport } from './routes/admin-atualizacao'
 import { Route as AdminAudioaulasRouteImport } from './routes/admin-audioaulas'
 import { Route as AdminAulasInterativasRouteImport } from './routes/admin-aulas-interativas'
-import { Route as AdminAvaliacaoLojaRouteImport } from './routes/admin-avaliacao-loja'
 import { Route as AdminBibliotecaEditarRouteImport } from './routes/admin-biblioteca-editar'
 import { Route as AdminBibliotecaLeisRouteImport } from './routes/admin-biblioteca-leis'
 import { Route as AdminBlogEdicaoRouteImport } from './routes/admin-blog-edicao'
@@ -27,8 +26,6 @@ import { Route as AdminErrosQuestoesRouteImport } from './routes/admin-erros-que
 import { Route as AdminFlashcardsEditarRouteImport } from './routes/admin-flashcards-editar'
 import { Route as AdminFuncoesRouteImport } from './routes/admin-funcoes'
 import { Route as AdminFuncoesAssinantesRouteImport } from './routes/admin-funcoes-assinantes'
-import { Route as AdminHeroHomeRouteImport } from './routes/admin-hero-home'
-import { Route as AdminHomeCuriosidadesRouteImport } from './routes/admin-home-curiosidades'
 import { Route as AdminHorusRouteImport } from './routes/admin-horus'
 import { Route as AdminHorusTemplateRouteImport } from './routes/admin-horus-template'
 import { Route as AdminInstagramPostsRouteImport } from './routes/admin-instagram-posts'
@@ -36,7 +33,6 @@ import { Route as AdminJurisprudenciaRouteImport } from './routes/admin-jurispru
 import { Route as AdminLeituraNativaRouteImport } from './routes/admin-leitura-nativa'
 import { Route as AdminLembretesRouteImport } from './routes/admin-lembretes'
 import { Route as AdminMapeamentoLeisRouteImport } from './routes/admin-mapeamento-leis'
-import { Route as AdminMetricasAdsRouteImport } from './routes/admin-metricas-ads'
 import { Route as AdminMonitorRouteImport } from './routes/admin-monitor'
 import { Route as AdminMonitorApisRouteImport } from './routes/admin-monitor-apis'
 import { Route as AdminMonitorUsuariosRouteImport } from './routes/admin-monitor-usuarios'
@@ -45,10 +41,8 @@ import { Route as AdminNarracaoLeisRouteImport } from './routes/admin-narracao-l
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminQuestoesRouteImport } from './routes/admin-questoes'
-import { Route as AdminRankingFuncoesRouteImport } from './routes/admin-ranking-funcoes'
 import { Route as AdminSimuladosRouteImport } from './routes/admin-simulados'
 import { Route as AdminSuporteRouteImport } from './routes/admin-suporte'
-import { Route as AdminTriagemRouteImport } from './routes/admin-triagem'
 import { Route as AdminUsuariosRouteImport } from './routes/admin-usuarios'
 import { Route as AdminVadeMecumRouteImport } from './routes/admin-vade-mecum'
 import { Route as AdminVadeMecumHistoricoRouteImport } from './routes/admin-vade-mecum-historico'
@@ -129,7 +123,6 @@ import { Route as AdminLembretesBibliotecaRouteImport } from './routes/admin-lem
 import { Route as AdminNarracaoApresentacaoRouteImport } from './routes/admin-narracao.apresentacao'
 import { Route as AdminNarracaoBibliotecaRouteImport } from './routes/admin-narracao.biblioteca'
 import { Route as AdminNarracaoBlogRouteImport } from './routes/admin-narracao.blog'
-import { Route as AdminLocaisRouteImport } from './routes/admin.locais'
 import { Route as AdminPesquisasProntasRouteImport } from './routes/admin.pesquisas-prontas'
 import { Route as AdminPilulasRouteImport } from './routes/admin.pilulas'
 import { Route as AjustesExcluirContaRouteImport } from './routes/ajustes.excluir-conta'
@@ -316,11 +309,6 @@ const AdminAulasInterativasRoute = AdminAulasInterativasRouteImport.update({
   path: '/admin-aulas-interativas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAvaliacaoLojaRoute = AdminAvaliacaoLojaRouteImport.update({
-  id: '/admin-avaliacao-loja',
-  path: '/admin-avaliacao-loja',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminBibliotecaEditarRoute = AdminBibliotecaEditarRouteImport.update({
   id: '/admin-biblioteca-editar',
   path: '/admin-biblioteca-editar',
@@ -376,16 +364,6 @@ const AdminFuncoesAssinantesRoute = AdminFuncoesAssinantesRouteImport.update({
   path: '/admin-funcoes-assinantes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminHeroHomeRoute = AdminHeroHomeRouteImport.update({
-  id: '/admin-hero-home',
-  path: '/admin-hero-home',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminHomeCuriosidadesRoute = AdminHomeCuriosidadesRouteImport.update({
-  id: '/admin-home-curiosidades',
-  path: '/admin-home-curiosidades',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminHorusRoute = AdminHorusRouteImport.update({
   id: '/admin-horus',
   path: '/admin-horus',
@@ -419,11 +397,6 @@ const AdminLembretesRoute = AdminLembretesRouteImport.update({
 const AdminMapeamentoLeisRoute = AdminMapeamentoLeisRouteImport.update({
   id: '/admin-mapeamento-leis',
   path: '/admin-mapeamento-leis',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMetricasAdsRoute = AdminMetricasAdsRouteImport.update({
-  id: '/admin-metricas-ads',
-  path: '/admin-metricas-ads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminMonitorRoute = AdminMonitorRouteImport.update({
@@ -466,11 +439,6 @@ const AdminQuestoesRoute = AdminQuestoesRouteImport.update({
   path: '/admin-questoes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRankingFuncoesRoute = AdminRankingFuncoesRouteImport.update({
-  id: '/admin-ranking-funcoes',
-  path: '/admin-ranking-funcoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminSimuladosRoute = AdminSimuladosRouteImport.update({
   id: '/admin-simulados',
   path: '/admin-simulados',
@@ -479,11 +447,6 @@ const AdminSimuladosRoute = AdminSimuladosRouteImport.update({
 const AdminSuporteRoute = AdminSuporteRouteImport.update({
   id: '/admin-suporte',
   path: '/admin-suporte',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminTriagemRoute = AdminTriagemRouteImport.update({
-  id: '/admin-triagem',
-  path: '/admin-triagem',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
@@ -889,11 +852,6 @@ const AdminNarracaoBlogRoute = AdminNarracaoBlogRouteImport.update({
   id: '/blog',
   path: '/blog',
   getParentRoute: () => AdminNarracaoRoute,
-} as any)
-const AdminLocaisRoute = AdminLocaisRouteImport.update({
-  id: '/admin/locais',
-  path: '/admin/locais',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPesquisasProntasRoute = AdminPesquisasProntasRouteImport.update({
   id: '/admin/pesquisas-prontas',
@@ -1714,7 +1672,6 @@ export interface FileRoutesByFullPath {
   '/admin-atualizacao': typeof AdminAtualizacaoRoute
   '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
-  '/admin-avaliacao-loja': typeof AdminAvaliacaoLojaRoute
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
@@ -1726,8 +1683,6 @@ export interface FileRoutesByFullPath {
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
-  '/admin-hero-home': typeof AdminHeroHomeRoute
-  '/admin-home-curiosidades': typeof AdminHomeCuriosidadesRoute
   '/admin-horus': typeof AdminHorusRoute
   '/admin-horus-template': typeof AdminHorusTemplateRoute
   '/admin-instagram-posts': typeof AdminInstagramPostsRoute
@@ -1735,7 +1690,6 @@ export interface FileRoutesByFullPath {
   '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
   '/admin-lembretes': typeof AdminLembretesRouteWithChildren
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
-  '/admin-metricas-ads': typeof AdminMetricasAdsRoute
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
   '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
@@ -1744,10 +1698,8 @@ export interface FileRoutesByFullPath {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-questoes': typeof AdminQuestoesRoute
-  '/admin-ranking-funcoes': typeof AdminRankingFuncoesRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-suporte': typeof AdminSuporteRoute
-  '/admin-triagem': typeof AdminTriagemRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
   '/admin-vade-mecum': typeof AdminVadeMecumRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
@@ -1828,7 +1780,6 @@ export interface FileRoutesByFullPath {
   '/admin-narracao/apresentacao': typeof AdminNarracaoApresentacaoRoute
   '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
-  '/admin/locais': typeof AdminLocaisRoute
   '/admin/pesquisas-prontas': typeof AdminPesquisasProntasRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
@@ -1992,7 +1943,6 @@ export interface FileRoutesByTo {
   '/admin-atualizacao': typeof AdminAtualizacaoRoute
   '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
-  '/admin-avaliacao-loja': typeof AdminAvaliacaoLojaRoute
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
@@ -2004,8 +1954,6 @@ export interface FileRoutesByTo {
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
-  '/admin-hero-home': typeof AdminHeroHomeRoute
-  '/admin-home-curiosidades': typeof AdminHomeCuriosidadesRoute
   '/admin-horus': typeof AdminHorusRoute
   '/admin-horus-template': typeof AdminHorusTemplateRoute
   '/admin-instagram-posts': typeof AdminInstagramPostsRoute
@@ -2013,7 +1961,6 @@ export interface FileRoutesByTo {
   '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
   '/admin-lembretes': typeof AdminLembretesRouteWithChildren
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
-  '/admin-metricas-ads': typeof AdminMetricasAdsRoute
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
   '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
@@ -2022,10 +1969,8 @@ export interface FileRoutesByTo {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-questoes': typeof AdminQuestoesRoute
-  '/admin-ranking-funcoes': typeof AdminRankingFuncoesRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-suporte': typeof AdminSuporteRoute
-  '/admin-triagem': typeof AdminTriagemRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
   '/admin-vade-mecum': typeof AdminVadeMecumRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
@@ -2106,7 +2051,6 @@ export interface FileRoutesByTo {
   '/admin-narracao/apresentacao': typeof AdminNarracaoApresentacaoRoute
   '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
-  '/admin/locais': typeof AdminLocaisRoute
   '/admin/pesquisas-prontas': typeof AdminPesquisasProntasRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
@@ -2271,7 +2215,6 @@ export interface FileRoutesById {
   '/admin-atualizacao': typeof AdminAtualizacaoRoute
   '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
-  '/admin-avaliacao-loja': typeof AdminAvaliacaoLojaRoute
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
@@ -2283,8 +2226,6 @@ export interface FileRoutesById {
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
-  '/admin-hero-home': typeof AdminHeroHomeRoute
-  '/admin-home-curiosidades': typeof AdminHomeCuriosidadesRoute
   '/admin-horus': typeof AdminHorusRoute
   '/admin-horus-template': typeof AdminHorusTemplateRoute
   '/admin-instagram-posts': typeof AdminInstagramPostsRoute
@@ -2292,7 +2233,6 @@ export interface FileRoutesById {
   '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
   '/admin-lembretes': typeof AdminLembretesRouteWithChildren
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
-  '/admin-metricas-ads': typeof AdminMetricasAdsRoute
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
   '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
@@ -2301,10 +2241,8 @@ export interface FileRoutesById {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-questoes': typeof AdminQuestoesRoute
-  '/admin-ranking-funcoes': typeof AdminRankingFuncoesRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-suporte': typeof AdminSuporteRoute
-  '/admin-triagem': typeof AdminTriagemRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
   '/admin-vade-mecum': typeof AdminVadeMecumRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
@@ -2385,7 +2323,6 @@ export interface FileRoutesById {
   '/admin-narracao/apresentacao': typeof AdminNarracaoApresentacaoRoute
   '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
-  '/admin/locais': typeof AdminLocaisRoute
   '/admin/pesquisas-prontas': typeof AdminPesquisasProntasRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
@@ -2551,7 +2488,6 @@ export interface FileRouteTypes {
     | '/admin-atualizacao'
     | '/admin-audioaulas'
     | '/admin-aulas-interativas'
-    | '/admin-avaliacao-loja'
     | '/admin-biblioteca-editar'
     | '/admin-biblioteca-leis'
     | '/admin-blog-edicao'
@@ -2563,8 +2499,6 @@ export interface FileRouteTypes {
     | '/admin-flashcards-editar'
     | '/admin-funcoes'
     | '/admin-funcoes-assinantes'
-    | '/admin-hero-home'
-    | '/admin-home-curiosidades'
     | '/admin-horus'
     | '/admin-horus-template'
     | '/admin-instagram-posts'
@@ -2572,7 +2506,6 @@ export interface FileRouteTypes {
     | '/admin-leitura-nativa'
     | '/admin-lembretes'
     | '/admin-mapeamento-leis'
-    | '/admin-metricas-ads'
     | '/admin-monitor'
     | '/admin-monitor-apis'
     | '/admin-monitor-usuarios'
@@ -2581,10 +2514,8 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-questoes'
-    | '/admin-ranking-funcoes'
     | '/admin-simulados'
     | '/admin-suporte'
-    | '/admin-triagem'
     | '/admin-usuarios'
     | '/admin-vade-mecum'
     | '/admin-vade-mecum-historico'
@@ -2665,7 +2596,6 @@ export interface FileRouteTypes {
     | '/admin-narracao/apresentacao'
     | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
-    | '/admin/locais'
     | '/admin/pesquisas-prontas'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
@@ -2829,7 +2759,6 @@ export interface FileRouteTypes {
     | '/admin-atualizacao'
     | '/admin-audioaulas'
     | '/admin-aulas-interativas'
-    | '/admin-avaliacao-loja'
     | '/admin-biblioteca-editar'
     | '/admin-biblioteca-leis'
     | '/admin-blog-edicao'
@@ -2841,8 +2770,6 @@ export interface FileRouteTypes {
     | '/admin-flashcards-editar'
     | '/admin-funcoes'
     | '/admin-funcoes-assinantes'
-    | '/admin-hero-home'
-    | '/admin-home-curiosidades'
     | '/admin-horus'
     | '/admin-horus-template'
     | '/admin-instagram-posts'
@@ -2850,7 +2777,6 @@ export interface FileRouteTypes {
     | '/admin-leitura-nativa'
     | '/admin-lembretes'
     | '/admin-mapeamento-leis'
-    | '/admin-metricas-ads'
     | '/admin-monitor'
     | '/admin-monitor-apis'
     | '/admin-monitor-usuarios'
@@ -2859,10 +2785,8 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-questoes'
-    | '/admin-ranking-funcoes'
     | '/admin-simulados'
     | '/admin-suporte'
-    | '/admin-triagem'
     | '/admin-usuarios'
     | '/admin-vade-mecum'
     | '/admin-vade-mecum-historico'
@@ -2943,7 +2867,6 @@ export interface FileRouteTypes {
     | '/admin-narracao/apresentacao'
     | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
-    | '/admin/locais'
     | '/admin/pesquisas-prontas'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
@@ -3107,7 +3030,6 @@ export interface FileRouteTypes {
     | '/admin-atualizacao'
     | '/admin-audioaulas'
     | '/admin-aulas-interativas'
-    | '/admin-avaliacao-loja'
     | '/admin-biblioteca-editar'
     | '/admin-biblioteca-leis'
     | '/admin-blog-edicao'
@@ -3119,8 +3041,6 @@ export interface FileRouteTypes {
     | '/admin-flashcards-editar'
     | '/admin-funcoes'
     | '/admin-funcoes-assinantes'
-    | '/admin-hero-home'
-    | '/admin-home-curiosidades'
     | '/admin-horus'
     | '/admin-horus-template'
     | '/admin-instagram-posts'
@@ -3128,7 +3048,6 @@ export interface FileRouteTypes {
     | '/admin-leitura-nativa'
     | '/admin-lembretes'
     | '/admin-mapeamento-leis'
-    | '/admin-metricas-ads'
     | '/admin-monitor'
     | '/admin-monitor-apis'
     | '/admin-monitor-usuarios'
@@ -3137,10 +3056,8 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-questoes'
-    | '/admin-ranking-funcoes'
     | '/admin-simulados'
     | '/admin-suporte'
-    | '/admin-triagem'
     | '/admin-usuarios'
     | '/admin-vade-mecum'
     | '/admin-vade-mecum-historico'
@@ -3221,7 +3138,6 @@ export interface FileRouteTypes {
     | '/admin-narracao/apresentacao'
     | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
-    | '/admin/locais'
     | '/admin/pesquisas-prontas'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
@@ -3386,7 +3302,6 @@ export interface RootRouteChildren {
   AdminAtualizacaoRoute: typeof AdminAtualizacaoRoute
   AdminAudioaulasRoute: typeof AdminAudioaulasRoute
   AdminAulasInterativasRoute: typeof AdminAulasInterativasRoute
-  AdminAvaliacaoLojaRoute: typeof AdminAvaliacaoLojaRoute
   AdminBibliotecaEditarRoute: typeof AdminBibliotecaEditarRoute
   AdminBibliotecaLeisRoute: typeof AdminBibliotecaLeisRouteWithChildren
   AdminBlogEdicaoRoute: typeof AdminBlogEdicaoRoute
@@ -3398,8 +3313,6 @@ export interface RootRouteChildren {
   AdminFlashcardsEditarRoute: typeof AdminFlashcardsEditarRoute
   AdminFuncoesRoute: typeof AdminFuncoesRoute
   AdminFuncoesAssinantesRoute: typeof AdminFuncoesAssinantesRoute
-  AdminHeroHomeRoute: typeof AdminHeroHomeRoute
-  AdminHomeCuriosidadesRoute: typeof AdminHomeCuriosidadesRoute
   AdminHorusRoute: typeof AdminHorusRoute
   AdminHorusTemplateRoute: typeof AdminHorusTemplateRoute
   AdminInstagramPostsRoute: typeof AdminInstagramPostsRoute
@@ -3407,7 +3320,6 @@ export interface RootRouteChildren {
   AdminLeituraNativaRoute: typeof AdminLeituraNativaRoute
   AdminLembretesRoute: typeof AdminLembretesRouteWithChildren
   AdminMapeamentoLeisRoute: typeof AdminMapeamentoLeisRoute
-  AdminMetricasAdsRoute: typeof AdminMetricasAdsRoute
   AdminMonitorRoute: typeof AdminMonitorRoute
   AdminMonitorApisRoute: typeof AdminMonitorApisRoute
   AdminMonitorUsuariosRoute: typeof AdminMonitorUsuariosRoute
@@ -3416,10 +3328,8 @@ export interface RootRouteChildren {
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
   AdminQuestoesRoute: typeof AdminQuestoesRoute
-  AdminRankingFuncoesRoute: typeof AdminRankingFuncoesRoute
   AdminSimuladosRoute: typeof AdminSimuladosRoute
   AdminSuporteRoute: typeof AdminSuporteRoute
-  AdminTriagemRoute: typeof AdminTriagemRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminVadeMecumRoute: typeof AdminVadeMecumRoute
   AdminVadeMecumHistoricoRoute: typeof AdminVadeMecumHistoricoRoute
@@ -3494,7 +3404,6 @@ export interface RootRouteChildren {
   VadeMecumRoute: typeof VadeMecumRouteWithChildren
   VideoaulasRoute: typeof VideoaulasRouteWithChildren
   VisuaisRoute: typeof VisuaisRouteWithChildren
-  AdminLocaisRoute: typeof AdminLocaisRoute
   AdminPesquisasProntasRoute: typeof AdminPesquisasProntasRoute
   AdminPilulasRoute: typeof AdminPilulasRoute
   AjustesExcluirContaRoute: typeof AjustesExcluirContaRoute
@@ -3565,13 +3474,6 @@ declare module '@tanstack/react-router' {
       path: '/admin-aulas-interativas'
       fullPath: '/admin-aulas-interativas'
       preLoaderRoute: typeof AdminAulasInterativasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-avaliacao-loja': {
-      id: '/admin-avaliacao-loja'
-      path: '/admin-avaliacao-loja'
-      fullPath: '/admin-avaliacao-loja'
-      preLoaderRoute: typeof AdminAvaliacaoLojaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-biblioteca-editar': {
@@ -3651,20 +3553,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFuncoesAssinantesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-hero-home': {
-      id: '/admin-hero-home'
-      path: '/admin-hero-home'
-      fullPath: '/admin-hero-home'
-      preLoaderRoute: typeof AdminHeroHomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-home-curiosidades': {
-      id: '/admin-home-curiosidades'
-      path: '/admin-home-curiosidades'
-      fullPath: '/admin-home-curiosidades'
-      preLoaderRoute: typeof AdminHomeCuriosidadesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-horus': {
       id: '/admin-horus'
       path: '/admin-horus'
@@ -3712,13 +3600,6 @@ declare module '@tanstack/react-router' {
       path: '/admin-mapeamento-leis'
       fullPath: '/admin-mapeamento-leis'
       preLoaderRoute: typeof AdminMapeamentoLeisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-metricas-ads': {
-      id: '/admin-metricas-ads'
-      path: '/admin-metricas-ads'
-      fullPath: '/admin-metricas-ads'
-      preLoaderRoute: typeof AdminMetricasAdsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-monitor': {
@@ -3777,13 +3658,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminQuestoesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-ranking-funcoes': {
-      id: '/admin-ranking-funcoes'
-      path: '/admin-ranking-funcoes'
-      fullPath: '/admin-ranking-funcoes'
-      preLoaderRoute: typeof AdminRankingFuncoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-simulados': {
       id: '/admin-simulados'
       path: '/admin-simulados'
@@ -3796,13 +3670,6 @@ declare module '@tanstack/react-router' {
       path: '/admin-suporte'
       fullPath: '/admin-suporte'
       preLoaderRoute: typeof AdminSuporteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-triagem': {
-      id: '/admin-triagem'
-      path: '/admin-triagem'
-      fullPath: '/admin-triagem'
-      preLoaderRoute: typeof AdminTriagemRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-usuarios': {
@@ -4364,13 +4231,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin-narracao/blog'
       preLoaderRoute: typeof AdminNarracaoBlogRouteImport
       parentRoute: typeof AdminNarracaoRoute
-    }
-    '/admin/locais': {
-      id: '/admin/locais'
-      path: '/admin/locais'
-      fullPath: '/admin/locais'
-      preLoaderRoute: typeof AdminLocaisRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/admin/pesquisas-prontas': {
       id: '/admin/pesquisas-prontas'
@@ -6179,7 +6039,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAtualizacaoRoute: AdminAtualizacaoRoute,
   AdminAudioaulasRoute: AdminAudioaulasRoute,
   AdminAulasInterativasRoute: AdminAulasInterativasRoute,
-  AdminAvaliacaoLojaRoute: AdminAvaliacaoLojaRoute,
   AdminBibliotecaEditarRoute: AdminBibliotecaEditarRoute,
   AdminBibliotecaLeisRoute: AdminBibliotecaLeisRouteWithChildren,
   AdminBlogEdicaoRoute: AdminBlogEdicaoRoute,
@@ -6191,8 +6050,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFlashcardsEditarRoute: AdminFlashcardsEditarRoute,
   AdminFuncoesRoute: AdminFuncoesRoute,
   AdminFuncoesAssinantesRoute: AdminFuncoesAssinantesRoute,
-  AdminHeroHomeRoute: AdminHeroHomeRoute,
-  AdminHomeCuriosidadesRoute: AdminHomeCuriosidadesRoute,
   AdminHorusRoute: AdminHorusRoute,
   AdminHorusTemplateRoute: AdminHorusTemplateRoute,
   AdminInstagramPostsRoute: AdminInstagramPostsRoute,
@@ -6200,7 +6057,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLeituraNativaRoute: AdminLeituraNativaRoute,
   AdminLembretesRoute: AdminLembretesRouteWithChildren,
   AdminMapeamentoLeisRoute: AdminMapeamentoLeisRoute,
-  AdminMetricasAdsRoute: AdminMetricasAdsRoute,
   AdminMonitorRoute: AdminMonitorRoute,
   AdminMonitorApisRoute: AdminMonitorApisRoute,
   AdminMonitorUsuariosRoute: AdminMonitorUsuariosRoute,
@@ -6209,10 +6065,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
   AdminQuestoesRoute: AdminQuestoesRoute,
-  AdminRankingFuncoesRoute: AdminRankingFuncoesRoute,
   AdminSimuladosRoute: AdminSimuladosRoute,
   AdminSuporteRoute: AdminSuporteRoute,
-  AdminTriagemRoute: AdminTriagemRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminVadeMecumRoute: AdminVadeMecumRoute,
   AdminVadeMecumHistoricoRoute: AdminVadeMecumHistoricoRoute,
@@ -6287,7 +6141,6 @@ const rootRouteChildren: RootRouteChildren = {
   VadeMecumRoute: VadeMecumRouteWithChildren,
   VideoaulasRoute: VideoaulasRouteWithChildren,
   VisuaisRoute: VisuaisRouteWithChildren,
-  AdminLocaisRoute: AdminLocaisRoute,
   AdminPesquisasProntasRoute: AdminPesquisasProntasRoute,
   AdminPilulasRoute: AdminPilulasRoute,
   AjustesExcluirContaRoute: AjustesExcluirContaRoute,

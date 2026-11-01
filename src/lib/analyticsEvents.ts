@@ -54,7 +54,6 @@ export const ROUTE_NAMES: Record<string, string> = {
   "/grafo-artigos": "Grafo Artigos",
   "/ferramentas": "Ferramentas",
   "/ferramentas/dicionario": "Dicionario Juridico",
-  "/admin/locais": "Admin Locais",
   "/tematica-juridica": "Tematica Juridica",
   "/radar-360": "Radar 360",
   "/normas/:slug": "Outras Normas",

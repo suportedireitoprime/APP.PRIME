@@ -25,16 +25,11 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-push': () => import('./AdminPush'),
   '/admin-horus': () => import('./AdminHorus'),
   '/admin-horus-template': () => import('./AdminHorusTemplate'),
-  '/admin-triagem': () => import('./AdminTriagem'),
-  '/admin-metricas-ads': () => import('./AdminMetricasAds'),
 
   '/admin-atualizacao': () => import('./AdminAtualizacao'),
   '/admin-blog-edicao': () => import('./AdminBlogEdicao'),
   '/admin-omniroute': () => import('./AdminOmniRouteTeste'),
   '/admin-design-imagens': () => import('./AdminDesignImagens'),
-  '/admin-avaliacao-loja': () => import('./AdminAvaliacaoLoja'),
-  '/admin-hero-home': () => import('./AdminHeroHome'),
-  '/admin-home-curiosidades': () => import('./AdminHomeCuriosidades'),
   '/admin/pilulas': () => import('./AdminPilulas'),
   
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
@@ -45,7 +40,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
   '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
   '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
-  '/admin/locais': () => import('./AdminLocais'),
   '/admin-biblioteca-leis': () => import('./AdminBibliotecaLeis'),
   '/admin-buscador-leis': () => import('./AdminBuscadorLeis'),
 
@@ -160,26 +154,6 @@ const CATEGORIES: Category[] = [
   },
 
   {
-    id: 'ads-metrics',
-    title: 'Métricas Google Ads',
-    desc: 'Monitoramento de conversões em tempo real',
-    icon: Target,
-    route: '/admin-metricas-ads',
-    items: [
-      { id: 'admin-metricas-ads', label: 'Métricas Google Ads', icon: Target, desc: 'Eventos disparados em tempo real', route: '/admin-metricas-ads' },
-    ],
-  },
-  {
-    id: 'crescimento-retencao',
-    title: 'Crescimento & Retenção',
-    desc: 'Onboarding, triagem e avaliações nas lojas',
-    icon: Target,
-    items: [
-      { id: 'admin-triagem', label: 'Triagem de Entrada', icon: Target, desc: 'Ver respostas de usuários e alterar design', route: '/admin-triagem' },
-      { id: 'admin-avaliacao-loja', label: 'Avaliação Loja', icon: Star, desc: 'Estatísticas e tracking', route: '/admin-avaliacao-loja' },
-    ]
-  },
-  {
     id: 'push',
     title: 'Notificações Push',
     desc: 'Campanhas, agendamento e métricas',
@@ -206,8 +180,6 @@ const CATEGORIES: Category[] = [
       { id: 'flashcards-edicao', label: 'Flashcards Editar', icon: Layers, desc: 'IA, bibliotecas, revisão e stats', route: '/admin-flashcards-editar' },
       { id: 'blog-edicao', label: 'Blog Editar', icon: Newspaper, desc: 'Geração automática de artigos + push', route: '/admin-blog-edicao' },
       { id: 'design-imagens', label: 'Design de Imagens', icon: Palette, desc: 'Presets de estilo (prompt travado) por categoria', route: '/admin-design-imagens' },
-      { id: 'hero-home', label: 'Imagens Início do App', icon: ImageIcon, desc: 'Personagens do painel amarelo + animações de entrada', route: '/admin-hero-home' },
-      { id: 'home-curiosidades', label: 'Curiosidades da Home', icon: Lightbulb, desc: 'Cards leves misturados aos stats, com capa vazada IA', route: '/admin-home-curiosidades' },
       { id: 'admin-pilulas', label: 'Pílulas (Clássicos)', icon: Pill, desc: 'Gerenciar áudios e prompts para pílulas de clássicos', route: '/admin/pilulas' },
       { id: 'explicacao-lei', label: 'Explicações Editar (IA)', icon: Lightbulb, desc: 'Batch de explicações', route: '/explicacao-lei' },
       
@@ -269,7 +241,6 @@ const CATEGORIES: Category[] = [
     desc: 'Funções restritas para admin',
     icon: FileSignature,
     items: [
-      { id: 'admin-locais', label: 'Locais Jurídicos', icon: MapPin, desc: 'Sincronizar OSM por UF e categoria (custo zero)', route: '/admin/locais' },
       { id: 'offline', label: 'Modo Offline', icon: CloudDownload, desc: 'Baixe leis e livros para usar sem internet', route: '/modo-offline' },
     ],
   },
@@ -283,7 +254,6 @@ const CATEGORIES: Category[] = [
       { id: 'admin-monitor', label: 'Monitoramento', icon: Activity, desc: 'Status e saúde do sistema', route: '/admin-monitor' },
       { id: 'monitor-usuarios', label: 'Usuários Online', icon: Users, desc: 'Monitoramento em tempo real', route: '/admin-monitor-usuarios' },
       { id: 'monitor-apis', label: 'APIs', icon: Activity, desc: 'Funções que usam IA (custo, manual/auto)', route: '/admin-monitor-apis' },
-      { id: 'ranking-funcoes', label: 'Ranking de Funções', icon: Activity, desc: 'Funções e subfunções mais acessadas pelos usuários', route: '/admin-ranking-funcoes' },
     ],
   },
   {

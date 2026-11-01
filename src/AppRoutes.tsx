@@ -124,7 +124,6 @@ const AdminSimulados = lazy(() => import("./pages/AdminSimulados.tsx"));
 const FerramentasSimulados = lazy(() => import("./pages/FerramentasSimulados.tsx"));
 const FerramentasSimuladosResolver = lazy(() => import("./pages/FerramentasSimuladosResolver.tsx"));
 const FerramentasSimuladosEstatisticas = lazy(() => import("./pages/FerramentasSimuladosEstatisticas.tsx"));
-const AdminMetricasAds = lazy(() => import("./pages/AdminMetricasAds.tsx"));
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
@@ -178,7 +177,6 @@ const SessoesSTF = lazy(() => import("./pages/ferramentas/SessoesSTF.tsx"));
 const SessaoSTFDetalhes = lazy(() => import("./pages/ferramentas/SessaoSTFDetalhes.tsx"));
 const Documentos = lazy(() => import("./pages/Documentos.tsx"));
 const DicionarioJuridicoPage = lazy(routePrefetch.dicionario);
-const AdminLocais = lazy(() => import("./pages/AdminLocais.tsx"));
 const TematicaJuridica = lazy(routePrefetch.tematica);
 const Compartilhado = lazy(() => import("./pages/Compartilhado.tsx"));
 const Radar360 = lazy(routePrefetch.radar360);
@@ -338,7 +336,6 @@ const BibliotecaOffline = lazy(() => import("./pages/BibliotecaOffline.tsx"));
 const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
-const AdminRankingFuncoes = lazy(() => import("./pages/AdminRankingFuncoes.tsx"));
 const AdminInstagramPosts = lazy(() => import("./pages/AdminInstagramPosts.tsx"));
 const AdminAulasInterativas = lazy(() => import("./pages/AdminAulasInterativas.tsx"));
 const AdminCotasAnalise = lazy(() => import("./pages/AdminCotasAnalise.tsx"));
@@ -356,19 +353,15 @@ const AdminUsuarios = lazy(() => import("./pages/AdminUsuarios.tsx"));
 const AdminMonitorUsuarios = lazy(() => import("./pages/AdminMonitorUsuarios.tsx"));
 const AdminMonitorApis = lazy(() => import("./pages/AdminMonitorApis.tsx"));
 const AdminAtualizacao = lazy(() => import("./pages/AdminAtualizacao.tsx"));
-const AdminAvaliacaoLoja = lazy(() => import("./pages/AdminAvaliacaoLoja.tsx"));
 const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
 
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
 const AdminHorusTemplate = lazy(() => import('./pages/AdminHorusTemplate'));
-const AdminTriagem = lazy(() => import('./pages/AdminTriagem'));
 const HorusWhatsApp = lazy(() => import("./pages/HorusWhatsApp.tsx"));
 const AdminBlogEdicao = lazy(() => import("./pages/AdminBlogEdicao.tsx"));
 const AdminOmniRouteTeste = lazy(() => import("./pages/AdminOmniRouteTeste.tsx"));
 const AdminFlashcardsEditar = lazy(() => import("./pages/AdminFlashcardsEditar.tsx"));
 const AdminDesignImagens = lazy(() => import("./pages/AdminDesignImagens.tsx"));
-const AdminHeroHome = lazy(() => import("./pages/AdminHeroHome.tsx"));
-const AdminHomeCuriosidades = lazy(() => import("./pages/AdminHomeCuriosidades.tsx"));
 const BibliotecaEditar = lazy(() => import("./pages/BibliotecaEditar.tsx"));
 const BibliotecaCaderno = lazy(() => import("./pages/BibliotecaCaderno.tsx"));
 const AdminLeituraNativa = lazy(() => import("./pages/AdminLeituraNativa.tsx"));
@@ -971,7 +964,6 @@ function AnimatedRoutes() {
           <Route path="/simulados/estatisticas" element={<ProtectedRoute><PageTransition><FerramentasSimuladosEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados/resolver/:id" element={<ProtectedRoute><PageTransition><FerramentasSimuladosResolver /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin/locais" element={<ProtectedRoute><PageTransition><AdminLocais /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition instant><PilulasHome /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/lista" element={<ProtectedRoute><PageTransition instant><PilulasLista /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/deck/:deckId" element={<ProtectedRoute><PageTransition instant><PilulasViewer /></PageTransition></ProtectedRoute>} />
@@ -1116,13 +1108,10 @@ function AnimatedRoutes() {
           <Route path="/biblioteca-offline" element={<ProtectedRoute><PageTransition instant><BibliotecaOffline /></PageTransition></ProtectedRoute>} />
 
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-metricas-ads" element={<ProtectedRoute><PageTransition><AdminMetricasAds /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-instagram-posts" element={<ProtectedRoute><PageTransition><AdminInstagramPosts /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-aulas-interativas" element={<ProtectedRoute><PageTransition><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-cotas-analise" element={<ProtectedRoute><PageTransition><AdminCotasAnalise /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-avaliacao-loja" element={<ProtectedRoute><PageTransition><AdminAvaliacaoLoja /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-ranking-funcoes" element={<ProtectedRoute><PageTransition><AdminRankingFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum-historico" element={<ProtectedRoute><PageTransition><AdminVadeMecumHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-mapeamento-leis" element={<ProtectedRoute><PageTransition><AdminMapeamentoLeis /></PageTransition></ProtectedRoute>} />
@@ -1152,7 +1141,6 @@ function AnimatedRoutes() {
 
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-horus-template" element={<ProtectedRoute><PageTransition><AdminHorusTemplate /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-triagem" element={<ProtectedRoute><PageTransition><AdminTriagem /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />
 
           <Route path="/boletins" element={<ProtectedRoute><PageTransition><BoletinsJuridicos tipo="juridico" /></PageTransition></ProtectedRoute>} />
@@ -1167,8 +1155,6 @@ function AnimatedRoutes() {
           <Route path="/omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-flashcards-editar" element={<ProtectedRoute><PageTransition><AdminFlashcardsEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-design-imagens" element={<ProtectedRoute><PageTransition><AdminDesignImagens /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-hero-home" element={<ProtectedRoute><PageTransition><AdminHeroHome /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-home-curiosidades" element={<ProtectedRoute><PageTransition><AdminHomeCuriosidades /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-editar" element={<ProtectedRoute><PageTransition><BibliotecaEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-leitura-nativa" element={<ProtectedRoute><PageTransition><AdminLeituraNativa /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-audioaulas" element={<ProtectedRoute><PageTransition><AdminAudioaulas /></PageTransition></ProtectedRoute>} />
