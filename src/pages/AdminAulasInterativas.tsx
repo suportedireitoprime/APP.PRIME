@@ -7,8 +7,19 @@ import {
   Sparkles, Play, CheckCircle2, BookOpen, Layers, 
   ArrowLeft, Check, Lock, HelpCircle, Award, 
   RotateCcw, AlertCircle, Unlock, ChevronRight, GraduationCap,
-  ShieldCheck, Compass, Search, X
+  ShieldCheck, Compass, Search, X, Star
 } from 'lucide-react';
+import { AulasMenuAlternancia, AbaAulas } from '@/components/aulas-interativas/AulasMenuAlternancia';
+import { AulasHeroPanel } from '@/components/aulas-interativas/AulasHeroPanel';
+import { AulasTabProgresso } from '@/components/aulas-interativas/AulasTabProgresso';
+import { AulasTabFavoritos } from '@/components/aulas-interativas/AulasTabFavoritos';
+import { AulasTabEstatisticas } from '@/components/aulas-interativas/AulasTabEstatisticas';
+import { 
+  carregarProgressoSupabase, 
+  salvarProgressoSupabase, 
+  carregarFavoritosSupabase, 
+  alternarFavoritoSupabase 
+} from '@/services/aulasSyncService';
 import { HERO_ILLUSTRATIONS } from '@/components/aprender/chunks/aprenderConstants';
 import { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
 import { ModalRevisarFlashcards } from '@/components/aulas-interativas/ModalRevisarFlashcards';
@@ -223,6 +234,43 @@ export default function AdminAulasInterativas() {
   const [aulaAtiva, setAulaAtiva] = useState<AulaItem | null>(null);
   const [aulaPendenteModal, setAulaPendenteModal] = useState<AulaItem | null>(null);
   const [buscaTermo, setBuscaTermo] = useState('');
+  const [abaAtiva, setAbaAtiva] = useState<AbaAulas>('trilhas');
+  const [favoritosIds, setFavoritosIds] = useState<Set<string>>(new Set());
+  const [acertosMap, setAcertosMap] = useState<Record<string, { acertos: number; total: number }>>({});
+
+  // Sincronização inicial com o Supabase (Single Source of Truth)
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const [progData, favData] = await Promise.all([
+          carregarProgressoSupabase(),
+          carregarFavoritosSupabase()
+        ]);
+        if (!mounted) return;
+        setProgressoMap(progData.progressoMap);
+        setFlashcardsConcluidos(progData.flashcardsMap);
+        setQuestoesConcluidas(progData.questoesMap);
+        setAcertosMap(progData.acertosMap);
+        setFavoritosIds(favData);
+      } catch (err) {
+        console.warn('Erro ao inicializar dados Supabase:', err);
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const handleAlternarFavorito = async (aula: AulaItem) => {
+    const isFav = favoritosIds.has(aula.id);
+    const novoStatus = await alternarFavoritoSupabase(aula, isFav);
+    setFavoritosIds(prev => {
+      const next = new Set(prev);
+      if (novoStatus) next.add(aula.id);
+      else next.delete(aula.id);
+      return next;
+    });
+    setToastAviso(novoStatus ? 'Aula adicionada aos favoritos!' : 'Aula removida dos favoritos.');
+  };
   // Função universal de reset de scroll (suporta Window, HTML, Body e #root do Desktop)
   const resetScrollToTop = () => {
     try {
@@ -362,6 +410,13 @@ export default function AdminAulasInterativas() {
     if (!progressoMap[aula.id] || progressoMap[aula.id].etapaAtual === 0) {
       saveStoredProgresso(aula.id, 1);
       setProgressoMap(prev => ({ ...prev, [aula.id]: { etapaAtual: 1 } }));
+      salvarProgressoSupabase({
+        aula,
+        etapaAtual: 1,
+        aulaTerminada: false,
+        flashcardsRevisados: !!flashcardsConcluidos[aula.id],
+        questoesPraticadas: !!questoesConcluidas[aula.id]
+      });
     }
     setAulaAtiva(aula);
     resetScrollToTop();
@@ -371,6 +426,16 @@ export default function AdminAulasInterativas() {
     saveStoredProgresso(aulaId, totalEtapas);
     setProgressoMap(prev => ({ ...prev, [aulaId]: { etapaAtual: totalEtapas } }));
     setToastAviso('Fase 1 (Aula) concluída! Fase 2 (Revisar Flashcards) liberada.');
+    const aula = AULAS_CATALOGO.find(a => a.id === aulaId);
+    if (aula) {
+      salvarProgressoSupabase({
+        aula,
+        etapaAtual: totalEtapas,
+        aulaTerminada: true,
+        flashcardsRevisados: !!flashcardsConcluidos[aulaId],
+        questoesPraticadas: !!questoesConcluidas[aulaId]
+      });
+    }
   };
 
   const abrirRevisarFlashcards = (aula: AulaItem) => {
@@ -389,6 +454,16 @@ export default function AdminAulasInterativas() {
     setStoredBoolean(FLASHCARDS_STORAGE_KEY, aulaId, true);
     setFlashcardsConcluidos(prev => ({ ...prev, [aulaId]: true }));
     setToastAviso('Fase 2 (Flashcards) concluída! Fase 3 (Praticar Questões) liberada.');
+    const aula = AULAS_CATALOGO.find(a => a.id === aulaId);
+    if (aula) {
+      salvarProgressoSupabase({
+        aula,
+        etapaAtual: progressoMap[aulaId]?.etapaAtual || aula.etapas,
+        aulaTerminada: true,
+        flashcardsRevisados: true,
+        questoesPraticadas: !!questoesConcluidas[aulaId]
+      });
+    }
   };
 
   const abrirPraticarQuestoes = (aula: AulaItem) => {
@@ -407,6 +482,18 @@ export default function AdminAulasInterativas() {
     setStoredBoolean(QUESTOES_STORAGE_KEY, aulaId, true);
     setQuestoesConcluidas(prev => ({ ...prev, [aulaId]: true }));
     setToastAviso('Parabéns! 100% da aula concluída (Aula + Flashcards + Questões)!');
+    const aula = AULAS_CATALOGO.find(a => a.id === aulaId);
+    if (aula) {
+      salvarProgressoSupabase({
+        aula,
+        etapaAtual: progressoMap[aulaId]?.etapaAtual || aula.etapas,
+        aulaTerminada: true,
+        flashcardsRevisados: true,
+        questoesPraticadas: true,
+        acertosQuestoes: 10,
+        totalQuestoes: 10
+      });
+    }
   };
 
   // Botão voltar hierárquico
@@ -565,90 +652,80 @@ export default function AdminAulasInterativas() {
           </div>
 
           <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
-            {/* Banner Hero Majestoso Estilo AprenderHeroProgress (Screenshot 2) */}
-            <section
-              className="relative isolate overflow-hidden rounded-2xl border border-amber-500/25 shadow-xl transition-all"
-              style={{
-                background: 'linear-gradient(135deg, #1f1a0b 0%, #171206 55%, #0d0a02 100%)',
-              }}
-            >
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_60%)]" />
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.25),transparent_65%)]" />
+            {/* Painel Hero das Trilhas de Aprendizado */}
+            <AulasHeroPanel
+              subtitulo="SUA TRILHA DE APRENDIZADO"
+              titulo="AULAS"
+              tituloDestaque="EM TRILHAS"
+              descricao="Slides interativos narrados, flashcards de retenção e questões por matéria."
+              porcentagem={porcentagemGeral}
+              corDestaque="#fbbf24"
+              metricas={[
+                { label: 'Disciplinas', valor: DISCIPLINAS_CATALOGO.length },
+                { label: 'Aulas', valor: totalAulasGeral },
+                { label: 'Concluídas', valor: `${ciclosGeralCompletos}/${totalAulasGeral}` }
+              ]}
+            />
 
-              {/* Personagem Animado no Canto Direito */}
-              <div className="pointer-events-none absolute inset-y-0 right-0 w-[42%] sm:w-[34%] overflow-hidden" aria-hidden="true">
-                {HERO_ILLUSTRATIONS.map((url, i) => (
-                  <img
-                    key={url}
-                    src={url}
-                    alt=""
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                    decoding="async"
-                    className="absolute inset-y-0 right-0 h-full w-auto object-contain object-right transition-opacity duration-[1400ms] ease-in-out"
-                    style={{ opacity: i === heroIdx ? 1 : 0 }}
-                  />
-                ))}
-                <div className="absolute inset-0 opacity-60 mix-blend-overlay" style={{ background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.45) 0%, transparent 100%)' }} />
-                <div className="absolute inset-y-0 left-0 w-2/3" style={{ background: 'linear-gradient(to right, #1f1a0b, transparent)' }} />
-              </div>
+            {/* Menu de Alternância (Trilhas, Progresso, Favoritos, Estatísticas) */}
+            <AulasMenuAlternancia
+              abaAtiva={abaAtiva}
+              onSelecionarAba={setAbaAtiva}
+              corDestaque="#fbbf24"
+              totalFavoritos={favoritosIds.size}
+              porcentagemGeral={porcentagemGeral}
+            />
 
-              <div className="relative p-4 sm:p-5">
-                <div className="flex items-start gap-3.5">
-                  {/* Anel Circular de Progresso SVG */}
-                  <div className="relative shrink-0 w-[72px] h-[72px]">
-                    <svg width={72} height={72} className="-rotate-90">
-                      <circle cx={36} cy={36} r={32.5} stroke="rgba(255,255,255,0.15)" strokeWidth={7} fill="none" />
-                      <circle
-                        cx={36}
-                        cy={36}
-                        r={32.5}
-                        stroke="#fbbf24"
-                        strokeWidth={7}
-                        strokeLinecap="round"
-                        fill="none"
-                        strokeDasharray={204.2}
-                        strokeDashoffset={204.2 - (204.2 * Math.min(100, Math.max(0, porcentagemGeral))) / 100}
-                        style={{ transition: 'stroke-dashoffset 600ms ease' }}
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                      <span className="text-sm font-black text-white leading-none">{porcentagemGeral}%</span>
-                      <span className="text-[8px] uppercase tracking-wider text-amber-400 font-bold leading-none mt-0.5">PROGRESSO</span>
-                    </div>
-                  </div>
+            {abaAtiva === 'progresso' && (
+              <AulasTabProgresso
+                materias={MATERIAS_CATALOGO}
+                aulas={AULAS_CATALOGO}
+                calcularProgressoCiclo={calcularProgressoCiclo}
+                onIniciarAula={iniciarAula}
+                onSelecionarMateria={(matId) => {
+                  const mat = MATERIAS_CATALOGO.find(m => m.id === matId);
+                  if (mat) {
+                    setDisciplinaSelecionadaId(mat.disciplinaId);
+                    setMateriaSelecionadaId(mat.id);
+                    setAbaAtiva('trilhas');
+                    resetScrollToTop();
+                  }
+                }}
+                corDestaque="#fbbf24"
+              />
+            )}
 
-                  {/* Textos Informativos */}
-                  <div className="min-w-0 flex-1 pr-16 sm:pr-24">
-                    <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-amber-400 block">
-                      SUA TRILHA DE APRENDIZADO
-                    </span>
-                    <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white leading-tight font-sans tracking-wide mt-0.5">
-                      AULAS <span className="italic text-amber-400">EM TRILHAS</span>
-                    </h2>
-                    <p className="text-xs text-zinc-300 mt-1 line-clamp-2 max-w-md leading-relaxed">
-                      Slides interativos narrados, flashcards de retenção e questões por matéria.
-                    </p>
-                  </div>
-                </div>
+            {abaAtiva === 'favoritos' && (
+              <AulasTabFavoritos
+                aulasFavoritas={AULAS_CATALOGO.filter(a => favoritosIds.has(a.id))}
+                onIniciarAula={iniciarAula}
+                onAlternarFavorito={handleAlternarFavorito}
+                corDestaque="#fbbf24"
+                onVoltarParaTrilhas={() => setAbaAtiva('trilhas')}
+              />
+            )}
 
-                {/* Métricas do Rodapé do Hero */}
-                <div className="mt-4 pt-3 border-t border-white/10 grid grid-cols-3 gap-2 text-center">
-                  <div className="flex flex-col">
-                    <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Disciplinas</span>
-                    <span className="text-sm sm:text-base font-black text-white mt-0.5">{DISCIPLINAS_CATALOGO.length}</span>
-                  </div>
-                  <div className="flex flex-col border-x border-white/10">
-                    <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Aulas</span>
-                    <span className="text-sm sm:text-base font-black text-white mt-0.5">{totalAulasGeral}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[9px] sm:text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Concluídas</span>
-                    <span className="text-sm sm:text-base font-black text-amber-400 mt-0.5">{ciclosGeralCompletos}/{totalAulasGeral}</span>
-                  </div>
-                </div>
-              </div>
-            </section>
+            {abaAtiva === 'estatisticas' && (
+              <AulasTabEstatisticas
+                materias={MATERIAS_CATALOGO}
+                aulas={AULAS_CATALOGO}
+                calcularProgressoCiclo={calcularProgressoCiclo}
+                acertosMap={acertosMap}
+                corDestaque="#fbbf24"
+                onSelecionarMateria={(matId) => {
+                  const mat = MATERIAS_CATALOGO.find(m => m.id === matId);
+                  if (mat) {
+                    setDisciplinaSelecionadaId(mat.disciplinaId);
+                    setMateriaSelecionadaId(mat.id);
+                    setAbaAtiva('trilhas');
+                    resetScrollToTop();
+                  }
+                }}
+              />
+            )}
 
+            {abaAtiva === 'trilhas' && (
+              <>
             {/* Barra de Pesquisa Nível 1 */}
             <div className="relative w-full">
               <div className="relative flex items-center w-full bg-white/[0.04] hover:bg-white/[0.06] border border-white/10 focus-within:border-amber-400/60 focus-within:bg-white/[0.07] rounded-xl px-3.5 py-2.5 sm:py-3 transition-all shadow-lg backdrop-blur-md">
@@ -945,6 +1022,8 @@ export default function AdminAulasInterativas() {
                 )}
               </div>
             </div>
+              </>
+            )}
           </div>
         </>
         );
@@ -996,19 +1075,75 @@ export default function AdminAulasInterativas() {
             </div>
 
             <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
-              {/* Título Principal Fora do Cabeçalho (Abaixo do Botão de Voltar) */}
-              <div className="flex flex-col gap-1">
-                <span 
-                  className="text-[11px] sm:text-xs font-black uppercase tracking-widest"
-                  style={{ color: disciplinaAtual.corDestaque }}
-                >
-                  TRILHA DE APRENDIZADO
-                </span>
-                <h1 className="text-2xl xs:text-3xl sm:text-4xl font-serif font-black text-white tracking-tight leading-tight">
-                  {disciplinaAtual.nome}
-                </h1>
-              </div>
+              {/* Painel Hero Temático da Área / Disciplina (Pedido pelo Usuário) */}
+              <AulasHeroPanel
+                subtitulo="TRILHA DE APRENDIZADO DA ÁREA"
+                titulo={disciplinaAtual.nome}
+                descricao={disciplinaAtual.descricao}
+                porcentagem={pctDisc}
+                corDestaque={disciplinaAtual.corDestaque}
+                corFundo={disciplinaAtual.corFundoCard}
+                capaUrl={disciplinaAtual.capaHeroUrl}
+                metricas={[
+                  { label: 'Matérias', valor: materiasDaDisc.length },
+                  { label: 'Aulas', valor: totalAulasDisc },
+                  { label: 'Concluídas', valor: `${ciclosDiscCompletos}/${totalAulasDisc}` }
+                ]}
+              />
 
+              {/* Menu de Alternância Temático da Disciplina */}
+              <AulasMenuAlternancia
+                abaAtiva={abaAtiva}
+                onSelecionarAba={setAbaAtiva}
+                corDestaque={disciplinaAtual.corDestaque}
+                totalFavoritos={aulasDaDisc.filter(a => favoritosIds.has(a.id)).length}
+                porcentagemGeral={pctDisc}
+              />
+
+              {abaAtiva === 'progresso' && (
+                <AulasTabProgresso
+                  disciplinaAtual={disciplinaAtual}
+                  materias={materiasDaDisc}
+                  aulas={aulasDaDisc}
+                  calcularProgressoCiclo={calcularProgressoCiclo}
+                  onIniciarAula={iniciarAula}
+                  onSelecionarMateria={(matId) => {
+                    setMateriaSelecionadaId(matId);
+                    setAbaAtiva('trilhas');
+                    resetScrollToTop();
+                  }}
+                  corDestaque={disciplinaAtual.corDestaque}
+                />
+              )}
+
+              {abaAtiva === 'favoritos' && (
+                <AulasTabFavoritos
+                  aulasFavoritas={aulasDaDisc.filter(a => favoritosIds.has(a.id))}
+                  onIniciarAula={iniciarAula}
+                  onAlternarFavorito={handleAlternarFavorito}
+                  corDestaque={disciplinaAtual.corDestaque}
+                  onVoltarParaTrilhas={() => setAbaAtiva('trilhas')}
+                />
+              )}
+
+              {abaAtiva === 'estatisticas' && (
+                <AulasTabEstatisticas
+                  disciplinaAtual={disciplinaAtual}
+                  materias={materiasDaDisc}
+                  aulas={aulasDaDisc}
+                  calcularProgressoCiclo={calcularProgressoCiclo}
+                  acertosMap={acertosMap}
+                  corDestaque={disciplinaAtual.corDestaque}
+                  onSelecionarMateria={(matId) => {
+                    setMateriaSelecionadaId(matId);
+                    setAbaAtiva('trilhas');
+                    resetScrollToTop();
+                  }}
+                />
+              )}
+
+              {abaAtiva === 'trilhas' && (
+                <>
               {/* Barra de Pesquisa Nível 2 */}
               <div className="relative w-full">
                 <div 
@@ -1292,6 +1427,8 @@ export default function AdminAulasInterativas() {
                   )}
                 </div>
               </div>
+                </>
+              )}
             </div>
           </>
         );
@@ -1598,6 +1735,23 @@ export default function AdminAulasInterativas() {
                                 >
                                   {aula.numeroAula}
                                 </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAlternarFavorito(aula);
+                                  }}
+                                  className={cn(
+                                    "p-1 rounded-full transition-all shrink-0 active:scale-90 ml-1.5",
+                                    favoritosIds.has(aula.id)
+                                      ? "text-amber-400 bg-amber-400/20"
+                                      : "text-zinc-500 hover:text-zinc-200 hover:bg-white/10"
+                                  )}
+                                  title={favoritosIds.has(aula.id) ? "Remover dos favoritos" : "Salvar nos favoritos"}
+                                  aria-label="Favoritar aula"
+                                >
+                                  <Star className={cn("w-3.5 h-3.5", favoritosIds.has(aula.id) ? "fill-current" : "")} />
+                                </button>
                                 
                               </div>
 
