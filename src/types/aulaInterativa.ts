@@ -32,4 +32,5 @@ export interface AulaData {
   imagens: Record<string, string>;
   audioBaseUrl?: string;
   urlHtmlR2?: string;
+  urlJsonR2?: string;
 }

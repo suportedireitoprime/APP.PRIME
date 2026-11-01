@@ -11,6 +11,7 @@ export interface AulaItem {
   audioQtd: number;
   imagensQtd: number;
   urlHtmlR2: string;
+  urlJsonR2?: string;
   capaUrl: string;
   status: 'pronto' | 'pendente';
   disciplinaId: string;

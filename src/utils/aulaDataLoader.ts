@@ -137,6 +137,51 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
     return aulaCache[aula.id];
   }
 
+  // 3. Carregar JSON estruturado do R2 (0ms parsing, entrega ultra-rápida)
+  if (aula.urlJsonR2 && aula.urlJsonR2.startsWith('http')) {
+    try {
+      const res = await fetch(aula.urlJsonR2);
+      if (res.ok) {
+        const json = await res.json();
+        const rawEtapas = json.etapas || json.slides || [];
+        if (Array.isArray(rawEtapas) && rawEtapas.length > 0) {
+          const slides: SlideItem[] = rawEtapas.map((e: any) => ({
+            tipo: e.tipo || 'Conteúdo',
+            titulo: e.titulo || '',
+            kicker: e.kicker || e.tipo || '',
+            corpo: e.corpo || (e.texto ? `<p>${e.texto}</p>` : ''),
+            narr: e.narr || e.narracao || '',
+            imgUrl: e.imgUrl || e.imagem || '',
+            questao: e.questao,
+            opcoes: e.opcoes,
+            correta: e.certa !== undefined ? e.certa : e.correta,
+            frente: e.frente,
+            verso: e.verso,
+            feedback: e.feedback,
+            intro: e.intro,
+            pares: e.pares
+          }));
+
+          const data: AulaData = {
+            aulaId: aula.id,
+            titulo: json.aula || json.titulo || aula.titulo,
+            disciplinaId: aula.disciplinaId,
+            totalEtapas: slides.length,
+            slides,
+            imagens: { capa: aula.capaUrl || '' },
+            urlJsonR2: aula.urlJsonR2,
+            urlHtmlR2: aula.urlHtmlR2
+          };
+          aulaCache[aula.id] = data;
+          return data;
+        }
+      }
+    } catch (e) {
+      console.warn(`Falha ao baixar JSON do R2 para ${aula.id}:`, e);
+    }
+  }
+
+  // 4. Carregar via HTML no R2 (Fallback robusto)
   if (aula.urlHtmlR2 && aula.urlHtmlR2.startsWith('http')) {
     try {
       const res = await fetch(aula.urlHtmlR2);
