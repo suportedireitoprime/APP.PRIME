@@ -151,7 +151,6 @@ const AdminAtualizacao = () => {
       desc: 'Push notifications no Android exigem Firebase. Envie o google-services.json e todos os ícones/splash pela nova tela de config nativa. O workflow injeta tudo antes do build.',
       icon: Bell,
       actions: [
-        { label: 'Abrir tela de config nativa', href: '/admin-native-assets' },
         { label: 'Firebase Console', href: 'https://console.firebase.google.com/' },
         { label: 'FCM Android setup (docs)', href: 'https://firebase.google.com/docs/cloud-messaging/android/client' },
       ],

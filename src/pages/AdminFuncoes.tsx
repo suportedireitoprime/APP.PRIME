@@ -30,29 +30,22 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-metricas-ads': () => import('./AdminMetricasAds'),
 
   '/admin-atualizacao': () => import('./AdminAtualizacao'),
-  '/admin-native-assets': () => import('./AdminNativeAssets'),
-  '/admin-handoff': () => import('./AdminHandoffIA'),
-  '/admin-transferencia-app': () => import('./AdminTransferenciaApp'),
-  '/admin-secrets': () => import('./AdminSecretsDownload'),
   '/admin-blog-edicao': () => import('./AdminBlogEdicao'),
-  '/admin-omniroute-teste': () => import('./AdminOmniRouteTeste'),
+  '/admin-omniroute': () => import('./AdminOmniRouteTeste'),
   '/admin-design-imagens': () => import('./AdminDesignImagens'),
   '/admin-avaliacao-loja': () => import('./AdminAvaliacaoLoja'),
   '/admin-hero-home': () => import('./AdminHeroHome'),
   '/admin-home-curiosidades': () => import('./AdminHomeCuriosidades'),
-  '/admin-overlay-frases': () => import('./AdminOverlayFrases'),
   '/admin/resumo-livro-audio': () => import('./AdminResumoLivroAudioEditar'),
   '/admin/pilulas': () => import('./AdminPilulas'),
   
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
   '/admin-assinantes': () => import('./AdminAssinantes'),
-  '/admin-assinantes-asaas': () => import('./AdminAssinantesAsaas'),
   '/admin-usuarios': () => import('./AdminUsuarios'),
   '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-simulados': () => import('./AdminSimulados'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
-  '/admin-geracao-funcoes': () => import('./AdminGeracaoFuncoes'),
   '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
   '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
   '/admin-radares-leis': () => import('./AdminRadaresLeis'),
@@ -174,16 +167,7 @@ const CATEGORIES: Category[] = [
       { id: 'cotas-analise', label: 'Cotas Análise', icon: Gauge, desc: 'Quem usou todas as cotas, ranking e bloqueios por função', route: '/admin-cotas-analise' },
     ],
   },
-  {
-    id: 'assinantes-asaas-api',
-    title: 'Assinantes Asaas',
-    desc: 'Lista de assinantes do Asaas via API',
-    icon: Users,
-    route: '/admin-assinantes-asaas',
-    items: [
-      { id: 'admin-assinantes-asaas', label: 'Assinantes API Asaas', icon: Users, desc: 'Lista de assinantes buscando direto do Asaas', route: '/admin-assinantes-asaas' },
-    ],
-  },
+
   {
     id: 'ads-metrics',
     title: 'Métricas Google Ads',
@@ -227,10 +211,9 @@ const CATEGORIES: Category[] = [
     icon: Newspaper,
     items: [
       // Conteúdo & IA
-      { id: 'omniroute-teste', label: 'Teste OmniRoute', icon: Sparkles, desc: 'Testes de IA via OmniRoute: Texto, Áudio e Imagem com fallback', route: '/admin-omniroute-teste' },
+      { id: 'omniroute-admin', label: 'OmniRoute (Gateway de IA)', icon: Sparkles, desc: 'Central unificada de modelos e chaves de IA do aplicativo', route: '/admin-omniroute' },
       { id: 'flashcards-edicao', label: 'Flashcards Editar', icon: Layers, desc: 'IA, bibliotecas, revisão e stats', route: '/admin-flashcards-editar' },
       { id: 'blog-edicao', label: 'Blog Editar', icon: Newspaper, desc: 'Geração automática de artigos + push', route: '/admin-blog-edicao' },
-      { id: 'overlay-frases', label: 'Frases Editar', icon: Quote, desc: 'Frases + vozes do overlay de geração', route: '/admin-overlay-frases' },
       { id: 'design-imagens', label: 'Design de Imagens', icon: Palette, desc: 'Presets de estilo (prompt travado) por categoria', route: '/admin-design-imagens' },
       { id: 'hero-home', label: 'Imagens Início do App', icon: ImageIcon, desc: 'Personagens do painel amarelo + animações de entrada', route: '/admin-hero-home' },
       { id: 'home-curiosidades', label: 'Curiosidades da Home', icon: Lightbulb, desc: 'Cards leves misturados aos stats, com capa vazada IA', route: '/admin-home-curiosidades' },
@@ -269,7 +252,6 @@ const CATEGORIES: Category[] = [
       { id: 'admin-questoes', label: 'Questões — Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
       { id: 'admin-erros-questoes', label: 'Reportes de Erro', icon: ShieldAlert, desc: 'Visualizar e resolver erros em questões reportados por alunos', route: '/admin-erros-questoes' },
       { id: 'admin-simulados', label: 'Simulados — Editar', icon: FileSpreadsheet, desc: 'Importar simulados, gabaritos e provas do Google Sheets', route: '/admin-simulados' },
-      { id: 'admin-geracao-funcoes', label: 'Geração de Funções (IA)', icon: Sparkles, desc: 'Gerar resumos, grifos e leis secas em lote para questões usando IA', route: '/admin-geracao-funcoes' },
     ],
   },
   {
@@ -356,21 +338,10 @@ const CATEGORIES: Category[] = [
     icon: RefreshCcw,
     items: [
       { id: 'admin-atualizacao', label: 'Atualizar app no GitHub', icon: GitBranch, desc: 'Guia completo: repositório, secrets e build', route: '/admin-atualizacao' },
-      { id: 'admin-native-assets', label: 'Ícone, Splash e Firebase', icon: ImageIcon, desc: 'Upload de ícones, splash e google-services.json', route: '/admin-native-assets' },
-      { id: 'admin-handoff', label: 'Handoff para IA (Remix)', icon: FileText, desc: 'Documento pronto pra colar em qualquer IA após remix', route: '/admin-handoff' },
-      { id: 'admin-transferencia-app', label: 'Transferência de app', icon: FileSignature, desc: 'Todos os IDs que precisam trocar para clonar o app em outra marca', route: '/admin-transferencia-app' },
       { id: 'github-abrir', label: 'Abrir repositório vinculado', icon: Github, desc: 'Vai direto pro repositório configurado' },
     ],
   },
-  {
-    id: 'secrets',
-    title: 'Secrets & Credenciais',
-    desc: 'Keystore e credenciais Android',
-    icon: Lock,
-    items: [
-      { id: 'admin-secrets', label: 'Secrets Android (download)', icon: KeyRound, desc: 'Baixar keystore e senhas como .txt', route: '/admin-secrets' },
-    ],
-  },
+
   {
     id: 'configuracoes',
     title: 'Configurações',
