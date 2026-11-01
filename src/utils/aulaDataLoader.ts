@@ -4,7 +4,7 @@ import { AULAS_CONTEUDO_REAL } from '@/data/aulasConteudoRealData';
 
 const aulaCache: Record<string, AulaData> = {};
 
-export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string): AulaData {
+export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string, baseFolder?: string): AulaData {
   let imagens: Record<string, string> = {};
   const imgMatch = html.match(/var\s+IMG\s*=\s*(\{[\s\S]*?\});/);
   if (imgMatch) {
@@ -19,6 +19,9 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
   const audioMatch = html.match(/function\s+audioSrc\s*\(\s*i\s*\)\s*\{\s*return\s*["']([^"']+)["']/);
   if (audioMatch) {
     audioBaseUrl = audioMatch[1];
+    if (audioBaseUrl.startsWith('assets/') && baseFolder) {
+      audioBaseUrl = `${baseFolder}/${audioBaseUrl}`;
+    }
   }
 
   let slides: SlideItem[] = [];
@@ -44,6 +47,9 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
     let resolvedImg = s.imgUrl;
     if (!resolvedImg && s.img && imagens[s.img]) {
       resolvedImg = imagens[s.img];
+    }
+    if (resolvedImg && resolvedImg.startsWith('assets/') && baseFolder) {
+      resolvedImg = `${baseFolder}/${resolvedImg}`;
     }
     return {
       ...s,
@@ -132,10 +138,15 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
     return AULAS_CONTEUDO_REAL[aula.id];
   }
 
-  // 2. Cache em memória da sessão
-  if (aulaCache[aula.id]) {
+  // 2. Cache em memória da sessão (ignora cache se for fallback antigo <= 5 slides)
+  if (aulaCache[aula.id] && aulaCache[aula.id].totalEtapas > 5) {
     return aulaCache[aula.id];
   }
+
+  // Base URL da pasta desta aula no Cloudflare R2
+  const baseFolder = aula.urlJsonR2
+    ? aula.urlJsonR2.replace(/\/aula\.json.*$/, '')
+    : (aula.urlHtmlR2 ? aula.urlHtmlR2.replace(/\/aula\.html.*$/, '') : '');
 
   // 3. Carregar JSON estruturado do R2 (0ms parsing, entrega ultra-rápida)
   if (aula.urlJsonR2 && aula.urlJsonR2.startsWith('http')) {
@@ -145,22 +156,32 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
         const json = await res.json();
         const rawEtapas = json.etapas || json.slides || [];
         if (Array.isArray(rawEtapas) && rawEtapas.length > 0) {
-          const slides: SlideItem[] = rawEtapas.map((e: any) => ({
-            tipo: e.tipo || 'Conteúdo',
-            titulo: e.titulo || '',
-            kicker: e.kicker || e.tipo || '',
-            corpo: e.corpo || (e.texto ? `<p>${e.texto}</p>` : ''),
-            narr: e.narr || e.narracao || '',
-            imgUrl: e.imgUrl || e.imagem || '',
-            questao: e.questao,
-            opcoes: e.opcoes,
-            correta: e.certa !== undefined ? e.certa : e.correta,
-            frente: e.frente,
-            verso: e.verso,
-            feedback: e.feedback,
-            intro: e.intro,
-            pares: e.pares
-          }));
+          const slides: SlideItem[] = rawEtapas.map((e: any, idx: number) => {
+            let img = e.imgUrl || e.imagem || '';
+            if (!img && (e.img === 'capa' || idx === 0)) {
+              img = aula.capaUrl || '';
+            } else if (img && img.startsWith('assets/') && baseFolder) {
+              img = `${baseFolder}/${img}`;
+            }
+
+            return {
+              tipo: e.tipo || 'Conteúdo',
+              titulo: e.titulo || '',
+              kicker: e.kicker || e.tipo || '',
+              corpo: e.corpo || (e.texto ? `<p>${e.texto}</p>` : ''),
+              narr: e.narr || e.narracao || '',
+              imgUrl: img,
+              img: e.img,
+              questao: e.questao,
+              opcoes: e.opcoes,
+              correta: e.certa !== undefined ? e.certa : e.correta,
+              frente: e.frente,
+              verso: e.verso,
+              feedback: e.feedback,
+              intro: e.intro,
+              pares: e.pares
+            };
+          });
 
           const data: AulaData = {
             aulaId: aula.id,
@@ -169,6 +190,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
             totalEtapas: slides.length,
             slides,
             imagens: { capa: aula.capaUrl || '' },
+            audioBaseUrl: baseFolder ? `${baseFolder}/assets/audio/s` : undefined,
             urlJsonR2: aula.urlJsonR2,
             urlHtmlR2: aula.urlHtmlR2
           };
@@ -187,7 +209,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
       const res = await fetch(aula.urlHtmlR2);
       if (res.ok) {
         const html = await res.text();
-        const data = parseAulaHtml(html, aula.id, aula.disciplinaId);
+        const data = parseAulaHtml(html, aula.id, aula.disciplinaId, baseFolder);
         if (data.slides && data.slides.length > 0) {
           aulaCache[aula.id] = data;
           return data;

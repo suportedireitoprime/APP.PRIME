@@ -96,3 +96,4 @@ console.log(`Aulas associadas com URLs do R2: ${matchedCount} de ${aulas.length}
 const newContent = before + JSON.stringify(updatedAulas, null, 2) + ';\n';
 fs.writeFileSync(catalogPath, newContent, 'utf8');
 console.log('Catálogo src/data/aulasInterativasCatalogoCompleto.ts atualizado com sucesso!');
+
