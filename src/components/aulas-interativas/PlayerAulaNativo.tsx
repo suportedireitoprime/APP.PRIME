@@ -308,6 +308,9 @@ export function PlayerAulaNativo({
     }
     if (!rawHtml.trim()) return '';
 
+    // Eliminar tags de marcas d'água quebradas/relativas que causam risco vertical na tela
+    rawHtml = rawHtml.replace(/<img[^>]*class=["'][^"']*wm[^"']*["'][^>]*>/gi, '');
+
     if (!grifoAtivo || !tocando || karaIdx < 0 || !frasesNarr[karaIdx]) {
       return rawHtml;
     }
@@ -829,7 +832,12 @@ export function PlayerAulaNativo({
           position: relative;
           overflow: hidden;
         }
-        .aula-html-tipografia .box.exemplo .wm {
+        .aula-html-tipografia .box.exemplo .wm,
+        .aula-html-tipografia .wm,
+        .aula-html-tipografia img.wm {
+          display: none !important;
+        }
+        .aula-html-tipografia .box.exemplo .wm_disabled {
           position: absolute;
           top: 0;
           right: 0;
@@ -1039,9 +1047,17 @@ export function PlayerAulaNativo({
               >
                 {disciplinaNome} · {aula.numeroAula}
               </span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setDrawerAberto(true);
+                }}
+                className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-bold border border-amber-500/30 shrink-0 hover:bg-amber-500/25 transition active:scale-95 cursor-pointer"
+                title="Abrir sumário de etapas"
+              >
                 {idx + 1} de {total}
-              </span>
+              </button>
             </div>
             <h2 className="text-xs sm:text-sm font-bold text-white truncate font-serif leading-tight">
               {aula.titulo}
@@ -1708,19 +1724,7 @@ export function PlayerAulaNativo({
             )}
           </button>
 
-          {/* Botão do Mini-Sumário de Etapas (Drawer) */}
-          <button
-            type="button"
-            onClick={() => {
-              haptic.light();
-              setDrawerAberto(true);
-            }}
-            className="w-12 h-14 sm:w-[58px] sm:h-[58px] rounded-2xl border border-white/20 bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-amber-300 flex items-center justify-center transition active:scale-95 shadow-md shrink-0"
-            title="Sumário de Etapas da Aula"
-            aria-label="Abrir sumário de etapas"
-          >
-            <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.2} />
-          </button>
+          
         </div>
       </footer>
 
