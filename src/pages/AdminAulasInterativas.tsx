@@ -273,15 +273,25 @@ export default function AdminAulasInterativas() {
   };
   // Função universal de reset de scroll (suporta Window, HTML, Body e #root do Desktop)
   const resetScrollToTop = () => {
-    try {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      if (document.documentElement) document.documentElement.scrollTop = 0;
-      if (document.body) document.body.scrollTop = 0;
-      const root = document.getElementById('root');
-      if (root) {
-        root.scrollTop = 0;
-      }
-    } catch {}
+    const doScroll = () => {
+      try {
+        window.scrollTo(0, 0);
+        if (document.documentElement) document.documentElement.scrollTop = 0;
+        if (document.body) document.body.scrollTop = 0;
+        const root = document.getElementById('root');
+        if (root) root.scrollTop = 0;
+        const main = document.querySelector('main');
+        if (main) main.scrollTop = 0;
+        document.querySelectorAll('main, [class*="overflow"]').forEach(el => {
+          if (el.scrollTop > 0) el.scrollTop = 0;
+        });
+      } catch {}
+    };
+    doScroll();
+    requestAnimationFrame(doScroll);
+    setTimeout(doScroll, 10);
+    setTimeout(doScroll, 50);
+    setTimeout(doScroll, 150);
   };
 
   // Garante início no topo absoluto do cabeçalho em todas as transições (Mobile & Desktop)
@@ -1497,6 +1507,25 @@ export default function AdminAulasInterativas() {
                   <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
                 </button>
 
+                {/* Caminho em Setas Sempre Visível no Topo Fixo */}
+                <div className="min-w-0 flex-1 flex items-center gap-1.5 text-xs truncate">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMateriaSelecionadaId(null);
+                      resetScrollToTop();
+                    }}
+                    className="font-bold truncate hover:underline transition shrink-0"
+                    style={{ color: disciplinaAtual.corDestaque }}
+                  >
+                    {disciplinaAtual.nome}
+                  </button>
+                  <ChevronRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                  <span className="text-white font-bold truncate">
+                    {materiaAtual.titulo}
+                  </span>
+                </div>
+
                 {/* Badge do total de aulas disponíveis */}
                 <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
                   <BookOpen className="w-3.5 h-3.5" style={{ color: disciplinaAtual.corDestaque }} />
@@ -1508,46 +1537,6 @@ export default function AdminAulasInterativas() {
             </div>
 
             <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
-              {/* Breadcrumb em Setas: Disciplina > Matéria (Pedido pelo Usuário) */}
-              <nav 
-                aria-label="Caminho de navegação"
-                className="flex items-center flex-wrap gap-1.5 text-xs font-medium select-none"
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMateriaSelecionadaId(null);
-                    setDisciplinaSelecionadaId(null);
-                    resetScrollToTop();
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/10 text-zinc-400 hover:text-white border border-white/10 transition-all text-[11px] sm:text-xs font-semibold active:scale-95"
-                >
-                  Trilhas
-                </button>
-
-                <ChevronRight className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMateriaSelecionadaId(null);
-                    resetScrollToTop();
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.05] hover:bg-white/10 border border-white/10 transition-all flex items-center gap-1 text-[11px] sm:text-xs font-bold active:scale-95"
-                  style={{ color: disciplinaAtual.corDestaque }}
-                  title={`Voltar para matérias de ${disciplinaAtual.nome}`}
-                >
-                  <span>{disciplinaAtual.nome}</span>
-                </button>
-
-                <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: disciplinaAtual.corDestaque }} />
-
-                <div className="px-2.5 py-1 rounded-lg bg-white/[0.08] text-white border border-white/15 text-[11px] sm:text-xs font-bold truncate max-w-[240px] sm:max-w-none flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: disciplinaAtual.corDestaque }} />
-                  <span className="truncate">{materiaAtual.titulo}</span>
-                </div>
-              </nav>
-
               {/* Título Principal Fora do Cabeçalho com Risquinho Temático */}
               <div className="flex items-start gap-3 sm:gap-4">
                 <div 
@@ -1566,6 +1555,46 @@ export default function AdminAulasInterativas() {
                   </h1>
                 </div>
               </div>
+
+              {/* Breadcrumb em Setas: Exatamente Antes do Botão de Pesquisar (Pedido pelo Usuário) */}
+              <nav 
+                aria-label="Caminho de navegação"
+                className="flex items-center flex-wrap gap-1.5 text-xs font-medium select-none"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMateriaSelecionadaId(null);
+                    setDisciplinaSelecionadaId(null);
+                    resetScrollToTop();
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/10 transition-all text-xs font-semibold active:scale-95 shadow-sm"
+                >
+                  Trilhas
+                </button>
+
+                <ChevronRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMateriaSelecionadaId(null);
+                    resetScrollToTop();
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/10 border border-white/15 transition-all flex items-center gap-1.5 text-xs font-bold active:scale-95 shadow-sm"
+                  style={{ color: disciplinaAtual.corDestaque }}
+                  title={`Voltar para matérias de ${disciplinaAtual.nome}`}
+                >
+                  <span>{disciplinaAtual.nome}</span>
+                </button>
+
+                <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: disciplinaAtual.corDestaque }} />
+
+                <div className="px-3 py-1.5 rounded-xl bg-white/[0.09] text-white border border-white/20 text-xs font-bold truncate max-w-[260px] sm:max-w-none flex items-center gap-2 shadow-sm">
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: disciplinaAtual.corDestaque }} />
+                  <span className="truncate">{materiaAtual.titulo}</span>
+                </div>
+              </nav>
 
               {/* Barra de Pesquisa Nível 3 */}
               <div className="relative w-full">
