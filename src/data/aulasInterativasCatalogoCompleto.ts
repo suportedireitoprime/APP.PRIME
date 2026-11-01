@@ -31,392 +31,392 @@ export interface MateriaItem {
 }
 
 export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
-  {
-    "id": "penal-mat-01",
-    "disciplinaId": "penal",
-    "numeroMateria": "01. CRIMES CONTRA A FAMÍLIA",
-    "titulo": "Crimes Contra a Família",
-    "subtitulo": "Módulo 01 · 11 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Família.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_01_-_crimes_contra_a_familia.webp"
-  },
-  {
-    "id": "penal-mat-02",
-    "disciplinaId": "penal",
-    "numeroMateria": "02. CRIMINOLOGIA",
-    "titulo": "Criminologia",
-    "subtitulo": "Módulo 02 · 6 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Criminologia.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_02_-_evolucao_historica_periodo_pre-cientifico.webp"
-  },
-  {
-    "id": "penal-mat-03",
-    "disciplinaId": "penal",
-    "numeroMateria": "03. DIREITO PENAL DO INIMIGO",
-    "titulo": "Direito Penal do Inimigo",
-    "subtitulo": "Módulo 03 · 7 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito Penal do Inimigo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp"
-  },
-  {
-    "id": "penal-mat-04",
-    "disciplinaId": "penal",
-    "numeroMateria": "04. CRÍTICA AO DIREITO PENAL DO INIMIGO",
-    "titulo": "Crítica ao Direito Penal do Inimigo",
-    "subtitulo": "Módulo 04 · 7 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crítica ao Direito Penal do Inimigo.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/04._critica_ao_direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp"
-  },
-  {
+{
     "id": "penal-mat-05",
     "disciplinaId": "penal",
-    "numeroMateria": "05. NOÇÕES GERAIS DE DIREITO PENAL",
+    "numeroMateria": "01. NOÇÕES GERAIS DE DIREITO PENAL",
     "titulo": "Noções Gerais de Direito Penal",
-    "subtitulo": "Módulo 05 · 10 aulas",
+    "subtitulo": "Módulo 01 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Noções Gerais de Direito Penal.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/06._nocoes_gerais_de_direito_penal_-_aula_01_-_direito_penal.webp"
   },
   {
     "id": "penal-mat-06",
     "disciplinaId": "penal",
-    "numeroMateria": "06. PRINCÍPIOS PENAIS",
+    "numeroMateria": "02. PRINCÍPIOS PENAIS",
     "titulo": "Princípios Penais",
-    "subtitulo": "Módulo 06 · 9 aulas",
+    "subtitulo": "Módulo 02 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Princípios Penais.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_01_-_principios_penais_introducao_ao_tema.webp"
   },
   {
     "id": "penal-mat-07",
     "disciplinaId": "penal",
-    "numeroMateria": "07. INTERPRETAÇÃO E INTEGRAÇÃO DA LEI PENAL",
+    "numeroMateria": "03. INTERPRETAÇÃO E INTEGRAÇÃO DA LEI PENAL",
     "titulo": "Interpretação e Integração da Lei Penal",
-    "subtitulo": "Módulo 07 · 4 aulas",
+    "subtitulo": "Módulo 03 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Interpretação e Integração da Lei Penal.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-08",
     "disciplinaId": "penal",
-    "numeroMateria": "08. LEI PENAL NO ESPAÇO E NO TEMPO",
+    "numeroMateria": "04. LEI PENAL NO ESPAÇO E NO TEMPO",
     "titulo": "Lei Penal no Espaço e no Tempo",
-    "subtitulo": "Módulo 08 · 4 aulas",
+    "subtitulo": "Módulo 04 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Lei Penal no Espaço e no Tempo.",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+  },
+  {
+    "id": "penal-mat-43",
+    "disciplinaId": "penal",
+    "numeroMateria": "05. CLASSIFICAÇÃO E ESPÉCIE DAS INFRAÇÕES PENAIS",
+    "titulo": "Classificação e espécie das infrações penais",
+    "subtitulo": "Módulo 05 · 15 aulas",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Classificação e espécie das infrações penais.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-09",
     "disciplinaId": "penal",
-    "numeroMateria": "09. TEORIA GERAL DO DELITO",
+    "numeroMateria": "06. TEORIA GERAL DO DELITO",
     "titulo": "Teoria Geral do Delito",
-    "subtitulo": "Módulo 09 · 16 aulas",
+    "subtitulo": "Módulo 06 · 16 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Teoria Geral do Delito.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
-  },
-  {
-    "id": "penal-mat-10",
-    "disciplinaId": "penal",
-    "numeroMateria": "10. ITER CRIMINIS",
-    "titulo": "Iter Criminis",
-    "subtitulo": "Módulo 10 · 12 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Iter Criminis.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-11",
     "disciplinaId": "penal",
-    "numeroMateria": "11. PRINCÍPIO DA INSIGNIFICÂNCIA",
+    "numeroMateria": "07. PRINCÍPIO DA INSIGNIFICÂNCIA",
     "titulo": "Princípio da Insignificância",
-    "subtitulo": "Módulo 11 · 6 aulas",
+    "subtitulo": "Módulo 07 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Princípio da Insignificância.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/07._principios_penais_-_aula_09_-_principio_da_insignificancia.webp"
   },
   {
+    "id": "penal-mat-10",
+    "disciplinaId": "penal",
+    "numeroMateria": "08. ITER CRIMINIS",
+    "titulo": "Iter Criminis",
+    "subtitulo": "Módulo 08 · 12 aulas",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Iter Criminis.",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+  },
+  {
     "id": "penal-mat-12",
     "disciplinaId": "penal",
-    "numeroMateria": "12. TEORIA DO ERRO",
+    "numeroMateria": "09. TEORIA DO ERRO",
     "titulo": "Teoria do Erro",
-    "subtitulo": "Módulo 12 · 5 aulas",
+    "subtitulo": "Módulo 09 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Teoria do Erro.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-13",
     "disciplinaId": "penal",
-    "numeroMateria": "13. IMPUTABILIDADE E CONCURSO DE PESSOAS",
+    "numeroMateria": "10. IMPUTABILIDADE E CONCURSO DE PESSOAS",
     "titulo": "Imputabilidade e Concurso de Pessoas",
-    "subtitulo": "Módulo 13 · 9 aulas",
+    "subtitulo": "Módulo 10 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Imputabilidade e Concurso de Pessoas.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-14",
     "disciplinaId": "penal",
-    "numeroMateria": "14. CONCURSO DE PESSOAS E AUTORIA IMEDIATA",
+    "numeroMateria": "11. CONCURSO DE PESSOAS E AUTORIA IMEDIATA",
     "titulo": "Concurso de Pessoas e Autoria Imediata",
-    "subtitulo": "Módulo 14 · 6 aulas",
+    "subtitulo": "Módulo 11 · 6 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Concurso de Pessoas e Autoria Imediata.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-15",
     "disciplinaId": "penal",
-    "numeroMateria": "15. TEORIA DA PENA",
+    "numeroMateria": "12. TEORIA DA PENA",
     "titulo": "Teoria da Pena",
-    "subtitulo": "Módulo 15 · 10 aulas",
+    "subtitulo": "Módulo 12 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Teoria da Pena.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-16",
     "disciplinaId": "penal",
-    "numeroMateria": "16. FUNÇÕES DA PENA",
+    "numeroMateria": "13. FUNÇÕES DA PENA",
     "titulo": "Funções da Pena",
-    "subtitulo": "Módulo 16 · 4 aulas",
+    "subtitulo": "Módulo 13 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Funções da Pena.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-17",
     "disciplinaId": "penal",
-    "numeroMateria": "17. CONCURSO DE CRIMES",
+    "numeroMateria": "14. CONCURSO DE CRIMES",
     "titulo": "Concurso de Crimes",
-    "subtitulo": "Módulo 17 · 4 aulas",
+    "subtitulo": "Módulo 14 · 4 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Concurso de Crimes.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-18",
     "disciplinaId": "penal",
-    "numeroMateria": "18. DOSIMETRIA DA PENA",
+    "numeroMateria": "15. DOSIMETRIA DA PENA",
     "titulo": "Dosimetria da Pena",
-    "subtitulo": "Módulo 18 · 3 aulas",
+    "subtitulo": "Módulo 15 · 3 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Dosimetria da Pena.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-19",
     "disciplinaId": "penal",
-    "numeroMateria": "19. SUSPENSÃO CONDICIONAL DA PENA E LIVRAMENTO CONDICIONAL",
+    "numeroMateria": "16. SUSPENSÃO CONDICIONAL DA PENA E LIVRAMENTO CONDICIONAL",
     "titulo": "Suspensão Condicional da Pena e Livramento Condicional",
-    "subtitulo": "Módulo 19 · 10 aulas",
+    "subtitulo": "Módulo 16 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Suspensão Condicional da Pena e Livramento Condicional.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-20",
     "disciplinaId": "penal",
-    "numeroMateria": "20. EFEITOS DA CONDENAÇÃO E REABILITAÇÃO",
+    "numeroMateria": "17. EFEITOS DA CONDENAÇÃO E REABILITAÇÃO",
     "titulo": "Efeitos da Condenação e Reabilitação",
-    "subtitulo": "Módulo 20 · 5 aulas",
+    "subtitulo": "Módulo 17 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Efeitos da Condenação e Reabilitação.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
-  },
-  {
-    "id": "penal-mat-21",
-    "disciplinaId": "penal",
-    "numeroMateria": "21. JECCRIM",
-    "titulo": "JECCRIM",
-    "subtitulo": "Módulo 21 · 4 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre JECCRIM.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-22",
     "disciplinaId": "penal",
-    "numeroMateria": "22. MEDIDAS DE SEGURANÇA",
+    "numeroMateria": "18. MEDIDAS DE SEGURANÇA",
     "titulo": "Medidas de Segurança",
-    "subtitulo": "Módulo 22 · 7 aulas",
+    "subtitulo": "Módulo 18 · 7 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Medidas de Segurança.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-23",
     "disciplinaId": "penal",
-    "numeroMateria": "23. EXTINÇÃO DA PUNIBILIDADE E PRESCRIÇÃO",
+    "numeroMateria": "19. EXTINÇÃO DA PUNIBILIDADE E PRESCRIÇÃO",
     "titulo": "Extinção da Punibilidade e Prescrição",
-    "subtitulo": "Módulo 23 · 9 aulas",
+    "subtitulo": "Módulo 19 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Extinção da Punibilidade e Prescrição.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-24",
     "disciplinaId": "penal",
-    "numeroMateria": "24. PRESCRIÇÃO PENAL",
+    "numeroMateria": "20. PRESCRIÇÃO PENAL",
     "titulo": "Prescrição Penal",
-    "subtitulo": "Módulo 24 · 8 aulas",
+    "subtitulo": "Módulo 20 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Prescrição Penal.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-25",
     "disciplinaId": "penal",
-    "numeroMateria": "25. CRIMES CONTRA A PESSOA",
+    "numeroMateria": "21. CRIMES CONTRA A PESSOA",
     "titulo": "Crimes Contra a Pessoa",
-    "subtitulo": "Módulo 25 · 45 aulas",
+    "subtitulo": "Módulo 21 · 45 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Pessoa.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-26",
     "disciplinaId": "penal",
-    "numeroMateria": "26. CRIMES CONTRA A VIDA",
+    "numeroMateria": "22. CRIMES CONTRA A VIDA",
     "titulo": "Crimes Contra a Vida",
-    "subtitulo": "Módulo 26 · 8 aulas",
+    "subtitulo": "Módulo 22 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Vida.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-27",
     "disciplinaId": "penal",
-    "numeroMateria": "27. CRIMES CONTRA A HONRA",
+    "numeroMateria": "23. CRIMES CONTRA A HONRA",
     "titulo": "Crimes Contra a Honra",
-    "subtitulo": "Módulo 27 · 10 aulas",
+    "subtitulo": "Módulo 23 · 10 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Honra.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-28",
     "disciplinaId": "penal",
-    "numeroMateria": "28. CRIMES CONTRA O PATRIMÔNIO",
+    "numeroMateria": "24. CRIMES CONTRA O PATRIMÔNIO",
     "titulo": "Crimes contra o Patrimônio",
-    "subtitulo": "Módulo 28 · 25 aulas",
+    "subtitulo": "Módulo 24 · 25 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes contra o Patrimônio.",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+  },
+  {
+    "id": "penal-mat-35",
+    "disciplinaId": "penal",
+    "numeroMateria": "25. CRIMES CONTRA O SENTIMENTO RELIGIOSO",
+    "titulo": "Crimes Contra o Sentimento Religioso",
+    "subtitulo": "Módulo 25 · 5 aulas",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra o Sentimento Religioso.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-29",
     "disciplinaId": "penal",
-    "numeroMateria": "29. CRIMES CONTRA A DIGNIDADE SEXUAL",
+    "numeroMateria": "26. CRIMES CONTRA A DIGNIDADE SEXUAL",
     "titulo": "Crimes contra a Dignidade Sexual",
-    "subtitulo": "Módulo 29 · 17 aulas",
+    "subtitulo": "Módulo 26 · 17 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes contra a Dignidade Sexual.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-30",
     "disciplinaId": "penal",
-    "numeroMateria": "30. DIREITO PENAL SEXUAL - TEORIA GERAL E REFLEXOS TÍPICOS",
+    "numeroMateria": "27. DIREITO PENAL SEXUAL - TEORIA GERAL E REFLEXOS TÍPICOS",
     "titulo": "Direito Penal Sexual - Teoria Geral e Reflexos Típicos",
-    "subtitulo": "Módulo 30 · 11 aulas",
+    "subtitulo": "Módulo 27 · 11 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito Penal Sexual - Teoria Geral e Reflexos Típicos.",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+  },
+  {
+    "id": "penal-mat-01",
+    "disciplinaId": "penal",
+    "numeroMateria": "28. CRIMES CONTRA A FAMÍLIA",
+    "titulo": "Crimes Contra a Família",
+    "subtitulo": "Módulo 28 · 11 aulas",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Família.",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/01._crimes_contra_a_familia_-_aula_01_-_crimes_contra_a_familia.webp"
+  },
+  {
+    "id": "penal-mat-37",
+    "disciplinaId": "penal",
+    "numeroMateria": "29. CRIMES CONTRA A FÉ PÚBLICA",
+    "titulo": "Crimes Contra a Fé Pública",
+    "subtitulo": "Módulo 29 · 8 aulas",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Fé Pública.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-31",
     "disciplinaId": "penal",
-    "numeroMateria": "31. CRIMES CONTRA A ORGANIZAÇÃO DO TRABALHO",
+    "numeroMateria": "30. CRIMES CONTRA A ORGANIZAÇÃO DO TRABALHO",
     "titulo": "Crimes Contra a Organização do Trabalho",
-    "subtitulo": "Módulo 31 · 8 aulas",
+    "subtitulo": "Módulo 30 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Organização do Trabalho.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-32",
     "disciplinaId": "penal",
-    "numeroMateria": "32. CRIMES CONTRA A PROPRIEDADE IMATERIAL",
+    "numeroMateria": "31. CRIMES CONTRA A PROPRIEDADE IMATERIAL",
     "titulo": "Crimes Contra a Propriedade Imaterial",
-    "subtitulo": "Módulo 32 · 5 aulas",
+    "subtitulo": "Módulo 31 · 5 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Propriedade Imaterial.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-33",
     "disciplinaId": "penal",
-    "numeroMateria": "33. CRIMES PRATICADOS POR FUNCIONÁRIO PÚBLICO CONTRA A ADMINISTRAÇÃO",
+    "numeroMateria": "32. CRIMES PRATICADOS POR FUNCIONÁRIO PÚBLICO CONTRA A ADMINISTRAÇÃO",
     "titulo": "Crimes praticados por Funcionário Público contra a Administração",
-    "subtitulo": "Módulo 33 · 19 aulas",
+    "subtitulo": "Módulo 32 · 19 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes praticados por Funcionário Público contra a Administração.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-34",
     "disciplinaId": "penal",
-    "numeroMateria": "34. CRIMES PRATICADOS POR PARTICULAR CONTRA A ADMINISTRAÇÃO EM GERAL E ESTRANGEIRA",
+    "numeroMateria": "33. CRIMES PRATICADOS POR PARTICULAR CONTRA A ADMINISTRAÇÃO EM GERAL E ESTRANGEIRA",
     "titulo": "Crimes Praticados por Particular Contra a Administração em Geral e Estrangeira",
-    "subtitulo": "Módulo 34 · 16 aulas",
+    "subtitulo": "Módulo 33 · 16 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Praticados por Particular Contra a Administração em Geral e Estrangeira.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
-  },
-  {
-    "id": "penal-mat-35",
-    "disciplinaId": "penal",
-    "numeroMateria": "35. CRIMES CONTRA O SENTIMENTO RELIGIOSO",
-    "titulo": "Crimes Contra o Sentimento Religioso",
-    "subtitulo": "Módulo 35 · 5 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra o Sentimento Religioso.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-36",
     "disciplinaId": "penal",
-    "numeroMateria": "36. CRIMES PRATICADOS EM LICITAÇÕES E CONTRATOS ADMINISTRATIVOS",
+    "numeroMateria": "34. CRIMES PRATICADOS EM LICITAÇÕES E CONTRATOS ADMINISTRATIVOS",
     "titulo": "Crimes Praticados em Licitações e Contratos Administrativos",
-    "subtitulo": "Módulo 36 · 12 aulas",
+    "subtitulo": "Módulo 34 · 12 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Praticados em Licitações e Contratos Administrativos.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
-  },
-  {
-    "id": "penal-mat-37",
-    "disciplinaId": "penal",
-    "numeroMateria": "37. CRIMES CONTRA A FÉ PÚBLICA",
-    "titulo": "Crimes Contra a Fé Pública",
-    "subtitulo": "Módulo 37 · 8 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Fé Pública.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-38",
     "disciplinaId": "penal",
-    "numeroMateria": "38. CRIMES CONTRA A ADMINISTRAÇÃO DA JUSTIÇA",
+    "numeroMateria": "35. CRIMES CONTRA A ADMINISTRAÇÃO DA JUSTIÇA",
     "titulo": "Crimes Contra a Administração da Justiça",
-    "subtitulo": "Módulo 38 · 8 aulas",
+    "subtitulo": "Módulo 35 · 8 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crimes Contra a Administração da Justiça.",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+  },
+  {
+    "id": "penal-mat-21",
+    "disciplinaId": "penal",
+    "numeroMateria": "36. JECCRIM",
+    "titulo": "JECCRIM",
+    "subtitulo": "Módulo 36 · 4 aulas",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre JECCRIM.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-39",
     "disciplinaId": "penal",
-    "numeroMateria": "39. LEI DE DROGAS",
+    "numeroMateria": "37. LEI DE DROGAS",
     "titulo": "Lei de Drogas",
-    "subtitulo": "Módulo 39 · 20 aulas",
+    "subtitulo": "Módulo 37 · 20 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Lei de Drogas.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-40",
     "disciplinaId": "penal",
-    "numeroMateria": "40. ESTATUTO DO DESARMAMENTO",
+    "numeroMateria": "38. ESTATUTO DO DESARMAMENTO",
     "titulo": "Estatuto do Desarmamento",
-    "subtitulo": "Módulo 40 · 9 aulas",
+    "subtitulo": "Módulo 38 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Estatuto do Desarmamento.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-41",
     "disciplinaId": "penal",
-    "numeroMateria": "41. LEGISLAÇÃO PENAL EXTRAVAGANTE",
+    "numeroMateria": "39. LEGISLAÇÃO PENAL EXTRAVAGANTE",
     "titulo": "Legislação Penal Extravagante",
-    "subtitulo": "Módulo 41 · 28 aulas",
+    "subtitulo": "Módulo 39 · 28 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Legislação Penal Extravagante.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
     "id": "penal-mat-42",
     "disciplinaId": "penal",
-    "numeroMateria": "42. RESPONSABILIDADE PENAL DA PESSOA JURÍDICA",
+    "numeroMateria": "40. RESPONSABILIDADE PENAL DA PESSOA JURÍDICA",
     "titulo": "Responsabilidade Penal da Pessoa Jurídica",
-    "subtitulo": "Módulo 42 · 9 aulas",
+    "subtitulo": "Módulo 40 · 9 aulas",
     "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Responsabilidade Penal da Pessoa Jurídica.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
   },
   {
-    "id": "penal-mat-43",
+    "id": "penal-mat-02",
     "disciplinaId": "penal",
-    "numeroMateria": "43. CLASSIFICAÇÃO E ESPÉCIE DAS INFRAÇÕES PENAIS",
-    "titulo": "Classificação e espécie das infrações penais",
-    "subtitulo": "Módulo 43 · 15 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Classificação e espécie das infrações penais.",
-    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-penal/direito-penal-hero.jpg"
+    "numeroMateria": "41. CRIMINOLOGIA",
+    "titulo": "Criminologia",
+    "subtitulo": "Módulo 41 · 6 aulas",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Criminologia.",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/02._criminologia_-_aula_02_-_evolucao_historica_periodo_pre-cientifico.webp"
+  },
+  {
+    "id": "penal-mat-03",
+    "disciplinaId": "penal",
+    "numeroMateria": "42. DIREITO PENAL DO INIMIGO",
+    "titulo": "Direito Penal do Inimigo",
+    "subtitulo": "Módulo 42 · 7 aulas",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito Penal do Inimigo.",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/03._direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp"
+  },
+  {
+    "id": "penal-mat-04",
+    "disciplinaId": "penal",
+    "numeroMateria": "43. CRÍTICA AO DIREITO PENAL DO INIMIGO",
+    "titulo": "Crítica ao Direito Penal do Inimigo",
+    "subtitulo": "Módulo 43 · 7 aulas",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Crítica ao Direito Penal do Inimigo.",
+    "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/capas/penal/04._critica_ao_direito_penal_do_inimigo_-_aula_01_-_nocoes_gerais.webp"
   },
   {
     "id": "administrativo-mat-01",

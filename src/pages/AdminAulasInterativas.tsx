@@ -235,6 +235,7 @@ export default function AdminAulasInterativas() {
   // Modais de Revisão e Prática
   const [modalFlashcardsAula, setModalFlashcardsAula] = useState<AulaItem | null>(null);
   const [modalQuestoesAula, setModalQuestoesAula] = useState<AulaItem | null>(null);
+  const [modalBloqueioAula, setModalBloqueioAula] = useState<{ aula: AulaItem; motivo: 'revisar' | 'praticar' } | null>(null);
   const [toastAviso, setToastAviso] = useState<string | null>(null);
 
   // Efeito de scroll para o topo imediato ao trocar de matéria ou disciplina
@@ -1095,10 +1096,7 @@ export default function AdminAulasInterativas() {
                                 <span className="text-[11px] sm:text-[13px] font-bold uppercase tracking-wider" style={{ color: disciplinaAtual.corDestaque }}>
                                   {mat.numeroMateria}
                                 </span>
-                                <span className="w-1 h-1 rounded-full bg-white/25" />
-                                <span className="text-[10px] sm:text-[11px] text-zinc-400">
-                                  {totalAulasMat} {totalAulasMat === 1 ? 'aula' : 'aulas'}
-                                </span>
+                                
                               </div>
 
                               <h3 className="font-serif font-bold text-[17px] xs:text-[19px] sm:text-[22px] md:text-[24px] leading-tight text-white group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-3">
@@ -1112,7 +1110,7 @@ export default function AdminAulasInterativas() {
                               )}
 
                               <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">
-                                <span>Explorar Matéria</span>
+                                <span>Explorar Matéria ({totalAulasMat} {totalAulasMat === 1 ? 'aula' : 'aulas'})</span>
                                 <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" style={{ color: disciplinaAtual.corDestaque }} />
                               </div>
                             </div>
@@ -1429,7 +1427,7 @@ export default function AdminAulasInterativas() {
                                 )}
                               >
                                 <span
-                                  className="text-[11px] sm:text-[13px] font-black uppercase tracking-wider"
+                                  className="text-[13px] sm:text-[15px] font-black uppercase tracking-wider"
                                   style={{ color: disciplinaAtual.corDestaque }}
                                 >
                                   {aula.numeroAula}
@@ -1480,11 +1478,15 @@ export default function AdminAulasInterativas() {
 
                                 {/* 2 & 3. Revisar + Praticar */}
                                 <div className="grid grid-cols-2 sm:contents gap-1.5">
-                                  {/* 2. Revisar */}
+                                  {/* 2. Revisar (Cor invisível/transparente quando bloqueado) */}
                                   <button
                                     type="button"
                                     onClick={(e) => {
                                       e.stopPropagation();
+                                      if (!flashcardsLiberados) {
+                                        setModalBloqueioAula({ aula, motivo: 'revisar' });
+                                        return;
+                                      }
                                       abrirRevisarFlashcards(aula);
                                     }}
                                     className={cn(
@@ -1493,23 +1495,27 @@ export default function AdminAulasInterativas() {
                                         ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
                                         : flashcardsLiberados
                                           ? "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
-                                          : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
+                                          : "bg-transparent text-zinc-400 border-white/10 hover:border-white/25 hover:bg-white/[0.04] cursor-pointer"
                                     )}
-                                    title={!flashcardsLiberados ? 'Conclua a aula para destravar a revisão' : 'Revisar com Flashcards'}
+                                    title={!flashcardsLiberados ? 'Toque para ver como destravar' : 'Revisar com Flashcards'}
                                   >
                                     {flashcardsLiberados ? (
                                       <Layers className="w-3.5 h-3.5 text-amber-300 shrink-0" />
                                     ) : (
-                                      <Lock className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                                      <Lock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                                     )}
                                     <span className="whitespace-nowrap">REVISAR</span>
                                   </button>
 
-                                  {/* 3. Praticar */}
+                                  {/* 3. Praticar (Cor invisível/transparente quando bloqueado) */}
                                   <button
                                     type="button"
                                     onClick={(e) => {
                                       e.stopPropagation();
+                                      if (!questoesLiberadas) {
+                                        setModalBloqueioAula({ aula, motivo: 'praticar' });
+                                        return;
+                                      }
                                       abrirPraticarQuestoes(aula);
                                     }}
                                     className={cn(
@@ -1518,14 +1524,14 @@ export default function AdminAulasInterativas() {
                                         ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
                                         : questoesLiberadas
                                           ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
-                                          : "bg-white/5 text-zinc-500 border-white/10 opacity-60 cursor-not-allowed"
+                                          : "bg-transparent text-zinc-400 border-white/10 hover:border-white/25 hover:bg-white/[0.04] cursor-pointer"
                                     )}
-                                    title={!questoesLiberadas ? 'Conclua a revisão para destravar o treino prático' : 'Praticar Questões'}
+                                    title={!questoesLiberadas ? 'Toque para ver como destravar' : 'Praticar Questões'}
                                   >
                                     {questoesLiberadas ? (
                                       <HelpCircle className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
                                     ) : (
-                                      <Lock className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                                      <Lock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                                     )}
                                     <span className="whitespace-nowrap">PRATICAR</span>
                                   </button>
@@ -1612,6 +1618,55 @@ export default function AdminAulasInterativas() {
           }}
         />
       )}
+
+      {/* Modal Centralizado de Etapa Bloqueada */}
+      {modalBloqueioAula && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setModalBloqueioAula(null)}
+        >
+          <div 
+            className="w-full max-w-sm rounded-3xl border border-white/20 bg-zinc-950 p-6 shadow-2xl flex flex-col items-center text-center relative overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mb-4 text-amber-400 shadow-lg shadow-amber-950/50">
+              <Lock className="w-8 h-8 stroke-[2.2]" />
+            </div>
+
+            <h3 className="text-lg font-black text-white uppercase tracking-wider mb-2">
+              Etapa Bloqueada
+            </h3>
+
+            <p className="text-sm text-zinc-300 leading-relaxed mb-6">
+              Você precisa terminar a aula interativa primeiro para poder revisar e praticar!
+            </p>
+
+            <div className="flex flex-col w-full gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  const aula = modalBloqueioAula.aula;
+                  setModalBloqueioAula(null);
+                  iniciarAula(aula);
+                }}
+                className="w-full h-12 rounded-2xl bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-red-950/40 active:scale-95 transition"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                <span>Iniciar Aula Agora</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setModalBloqueioAula(null)}
+                className="w-full h-11 rounded-2xl bg-white/5 hover:bg-white/10 text-zinc-300 font-bold text-xs uppercase tracking-wider border border-white/10 active:scale-95 transition"
+              >
+                Entendi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
           {/* Modal 3: Aula em Produção / Em Breve */}
       {aulaPendenteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
