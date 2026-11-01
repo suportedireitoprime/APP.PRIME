@@ -62,7 +62,7 @@ export function scheduleAppWarmup(qc: QueryClient): void {
       const routes = [
         () => routePrefetch.vadeMecum(),
         () => routePrefetch.biblioteca(),
-        () => routePrefetch.aprender(),
+        () => routePrefetch.aulas(),
       ];
 
       let idx = 0;

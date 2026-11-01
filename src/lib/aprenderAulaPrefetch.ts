@@ -83,7 +83,6 @@ function revalidate(aulaId: string) {
 
 export function prefetchAprenderAula(aulaId: string): Promise<AulaBundle> {
   if (!aulaId) return Promise.resolve({ aula: null, blocos: [] });
-  try { prefetchRoute('aprenderAula'); } catch { /* noop */ }
 
   const mem = memCache.get(aulaId);
   if (mem) { revalidate(aulaId); return Promise.resolve(mem); }

@@ -18,10 +18,7 @@ export const routePrefetch = {
   tematica: () => import("@/pages/TematicaJuridica.tsx"),
   estudos: () => import("@/pages/Estudar.tsx"),
   ferramentas: () => import("@/pages/Ferramentas.tsx"),
-  pessoal: () => import("@/pages/pessoal/Avisos.tsx"),
   perfil: () => import("@/pages/Perfil.tsx"),
-  aprender: () => import("@/pages/Aprender.tsx"),
-  aprenderModulo: () => import("@/pages/AprenderModulo.tsx"),
   dicionario: () => import("@/pages/DicionarioJuridicoPage.tsx"),
   leiSeca: () => import("@/pages/LeiSeca/LeiSecaIndex.tsx"),
   leiSecaTrilha: () => import("@/pages/LeiSeca/LeiSecaTrilha.tsx"),
@@ -31,9 +28,6 @@ export const routePrefetch = {
 
   radar360: () => import("@/pages/Radar360.tsx"),
   newsletter: () => import("@/pages/Newsletter.tsx"),
-  gravarAula: () => import("@/pages/AnotacoesAudio.tsx"),
-  categoriaAprender: () => import("@/pages/CategoriaAprender.tsx"),
-  aprenderAula: () => import("@/pages/AprenderAula.tsx"),
 
   jurisprudencia: () => import("@/pages/Jurisprudencia.tsx"),
   sumulasTribunal: () => import("@/pages/SumulasTribunal.tsx"),
@@ -64,8 +58,8 @@ export const routePrefetch = {
   vadeMecumRecentes: () => import("@/pages/VadeMecumRecentes.tsx"),
   meExplique: () => import("@/pages/MeExplique.tsx"),
   apresentacoes: () => import("@/pages/Apresentacoes.tsx"),
-  leisCantadas: () => import("@/pages/LeisCantadas.tsx"),
   audioleis: () => import("@/pages/Audioleis.tsx"),
+  aulas: () => import("@/pages/AdminAulasInterativas.tsx"),
 } as const;
 
 export type PrefetchKey = keyof typeof routePrefetch;
@@ -75,7 +69,7 @@ const MAIN_TAB_KEYS: PrefetchKey[] = [
   'vadeMecum',
   'questoes',
   'flashcards',
-  'aprender',
+  'aulas',
   'meExplique',
   'resumosJuridicos',
   'videoaulas',

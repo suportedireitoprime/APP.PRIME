@@ -78,10 +78,8 @@ function parseDeepLink(url: string): string | null {
         return '/assistente';
       case 'radar-360':
         return '/radar-360';
-      case 'aprender':
-        return rest[0] ? `/aprender/${rest[0]}` : '/aprender';
       case 'audio':
-        return '/anotacoes/audio';
+        return '/audioaulas';
       case 'lembretes':
         return rest[0] === 'local' ? '/lembretes/local' : '/meus-lembretes';
       case 'leitura':

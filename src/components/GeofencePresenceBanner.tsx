@@ -34,7 +34,7 @@ export function GeofencePresenceBanner() {
       <div className="flex items-center gap-4 rounded-2xl border border-border bg-muted px-5 py-4 shadow-2xl">
         <button
           type="button"
-          onClick={() => navigate('/pessoal/avisos')}
+          onClick={() => navigate('/lembretes')}
           className="flex items-center gap-4 min-w-0 flex-1 text-left"
           aria-label="Abrir meus avisos"
         >

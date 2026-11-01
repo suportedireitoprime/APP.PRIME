@@ -39,8 +39,8 @@ const AtualizacaoTab = ({ searchQuery }: { searchQuery: string }) => {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08, type: 'spring', stiffness: 260, damping: 24 }}
-              onPointerEnter={() => prefetchRoute('categoriaAprender')}
-              onClick={() => navigate(`/aprender/categoria/${cat.id}`)}
+              onPointerEnter={() => prefetchRoute('aulas')}
+              onClick={() => navigate('/aulas')}
               className="relative rounded-2xl overflow-hidden cursor-pointer group aspect-[2/1]"
             >
               <img

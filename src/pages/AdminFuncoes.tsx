@@ -57,10 +57,8 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/narracao': () => import('./NarracaoLei'),
   '/admin-vade-mecum': () => import('./AdminVadeMecum'),
   '/explicacao-lei': () => import('./ExplicacaoLei'),
-  '/radar/deputados': () => import('./RadarDeputados'),
   '/newsletter': () => import('./Newsletter'),
   '/configuracoes': () => import('./Configuracoes'),
-  '/anotacoes/audio': () => import('./AnotacoesAudio'),
 };
 const prefetched = new Set<string>();
 const prefetching = new Map<string, Promise<unknown>>();
@@ -294,7 +292,6 @@ const CATEGORIES: Category[] = [
     desc: 'Radar de Leis, cron e histórico',
     icon: Rss,
     items: [
-      { id: 'camara-deputados', label: 'Câmara Editar', icon: Building2, desc: 'Radar legislativo - Câmara dos Deputados', route: '/radar/deputados' },
       { id: 'admin-biblioteca-leis', label: 'Biblioteca de Leis', icon: BookOpen, desc: 'Auditoria, verificação de atualização e sugestões do Radar', route: '/admin-biblioteca-leis' },
       { id: 'admin-buscador-leis', label: 'Buscador de Leis', icon: Search, desc: 'IA busca na web leis faltantes e sugere para adicionar à Biblioteca', route: '/admin-buscador-leis' },
     ],

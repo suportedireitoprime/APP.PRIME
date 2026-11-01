@@ -157,18 +157,6 @@ const PoderDetalhe = () => {
                   </span>
                 </button>
               )}
-
-              {id === 'camara' && (
-                <button
-                  onClick={() => { haptic.selection(); navigate('/radar/deputados'); }}
-                  className="flex flex-col items-center justify-center py-2 px-4 rounded-xl bg-black/45 backdrop-blur-md border border-white/10 shadow-xl hover:bg-black/60 transition-all active:opacity-70 gap-1.5 text-center min-h-[48px] min-w-[72px]"
-                >
-                  <Users className="w-4 h-4 text-[#0EA5E9]" strokeWidth={2} />
-                  <span className="text-[9px] font-extrabold text-white/90 leading-tight uppercase tracking-wider">
-                    Deputados
-                  </span>
-                </button>
-              )}
            </div>
         </div>
       </div>
@@ -288,17 +276,6 @@ const PoderDetalhe = () => {
                   onClick={() => navigate(`/radar-360`)}
                   className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
                 />
-                {id === 'camara' && (
-                  <HomeCard
-                    icon={Users}
-                    label="DEPUTADOS"
-                    sublabel="Lista oficial"
-                    color="#FFFFFF"
-                    iconStrokeWidth={1.5}
-                    onClick={() => navigate(`/radar/deputados`)}
-                    className="transition-all bg-[#252528] hover:bg-[#2F2F33] border-white/5 shadow-sm"
-                  />
-                )}
                 {CARDS.map((item, index) => (
                   <HomeCard
                     key={item.id}

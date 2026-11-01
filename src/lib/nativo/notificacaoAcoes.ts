@@ -97,7 +97,7 @@ export async function registrarAcoesNotificacao(): Promise<void> {
         return;
       }
       if (acao === 'responder') return navegar(extra.rota ?? '/flashcards');
-      if (acao === 'ouvir') return navegar(extra.rota ?? '/leis-cantadas');
+      if (acao === 'ouvir') return navegar(extra.rota ?? '/audioaulas');
       if (acao === 'estudar') return navegar(extra.rota ?? '/aprender');
       // Toque no corpo da notificação
       if (extra.rota) navegar(extra.rota);

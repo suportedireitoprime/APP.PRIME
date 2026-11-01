@@ -12,7 +12,6 @@ export const PESSOAL_KEYS = {
   anotacoes: (uid: string) => ['pessoal', 'anotacoes', uid] as const,
   grifos: (uid: string) => ['pessoal', 'grifos', uid] as const,
   livros: (uid: string) => ['pessoal', 'livros', uid] as const,
-  filmes: (uid: string) => ['pessoal', 'filmes', uid] as const,
 };
 
 const STALE = 60_000;
@@ -58,25 +57,6 @@ export async function fetchPessoalLivros() {
   return payload;
 }
 
-export async function fetchPessoalFilmes() {
-  const { data: favData } = await supabase
-    .from('tematica_favoritos')
-    .select('obra_id, created_at')
-    .order('created_at', { ascending: false });
-  const favs = (favData ?? []) as any[];
-  let obras: any[] = [];
-  if (favs.length > 0) {
-    const { data: obrasData } = await supabase
-      .from('tematica_juridica_obras')
-      .select('id, titulo, poster_url, categoria_juridica, tipo, ano')
-      .in('id', favs.map((r) => r.obra_id));
-    obras = (obrasData ?? []) as any[];
-  }
-  const payload = { favs, obras };
-  setCache('filmes', payload);
-  return payload;
-}
-
 export function prefetchAllPessoal(qc: QueryClient, uid: string) {
   const opts = { staleTime: STALE };
   // Aquece a capa do perfil (a imagem já vem do snapshot local, então o paint é imediato).
@@ -88,7 +68,6 @@ export function prefetchAllPessoal(qc: QueryClient, uid: string) {
   qc.prefetchQuery({ queryKey: PESSOAL_KEYS.anotacoes(uid), queryFn: fetchPessoalAnotacoes, ...opts }).catch(() => {});
   qc.prefetchQuery({ queryKey: PESSOAL_KEYS.grifos(uid), queryFn: fetchPessoalGrifos, ...opts }).catch(() => {});
   qc.prefetchQuery({ queryKey: PESSOAL_KEYS.livros(uid), queryFn: fetchPessoalLivros, ...opts }).catch(() => {});
-  qc.prefetchQuery({ queryKey: PESSOAL_KEYS.filmes(uid), queryFn: fetchPessoalFilmes, ...opts }).catch(() => {});
 }
 
 /** Prefetch por path — chamado no onPointerDown dos cards do Meu Espaço. */
@@ -106,9 +85,6 @@ export function prefetchPessoalByPath(qc: QueryClient, uid: string, path: string
       break;
     case '/pessoal/livros':
       qc.prefetchQuery({ queryKey: PESSOAL_KEYS.livros(uid), queryFn: fetchPessoalLivros, ...opts }).catch(() => {});
-      break;
-    case '/pessoal/filmes':
-      qc.prefetchQuery({ queryKey: PESSOAL_KEYS.filmes(uid), queryFn: fetchPessoalFilmes, ...opts }).catch(() => {});
       break;
   }
 }

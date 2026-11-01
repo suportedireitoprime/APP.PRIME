@@ -33,9 +33,7 @@ const prefetchRoute = (path: string) => {
     case '/pessoal/anotacoes': import("@/pages/pessoal/Anotacoes.tsx"); break;
     case '/pessoal/grifos': import("@/pages/pessoal/Grifos.tsx"); break;
     case '/pessoal/livros': import("@/pages/pessoal/Livros.tsx"); break;
-    case '/pessoal/filmes': import("@/pages/pessoal/Filmes.tsx"); break;
     case '/pessoal/jurisprudencias': import("@/pages/pessoal/Jurisprudencias.tsx"); break;
-    case '/pessoal/tematicas': import("@/pages/pessoal/Tematicas.tsx"); break;
   }
 };
 
@@ -121,9 +119,7 @@ const QUICK = [
   { label: 'Minhas anotações', icon: StickyNote, path: '/pessoal/anotacoes' },
   { label: 'Meus grifos', icon: Highlighter, path: '/pessoal/grifos' },
   { label: 'Livros Salvos', icon: BookMarked, path: '/pessoal/livros' },
-  { label: 'Filmes', icon: Film, path: '/pessoal/filmes' },
   { label: 'Jurisprudências', icon: Gavel, path: '/pessoal/jurisprudencias' },
-  { label: 'Temáticas', icon: Star, path: '/pessoal/tematicas' },
 ];
 
 const MeuEspaco = () => {
@@ -232,9 +228,7 @@ const MeuEspaco = () => {
       import('@/pages/pessoal/Anotacoes.tsx');
       import('@/pages/pessoal/Grifos.tsx');
       import('@/pages/pessoal/Livros.tsx');
-      import('@/pages/pessoal/Filmes.tsx');
       import('@/pages/pessoal/Jurisprudencias.tsx');
-      import('@/pages/pessoal/Tematicas.tsx');
     });
     return () => { try { cancelIdle(handle); } catch {} };
   }, [user?.id, qc]);
@@ -545,16 +539,16 @@ const MeuEspaco = () => {
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <motion.button
-                    onClick={() => go('/anotacoes/audio')}
+                    onClick={() => go('/pessoal/anotacoes')}
                     className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-card p-5 text-center hover:border-emerald-500/50 transition-colors active:opacity-70 shadow-sm relative group overflow-hidden"
                   >
                     <div className="absolute top-3 right-3 text-muted-foreground group-hover:text-emerald-500 group-hover:translate-x-1 transition-all">
                       <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
                     </div>
                     <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center relative z-10 mb-1">
-                      <Mic className="w-6 h-6 text-emerald-500" strokeWidth={1.5} />
+                      <StickyNote className="w-6 h-6 text-emerald-500" strokeWidth={1.5} />
                     </div>
-                    <span className="font-display font-bold text-[14px] text-foreground relative z-10">Gravar Aula</span>
+                    <span className="font-display font-bold text-[14px] text-foreground relative z-10">Minhas Anotações</span>
                   </motion.button>
                   
                   <motion.button

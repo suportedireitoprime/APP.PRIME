@@ -138,7 +138,7 @@ const BottomNav = () => {
       prefetchRoute('questoes');
       prefetchRoute('videoaulas');
       prefetchRoute('flashcards');
-      prefetchRoute('aprender');
+      prefetchRoute('aulas');
       prefetchRoute('vadeMecum');
       prefetchRoute('ferramentas');
       prefetchRoute('pilulas');
@@ -191,7 +191,6 @@ const BottomNav = () => {
 
     { id: 'audioaulas', label: 'Audioaulas', desc: 'Aulas em áudio por área do Direito', icon: Headphones, action: () => navigate('/audioaulas') },
     { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo com flashcards, questões e lei seca por IA', icon: Video, action: () => navigate('/videoaulas') },
-    { id: 'gravar-aula', label: 'Gravar aula', desc: 'Grave aulas longas com resumo automático por IA', icon: Mic, action: () => navigate('/anotacoes/audio'), prefetch: 'gravarAula' },
     { id: 'boletins', label: 'Boletins Jurídicos', desc: 'Vídeo diário com as normas quentes de hoje', icon: MicVocal, action: () => navigate('/boletins'), prefetch: 'boletins' },
     { id: 'noticias', label: 'Notícias', desc: 'Notícias jurídicas e atualizações', icon: Newspaper, action: () => navigate('/noticias'), prefetch: 'noticias' },
     { id: 'newsletter', label: 'Newsletter', desc: 'Receba um resumo jurídico diário no e-mail', icon: Send, action: () => navigate('/newsletter'), prefetch: 'newsletter' },
@@ -323,13 +322,13 @@ const BottomNav = () => {
 
           {/* Slot 4: Aulas */}
           <button
-            onPointerDown={() => prefetchRoute('aprender')}
-            onMouseEnter={() => prefetchRoute('aprender')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/aprender')); }}
+            onPointerDown={() => prefetchRoute('aulas')}
+            onMouseEnter={() => prefetchRoute('aulas')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/aulas')); }}
             data-track="bottom_nav_click"
-            data-track-destino="aprender"
+            data-track-destino="aulas"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              location.pathname.startsWith('/aprender') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              location.pathname.startsWith('/aulas') || location.pathname.startsWith('/admin-aulas-interativas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
             aria-label="Aulas"
           >

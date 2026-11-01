@@ -38,15 +38,6 @@ export default function ModoOffline() {
       to: '/modo-offline/audioaulas',
     },
     {
-      id: 'leis-cantadas',
-      icon: Music,
-      color: '#d946ef',
-      title: 'Leis cantadas',
-      desc: 'Baixe as faixas e ouça offline no player nativo',
-      meta: meta(d.leisCantadas, 'Nenhuma faixa baixada ainda'),
-      to: '/modo-offline/leis-cantadas',
-    },
-    {
       id: 'apresentacoes',
       icon: Presentation,
       color: '#06b6d4',

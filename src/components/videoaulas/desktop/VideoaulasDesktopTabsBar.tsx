@@ -8,7 +8,7 @@ export const DESKTOP_TABS: Array<{ id: string; label: string; icon: any; path: s
   { id: 'legislacao', label: 'Legislação', icon: Scale, path: '/' },
   { id: 'biblioteca', label: 'Biblioteca', icon: Library, path: '/bibliotecas' },
   { id: 'ferramentas', label: 'Ferramentas', icon: Gavel, path: '/ferramentas', prefetch: 'ferramentas' },
-  { id: 'aprender', label: 'Aprender', icon: GraduationCap, path: '/aprender', prefetch: 'aprender' },
+  { id: 'aulas', label: 'Aulas', icon: GraduationCap, path: '/aulas', prefetch: 'aulas' },
   { id: 'chat', label: 'Chat', icon: MessageSquare, path: '/assistente-horus' },
   { id: 'vademecum', label: 'Vade Mecum', icon: BookOpenText, path: '/vade-mecum' },
 ];

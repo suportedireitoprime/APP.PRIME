@@ -72,7 +72,6 @@ const brasaoImg = brasaoImgAsset;
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { RecordingProvider } from "@/contexts/RecordingContext";
-import { LeisCantadasPlayerProvider } from "@/contexts/LeisCantadasPlayerContext";
 import { AudioaulasPlayerProvider } from "@/contexts/AudioaulasPlayerContext";
 import { ResumoLivroPlayerProvider } from "./contexts/ResumoLivroPlayerContext.tsx";
 import { PilulasPlayerProvider } from "@/contexts/PilulasPlayerContext";
@@ -135,15 +134,12 @@ const Atualizacoes = lazy(() => import("./pages/Atualizacoes.tsx"));
 const Novidades = lazy(() => import("./pages/Novidades.tsx"));
 const Anotacoes = lazy(() => import("./pages/Anotacoes.tsx"));
 const AvaliacaoInteligente = lazy(() => import("./pages/graficos/AvaliacaoInteligente.tsx"));
-const PessoalAvisos = lazy(() => import("./pages/pessoal/Avisos.tsx"));
 const PessoalGrifos = lazy(() => import("./pages/pessoal/Grifos.tsx"));
 const PessoalArtigos = lazy(() => import("./pages/pessoal/Artigos.tsx"));
 const PessoalLeis = lazy(() => import("./pages/pessoal/Leis.tsx"));
 const PessoalAnotacoes = lazy(() => import("./pages/pessoal/Anotacoes.tsx"));
 const PessoalLivros = lazy(() => import("./pages/pessoal/Livros.tsx"));
-const PessoalFilmes = lazy(() => import("./pages/pessoal/Filmes.tsx"));
 const PessoalJurisprudencias = lazy(() => import("./pages/pessoal/Jurisprudencias.tsx"));
-const PessoalTematicas = lazy(() => import("./pages/pessoal/Tematicas.tsx"));
 const Concursos = lazy(() => import("./pages/Concursos.tsx"));
 const RadarConcursos = lazy(() => import("./pages/RadarConcursos.tsx"));
 const RadarEstatisticas = lazy(() => import("./pages/RadarEstatisticas.tsx"));
@@ -155,35 +151,23 @@ const MinhasLeituras = lazy(() => import("./pages/MinhasLeituras.tsx"));
 const MeusResumos = lazy(() => import("./pages/MeusResumos.tsx"));
 const MinhasVideoaulas = lazy(() => import("./pages/MinhasVideoaulas.tsx"));
 
-const ModoAula = lazy(() => import("./pages/ModoAula.tsx"));
-const ModoAulaSessao = lazy(() => import("./pages/ModoAulaSessao.tsx"));
-const ModoAulaAula = lazy(() => import("./pages/ModoAulaAula.tsx"));
 const MeExplique = lazy(routePrefetch.meExplique);
 const ChatJuridico = lazy(() => import("./pages/ChatJuridico.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
-const AgendaCamara = lazy(() => import("./pages/tres-poderes/AgendaCamara.tsx"));
-const AgendaSenado = lazy(() => import("./pages/tres-poderes/AgendaSenado.tsx"));
 const AgendaSTF = lazy(() => import("./pages/tres-poderes/AgendaSTF.tsx"));
 const SessoesAoVivo = lazy(() => import("./pages/tres-poderes/SessoesAoVivo.tsx"));
-const RadarDeputados = lazy(() => import("./pages/RadarDeputados.tsx"));
 const RadarSTF = lazy(() => import("./pages/RadarSTF.tsx"));
-const RadarVotacoes = lazy(() => import("./pages/RadarVotacoes.tsx"));
 const PoderDetalhe = lazy(() => import("./pages/PoderDetalhe.tsx"));
 const PortaisPoder = lazy(() => import("./pages/tres-poderes/PortaisPoder.tsx"));
-const PodcastPlayer = lazy(() => import("./pages/PodcastPlayer.tsx"));
-const PodcastsLista = lazy(() => import("./pages/PodcastsLista.tsx"));
-const RadarRankings = lazy(() => import("./pages/RadarRankings.tsx"));
 const RadarProposicoes = lazy(() => import("./pages/RadarProposicoes.tsx"));
 const RadarProposicoesDia = lazy(() => import("./pages/RadarProposicoesDia.tsx"));
 const RadarCategorias = lazy(() => import("./pages/RadarCategorias.tsx"));
 const RadarEmAlta = lazy(() => import("./pages/RadarEmAlta.tsx"));
-const RadarDeputadoDetalhe = lazy(() => import("./pages/RadarDeputadoDetalhe.tsx"));
 const LegislacaoEstadual = lazy(() => import("./pages/LegislacaoEstadual.tsx"));
 const EstadoDetalhe = lazy(() => import("./pages/EstadoDetalhe.tsx"));
 const LeiEstadualView = lazy(() => import("./pages/LeiEstadualView.tsx"));
 const ExplicacaoLei = lazy(() => import("./pages/ExplicacaoLei.tsx"));
-const RadarPLDetalhe = lazy(() => import("./pages/RadarPLDetalhe.tsx"));
 const NarracaoLei = lazy(() => import("./pages/NarracaoLei.tsx"));
 
 const PlanoEstudos = lazy(() => import("./pages/ferramentas/PlanoEstudos.tsx"));
@@ -203,17 +187,9 @@ const Radares = lazy(routePrefetch.radares);
 
 const Estudar = lazy(routePrefetch.estudos);
 const EstudosHub = lazy(() => import("./pages/EstudosHub.tsx"));
-const Aprender = lazy(routePrefetch.aprender);
 
-const ArtigoEducacional = lazy(() => import("./pages/ArtigoEducacional.tsx"));
-const CategoriaAprender = lazy(() => import("./pages/CategoriaAprender.tsx"));
-const AprenderArea = lazy(() => import("./pages/AprenderArea.tsx"));
 const QuestoesArea = lazy(() => import("./pages/QuestoesArea.tsx"));
 const FlashcardsArea = lazy(() => import("./pages/FlashcardsArea.tsx"));
-const AprenderTeoria = lazy(() => import("./pages/AprenderTeoria.tsx"));
-const AprenderTrilhas = lazy(() => import("./pages/AprenderTrilhas.tsx"));
-const AprenderQuestoes = lazy(() => import("./pages/AprenderQuestoes.tsx"));
-const AprenderFlashcards = lazy(() => import("./pages/AprenderFlashcards.tsx"));
 const Flashcards = lazy(() => import("./pages/Flashcards.tsx"));
 const FlashcardsCargos = lazy(() => import("./pages/FlashcardsCargos.tsx"));
 const FlashcardsCargosDetalhes = lazy(() => import("./pages/FlashcardsCargosDetalhes.tsx"));
@@ -249,9 +225,6 @@ const VideoaulasLista = lazy(routePrefetch.videoaulasLista);
 const VideoaulaView = lazy(routePrefetch.videoaulaView);
 
 const VideoaulasConcurso = lazy(() => import("./pages/VideoaulasConcurso.tsx"));
-const AprenderDesempenho = lazy(() => import("./pages/AprenderDesempenho.tsx"));
-const AprenderAula = lazy(() => import("./pages/AprenderAula.tsx"));
-const AprenderModulo = lazy(routePrefetch.aprenderModulo);
 const JurisprudenciaArtigo = lazy(() => import("./pages/JurisprudenciaArtigo"));
 const Jurisprudencia = lazy(() => import("./pages/Jurisprudencia.tsx"));
 const PesquisasProntasLista = lazy(() => import("./pages/PesquisasProntasLista.tsx"));
@@ -401,7 +374,6 @@ const BibliotecaCaderno = lazy(() => import("./pages/BibliotecaCaderno.tsx"));
 const AdminLeituraNativa = lazy(() => import("./pages/AdminLeituraNativa.tsx"));
 const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
-const LeisCantadas = lazy(() => import("./pages/LeisCantadas.tsx"));
 const Audioleis = lazyWithRetry(routePrefetch.audioleis);
 const AdminConteudoFila = lazy(() => import("./pages/AdminConteudoFila.tsx"));
 const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
@@ -418,7 +390,6 @@ const ModoOffline = lazy(() => import("./pages/ModoOffline.tsx"));
 const ModoOfflineLeis = lazy(() => import("./pages/ModoOfflineLeis.tsx"));
 const ModoOfflineLivros = lazy(() => import("./pages/ModoOfflineLivros.tsx"));
 const ModoOfflineAudioaulas = lazy(() => import("./pages/ModoOfflineAudioaulas.tsx"));
-const ModoOfflineLeisCantadas = lazy(() => import("./pages/ModoOfflineLeisCantadas.tsx"));
 const ModoOfflineApresentacoes = lazy(() => import("./pages/ModoOfflineApresentacoes.tsx"));
 const BoletinsJuridicos = lazy(() => import("./pages/BoletinsJuridicos.tsx"));
 const PilulasHome = lazy(() => import("./pages/pilulas/PilulasHome.tsx"));
@@ -441,7 +412,6 @@ const AdminSuporte = lazy(() => import("./pages/AdminSuporte.tsx"));
 const Opiniao = lazy(() => import("./pages/Opiniao.tsx"));
 const MinhaCota = lazy(() => import("./pages/MinhaCota.tsx"));
 const PreferenciasLembretes = lazy(() => import("./pages/PreferenciasLembretes.tsx"));
-const AnotacoesAudio = lazy(() => import("./pages/AnotacoesAudio.tsx"));
 const AssistenteApp = lazy(() => import("./pages/AssistenteApp.tsx"));
 const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 
@@ -677,8 +647,8 @@ function LazyFallback() {
     );
   }
 
-  // Skeleton contextual para Aprender e Videoaulas (Item 43)
-  if (path.includes('/aprender') || path.includes('/videoaulas')) {
+  // Skeleton contextual para Aulas e Videoaulas (Item 43)
+  if (path.includes('/aulas') || path.includes('/videoaulas')) {
     return (
       <div className="min-h-dvh bg-[#0D0D0D] p-4 pt-16 space-y-5 max-w-5xl mx-auto" aria-busy="true">
         <div className="h-8 w-60 rounded bg-white/[0.06] animate-pulse" />
@@ -977,18 +947,12 @@ function AnimatedRoutes() {
           <Route path="/lembretes" element={<ProtectedRoute><PageTransition><CentralLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/local" element={<ProtectedRoute><PageTransition><LembretesLocal /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/seguranca" element={<ProtectedRoute><PageTransition><Seguranca /></PageTransition></ProtectedRoute>} />
-          <Route path="/anotacoes/audio" element={<ProtectedRoute><PageTransition><AnotacoesAudio /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/excluir-conta" element={<ProtectedRoute><PageTransition><ExcluirConta /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar/deputados" element={<ProtectedRoute><PageTransition><RadarDeputados /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/stf" element={<ProtectedRoute><PageTransition><RadarSTF /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar/votacoes" element={<ProtectedRoute><PageTransition><RadarVotacoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar/rankings" element={<ProtectedRoute><PageTransition><RadarRankings /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/proposicoes" element={<ProtectedRoute><PageTransition><RadarProposicoes /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/proposicoes/:date" element={<ProtectedRoute><PageTransition><RadarProposicoesDia /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/categorias" element={<ProtectedRoute><PageTransition><RadarCategorias /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar/deputado/:id" element={<ProtectedRoute><PageTransition><RadarDeputadoDetalhe /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/em-alta" element={<ProtectedRoute><PageTransition><RadarEmAlta /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar/pl/:id" element={<ProtectedRoute><PageTransition><RadarPLDetalhe /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao-estadual" element={<ProtectedRoute><PageTransition><LegislacaoEstadual /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao-estadual/:uf" element={<ProtectedRoute><PageTransition><EstadoDetalhe /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao-estadual/:uf/lei/:slug" element={<ProtectedRoute><PageTransition><LeiEstadualView /></PageTransition></ProtectedRoute>} />
@@ -1028,17 +992,6 @@ function AnimatedRoutes() {
           <Route path="/vade-mecum/sumulas" element={<ProtectedRoute><PageTransition instant><VadeMecumSumulas /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/favoritos" element={<ProtectedRoute><PageTransition instant><VadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/vade-mecum/recentes" element={<ProtectedRoute><PageTransition instant><VadeMecumRecentes /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender" element={<ProtectedRoute><PageTransition instant><Aprender /></PageTransition></ProtectedRoute>} />
-
-          <Route path="/aprender/categoria/:categoriaId" element={<ProtectedRoute><PageTransition instant><CategoriaAprender /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/area/:slug" element={<ProtectedRoute><PageTransition instant><AprenderArea /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/modulo/:moduloId" element={<ProtectedRoute><PageTransition instant><AprenderModulo /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/teoria" element={<ProtectedRoute><PageTransition instant><AprenderTeoria /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/trilhas" element={<ProtectedRoute><PageTransition instant><AprenderTrilhas /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/questoes" element={<ProtectedRoute><PageTransition instant><AprenderQuestoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/flashcards" element={<ProtectedRoute><PageTransition instant><AprenderFlashcards /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/desempenho" element={<ProtectedRoute><PageTransition instant><AprenderDesempenho /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/aula/:aulaId" element={<ProtectedRoute><PageTransition instant><AprenderAula /></PageTransition></ProtectedRoute>} />
           
           <Route path="/questoes/area/:slug" element={<ProtectedRoute><PageTransition instant><QuestoesArea /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/area/:slug" element={<ProtectedRoute><PageTransition instant><FlashcardsArea /></PageTransition></ProtectedRoute>} />
@@ -1094,7 +1047,9 @@ function AnimatedRoutes() {
         <Route path="/jurisprudencia/teses-stj" element={<ProtectedRoute><PageTransition><TesesSTJ /></PageTransition></ProtectedRoute>} />
         <Route path="/jurisprudencia/teses-stf" element={<ProtectedRoute><PageTransition><TesesSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia" element={<ProtectedRoute><PageTransition instant><Jurisprudencia /></PageTransition></ProtectedRoute>} />
-          <Route path="/aprender/:slug" element={<ProtectedRoute><PageTransition><ArtigoEducacional /></PageTransition></ProtectedRoute>} />
+          <Route path="/aulas" element={<ProtectedRoute><PageTransition instant><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
+          <Route path="/aprender" element={<Navigate to="/aulas" replace />} />
+          <Route path="/aprender/*" element={<Navigate to="/aulas" replace />} />
           {/* Pílulas */}
           <Route path="/pilulas/classicos" element={<ProtectedRoute><PageTransition><Pilulas /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/cp" element={<ProtectedRoute><PageTransition><PilulasLeiSeca slug="cp" /></PageTransition></ProtectedRoute>} />
@@ -1224,14 +1179,9 @@ function AnimatedRoutes() {
           <Route path="/meus-resumos" element={<ProtectedRoute><PageTransition><MeusResumos /></PageTransition></ProtectedRoute>} />
           <Route path="/minhas-videoaulas" element={<ProtectedRoute><PageTransition><MinhasVideoaulas /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/modo-aula" element={<ProtectedRoute><PageTransition><ModoAula /></PageTransition></ProtectedRoute>} />
-          <Route path="/modo-aula/sessao" element={<ProtectedRoute><ModoAulaSessao /></ProtectedRoute>} />
-          <Route path="/modo-aula/aula/:id" element={<ProtectedRoute><PageTransition><ModoAulaAula /></PageTransition></ProtectedRoute>} />
-          <Route path="/modo-aula/disciplina/:id" element={<ProtectedRoute><PageTransition><ModoAula /></PageTransition></ProtectedRoute>} />
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
-          <Route path="/leis-cantadas" element={<ProtectedRoute><PageTransition><LeisCantadas /></PageTransition></ProtectedRoute>} />
           <Route path="/audioleis" element={<ProtectedRoute><PageTransition><Audioleis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-conteudo-fila" element={<ProtectedRoute><PageTransition><AdminConteudoFila /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeis /></PageTransition></ProtectedRoute>} />
@@ -1246,30 +1196,22 @@ function AnimatedRoutes() {
           <Route path="/modo-offline/leis-e-narracoes" element={<ProtectedRoute><PageTransition><ModoOfflineLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/livros" element={<ProtectedRoute><PageTransition><ModoOfflineLivros /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/audioaulas" element={<ProtectedRoute><PageTransition><ModoOfflineAudioaulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/modo-offline/leis-cantadas" element={<ProtectedRoute><PageTransition><ModoOfflineLeisCantadas /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/apresentacoes" element={<ProtectedRoute><PageTransition><ModoOfflineApresentacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/assistente" element={<ProtectedRoute><PageTransition instant><AssistenteApp /></PageTransition></ProtectedRoute>} />
           <Route path="/assistente-horus" element={<ProtectedRoute><PageTransition instant><AssistenteHorus /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/pessoal/avisos" element={<ProtectedRoute><PageTransition><PessoalAvisos /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/grifos" element={<ProtectedRoute><PageTransition><PessoalGrifos /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/artigos" element={<ProtectedRoute><PageTransition><PessoalArtigos /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/leis" element={<ProtectedRoute><PageTransition><PessoalLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/anotacoes" element={<ProtectedRoute><PageTransition><PessoalAnotacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/livros" element={<ProtectedRoute><PageTransition><PessoalLivros /></PageTransition></ProtectedRoute>} />
-          <Route path="/pessoal/filmes" element={<ProtectedRoute><PageTransition><PessoalFilmes /></PageTransition></ProtectedRoute>} />
           <Route path="/pessoal/jurisprudencias" element={<ProtectedRoute><PageTransition><PessoalJurisprudencias /></PageTransition></ProtectedRoute>} />
-          <Route path="/pessoal/tematicas" element={<ProtectedRoute><PageTransition><PessoalTematicas /></PageTransition></ProtectedRoute>} />
           <Route path="/meu-espaco" element={<ProtectedRoute><PageTransition instant><MeuEspaco /></PageTransition></ProtectedRoute>} />
           <Route path="/graficos/avaliacao" element={<ProtectedRoute><PageTransition><AvaliacaoInteligente /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/:id" element={<ProtectedRoute><PageTransition><PoderDetalhe /></PageTransition></ProtectedRoute>} />
-          <Route path="/tres-poderes/camara/agenda" element={<ProtectedRoute><PageTransition><AgendaCamara /></PageTransition></ProtectedRoute>} />
-          <Route path="/tres-poderes/senado/agenda" element={<ProtectedRoute><PageTransition><AgendaSenado /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/stf/agenda" element={<ProtectedRoute><PageTransition><AgendaSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/stf/sessoes-ao-vivo" element={<ProtectedRoute><PageTransition><SessoesAoVivo /></PageTransition></ProtectedRoute>} />
           <Route path="/tres-poderes/:poderId/portais" element={<ProtectedRoute><PageTransition><PortaisPoder /></PageTransition></ProtectedRoute>} />
-          <Route path="/tres-poderes/stf/podcast/:videoId" element={<PageTransition><PodcastPlayer /></PageTransition>} />
-          <Route path="/tres-poderes/stf/podcasts" element={<PageTransition><PodcastsLista /></PageTransition>} />
           <Route path="/notificacoes" element={<Navigate to="/?notificacoes=1" replace />} />
           <Route path="/meus-lembretes" element={<Navigate to="/?notificacoes=1" replace />} />
           <Route path="/mapas-mentais" element={<ProtectedRoute><PageTransition instant><VisualJuridico /></PageTransition></ProtectedRoute>} />
