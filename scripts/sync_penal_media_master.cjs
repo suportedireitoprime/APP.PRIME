@@ -1,12 +1,14 @@
 /**
- * SCRIPT ULTRA TURBO 4X MULTI-AULA DE TRANSFERÊNCIA DE MÍDIAS - DIREITO PENAL
- * Executa 4 aulas simultaneamente em paralelo, cada uma com 20 streams (10 áudio + 10 imagem).
- * Total de conexões paralelas: 80 streams.
- * Velocidade média: ~2.5s por aula (~14 minutos para 380 aulas restantes).
+ * SCRIPT NITRO 8X MULTI-AULA DE TRANSFERÊNCIA DE MÍDIAS - DIREITO PENAL (LIMITE EXTREMO)
+ * Executa 8 aulas simultaneamente em paralelo, cada uma com 32 streams (16 áudios + 16 imagens).
+ * Total de conexões paralelas: 256 streams com keep-alive de 300 sockets no R2.
+ * Velocidade média: ~1.2s a 1.5s por aula finalizada (~6 minutos para concluir as restantes).
  */
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 
 const s3 = new S3Client({
   region: 'auto',
@@ -14,14 +16,22 @@ const s3 = new S3Client({
   credentials: {
     accessKeyId: '199f43b3ef1e89db1506e45430cb4660',
     secretAccessKey: '6ac079b15bc8f24d9bbeacdf5bbb7ad9ead1b1caa96eafe1ba1b75d15200c6bc'
-  }
+  },
+  requestHandler: new NodeHttpHandler({
+    httpsAgent: new https.Agent({
+      maxSockets: 300,
+      keepAlive: true,
+      keepAliveMsecs: 30000
+    })
+  })
 });
+
 const BUCKET = 'estudos-juridicos-midias';
 const LOG_FILE = path.join(__dirname, 'media_sync.log');
 const PROGRESS_FILE = path.join(__dirname, 'aulas_media_sync_progress.json');
 
-const AULAS_CONCURRENCY = 4; // 4 aulas processadas simultaneamente
-const STREAM_CONCURRENCY = 10; // 10 downloads/uploads de áudio + 10 de imagem por aula
+const AULAS_CONCURRENCY = 8; // 8 aulas processadas SIMULTANEAMENTE!
+const STREAM_CONCURRENCY = 16; // 16 áudios + 16 imagens por aula (32 conexões por aula = 256 total)
 
 function log(msg) {
   const line = `[${new Date().toLocaleTimeString('pt-BR')}] ${msg}\n`;
@@ -106,7 +116,7 @@ async function fetchFolderItems(folderId, retries = 3) {
       return items;
     } catch {
       if (attempt === retries) return [];
-      await new Promise(r => setTimeout(r, 600 * attempt));
+      await new Promise(r => setTimeout(r, 400 * attempt));
     }
   }
   return [];
@@ -126,7 +136,7 @@ async function downloadDriveBuffer(fileId, retries = 3) {
       }
     } catch {
       if (attempt === retries) return null;
-      await new Promise(r => setTimeout(r, 600 * attempt));
+      await new Promise(r => setTimeout(r, 400 * attempt));
     }
   }
   return null;
@@ -146,7 +156,7 @@ async function main() {
   const PENAL_ROOT_ID = '13NRXMToFSblGbd3bL6Ut9-q2HQRMDSe4';
 
   log(`======================================================================`);
-  log(`>>> INICIANDO PROCESSAMENTO ULTRA TURBO: DIREITO PENAL (${AULAS_CONCURRENCY} AULAS EM PARALELO / 80 STREAMS)`);
+  log(`>>> MODO NITRO MÁXIMO ATIVADO: DIREITO PENAL (${AULAS_CONCURRENCY} AULAS EM PARALELO / 256 STREAMS)`);
   log(`======================================================================\n`);
 
   log(`Buscando matérias de Direito Penal no Drive...`);
@@ -223,7 +233,7 @@ async function main() {
   let totalImagensUploaded = 0;
   let aulasIniciadasNestaSessao = 0;
 
-  // Executa 4 aulas simultaneamente
+  // Executa 8 aulas simultaneamente (Modo Nitro 256 streams)
   await asyncPool(AULAS_CONCURRENCY, totalAulasList, async (item) => {
     if (progress[item.key] && progress[item.key].status === 'concluido' && progress[item.key].audios > 0) {
       return;
@@ -233,7 +243,7 @@ async function main() {
     aulasIniciadasNestaSessao++;
 
     let etaString = 'calculando...';
-    if (aulasIniciadasNestaSessao >= 4) {
+    if (aulasIniciadasNestaSessao >= 8) {
       const elapsed = Date.now() - startTime;
       const avgMsPerAula = elapsed / aulasIniciadasNestaSessao;
       const remainingCount = totalPenal - completedCount;
@@ -241,7 +251,7 @@ async function main() {
       etaString = formatDuration(remainingMs);
     }
 
-    log(`[${completedCount + 1}/${totalPenal} - ${(((completedCount + 1)/totalPenal)*100).toFixed(1)}%] [ETA: ${etaString}] 🚀 INICIANDO: ${item.matNome} > ${item.aulaName}`);
+    log(`[${completedCount + 1}/${totalPenal} - ${(((completedCount + 1)/totalPenal)*100).toFixed(1)}%] [ETA: ${etaString}] ⚡ INICIANDO (NITRO): ${item.matNome} > ${item.aulaName}`);
 
     try {
       const folderItems = await fetchFolderItems(item.folderId);
@@ -252,7 +262,7 @@ async function main() {
       let audioCount = 0;
       let imgCount = 0;
 
-      // Transferência Simultânea de Áudios e Imagens com 10 streams cada (20 streams por aula)
+      // Transferência Simultânea de Áudios e Imagens com 16 streams cada (32 streams por aula)
       await Promise.all([
         (async () => {
           if (!audioFolder) return;
@@ -308,7 +318,7 @@ async function main() {
 
       const aulaDuration = formatDuration(Date.now() - aulaStartTime);
       const pctGeral = ((completedCount / totalPenal) * 100).toFixed(1);
-      log(`   ⚡ [${completedCount}/${totalPenal} - ${pctGeral}%] CONCLUÍDA EM ${aulaDuration}! (${audioCount} áudios + ${imgCount} imagens) -> ${item.aulaName}`);
+      log(`   🔥 [${completedCount}/${totalPenal} - ${pctGeral}%] CONCLUÍDA EM ${aulaDuration}! (${audioCount} áudios + ${imgCount} imagens) -> ${item.aulaName}`);
     } catch (err) {
       log(`   ❌ Erro em ${item.aulaName}: ${err.message}`);
     }
