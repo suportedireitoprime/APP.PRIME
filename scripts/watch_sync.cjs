@@ -109,3 +109,4 @@ function updateScreen() {
 // Atualiza a cada 1.5s
 setInterval(updateScreen, 1500);
 updateScreen();
+
