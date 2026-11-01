@@ -158,7 +158,13 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
         if (Array.isArray(rawEtapas) && rawEtapas.length > 0) {
           const slides: SlideItem[] = rawEtapas.map((e: any, idx: number) => {
             let img = e.imgUrl || e.imagem || '';
-            if (!img && (e.img === 'capa' || idx === 0)) {
+            if (!img && e.img) {
+              if (e.img === 'capa') {
+                img = aula.capaUrl || (baseFolder ? `${baseFolder}/assets/img/capa.webp` : '');
+              } else if (baseFolder) {
+                img = `${baseFolder}/assets/img/${e.img}.webp`;
+              }
+            } else if (!img && idx === 0) {
               img = aula.capaUrl || '';
             } else if (img && img.startsWith('assets/') && baseFolder) {
               img = `${baseFolder}/${img}`;
