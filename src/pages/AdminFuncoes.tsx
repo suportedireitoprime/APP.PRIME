@@ -17,7 +17,6 @@ import { AdminHojeCards } from '@/components/admin/AdminHojeCards';
 
 // Prefetch map
 const PREFETCH: Record<string, () => Promise<unknown>> = {
-  '/admin-cotas-analise': () => import('./AdminCotasAnalise'),
   '/admin-aulas-interativas': () => import('./AdminAulasInterativas'),
   '/admin-monitor': () => import('./AdminMonitor'),
   '/admin-monitor-usuarios': () => import('./AdminMonitorUsuarios'),
@@ -26,7 +25,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-horus': () => import('./AdminHorus'),
   '/admin-horus-template': () => import('./AdminHorusTemplate'),
 
-  '/admin-atualizacao': () => import('./AdminAtualizacao'),
   '/admin-blog-edicao': () => import('./AdminBlogEdicao'),
   '/admin-omniroute': () => import('./AdminOmniRouteTeste'),
   '/admin-design-imagens': () => import('./AdminDesignImagens'),
@@ -41,14 +39,12 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
   '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
   '/admin-biblioteca-leis': () => import('./AdminBibliotecaLeis'),
-  '/admin-buscador-leis': () => import('./AdminBuscadorLeis'),
 
   '/boletins': () => import('./BoletinsJuridicos'),
   
   '/admin-biblioteca-editar': () => import('./BibliotecaEditar'),
   '/admin-leitura-nativa': () => import('./AdminLeituraNativa'),
   '/admin-audioaulas': () => import('./AdminAudioaulas'),
-  '/narracao': () => import('./NarracaoLei'),
   '/admin-vade-mecum': () => import('./AdminVadeMecum'),
   '/explicacao-lei': () => import('./ExplicacaoLei'),
   '/newsletter': () => import('./Newsletter'),
@@ -143,17 +139,6 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: 'cotas-analise-cat',
-    title: 'Cotas Análise',
-    desc: 'Ranking de consumo de cotas gratuitas e bloqueios (ciclo de 30 dias)',
-    icon: Gauge,
-    route: '/admin-cotas-analise',
-    items: [
-      { id: 'cotas-analise', label: 'Cotas Análise', icon: Gauge, desc: 'Quem usou todas as cotas, ranking e bloqueios por função', route: '/admin-cotas-analise' },
-    ],
-  },
-
-  {
     id: 'push',
     title: 'Notificações Push',
     desc: 'Campanhas, agendamento e métricas',
@@ -215,22 +200,11 @@ const CATEGORIES: Category[] = [
     ],
   },
   {
-    id: 'lembretes',
-    title: 'Lembretes',
-    desc: 'Funções do app que oferecem lembretes ao usuário',
-    icon: BellRing,
-    route: '/admin-lembretes',
-    items: [
-      { id: 'admin-lembretes-biblioteca', label: 'Biblioteca', icon: BookOpen, desc: 'Lembretes de leitura: métricas, canais e disparos', route: '/admin-lembretes/biblioteca' },
-    ],
-  },
-  {
     id: 'narracao-conteudo',
     title: 'Narração de Conteúdo',
     desc: 'Narrar livros da biblioteca e artigos do blog com vozes do Gemini',
     icon: Mic,
     items: [
-      { id: 'narracao', label: 'Narração Editar (Avulso)', icon: Mic, desc: 'TTS com Gemini para conteúdo rápido', route: '/narracao' },
       { id: 'admin-narracao-biblioteca', label: 'Narração Biblioteca', icon: BookOpen, desc: 'Escolha o livro, a voz e narre página por página ou em fila', route: '/admin-narracao/biblioteca' },
       { id: 'admin-narracao-blog', label: 'Narração Blog e Artigos', icon: Newspaper, desc: 'Prévia de voz e narração dos artigos do Blogger', route: '/admin-narracao/blog' },
     ],
@@ -263,7 +237,6 @@ const CATEGORIES: Category[] = [
     icon: Rss,
     items: [
       { id: 'admin-biblioteca-leis', label: 'Biblioteca de Leis', icon: BookOpen, desc: 'Auditoria, verificação de atualização e sugestões do Radar', route: '/admin-biblioteca-leis' },
-      { id: 'admin-buscador-leis', label: 'Buscador de Leis', icon: Search, desc: 'IA busca na web leis faltantes e sugere para adicionar à Biblioteca', route: '/admin-buscador-leis' },
     ],
   },
   {
@@ -276,16 +249,6 @@ const CATEGORIES: Category[] = [
       { id: 'boletins-player', label: 'Player de Boletins', icon: Rss, desc: 'Visualizar boletins publicados no app', route: '/boletins' },
     ],
   },
-  {
-    id: 'atualizacao',
-    title: 'Passo a passo — Atualização',
-    desc: 'Build, ícone, splash e Firebase',
-    icon: RefreshCcw,
-    items: [
-      { id: 'admin-atualizacao', label: 'Atualizar app no GitHub', icon: GitBranch, desc: 'Guia completo: repositório, secrets e build', route: '/admin-atualizacao' },
-      { id: 'github-abrir', label: 'Abrir repositório vinculado', icon: Github, desc: 'Vai direto pro repositório configurado' },
-    ],
-  },
 
   {
     id: 'configuracoes',
@@ -296,20 +259,7 @@ const CATEGORIES: Category[] = [
       { id: 'paleta-cores', label: 'Paleta de Cores', icon: Palette, desc: 'Configurações visuais', route: '/configuracoes' },
     ],
   },
-  {
-    id: 'laboratorio-testes',
-    title: 'Laboratório & Viewer',
-    desc: 'Atalhos para testar áreas ocultas do app',
-    icon: Sparkles,
-    items: [
-      { id: 'aprender-viewer', label: 'Aprender (WIP)', icon: GraduationCap, desc: 'Acesso ao módulo principal Aprender (oculto para usuários)', route: '/aprender' },
-      { id: 'praticar', label: 'Praticar', icon: Target, desc: 'Tiro ao alvo na lei seca (em testes, só admin)', route: '/praticar' },
-    ],
-  },
 ];
-
-const REPO_STORAGE_KEY = 'admin_github_repo';
-const DEFAULT_REPO = 'WN7CORP/lexi-guide';
 
 const AdminFuncoes = () => {
   const navigate = useNavigate();
@@ -344,12 +294,6 @@ const AdminFuncoes = () => {
   }, []);
 
   const handleClick = async (item: Item) => {
-    if (item.id === 'github-abrir') {
-      const repo = (typeof window !== 'undefined' && localStorage.getItem(REPO_STORAGE_KEY)) || DEFAULT_REPO;
-      window.open(`https://github.com/${repo}`, '_blank');
-      return;
-    }
-
     if (item.route) {
       try { await prefetch(item.route); } catch {}
       navigate(item.route, { state: { fromCat: openCat?.id } });

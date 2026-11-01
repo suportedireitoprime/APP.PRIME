@@ -167,7 +167,6 @@ const LegislacaoEstadual = lazy(() => import("./pages/LegislacaoEstadual.tsx"));
 const EstadoDetalhe = lazy(() => import("./pages/EstadoDetalhe.tsx"));
 const LeiEstadualView = lazy(() => import("./pages/LeiEstadualView.tsx"));
 const ExplicacaoLei = lazy(() => import("./pages/ExplicacaoLei.tsx"));
-const NarracaoLei = lazy(() => import("./pages/NarracaoLei.tsx"));
 
 const PlanoEstudos = lazy(() => import("./pages/ferramentas/PlanoEstudos.tsx"));
 const STFDashboard = lazy(() => import("./pages/ferramentas/STFDashboard.tsx"));
@@ -338,10 +337,7 @@ const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
 const AdminInstagramPosts = lazy(() => import("./pages/AdminInstagramPosts.tsx"));
 const AdminAulasInterativas = lazy(() => import("./pages/AdminAulasInterativas.tsx"));
-const AdminCotasAnalise = lazy(() => import("./pages/AdminCotasAnalise.tsx"));
 const AdminVadeMecum = lazy(() => import("./pages/AdminVadeMecum.tsx"));
-const AdminLembretes = lazy(() => import("./pages/AdminLembretes.tsx"));
-const AdminLembretesBiblioteca = lazy(() => import("./pages/AdminLembretesBiblioteca.tsx"));
 const AdminNarracaoConteudo = lazy(() => import("./pages/AdminNarracaoConteudo.tsx"));
 const AdminNarracaoBiblioteca = lazy(() => import("./pages/AdminNarracaoBiblioteca.tsx"));
 const AdminNarracaoBlog = lazy(() => import("./pages/AdminNarracaoBlog.tsx"));
@@ -352,7 +348,6 @@ const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
 const AdminUsuarios = lazy(() => import("./pages/AdminUsuarios.tsx"));
 const AdminMonitorUsuarios = lazy(() => import("./pages/AdminMonitorUsuarios.tsx"));
 const AdminMonitorApis = lazy(() => import("./pages/AdminMonitorApis.tsx"));
-const AdminAtualizacao = lazy(() => import("./pages/AdminAtualizacao.tsx"));
 const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
 
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
@@ -375,7 +370,6 @@ const DesktopPromo = lazy(routePrefetch.desktop);
 const AdminBibliotecaLeis = lazy(() => import("./pages/AdminBibliotecaLeis.tsx"));
 const AdminBibliotecaLeisEstaduais = lazy(() => import("./pages/AdminBibliotecaLeisEstaduais.tsx"));
 const AdminBibliotecaLeisGeral = lazy(() => import("./pages/AdminBibliotecaLeisGeral.tsx"));
-const AdminBuscadorLeis = lazy(() => import("./pages/AdminBuscadorLeis.tsx"));
 const NovidadesRadarOverlay = lazy(() => import("./components/NovidadesRadarOverlay"));
 const GlobalDesktopHeader = lazy(() => import("./components/layout/GlobalDesktopHeader"));
 const DesktopFileDropOverlay = lazy(() => import("./components/desktop/DesktopFileDropOverlay"));
@@ -401,7 +395,6 @@ const CentralLembretes = lazy(() => import("./pages/CentralLembretes.tsx"));
 const LembretesLocal = lazy(() => import("./pages/LembretesLocal.tsx"));
 const Suporte = lazy(() => import("./pages/Suporte.tsx"));
 const SuportePublico = lazy(() => import("./pages/SuportePublico.tsx"));
-const AdminSuporte = lazy(() => import("./pages/AdminSuporte.tsx"));
 const Opiniao = lazy(() => import("./pages/Opiniao.tsx"));
 const MinhaCota = lazy(() => import("./pages/MinhaCota.tsx"));
 const PreferenciasLembretes = lazy(() => import("./pages/PreferenciasLembretes.tsx"));
@@ -950,7 +943,6 @@ function AnimatedRoutes() {
           <Route path="/legislacao-estadual/:uf" element={<ProtectedRoute><PageTransition><EstadoDetalhe /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao-estadual/:uf/lei/:slug" element={<ProtectedRoute><PageTransition><LeiEstadualView /></PageTransition></ProtectedRoute>} />
           <Route path="/explicacao-lei" element={<ProtectedRoute><PageTransition><ExplicacaoLei /></PageTransition></ProtectedRoute>} />
-          <Route path="/narracao" element={<ProtectedRoute><PageTransition><NarracaoLei /></PageTransition></ProtectedRoute>} />
 
           <Route path="/ferramentas" element={<ProtectedRoute><PageTransition instant><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/documentos" element={<ProtectedRoute><PageTransition><Documentos /></PageTransition></ProtectedRoute>} />
@@ -1110,14 +1102,11 @@ function AnimatedRoutes() {
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-instagram-posts" element={<ProtectedRoute><PageTransition><AdminInstagramPosts /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-aulas-interativas" element={<ProtectedRoute><PageTransition><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-cotas-analise" element={<ProtectedRoute><PageTransition><AdminCotasAnalise /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum-historico" element={<ProtectedRoute><PageTransition><AdminVadeMecumHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-mapeamento-leis" element={<ProtectedRoute><PageTransition><AdminMapeamentoLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao-leis" element={<ProtectedRoute><PageTransition><AdminNarracaoLeis /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-lembretes" element={<ProtectedRoute><PageTransition><AdminLembretes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-lembretes/biblioteca" element={<ProtectedRoute><PageTransition><AdminLembretesBiblioteca /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao" element={<ProtectedRoute><PageTransition><AdminNarracaoConteudo /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao/biblioteca" element={<ProtectedRoute><PageTransition><AdminNarracaoBiblioteca /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao/blog" element={<ProtectedRoute><PageTransition><AdminNarracaoBlog /></PageTransition></ProtectedRoute>} />
@@ -1133,8 +1122,6 @@ function AnimatedRoutes() {
           <Route path="/opiniao" element={<ProtectedRoute><PageTransition><Opiniao /></PageTransition></ProtectedRoute>} />
           <Route path="/minha-cota" element={<ProtectedRoute><PageTransition><MinhaCota /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-suporte" element={<ProtectedRoute><PageTransition><AdminSuporte /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-atualizacao" element={<ProtectedRoute><PageTransition><AdminAtualizacao /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-jurisprudencia" element={<ProtectedRoute><PageTransition><AdminJurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-push" element={<ProtectedRoute><PageTransition><AdminPush /></PageTransition></ProtectedRoute>} />
 
@@ -1174,7 +1161,6 @@ function AnimatedRoutes() {
           <Route path="/admin-biblioteca-leis/estadual" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeisEstaduais /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis/estadual/:uf" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeisEstaduais /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis/geral" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeisGeral /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-buscador-leis" element={<ProtectedRoute><PageTransition><AdminBuscadorLeis /></PageTransition></ProtectedRoute>} />
 
 
           <Route path="/desktop" element={<PageTransition><DesktopPromo /></PageTransition>} />
