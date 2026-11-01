@@ -4,7 +4,8 @@ import {
   Layers, HelpCircle, AlertCircle, Award, CheckCircle2,
   Sparkles, ArrowUpRight
 } from 'lucide-react';
-import { AulaItem, MateriaItem, DisciplinaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import { AulaItem, MateriaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import type { DisciplinaItem } from './AulasHeroPanel';
 
 interface AulasTabEstatisticasProps {
   disciplinaAtual?: DisciplinaItem | null;

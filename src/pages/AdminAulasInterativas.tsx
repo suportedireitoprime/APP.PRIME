@@ -606,7 +606,7 @@ export default function AdminAulasInterativas() {
         const disciplinasFiltradas = DISCIPLINAS_CATALOGO.filter(disc => {
           if (!termoBuscaNorm) return true;
           const matchNome = disc.nome.toLowerCase().includes(termoBuscaNorm);
-          const matchMateria = MATERIAS_CATALOGO.some(m => m.disciplinaId === disc.id && m.nome.toLowerCase().includes(termoBuscaNorm));
+          const matchMateria = MATERIAS_CATALOGO.some(m => m.disciplinaId === disc.id && ((m as any).nome || m.titulo || "").toLowerCase().includes(termoBuscaNorm));
           const matchAula = AULAS_CATALOGO.some(a => a.disciplinaId === disc.id && a.titulo.toLowerCase().includes(termoBuscaNorm));
           return matchNome || matchMateria || matchAula;
         });
@@ -1485,7 +1485,7 @@ export default function AdminAulasInterativas() {
         const aulasFiltradas = aulasDaMateria.filter(aula => {
           if (!termoBuscaNorm) return true;
           return aula.titulo.toLowerCase().includes(termoBuscaNorm) || 
-            (aula.descricaoBreve && aula.descricaoBreve.toLowerCase().includes(termoBuscaNorm));
+            (aul((a as any).descricaoBreve || a.descricao || "") && aul((a as any).descricaoBreve || a.descricao || "").toLowerCase().includes(termoBuscaNorm));
         });
 
         return (

@@ -19,7 +19,7 @@ export const AulasMenuAlternancia: React.FC<AulasMenuAlternanciaProps> = ({
   totalFavoritos = 0,
   porcentagemGeral = 0
 }) => {
-  const abas: { id: AbaAulas; label: string; icon: React.FC<{ className?: string }>; badge?: string | number }[] = [
+  const abas: { id: AbaAulas; label: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; badge?: string | number }[] = [
     { id: 'trilhas', label: 'Trilhas', icon: Compass },
     { id: 'progresso', label: 'Progresso', icon: CheckCircle2, badge: porcentagemGeral > 0 ? `${porcentagemGeral}%` : undefined },
     { id: 'favoritos', label: 'Favoritos', icon: Star, badge: totalFavoritos > 0 ? totalFavoritos : undefined },

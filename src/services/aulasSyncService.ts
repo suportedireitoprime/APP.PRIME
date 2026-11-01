@@ -73,8 +73,7 @@ export async function carregarProgressoSupabase(): Promise<{
 
   try {
     const userId = await getEffectiveUserId();
-    const { data, error } = await supabase
-      .from('aulas_trilhas_progresso')
+    const { data, error } = await (supabase as any).from('aulas_trilhas_progresso')
       .select('*')
       .eq('user_id', userId);
 
@@ -161,7 +160,7 @@ export async function salvarProgressoSupabase(params: {
     const userId = await getEffectiveUserId();
     const isCicloCompleto = aulaTerminada && flashcardsRevisados && questoesPraticadas;
 
-    await supabase.from('aulas_trilhas_progresso').upsert({
+    await (supabase as any).from('aulas_trilhas_progresso').upsert({
       user_id: userId,
       aula_id: aula.id,
       disciplina_id: aula.disciplinaId,
@@ -200,8 +199,7 @@ export async function carregarFavoritosSupabase(): Promise<Set<string>> {
 
   try {
     const userId = await getEffectiveUserId();
-    const { data, error } = await supabase
-      .from('aulas_trilhas_favoritos')
+    const { data, error } = await (supabase as any).from('aulas_trilhas_favoritos')
       .select('aula_id')
       .eq('user_id', userId);
 
@@ -244,7 +242,7 @@ export async function alternarFavoritoSupabase(aula: AulaItem, isFavoritoAtual: 
   try {
     const userId = await getEffectiveUserId();
     if (novoEstado) {
-      await supabase.from('aulas_trilhas_favoritos').upsert({
+      await (supabase as any).from('aulas_trilhas_favoritos').upsert({
         user_id: userId,
         aula_id: aula.id,
         disciplina_id: aula.disciplinaId,
@@ -254,7 +252,7 @@ export async function alternarFavoritoSupabase(aula: AulaItem, isFavoritoAtual: 
         onConflict: 'user_id,aula_id'
       });
     } else {
-      await supabase.from('aulas_trilhas_favoritos')
+      await (supabase as any).from('aulas_trilhas_favoritos')
         .delete()
         .eq('user_id', userId)
         .eq('aula_id', aula.id);

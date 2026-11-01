@@ -302,6 +302,9 @@ export function PlayerAulaNativo({
 
   // HTML com o Grifo Leve e Elegante por cima na frase ativa (respeita a chavinha de ativar/desativar)
   const htmlComGrifo = useMemo(() => {
+    // Flashcards, Karaokê e Questões têm renderização própria e não devem duplicar narração embaixo
+    if (isFlashcard || slideAtual?.tipo === 'Karaokê' || isQuestao) return '';
+
     let rawHtml = slideAtual?.corpo || '';
     if (!rawHtml.trim() && (slideAtual?.narr || slideAtual?.intro)) {
       rawHtml = formatNarracaoParaHtml(slideAtual?.narr || slideAtual?.intro || '', slideAtual?.titulo);
@@ -315,7 +318,7 @@ export function PlayerAulaNativo({
       return rawHtml;
     }
     return highlightFraseInHtml(rawHtml, frasesNarr[karaIdx]);
-  }, [slideAtual?.corpo, slideAtual?.narr, slideAtual?.intro, slideAtual?.titulo, grifoAtivo, tocando, karaIdx, frasesNarr]);
+  }, [slideAtual?.corpo, slideAtual?.narr, slideAtual?.intro, slideAtual?.titulo, slideAtual?.tipo, isFlashcard, isQuestao, grifoAtivo, tocando, karaIdx, frasesNarr]);
 
   // Verifica se o título do slide deve receber o grifo inicial quando a narração começa nele
   const isTituloAtivo = useMemo(() => {
@@ -981,6 +984,29 @@ export function PlayerAulaNativo({
           transition: background-color 0.25s ease-out, outline-color 0.25s ease-out !important;
         }
 
+        /* Karaokê Padrão Oficial do HTML com Mesma Tipografia e Efeito de Destaque */
+        .karaoke {
+          font-size: 17.5px;
+          line-height: 1.85;
+          color: #d8bfc4;
+          font-family: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+        }
+        .karaoke .sent {
+          border-radius: 6px;
+          padding: 2px 4px;
+          cursor: pointer;
+          color: #d8bfc4;
+          transition: background-color 0.25s ease, color 0.25s ease;
+        }
+        .karaoke .sent.on {
+          background-color: rgba(212, 175, 55, 0.28);
+          color: #ffffff;
+          font-weight: 600;
+        }
+        .karaoke .sent.done {
+          color: #f8edef;
+        }
+
         /* Animação Cinematográfica de Flip 3D para Flashcards */
         .flip-perspective {
           perspective: 1200px;
@@ -1354,10 +1380,7 @@ export function PlayerAulaNativo({
                       <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-amber-400 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30">
                         FRENTE · CONCEITO
                       </span>
-                      <span className="text-xs text-amber-200/80 font-medium flex items-center gap-1.5 hover:text-amber-300 transition">
-                        <RotateCcw className="w-4 h-4 text-amber-400" />
-                        <span>Toque para virar</span>
-                      </span>
+                      
                     </div>
 
                     <div className="my-auto py-6 flex items-center justify-center text-center">
@@ -1368,9 +1391,9 @@ export function PlayerAulaNativo({
                     </div>
 
                     <div className="border-t border-white/10 pt-3 text-center">
-                      <p className="text-[11px] sm:text-xs text-zinc-400 font-medium flex items-center justify-center gap-1.5">
-                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                        <span>Teste sua memória antes de virar o cartão</span>
+                      <p className="text-[11px] sm:text-xs text-amber-300/85 font-medium flex items-center justify-center gap-1.5">
+                        <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Toque para virar</span>
                       </p>
                     </div>
                   </div>
@@ -1381,10 +1404,7 @@ export function PlayerAulaNativo({
                       <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-emerald-400 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30">
                         VERSO · RESPOSTA
                       </span>
-                      <span className="text-xs text-emerald-200/80 font-medium flex items-center gap-1.5 hover:text-emerald-300 transition">
-                        <RotateCcw className="w-4 h-4 text-emerald-400" />
-                        <span>Toque para voltar à frente</span>
-                      </span>
+                      
                     </div>
 
                     <div className="my-auto py-6 flex items-center justify-center text-center overflow-y-auto max-h-[220px]">
@@ -1395,9 +1415,9 @@ export function PlayerAulaNativo({
                     </div>
 
                     <div className="border-t border-white/10 pt-3 text-center">
-                      <p className="text-[11px] sm:text-xs text-emerald-300 font-medium flex items-center justify-center gap-1.5">
+                      <p className="text-[11px] sm:text-xs text-emerald-300/80 font-medium flex items-center justify-center gap-1.5">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                        <span>Resposta revelada · Toque para virar novamente</span>
+                        <span>Resposta</span>
                       </p>
                     </div>
                   </div>
@@ -1405,27 +1425,15 @@ export function PlayerAulaNativo({
               </div>
             )}
 
-            {/* Bloco de Karaokê Interativo: Frases Reais da Narração com Grifo Sincronizado */}
+            {/* Bloco de Karaokê: 100% Padrão HTML Original com Frases Interativas e Destaque Sincronizado */}
             {(slideAtual.tipo === 'Karaokê' || (!slideAtual.corpo && slideAtual.frases && slideAtual.frases.length > 0)) && (
-              <div className="rounded-3xl border border-white/15 p-5 sm:p-6 bg-gradient-to-b from-[#2e1219]/90 to-[#1d0810]/95 shadow-2xl space-y-4 animate-in fade-in zoom-in-[0.98] duration-300">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <span 
-                    className="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 border border-white/10 flex items-center gap-1.5"
-                    style={{ color: tema.destaque }}
-                  >
-                    <Volume2 className="w-4 h-4" />
-                    <span>Recapitulação · Siga a Narração</span>
-                  </span>
-                  <span className="text-[11px] font-bold text-zinc-400">
-                    Toque em uma frase para ouvir
-                  </span>
-                </div>
-
-                <div className="space-y-2.5 pt-1">
+              <div className="my-2 space-y-3">
+                <div className="karaoke text-[17px] sm:text-[18.5px] leading-[1.85] text-[#d8bfc4] select-none font-sans">
                   {(slideAtual.frases || frasesNarr).map((frase, fi) => {
                     const isAtiva = tocando && karaIdx === fi;
+                    const isDone = tocando && karaIdx > fi;
                     return (
-                      <div
+                      <span
                         key={fi}
                         onClick={() => {
                           haptic.selection();
@@ -1436,26 +1444,20 @@ export function PlayerAulaNativo({
                             }
                           }
                         }}
-                        className={`p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 cursor-pointer flex items-start gap-3.5 active:scale-[0.99] ${
-                          isAtiva
-                            ? 'border-amber-400/90 bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent shadow-xl shadow-amber-500/10 ring-1 ring-amber-400/60 translate-x-1'
-                            : 'border-white/10 bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06] text-zinc-300'
+                        className={`sent inline rounded-md px-1.5 py-0.5 mx-0.5 cursor-pointer transition-all duration-200 ${
+                          isAtiva ? 'on' : isDone ? 'done' : ''
                         }`}
                       >
-                        <span 
-                          className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5 transition-colors ${
-                            isAtiva ? 'bg-amber-400 text-black shadow-md shadow-amber-400/50' : 'bg-white/10 text-zinc-400'
-                          }`}
-                        >
-                          {fi + 1}
-                        </span>
-                        <p className={`text-sm sm:text-base leading-relaxed transition-colors ${isAtiva ? 'text-amber-200 font-bold' : 'text-zinc-200'}`}>
-                          {frase}
-                        </p>
-                      </div>
+                        {frase}{' '}
+                      </span>
                     );
                   })}
                 </div>
+
+                <p className="text-xs sm:text-[13px] text-[#c9b083]/80 italic flex items-center gap-1.5 pt-2 border-t border-white/10">
+                  <Volume2 className="w-3.5 h-3.5 text-[#d4af37] shrink-0" />
+                  <span>Toque em qualquer frase para ouvir a partir dela.</span>
+                </p>
               </div>
             )}
 
@@ -1609,8 +1611,8 @@ export function PlayerAulaNativo({
               </div>
             )}
 
-            {/* Conteúdo Rico da Aula: 100% Tipografia Autêntica do HTML com Grifo Leve por cima */}
-            {(slideAtual.corpo || htmlComGrifo) && (
+            {/* Conteúdo Rico da Aula: 100% Tipografia Autêntica do HTML com Grifo Leve por cima (oculto em flashcards/karaokê/questões para zero duplicação) */}
+            {(slideAtual.corpo || htmlComGrifo) && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !isQuestao && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && (
               <div 
                 className="aula-html-tipografia pt-1"
                 dangerouslySetInnerHTML={{ __html: htmlComGrifo }}

@@ -3,7 +3,8 @@ import {
   Play, CheckCircle2, Layers, HelpCircle, 
   ChevronRight, Award, Flame, BookOpen 
 } from 'lucide-react';
-import { AulaItem, MateriaItem, DisciplinaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import { AulaItem, MateriaItem } from '@/data/aulasInterativasCatalogoCompleto';
+import type { DisciplinaItem } from './AulasHeroPanel';
 
 interface AulasTabProgressoProps {
   disciplinaAtual?: DisciplinaItem | null;
