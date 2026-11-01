@@ -1,8 +1,5 @@
 import React from 'react';
-import { 
-  Play, CheckCircle2, Layers, HelpCircle, 
-  ChevronRight, Award, Flame, BookOpen 
-} from 'lucide-react';
+import { Play, Layers, HelpCircle, Flame, BookOpen } from 'lucide-react';
 import { AulaItem, MateriaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import type { DisciplinaItem } from './AulasHeroPanel';
 

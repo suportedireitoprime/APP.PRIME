@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowLeft, CheckCircle2, RotateCw, 
-  Award, LockOpen, Check
-} from 'lucide-react';
+import { ArrowLeft, CheckCircle2, RotateCw, Award, LockOpen } from 'lucide-react';
 import type { FlashcardAula } from '@/data/aulasInterativasConteudo';
 
 interface ModalRevisarFlashcardsProps {

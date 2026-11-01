@@ -1,13 +1,12 @@
-import { getAulaFallbackHtml } from '@/utils/getAulaFallbackHtml';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { cn } from '@/lib/utils';
 import { 
-  Sparkles, Play, CheckCircle2, BookOpen, Layers, 
-  ArrowLeft, Check, Lock, HelpCircle, Award, 
-  RotateCcw, AlertCircle, Unlock, ChevronRight, GraduationCap,
-  ShieldCheck, Compass, Search, X, Star
+  Sparkles, Play, BookOpen, Layers, 
+  ArrowLeft, Check, Lock, HelpCircle, 
+  AlertCircle, Unlock, ChevronRight, 
+  Search, X, Star 
 } from 'lucide-react';
 import { AulasMenuAlternancia, AbaAulas } from '@/components/aulas-interativas/AulasMenuAlternancia';
 import { AulasHeroPanel } from '@/components/aulas-interativas/AulasHeroPanel';
@@ -20,17 +19,11 @@ import {
   carregarFavoritosSupabase, 
   alternarFavoritoSupabase 
 } from '@/services/aulasSyncService';
-import { HERO_ILLUSTRATIONS } from '@/components/aprender/chunks/aprenderConstants';
 import { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
 import { ModalRevisarFlashcards } from '@/components/aulas-interativas/ModalRevisarFlashcards';
 import { ModalPraticarQuestoes } from '@/components/aulas-interativas/ModalPraticarQuestoes';
 import { PlayerAulaNativo } from '@/components/aulas-interativas/PlayerAulaNativo';
-import adminCover from '@/assets/biblioteca/areas/direito-administrativo.webp';
-import themisHero from '@/assets/jurisprudencia-hero-themis.webp';
 import capaAdminOrigens from '@/assets/aulas-interativas/direito-administrativo/capa-aula-01-origens.webp';
-import capaAdminDefinicoes from '@/assets/aulas-interativas/direito-administrativo/capa-aula-02-definicoes.webp';
-
-
 import { 
   MATERIAS_CATALOGO_COMPLETO, 
   AULAS_CATALOGO_COMPLETO,
@@ -313,15 +306,7 @@ export default function AdminAulasInterativas() {
 
   
   const [modoLivreTeste, setModoLivreTeste] = useState(false);
-  const [heroIdx, setHeroIdx] = useState(0);
 
-  // Rotação suave da ilustração no banner hero
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setHeroIdx(i => (i + 1) % (HERO_ILLUSTRATIONS.length || 1));
-    }, 4500);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     if (!toastAviso) return;
@@ -971,7 +956,7 @@ export default function AdminAulasInterativas() {
 
                       {/* SVG S-Curve Connector */}
                       {i < disciplinasFiltradas.length - 1 && (
-                        <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-28 sm:h-36 my-2 sm:my-3 pointer-events-none z-[5] overflow-visible">
+                        <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-36 sm:h-44 md:h-52 -my-14 sm:-my-18 md:-my-22 pointer-events-none z-0 overflow-visible">
                           <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                             <defs>
                               <filter id={`trail-glow-disc-${i}`} x="-20%" y="-20%" width="140%" height="140%">
@@ -983,7 +968,7 @@ export default function AdminAulasInterativas() {
                               </filter>
                             </defs>
                             <path
-                              d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                              d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                               fill="none"
                               stroke="rgba(255, 255, 255, 0.08)"
                               strokeWidth="4"
@@ -991,7 +976,7 @@ export default function AdminAulasInterativas() {
                               vectorEffect="non-scaling-stroke"
                             />
                             <path
-                              d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                              d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                               fill="none"
                               className="animate-trail-flow"
                               stroke={disc.corDestaque}
@@ -1404,7 +1389,7 @@ export default function AdminAulasInterativas() {
 
                         {/* SVG S-Curve Connector */}
                         {i < materiasFiltradas.length - 1 && (
-                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-28 sm:h-36 my-2 sm:my-3 pointer-events-none z-[5] overflow-visible">
+                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-36 sm:h-44 md:h-52 -my-14 sm:-my-18 md:-my-22 pointer-events-none z-0 overflow-visible">
                             <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                               <defs>
                                 <filter id={`trail-glow-mat-${i}`} x="-20%" y="-20%" width="140%" height="140%">
@@ -1416,7 +1401,7 @@ export default function AdminAulasInterativas() {
                                 </filter>
                               </defs>
                               <path
-                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                                d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                                 fill="none"
                                 stroke="rgba(255, 255, 255, 0.08)"
                                 strokeWidth="4"
@@ -1424,7 +1409,7 @@ export default function AdminAulasInterativas() {
                                 vectorEffect="non-scaling-stroke"
                               />
                               <path
-                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                                d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                                 fill="none"
                                 className="animate-trail-flow"
                                 stroke={disciplinaAtual.corDestaque}
@@ -1486,8 +1471,8 @@ export default function AdminAulasInterativas() {
         const numMateria = matsDaDisc.findIndex(m => m.id === materiaAtual.id) + 1;
         const aulasFiltradas = aulasDaMateria.filter(aula => {
           if (!termoBuscaNorm) return true;
-          return aula.titulo.toLowerCase().includes(termoBuscaNorm) || 
-            (aul((a as any).descricaoBreve || a.descricao || "") && aul((a as any).descricaoBreve || a.descricao || "").toLowerCase().includes(termoBuscaNorm));
+          const desc = ((aula as any).descricaoBreve || aula.descricao || '').toLowerCase();
+          return aula.titulo.toLowerCase().includes(termoBuscaNorm) || desc.includes(termoBuscaNorm);
         });
 
         return (
@@ -1520,28 +1505,9 @@ export default function AdminAulasInterativas() {
             </div>
 
             <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
-              {/* Título Principal Fora do Cabeçalho com Risquinho Temático */}
-              <div className="flex items-start gap-3 sm:gap-4">
-                <div 
-                  className="w-1.5 sm:w-2 h-10 sm:h-12 rounded-full shrink-0 mt-1 shadow-sm"
-                  style={{ backgroundColor: disciplinaAtual.corDestaque }}
-                />
-                <div className="min-w-0 flex-1">
-                  <span 
-                    className="text-[11px] sm:text-xs font-black uppercase tracking-widest block truncate"
-                    style={{ color: disciplinaAtual.corDestaque }}
-                  >
-                    {disciplinaAtual.nome} · MATÉRIA {numMateria > 0 ? numMateria : 1}
-                  </span>
-                  <h1 className="text-xl xs:text-2xl sm:text-3xl font-serif font-black text-white tracking-tight leading-tight mt-0.5">
-                    {materiaAtual.titulo}
-                  </h1>
-                </div>
-              </div>
-
-              {/* Breadcrumb em Setas: Exatamente Antes do Botão de Pesquisar (Pedido pelo Usuário) */}
+              {/* Breadcrumb em Setas (Rota Completa): Trilhas > Disciplina > Matéria */}
               <nav 
-                aria-label="Caminho de navegação"
+                aria-label="Caminho de navegação da matéria"
                 className="flex items-center flex-wrap gap-1.5 text-xs font-medium select-none"
               >
                 <button
@@ -1551,12 +1517,12 @@ export default function AdminAulasInterativas() {
                     setDisciplinaSelecionadaId(null);
                     resetScrollToTop();
                   }}
-                  className="px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/10 transition-all text-xs font-semibold active:scale-95 shadow-sm"
+                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/10 text-zinc-400 hover:text-white border border-white/10 transition-all text-[11px] sm:text-xs font-semibold active:scale-95"
                 >
                   Trilhas
                 </button>
 
-                <ChevronRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                <ChevronRight className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
 
                 <button
                   type="button"
@@ -1564,7 +1530,7 @@ export default function AdminAulasInterativas() {
                     setMateriaSelecionadaId(null);
                     resetScrollToTop();
                   }}
-                  className="px-2.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/10 border border-white/15 transition-all flex items-center gap-1.5 text-xs font-bold active:scale-95 shadow-sm"
+                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/10 border border-white/10 transition-all flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold active:scale-95"
                   style={{ color: disciplinaAtual.corDestaque }}
                   title={`Voltar para matérias de ${disciplinaAtual.nome}`}
                 >
@@ -1573,13 +1539,32 @@ export default function AdminAulasInterativas() {
 
                 <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: disciplinaAtual.corDestaque }} />
 
-                <div className="px-3 py-1.5 rounded-xl bg-white/[0.09] text-white border border-white/20 text-xs font-bold truncate max-w-[260px] sm:max-w-none flex items-center gap-2 shadow-sm">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: disciplinaAtual.corDestaque }} />
+                <div 
+                  className="px-2.5 py-1 rounded-lg bg-white/[0.08] border border-white/15 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate max-w-[240px] sm:max-w-none"
+                  style={{ color: disciplinaAtual.corDestaque }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: disciplinaAtual.corDestaque }} />
                   <span className="truncate">{materiaAtual.titulo}</span>
                 </div>
               </nav>
 
-              {/* Barra de Pesquisa Nível 3 */}
+              {/* Painel Hero da Matéria em Destaque Antes da Barra de Pesquisa */}
+              <AulasHeroPanel
+                subtitulo={`TRILHA DA MATÉRIA · ${disciplinaAtual.nome.toUpperCase()}`}
+                titulo={materiaAtual.titulo}
+                descricao={materiaAtual.descricao || `Trilha de aulas de ${materiaAtual.titulo}. Conclua os slides interativos narrados, flashcards e questões para avançar.`}
+                porcentagem={pctMat}
+                corDestaque={disciplinaAtual.corDestaque}
+                corFundo={disciplinaAtual.corFundoCard}
+                capaUrl={materiaAtual.capaUrl}
+                metricas={[
+                  { label: 'Aulas', valor: totalAulasMat },
+                  { label: 'Concluídas', valor: `${ciclosCompletosMat}/${totalAulasMat}` },
+                  { label: 'Matéria', valor: `${numMateria > 0 ? numMateria : 1}/${matsDaDisc.length}` }
+                ]}
+              />
+
+              {/* Barra de Pesquisa Nível 3 (Imediatamente Após o Painel da Matéria) */}
               <div className="relative w-full">
                 <div 
                   className="relative flex items-center w-full bg-white/[0.04] hover:bg-white/[0.06] border border-white/10 focus-within:bg-white/[0.07] rounded-xl px-3.5 py-2.5 sm:py-3 transition-all shadow-lg backdrop-blur-md"
@@ -1943,7 +1928,7 @@ export default function AdminAulasInterativas() {
 
                         {/* SVG S-Curve Connector */}
                         {i < aulasFiltradas.length - 1 && (
-                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-28 sm:h-36 my-2 sm:my-3 pointer-events-none z-[5] overflow-visible">
+                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-36 sm:h-44 md:h-52 -my-14 sm:-my-18 md:-my-22 pointer-events-none z-0 overflow-visible">
                             <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                               <defs>
                                 <filter id={`trail-glow-aula-${i}`} x="-20%" y="-20%" width="140%" height="140%">
@@ -1955,7 +1940,7 @@ export default function AdminAulasInterativas() {
                                 </filter>
                               </defs>
                               <path
-                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                                d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                                 fill="none"
                                 stroke="rgba(255, 255, 255, 0.08)"
                                 strokeWidth="4"
@@ -1963,7 +1948,7 @@ export default function AdminAulasInterativas() {
                                 vectorEffect="non-scaling-stroke"
                               />
                               <path
-                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+                                d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                                 fill="none"
                                 className="animate-trail-flow"
                                 stroke={disciplinaAtual.corDestaque}

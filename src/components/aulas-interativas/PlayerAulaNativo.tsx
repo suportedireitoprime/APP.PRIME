@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   ArrowLeft, Play, Pause, Check, CheckCircle2, 
-  RotateCcw, Sparkles, BookOpen, Volume2, VolumeX,
-  ChevronRight, ChevronLeft, Award, HelpCircle, XCircle,
-  Clock, GitBranch, Link2, CheckSquare, LayoutGrid, X,
-  Highlighter
+  RotateCcw, BookOpen, Volume2, ChevronRight, ChevronLeft, 
+  HelpCircle, XCircle, Link2, CheckSquare, X, Highlighter 
 } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import { AulaData, SlideItem } from '@/types/aulaInterativa';
@@ -77,7 +75,6 @@ export function PlayerAulaNativo({
 
   // Estados de Áudio e Karaokê
   const [tocando, setTocando] = useState(false);
-  const [tempoAtual, setTempoAtual] = useState(0);
   const [duracao, setDuracao] = useState(0);
   const [velocidade, setVelocidade] = useState<number>(1);
   const [karaIdx, setKaraIdx] = useState(-1);
@@ -98,7 +95,6 @@ export function PlayerAulaNativo({
   const [respostaSelecionada, setRespostaSelecionada] = useState<number | null>(null);
   const [respostaConfirmada, setRespostaConfirmada] = useState(false);
   const [flashcardVirado, setFlashcardVirado] = useState(false);
-  const [vfRespostas, setVfRespostas] = useState<Record<number, boolean | null>>({});
   const [cartasReveladas, setCartasReveladas] = useState<Record<number, boolean>>({});
   const [pontoAtivo, setPontoAtivo] = useState<number>(0);
   const [parSelecionadoL, setParSelecionadoL] = useState<number | null>(null);
@@ -367,13 +363,11 @@ export function PlayerAulaNativo({
 
   // Resetar estados ao mudar de etapa e iniciar autoplay contínuo
   useEffect(() => {
-    setTempoAtual(0);
     setDuracao(0);
     setKaraIdx(-1);
     setRespostaSelecionada(null);
     setRespostaConfirmada(false);
     setFlashcardVirado(false);
-    setVfRespostas({});
     setCartasReveladas({});
     setPontoAtivo(0);
     setParSelecionadoL(null);
@@ -505,8 +499,6 @@ export function PlayerAulaNativo({
   const handleTimeUpdate = () => {
     if (!audioRef.current) return;
     const cur = audioRef.current.currentTime;
-    setTempoAtual(cur);
-
     const realDur = (Number.isFinite(audioRef.current.duration) && audioRef.current.duration > 0)
       ? audioRef.current.duration
       : duracao;

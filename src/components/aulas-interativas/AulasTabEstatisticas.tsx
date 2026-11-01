@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Trophy, Target, Zap, BarChart3, TrendingUp, 
-  Layers, HelpCircle, AlertCircle, Award, CheckCircle2,
-  Sparkles, ArrowUpRight
-} from 'lucide-react';
+import { Trophy, BarChart3, TrendingUp, Layers, HelpCircle, CheckCircle2, Sparkles } from 'lucide-react';
 import { AulaItem, MateriaItem } from '@/data/aulasInterativasCatalogoCompleto';
 import type { DisciplinaItem } from './AulasHeroPanel';
 

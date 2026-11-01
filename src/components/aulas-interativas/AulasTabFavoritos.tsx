@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Play, BookOpen, Layers } from 'lucide-react';
+import { Star, Play } from 'lucide-react';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
 
 interface AulasTabFavoritosProps {
