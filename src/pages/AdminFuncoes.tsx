@@ -36,13 +36,11 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-avaliacao-loja': () => import('./AdminAvaliacaoLoja'),
   '/admin-hero-home': () => import('./AdminHeroHome'),
   '/admin-home-curiosidades': () => import('./AdminHomeCuriosidades'),
-  '/admin/resumo-livro-audio': () => import('./AdminResumoLivroAudioEditar'),
   '/admin/pilulas': () => import('./AdminPilulas'),
   
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
   '/admin-assinantes': () => import('./AdminAssinantes'),
   '/admin-usuarios': () => import('./AdminUsuarios'),
-  '/admin-boletins': () => import('./AdminBoletins'),
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-simulados': () => import('./AdminSimulados'),
   '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
@@ -58,9 +56,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-biblioteca-editar': () => import('./BibliotecaEditar'),
   '/admin-leitura-nativa': () => import('./AdminLeituraNativa'),
   '/admin-audioaulas': () => import('./AdminAudioaulas'),
-  '/admin-leis-cantadas': () => import('./AdminLeisCantadas'),
   '/narracao': () => import('./NarracaoLei'),
-  '/admin-apresentacao-editar': () => import('./AdminApresentacaoEditar'),
   '/admin-vade-mecum': () => import('./AdminVadeMecum'),
   '/explicacao-lei': () => import('./ExplicacaoLei'),
   '/radar/deputados': () => import('./RadarDeputados'),
@@ -217,8 +213,6 @@ const CATEGORIES: Category[] = [
       { id: 'design-imagens', label: 'Design de Imagens', icon: Palette, desc: 'Presets de estilo (prompt travado) por categoria', route: '/admin-design-imagens' },
       { id: 'hero-home', label: 'Imagens Início do App', icon: ImageIcon, desc: 'Personagens do painel amarelo + animações de entrada', route: '/admin-hero-home' },
       { id: 'home-curiosidades', label: 'Curiosidades da Home', icon: Lightbulb, desc: 'Cards leves misturados aos stats, com capa vazada IA', route: '/admin-home-curiosidades' },
-      { id: 'apresentacao-editar', label: 'Apresentação Editar', icon: Mic, desc: 'Resumo ou lei + PDF → OCR e narração de cada slide', route: '/admin-apresentacao-editar' },
-      { id: 'resumo-livro-audio-editar', label: 'Resumo Livro Áudio Editar', icon: Headphones, desc: 'Adicionar áudio para os resumos dos livros', route: '/admin/resumo-livro-audio' },
       { id: 'admin-pilulas', label: 'Pílulas (Clássicos)', icon: Pill, desc: 'Gerenciar áudios e prompts para pílulas de clássicos', route: '/admin/pilulas' },
       { id: 'explicacao-lei', label: 'Explicações Editar (IA)', icon: Lightbulb, desc: 'Batch de explicações', route: '/explicacao-lei' },
       
@@ -226,7 +220,6 @@ const CATEGORIES: Category[] = [
       { id: 'biblioteca-editar', label: 'Biblioteca Editar', icon: BookOpen, desc: 'Sinopse, capa horizontal e análise técnica com IA', route: '/admin-biblioteca-editar' },
       { id: 'leitura-nativa', label: 'Leitura Nativa', icon: FileText, desc: 'Extração instantânea de PDFs em segundo plano com divisão de capítulos', route: '/admin-leitura-nativa' },
       { id: 'audioaulas', label: 'Audioaulas', icon: PlayCircle, desc: 'Gera títulos e prompts de podcast a partir da leitura nativa', route: '/admin-audioaulas' },
-      { id: 'leis-cantadas', label: 'Leis Cantadas Editar', icon: PlayCircle, desc: 'Gera prompts de música (sertanejo, pagode, rock...) e publica as faixas', route: '/admin-leis-cantadas' },
       
       // Estudo & Jogos
       { id: 'dicionario', label: 'Dicionário Editar', icon: BookA, desc: 'Termos e definições' },
@@ -286,16 +279,7 @@ const CATEGORIES: Category[] = [
       { id: 'offline', label: 'Modo Offline', icon: CloudDownload, desc: 'Baixe leis e livros para usar sem internet', route: '/modo-offline' },
     ],
   },
-  {
-    id: 'aprender',
-    title: 'Aprender',
-    desc: 'Gerar aulas por IA a partir dos resumos e publicar',
-    icon: GraduationCap,
-    route: '/admin-aprender',
-    items: [
-      { id: 'admin-aprender', label: 'Gerar conteúdo das aulas', icon: Sparkles, desc: 'Gera/regera aulas a partir dos resumos e publica no app', route: '/admin-aprender' },
-    ],
-  },
+
   {
     id: 'monitoramento',
     title: 'Monitoramento & Saúde',
@@ -326,7 +310,6 @@ const CATEGORIES: Category[] = [
     desc: 'Geração diária de boletins em áudio e vídeo',
     icon: Mic,
     items: [
-      { id: 'admin-boletins', label: 'Boletins (Admin)', icon: Mic, desc: 'Gerar, renderizar MP4 e configurar cron 9h', route: '/admin-boletins' },
       { id: 'boletins', label: 'Boletins Editar (News)', icon: Rss, desc: 'Newsletters antigas e boletins', route: '/newsletter' },
       { id: 'boletins-player', label: 'Player de Boletins', icon: Rss, desc: 'Visualizar boletins publicados no app', route: '/boletins' },
     ],

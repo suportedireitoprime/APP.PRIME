@@ -1034,7 +1034,7 @@ export default function AdminAulasInterativas() {
         const materiasDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disciplinaAtual.id);
         const materiasFiltradas = materiasDaDisc.filter(mat => {
           if (!termoBuscaNorm) return true;
-          const matchNome = mat.nome.toLowerCase().includes(termoBuscaNorm);
+          const matchNome = (mat.titulo || '').toLowerCase().includes(termoBuscaNorm);
           const matchAula = AULAS_CATALOGO.some(a => a.materiaId === mat.id && a.titulo.toLowerCase().includes(termoBuscaNorm));
           return matchNome || matchAula;
         });
@@ -1406,7 +1406,7 @@ export default function AdminAulasInterativas() {
                                 d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                                 fill="none"
                                 className="animate-trail-flow"
-                                stroke={prog.cicloCompleto ? '#fbbf24' : disciplinaAtual.corDestaque} strokeWidth={prog.cicloCompleto ? '3' : '2.5'}
+                                stroke={pctMat >= 100 ? '#fbbf24' : disciplinaAtual.corDestaque} strokeWidth={pctMat >= 100 ? '3' : '2.5'}
                                 strokeDasharray="6 8"
                                 strokeLinecap="round"
                                 vectorEffect="non-scaling-stroke"
@@ -1941,7 +1941,7 @@ export default function AdminAulasInterativas() {
                                 d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
                                 fill="none"
                                 className="animate-trail-flow"
-                                stroke={prog.cicloCompleto ? '#fbbf24' : disciplinaAtual.corDestaque} strokeWidth={prog.cicloCompleto ? '3' : '2.5'}
+                                stroke={pctMat >= 100 ? '#fbbf24' : disciplinaAtual.corDestaque} strokeWidth={pctMat >= 100 ? '3' : '2.5'}
                                 strokeDasharray="6 8"
                                 strokeLinecap="round"
                                 vectorEffect="non-scaling-stroke"

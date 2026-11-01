@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { HERO_ILLUSTRATIONS } from '@/components/aprender/chunks/aprenderConstants';
 
+export interface DisciplinaItem {
+  id: string;
+  nome: string;
+  subtitulo?: string;
+  descricao?: string;
+  capaHeroUrl?: string;
+  corDestaque?: string;
+  corGradientRing?: [string, string];
+  corFundoCard?: string;
+  corBorda?: string;
+  textAccentClass?: string;
+}
+
 interface MetricaHero {
   label: string;
   valor: string | number;

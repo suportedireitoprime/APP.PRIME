@@ -117,7 +117,6 @@ const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
 const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
 
 const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
-const AdminResumoLivroAudioEditar = lazy(() => import("./pages/AdminResumoLivroAudioEditar.tsx"));
 const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
 const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistorico.tsx'));
 const AdminMapeamentoLeis = lazy(() => import('./pages/AdminMapeamentoLeis.tsx'));
@@ -385,16 +384,13 @@ const AdminNarracaoBlog = lazy(() => import("./pages/AdminNarracaoBlog.tsx"));
 const AdminNarracaoApresentacao = lazy(() => import("./pages/AdminNarracaoApresentacao.tsx"));
 const ApresentacaoPlayer = lazy(() => import("./pages/ApresentacaoPlayer.tsx"));
 const Apresentacoes = lazy(() => import("./pages/Apresentacoes.tsx"));
-const AdminApresentacaoEditar = lazy(() => import("./pages/AdminApresentacaoEditar.tsx"));
 const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
 const AdminUsuarios = lazy(() => import("./pages/AdminUsuarios.tsx"));
 const AdminMonitorUsuarios = lazy(() => import("./pages/AdminMonitorUsuarios.tsx"));
 const AdminMonitoramento = lazy(() => import("./pages/AdminMonitoramento.tsx"));
 const AdminMonitorApis = lazy(() => import("./pages/AdminMonitorApis.tsx"));
 const AdminAtualizacao = lazy(() => import("./pages/AdminAtualizacao.tsx"));
-const AdminAprender = lazy(() => import("./pages/AdminAprender.tsx"));
 const AdminAvaliacaoLoja = lazy(() => import("./pages/AdminAvaliacaoLoja.tsx"));
-const AdminAprenderArea = lazy(() => import("./pages/AdminAprenderArea.tsx"));
 const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
 
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
@@ -414,7 +410,6 @@ const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
 const LeisCantadas = lazy(() => import("./pages/LeisCantadas.tsx"));
 const Audioleis = lazyWithRetry(routePrefetch.audioleis);
-const AdminLeisCantadas = lazy(() => import("./pages/AdminLeisCantadas.tsx"));
 const AdminConteudoFila = lazy(() => import("./pages/AdminConteudoFila.tsx"));
 const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
 const PlanosAtivos = lazy(() => import("./pages/PlanosAtivos.tsx"));
@@ -434,7 +429,6 @@ const ModoOfflineAudioaulas = lazy(() => import("./pages/ModoOfflineAudioaulas.t
 const ModoOfflineLeisCantadas = lazy(() => import("./pages/ModoOfflineLeisCantadas.tsx"));
 const ModoOfflineApresentacoes = lazy(() => import("./pages/ModoOfflineApresentacoes.tsx"));
 const BoletinsJuridicos = lazy(() => import("./pages/BoletinsJuridicos.tsx"));
-const AdminBoletins = lazy(() => import("./pages/AdminBoletins.tsx"));
 const PilulasHome = lazy(() => import("./pages/pilulas/PilulasHome.tsx"));
 const PilulasViewer = lazy(() => import("./pages/pilulas/PilulasViewer.tsx"));
 const Pilulas = lazy(() => import("./pages/Pilulas.tsx"));
@@ -1164,7 +1158,6 @@ function AnimatedRoutes() {
           <Route path="/admin-questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-simulados" element={<ProtectedRoute><PageTransition><AdminSimulados /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/pilulas" element={<ProtectedRoute><PageTransition><AdminPilulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin/resumo-livro-audio" element={<ProtectedRoute><PageTransition><AdminResumoLivroAudioEditar /></PageTransition></ProtectedRoute>} />
 
           <Route path="/admin-monitor" element={<ProtectedRoute><PageTransition><AdminMonitor /></PageTransition></ProtectedRoute>} />
           <Route path="/perfil" element={<ProtectedRoute><PageTransition instant><Perfil /></PageTransition></ProtectedRoute>} />
@@ -1201,7 +1194,6 @@ function AnimatedRoutes() {
           <Route path="/admin-narracao/blog" element={<ProtectedRoute><PageTransition><AdminNarracaoBlog /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao/apresentacao" element={<ProtectedRoute><PageTransition><AdminNarracaoApresentacao /></PageTransition></ProtectedRoute>} />
           <Route path="/apresentacoes" element={<ProtectedRoute><PageTransition><Apresentacoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-apresentacao-editar" element={<ProtectedRoute><PageTransition><AdminApresentacaoEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/apresentacao/:id" element={<ProtectedRoute><PageTransition><ApresentacaoPlayer /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-usuarios" element={<ProtectedRoute><PageTransition><AdminUsuarios /></PageTransition></ProtectedRoute>} />
@@ -1215,8 +1207,6 @@ function AnimatedRoutes() {
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-suporte" element={<ProtectedRoute><PageTransition><AdminSuporte /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-atualizacao" element={<ProtectedRoute><PageTransition><AdminAtualizacao /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-aprender" element={<ProtectedRoute><PageTransition><AdminAprender /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-aprender/:area" element={<ProtectedRoute><PageTransition><AdminAprenderArea /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-jurisprudencia" element={<ProtectedRoute><PageTransition><AdminJurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-push" element={<ProtectedRoute><PageTransition><AdminPush /></PageTransition></ProtectedRoute>} />
 
@@ -1224,7 +1214,6 @@ function AnimatedRoutes() {
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-horus-template" element={<ProtectedRoute><PageTransition><AdminHorusTemplate /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-triagem" element={<ProtectedRoute><PageTransition><AdminTriagem /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-boletins" element={<ProtectedRoute><PageTransition><AdminBoletins /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />
 
           <Route path="/boletins" element={<ProtectedRoute><PageTransition><BoletinsJuridicos tipo="juridico" /></PageTransition></ProtectedRoute>} />
@@ -1260,7 +1249,6 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/leis-cantadas" element={<ProtectedRoute><PageTransition><LeisCantadas /></PageTransition></ProtectedRoute>} />
           <Route path="/audioleis" element={<ProtectedRoute><PageTransition><Audioleis /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-leis-cantadas" element={<ProtectedRoute><PageTransition><AdminLeisCantadas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-conteudo-fila" element={<ProtectedRoute><PageTransition><AdminConteudoFila /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-radares-leis" element={<ProtectedRoute><PageTransition><AdminRadaresLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeis /></PageTransition></ProtectedRoute>} />
