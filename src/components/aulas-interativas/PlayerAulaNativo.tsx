@@ -441,17 +441,30 @@ export function PlayerAulaNativo({
     }
   };
 
+  // Metadados do áudio: define a duração exata assim que o arquivo é reconhecido
+  const handleLoadedMetadata = () => {
+    if (audioRef.current && Number.isFinite(audioRef.current.duration) && audioRef.current.duration > 0) {
+      setDuracao(audioRef.current.duration);
+    }
+  };
+
   // Sincronização do Karaokê em tempo real com compensação de timing precisa
   const handleTimeUpdate = () => {
     if (!audioRef.current) return;
     const cur = audioRef.current.currentTime;
-    const dur = audioRef.current.duration || 1;
     setTempoAtual(cur);
-    setDuracao(dur);
 
-    if (faixasKaraoke.length > 0 && dur > 0) {
+    const realDur = (Number.isFinite(audioRef.current.duration) && audioRef.current.duration > 0)
+      ? audioRef.current.duration
+      : duracao;
+
+    if (realDur > 0 && realDur !== duracao) {
+      setDuracao(realDur);
+    }
+
+    if (faixasKaraoke.length > 0 && realDur > 0) {
       // Offset de antecipação fino: +0.08s para sincronia perceptual perfeita com o início da fala
-      const pos = Math.max(0, (cur + 0.08) / dur);
+      const pos = Math.max(0, (cur + 0.08) / realDur);
       const foundIdx = faixasKaraoke.findIndex(r => pos >= r.start && pos < r.end);
       if (foundIdx !== -1) {
         setKaraIdx(foundIdx);
@@ -936,9 +949,11 @@ export function PlayerAulaNativo({
         }
       `}</style>
 
-      {/* Elemento de áudio oculto */}
+      {/* Elemento de áudio oculto com captura imediata de metadados e duração real */}
       <audio
         ref={audioRef}
+        onLoadedMetadata={handleLoadedMetadata}
+        onDurationChange={handleLoadedMetadata}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleAudioEnded}
         onError={() => setTocando(false)}
@@ -1074,6 +1089,12 @@ export function PlayerAulaNativo({
                   className="w-full h-full object-cover object-center img-zoom-in group-hover:scale-105 transition-transform duration-700"
                   loading="eager"
                   fetchPriority="high"
+                  onError={(e) => {
+                    const fallbackSrc = aula.capaUrl || '';
+                    if (fallbackSrc && e.currentTarget.src !== fallbackSrc) {
+                      e.currentTarget.src = fallbackSrc;
+                    }
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
               </div>
@@ -1592,7 +1613,7 @@ export function PlayerAulaNativo({
             <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
               <div className="flex items-center justify-between leading-none">
                 <span className="text-zinc-200 font-mono text-[11px] sm:text-xs font-bold tracking-wider">
-                  {formatTempo(tempoAtual)} / {duracao > 0 ? formatTempo(duracao) : '0:45'}
+                  {formatTempo(tempoAtual)} / {duracao > 0 ? formatTempo(duracao) : (slideAtual?.narr ? formatTempo(Math.max(5, Math.ceil(slideAtual.narr.length / 16))) : '--:--')}
                 </span>
                 {/* Seletor de Velocidade da Narração (1x, 1.25x, 1.5x, 2x) */}
                 <button

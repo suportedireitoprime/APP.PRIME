@@ -159,7 +159,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
           const slides: SlideItem[] = rawEtapas.map((e: any, idx: number) => {
             let img = e.imgUrl || e.imagem || '';
             if (!img && e.img) {
-              if (e.img === 'capa') {
+              if (e.img === 'capa' || e.img === 'roteiro') {
                 img = aula.capaUrl || (baseFolder ? `${baseFolder}/assets/img/capa.webp` : '');
               } else if (baseFolder) {
                 img = `${baseFolder}/assets/img/${e.img}.webp`;
@@ -227,6 +227,6 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
   }
 
   const fallback = buildFallbackAulaData(aula);
-  aulaCache[aula.id] = fallback;
+  // Não armazena fallback em cache para permitir nova tentativa limpa caso a rede oscile
   return fallback;
 }
