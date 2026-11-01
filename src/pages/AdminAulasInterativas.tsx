@@ -222,9 +222,26 @@ export default function AdminAulasInterativas() {
   const [materiaSelecionadaId, setMateriaSelecionadaId] = useState<string | null>(null);
   const [aulaAtiva, setAulaAtiva] = useState<AulaItem | null>(null);
   const [aulaPendenteModal, setAulaPendenteModal] = useState<AulaItem | null>(null);
-  // Sempre rolar para o topo instantaneamente ao selecionar matéria ou disciplina
+  // Função universal de reset de scroll (suporta Window, HTML, Body e #root do Desktop)
+  const resetScrollToTop = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    if (document.documentElement) document.documentElement.scrollTop = 0;
+    if (document.body) document.body.scrollTop = 0;
+    const root = document.getElementById('root');
+    if (root) {
+      root.scrollTop = 0;
+    }
+  };
+
+  // Garante início no topo absoluto do cabeçalho em todas as transições (Mobile & Desktop)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    resetScrollToTop();
+    const timer = setTimeout(resetScrollToTop, 20);
+    const raf = requestAnimationFrame(resetScrollToTop);
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(raf);
+    };
   }, [disciplinaSelecionadaId, materiaSelecionadaId, aulaAtiva]);
 
   // Estados de progresso
@@ -238,12 +255,7 @@ export default function AdminAulasInterativas() {
   const [modalBloqueioAula, setModalBloqueioAula] = useState<{ aula: AulaItem; motivo: 'revisar' | 'praticar' } | null>(null);
   const [toastAviso, setToastAviso] = useState<string | null>(null);
 
-  // Efeito de scroll para o topo imediato ao trocar de matéria ou disciplina
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }, [materiaSelecionadaId, disciplinaSelecionadaId]);
+  
   const [modoLivreTeste, setModoLivreTeste] = useState(false);
   const [heroIdx, setHeroIdx] = useState(0);
 
@@ -314,12 +326,7 @@ export default function AdminAulasInterativas() {
     };
   };
 
-  // Scroll para o topo ao trocar de tela / selecionar matéria ou disciplina
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }, [disciplinaSelecionadaId, materiaSelecionadaId]);
+  
 
   // Progresso Geral da Plataforma (todas as aulas)
   const totalAulasGeral = AULAS_CATALOGO.length;
@@ -359,6 +366,7 @@ export default function AdminAulasInterativas() {
       setProgressoMap(prev => ({ ...prev, [aula.id]: { etapaAtual: 1 } }));
     }
     setAulaAtiva(aula);
+    resetScrollToTop();
   };
 
   const concluirAulaManual = (aulaId: string, totalEtapas: number) => {
@@ -414,7 +422,7 @@ export default function AdminAulasInterativas() {
     } else {
       navigate('/admin-funcoes');
     }
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    resetScrollToTop();
   };
 
   // ─────────────────────────────────────────────────────────────────────────────
@@ -442,18 +450,29 @@ export default function AdminAulasInterativas() {
 
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white pb-[calc(7.5rem+env(safe-area-inset-bottom,24px))] relative overflow-x-hidden">
-      {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
+      {/* Fundo ShapeGrid Dinâmico: Adota a cor temática da Disciplina selecionada */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]">
         <ShapeGrid
-          speed={0.5}
+          key={disciplinaAtual ? disciplinaAtual.id : 'home'}
+          speed={0.6}
           squareSize={40}
           direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.04)"
-          hoverFillColor="rgba(255, 255, 255, 0.08)"
+          borderColor={disciplinaAtual ? `${disciplinaAtual.corDestaque}28` : "rgba(255, 255, 255, 0.04)"}
+          hoverFillColor={disciplinaAtual ? `${disciplinaAtual.corDestaque}40` : "rgba(255, 255, 255, 0.08)"}
           shape="square"
-          hoverTrailAmount={5}
+          hoverTrailAmount={6}
         />
       </div>
+
+      {/* Glow Atmosférico Temático da Disciplina no Fundo */}
+      {disciplinaAtual && (
+        <div 
+          className="pointer-events-none fixed inset-0 z-0 transition-opacity duration-700 opacity-20"
+          style={{
+            background: `radial-gradient(ellipse 90% 55% at 50% 15%, ${disciplinaAtual.corDestaque}45, transparent 75%)`
+          }}
+        />
+      )}
 
       {/* ── Imagem Majestosa da Deusa Têmis Vazada no Fundo Central da Trilha ── */}
       <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
@@ -652,6 +671,7 @@ export default function AdminAulasInterativas() {
                           onClick={() => {
                             setDisciplinaSelecionadaId(disc.id);
                             setMateriaSelecionadaId(null);
+                            resetScrollToTop();
                           }}
                           className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                         >
@@ -758,6 +778,7 @@ export default function AdminAulasInterativas() {
                           onClick={() => {
                             setDisciplinaSelecionadaId(disc.id);
                             setMateriaSelecionadaId(null);
+                            resetScrollToTop();
                           }}
                           className={cn(
                             "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
@@ -792,13 +813,13 @@ export default function AdminAulasInterativas() {
                           <div
                             className={cn(
                               "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
-                              isLeft ? "items-start text-left" : "items-end text-right"
+                              "items-start text-left"
                             )}
                           >
                             <div
                               className={cn(
                                 "flex items-center mb-1",
-                                isLeft ? "justify-start" : "justify-end"
+                                "justify-start"
                               )}
                             >
                               <span
@@ -958,7 +979,7 @@ export default function AdminAulasInterativas() {
                         >
                           {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA MATÉRIA */}
                           <div
-                            onClick={() => setMateriaSelecionadaId(mat.id)}
+                            onClick={() => { setMateriaSelecionadaId(mat.id); resetScrollToTop(); }}
                             className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
                           >
                             {/* Carta 1 (Fundo) */}
@@ -1057,7 +1078,10 @@ export default function AdminAulasInterativas() {
 
                           {/* LINHA FINA CONECTORA E TÍTULO NO LADO OPOSTO */}
                           <div
-                            onClick={() => setMateriaSelecionadaId(mat.id)}
+                            onClick={() => {
+                              setMateriaSelecionadaId(mat.id);
+                              resetScrollToTop();
+                            }}
                             className={cn(
                               "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
                               isLeft ? "flex-row pl-2 sm:pl-4" : "flex-row-reverse pr-2 sm:pr-4"
@@ -1089,10 +1113,10 @@ export default function AdminAulasInterativas() {
                             <div
                               className={cn(
                                 "flex-1 min-w-0 flex flex-col justify-center px-2 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
-                                isLeft ? "items-start text-left" : "items-end text-right"
+                                "items-start text-left"
                               )}
                             >
-                              <div className={cn("flex items-center gap-1.5 mb-1 opacity-80", isLeft ? "justify-start" : "justify-end")}>
+                              <div className={cn("flex items-center gap-1.5 mb-1 opacity-80", "justify-start")}>
                                 <span className="text-[11px] sm:text-[13px] font-bold uppercase tracking-wider" style={{ color: disciplinaAtual.corDestaque }}>
                                   {mat.numeroMateria}
                                 </span>
@@ -1417,13 +1441,13 @@ export default function AdminAulasInterativas() {
                             <div
                               className={cn(
                                 "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
-                                isLeft ? "items-start text-left" : "items-end text-right"
+                                "items-start text-left"
                               )}
                             >
                               <div
                                 className={cn(
                                   "flex items-center gap-1.5 mb-1 opacity-90",
-                                  isLeft ? "justify-start" : "justify-end"
+                                  "justify-start"
                                 )}
                               >
                                 <span
@@ -1450,7 +1474,7 @@ export default function AdminAulasInterativas() {
                               <div 
                                 className={cn(
                                   "flex flex-col sm:grid sm:grid-cols-3 gap-1.5 sm:gap-2 mt-3 pt-2.5 border-t border-white/10 w-full",
-                                  isLeft ? "justify-start" : "justify-end"
+                                  "justify-start"
                                 )}
                               >
                                 {/* 1. Iniciar Aula */}
