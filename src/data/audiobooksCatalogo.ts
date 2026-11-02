@@ -33,22 +33,26 @@ export interface AudiobookCapitulo {
 
 export interface AudiobookLivro {
   id: string;
+  tableId?: number;
   titulo: string;
-  subtitulo: string;
+  subtitulo?: string;
   autor: string;
-  ano: number;
+  ano?: number | string | null;
   descricao: string;
-  sinopse: string;
+  sinopse?: string;
   capaUrl: string;
   totalCapitulos: number;
-  duracaoTotalSegundos: number;
-  duracaoTotalFormatada: string;
-  tags: string[];
+  duracaoTotalSegundos?: number;
+  duracaoTotalFormatada?: string;
+  tags?: string[];
+  status: 'disponivel' | 'em_breve';
   capitulos: AudiobookCapitulo[];
 }
 
 export const O_CASO_DOS_EXPLORADORES_DE_CAVERNAS: AudiobookLivro = {
   "id": "o-caso-dos-exploradores-de-cavernas",
+  "tableId": 121,
+  "status": "disponivel",
   "titulo": "O Caso dos Exploradores de Cavernas",
   "subtitulo": "Um clássico imortal da Filosofia do Direito",
   "autor": "Lon L. Fuller",
@@ -4084,6 +4088,588 @@ export const O_CASO_DOS_EXPLORADORES_DE_CAVERNAS: AudiobookLivro = {
   ]
 };
 
+export const AUDIOBOOKS_EM_BREVE: AudiobookLivro[] = [
+  {
+    "id": "livro-classico-122",
+    "tableId": 122,
+    "titulo": "Justiça: O que é fazer a coisa certa",
+    "autor": "Michael J. Sandel",
+    "ano": "2009",
+    "descricao": "A obra \"Justiça: O que é fazer a coisa certa\", de Michael J. Sandel, publicada originalmente em 2008, insere-se em um contexto global permeado por intensos debates sobre a equidade...",
+    "sinopse": "A obra \"Justiça: O que é fazer a coisa certa\", de Michael J. Sandel, publicada originalmente em 2008, insere-se em um contexto global permeado por intensos debates sobre a equidade na distribuição de bens, a justiça social e o papel do Estado na edificação de uma sociedade mais justa. Posicionando-se na rica tradição dos clássicos do pensamento político, Sandel, um renomado filósofo político, adota uma metodologia intrinsecamente socrática. Essa abordagem convida o leitor a engajar-se em um diálogo profundo e reflexivo acerca dos dilemas morais que subjazem às nossas concepções de justiça. A m...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/justica_o_que_e_fazer_a_coisa_certa_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-123",
+    "tableId": 123,
+    "titulo": "Dos Delitos e das Penas",
+    "autor": "Cesare Beccaria",
+    "ano": "1764",
+    "descricao": "A obra \"Dos Delitos e das Penas\", publicada anonimamente em 1764 por Cesare Beccaria, constitui um divisor de águas na história do Direito Penal, emergindo em um contexto europeu m...",
+    "sinopse": "A obra \"Dos Delitos e das Penas\", publicada anonimamente em 1764 por Cesare Beccaria, constitui um divisor de águas na história do Direito Penal, emergindo em um contexto europeu marcado pelo absolutismo, pela arbitrariedade judicial e por um sistema punitivo desumano. O século XVIII era palco de penas cruéis, desproporcionais e frequentemente imbricadas em práticas arcaicas e supersticiosas, desprovidas de racionalidade. Beccaria, imbuído dos ideais iluministas de razão, progresso, direitos naturais e felicidade geral, propôs uma reestruturação radical do pensamento jurídico-penal. Sua aborda...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/dos_delitos_e_das_penas_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-124",
+    "tableId": 124,
+    "titulo": "O Monge e o Executivo",
+    "autor": "James C. Hunter",
+    "ano": "1998",
+    "descricao": "A obra \"O Monge e o Executivo\", de James C. Hunter, publicada originalmente em 1998, transcende a categorização de um mero \"clássico\" para se firmar como um tratado seminal sobre a...",
+    "sinopse": "A obra \"O Monge e o Executivo\", de James C. Hunter, publicada originalmente em 1998, transcende a categorização de um mero \"clássico\" para se firmar como um tratado seminal sobre a natureza intrínseca da liderança e a edificação de relacionamentos interpessoais, com uma ressonância particularmente profunda e aplicável ao campo jurídico. Seu surgimento se deu em um período de crescente ceticismo em relação aos modelos de gestão tradicionalistas, que frequentemente se apoiavam em estruturas autoritárias e hierarquias inflexíveis, em contrapartida a uma demanda por abordagens mais humanizadas, co...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_monge_e_o_executivo_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-125",
+    "tableId": 125,
+    "titulo": "A Arte da Guerra",
+    "autor": "Sun Tzu",
+    "ano": "séc. V a.C.",
+    "descricao": "A obra \"A Arte da Guerra\", atribuída ao célebre general e estrategista chinês Sun Tzu, emerge do turbulento contexto histórico da China Antiga, mais precisamente entre os Períodos ...",
+    "sinopse": "A obra \"A Arte da Guerra\", atribuída ao célebre general e estrategista chinês Sun Tzu, emerge do turbulento contexto histórico da China Antiga, mais precisamente entre os Períodos das Primaveras e Outonos (771-476 a.C.) e dos Estados Combatentes (475-221 a.C.). Neste cenário de fragmentação política e beligerância constante, a sobrevivência e a prosperidade dos diversos estados chineses dependiam intrinsecamente da maestria em conduzir conflitos e assegurar a vitória militar. \"A Arte da Guerra\" transcende, assim, a mera compilação de táticas de combate, apresentando-se como um tratado filosófi...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_arte_da_guerra_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-126",
+    "tableId": 126,
+    "titulo": "O Leviatã",
+    "autor": "Thomas Hobbes",
+    "ano": "1651",
+    "descricao": "A obra \"O Leviatã\" (1651) de Thomas Hobbes emerge como um marco indelével no pensamento político e jurídico ocidental, concebida em meio ao caos e à violência da Guerra Civil Ingle...",
+    "sinopse": "A obra \"O Leviatã\" (1651) de Thomas Hobbes emerge como um marco indelével no pensamento político e jurídico ocidental, concebida em meio ao caos e à violência da Guerra Civil Inglesa. O contexto histórico turbulento moldou profundamente a visão hobbesiana, levando-o a uma análise penetrante sobre a fragilidade da ordem social e a necessidade imperiosa de um poder soberano robusto para evitar o retorno a um estado de anarquia. Hobbes inicia sua argumentação a partir de um postulado hipotético: o estado de natureza. Neste cenário, desprovido de autoridade coercitiva, os seres humanos são impulsi...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_leviata_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-127",
+    "tableId": 127,
+    "titulo": "O que é Direito (Primeiros Passos)",
+    "autor": "Roberto Lyra Filho",
+    "ano": "1982",
+    "descricao": "A obra \"O que é Direito (Primeiros Passos)\" de Roberto Lyra Filho, um marco na literatura jurídica brasileira, emerge em um período de intensa efervescência intelectual e social no...",
+    "sinopse": "A obra \"O que é Direito (Primeiros Passos)\" de Roberto Lyra Filho, um marco na literatura jurídica brasileira, emerge em um período de intensa efervescência intelectual e social no Brasil, com o propósito de oferecer uma introdução crítica e acessível aos fundamentos do Direito. Publicado em um contexto onde a dogmática jurídica tendia a se apresentar de forma hermética e dissociada da realidade social, Lyra Filho empreende uma profunda desmistificação, convidando o leitor a apreender o Direito não como um corpo estático de normas, mas como um fenômeno dinâmico, intrinsecamente conectado às re...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_que_e_direito_primeiros_passos_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-128",
+    "tableId": 128,
+    "titulo": "Acesso à Justiça",
+    "autor": "Mauro Cappelletti",
+    "ano": "2009",
+    "descricao": "A obra \"Acesso à Justiça\" de Mauro Cappelletti, publicada originalmente em 1974, surge em um contexto histórico de crescente crítica aos sistemas judiciais tradicionais, que se mos...",
+    "sinopse": "A obra \"Acesso à Justiça\" de Mauro Cappelletti, publicada originalmente em 1974, surge em um contexto histórico de crescente crítica aos sistemas judiciais tradicionais, que se mostravam lentos, burocráticos e, fundamentalmente, inacessíveis para a vasta maioria da população. Cappelletti, influenciado pelas correntes do realismo jurídico e pela sociologia do direito, propõe uma análise crítica e multifacetada das \"barreiras\" que efetivamente impedem a plena realização do princípio fundamental do acesso à justiça. A obra não se limita a um diagnóstico, mas se debruça sobre a identificação e cla...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/acesso_a_justica_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-129",
+    "tableId": 129,
+    "titulo": "O Contrato Social",
+    "autor": "Jean-Jacques Rousseau",
+    "ano": "1762",
+    "descricao": "Jean-Jacques Rousseau, em sua obra seminal \"O Contrato Social\" (1762), apresenta uma profunda reflexão sobre a legitimidade do poder político e a natureza da associação humana, pro...",
+    "sinopse": "Jean-Jacques Rousseau, em sua obra seminal \"O Contrato Social\" (1762), apresenta uma profunda reflexão sobre a legitimidade do poder político e a natureza da associação humana, propondo uma reconfiguração radical da relação entre o indivíduo e o Estado. Publicado em um período de intensa efervescência intelectual e política na Europa, às vésperas da Revolução Francesa, o livro surge como um contraponto direto às teorias absolutistas e às estruturas sociais hierarquizadas da época, que Rousseau criticava como fontes de opressão e desigualdade. O filósofo genebrino inicia sua argumentação a part...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_contrato_social_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-130",
+    "tableId": 130,
+    "titulo": "O Espírito das Leis",
+    "autor": "Montesquieu",
+    "ano": "1748",
+    "descricao": "A obra \"O Espírito das Leis\" (De l'esprit des lois), publicada anonimamente em 1748 por Charles-Louis de Secondat, Barão de La Brède e de Montesquieu, representa um divisor de água...",
+    "sinopse": "A obra \"O Espírito das Leis\" (De l'esprit des lois), publicada anonimamente em 1748 por Charles-Louis de Secondat, Barão de La Brède e de Montesquieu, representa um divisor de águas na história do pensamento político e jurídico ocidental. Escrita em um período de transição intelectual, antecedendo a plena efervescência do Iluminismo e com as estruturas do absolutismo monárquico ainda consolidadas, o livro emerge como uma análise comparativa profunda e sistemática das diversas formas de governo e dos complexos sistemas legais que as sustentam. Montesquieu, demonstrando uma erudição notável e um...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-131",
+    "tableId": 131,
+    "titulo": "1984",
+    "autor": "George Orwell",
+    "ano": "1949",
+    "descricao": "George Orwell, em sua obra seminal \"1984\", publicada em 1949, tece uma visão distópica e profética que transcende a mera ficção, servindo como um estudo de caso crucial para a comp...",
+    "sinopse": "George Orwell, em sua obra seminal \"1984\", publicada em 1949, tece uma visão distópica e profética que transcende a mera ficção, servindo como um estudo de caso crucial para a compreensão dos perigos do totalitarismo e da erosão dos direitos humanos. Ambientado na Oceania, um dos três superestados globais, o romance centra-se em Winston Smith, um funcionário do Ministério da Verdade. Sua função é a reescrita contínua da história e a falsificação de documentos para alinhar o passado com a narrativa mutável do Partido, personificado pela figura onipresente e onisciente do \"Grande Irmão\". A socie...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/1984_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-132",
+    "tableId": 132,
+    "titulo": "O Advogado do Diabo",
+    "autor": "Morris West",
+    "ano": "1959",
+    "descricao": "Publicado em 1963, 'O Advogado do Diabo' de Morris West emerge como um clássico atemporal que transcende a ficção para oferecer uma profunda meditação sobre a fé, a moralidade e a ...",
+    "sinopse": "Publicado em 1963, 'O Advogado do Diabo' de Morris West emerge como um clássico atemporal que transcende a ficção para oferecer uma profunda meditação sobre a fé, a moralidade e a busca pela verdade, com ressonâncias significativas para o campo jurídico. A trama se desenrola na pitoresca, porém enigmática, ilha de Montelusa, na Itália, onde o Ceticismo do Monsenhor Merganti, um teólogo enviado pela Santa Sé, é posto à prova ao investigar os supostos milagres e a santidade de um homem local. A atmosfera carregada de tradições ancestrais e superstições da ilha serve como pano de fundo para uma i...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_advogado_do_diabo.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-133",
+    "tableId": 133,
+    "titulo": "A Luta pelo Direito",
+    "autor": "Rudolf von Ihering",
+    "ano": "1872",
+    "descricao": "A obra \"A Luta pelo Direito\" (Der Kampf ums Recht), publicada em 1872 por Rudolf von Ihering, representa um divisor de águas na literatura jurídica, especialmente considerando o co...",
+    "sinopse": "A obra \"A Luta pelo Direito\" (Der Kampf ums Recht), publicada em 1872 por Rudolf von Ihering, representa um divisor de águas na literatura jurídica, especialmente considerando o contexto do século XIX, um período marcado pela consolidação dos Estados Nacionais europeus e por intensos debates intelectuais. Ihering, figura proeminente da Escola Histórica do Direito, transcende a visão meramente positivista e descritiva da norma, propondo uma abordagem dinâmica e militante. Ele argumenta que o Direito não é um conjunto estático de regras, mas uma força viva, intrinsecamente ligada à vontade human...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_luta_pelo_direito_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-134",
+    "tableId": 134,
+    "titulo": "O Último Dia de um Condenado",
+    "autor": "Victor Hugo",
+    "ano": "1829",
+    "descricao": "Victor Hugo, em sua obra seminal \"O Último Dia de um Condenado\", publicada originalmente em 1829, transcende a esfera literária para oferecer um robusto estudo de caso sobre a pena...",
+    "sinopse": "Victor Hugo, em sua obra seminal \"O Último Dia de um Condenado\", publicada originalmente em 1829, transcende a esfera literária para oferecer um robusto estudo de caso sobre a pena de morte e seus efeitos corrosivos na psique humana. O romance emerge em um período de efervescência no debate jurídico e social francês acerca da reforma penal, onde a pena capital era uma realidade palpável, frequentemente executada em praça pública com um espetáculo de crueldade. Inserida no movimento romântico, a obra se distingue por sua veia crítica e social aguçada, utilizando a subjetividade exacerbada e a i...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_ultimo_dia_de_um_condenado_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-135",
+    "tableId": 135,
+    "titulo": "Como as Democracias Morrem",
+    "autor": "Steven Levitsky e Daniel Ziblatt",
+    "ano": "2018",
+    "descricao": "Em \"Como as Democracias Morrem\", Steven Levitsky e Daniel Ziblatt, proeminentes cientistas políticos, desafiam a concepção tradicional de que o colapso democrático é precipitado po...",
+    "sinopse": "Em \"Como as Democracias Morrem\", Steven Levitsky e Daniel Ziblatt, proeminentes cientistas políticos, desafiam a concepção tradicional de que o colapso democrático é precipitado por eventos cataclísmicos como golpes de Estado ou revoluções. Em vez disso, argumentam que a erosão democrática é um processo insidioso e gradual, orquestrado frequentemente por líderes eleitos que, operando dentro das próprias estruturas democráticas, trabalham para desmantelar seus alicerces. A obra se insere firmemente na tradição clássica da ciência política, dialogando com pensadores que investigaram a consolidaç...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/como_as_democracias_morrem_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-136",
+    "tableId": 136,
+    "titulo": "O Processo",
+    "autor": "Franz Kafka",
+    "ano": "1925",
+    "descricao": "A obra \"O Processo\" (Der Process), de Franz Kafka, publicada postumamente em 1925, emerge de um panorama literário marcado pelo expressionismo e por uma crescente desilusão com as ...",
+    "sinopse": "A obra \"O Processo\" (Der Process), de Franz Kafka, publicada postumamente em 1925, emerge de um panorama literário marcado pelo expressionismo e por uma crescente desilusão com as engrenagens sociais e burocráticas que caracterizaram o início do século XX. Inacabado e fragmentário, o romance narra a jornada de Josef K., um gerente de banco que, em seu trigésimo aniversário, é abruptamente detido por agentes de uma autoridade judicial até então desconhecida, sem que a natureza da acusação lhe seja explicitada. Essa premissa inicial estabelece o tom de uma narrativa que se debruça sobre a aliena...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_processo_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-137",
+    "tableId": 137,
+    "titulo": "O Mundo Assombrado pelos Demônios",
+    "autor": "Carl Sagan",
+    "ano": "1995",
+    "descricao": "Publicado em 1995, \"O Mundo Assombrado pelos Demônios: A Ciência como uma Vela no Escuro\" de Carl Sagan emerge como um farol intelectual em uma época de crescente proliferação de p...",
+    "sinopse": "Publicado em 1995, \"O Mundo Assombrado pelos Demônios: A Ciência como uma Vela no Escuro\" de Carl Sagan emerge como um farol intelectual em uma época de crescente proliferação de pseudociências, teorias conspiratórias e desinformação. Sagan, um renomado astrônomo e divulgador científico, utiliza sua erudição e clareza ímpar para desmistificar crenças infundadas e defender o pensamento crítico e o método científico como pilares da compreensão racional do mundo. A obra não se restringe a refutar alegações extraordinárias, como astrologia, relatos de abduções alienígenas ou curas milagrosas, mas ...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_assombrado_pelos_demonios_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-138",
+    "tableId": 138,
+    "titulo": "Sobre a Liberdade",
+    "autor": "John Stuart Mill",
+    "ano": "1859",
+    "descricao": "\"Sobre a Liberdade\" (On Liberty), publicado em 1859 por John Stuart Mill, é um dos tratados mais influentes sobre o liberalismo clássico e a defesa dos direitos individuais contra ...",
+    "sinopse": "\"Sobre a Liberdade\" (On Liberty), publicado em 1859 por John Stuart Mill, é um dos tratados mais influentes sobre o liberalismo clássico e a defesa dos direitos individuais contra a interferência do Estado e da opinião pública. A obra foi concebida em um período de profundas transformações na Inglaterra vitoriana, marcado pela Revolução Industrial, pelo crescimento das cidades e pela expansão da democracia representativa. Mill, ciente dos benefícios da democracia, também antecipou um perigo inerente a ela: a ascensão da \"tirania da maioria\". Ele temia que, em uma sociedade onde a maioria detém...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/sobre_a_liberdade_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-139",
+    "tableId": 139,
+    "titulo": "A República",
+    "autor": "Platão",
+    "ano": "séc. IV a.C.",
+    "descricao": "\"A República\", obra monumental de Platão, concebida por volta de 380 a.C., transcende a esfera literária para se consolidar como um dos pilares da filosofia ocidental e um texto de...",
+    "sinopse": "\"A República\", obra monumental de Platão, concebida por volta de 380 a.C., transcende a esfera literária para se consolidar como um dos pilares da filosofia ocidental e um texto de valor inestimável para o estudo do Direito. Inserida no efervescente cenário da Grécia Antiga, período de intensas transformações intelectuais e políticas, a obra se desdobra em um diálogo socrático, onde o mestre Sócrates, com sua inconfundível maiêutica, instiga a investigação sobre a essência da justiça. Essa busca não se limita à esfera individual, mas se expande vigorosamente para a estrutura da pólis, a cidade...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_republica_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-140",
+    "tableId": 140,
+    "titulo": "O Príncipe",
+    "autor": "Nicolau Maquiavel",
+    "ano": "1532",
+    "descricao": "Nicolau Maquiavel, em sua obra seminal \"O Príncipe\", publicada postumamente em 1532, oferece um tratado de ciência política que se distancia radicalmente das idealizações moralizan...",
+    "sinopse": "Nicolau Maquiavel, em sua obra seminal \"O Príncipe\", publicada postumamente em 1532, oferece um tratado de ciência política que se distancia radicalmente das idealizações moralizantes de seus predecessores. Escrito durante um período de intensa instabilidade política na Itália renascentista, marcado por divisões internas e a constante ameaça de potências estrangeiras, o livro surge como um manual pragmático para a aquisição e manutenção do poder principesco. Maquiavel, com uma análise crua e empírica, desmistifica a figura do governante, apresentando-o não como um líder guiado por virtudes mor...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_principe_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-141",
+    "tableId": 141,
+    "titulo": "Ética a Nicômaco",
+    "autor": "Aristóteles",
+    "ano": "séc. IV a.C.",
+    "descricao": "A \"Ética a Nicômaco\", obra seminal de Aristóteles (384-322 a.C.), constitui um dos alicerces da filosofia moral ocidental, oferecendo um mergulho profundo e sistemático na investig...",
+    "sinopse": "A \"Ética a Nicômaco\", obra seminal de Aristóteles (384-322 a.C.), constitui um dos alicerces da filosofia moral ocidental, oferecendo um mergulho profundo e sistemático na investigação da vida boa (*eudaimonia*), o bem supremo para o ser humano. Escrita em Atenas durante o século IV a.C., um período de efervescência intelectual e política, a obra reflete a preocupação aristotélica com a formação do cidadão virtuoso, apto a participar ativamente da *pólis* e a alcançar a plenitude existencial. Sua estrutura didática, dividida em dez livros, desdobra a argumentação de forma lógica e progressiva,...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/etica_a_nicomaco_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-142",
+    "tableId": 142,
+    "titulo": "Eles, os Juízes, Vistos por Nós, os Advogados",
+    "autor": "Piero Calamandrei",
+    "ano": "1935",
+    "descricao": "O livro \"Eles, os Juízes, Vistos por Nós, os Advogados\", escrito pelo renomado jurista italiano Piero Calamandrei, representa um clássico da literatura jurídica, transcendo a mera ...",
+    "sinopse": "O livro \"Eles, os Juízes, Vistos por Nós, os Advogados\", escrito pelo renomado jurista italiano Piero Calamandrei, representa um clássico da literatura jurídica, transcendo a mera exegese normativista para adentrar o âmago humano e ético da prática forense. Publicada em um período crucial da história italiana pós-Segunda Guerra Mundial, a obra emerge como uma resposta à necessidade premente de restauração da confiança nas instituições judiciais, em um contexto de profunda crise moral e institucional. Calamandrei, com sua vasta experiência como professor e advogado, oferece uma análise introspe...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/eles_os_juizes_vistos_por_nos_os_advogados_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-143",
+    "tableId": 143,
+    "titulo": "Virando a Própria Mesa",
+    "autor": "Ricardo Semler",
+    "ano": "1988",
+    "descricao": "O livro \"Virando a Própria Mesa\", de Ricardo Semler, transcende a esfera da gestão empresarial para se posicionar como um marco teórico e prático de profunda relevância para o estu...",
+    "sinopse": "O livro \"Virando a Própria Mesa\", de Ricardo Semler, transcende a esfera da gestão empresarial para se posicionar como um marco teórico e prático de profunda relevância para o estudo e a aplicação do Direito, especialmente para estudantes e profissionais da área jurídica. Publicado em um período de efervescência na busca por modelos organizacionais mais humanos e eficientes, a obra narra a experiência transformadora de Semler na Semco, empresa brasileira que, sob sua liderança, rompeu com as estruturas hierárquicas e burocráticas tradicionais. A filosofia central de Semler reside na implementa...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/virando_a_propria_mesa_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-144",
+    "tableId": 144,
+    "titulo": "Teoria Pura do Direito",
+    "autor": "Hans Kelsen",
+    "ano": "1934",
+    "descricao": "A \"Teoria Pura do Direito\", em sua versão definitiva publicada em 1960, é a obra magna de Hans Kelsen, um jurista austríaco que revolucionou o pensamento jurídico no século XX. O c...",
+    "sinopse": "A \"Teoria Pura do Direito\", em sua versão definitiva publicada em 1960, é a obra magna de Hans Kelsen, um jurista austríaco que revolucionou o pensamento jurídico no século XX. O contexto histórico em que Kelsen desenvolveu sua teoria é crucial para sua compreensão. Marcado pelas profundas crises políticas e ideológicas que varreram a Europa, especialmente após as duas Guerras Mundiais e a ascensão de regimes totalitários, Kelsen buscou, com sua \"pureza\", construir um método científico para o Direito, dissociando-o de quaisquer influências que pudessem comprometer sua objetividade e autonomia....",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/teoria_pura_do_direito_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-145",
+    "tableId": 145,
+    "titulo": "Vigiar e Punir: Nascimento da Prisão",
+    "autor": "Michel Foucault",
+    "ano": "1975",
+    "descricao": "A obra \"Vigiar e Punir: Nascimento da Prisão\", de Michel Foucault, é um marco incontornável nos estudos sobre o direito, a punição e as formas de poder na sociedade ocidental. Publ...",
+    "sinopse": "A obra \"Vigiar e Punir: Nascimento da Prisão\", de Michel Foucault, é um marco incontornável nos estudos sobre o direito, a punição e as formas de poder na sociedade ocidental. Publicado originalmente em 1975, o livro insere-se no contexto intelectual pós-estruturalista, dialogando com debates sobre a história das ideias, a crítica das instituições e a análise das relações de poder. Foucault empreende uma profunda investigação genealógica, rastreando as transformações nas práticas punitivas desde o Antigo Regime até o advento da prisão como principal modalidade de sanção penal. Ele parte da aná...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/vigiar_e_punir_nascimento_da_prisao_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-146",
+    "tableId": 146,
+    "titulo": "A Meta: Um Processo de Melhoria Contínua",
+    "autor": "Eliyahu M. Goldratt e Jeff Cox",
+    "ano": "1925",
+    "descricao": "A Meta: Um Processo de Melhoria Contínua, de Eliyahu M. Goldratt e Jeff Cox, transcende a mera literatura de gestão para se consolidar como um clássico indispensável na formação de...",
+    "sinopse": "A Meta: Um Processo de Melhoria Contínua, de Eliyahu M. Goldratt e Jeff Cox, transcende a mera literatura de gestão para se consolidar como um clássico indispensável na formação de profissionais em diversas áreas, incluindo o Direito. Publicado originalmente em 1984, em um contexto de crescente globalização e intensificação da concorrência, o livro surge como uma resposta à necessidade de repensar os modelos tradicionais de produção e gestão, focando na otimização de processos e na busca incessante por eficiência. A obra se distancia de manuais técnicos e adota a forma de um romance empresaria...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_meta_um_processo_de_melhoria_continua_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-147",
+    "tableId": 147,
+    "titulo": "Introdução ao Estudo do Direito",
+    "autor": "Tercio Sampaio Ferraz Júnior",
+    "ano": "1988",
+    "descricao": "A obra \"Introdução ao Estudo do Direito\", de Tercio Sampaio Ferraz Júnior, emerge como um marco na literatura jurídica brasileira, posicionando-se como um clássico indispensável pa...",
+    "sinopse": "A obra \"Introdução ao Estudo do Direito\", de Tercio Sampaio Ferraz Júnior, emerge como um marco na literatura jurídica brasileira, posicionando-se como um clássico indispensável para a formação de novos juristas. Publicada em um período de efervescência intelectual e jurídica no Brasil, o livro reflete a necessidade de sistematizar e clarificar os fundamentos do fenômeno jurídico para um público acadêmico ainda em formação. Ferraz Júnior, com sua notória erudição e clareza expositiva, propõe uma imersão profunda nos pilares que sustentam o ordenamento jurídico, desmistificando conceitos que, à...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/introducao_ao_estudo_do_direito.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-148",
+    "tableId": 148,
+    "titulo": "A Era dos Direitos",
+    "autor": "Norberto Bobbio",
+    "ano": "1990",
+    "descricao": "A obra \"A Era dos Direitos\", de Norberto Bobbio, é um marco incontornável na teoria dos direitos humanos e fundamentais, oferecendo aos estudantes de Direito uma análise profunda e...",
+    "sinopse": "A obra \"A Era dos Direitos\", de Norberto Bobbio, é um marco incontornável na teoria dos direitos humanos e fundamentais, oferecendo aos estudantes de Direito uma análise profunda e multifacetada de um dos pilares do Estado Democrático de Direito. Publicado em um período de intensa reflexão sobre os limites e as possibilidades da proteção dos direitos humanos após os horrores do século XX, o livro se insere no contexto de um \"clássico\" do pensamento jurídico e filosófico, dialogando com as tradições do jusnaturalismo e do positivismo, mas propondo uma abordagem original e crítica. Bobbio, com s...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_era_dos_direitos_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-149",
+    "tableId": 149,
+    "titulo": "O Mundo de Sofia",
+    "autor": "Jostein Gaarder",
+    "ano": "1991",
+    "descricao": "O Mundo de Sofia, obra seminal do escritor norueguês Jostein Gaarder, transcende a mera ficção para se consolidar como um portal de acesso à história do pensamento filosófico ocide...",
+    "sinopse": "O Mundo de Sofia, obra seminal do escritor norueguês Jostein Gaarder, transcende a mera ficção para se consolidar como um portal de acesso à história do pensamento filosófico ocidental. Publicado em 1991, o romance se insere em um contexto de crescente busca por sentido e questionamento da realidade, especialmente entre os jovens, oferecendo uma narrativa envolvente para desmistificar conceitos complexos. A premissa central gira em torno de Sofia Amundsen, uma adolescente de 14 anos que se vê imersa em um mistério epistolar, recebendo cartas anônimas que a convidam a refletir sobre questões fu...",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_de_sofia_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-150",
+    "tableId": 150,
+    "titulo": "A Riqueza das Nações",
+    "autor": "Adam Smith",
+    "ano": null,
+    "descricao": "Uma investigação sobre a natureza e as causas da riqueza das nações é a obra mais famosa de Adam Smith....",
+    "sinopse": "Uma investigação sobre a natureza e as causas da riqueza das nações é a obra mais famosa de Adam Smith....",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_riqueza_das_nacoes.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-151",
+    "tableId": 151,
+    "titulo": "A Teoria das Formas de Governo",
+    "autor": "Norberto Bobbio",
+    "ano": null,
+    "descricao": "Um clássico sobre a evolução histórica do pensamento político e as formas de governo....",
+    "sinopse": "Um clássico sobre a evolução histórica do pensamento político e as formas de governo....",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/a_teoria_das_formas_de_governo_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-152",
+    "tableId": 152,
+    "titulo": "O Espírito das Leis",
+    "autor": "Charles de Montesquieu",
+    "ano": null,
+    "descricao": "A obra-prima que fundamenta a teoria da separação dos três poderes, essencial para o Estado Democrático de Direito....",
+    "sinopse": "A obra-prima que fundamenta a teoria da separação dos três poderes, essencial para o Estado Democrático de Direito....",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_espirito_das_leis_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-153",
+    "tableId": 153,
+    "titulo": "Lições Preliminares de Direito",
+    "autor": "Miguel Reale",
+    "ano": null,
+    "descricao": "Obra introdutória magistral, essencial para a compreensão dos conceitos fundamentais do Direito....",
+    "sinopse": "Obra introdutória magistral, essencial para a compreensão dos conceitos fundamentais do Direito....",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/licoes_preliminares_de_direito.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-154",
+    "tableId": 154,
+    "titulo": "O Futuro da Democracia",
+    "autor": "Norberto Bobbio",
+    "ano": null,
+    "descricao": "Uma análise profunda das promessas não cumpridas da democracia e os desafios contemporâneos do sistema representativo....",
+    "sinopse": "Uma análise profunda das promessas não cumpridas da democracia e os desafios contemporâneos do sistema representativo....",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_futuro_da_democracia_manual.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  },
+  {
+    "id": "livro-classico-155",
+    "tableId": 155,
+    "titulo": "O Manual Definitivo para entender a Filosofia do Direito",
+    "autor": "Vários Autores",
+    "ano": null,
+    "descricao": "Um guia prático e direto para compreender as principais correntes filosóficas e pensadores do direito....",
+    "sinopse": "Um guia prático e direto para compreender as principais correntes filosóficas e pensadores do direito....",
+    "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/filosofia_do_direito.jpg",
+    "totalCapitulos": 0,
+    "tags": [
+      "Clássico",
+      "Filosofia do Direito"
+    ],
+    "status": "em_breve",
+    "capitulos": []
+  }
+];
+
 export const AUDIOBOOKS_CATALOGO: AudiobookLivro[] = [
-  O_CASO_DOS_EXPLORADORES_DE_CAVERNAS
+  O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
+  ...AUDIOBOOKS_EM_BREVE
 ];
