@@ -304,12 +304,34 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
         }}
       />
 
-      {/* Header superior */}
-      <header className="pt-[calc(0.75rem+var(--sai-top,0px))] px-4 pb-2 flex items-center justify-between border-b border-white/5 bg-[#0A0A0C]/80 backdrop-blur-md z-30 shrink-0">
+      {/* IMAGEM EM TELA TODA (FULL SCREEN BACKGROUND) COM DEGRADÊ PRETO DE BAIXO PARA CIMA */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={imagemAtual}
+            src={imagemAtual}
+            alt={capituloAtual.titulo}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="w-full h-full object-cover object-center"
+          />
+        </AnimatePresence>
+
+        {/* Degradê preto profundo de baixo para cima */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/85 via-55% to-black/35" />
+
+        {/* Vinheta superior suave para proteger o header */}
+        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/85 to-transparent" />
+      </div>
+
+      {/* Header superior translúcido com z-index acima da imagem */}
+      <header className="relative z-20 pt-[calc(0.75rem+var(--sai-top,0px))] px-4 pb-2 flex items-center justify-between border-b border-white/10 bg-black/40 backdrop-blur-md shrink-0">
         <button
           type="button"
           onClick={fecharPlayer}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-white/80 hover:text-white"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white/90 hover:text-white"
           aria-label="Minimizar player"
         >
           <ChevronDown className="w-6 h-6" />
@@ -320,7 +342,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
             <Volume2 className="w-3 h-3 text-[#E11D48]" />
             Audiobook Oficial
           </span>
-          <span className="text-[13px] font-display font-bold text-white truncate max-w-full">
+          <span className="text-[13px] font-display font-bold text-white truncate max-w-full drop-shadow">
             {livro.titulo}
           </span>
         </div>
@@ -331,112 +353,100 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
             haptic.selection();
             setShowCapitulosSheet(true);
           }}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-white/80 hover:text-white"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white/90 hover:text-white"
           aria-label="Lista de capítulos"
         >
           <ListOrdered className="w-5 h-5" />
         </button>
       </header>
 
-      {/* Área Central: Cena Visual do Capítulo vs Modo Legenda Completa */}
-      <div className="flex-1 min-h-0 relative flex flex-col justify-center items-center p-4 max-w-2xl mx-auto w-full">
+      {/* Área Central: Cena Visual / Legenda Flutuante vs Modo Transcrição Completa */}
+      <div className="relative z-10 flex-1 min-h-0 flex flex-col justify-end p-4 max-w-xl mx-auto w-full">
         {viewMode === 'cena' ? (
-          <div className="relative w-full h-full max-h-[460px] rounded-3xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center bg-zinc-950">
-            {/* Imagem de fundo com blur para imersão */}
-            <div
-              className="absolute inset-0 bg-cover bg-center blur-2xl opacity-35 scale-110 pointer-events-none"
-              style={{ backgroundImage: `url(${imagemAtual})` }}
-            />
-
-            {/* Imagem principal da cena em alta definição */}
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={imagemAtual}
-                src={imagemAtual}
-                alt={capituloAtual.titulo}
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.45, ease: 'easeOut' }}
-                className="relative z-10 w-full h-full object-contain pointer-events-none drop-shadow-2xl"
-              />
-            </AnimatePresence>
-
-            {/* Faixa inferior de Legenda em Tempo Real (Closed Caption sincronizado) */}
+          <div className="w-full flex flex-col items-center justify-end pb-2">
+            {/* Faixa inferior de Legenda em Tempo Real (Closed Caption sincronizado sobre a imagem) */}
             {cueAtual && (
               <motion.div
+                key={cueAtual.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="absolute bottom-3 left-3 right-3 z-20 bg-black/85 backdrop-blur-md rounded-2xl px-4 py-2.5 border border-white/15 text-center shadow-2xl"
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+                className="w-full max-w-lg bg-black/85 backdrop-blur-md rounded-2xl px-5 py-3.5 border border-white/15 text-center shadow-2xl mb-3"
               >
-                <p className="text-[13px] sm:text-[14px] font-sans font-medium leading-snug text-white/95">
+                <p className="text-[14px] sm:text-[15px] font-sans font-medium leading-snug text-white/95 drop-shadow-md">
                   {cueAtual.text}
                 </p>
               </motion.div>
             )}
+
+            {/* Botão de Alternar para Transcrição */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                setViewMode('legenda');
+              }}
+              className="px-4 py-2 rounded-full bg-black/60 hover:bg-black/80 active:scale-95 transition-all text-xs font-semibold text-white/85 hover:text-white flex items-center gap-1.5 border border-white/15 backdrop-blur-md shadow-lg"
+            >
+              <Subtitles className="w-3.5 h-3.5 text-[#E11D48]" />
+              <span>Ver Transcrição / Legenda</span>
+            </button>
           </div>
         ) : (
-          /* Modo Legenda / Transcrição Interativa (Karaokê Teleprompter) */
-          <div
-            ref={transcriptContainerRef}
-            className="w-full h-full max-h-[460px] rounded-3xl overflow-y-auto px-4 py-6 bg-zinc-950/70 border border-white/10 backdrop-blur-md space-y-4 no-scrollbar"
-          >
-            {capituloAtual.cues.map((cue) => {
-              const isActive = currentTime >= cue.start && currentTime <= cue.end;
-              return (
-                <div
-                  key={cue.id}
-                  ref={isActive ? activeCueRef : null}
-                  onClick={() => {
-                    haptic.selection();
-                    if (audioRef.current) {
-                      audioRef.current.currentTime = cue.start;
-                      setCurrentTime(cue.start);
-                    }
-                  }}
-                  className={`p-3 rounded-xl transition-all cursor-pointer text-left ${
-                    isActive
-                      ? 'bg-[#E11D48]/20 border border-[#E11D48]/40 shadow-lg text-white font-semibold scale-[1.01]'
-                      : 'text-white/60 hover:text-white/90 hover:bg-white/5 border border-transparent'
-                  }`}
-                >
-                  <span className="text-[10px] font-mono text-white/40 block mb-0.5">
-                    {formatTempo(cue.start)}
-                  </span>
-                  <p className="text-[14px] leading-relaxed">{cue.text}</p>
-                </div>
-              );
-            })}
+          /* Modo Legenda / Transcrição Interativa (Karaokê Teleprompter com Glassmorphism) */
+          <div className="w-full h-full flex flex-col justify-between py-2">
+            <div
+              ref={transcriptContainerRef}
+              className="w-full flex-1 max-h-[52dvh] rounded-3xl overflow-y-auto px-4 py-5 bg-black/80 border border-white/15 backdrop-blur-xl space-y-3.5 no-scrollbar shadow-2xl"
+            >
+              {capituloAtual.cues.map((cue) => {
+                const isActive = currentTime >= cue.start && currentTime <= cue.end;
+                return (
+                  <div
+                    key={cue.id}
+                    ref={isActive ? activeCueRef : null}
+                    onClick={() => {
+                      haptic.selection();
+                      if (audioRef.current) {
+                        audioRef.current.currentTime = cue.start;
+                        setCurrentTime(cue.start);
+                      }
+                    }}
+                    className={`p-3.5 rounded-xl transition-all cursor-pointer text-left ${
+                      isActive
+                        ? 'bg-[#E11D48]/25 border border-[#E11D48]/50 shadow-lg text-white font-semibold scale-[1.01]'
+                        : 'text-white/65 hover:text-white/95 hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    <span className="text-[10px] font-mono text-white/40 block mb-0.5">
+                      {formatTempo(cue.start)}
+                    </span>
+                    <p className="text-[14px] leading-relaxed">{cue.text}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-3 flex justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setViewMode('cena');
+                }}
+                className="px-4 py-2 rounded-full bg-black/60 hover:bg-black/80 active:scale-95 transition-all text-xs font-semibold text-white/85 hover:text-white flex items-center gap-1.5 border border-white/15 backdrop-blur-md shadow-lg"
+              >
+                <ImageIcon className="w-3.5 h-3.5 text-[#E11D48]" />
+                <span>Ver Cenas em Tela Cheia</span>
+              </button>
+            </div>
           </div>
         )}
-
-        {/* Botão de Alternar Visualização (Cena vs Legenda) */}
-        <div className="mt-3 flex justify-center">
-          <button
-            type="button"
-            onClick={() => {
-              haptic.selection();
-              setViewMode(viewMode === 'cena' ? 'legenda' : 'cena');
-            }}
-            className="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition-all text-xs font-semibold text-white/80 hover:text-white flex items-center gap-1.5 border border-white/10"
-          >
-            {viewMode === 'cena' ? (
-              <>
-                <Subtitles className="w-3.5 h-3.5 text-[#E11D48]" />
-                <span>Ver Transcrição / Legenda</span>
-              </>
-            ) : (
-              <>
-                <ImageIcon className="w-3.5 h-3.5 text-[#E11D48]" />
-                <span>Ver Cenas Ilustradas</span>
-              </>
-            )}
-          </button>
-        </div>
       </div>
 
-      {/* Painel Inferior: Metadados, Scrub e Controles */}
-      <div className="w-full max-w-xl mx-auto px-6 pb-[calc(1.25rem+var(--sai-bottom,0px))] pt-2 flex flex-col gap-3 shrink-0">
+      {/* Painel Inferior: Metadados, Scrub e Controles sobre o degradê preto */}
+      <div className="relative z-20 w-full max-w-xl mx-auto px-6 pb-[calc(1.25rem+var(--sai-bottom,0px))] pt-1 flex flex-col gap-3 shrink-0">
         {/* Informações do Capítulo */}
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
