@@ -4,10 +4,9 @@ import {
   Play,
   Clock,
   BookOpen,
-  Bell,
+  ArrowLeft,
   Sparkles,
   ChevronRight,
-  Layers
 } from 'lucide-react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
@@ -15,6 +14,7 @@ import audiobooksHeroImg from '@/assets/covers/resumos-philosophers-hero.webp';
 import { O_CASO_DOS_EXPLORADORES_DE_CAVERNAS, AudiobookLivro } from '@/data/audiobooksCatalogo';
 
 interface AudiobooksHeroPanelProps {
+  onBack?: () => void;
   onOpenLivro: (livro: AudiobookLivro) => void;
   onPlayDisponivel: () => void;
   onFiltrarStatus: (status: 'todos' | 'disponivel' | 'em_breve') => void;
@@ -24,6 +24,7 @@ interface AudiobooksHeroPanelProps {
 }
 
 export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
+  onBack,
   onOpenLivro,
   onPlayDisponivel,
   onFiltrarStatus,
@@ -33,12 +34,19 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
 }) => {
   return (
     <div
-      className="relative overflow-hidden rounded-3xl sm:rounded-[36px] shadow-2xl shadow-black/80 flex flex-col z-20 border border-purple-500/20"
+      className="relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/80 flex flex-col z-20 border-b border-purple-500/25 w-full"
       style={{
         backgroundColor: '#07060A',
         transform: 'translateZ(0)',
       }}
     >
+      {/* ── Blindagem de overscroll superior contra vazamento do fundo ── */}
+      <div
+        className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
+        style={{ backgroundColor: '#07060A' }}
+        aria-hidden="true"
+      />
+
       {/* ── Imagem de Fundo (Filósofos / Clássicos) ── */}
       <img
         src={audiobooksHeroImg}
@@ -74,12 +82,39 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
       {/* Glow Roxo de Atmosfera */}
       <div className="absolute -top-16 -left-16 w-72 h-72 bg-[#7C3AED]/35 rounded-full blur-3xl pointer-events-none z-[2]" />
 
+      {/* ── Cabeçalho Superior Embutido no Topo do Painel com Botão de Voltar Padrão Premium ── */}
+      <header className="relative z-20 px-4 sm:px-6 md:px-8 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-1 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => {
+            haptic.selection();
+            if (onBack) onBack();
+          }}
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 hover:bg-black/60 active:scale-95 border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg backdrop-blur-md"
+          aria-label="Voltar"
+        >
+          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
+        </button>
+
+        <div className="flex flex-col items-center text-center">
+          <span className="text-[10.5px] sm:text-[11px] font-bold uppercase tracking-widest text-purple-200 flex items-center gap-1.5 drop-shadow-md">
+            <Headphones className="w-3.5 h-3.5 text-white" />
+            Direito Prime Audiobooks
+          </span>
+          <h1 className="font-display font-bold text-base sm:text-lg text-white drop-shadow-md">
+            Audiobooks Clássicos
+          </h1>
+        </div>
+
+        <div className="w-12 sm:w-[52px]" />
+      </header>
+
       {/* ── Conteúdo Central do Painel ── */}
-      <div className="relative z-10 px-4 sm:px-6 pt-6 sm:pt-8 pb-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-5">
+      <div className="relative z-10 px-4 sm:px-6 md:px-8 pt-3 sm:pt-4 pb-3 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 sm:gap-5">
         {/* Marca à Esquerda (dentro da área roxa) */}
         <div className="flex flex-col items-start text-left z-10 w-full md:w-[48%] max-w-[280px]">
           {/* Ícone com Glow */}
-          <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-lg shadow-purple-950/60 mb-2.5">
+          <div className="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-lg shadow-purple-950/60 mb-2">
             <Headphones className="w-6 h-6 text-white drop-shadow-md" strokeWidth={2.2} />
           </div>
 
@@ -91,7 +126,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
             CLÁSSICOS DO DIREITO
           </p>
 
-          <div className="mt-3 flex items-center gap-2.5">
+          <div className="mt-2.5 flex items-center gap-2.5">
             <div className="w-[2.5px] h-8 bg-white/50 rounded-full" />
             <p className="font-serif italic text-white/90 text-xs sm:text-[13px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
               A voz dos grandes pensadores,
@@ -154,7 +189,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
       </div>
 
       {/* ── 4 Botões de Ação Rápida no Padrão Vade Mecum (com detalhes roxos) ── */}
-      <div className="relative z-10 px-3 sm:px-5 pb-3 pt-1">
+      <div className="relative z-10 px-3 sm:px-6 md:px-8 pb-3.5 pt-1">
         <div className="flex items-center justify-between gap-2 bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl p-1.5 shadow-2xl">
           {/* Botão 1: Ouvir Agora */}
           <button
@@ -234,4 +269,3 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
 };
 
 export default memo(AudiobooksHeroPanel);
-

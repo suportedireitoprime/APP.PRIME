@@ -243,7 +243,7 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       isInteractingRef.current = false;
-    }, 10000);
+    }, 4000);
   }, []);
 
   useEffect(() => {
@@ -251,8 +251,30 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
 
     const interval = setInterval(() => {
       if (isInteractingRef.current || document.hidden) return;
-      setActiveIndex(prev => {
-        const nextIndex = prev + 1;
+
+      const el = scrollerRef.current;
+      setActiveIndex((prev) => {
+        let current = prev;
+        const N = displayItems.length;
+
+        // Teleporte silencioso de 0ms quando aproxima do fim do buffer, para nunca rebobinar
+        if (N > 0 && current >= loopedItems.length - N - 2 && el) {
+          const equivalent = (current % N) + N * 2;
+          const childCurr = el.children[current] as HTMLElement | undefined;
+          const childEq = el.children[equivalent] as HTMLElement | undefined;
+          if (childCurr && childEq) {
+            const diff = childCurr.offsetLeft - childEq.offsetLeft;
+            el.style.scrollBehavior = 'auto';
+            el.style.scrollSnapType = 'none';
+            el.scrollLeft -= diff;
+            void el.offsetHeight;
+            el.style.scrollSnapType = '';
+            el.style.scrollBehavior = '';
+            current = equivalent;
+          }
+        }
+
+        const nextIndex = current + 1;
         scrollToIndex(nextIndex);
         return nextIndex;
       });
@@ -261,7 +283,7 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
     return () => {
       clearInterval(interval);
     };
-  }, [displayItems.length, scrollToIndex, isReady]);
+  }, [displayItems.length, scrollToIndex, isReady, loopedItems.length]);
 
   return (
     <section className="space-y-3">
@@ -294,7 +316,7 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
         onScroll={handleScroll}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
         {loopedItems.map((item, i) => {
@@ -329,12 +351,14 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
                 setActiveIndex(i);
                 handleOpenItem(item);
               }}
-              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col shadow-md rounded-2xl group transition-all duration-500 ease-out ${
-                isActive ? 'scale-100 opacity-100 z-10' : 'scale-[0.92] opacity-60 z-0'
+              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-400 ease-out ${
+                isActive
+                  ? 'scale-[1.02] opacity-100 z-10 shadow-xl'
+                  : 'scale-[0.94] opacity-75 z-0 shadow-sm'
               }`}
             >
               <div 
-                className={`absolute inset-0 rounded-2xl overflow-hidden pointer-events-none transition-all duration-300 ${isActive ? 'shadow-xl' : 'shadow-md group-hover:opacity-100 opacity-95'}`}
+                className={`absolute inset-0 rounded-2xl overflow-hidden pointer-events-none transition-all duration-300 ${isActive ? 'shadow-lg ring-1 ring-white/15' : 'shadow-sm group-hover:opacity-100 opacity-95'}`}
                 style={{ background: `linear-gradient(135deg, ${baseColor} 0%, ${shade(baseColor, -0.3)} 100%)` }}
               >
                 <Icon
@@ -345,11 +369,19 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
               </div>
 
               {coverImage && (
-                <div className={`absolute right-0 w-auto h-[105px] max-w-none pointer-events-none z-10 transition-all duration-500 ease-out origin-bottom ${isActive ? 'scale-[1.06] -top-5 drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]' : 'scale-100 -top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]'}`}>
+                <div
+                  className={`absolute right-0 w-auto h-[96px] sm:h-[100px] max-w-none pointer-events-none z-10 transform-gpu origin-bottom transition-all duration-500 ease-out ${
+                    isActive
+                      ? 'scale-[1.08] sm:scale-[1.10] -top-3.5 sm:-top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.65)] opacity-100'
+                      : 'scale-[0.86] -top-0.5 drop-shadow-[0_2px_6px_rgba(0,0,0,0.3)] opacity-60'
+                  }`}
+                >
                   <img
                     src={coverImage}
                     alt={`Capa ${item.sigla}`}
-                    className="h-full w-auto object-contain"
+                    className="h-full w-auto object-contain select-none pointer-events-none"
+                    loading="eager"
+                    decoding="async"
                   />
                 </div>
               )}

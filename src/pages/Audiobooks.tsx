@@ -25,6 +25,7 @@ import {
 import { AudiobookPlayerModal } from "@/components/audiobooks/AudiobookPlayerModal";
 import { AudiobookDetailSheet } from "@/components/audiobooks/AudiobookDetailSheet";
 import { AudiobooksHeroPanel } from "@/components/audiobooks/AudiobooksHeroPanel";
+import { AudiobooksContinuarOuvindoCard } from "@/components/audiobooks/AudiobooksContinuarOuvindoCard";
 
 export default function AudiobooksPage() {
   const navigate = useNavigate();
@@ -121,6 +122,11 @@ export default function AudiobooksPage() {
     });
   }, [termoBusca, filtroStatus]);
 
+  // Livros recomendados para a seção de destaque
+  const livrosRecomendados = useMemo(() => {
+    return AUDIOBOOKS_CATALOGO.slice(0, 6);
+  }, []);
+
   // Contadores para as abas
   const totalCount = AUDIOBOOKS_CATALOGO.length;
   const disponivelCount = useMemo(
@@ -141,55 +147,98 @@ export default function AudiobooksPage() {
         <ShapeGrid />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-[calc(1rem+var(--sai-top,0px))]">
-        {/* Header Superior com Botão de Voltar Padrão Premium */}
-        <header className="flex items-center justify-between pb-4 border-b border-white/5">
-          <button
-            type="button"
-            onClick={() => {
-              haptic.selection();
-              navigate(-1);
-            }}
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 flex items-center justify-center transition-all cursor-pointer shadow-lg"
-            aria-label="Voltar"
-          >
-            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
-          </button>
+      {/* Painel Hero Estilo Vade Mecum (Full-Bleed, sem margens laterais, botão de voltar embutido) */}
+      <AudiobooksHeroPanel
+        onBack={() => {
+          haptic.selection();
+          navigate(-1);
+        }}
+        onOpenLivro={(livro) => {
+          setLivroSelecionado(livro);
+        }}
+        onPlayDisponivel={() => {
+          const idx = progressoSalvo?.capituloIndex ?? 0;
+          abrirCapitulo(idx);
+        }}
+        onFiltrarStatus={setFiltroStatus}
+        filtroStatus={filtroStatus}
+        totalCount={totalCount}
+        emBreveCount={emBreveCount}
+      />
 
-          <div className="flex flex-col items-center text-center">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-purple-400 flex items-center gap-1.5">
-              <Headphones className="w-3.5 h-3.5" />
-              Direito Prime Audiobooks
-            </span>
-            <h1 className="font-display font-bold text-lg sm:text-xl text-white">
-              Audiobooks Clássicos
-            </h1>
+      {/* Conteúdo Principal com Margens Laterais e Layout Fluido */}
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
+        {/* Banner Continuar Ouvindo / Leitura (Padrão Vade Mecum com Capa do Livro) */}
+        <AudiobooksContinuarOuvindoCard
+          livro={O_CASO_DOS_EXPLORADORES_DE_CAVERNAS}
+          progressoSalvo={progressoSalvo}
+          onPlay={(idx) => abrirCapitulo(idx)}
+        />
+
+        {/* ======================================================== */}
+        {/* SEÇÃO RECOMENDAÇÕES (DESTAQUES DA COLEÇÃO)               */}
+        {/* ======================================================== */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between gap-2 px-1">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-display text-white text-[16px] sm:text-[17px] font-bold flex items-center gap-2 uppercase tracking-widest">
+                <span className="w-1 h-5 rounded-full bg-purple-500 shrink-0" />
+                <span className="truncate">RECOMENDAÇÕES</span>
+              </h3>
+              <p className="font-body text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate">
+                Obras fundamentais e mais recomendadas para a sua formação
+              </p>
+            </div>
           </div>
 
-          <div className="w-12 sm:w-[52px]" />
-        </header>
-
-        {/* Banner Hero Painel Vade Mecum (Roxo Oficial) */}
-        <section className="mt-4">
-          <AudiobooksHeroPanel
-            onOpenLivro={(livro) => {
-              setLivroSelecionado(livro);
-            }}
-            onPlayDisponivel={() => {
-              const idx = progressoSalvo?.capituloIndex ?? 0;
-              abrirCapitulo(idx);
-            }}
-            onFiltrarStatus={setFiltroStatus}
-            filtroStatus={filtroStatus}
-            totalCount={totalCount}
-            emBreveCount={emBreveCount}
-          />
+          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+            {livrosRecomendados.map((livro) => {
+              const isDisponivel = livro.status === "disponivel";
+              return (
+                <button
+                  key={`rec-${livro.id}`}
+                  type="button"
+                  onClick={() => handleCardClick(livro)}
+                  className="snap-start shrink-0 w-[122px] sm:w-[136px] flex flex-col text-left group cursor-pointer focus-visible:outline-none"
+                >
+                  <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-purple-500/50 transition-all shadow-md group-hover:shadow-purple-950/40">
+                    <img
+                      src={livro.capaUrl}
+                      alt={livro.titulo}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
+                    <div className="absolute top-2 left-2">
+                      {isDisponivel ? (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                          <Play className="w-2 h-2 fill-white" />
+                          Áudio HD
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full bg-black/80 border border-amber-500/30 text-amber-300 text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md backdrop-blur-md">
+                          <Clock className="w-2 h-2" />
+                          Em Breve
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <p className="font-serif italic font-semibold text-xs sm:text-[13px] text-white group-hover:text-purple-300 transition-colors line-clamp-2 mt-2 leading-tight">
+                    {livro.titulo}
+                  </p>
+                  <p className="text-[10.5px] text-white/50 truncate mt-0.5">
+                    {livro.autor}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
         </section>
 
         {/* ======================================================== */}
         {/* SEÇÃO DO ACERVO NO FORMATO PADRÃO DA BIBLIOTECA         */}
         {/* ======================================================== */}
-        <section className="mt-8">
+        <section className="pt-2">
           {/* Header da Seção Idêntico à Biblioteca */}
           <div className="mb-4">
             <p className="text-[10px] uppercase tracking-[0.22em] text-purple-400 font-bold">
@@ -387,7 +436,8 @@ export default function AudiobooksPage() {
                         {/* Status: Disponível vs Em Breve */}
                         {isDisponivel ? (
                           <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                            <Headphones className="w-2.5 h-2.5" />8 Capítulos Gravados
+                            <Headphones className="w-2.5 h-2.5" />
+                            8 Capítulos Gravados
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30">
@@ -504,7 +554,7 @@ export default function AudiobooksPage() {
             </div>
           )}
         </section>
-      </div>
+      </main>
 
       {/* ======================================================== */}
       {/* PAINEL DE AJUSTE / DETALHES DO AUDIOBOOK (PADRÃO BIBLIOTECA) */}
