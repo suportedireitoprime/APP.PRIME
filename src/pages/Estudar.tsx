@@ -7,7 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import QuizView from '@/components/estudar/QuizView';
 import FlashcardView from '@/components/estudar/FlashcardView';
 import DesempenhoView from '@/components/estudar/DesempenhoView';
-import MindMapView from '@/components/estudar/MindMapView';
+import MapasMentaisView from '@/components/mapas-mentais/MapasMentaisView';
 import QuestoesDashboard from '@/components/estudar/QuestoesDashboard';
 
 import { Input } from '@/components/ui/input';
@@ -127,7 +127,7 @@ const Estudar = () => {
     return <FlashcardView tabelaNome={selectedLei.tabela} artigoNumero={selectedArtigo} leiNome={selectedLei.nome} onBack={handleBack} />;
   }
   if (view === 'mapa_mental' && selectedLei && selectedArtigo) {
-    return <MindMapView tabelaNome={selectedLei.tabela} artigoNumero={selectedArtigo} leiNome={selectedLei.nome} onBack={handleBack} />;
+    return <MapasMentaisView onClose={handleBack} />;
   }
   if (view === 'desempenho') {
     return <DesempenhoView onBack={handleBack} />;

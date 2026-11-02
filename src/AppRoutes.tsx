@@ -768,10 +768,6 @@ function AnimatedRoutes() {
       m.hydrateVideoaulasCache();
       m.warmVideoaulasCache();
     });
-    void import('@/lib/tematicaStore').then((m) => {
-      m.hydrateTematicaCache();
-      m.warmTematicaCache();
-    });
     // Favoritos/recentes (biblioteca, leis, resumos, dicionário) da conta.
     void Promise.all([
       import('@/lib/leisFavoritos'),
@@ -791,7 +787,6 @@ function AnimatedRoutes() {
         'videoaulasLista', 'resumosJuridicos', 'resumosJuridicosTemas',
         'resumosJuridicosSubtemas', 'resumosJuridicosLista', 'audioaulas',
         'dicionario', 'biblioteca', 'bibliotecaCategoria', 'blog',
-        'tematica',
       ] as PrefetchKey[]).forEach((k) => prefetchRoute(k));
     };
     const ric = (window as any).requestIdleCallback as ((cb: () => void, o?: { timeout?: number }) => number) | undefined;
@@ -913,7 +908,7 @@ function AnimatedRoutes() {
           <Route path="/flashcards/area/:slug" element={<ProtectedRoute><PageTransition instant><FlashcardsArea /></PageTransition></ProtectedRoute>} />
 
           <Route path="/flashcards" element={<ProtectedRoute><FlashcardsRouteWrapper><PageTransition instant><Flashcards /></PageTransition></FlashcardsRouteWrapper></ProtectedRoute>} />
-          <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition instant><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/estudar" element={<Navigate to="/flashcards/estudo" replace />} />
           <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition instant><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/cargos" element={<ProtectedRoute><PageTransition instant><FlashcardsCargos /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/cargos/:id" element={<ProtectedRoute><PageTransition instant><FlashcardsCargosDetalhes /></PageTransition></ProtectedRoute>} />

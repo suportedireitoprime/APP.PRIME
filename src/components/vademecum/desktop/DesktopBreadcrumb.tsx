@@ -25,7 +25,6 @@ const LABEL_MAP: Record<string, string> = {
   estudar: 'Estudar',
   dicionario: 'Dicionário Jurídico',
   'dicionario-juridico': 'Dicionário Jurídico',
-  tematica: 'Temática Jurídica',
   locais: 'Locais',
   pessoal: 'Pessoal',
   artigos: 'Artigos',

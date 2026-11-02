@@ -235,7 +235,7 @@ function SectionCard({
   icon: React.ReactNode;
   title: string;
   subtitle: string;
-  status: "idle" | "running" | "done" | "error";
+  status: "idle" | "running" | "complete" | "error";
   progress: number;
   done: number;
   total: number;
@@ -244,7 +244,7 @@ function SectionCard({
   disabled?: boolean;
 }) {
   const isRunning = status === "running";
-  const isDone = status === "done";
+  const isDone = status === "complete";
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card p-4 space-y-3">
