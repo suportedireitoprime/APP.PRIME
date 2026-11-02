@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { HERO_ILLUSTRATIONS } from '@/components/aprender/chunks/aprenderConstants';
+import hero1 from '@/assets/aprender-hero/hero-1.webp.asset.json';
+import hero2 from '@/assets/aprender-hero/hero-2.webp.asset.json';
+import hero3 from '@/assets/aprender-hero/hero-3.webp.asset.json';
+import hero4 from '@/assets/aprender-hero/hero-4.webp.asset.json';
+import hero5 from '@/assets/aprender-hero/hero-5.webp.asset.json';
+import hero6 from '@/assets/aprender-hero/hero-6.webp.asset.json';
+import { srcOf } from '@/lib/assetUrl';
+
+export const HERO_ILLUSTRATIONS = [
+  srcOf(hero1),
+  srcOf(hero2),
+  srcOf(hero3),
+  srcOf(hero4),
+  srcOf(hero5),
+  srcOf(hero6),
+];
 
 export interface DisciplinaItem {
   id: string;
