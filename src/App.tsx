@@ -154,14 +154,6 @@ function ForceUpdateWrapper() {
 
 const AnimatedRoutes = lazy(() => import("./AppRoutes"));
 
-const CustomSplashScreen = lazy(() => import("@/components/CustomSplashScreen").then(m => ({ default: m.CustomSplashScreen })));
-
-function AppBootSplash() {
-  const [show, setShow] = useState(true);
-  if (!show) return null;
-  return <CustomSplashScreen onComplete={() => setShow(false)} />;
-}
-
 function AppWarmupInitializer() {
   const qc = useQueryClient();
   useEffect(() => {
@@ -207,9 +199,6 @@ const App = () => (
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <ThemeProvider>
-            <Suspense fallback={null}>
-              <AppBootSplash />
-            </Suspense>
             <RecordingProvider>
               <UniversalMediaPlayerProvider>
                 <TooltipProvider>
