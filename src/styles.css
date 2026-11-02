@@ -21,7 +21,7 @@
 
 /* Item 4: Espaçamento de Tipografia em Títulos Uppercase */
 @layer base {
-  h1.uppercase, h2.uppercase, h3.uppercase, h4.uppercase, h5.uppercase, h6.uppercase, .uppercase-title {
+  h1.uppercase, h2.uppercase, h3.uppercase, h4.uppercase, h5.uppercase, h6.uppercase {
     @apply tracking-widest;
   }
 }
@@ -124,16 +124,6 @@ button, a, input, select, textarea, [role="button"], [role="tab"], .cursor-point
   from, to {
     opacity: 1;
     transform: none;
-  }
-}
-
-.resultado-card-enter {
-  animation: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .resultado-card-enter {
-    animation: none;
   }
 }
 
@@ -446,10 +436,6 @@ body {
     background: linear-gradient(135deg, hsl(46 65% 22%) 0%, hsl(46 65% 34%) 50%, hsl(46 65% 46%) 100%);
     color: #fff;
   }
-  .tab-hero-yellow[data-state="active"] {
-    background: linear-gradient(135deg, hsl(46 65% 32%) 0%, hsl(46 65% 44%) 50%, hsl(46 65% 52%) 100%) !important;
-    color: #1a1a1a !important;
-  }
 
   /* Painel vermelho / tab ativa / rodapé — gradiente compartilhado (DIREITO PRIME) */
   .bg-hero-panel {
@@ -684,26 +670,6 @@ body {
   animation: shimmer-reflect 1.6s ease-out 1 forwards;
   pointer-events: none;
   z-index: 2;
-}
-
-/* Reflexo único disparado quando o card entra no centro do carrossel */
-.card-center-shine::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 30%,
-    hsla(0, 0%, 100%, 0.18) 45%,
-    hsla(51, 100%, 90%, 0.42) 50%,
-    hsla(0, 0%, 100%, 0.18) 55%,
-    transparent 70%
-  );
-  transform: translateX(-150%) skewX(-15deg);
-  animation: shimmer-reflect 0.9s ease-out 1 forwards;
-  pointer-events: none;
-  z-index: 3;
-  border-radius: inherit;
 }
 
 /* === Botão dourado com reflexo (upgrade Premium) === */

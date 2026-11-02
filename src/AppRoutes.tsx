@@ -867,7 +867,6 @@ function AnimatedRoutes() {
           <Route path="/lembretes/local" element={<ProtectedRoute><PageTransition><LembretesLocal /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/seguranca" element={<ProtectedRoute><PageTransition><Seguranca /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/excluir-conta" element={<ProtectedRoute><PageTransition><ExcluirConta /></PageTransition></ProtectedRoute>} />
-          <Route path="/radar/stf" element={<Navigate to="/" replace />} />
           <Route path="/radar/proposicoes" element={<ProtectedRoute><PageTransition><RadarProposicoes /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/proposicoes/:date" element={<ProtectedRoute><PageTransition><RadarProposicoesDia /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/categorias" element={<Navigate to="/radar-360" replace />} />
@@ -1003,7 +1002,6 @@ function AnimatedRoutes() {
           <Route path="/perfil" element={<ProtectedRoute><PageTransition instant><Perfil /></PageTransition></ProtectedRoute>} />
           <Route path="/sobre" element={<ProtectedRoute><PageTransition><SobreApp /></PageTransition></ProtectedRoute>} />
           <Route path="/blog" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
-          <Route path="/newsletter" element={<Navigate to="/" replace />} />
           <Route path="/biblioteca" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
           <Route path="/biblioteca/caderno" element={<Navigate to="/pessoal/grifos" replace />} />
@@ -1022,16 +1020,12 @@ function AnimatedRoutes() {
           <Route path="/admin-narracao" element={<Navigate to="/admin-narracao-leis" replace />} />
           <Route path="/admin-narracao/biblioteca" element={<ProtectedRoute><PageTransition><AdminNarracaoBiblioteca /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao/blog" element={<ProtectedRoute><PageTransition><AdminNarracaoBlog /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-narracao/apresentacao" element={<Navigate to="/admin-funcoes" replace />} />
-          <Route path="/apresentacoes" element={<Navigate to="/" replace />} />
-          <Route path="/apresentacao/:id" element={<Navigate to="/" replace />} />
           <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-usuarios" element={<ProtectedRoute><PageTransition><AdminUsuarios /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor-usuarios" element={<ProtectedRoute><PageTransition><AdminMonitorUsuarios /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor-apis" element={<ProtectedRoute><PageTransition><AdminMonitorApis /></PageTransition></ProtectedRoute>} />
           <Route path="/assinatura" element={<ProtectedRoute><PageTransition instant><Assinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
-          <Route path="/opiniao" element={<Navigate to="/" replace />} />
           <Route path="/minha-cota" element={<ProtectedRoute><PageTransition><MinhaCota /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-push" element={<ProtectedRoute><PageTransition><AdminPush /></PageTransition></ProtectedRoute>} />
@@ -1040,10 +1034,6 @@ function AnimatedRoutes() {
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/boletins" element={<Navigate to="/" replace />} />
-          <Route path="/boletins/:id" element={<Navigate to="/" replace />} />
-          <Route path="/boletins-noticias" element={<Navigate to="/" replace />} />
-          <Route path="/boletins-noticias/:id" element={<Navigate to="/" replace />} />
           <Route path="/ajustes/horus" element={<ProtectedRoute><PageTransition><HorusWhatsApp /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-blog-edicao" element={<ProtectedRoute><PageTransition><AdminBlogEdicao /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
@@ -1056,17 +1046,15 @@ function AnimatedRoutes() {
           <Route path="/audioaulas/:area" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/meus-downloads" element={<Navigate to="/modo-offline" replace />} />
           <Route path="/minhas-leituras" element={<Navigate to="/pessoal/livros" replace />} />
-          <Route path="/meus-resumos" element={<Navigate to="/resumos" replace />} />
-          <Route path="/minhas-videoaulas" element={<Navigate to="/videoaulas" replace />} />
+          <Route path="/meus-resumos" element={<Navigate to="/resumos-juridicos" replace />} />
+          <Route path="/minhas-videoaulas" element={<Navigate to="/videoaulas/painel" replace />} />
 
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/audioleis" element={<ProtectedRoute><PageTransition><Audioleis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis" element={<Navigate to="/admin-mapeamento-leis" replace />} />
-          <Route path="/admin-biblioteca-leis/estadual" element={<Navigate to="/admin-mapeamento-leis" replace />} />
-          <Route path="/admin-biblioteca-leis/estadual/:uf" element={<Navigate to="/admin-mapeamento-leis" replace />} />
-          <Route path="/admin-biblioteca-leis/geral" element={<Navigate to="/admin-mapeamento-leis" replace />} />
+          <Route path="/admin-biblioteca-leis/*" element={<Navigate to="/admin-mapeamento-leis" replace />} />
 
 
           <Route path="/desktop" element={<PageTransition><DesktopPromo /></PageTransition>} />
@@ -1074,7 +1062,6 @@ function AnimatedRoutes() {
           <Route path="/modo-offline/leis-e-narracoes" element={<ProtectedRoute><PageTransition><ModoOfflineLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/livros" element={<ProtectedRoute><PageTransition><ModoOfflineLivros /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/audioaulas" element={<ProtectedRoute><PageTransition><ModoOfflineAudioaulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/modo-offline/apresentacoes" element={<Navigate to="/modo-offline" replace />} />
           <Route path="/assistente" element={<ProtectedRoute><PageTransition instant><AssistenteApp /></PageTransition></ProtectedRoute>} />
           <Route path="/assistente-horus" element={<ProtectedRoute><PageTransition instant><AssistenteHorus /></PageTransition></ProtectedRoute>} />
 
