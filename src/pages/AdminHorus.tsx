@@ -1,18 +1,30 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { MessageCircle, Settings, Sparkles, MessagesSquare, Megaphone, Bell, BarChart3, Dumbbell, Trophy, ChevronRight, Radio } from 'lucide-react';
-import { HorusAdminTab } from '@/components/admin/horus/HorusAdminTab';
-import { HorusFuncoesTab } from '@/components/admin/horus/HorusFuncoesTab';
-import { HorusConversasTab } from '@/components/admin/horus/HorusConversasTab';
-import { HorusMarketingTab } from '@/components/admin/horus/HorusMarketingTab';
-import { HorusNotificacoesTab } from '@/components/admin/horus/HorusNotificacoesTab';
-import { HorusEstatisticasTab } from '@/components/admin/horus/HorusEstatisticasTab';
-import { HorusPoderesTab } from '@/components/admin/horus/HorusPoderesTab';
-import { HorusRankingTab } from '@/components/admin/horus/HorusRankingTab';
-import { HorusCanalTab } from '@/components/admin/horus/HorusCanalTab';
-import { HorusUsuariosTab } from '@/components/admin/horus/HorusUsuariosTab';
-import { AdminHorusHojeCards } from '@/components/admin/horus/AdminHorusHojeCards';
-import { Users } from 'lucide-react';
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { PageHeader } from "@/components/vademecum/navigation/PageHeader";
+import {
+  MessageCircle,
+  Settings,
+  Sparkles,
+  MessagesSquare,
+  Megaphone,
+  Bell,
+  BarChart3,
+  Dumbbell,
+  Trophy,
+  ChevronRight,
+  Radio,
+} from "lucide-react";
+import { HorusAdminTab } from "@/components/admin/horus/HorusAdminTab";
+import { HorusFuncoesTab } from "@/components/admin/horus/HorusFuncoesTab";
+import { HorusConversasTab } from "@/components/admin/horus/HorusConversasTab";
+import { HorusMarketingTab } from "@/components/admin/horus/HorusMarketingTab";
+import { HorusNotificacoesTab } from "@/components/admin/horus/HorusNotificacoesTab";
+import { HorusEstatisticasTab } from "@/components/admin/horus/HorusEstatisticasTab";
+import { HorusPoderesTab } from "@/components/admin/horus/HorusPoderesTab";
+import { HorusRankingTab } from "@/components/admin/horus/HorusRankingTab";
+import { HorusCanalTab } from "@/components/admin/horus/HorusCanalTab";
+import { HorusUsuariosTab } from "@/components/admin/horus/HorusUsuariosTab";
+import { AdminHorusHojeCards } from "@/components/admin/horus/AdminHorusHojeCards";
+import { Users } from "lucide-react";
 
 type Section = {
   id: string;
@@ -25,31 +37,101 @@ type Section = {
 };
 
 const SECTIONS: Section[] = [
-  { id: 'admin', label: 'Admin', desc: 'Instância, QR code e conexão', icon: Settings, color: '#3B82F6', Component: HorusAdminTab },
-  { id: 'funcoes', label: 'Funções', desc: 'Agentes, prompts e configurações', icon: Sparkles, color: '#A855F7', Component: HorusFuncoesTab },
-  { id: 'poderes', label: 'Poderes', desc: 'Superpoderes open-source: memória, Wikipedia, BrasilAPI, BCB…', icon: Dumbbell, color: '#DC2626', Component: HorusPoderesTab },
-  { id: 'ranking', label: 'Ranking de gastos', desc: 'Top usuários por custo (USD) e tokens — 7 e 30 dias', icon: Trophy, color: '#DC2626', Component: HorusRankingTab },
-  { id: 'estatisticas', label: 'Estatísticas & Proativos', desc: 'Contexto do aluno, intenções e mensagens automáticas', icon: BarChart3, color: '#EC4899', Component: HorusEstatisticasTab },
-  { id: 'conversas', label: 'Conversas', desc: 'Histórico e resposta manual', icon: MessagesSquare, color: '#10B981', Component: HorusConversasTab },
-  { id: 'marketing', label: 'Marketing', desc: 'Campanhas e disparos em massa', icon: Megaphone, color: '#DC2626', Component: HorusMarketingTab },
-  { id: 'canal', label: 'Canal', desc: 'Publicar no canal do WhatsApp (Direito Prime vade mecum)', icon: Radio, color: '#22C55E', Component: HorusCanalTab },
-  { id: 'usuarios', label: 'Pessoas Cadastradas', desc: 'Gerenciar usuários vinculados ao Horus', icon: Users, color: '#14B8A6', Component: HorusUsuariosTab },
-  { id: 'notifs', label: 'Notificações', desc: 'Logs de envio e diagnóstico', icon: Bell, color: 'hsl(348 78% 38%)', Component: HorusNotificacoesTab },
+  {
+    id: "admin",
+    label: "Admin",
+    desc: "Instância, QR code e conexão",
+    icon: Settings,
+    color: "#3B82F6",
+    Component: HorusAdminTab,
+  },
+  {
+    id: "funcoes",
+    label: "Funções",
+    desc: "Agentes, prompts e configurações",
+    icon: Sparkles,
+    color: "#A855F7",
+    Component: HorusFuncoesTab,
+  },
+  {
+    id: "poderes",
+    label: "Poderes",
+    desc: "Superpoderes open-source: memória, Wikipedia, BrasilAPI, BCB…",
+    icon: Dumbbell,
+    color: "#DC2626",
+    Component: HorusPoderesTab,
+  },
+  {
+    id: "ranking",
+    label: "Ranking de gastos",
+    desc: "Top usuários por custo (USD) e tokens — 7 e 30 dias",
+    icon: Trophy,
+    color: "#DC2626",
+    Component: HorusRankingTab,
+  },
+  {
+    id: "estatisticas",
+    label: "Estatísticas & Proativos",
+    desc: "Contexto do aluno, intenções e mensagens automáticas",
+    icon: BarChart3,
+    color: "#EC4899",
+    Component: HorusEstatisticasTab,
+  },
+  {
+    id: "conversas",
+    label: "Conversas",
+    desc: "Histórico e resposta manual",
+    icon: MessagesSquare,
+    color: "#10B981",
+    Component: HorusConversasTab,
+  },
+  {
+    id: "marketing",
+    label: "Marketing",
+    desc: "Campanhas e disparos em massa",
+    icon: Megaphone,
+    color: "#DC2626",
+    Component: HorusMarketingTab,
+  },
+  {
+    id: "canal",
+    label: "Canal",
+    desc: "Publicar no canal do WhatsApp (Direito Prime vade mecum)",
+    icon: Radio,
+    color: "#22C55E",
+    Component: HorusCanalTab,
+  },
+  {
+    id: "usuarios",
+    label: "Pessoas Cadastradas",
+    desc: "Gerenciar usuários vinculados ao Horus",
+    icon: Users,
+    color: "#14B8A6",
+    Component: HorusUsuariosTab,
+  },
+  {
+    id: "notifs",
+    label: "Notificações",
+    desc: "Logs de envio e diagnóstico",
+    icon: Bell,
+    color: "hsl(348 78% 38%)",
+    Component: HorusNotificacoesTab,
+  },
 ];
 
 export default function AdminHorus() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
-  const tab = params.get('tab');
+  const tab = params.get("tab");
   const active = SECTIONS.find((s) => s.id === tab);
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
       <PageHeader
         title="Horus"
-        onBack={() => (active ? setParams({}, { replace: true }) : navigate('/admin-funcoes'))}
+        onBack={() => (active ? setParams({}, { replace: true }) : navigate("/admin-funcoes"))}
       />
-      <div className={`px-4 py-4 ${active ? 'max-w-2xl' : 'max-w-3xl'} mx-auto`}>
+      <div className={`px-4 py-4 ${active ? "max-w-2xl" : "max-w-3xl"} mx-auto`}>
         {active ? (
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -65,7 +147,9 @@ export default function AdminHorus() {
               {SECTIONS.map(({ id, label, desc, icon: Icon, color, route }) => (
                 <button
                   key={id}
-                  onClick={() => route ? navigate(route) : setParams({ tab: id }, { replace: true })}
+                  onClick={() =>
+                    route ? navigate(route) : setParams({ tab: id }, { replace: true })
+                  }
                   className="w-full flex items-center gap-4 px-4 py-5 min-h-[84px] text-left hover:bg-secondary/60 active:bg-secondary transition-colors"
                 >
                   <div
@@ -89,7 +173,6 @@ export default function AdminHorus() {
           </>
         )}
       </div>
-
     </div>
   );
 }

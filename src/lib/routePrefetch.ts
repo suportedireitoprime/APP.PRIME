@@ -5,7 +5,7 @@
 
 export const routePrefetch = {
   radares:  () => import("@/pages/Radares.tsx"),
-  boletins: () => import("@/pages/Boletins.tsx"),
+  boletins: () => import("@/pages/BoletinsJuridicos.tsx"),
   noticias: () => import("@/pages/Noticias.tsx"),
   desktop:  () => import("@/pages/DesktopPromo.tsx"),
   blog:     () => import("@/pages/Blog.tsx"),

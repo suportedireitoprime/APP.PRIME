@@ -131,7 +131,6 @@ const ResumosJuridicosJurisprudencia = lazy(() => import("./pages/resumos-juridi
 const Noticias = lazy(routePrefetch.noticias);
 const Atualizacoes = lazy(() => import("./pages/Atualizacoes.tsx"));
 const Novidades = lazy(() => import("./pages/Novidades.tsx"));
-const Anotacoes = lazy(() => import("./pages/Anotacoes.tsx"));
 const AvaliacaoInteligente = lazy(() => import("./pages/graficos/AvaliacaoInteligente.tsx"));
 const PessoalGrifos = lazy(() => import("./pages/pessoal/Grifos.tsx"));
 const PessoalArtigos = lazy(() => import("./pages/pessoal/Artigos.tsx"));
@@ -361,14 +360,12 @@ const Termos = lazy(() => import("./pages/Termos.tsx"));
 const Seguranca = lazy(() => import("./pages/Seguranca.tsx"));
 const ExcluirConta = lazy(() => import("./pages/ExcluirConta.tsx"));
 const ExcluirContaPublico = lazy(() => import("./pages/ExcluirContaPublico.tsx"));
-const Lembretes = lazy(() => import("./pages/Lembretes.tsx"));
 const CentralLembretes = lazy(() => import("./pages/CentralLembretes.tsx"));
 const LembretesLocal = lazy(() => import("./pages/LembretesLocal.tsx"));
 const Suporte = lazy(() => import("./pages/Suporte.tsx"));
 const SuportePublico = lazy(() => import("./pages/SuportePublico.tsx"));
 const Opiniao = lazy(() => import("./pages/Opiniao.tsx"));
 const MinhaCota = lazy(() => import("./pages/MinhaCota.tsx"));
-const PreferenciasLembretes = lazy(() => import("./pages/PreferenciasLembretes.tsx"));
 const AssistenteApp = lazy(() => import("./pages/AssistenteApp.tsx"));
 const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 
@@ -896,7 +893,7 @@ function AnimatedRoutes() {
           <Route path="/radar-concursos/estatisticas" element={<ProtectedRoute><PageTransition><RadarEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/atualizacoes" element={<ProtectedRoute><PageTransition instant><Atualizacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
-          <Route path="/anotacoes" element={<ProtectedRoute><PageTransition><Anotacoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/anotacoes" element={<Navigate to="/pessoal/anotacoes" replace />} />
           <Route path="/configuracoes" element={<ProtectedRoute><PageTransition><Configuracoes /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes" element={<ProtectedRoute><PageTransition><CentralLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/local" element={<ProtectedRoute><PageTransition><LembretesLocal /></PageTransition></ProtectedRoute>} />

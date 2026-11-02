@@ -37,9 +37,6 @@ const VideoaulaSheet = lazyWithRetry(
 const VideoaulasListSheet = lazyWithRetry(
   () => import('@/components/vademecum/sheets/VideoaulasListSheet')
 );
-const GrafoOverlay = lazyWithRetry(
-  () => import('@/components/vademecum/overlays/GrafoOverlay')
-);
 
 interface ArtigoOverlaysProps {
   showEraseSheet: boolean;
@@ -74,8 +71,8 @@ interface ArtigoOverlaysProps {
   setAnotacoesCount: (c: number) => void;
   showPerguntarSheet: boolean;
   setShowPerguntarSheet: (v: boolean) => void;
-  showGrafo: boolean;
-  setShowGrafo: (v: boolean) => void;
+  showGrafo?: boolean;
+  setShowGrafo?: (v: boolean) => void;
   showPremiumGate: boolean;
   setShowPremiumGate: (v: boolean) => void;
   premiumGateFeature: PremiumFeatureKey;
@@ -264,27 +261,6 @@ export const ArtigoOverlays = memo(function ArtigoOverlays({
             tabelaNome={tabelaNome || 'unknown'}
             artigoNumero={artigo.numero}
             artigoTexto={artigo.caput}
-          />
-        )}
-
-        {tabelaNome && artigo && showGrafo && (
-          <GrafoOverlay
-            open={showGrafo}
-            onClose={() => setShowGrafo(false)}
-            tabelaNome={tabelaNome}
-            leiNome={tabelaNome}
-            artigoNumero={String(artigo.numero)}
-            artigoTexto={[
-              artigo.caput,
-              ...(artigo.incisos?.map((x: any) =>
-                typeof x === 'string' ? x : x?.texto
-              ) || []),
-              ...(artigo.paragrafos?.map((x: any) =>
-                typeof x === 'string' ? x : x?.texto
-              ) || []),
-            ]
-              .filter(Boolean)
-              .join('\n\n')}
           />
         )}
 

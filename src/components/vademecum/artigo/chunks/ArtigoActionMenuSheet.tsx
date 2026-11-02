@@ -7,7 +7,6 @@ import {
   BookOpen,
   History,
   MessageCircle,
-  Network,
   Copy,
   Bell,
   Download,
@@ -40,7 +39,7 @@ interface ArtigoActionMenuSheetProps {
   setShowTermosSheet?: (v: boolean) => void;
   setShowHistoricoSheet?: (v: boolean) => void;
   setShowPerguntarSheet: (v: boolean) => void;
-  setShowGrafo: (v: boolean) => void;
+  setShowGrafo?: (v: boolean) => void;
   handleCopy: () => void;
   setShowLembretesLocal: (v: boolean) => void;
   setShowBaixarSheet: (v: boolean) => void;
@@ -191,23 +190,6 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               );
             },
           },
-          ...(tabelaNome
-            ? [
-                {
-                  icon: Network,
-                  label: 'Grafo de conexões',
-                  desc: 'Ver relações do artigo',
-                  color: '#10B981',
-                  exclusive: true,
-                  onClick: () => {
-                    setActiveActionMenu(null);
-                    gateFeature('grafo', 'grafo', 'Grafo de conexões', () =>
-                      setShowGrafo(true)
-                    );
-                  },
-                },
-              ]
-            : []),
           {
             icon: Copy,
             label: 'Copiar artigo',

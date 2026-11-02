@@ -117,7 +117,6 @@ const LeiDetailView: React.FC<LeiDetailViewProps> = ({
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [ocrOpen, setOcrOpen] = useState(false);
-  const [showGrafo, setShowGrafo] = useState(false);
 
   const [openArtigo, setOpenArtigo] = useState<ArtigoLei | null>(null);
   const [openFromNovidades, setOpenFromNovidades] = useState(false);
