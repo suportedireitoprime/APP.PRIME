@@ -236,3 +236,4 @@ export const CANONICAL_AREA_TOPICS: Record<string, string[]> = {
     'Ética na Pesquisa e Escrita Acadêmica',
   ],
 };
+
