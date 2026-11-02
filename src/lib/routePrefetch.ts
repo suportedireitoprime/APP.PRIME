@@ -4,10 +4,10 @@
 // visible fallback.
 
 export const routePrefetch = {
-  radares:  () => import("@/pages/Radares.tsx"),
+  radares: () => import("@/pages/Radares.tsx"),
   noticias: () => import("@/pages/Noticias.tsx"),
-  desktop:  () => import("@/pages/DesktopPromo.tsx"),
-  blog:     () => import("@/pages/Blog.tsx"),
+  desktop: () => import("@/pages/DesktopPromo.tsx"),
+  blog: () => import("@/pages/Blog.tsx"),
   meuEspaco: () => import("@/pages/MeuEspaco.tsx"),
   biblioteca: () => import("@/pages/Bibliotecas.tsx"),
   assistenteHorus: () => import("@/pages/AssistenteHorus.tsx"),
@@ -62,31 +62,31 @@ export type PrefetchKey = keyof typeof routePrefetch;
 
 // Rotas de funções mais acessadas pré-aquecidas em idle para resposta instantânea (0ms de espera)
 const MAIN_TAB_KEYS: PrefetchKey[] = [
-  'vadeMecum',
-  'questoes',
-  'flashcards',
-  'aulas',
-  'meExplique',
-  'resumosJuridicos',
-  'videoaulas',
-  'audioaulas',
-  'pilulas',
-  'biblioteca',
-  'leiSeca',
-  'dicionario',
-  'radar360',
-  'vademecum',
-  'ferramentas',
-  'blog',
-  'meuEspaco',
+  "vadeMecum",
+  "questoes",
+  "flashcards",
+  "aulas",
+  "meExplique",
+  "resumosJuridicos",
+  "videoaulas",
+  "audioaulas",
+  "pilulas",
+  "biblioteca",
+  "leiSeca",
+  "dicionario",
+  "radar360",
+  "vademecum",
+  "ferramentas",
+  "blog",
+  "meuEspaco",
 ];
 
 let mainTabsScheduled = false;
 let idleScheduled = false;
 
-import { prewarmFavoritosERecentesIdle } from '@/services/warmFavoritosService';
-import { warmVideoaulasStartup } from '@/services/videoaulasWarmup';
-import { warmQuestoesStartup } from '@/services/questoesWarmup';
+import { prewarmFavoritosERecentesIdle } from "@/services/warmFavoritosService";
+import { warmVideoaulasStartup } from "@/services/videoaulasWarmup";
+import { warmQuestoesStartup } from "@/services/questoesWarmup";
 
 /** Pre-aquecimento imediato das 6 abas e rotas principais do BottomNav em idle. */
 export function prefetchMainTabsIdle(): void {
@@ -95,31 +95,46 @@ export function prefetchMainTabsIdle(): void {
 
   const run = () => {
     MAIN_TAB_KEYS.forEach((key) => {
-      try { routePrefetch[key](); } catch { /* noop */ }
+      try {
+        routePrefetch[key]();
+      } catch {
+        /* noop */
+      }
     });
     try {
       prewarmFavoritosERecentesIdle();
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
     try {
       warmVideoaulasStartup();
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
     try {
-      import('@/services/giroJuridicoWarmup').then(m => m.prefetchGiroJuridico());
-    } catch { /* noop */ }
+      import("@/services/giroJuridicoWarmup").then((m) => m.prefetchGiroJuridico());
+    } catch {
+      /* noop */
+    }
     try {
-      import('@/lib/visuaisJuridicos/materias').then(m => m.fetchAreasResumos());
-    } catch { /* noop */ }
+      import("@/lib/visuaisJuridicos/materias").then((m) => m.fetchAreasResumos());
+    } catch {
+      /* noop */
+    }
     try {
-      import('@/lib/visuaisJuridicos/cache').then(m => m.prefetchVisuais());
-    } catch { /* noop */ }
+      import("@/lib/visuaisJuridicos/cache").then((m) => m.prefetchVisuais());
+    } catch {
+      /* noop */
+    }
     try {
       warmQuestoesStartup();
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   };
 
   const ric = (window as any).requestIdleCallback as
-    | ((cb: () => void, opts?: { timeout?: number }) => number)
-    | undefined;
+    ((cb: () => void, opts?: { timeout?: number }) => number) | undefined;
 
   if (ric) ric(run, { timeout: 1200 });
   else setTimeout(run, 350);
@@ -140,14 +155,17 @@ export function prefetchHeroRoutesIdle(): void {
     // Pré-carrega o restante de forma cadenciada para não afogar a CPU/rede
     remaining.forEach((key, index) => {
       setTimeout(() => {
-        try { routePrefetch[key](); } catch { /* noop */ }
+        try {
+          routePrefetch[key]();
+        } catch {
+          /* noop */
+        }
       }, index * 40);
     });
   };
 
   const ric = (window as any).requestIdleCallback as
-    | ((cb: () => void, opts?: { timeout?: number }) => number)
-    | undefined;
+    ((cb: () => void, opts?: { timeout?: number }) => number) | undefined;
 
   if (ric) ric(run, { timeout: 3000 });
   else setTimeout(run, 1500);
@@ -155,5 +173,9 @@ export function prefetchHeroRoutesIdle(): void {
 
 /** Fires a single route prefetch (safe to call repeatedly — dedup by browser). */
 export function prefetchRoute(key: PrefetchKey): void {
-  try { routePrefetch[key](); } catch { /* noop */ }
+  try {
+    routePrefetch[key]();
+  } catch {
+    /* noop */
+  }
 }
