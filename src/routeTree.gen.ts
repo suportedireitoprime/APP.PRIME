@@ -39,6 +39,7 @@ import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as AssistenteHorusRouteImport } from './routes/assistente-horus'
 import { Route as AtualizacoesRouteImport } from './routes/atualizacoes'
 import { Route as AudioaulasRouteImport } from './routes/audioaulas'
+import { Route as AudiobooksRouteImport } from './routes/audiobooks'
 import { Route as AudioleisRouteImport } from './routes/audioleis'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BibliotecaRouteImport } from './routes/biblioteca'
@@ -353,6 +354,11 @@ const AtualizacoesRoute = AtualizacoesRouteImport.update({
 const AudioaulasRoute = AudioaulasRouteImport.update({
   id: '/audioaulas',
   path: '/audioaulas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AudiobooksRoute = AudiobooksRouteImport.update({
+  id: '/audiobooks',
+  path: '/audiobooks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AudioleisRoute = AudioleisRouteImport.update({
@@ -1236,6 +1242,7 @@ export interface FileRoutesByFullPath {
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atualizacoes': typeof AtualizacoesRoute
   '/audioaulas': typeof AudioaulasRouteWithChildren
+  '/audiobooks': typeof AudiobooksRoute
   '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
   '/biblioteca': typeof BibliotecaRoute
@@ -1433,6 +1440,7 @@ export interface FileRoutesByTo {
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atualizacoes': typeof AtualizacoesRoute
   '/audioaulas': typeof AudioaulasRouteWithChildren
+  '/audiobooks': typeof AudiobooksRoute
   '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
   '/biblioteca': typeof BibliotecaRoute
@@ -1631,6 +1639,7 @@ export interface FileRoutesById {
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atualizacoes': typeof AtualizacoesRoute
   '/audioaulas': typeof AudioaulasRouteWithChildren
+  '/audiobooks': typeof AudiobooksRoute
   '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
   '/biblioteca': typeof BibliotecaRoute
@@ -1830,6 +1839,7 @@ export interface FileRouteTypes {
     | '/assistente-horus'
     | '/atualizacoes'
     | '/audioaulas'
+    | '/audiobooks'
     | '/audioleis'
     | '/auth'
     | '/biblioteca'
@@ -2027,6 +2037,7 @@ export interface FileRouteTypes {
     | '/assistente-horus'
     | '/atualizacoes'
     | '/audioaulas'
+    | '/audiobooks'
     | '/audioleis'
     | '/auth'
     | '/biblioteca'
@@ -2224,6 +2235,7 @@ export interface FileRouteTypes {
     | '/assistente-horus'
     | '/atualizacoes'
     | '/audioaulas'
+    | '/audiobooks'
     | '/audioleis'
     | '/auth'
     | '/biblioteca'
@@ -2422,6 +2434,7 @@ export interface RootRouteChildren {
   AssistenteHorusRoute: typeof AssistenteHorusRoute
   AtualizacoesRoute: typeof AtualizacoesRoute
   AudioaulasRoute: typeof AudioaulasRouteWithChildren
+  AudiobooksRoute: typeof AudiobooksRoute
   AudioleisRoute: typeof AudioleisRoute
   AuthRoute: typeof AuthRoute
   BibliotecaRoute: typeof BibliotecaRoute
@@ -2701,6 +2714,13 @@ declare module '@tanstack/react-router' {
       path: '/audioaulas'
       fullPath: '/audioaulas'
       preLoaderRoute: typeof AudioaulasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/audiobooks': {
+      id: '/audiobooks'
+      path: '/audiobooks'
+      fullPath: '/audiobooks'
+      preLoaderRoute: typeof AudiobooksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/audioleis': {
@@ -4432,6 +4452,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssistenteHorusRoute: AssistenteHorusRoute,
   AtualizacoesRoute: AtualizacoesRoute,
   AudioaulasRoute: AudioaulasRouteWithChildren,
+  AudiobooksRoute: AudiobooksRoute,
   AudioleisRoute: AudioleisRoute,
   AuthRoute: AuthRoute,
   BibliotecaRoute: BibliotecaRoute,

@@ -312,7 +312,7 @@ const BibliotecaEditar = lazy(() => import("./pages/BibliotecaEditar.tsx"));
 const AdminLeituraNativa = lazy(() => import("./pages/AdminLeituraNativa.tsx"));
 const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
-const Audioleis = lazyWithRetry(routePrefetch.audioleis);
+const Audiobooks = lazyWithRetry(routePrefetch.audiobooks);
 const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
 const PlanosAtivos = lazy(() => import("./pages/PlanosAtivos.tsx"));
 const DesktopPromo = lazy(routePrefetch.desktop);
@@ -1052,7 +1052,9 @@ function AnimatedRoutes() {
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
-          <Route path="/audioleis" element={<ProtectedRoute><PageTransition><Audioleis /></PageTransition></ProtectedRoute>} />
+          <Route path="/audiobooks" element={<ProtectedRoute><PageTransition><Audiobooks /></PageTransition></ProtectedRoute>} />
+          <Route path="/audioleis" element={<Navigate to="/audiobooks" replace />} />
+          <Route path="/audio-leis" element={<Navigate to="/audiobooks" replace />} />
           <Route path="/admin-biblioteca-leis" element={<Navigate to="/admin-mapeamento-leis" replace />} />
           <Route path="/admin-biblioteca-leis/*" element={<Navigate to="/admin-mapeamento-leis" replace />} />
 
