@@ -7,7 +7,7 @@ import hero5 from '@/assets/aprender-hero/hero-5.webp.asset.json';
 import hero6 from '@/assets/aprender-hero/hero-6.webp.asset.json';
 import { srcOf } from '@/lib/assetUrl';
 
-export const HERO_ILLUSTRATIONS = [
+const HERO_ILLUSTRATIONS = [
   srcOf(hero1),
   srcOf(hero2),
   srcOf(hero3),
