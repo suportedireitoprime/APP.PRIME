@@ -1,8 +1,9 @@
-import { memo, useRef, useState, useEffect, useCallback } from 'react';
+import { memo, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Layers, FileQuestion, Timer, Pencil, LucideIcon } from 'lucide-react';
 import { shade } from '@/lib/leiTheme';
 import { haptic } from '@/lib/nativeHaptics';
+import praticarLicoesImg from '@/assets/praticar-licoes.png';
 
 export interface PraticarItem {
   id: string;
@@ -48,7 +49,7 @@ const PRATICAR_ITEMS: PraticarItem[] = [
     subtitle: 'Artigo por artigo',
     icon: Pencil,
     color: '#ea580c', // orange vibrante
-    image: '/assets/praticar-licoes.png',
+    image: praticarLicoesImg || '/assets/praticar-licoes.png',
     path: '/lei-seca',
   },
 ];
@@ -56,8 +57,14 @@ const PRATICAR_ITEMS: PraticarItem[] = [
 const HomePraticarCarousel = () => {
   const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  // Questões (índice 1) é o card centralizado por padrão
-  const [activeIndex, setActiveIndex] = useState(1);
+
+  // 4 cópias para permitir rolagem contínua infinita sem bater nas bordas
+  const loopedItems = useMemo(() => {
+    return [...PRATICAR_ITEMS, ...PRATICAR_ITEMS, ...PRATICAR_ITEMS, ...PRATICAR_ITEMS];
+  }, []);
+
+  // Questões no 2º bloco (índice 4 + 1 = 5) centralizado por padrão
+  const [activeIndex, setActiveIndex] = useState(PRATICAR_ITEMS.length + 1);
   const [isReady, setIsReady] = useState(false);
 
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
@@ -69,10 +76,12 @@ const HomePraticarCarousel = () => {
     el.scrollTo({ left: target, behavior });
   }, []);
 
-  // Centraliza em Questões (idx 1) no carregamento inicial
+  // Centraliza em Questões no 2º bloco no carregamento inicial
   useEffect(() => {
+    const initialIndex = PRATICAR_ITEMS.length + 1;
+    setActiveIndex(initialIndex);
     const timer = setTimeout(() => {
-      scrollToIndex(1, 'instant' as ScrollBehavior);
+      scrollToIndex(initialIndex, 'instant' as ScrollBehavior);
       setIsReady(true);
     }, 40);
     return () => clearTimeout(timer);
@@ -93,8 +102,37 @@ const HomePraticarCarousel = () => {
         best = i;
       }
     }
+
+    // Lógica de carrossel infinito sem emendas
+    const N = PRATICAR_ITEMS.length;
+    if (N > 0) {
+      if (best <= 1) {
+        const jumpTo = best + N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({
+            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
+            behavior: 'auto',
+          });
+          setActiveIndex(jumpTo);
+          return;
+        }
+      } else if (best >= loopedItems.length - 2) {
+        const jumpTo = best - N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({
+            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
+            behavior: 'auto',
+          });
+          setActiveIndex(jumpTo);
+          return;
+        }
+      }
+    }
+
     setActiveIndex(best);
-  }, []);
+  }, [loopedItems.length]);
 
   const handleCardClick = useCallback(
     (item: PraticarItem, index: number) => {
@@ -121,21 +159,21 @@ const HomePraticarCarousel = () => {
         </div>
       </div>
 
-      {/* Faixa Carrossel Horizontal: 3 cards com Questões centralizado com meio zoom */}
+      {/* Faixa Carrossel Horizontal Infinito */}
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
         className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] md:px-0 flex md:justify-center gap-2.5 sm:gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
-        {PRATICAR_ITEMS.map((item, i) => {
+        {loopedItems.map((item, i) => {
           const isActive = i === activeIndex;
           const Icon = item.icon;
           const baseColor = item.color;
 
           return (
             <button
-              key={item.id}
+              key={`${item.id}-${i}`}
               type="button"
               onClick={() => handleCardClick(item, i)}
               className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col shadow-md rounded-2xl group transition-all duration-500 ease-out ${
@@ -160,19 +198,25 @@ const HomePraticarCarousel = () => {
                 <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-xl group-hover:bg-white/20 transition-all" />
               </div>
 
-              {/* Personagem 3D com destaque e meio zoom */}
+              {/* Personagem 3D com destaque e efeito elástico: menor nas laterais e zoom-in + leve zoom-out ao centralizar */}
               {item.image && (
                 <div
-                  className={`absolute right-0 w-auto h-[105px] max-w-none pointer-events-none z-10 transition-all duration-500 ease-out origin-bottom ${
+                  className={`absolute right-0 w-auto h-[105px] max-w-none pointer-events-none z-10 transform-gpu origin-bottom transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
                     isActive
-                      ? 'scale-[1.06] -top-5 drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]'
-                      : 'scale-100 -top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)]'
+                      ? 'scale-[1.12] -top-5 drop-shadow-[0_14px_28px_rgba(0,0,0,0.75)] opacity-100'
+                      : 'scale-[0.80] -top-2 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)] opacity-60'
                   }`}
                 >
                   <img
                     src={item.image}
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (item.id === 'licoes' && !target.src.endsWith('/assets/praticar-licoes.png')) {
+                        target.src = '/assets/praticar-licoes.png';
+                      }
+                    }}
                     alt={`Ilustração ${item.title}`}
-                    className="h-full w-auto object-contain"
+                    className="h-full w-auto object-contain select-none pointer-events-none"
                     loading="eager"
                     decoding="async"
                   />
@@ -204,25 +248,30 @@ const HomePraticarCarousel = () => {
         })}
       </div>
 
-      {/* Indicador de 3 pontos no mobile */}
+      {/* Indicador de pontos no mobile (respeita o item real no loop) */}
       <div className="flex md:hidden justify-center items-center gap-1.5 pt-1">
-        {PRATICAR_ITEMS.map((item, idx) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => {
-              haptic.selection();
-              setActiveIndex(idx);
-              scrollToIndex(idx);
-            }}
-            aria-label={`Ir para ${item.title}`}
-            className={`transition-all duration-300 rounded-full ${
-              idx === activeIndex
-                ? 'w-6 h-1.5 bg-primary'
-                : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'
-            }`}
-          />
-        ))}
+        {PRATICAR_ITEMS.map((item, idx) => {
+          const isCurrentActive = idx === activeIndex % PRATICAR_ITEMS.length;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                const currentBlock = Math.floor(activeIndex / PRATICAR_ITEMS.length);
+                const targetIndex = currentBlock * PRATICAR_ITEMS.length + idx;
+                setActiveIndex(targetIndex);
+                scrollToIndex(targetIndex);
+              }}
+              aria-label={`Ir para ${item.title}`}
+              className={`transition-all duration-300 rounded-full ${
+                isCurrentActive
+                  ? 'w-6 h-1.5 bg-primary'
+                  : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'
+              }`}
+            />
+          );
+        })}
       </div>
     </section>
   );
