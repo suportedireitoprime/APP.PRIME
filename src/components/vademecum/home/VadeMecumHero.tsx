@@ -1,7 +1,7 @@
 // @ts-nocheck
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import vademecumHeroImg from '@/assets/covers/vademecum-judge.webp';
+import { getVadeMecumHeroImage } from '@/lib/vademecumHeroImage';
 
 import VadeMecumHeroHeader from './chunks/VadeMecumHeroHeader';
 import VadeMecumHeroBrand from './chunks/VadeMecumHeroBrand';
@@ -17,6 +17,7 @@ interface VadeMecumHeroProps {
 }
 
 const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuickAction, onOpenSearch }) => {
+  const heroImg = useMemo(() => getVadeMecumHeroImage(), []);
 
   return (
     <>
@@ -35,10 +36,10 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
           aria-hidden="true"
         />
 
-        {/* Imagem de Fundo */}
+        {/* Imagem de Fundo (Metade do dia: Professor e Aluna vs Dois Advogados no Tribunal) */}
         <img
-          src={vademecumHeroImg}
-          alt=""
+          src={heroImg}
+          alt="Vade Mecum Capa"
           aria-hidden="true"
           loading="eager"
           fetchpriority="high"

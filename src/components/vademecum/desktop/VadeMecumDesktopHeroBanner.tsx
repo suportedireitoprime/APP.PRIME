@@ -15,7 +15,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import heroBannerAsset from "@/assets/covers/vademecum-judge.webp";
+import { getVadeMecumHeroImage } from "@/lib/vademecumHeroImage";
 import HeroMotifs from "@/components/vademecum/home/HeroMotifs";
 import primeLogoAsset from "@/assets/logo-direitoprime-v2.webp.asset.json";
 import primeLogoBundled from "@/assets/bundled/logo-direitoprime-v2.webp";
@@ -48,9 +48,9 @@ const VadeMecumDesktopHeroBanner = ({
     <div className="relative w-full mx-auto z-20 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6 h-95">
       {/* COLUNA ESQUERDA: CAPA PRINCIPAL */}
       <div className="relative h-full rounded-3xl overflow-hidden shadow-2xl flex flex-col group">
-        {/* Imagem de Fundo */}
+        {/* Imagem de Fundo (Metade do dia: Professor e Aluna vs Dois Advogados no Tribunal) */}
         <img
-          src={heroBannerAsset}
+          src={getVadeMecumHeroImage()}
           alt="Estudos Jurídicos - Capa"
           className="absolute inset-0 w-full h-full object-cover object-[25%_center] z-0 pointer-events-none transition-transform duration-700 group-hover:scale-105"
           loading="eager"
