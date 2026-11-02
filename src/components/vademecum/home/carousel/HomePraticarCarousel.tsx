@@ -1,6 +1,6 @@
 import { memo, useRef, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layers, FileQuestion, Timer, LucideIcon } from 'lucide-react';
+import { Layers, FileQuestion, Timer, Pencil, LucideIcon } from 'lucide-react';
 import { shade } from '@/lib/leiTheme';
 import { haptic } from '@/lib/nativeHaptics';
 
@@ -41,6 +41,15 @@ const PRATICAR_ITEMS: PraticarItem[] = [
     color: '#7c3aed', // violet
     image: '/assets/praticar-simulados.webp',
     path: '/simulados',
+  },
+  {
+    id: 'licoes',
+    title: 'LIÇÕES',
+    subtitle: 'Artigo por artigo',
+    icon: Pencil,
+    color: '#ea580c', // orange vibrante
+    image: '/assets/praticar-licoes.png',
+    path: '/lei-seca',
   },
 ];
 
@@ -107,7 +116,7 @@ const HomePraticarCarousel = () => {
             <span className="truncate">PRATICAR</span>
           </h3>
           <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
-            Treine com questões, simulados e flashcards
+            Treine com questões, simulados, flashcards e lições
           </p>
         </div>
       </div>
