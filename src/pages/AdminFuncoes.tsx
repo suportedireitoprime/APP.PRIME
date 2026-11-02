@@ -26,7 +26,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
 
   '/admin-blog-edicao': () => import('./AdminBlogEdicao'),
   '/admin-omniroute': () => import('./AdminOmniRouteTeste'),
-  '/admin-design-imagens': () => import('./AdminDesignImagens'),
   '/admin/pilulas': () => import('./AdminPilulas'),
   
   '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
@@ -36,7 +35,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-simulados': () => import('./AdminSimulados'),
   '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
   '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
-  '/admin-biblioteca-leis': () => import('./AdminBibliotecaLeis'),
   '/admin-biblioteca-editar': () => import('./BibliotecaEditar'),
   '/admin-leitura-nativa': () => import('./AdminLeituraNativa'),
   '/admin-audioaulas': () => import('./AdminAudioaulas'),
@@ -147,7 +145,6 @@ const CATEGORIES: Category[] = [
       { id: 'omniroute-admin', label: 'OmniRoute (Gateway de IA)', icon: Sparkles, desc: 'Central unificada de modelos e chaves de IA do aplicativo', route: '/admin-omniroute' },
       { id: 'flashcards-edicao', label: 'Flashcards Editar', icon: Layers, desc: 'IA, bibliotecas, revisão e stats', route: '/admin-flashcards-editar' },
       { id: 'blog-edicao', label: 'Blog Editar', icon: Newspaper, desc: 'Geração automática de artigos + push', route: '/admin-blog-edicao' },
-      { id: 'design-imagens', label: 'Design de Imagens', icon: Palette, desc: 'Presets de estilo (prompt travado) por categoria', route: '/admin-design-imagens' },
       { id: 'admin-pilulas', label: 'Pílulas (Clássicos)', icon: Pill, desc: 'Gerenciar áudios e prompts para pílulas de clássicos', route: '/admin/pilulas' },
       { id: 'explicacao-lei', label: 'Explicações Editar (IA)', icon: Lightbulb, desc: 'Batch de explicações', route: '/explicacao-lei' },
       
@@ -217,7 +214,7 @@ const CATEGORIES: Category[] = [
     desc: 'Radar de Leis, cron e histórico',
     icon: Rss,
     items: [
-      { id: 'admin-biblioteca-leis', label: 'Biblioteca de Leis', icon: BookOpen, desc: 'Auditoria, verificação de atualização e sugestões do Radar', route: '/admin-biblioteca-leis' },
+      { id: 'admin-mapeamento-leis', label: 'Catálogo de Leis', icon: BookOpen, desc: 'Mapeamento de códigos, estatutos e status de extração', route: '/admin-mapeamento-leis' },
     ],
   },
   {

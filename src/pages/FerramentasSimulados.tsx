@@ -170,7 +170,7 @@ export default function FerramentasSimulados() {
     <PageHeader
       title="Simulados & Provas"
       subtitle="Pratique com provas anteriores e simulados"
-      onBack={() => navigate('/simulados')}
+      onBack={() => navigate('/')}
     />
   );
 

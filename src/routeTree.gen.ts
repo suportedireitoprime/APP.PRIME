@@ -15,9 +15,7 @@ import { Route as AdminAssinantesRouteImport } from './routes/admin-assinantes'
 import { Route as AdminAudioaulasRouteImport } from './routes/admin-audioaulas'
 import { Route as AdminAulasInterativasRouteImport } from './routes/admin-aulas-interativas'
 import { Route as AdminBibliotecaEditarRouteImport } from './routes/admin-biblioteca-editar'
-import { Route as AdminBibliotecaLeisRouteImport } from './routes/admin-biblioteca-leis'
 import { Route as AdminBlogEdicaoRouteImport } from './routes/admin-blog-edicao'
-import { Route as AdminDesignImagensRouteImport } from './routes/admin-design-imagens'
 import { Route as AdminErrosQuestoesRouteImport } from './routes/admin-erros-questoes'
 import { Route as AdminFlashcardsEditarRouteImport } from './routes/admin-flashcards-editar'
 import { Route as AdminFuncoesRouteImport } from './routes/admin-funcoes'
@@ -44,7 +42,6 @@ import { Route as AudioaulasRouteImport } from './routes/audioaulas'
 import { Route as AudioleisRouteImport } from './routes/audioleis'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BibliotecaRouteImport } from './routes/biblioteca'
-import { Route as BibliotecaOfflineRouteImport } from './routes/biblioteca-offline'
 import { Route as BibliotecasRouteImport } from './routes/bibliotecas'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as ChatJuridicoRouteImport } from './routes/chat-juridico'
@@ -92,8 +89,6 @@ import { Route as TermosRouteImport } from './routes/termos'
 import { Route as VadeMecumRouteImport } from './routes/vade-mecum'
 import { Route as VideoaulasRouteImport } from './routes/videoaulas'
 import { Route as VisuaisRouteImport } from './routes/visuais'
-import { Route as AdminBibliotecaLeisEstadualRouteImport } from './routes/admin-biblioteca-leis.estadual'
-import { Route as AdminBibliotecaLeisGeralRouteImport } from './routes/admin-biblioteca-leis.geral'
 import { Route as AdminNarracaoBibliotecaRouteImport } from './routes/admin-narracao.biblioteca'
 import { Route as AdminNarracaoBlogRouteImport } from './routes/admin-narracao.blog'
 import { Route as AdminPilulasRouteImport } from './routes/admin.pilulas'
@@ -180,13 +175,10 @@ import { Route as VadeMecumEstatutosRouteImport } from './routes/vade-mecum.esta
 import { Route as VadeMecumRecentesRouteImport } from './routes/vade-mecum.recentes'
 import { Route as VadeMecumSumulasRouteImport } from './routes/vade-mecum.sumulas'
 import { Route as VideoaulasCatalogoRouteImport } from './routes/videoaulas.$catalogo'
-import { Route as VideoaulasEstatutosRouteImport } from './routes/videoaulas.estatutos'
 import { Route as VideoaulasFavoritosRouteImport } from './routes/videoaulas.favoritos'
-import { Route as VideoaulasJurisprudenciaRouteImport } from './routes/videoaulas.jurisprudencia'
 import { Route as VideoaulasLeiSecaRouteImport } from './routes/videoaulas.lei-seca'
 import { Route as VideoaulasPainelRouteImport } from './routes/videoaulas.painel'
 import { Route as VisuaisSplatRouteImport } from './routes/visuais.$'
-import { Route as AdminBibliotecaLeisEstadualUfRouteImport } from './routes/admin-biblioteca-leis.estadual.$uf'
 import { Route as BibliotecasColecaoIdAreaSlugRouteImport } from './routes/bibliotecas.$colecaoId.$areaSlug'
 import { Route as FlashcardsAreaSlugRouteImport } from './routes/flashcards.area.$slug'
 import { Route as FlashcardsCargosIdRouteImport } from './routes/flashcards.cargos.$id'
@@ -243,19 +235,9 @@ const AdminBibliotecaEditarRoute = AdminBibliotecaEditarRouteImport.update({
   path: '/admin-biblioteca-editar',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminBibliotecaLeisRoute = AdminBibliotecaLeisRouteImport.update({
-  id: '/admin-biblioteca-leis',
-  path: '/admin-biblioteca-leis',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminBlogEdicaoRoute = AdminBlogEdicaoRouteImport.update({
   id: '/admin-blog-edicao',
   path: '/admin-blog-edicao',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminDesignImagensRoute = AdminDesignImagensRouteImport.update({
-  id: '/admin-design-imagens',
-  path: '/admin-design-imagens',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminErrosQuestoesRoute = AdminErrosQuestoesRouteImport.update({
@@ -386,11 +368,6 @@ const AuthRoute = AuthRouteImport.update({
 const BibliotecaRoute = BibliotecaRouteImport.update({
   id: '/biblioteca',
   path: '/biblioteca',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BibliotecaOfflineRoute = BibliotecaOfflineRouteImport.update({
-  id: '/biblioteca-offline',
-  path: '/biblioteca-offline',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BibliotecasRoute = BibliotecasRouteImport.update({
@@ -628,18 +605,6 @@ const VisuaisRoute = VisuaisRouteImport.update({
   path: '/visuais',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminBibliotecaLeisEstadualRoute =
-  AdminBibliotecaLeisEstadualRouteImport.update({
-    id: '/estadual',
-    path: '/estadual',
-    getParentRoute: () => AdminBibliotecaLeisRoute,
-  } as any)
-const AdminBibliotecaLeisGeralRoute =
-  AdminBibliotecaLeisGeralRouteImport.update({
-    id: '/geral',
-    path: '/geral',
-    getParentRoute: () => AdminBibliotecaLeisRoute,
-  } as any)
 const AdminNarracaoBibliotecaRoute = AdminNarracaoBibliotecaRouteImport.update({
   id: '/biblioteca',
   path: '/biblioteca',
@@ -1082,22 +1047,11 @@ const VideoaulasCatalogoRoute = VideoaulasCatalogoRouteImport.update({
   path: '/$catalogo',
   getParentRoute: () => VideoaulasRoute,
 } as any)
-const VideoaulasEstatutosRoute = VideoaulasEstatutosRouteImport.update({
-  id: '/estatutos',
-  path: '/estatutos',
-  getParentRoute: () => VideoaulasRoute,
-} as any)
 const VideoaulasFavoritosRoute = VideoaulasFavoritosRouteImport.update({
   id: '/favoritos',
   path: '/favoritos',
   getParentRoute: () => VideoaulasRoute,
 } as any)
-const VideoaulasJurisprudenciaRoute =
-  VideoaulasJurisprudenciaRouteImport.update({
-    id: '/jurisprudencia',
-    path: '/jurisprudencia',
-    getParentRoute: () => VideoaulasRoute,
-  } as any)
 const VideoaulasLeiSecaRoute = VideoaulasLeiSecaRouteImport.update({
   id: '/lei-seca',
   path: '/lei-seca',
@@ -1113,12 +1067,6 @@ const VisuaisSplatRoute = VisuaisSplatRouteImport.update({
   path: '/$',
   getParentRoute: () => VisuaisRoute,
 } as any)
-const AdminBibliotecaLeisEstadualUfRoute =
-  AdminBibliotecaLeisEstadualUfRouteImport.update({
-    id: '/$uf',
-    path: '/$uf',
-    getParentRoute: () => AdminBibliotecaLeisEstadualRoute,
-  } as any)
 const BibliotecasColecaoIdAreaSlugRoute =
   BibliotecasColecaoIdAreaSlugRouteImport.update({
     id: '/$areaSlug',
@@ -1264,9 +1212,7 @@ export interface FileRoutesByFullPath {
   '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
-  '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
-  '/admin-design-imagens': typeof AdminDesignImagensRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
@@ -1293,7 +1239,6 @@ export interface FileRoutesByFullPath {
   '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
   '/biblioteca': typeof BibliotecaRoute
-  '/biblioteca-offline': typeof BibliotecaOfflineRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
   '/chat-juridico': typeof ChatJuridicoRoute
@@ -1341,8 +1286,6 @@ export interface FileRoutesByFullPath {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/visuais': typeof VisuaisRouteWithChildren
-  '/admin-biblioteca-leis/estadual': typeof AdminBibliotecaLeisEstadualRouteWithChildren
-  '/admin-biblioteca-leis/geral': typeof AdminBibliotecaLeisGeralRoute
   '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
   '/admin/pilulas': typeof AdminPilulasRoute
@@ -1429,13 +1372,10 @@ export interface FileRoutesByFullPath {
   '/vade-mecum/recentes': typeof VadeMecumRecentesRoute
   '/vade-mecum/sumulas': typeof VadeMecumSumulasRoute
   '/videoaulas/$catalogo': typeof VideoaulasCatalogoRouteWithChildren
-  '/videoaulas/estatutos': typeof VideoaulasEstatutosRoute
   '/videoaulas/favoritos': typeof VideoaulasFavoritosRoute
-  '/videoaulas/jurisprudencia': typeof VideoaulasJurisprudenciaRoute
   '/videoaulas/lei-seca': typeof VideoaulasLeiSecaRouteWithChildren
   '/videoaulas/painel': typeof VideoaulasPainelRoute
   '/visuais/$': typeof VisuaisSplatRoute
-  '/admin-biblioteca-leis/estadual/$uf': typeof AdminBibliotecaLeisEstadualUfRoute
   '/bibliotecas/$colecaoId/$areaSlug': typeof BibliotecasColecaoIdAreaSlugRoute
   '/flashcards/area/$slug': typeof FlashcardsAreaSlugRoute
   '/flashcards/cargos/$id': typeof FlashcardsCargosIdRoute
@@ -1469,9 +1409,7 @@ export interface FileRoutesByTo {
   '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
-  '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
-  '/admin-design-imagens': typeof AdminDesignImagensRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
@@ -1498,7 +1436,6 @@ export interface FileRoutesByTo {
   '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
   '/biblioteca': typeof BibliotecaRoute
-  '/biblioteca-offline': typeof BibliotecaOfflineRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
   '/chat-juridico': typeof ChatJuridicoRoute
@@ -1546,8 +1483,6 @@ export interface FileRoutesByTo {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/visuais': typeof VisuaisRouteWithChildren
-  '/admin-biblioteca-leis/estadual': typeof AdminBibliotecaLeisEstadualRouteWithChildren
-  '/admin-biblioteca-leis/geral': typeof AdminBibliotecaLeisGeralRoute
   '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
   '/admin/pilulas': typeof AdminPilulasRoute
@@ -1634,13 +1569,10 @@ export interface FileRoutesByTo {
   '/vade-mecum/recentes': typeof VadeMecumRecentesRoute
   '/vade-mecum/sumulas': typeof VadeMecumSumulasRoute
   '/videoaulas/$catalogo': typeof VideoaulasCatalogoRouteWithChildren
-  '/videoaulas/estatutos': typeof VideoaulasEstatutosRoute
   '/videoaulas/favoritos': typeof VideoaulasFavoritosRoute
-  '/videoaulas/jurisprudencia': typeof VideoaulasJurisprudenciaRoute
   '/videoaulas/lei-seca': typeof VideoaulasLeiSecaRouteWithChildren
   '/videoaulas/painel': typeof VideoaulasPainelRoute
   '/visuais/$': typeof VisuaisSplatRoute
-  '/admin-biblioteca-leis/estadual/$uf': typeof AdminBibliotecaLeisEstadualUfRoute
   '/bibliotecas/$colecaoId/$areaSlug': typeof BibliotecasColecaoIdAreaSlugRoute
   '/flashcards/area/$slug': typeof FlashcardsAreaSlugRoute
   '/flashcards/cargos/$id': typeof FlashcardsCargosIdRoute
@@ -1675,9 +1607,7 @@ export interface FileRoutesById {
   '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
-  '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
-  '/admin-design-imagens': typeof AdminDesignImagensRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
@@ -1704,7 +1634,6 @@ export interface FileRoutesById {
   '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
   '/biblioteca': typeof BibliotecaRoute
-  '/biblioteca-offline': typeof BibliotecaOfflineRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
   '/chat-juridico': typeof ChatJuridicoRoute
@@ -1752,8 +1681,6 @@ export interface FileRoutesById {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/visuais': typeof VisuaisRouteWithChildren
-  '/admin-biblioteca-leis/estadual': typeof AdminBibliotecaLeisEstadualRouteWithChildren
-  '/admin-biblioteca-leis/geral': typeof AdminBibliotecaLeisGeralRoute
   '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
   '/admin/pilulas': typeof AdminPilulasRoute
@@ -1840,13 +1767,10 @@ export interface FileRoutesById {
   '/vade-mecum/recentes': typeof VadeMecumRecentesRoute
   '/vade-mecum/sumulas': typeof VadeMecumSumulasRoute
   '/videoaulas/$catalogo': typeof VideoaulasCatalogoRouteWithChildren
-  '/videoaulas/estatutos': typeof VideoaulasEstatutosRoute
   '/videoaulas/favoritos': typeof VideoaulasFavoritosRoute
-  '/videoaulas/jurisprudencia': typeof VideoaulasJurisprudenciaRoute
   '/videoaulas/lei-seca': typeof VideoaulasLeiSecaRouteWithChildren
   '/videoaulas/painel': typeof VideoaulasPainelRoute
   '/visuais/$': typeof VisuaisSplatRoute
-  '/admin-biblioteca-leis/estadual/$uf': typeof AdminBibliotecaLeisEstadualUfRoute
   '/bibliotecas/$colecaoId/$areaSlug': typeof BibliotecasColecaoIdAreaSlugRoute
   '/flashcards/area/$slug': typeof FlashcardsAreaSlugRoute
   '/flashcards/cargos/$id': typeof FlashcardsCargosIdRoute
@@ -1882,9 +1806,7 @@ export interface FileRouteTypes {
     | '/admin-audioaulas'
     | '/admin-aulas-interativas'
     | '/admin-biblioteca-editar'
-    | '/admin-biblioteca-leis'
     | '/admin-blog-edicao'
-    | '/admin-design-imagens'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
     | '/admin-funcoes'
@@ -1911,7 +1833,6 @@ export interface FileRouteTypes {
     | '/audioleis'
     | '/auth'
     | '/biblioteca'
-    | '/biblioteca-offline'
     | '/bibliotecas'
     | '/blog'
     | '/chat-juridico'
@@ -1959,8 +1880,6 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/visuais'
-    | '/admin-biblioteca-leis/estadual'
-    | '/admin-biblioteca-leis/geral'
     | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
     | '/admin/pilulas'
@@ -2047,13 +1966,10 @@ export interface FileRouteTypes {
     | '/vade-mecum/recentes'
     | '/vade-mecum/sumulas'
     | '/videoaulas/$catalogo'
-    | '/videoaulas/estatutos'
     | '/videoaulas/favoritos'
-    | '/videoaulas/jurisprudencia'
     | '/videoaulas/lei-seca'
     | '/videoaulas/painel'
     | '/visuais/$'
-    | '/admin-biblioteca-leis/estadual/$uf'
     | '/bibliotecas/$colecaoId/$areaSlug'
     | '/flashcards/area/$slug'
     | '/flashcards/cargos/$id'
@@ -2087,9 +2003,7 @@ export interface FileRouteTypes {
     | '/admin-audioaulas'
     | '/admin-aulas-interativas'
     | '/admin-biblioteca-editar'
-    | '/admin-biblioteca-leis'
     | '/admin-blog-edicao'
-    | '/admin-design-imagens'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
     | '/admin-funcoes'
@@ -2116,7 +2030,6 @@ export interface FileRouteTypes {
     | '/audioleis'
     | '/auth'
     | '/biblioteca'
-    | '/biblioteca-offline'
     | '/bibliotecas'
     | '/blog'
     | '/chat-juridico'
@@ -2164,8 +2077,6 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/visuais'
-    | '/admin-biblioteca-leis/estadual'
-    | '/admin-biblioteca-leis/geral'
     | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
     | '/admin/pilulas'
@@ -2252,13 +2163,10 @@ export interface FileRouteTypes {
     | '/vade-mecum/recentes'
     | '/vade-mecum/sumulas'
     | '/videoaulas/$catalogo'
-    | '/videoaulas/estatutos'
     | '/videoaulas/favoritos'
-    | '/videoaulas/jurisprudencia'
     | '/videoaulas/lei-seca'
     | '/videoaulas/painel'
     | '/visuais/$'
-    | '/admin-biblioteca-leis/estadual/$uf'
     | '/bibliotecas/$colecaoId/$areaSlug'
     | '/flashcards/area/$slug'
     | '/flashcards/cargos/$id'
@@ -2292,9 +2200,7 @@ export interface FileRouteTypes {
     | '/admin-audioaulas'
     | '/admin-aulas-interativas'
     | '/admin-biblioteca-editar'
-    | '/admin-biblioteca-leis'
     | '/admin-blog-edicao'
-    | '/admin-design-imagens'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
     | '/admin-funcoes'
@@ -2321,7 +2227,6 @@ export interface FileRouteTypes {
     | '/audioleis'
     | '/auth'
     | '/biblioteca'
-    | '/biblioteca-offline'
     | '/bibliotecas'
     | '/blog'
     | '/chat-juridico'
@@ -2369,8 +2274,6 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/visuais'
-    | '/admin-biblioteca-leis/estadual'
-    | '/admin-biblioteca-leis/geral'
     | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
     | '/admin/pilulas'
@@ -2457,13 +2360,10 @@ export interface FileRouteTypes {
     | '/vade-mecum/recentes'
     | '/vade-mecum/sumulas'
     | '/videoaulas/$catalogo'
-    | '/videoaulas/estatutos'
     | '/videoaulas/favoritos'
-    | '/videoaulas/jurisprudencia'
     | '/videoaulas/lei-seca'
     | '/videoaulas/painel'
     | '/visuais/$'
-    | '/admin-biblioteca-leis/estadual/$uf'
     | '/bibliotecas/$colecaoId/$areaSlug'
     | '/flashcards/area/$slug'
     | '/flashcards/cargos/$id'
@@ -2498,9 +2398,7 @@ export interface RootRouteChildren {
   AdminAudioaulasRoute: typeof AdminAudioaulasRoute
   AdminAulasInterativasRoute: typeof AdminAulasInterativasRoute
   AdminBibliotecaEditarRoute: typeof AdminBibliotecaEditarRoute
-  AdminBibliotecaLeisRoute: typeof AdminBibliotecaLeisRouteWithChildren
   AdminBlogEdicaoRoute: typeof AdminBlogEdicaoRoute
-  AdminDesignImagensRoute: typeof AdminDesignImagensRoute
   AdminErrosQuestoesRoute: typeof AdminErrosQuestoesRoute
   AdminFlashcardsEditarRoute: typeof AdminFlashcardsEditarRoute
   AdminFuncoesRoute: typeof AdminFuncoesRoute
@@ -2527,7 +2425,6 @@ export interface RootRouteChildren {
   AudioleisRoute: typeof AudioleisRoute
   AuthRoute: typeof AuthRoute
   BibliotecaRoute: typeof BibliotecaRoute
-  BibliotecaOfflineRoute: typeof BibliotecaOfflineRoute
   BibliotecasRoute: typeof BibliotecasRouteWithChildren
   BlogRoute: typeof BlogRoute
   ChatJuridicoRoute: typeof ChatJuridicoRoute
@@ -2638,25 +2535,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBibliotecaEditarRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-biblioteca-leis': {
-      id: '/admin-biblioteca-leis'
-      path: '/admin-biblioteca-leis'
-      fullPath: '/admin-biblioteca-leis'
-      preLoaderRoute: typeof AdminBibliotecaLeisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-blog-edicao': {
       id: '/admin-blog-edicao'
       path: '/admin-blog-edicao'
       fullPath: '/admin-blog-edicao'
       preLoaderRoute: typeof AdminBlogEdicaoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-design-imagens': {
-      id: '/admin-design-imagens'
-      path: '/admin-design-imagens'
-      fullPath: '/admin-design-imagens'
-      preLoaderRoute: typeof AdminDesignImagensRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-erros-questoes': {
@@ -2839,13 +2722,6 @@ declare module '@tanstack/react-router' {
       path: '/biblioteca'
       fullPath: '/biblioteca'
       preLoaderRoute: typeof BibliotecaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/biblioteca-offline': {
-      id: '/biblioteca-offline'
-      path: '/biblioteca-offline'
-      fullPath: '/biblioteca-offline'
-      preLoaderRoute: typeof BibliotecaOfflineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bibliotecas': {
@@ -3176,20 +3052,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/visuais'
       preLoaderRoute: typeof VisuaisRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/admin-biblioteca-leis/estadual': {
-      id: '/admin-biblioteca-leis/estadual'
-      path: '/estadual'
-      fullPath: '/admin-biblioteca-leis/estadual'
-      preLoaderRoute: typeof AdminBibliotecaLeisEstadualRouteImport
-      parentRoute: typeof AdminBibliotecaLeisRoute
-    }
-    '/admin-biblioteca-leis/geral': {
-      id: '/admin-biblioteca-leis/geral'
-      path: '/geral'
-      fullPath: '/admin-biblioteca-leis/geral'
-      preLoaderRoute: typeof AdminBibliotecaLeisGeralRouteImport
-      parentRoute: typeof AdminBibliotecaLeisRoute
     }
     '/admin-narracao/biblioteca': {
       id: '/admin-narracao/biblioteca'
@@ -3793,25 +3655,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VideoaulasCatalogoRouteImport
       parentRoute: typeof VideoaulasRoute
     }
-    '/videoaulas/estatutos': {
-      id: '/videoaulas/estatutos'
-      path: '/estatutos'
-      fullPath: '/videoaulas/estatutos'
-      preLoaderRoute: typeof VideoaulasEstatutosRouteImport
-      parentRoute: typeof VideoaulasRoute
-    }
     '/videoaulas/favoritos': {
       id: '/videoaulas/favoritos'
       path: '/favoritos'
       fullPath: '/videoaulas/favoritos'
       preLoaderRoute: typeof VideoaulasFavoritosRouteImport
-      parentRoute: typeof VideoaulasRoute
-    }
-    '/videoaulas/jurisprudencia': {
-      id: '/videoaulas/jurisprudencia'
-      path: '/jurisprudencia'
-      fullPath: '/videoaulas/jurisprudencia'
-      preLoaderRoute: typeof VideoaulasJurisprudenciaRouteImport
       parentRoute: typeof VideoaulasRoute
     }
     '/videoaulas/lei-seca': {
@@ -3834,13 +3682,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/visuais/$'
       preLoaderRoute: typeof VisuaisSplatRouteImport
       parentRoute: typeof VisuaisRoute
-    }
-    '/admin-biblioteca-leis/estadual/$uf': {
-      id: '/admin-biblioteca-leis/estadual/$uf'
-      path: '/$uf'
-      fullPath: '/admin-biblioteca-leis/estadual/$uf'
-      preLoaderRoute: typeof AdminBibliotecaLeisEstadualUfRouteImport
-      parentRoute: typeof AdminBibliotecaLeisEstadualRoute
     }
     '/bibliotecas/$colecaoId/$areaSlug': {
       id: '/bibliotecas/$colecaoId/$areaSlug'
@@ -4019,34 +3860,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AdminBibliotecaLeisEstadualRouteChildren {
-  AdminBibliotecaLeisEstadualUfRoute: typeof AdminBibliotecaLeisEstadualUfRoute
-}
-
-const AdminBibliotecaLeisEstadualRouteChildren: AdminBibliotecaLeisEstadualRouteChildren =
-  {
-    AdminBibliotecaLeisEstadualUfRoute: AdminBibliotecaLeisEstadualUfRoute,
-  }
-
-const AdminBibliotecaLeisEstadualRouteWithChildren =
-  AdminBibliotecaLeisEstadualRoute._addFileChildren(
-    AdminBibliotecaLeisEstadualRouteChildren,
-  )
-
-interface AdminBibliotecaLeisRouteChildren {
-  AdminBibliotecaLeisEstadualRoute: typeof AdminBibliotecaLeisEstadualRouteWithChildren
-  AdminBibliotecaLeisGeralRoute: typeof AdminBibliotecaLeisGeralRoute
-}
-
-const AdminBibliotecaLeisRouteChildren: AdminBibliotecaLeisRouteChildren = {
-  AdminBibliotecaLeisEstadualRoute:
-    AdminBibliotecaLeisEstadualRouteWithChildren,
-  AdminBibliotecaLeisGeralRoute: AdminBibliotecaLeisGeralRoute,
-}
-
-const AdminBibliotecaLeisRouteWithChildren =
-  AdminBibliotecaLeisRoute._addFileChildren(AdminBibliotecaLeisRouteChildren)
 
 interface AudioaulasRouteChildren {
   AudioaulasAreaRoute: typeof AudioaulasAreaRoute
@@ -4522,9 +4335,7 @@ const VideoaulasLeiSecaRouteWithChildren =
 
 interface VideoaulasRouteChildren {
   VideoaulasCatalogoRoute: typeof VideoaulasCatalogoRouteWithChildren
-  VideoaulasEstatutosRoute: typeof VideoaulasEstatutosRoute
   VideoaulasFavoritosRoute: typeof VideoaulasFavoritosRoute
-  VideoaulasJurisprudenciaRoute: typeof VideoaulasJurisprudenciaRoute
   VideoaulasLeiSecaRoute: typeof VideoaulasLeiSecaRouteWithChildren
   VideoaulasPainelRoute: typeof VideoaulasPainelRoute
   VideoaulasCanalIdRoute: typeof VideoaulasCanalIdRoute
@@ -4532,9 +4343,7 @@ interface VideoaulasRouteChildren {
 
 const VideoaulasRouteChildren: VideoaulasRouteChildren = {
   VideoaulasCatalogoRoute: VideoaulasCatalogoRouteWithChildren,
-  VideoaulasEstatutosRoute: VideoaulasEstatutosRoute,
   VideoaulasFavoritosRoute: VideoaulasFavoritosRoute,
-  VideoaulasJurisprudenciaRoute: VideoaulasJurisprudenciaRoute,
   VideoaulasLeiSecaRoute: VideoaulasLeiSecaRouteWithChildren,
   VideoaulasPainelRoute: VideoaulasPainelRoute,
   VideoaulasCanalIdRoute: VideoaulasCanalIdRoute,
@@ -4599,9 +4408,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAudioaulasRoute: AdminAudioaulasRoute,
   AdminAulasInterativasRoute: AdminAulasInterativasRoute,
   AdminBibliotecaEditarRoute: AdminBibliotecaEditarRoute,
-  AdminBibliotecaLeisRoute: AdminBibliotecaLeisRouteWithChildren,
   AdminBlogEdicaoRoute: AdminBlogEdicaoRoute,
-  AdminDesignImagensRoute: AdminDesignImagensRoute,
   AdminErrosQuestoesRoute: AdminErrosQuestoesRoute,
   AdminFlashcardsEditarRoute: AdminFlashcardsEditarRoute,
   AdminFuncoesRoute: AdminFuncoesRoute,
@@ -4628,7 +4435,6 @@ const rootRouteChildren: RootRouteChildren = {
   AudioleisRoute: AudioleisRoute,
   AuthRoute: AuthRoute,
   BibliotecaRoute: BibliotecaRoute,
-  BibliotecaOfflineRoute: BibliotecaOfflineRoute,
   BibliotecasRoute: BibliotecasRouteWithChildren,
   BlogRoute: BlogRoute,
   ChatJuridicoRoute: ChatJuridicoRoute,

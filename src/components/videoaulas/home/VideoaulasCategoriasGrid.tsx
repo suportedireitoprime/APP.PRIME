@@ -7,8 +7,8 @@ import { motion } from 'framer-motion';
 const CATEGORIAS_PRINCIPAIS = [
   { id: 'areas', label: 'Áreas do Direito', icon: BookOpen, color: '#3b82f6', route: '/videoaulas/areas' },
   { id: 'lei-seca', label: 'Lei Seca', icon: Scale, color: '#f59e0b', route: '/videoaulas/lei-seca' },
-  { id: 'jurisprudencia', label: 'Jurisprudência', icon: BookText, color: '#8b5cf6', route: '/videoaulas/jurisprudencia' },
-  { id: 'estatutos', label: 'Estatutos', icon: Landmark, color: '#10b981', route: '/videoaulas/estatutos' },
+  { id: 'jurisprudencia', label: 'Jurisprudência', icon: BookText, color: '#8b5cf6', route: '/jurisprudencia' },
+  { id: 'estatutos', label: 'Estatutos', icon: Landmark, color: '#10b981', route: '/videoaulas/lei-seca/categoria/estatutos' },
 ];
 
 const TRES_PODERES = [

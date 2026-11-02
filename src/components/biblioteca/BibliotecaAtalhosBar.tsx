@@ -218,7 +218,7 @@ const BibliotecaAtalhosBar = ({ onAbrirLivro, filtroArea = null, onAbrirCustomPd
                 }}
                 onGerenciar={() => {
                   setActive(null);
-                  navigate('/biblioteca-offline');
+                  navigate('/modo-offline/livros');
                 }}
               />
             )}
