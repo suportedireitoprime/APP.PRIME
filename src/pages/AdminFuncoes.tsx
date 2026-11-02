@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   ChevronRight, Activity, ShieldCheck, ClipboardList, BookOpen,
   Gamepad2, Brain, MessageCircle, BellRing, Mic, Lightbulb, Building2,
-  Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
+  Rss, Palette, Users, GitBranch, Github, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
   ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill, UserCheck, Bird, FileSpreadsheet,
@@ -109,16 +109,6 @@ const CATEGORIES: Category[] = [
       { id: 'admin-assinantes', label: 'Assinantes App', icon: Users, desc: 'Lista de todos os assinantes via banco local', route: '/admin-assinantes' },
       { id: 'admin-usuarios', label: 'Usuários Cadastrados', icon: UserCheck, desc: 'Lista de todos os usuários cadastrados e status', route: '/admin-usuarios' },
       { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função', route: '/admin-funcoes-assinantes' },
-    ],
-  },
-  {
-    id: 'instagram-posts-cat',
-    title: 'Instagram Posts',
-    desc: 'Criação de carrosséis de imagens com IA',
-    icon: ImageIcon,
-    route: '/admin-instagram-posts',
-    items: [
-      { id: 'instagram-posts', label: 'Instagram Posts', icon: ImageIcon, desc: 'Gerar carrosséis com IA no padrão Vade Mecum', route: '/admin-instagram-posts' },
     ],
   },
   {

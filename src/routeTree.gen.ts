@@ -23,13 +23,11 @@ import { Route as AdminFlashcardsEditarRouteImport } from './routes/admin-flashc
 import { Route as AdminFuncoesRouteImport } from './routes/admin-funcoes'
 import { Route as AdminFuncoesAssinantesRouteImport } from './routes/admin-funcoes-assinantes'
 import { Route as AdminHorusRouteImport } from './routes/admin-horus'
-import { Route as AdminInstagramPostsRouteImport } from './routes/admin-instagram-posts'
 import { Route as AdminLeituraNativaRouteImport } from './routes/admin-leitura-nativa'
 import { Route as AdminMapeamentoLeisRouteImport } from './routes/admin-mapeamento-leis'
 import { Route as AdminMonitorRouteImport } from './routes/admin-monitor'
 import { Route as AdminMonitorApisRouteImport } from './routes/admin-monitor-apis'
 import { Route as AdminMonitorUsuariosRouteImport } from './routes/admin-monitor-usuarios'
-import { Route as AdminNarracaoRouteImport } from './routes/admin-narracao'
 import { Route as AdminNarracaoLeisRouteImport } from './routes/admin-narracao-leis'
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
@@ -103,7 +101,6 @@ import { Route as AjustesExcluirContaRouteImport } from './routes/ajustes.exclui
 import { Route as AjustesHorusRouteImport } from './routes/ajustes.horus'
 import { Route as AjustesSegurancaRouteImport } from './routes/ajustes.seguranca'
 import { Route as AudioaulasAreaRouteImport } from './routes/audioaulas.$area'
-import { Route as BibliotecaCadernoRouteImport } from './routes/biblioteca.caderno'
 import { Route as BibliotecasColecaoIdRouteImport } from './routes/bibliotecas.$colecaoId'
 import { Route as BibliotecasTrilhasRouteImport } from './routes/bibliotecas.trilhas'
 import { Route as DesktopLinkTokenRouteImport } from './routes/desktop-link.$token'
@@ -168,8 +165,6 @@ import { Route as QuestoesRevisarRouteImport } from './routes/questoes.revisar'
 import { Route as QuestoesSimuladoRouteImport } from './routes/questoes.simulado'
 import { Route as QuestoesTrilhasRouteImport } from './routes/questoes.trilhas'
 import { Route as RadarConcursosEstatisticasRouteImport } from './routes/radar-concursos.estatisticas'
-import { Route as RadarCategoriasRouteImport } from './routes/radar.categorias'
-import { Route as RadarEmAltaRouteImport } from './routes/radar.em-alta'
 import { Route as RadarProposicoesRouteImport } from './routes/radar.proposicoes'
 import { Route as ResumosJuridicosAreaRouteImport } from './routes/resumos-juridicos.$area'
 import { Route as ResumosJuridicosFavoritosRouteImport } from './routes/resumos-juridicos.favoritos'
@@ -210,7 +205,6 @@ import { Route as ResumosJuridicosJurisprudenciaCategoriaRouteImport } from './r
 import { Route as SimuladosResolverIdRouteImport } from './routes/simulados.resolver.$id'
 import { Route as VideoaulasCatalogoAreaRouteImport } from './routes/videoaulas.$catalogo.$area'
 import { Route as VideoaulasCanalIdRouteImport } from './routes/videoaulas.canal.$id'
-import { Route as VideoaulasConcursoIdRouteImport } from './routes/videoaulas.concurso.$id'
 import { Route as JurisprudenciaProntasTribunalSlugRouteImport } from './routes/jurisprudencia.prontas.$tribunal.$slug'
 import { Route as LegislacaoEstadualUfLeiSlugRouteImport } from './routes/legislacao-estadual.$uf.lei.$slug'
 import { Route as LegislacaoTipoLeiSlugArtigoNumeroRouteImport } from './routes/legislacao.$tipo.$leiSlug.$artigoNumero'
@@ -289,11 +283,6 @@ const AdminHorusRoute = AdminHorusRouteImport.update({
   path: '/admin-horus',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminInstagramPostsRoute = AdminInstagramPostsRouteImport.update({
-  id: '/admin-instagram-posts',
-  path: '/admin-instagram-posts',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminLeituraNativaRoute = AdminLeituraNativaRouteImport.update({
   id: '/admin-leitura-nativa',
   path: '/admin-leitura-nativa',
@@ -317,11 +306,6 @@ const AdminMonitorApisRoute = AdminMonitorApisRouteImport.update({
 const AdminMonitorUsuariosRoute = AdminMonitorUsuariosRouteImport.update({
   id: '/admin-monitor-usuarios',
   path: '/admin-monitor-usuarios',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminNarracaoRoute = AdminNarracaoRouteImport.update({
-  id: '/admin-narracao',
-  path: '/admin-narracao',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminNarracaoLeisRoute = AdminNarracaoLeisRouteImport.update({
@@ -691,11 +675,6 @@ const AudioaulasAreaRoute = AudioaulasAreaRouteImport.update({
   path: '/$area',
   getParentRoute: () => AudioaulasRoute,
 } as any)
-const BibliotecaCadernoRoute = BibliotecaCadernoRouteImport.update({
-  id: '/caderno',
-  path: '/caderno',
-  getParentRoute: () => BibliotecaRoute,
-} as any)
 const BibliotecasColecaoIdRoute = BibliotecasColecaoIdRouteImport.update({
   id: '/$colecaoId',
   path: '/$colecaoId',
@@ -1024,16 +1003,6 @@ const RadarConcursosEstatisticasRoute =
     path: '/estatisticas',
     getParentRoute: () => RadarConcursosRoute,
   } as any)
-const RadarCategoriasRoute = RadarCategoriasRouteImport.update({
-  id: '/radar/categorias',
-  path: '/radar/categorias',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RadarEmAltaRoute = RadarEmAltaRouteImport.update({
-  id: '/radar/em-alta',
-  path: '/radar/em-alta',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RadarProposicoesRoute = RadarProposicoesRouteImport.update({
   id: '/radar/proposicoes',
   path: '/radar/proposicoes',
@@ -1246,11 +1215,6 @@ const VideoaulasCanalIdRoute = VideoaulasCanalIdRouteImport.update({
   path: '/canal/$id',
   getParentRoute: () => VideoaulasRoute,
 } as any)
-const VideoaulasConcursoIdRoute = VideoaulasConcursoIdRouteImport.update({
-  id: '/concurso/$id',
-  path: '/concurso/$id',
-  getParentRoute: () => VideoaulasRoute,
-} as any)
 const JurisprudenciaProntasTribunalSlugRoute =
   JurisprudenciaProntasTribunalSlugRouteImport.update({
     id: '/$slug',
@@ -1308,13 +1272,11 @@ export interface FileRoutesByFullPath {
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
   '/admin-horus': typeof AdminHorusRoute
-  '/admin-instagram-posts': typeof AdminInstagramPostsRoute
   '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
   '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
-  '/admin-narracao': typeof AdminNarracaoRouteWithChildren
   '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
@@ -1330,7 +1292,7 @@ export interface FileRoutesByFullPath {
   '/audioaulas': typeof AudioaulasRouteWithChildren
   '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
-  '/biblioteca': typeof BibliotecaRouteWithChildren
+  '/biblioteca': typeof BibliotecaRoute
   '/biblioteca-offline': typeof BibliotecaOfflineRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
@@ -1388,7 +1350,6 @@ export interface FileRoutesByFullPath {
   '/ajustes/horus': typeof AjustesHorusRoute
   '/ajustes/seguranca': typeof AjustesSegurancaRoute
   '/audioaulas/$area': typeof AudioaulasAreaRoute
-  '/biblioteca/caderno': typeof BibliotecaCadernoRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
@@ -1453,8 +1414,6 @@ export interface FileRoutesByFullPath {
   '/questoes/simulado': typeof QuestoesSimuladoRouteWithChildren
   '/questoes/trilhas': typeof QuestoesTrilhasRoute
   '/radar-concursos/estatisticas': typeof RadarConcursosEstatisticasRoute
-  '/radar/categorias': typeof RadarCategoriasRoute
-  '/radar/em-alta': typeof RadarEmAltaRoute
   '/radar/proposicoes': typeof RadarProposicoesRouteWithChildren
   '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRouteWithChildren
   '/resumos-juridicos/favoritos': typeof ResumosJuridicosFavoritosRoute
@@ -1495,7 +1454,6 @@ export interface FileRoutesByFullPath {
   '/simulados/resolver/$id': typeof SimuladosResolverIdRoute
   '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRouteWithChildren
   '/videoaulas/canal/$id': typeof VideoaulasCanalIdRoute
-  '/videoaulas/concurso/$id': typeof VideoaulasConcursoIdRoute
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
   '/legislacao-estadual/$uf/lei/$slug': typeof LegislacaoEstadualUfLeiSlugRoute
   '/legislacao/$tipo/$leiSlug/$artigoNumero': typeof LegislacaoTipoLeiSlugArtigoNumeroRoute
@@ -1519,13 +1477,11 @@ export interface FileRoutesByTo {
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
   '/admin-horus': typeof AdminHorusRoute
-  '/admin-instagram-posts': typeof AdminInstagramPostsRoute
   '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
   '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
-  '/admin-narracao': typeof AdminNarracaoRouteWithChildren
   '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
@@ -1541,7 +1497,7 @@ export interface FileRoutesByTo {
   '/audioaulas': typeof AudioaulasRouteWithChildren
   '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
-  '/biblioteca': typeof BibliotecaRouteWithChildren
+  '/biblioteca': typeof BibliotecaRoute
   '/biblioteca-offline': typeof BibliotecaOfflineRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
@@ -1599,7 +1555,6 @@ export interface FileRoutesByTo {
   '/ajustes/horus': typeof AjustesHorusRoute
   '/ajustes/seguranca': typeof AjustesSegurancaRoute
   '/audioaulas/$area': typeof AudioaulasAreaRoute
-  '/biblioteca/caderno': typeof BibliotecaCadernoRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
@@ -1664,8 +1619,6 @@ export interface FileRoutesByTo {
   '/questoes/simulado': typeof QuestoesSimuladoRouteWithChildren
   '/questoes/trilhas': typeof QuestoesTrilhasRoute
   '/radar-concursos/estatisticas': typeof RadarConcursosEstatisticasRoute
-  '/radar/categorias': typeof RadarCategoriasRoute
-  '/radar/em-alta': typeof RadarEmAltaRoute
   '/radar/proposicoes': typeof RadarProposicoesRouteWithChildren
   '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRouteWithChildren
   '/resumos-juridicos/favoritos': typeof ResumosJuridicosFavoritosRoute
@@ -1706,7 +1659,6 @@ export interface FileRoutesByTo {
   '/simulados/resolver/$id': typeof SimuladosResolverIdRoute
   '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRouteWithChildren
   '/videoaulas/canal/$id': typeof VideoaulasCanalIdRoute
-  '/videoaulas/concurso/$id': typeof VideoaulasConcursoIdRoute
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
   '/legislacao-estadual/$uf/lei/$slug': typeof LegislacaoEstadualUfLeiSlugRoute
   '/legislacao/$tipo/$leiSlug/$artigoNumero': typeof LegislacaoTipoLeiSlugArtigoNumeroRoute
@@ -1731,13 +1683,11 @@ export interface FileRoutesById {
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
   '/admin-horus': typeof AdminHorusRoute
-  '/admin-instagram-posts': typeof AdminInstagramPostsRoute
   '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
   '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
-  '/admin-narracao': typeof AdminNarracaoRouteWithChildren
   '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
@@ -1753,7 +1703,7 @@ export interface FileRoutesById {
   '/audioaulas': typeof AudioaulasRouteWithChildren
   '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
-  '/biblioteca': typeof BibliotecaRouteWithChildren
+  '/biblioteca': typeof BibliotecaRoute
   '/biblioteca-offline': typeof BibliotecaOfflineRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
@@ -1811,7 +1761,6 @@ export interface FileRoutesById {
   '/ajustes/horus': typeof AjustesHorusRoute
   '/ajustes/seguranca': typeof AjustesSegurancaRoute
   '/audioaulas/$area': typeof AudioaulasAreaRoute
-  '/biblioteca/caderno': typeof BibliotecaCadernoRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
@@ -1876,8 +1825,6 @@ export interface FileRoutesById {
   '/questoes/simulado': typeof QuestoesSimuladoRouteWithChildren
   '/questoes/trilhas': typeof QuestoesTrilhasRoute
   '/radar-concursos/estatisticas': typeof RadarConcursosEstatisticasRoute
-  '/radar/categorias': typeof RadarCategoriasRoute
-  '/radar/em-alta': typeof RadarEmAltaRoute
   '/radar/proposicoes': typeof RadarProposicoesRouteWithChildren
   '/resumos-juridicos/$area': typeof ResumosJuridicosAreaRouteWithChildren
   '/resumos-juridicos/favoritos': typeof ResumosJuridicosFavoritosRoute
@@ -1918,7 +1865,6 @@ export interface FileRoutesById {
   '/simulados/resolver/$id': typeof SimuladosResolverIdRoute
   '/videoaulas/$catalogo/$area': typeof VideoaulasCatalogoAreaRouteWithChildren
   '/videoaulas/canal/$id': typeof VideoaulasCanalIdRoute
-  '/videoaulas/concurso/$id': typeof VideoaulasConcursoIdRoute
   '/jurisprudencia/prontas/$tribunal/$slug': typeof JurisprudenciaProntasTribunalSlugRoute
   '/legislacao-estadual/$uf/lei/$slug': typeof LegislacaoEstadualUfLeiSlugRoute
   '/legislacao/$tipo/$leiSlug/$artigoNumero': typeof LegislacaoTipoLeiSlugArtigoNumeroRoute
@@ -1944,13 +1890,11 @@ export interface FileRouteTypes {
     | '/admin-funcoes'
     | '/admin-funcoes-assinantes'
     | '/admin-horus'
-    | '/admin-instagram-posts'
     | '/admin-leitura-nativa'
     | '/admin-mapeamento-leis'
     | '/admin-monitor'
     | '/admin-monitor-apis'
     | '/admin-monitor-usuarios'
-    | '/admin-narracao'
     | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
@@ -2024,7 +1968,6 @@ export interface FileRouteTypes {
     | '/ajustes/horus'
     | '/ajustes/seguranca'
     | '/audioaulas/$area'
-    | '/biblioteca/caderno'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
@@ -2089,8 +2032,6 @@ export interface FileRouteTypes {
     | '/questoes/simulado'
     | '/questoes/trilhas'
     | '/radar-concursos/estatisticas'
-    | '/radar/categorias'
-    | '/radar/em-alta'
     | '/radar/proposicoes'
     | '/resumos-juridicos/$area'
     | '/resumos-juridicos/favoritos'
@@ -2131,7 +2072,6 @@ export interface FileRouteTypes {
     | '/simulados/resolver/$id'
     | '/videoaulas/$catalogo/$area'
     | '/videoaulas/canal/$id'
-    | '/videoaulas/concurso/$id'
     | '/jurisprudencia/prontas/$tribunal/$slug'
     | '/legislacao-estadual/$uf/lei/$slug'
     | '/legislacao/$tipo/$leiSlug/$artigoNumero'
@@ -2155,13 +2095,11 @@ export interface FileRouteTypes {
     | '/admin-funcoes'
     | '/admin-funcoes-assinantes'
     | '/admin-horus'
-    | '/admin-instagram-posts'
     | '/admin-leitura-nativa'
     | '/admin-mapeamento-leis'
     | '/admin-monitor'
     | '/admin-monitor-apis'
     | '/admin-monitor-usuarios'
-    | '/admin-narracao'
     | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
@@ -2235,7 +2173,6 @@ export interface FileRouteTypes {
     | '/ajustes/horus'
     | '/ajustes/seguranca'
     | '/audioaulas/$area'
-    | '/biblioteca/caderno'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
@@ -2300,8 +2237,6 @@ export interface FileRouteTypes {
     | '/questoes/simulado'
     | '/questoes/trilhas'
     | '/radar-concursos/estatisticas'
-    | '/radar/categorias'
-    | '/radar/em-alta'
     | '/radar/proposicoes'
     | '/resumos-juridicos/$area'
     | '/resumos-juridicos/favoritos'
@@ -2342,7 +2277,6 @@ export interface FileRouteTypes {
     | '/simulados/resolver/$id'
     | '/videoaulas/$catalogo/$area'
     | '/videoaulas/canal/$id'
-    | '/videoaulas/concurso/$id'
     | '/jurisprudencia/prontas/$tribunal/$slug'
     | '/legislacao-estadual/$uf/lei/$slug'
     | '/legislacao/$tipo/$leiSlug/$artigoNumero'
@@ -2366,13 +2300,11 @@ export interface FileRouteTypes {
     | '/admin-funcoes'
     | '/admin-funcoes-assinantes'
     | '/admin-horus'
-    | '/admin-instagram-posts'
     | '/admin-leitura-nativa'
     | '/admin-mapeamento-leis'
     | '/admin-monitor'
     | '/admin-monitor-apis'
     | '/admin-monitor-usuarios'
-    | '/admin-narracao'
     | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
@@ -2446,7 +2378,6 @@ export interface FileRouteTypes {
     | '/ajustes/horus'
     | '/ajustes/seguranca'
     | '/audioaulas/$area'
-    | '/biblioteca/caderno'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
@@ -2511,8 +2442,6 @@ export interface FileRouteTypes {
     | '/questoes/simulado'
     | '/questoes/trilhas'
     | '/radar-concursos/estatisticas'
-    | '/radar/categorias'
-    | '/radar/em-alta'
     | '/radar/proposicoes'
     | '/resumos-juridicos/$area'
     | '/resumos-juridicos/favoritos'
@@ -2553,7 +2482,6 @@ export interface FileRouteTypes {
     | '/simulados/resolver/$id'
     | '/videoaulas/$catalogo/$area'
     | '/videoaulas/canal/$id'
-    | '/videoaulas/concurso/$id'
     | '/jurisprudencia/prontas/$tribunal/$slug'
     | '/legislacao-estadual/$uf/lei/$slug'
     | '/legislacao/$tipo/$leiSlug/$artigoNumero'
@@ -2578,13 +2506,11 @@ export interface RootRouteChildren {
   AdminFuncoesRoute: typeof AdminFuncoesRoute
   AdminFuncoesAssinantesRoute: typeof AdminFuncoesAssinantesRoute
   AdminHorusRoute: typeof AdminHorusRoute
-  AdminInstagramPostsRoute: typeof AdminInstagramPostsRoute
   AdminLeituraNativaRoute: typeof AdminLeituraNativaRoute
   AdminMapeamentoLeisRoute: typeof AdminMapeamentoLeisRoute
   AdminMonitorRoute: typeof AdminMonitorRoute
   AdminMonitorApisRoute: typeof AdminMonitorApisRoute
   AdminMonitorUsuariosRoute: typeof AdminMonitorUsuariosRoute
-  AdminNarracaoRoute: typeof AdminNarracaoRouteWithChildren
   AdminNarracaoLeisRoute: typeof AdminNarracaoLeisRoute
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
@@ -2600,7 +2526,7 @@ export interface RootRouteChildren {
   AudioaulasRoute: typeof AudioaulasRouteWithChildren
   AudioleisRoute: typeof AudioleisRoute
   AuthRoute: typeof AuthRoute
-  BibliotecaRoute: typeof BibliotecaRouteWithChildren
+  BibliotecaRoute: typeof BibliotecaRoute
   BibliotecaOfflineRoute: typeof BibliotecaOfflineRoute
   BibliotecasRoute: typeof BibliotecasRouteWithChildren
   BlogRoute: typeof BlogRoute
@@ -2665,8 +2591,6 @@ export interface RootRouteChildren {
   PessoalLeisRoute: typeof PessoalLeisRoute
   PessoalLivrosRoute: typeof PessoalLivrosRoute
   PlanosAtivosRoute: typeof PlanosAtivosRoute
-  RadarCategoriasRoute: typeof RadarCategoriasRoute
-  RadarEmAltaRoute: typeof RadarEmAltaRoute
   RadarProposicoesRoute: typeof RadarProposicoesRouteWithChildren
 }
 
@@ -2770,13 +2694,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHorusRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-instagram-posts': {
-      id: '/admin-instagram-posts'
-      path: '/admin-instagram-posts'
-      fullPath: '/admin-instagram-posts'
-      preLoaderRoute: typeof AdminInstagramPostsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-leitura-nativa': {
       id: '/admin-leitura-nativa'
       path: '/admin-leitura-nativa'
@@ -2810,13 +2727,6 @@ declare module '@tanstack/react-router' {
       path: '/admin-monitor-usuarios'
       fullPath: '/admin-monitor-usuarios'
       preLoaderRoute: typeof AdminMonitorUsuariosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-narracao': {
-      id: '/admin-narracao'
-      path: '/admin-narracao'
-      fullPath: '/admin-narracao'
-      preLoaderRoute: typeof AdminNarracaoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-narracao-leis': {
@@ -3330,13 +3240,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AudioaulasAreaRouteImport
       parentRoute: typeof AudioaulasRoute
     }
-    '/biblioteca/caderno': {
-      id: '/biblioteca/caderno'
-      path: '/caderno'
-      fullPath: '/biblioteca/caderno'
-      preLoaderRoute: typeof BibliotecaCadernoRouteImport
-      parentRoute: typeof BibliotecaRoute
-    }
     '/bibliotecas/$colecaoId': {
       id: '/bibliotecas/$colecaoId'
       path: '/$colecaoId'
@@ -3785,20 +3688,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RadarConcursosEstatisticasRouteImport
       parentRoute: typeof RadarConcursosRoute
     }
-    '/radar/categorias': {
-      id: '/radar/categorias'
-      path: '/radar/categorias'
-      fullPath: '/radar/categorias'
-      preLoaderRoute: typeof RadarCategoriasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/radar/em-alta': {
-      id: '/radar/em-alta'
-      path: '/radar/em-alta'
-      fullPath: '/radar/em-alta'
-      preLoaderRoute: typeof RadarEmAltaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/radar/proposicoes': {
       id: '/radar/proposicoes'
       path: '/radar/proposicoes'
@@ -4079,13 +3968,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VideoaulasCanalIdRouteImport
       parentRoute: typeof VideoaulasRoute
     }
-    '/videoaulas/concurso/$id': {
-      id: '/videoaulas/concurso/$id'
-      path: '/concurso/$id'
-      fullPath: '/videoaulas/concurso/$id'
-      preLoaderRoute: typeof VideoaulasConcursoIdRouteImport
-      parentRoute: typeof VideoaulasRoute
-    }
     '/jurisprudencia/prontas/$tribunal/$slug': {
       id: '/jurisprudencia/prontas/$tribunal/$slug'
       path: '/$slug'
@@ -4166,20 +4048,6 @@ const AdminBibliotecaLeisRouteChildren: AdminBibliotecaLeisRouteChildren = {
 const AdminBibliotecaLeisRouteWithChildren =
   AdminBibliotecaLeisRoute._addFileChildren(AdminBibliotecaLeisRouteChildren)
 
-interface AdminNarracaoRouteChildren {
-  AdminNarracaoBibliotecaRoute: typeof AdminNarracaoBibliotecaRoute
-  AdminNarracaoBlogRoute: typeof AdminNarracaoBlogRoute
-}
-
-const AdminNarracaoRouteChildren: AdminNarracaoRouteChildren = {
-  AdminNarracaoBibliotecaRoute: AdminNarracaoBibliotecaRoute,
-  AdminNarracaoBlogRoute: AdminNarracaoBlogRoute,
-}
-
-const AdminNarracaoRouteWithChildren = AdminNarracaoRoute._addFileChildren(
-  AdminNarracaoRouteChildren,
-)
-
 interface AudioaulasRouteChildren {
   AudioaulasAreaRoute: typeof AudioaulasAreaRoute
 }
@@ -4190,18 +4058,6 @@ const AudioaulasRouteChildren: AudioaulasRouteChildren = {
 
 const AudioaulasRouteWithChildren = AudioaulasRoute._addFileChildren(
   AudioaulasRouteChildren,
-)
-
-interface BibliotecaRouteChildren {
-  BibliotecaCadernoRoute: typeof BibliotecaCadernoRoute
-}
-
-const BibliotecaRouteChildren: BibliotecaRouteChildren = {
-  BibliotecaCadernoRoute: BibliotecaCadernoRoute,
-}
-
-const BibliotecaRouteWithChildren = BibliotecaRoute._addFileChildren(
-  BibliotecaRouteChildren,
 )
 
 interface BibliotecasColecaoIdRouteChildren {
@@ -4672,7 +4528,6 @@ interface VideoaulasRouteChildren {
   VideoaulasLeiSecaRoute: typeof VideoaulasLeiSecaRouteWithChildren
   VideoaulasPainelRoute: typeof VideoaulasPainelRoute
   VideoaulasCanalIdRoute: typeof VideoaulasCanalIdRoute
-  VideoaulasConcursoIdRoute: typeof VideoaulasConcursoIdRoute
 }
 
 const VideoaulasRouteChildren: VideoaulasRouteChildren = {
@@ -4683,7 +4538,6 @@ const VideoaulasRouteChildren: VideoaulasRouteChildren = {
   VideoaulasLeiSecaRoute: VideoaulasLeiSecaRouteWithChildren,
   VideoaulasPainelRoute: VideoaulasPainelRoute,
   VideoaulasCanalIdRoute: VideoaulasCanalIdRoute,
-  VideoaulasConcursoIdRoute: VideoaulasConcursoIdRoute,
 }
 
 const VideoaulasRouteWithChildren = VideoaulasRoute._addFileChildren(
@@ -4753,13 +4607,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminFuncoesRoute: AdminFuncoesRoute,
   AdminFuncoesAssinantesRoute: AdminFuncoesAssinantesRoute,
   AdminHorusRoute: AdminHorusRoute,
-  AdminInstagramPostsRoute: AdminInstagramPostsRoute,
   AdminLeituraNativaRoute: AdminLeituraNativaRoute,
   AdminMapeamentoLeisRoute: AdminMapeamentoLeisRoute,
   AdminMonitorRoute: AdminMonitorRoute,
   AdminMonitorApisRoute: AdminMonitorApisRoute,
   AdminMonitorUsuariosRoute: AdminMonitorUsuariosRoute,
-  AdminNarracaoRoute: AdminNarracaoRouteWithChildren,
   AdminNarracaoLeisRoute: AdminNarracaoLeisRoute,
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
@@ -4775,7 +4627,7 @@ const rootRouteChildren: RootRouteChildren = {
   AudioaulasRoute: AudioaulasRouteWithChildren,
   AudioleisRoute: AudioleisRoute,
   AuthRoute: AuthRoute,
-  BibliotecaRoute: BibliotecaRouteWithChildren,
+  BibliotecaRoute: BibliotecaRoute,
   BibliotecaOfflineRoute: BibliotecaOfflineRoute,
   BibliotecasRoute: BibliotecasRouteWithChildren,
   BlogRoute: BlogRoute,
@@ -4840,8 +4692,6 @@ const rootRouteChildren: RootRouteChildren = {
   PessoalLeisRoute: PessoalLeisRoute,
   PessoalLivrosRoute: PessoalLivrosRoute,
   PlanosAtivosRoute: PlanosAtivosRoute,
-  RadarCategoriasRoute: RadarCategoriasRoute,
-  RadarEmAltaRoute: RadarEmAltaRoute,
   RadarProposicoesRoute: RadarProposicoesRouteWithChildren,
 }
 export const routeTree = rootRouteImport

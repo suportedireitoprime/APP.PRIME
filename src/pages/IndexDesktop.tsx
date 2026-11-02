@@ -32,7 +32,7 @@ import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 // Overlays only mount when opened — lazy so they don't inflate the initial
 // desktop chunk.
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlayV2'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlay'));
 import { useQueryClient } from '@tanstack/react-query';
 import { pushRecente } from '@/lib/leisRecentes';
 import { warmCoverCache } from '@/lib/coverLoader';

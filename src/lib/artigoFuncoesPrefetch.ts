@@ -80,7 +80,6 @@ export function prefetchArtigoFuncoesChunks() {
       () => import('@/components/vademecum/sheets/GrifoFotoSheet'),
       () => import('@/components/vademecum/sheets/GrifoVoiceSheet'),
       () => import('@/components/vademecum/sheets/GrifoEraseSheet'),
-      () => import('@/components/vademecum/overlays/KaraokeOverlay'),
       () => import('@/components/vademecum/overlays/GeracaoAnimacaoOverlay'),
     ];
     // Sequencial para não competir com o conteúdo do artigo pela banda.

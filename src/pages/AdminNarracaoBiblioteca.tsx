@@ -234,7 +234,7 @@ const AdminNarracaoBiblioteca = () => {
       <PageHeader
         title="Narração · Biblioteca"
         subtitle="Vozes, prévia e narração por página"
-        onBack={() => navigate('/admin-narracao')}
+        onBack={() => navigate('/admin-funcoes')}
       />
 
       <div className="max-w-4xl mx-auto p-4 space-y-6">

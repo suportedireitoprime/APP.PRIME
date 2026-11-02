@@ -14,7 +14,7 @@ export function useHomeWarmup(imagesToPreload: string[], queryClient?: QueryClie
     const id = ric(() => {
       // 1. Prefetch Overlays and Heavy Components
       import('@/components/vademecum/overlays/SearchOverlay').catch(() => {});
-      import('@/components/vademecum/overlays/AssistenteOverlayV2').catch(() => {});
+      import('@/components/vademecum/overlays/AssistenteOverlay').catch(() => {});
       // Prefetch da página principal do Vade Mecum (evita tela branca/delay ao trocar de aba)
       import('@/pages/VadeMecum').catch(() => {});
       

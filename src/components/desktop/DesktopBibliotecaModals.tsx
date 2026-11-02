@@ -3,7 +3,7 @@ import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import type { LivroNormalizado } from '@/lib/bibliotecaColecoes';
 
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlayV2'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlay'));
 const LivroDetailSheet = lazyWithRetry(() => import('@/components/biblioteca/LivroDetailSheet'));
 
 interface DesktopBibliotecaModalsProps {

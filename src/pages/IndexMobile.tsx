@@ -19,7 +19,7 @@ import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
 // the initial mobile bundle stays lean and the home paints faster.
 const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/SideMenu'));
 const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
-const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlayV2'));
+const AssistenteOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/AssistenteOverlay'));
 import HomeHeaderHero from '@/components/vademecum/home/HomeHeaderHero';
 
 import MobileHomeSections from '@/components/vademecum/home/MobileHomeSections';
