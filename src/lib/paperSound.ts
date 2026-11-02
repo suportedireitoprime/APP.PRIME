@@ -1,4 +1,4 @@
-// Efeito sonoro de passar página / folhear no Aprender (mixkit-paper-slide-1530.wav)
+// Efeito sonoro de passar página / folhear no Aprender (paper-slide.wav)
 
 let paperAudio: HTMLAudioElement | null = null;
 
@@ -6,7 +6,7 @@ export function playPaperSlideSound(volume = 0.55) {
   if (typeof window === 'undefined') return;
   try {
     if (!paperAudio) {
-      paperAudio = new Audio('/sounds/mixkit-paper-slide-1530.wav');
+      paperAudio = new Audio('/sounds/paper-slide.wav');
       paperAudio.preload = 'auto';
     }
     paperAudio.volume = volume;
@@ -20,7 +20,7 @@ export function playPaperSlideSound(volume = 0.55) {
 export function preloadPaperSlideSound() {
   if (typeof window === 'undefined') return;
   if (!paperAudio) {
-    paperAudio = new Audio('/sounds/mixkit-paper-slide-1530.wav');
+    paperAudio = new Audio('/sounds/paper-slide.wav');
     paperAudio.preload = 'auto';
   }
 }

@@ -110,23 +110,6 @@ button, a, input, select, textarea, [role="button"], [role="tab"], .cursor-point
    a pedido do usuário para preservar a estética de "vidro" (glassmorphism) 
    nos cards de Aprender, Flashcards, etc. */
 
-/* ==========================================================================
-   ANIMAÇÃO GPU-ONLY PARA CARDS DE BUSCA
-   Usa apenas transform + opacity (propriedades compostas pela GPU).
-   Respeita prefers-reduced-motion para acessibilidade.
-   ========================================================================== */
-@keyframes lei-icon-reflexo {
-  0%, 100% { opacity: 0.22; transform: translateY(0); }
-  50% { opacity: 0.45; transform: translateY(-2px); }
-}
-
-@keyframes resultado-fade-up {
-  from, to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 /* Reabilita a seleção para campos de texto (para permitir a digitação normal) */
 input, textarea, [contenteditable], .ProseMirror, .aui-composer-input, [data-aui-composer-input] {
   -webkit-touch-callout: default !important;
@@ -559,17 +542,6 @@ body {
   100% { left: 100%; }
 }
 
-@keyframes liveSlide {
-  0% { left: -2rem; }
-  50% { left: calc(100% + 2rem); }
-  100% { left: calc(100% + 2rem); }
-}
-
-@keyframes shimmer-reflect {
-  0% { transform: translateX(-150%) skewX(-15deg); }
-  100% { transform: translateX(250%) skewX(-15deg); }
-}
-
 @keyframes shimmer {
   0%, 100% { transform: translateX(-150%); }
   50% { transform: translateX(150%); }
@@ -584,42 +556,6 @@ body {
   0% { background-position: 200% 0; }
   60% { background-position: -100% 0; }
   100% { background-position: -100% 0; }
-}
-
-
-@keyframes letter-slide {
-  0%   { opacity: 0; transform: translateY(28px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-@keyframes underline-draw {
-  0%   { transform: scaleX(0); }
-  100% { transform: scaleX(1); }
-}
-
-@keyframes pulse-hazard {
-  0%, 100% { box-shadow: 0 0 0 0 hsl(348 80% 50% / 0.6); }
-  50%      { box-shadow: 0 0 0 12px hsl(348 80% 50% / 0); }
-}
-
-@keyframes waveform {
-  0%, 100% { transform: scaleY(0.35); }
-  50%      { transform: scaleY(1); }
-}
-
-/* Reflexo rápido horizontal (deitado) em cascata: um ícone por vez,
-   o brilho desliza da esquerda para a direita passando de um ícone
-   para o outro com delays curtos. */
-@keyframes icon-sweep {
-  0%   { clip-path: polygon(-30% 0%, -10% 0%, -10% 100%, -30% 100%); opacity: 0; }
-  10%  { opacity: 0.85; }
-  90%  { opacity: 0.85; }
-  100% { clip-path: polygon(110% 0%, 130% 0%, 130% 100%, 110% 100%); opacity: 0; }
 }
 
 /* Reflexo contínuo sobre ícones de matérias na tela Aprender */
@@ -1083,18 +1019,6 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   [style*="ken-burns-a"], [style*="ken-burns-b"] { animation: none !important; }
 }
 
-/* Reflexo diagonal para a linha "Planos" no menu lateral. */
-@keyframes planos-shine {
-  0%   { transform: translateX(0) skewX(-12deg); opacity: 0; }
-  15%  { opacity: 1; }
-  60%  { transform: translateX(520%) skewX(-12deg); opacity: 1; }
-  100% { transform: translateX(520%) skewX(-12deg); opacity: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .animate-\[planos-shine_3\.2s_ease-in-out_infinite\] { animation: none !important; }
-}
-
-
 /* Page transition — 0ms instant display without opacity 0 or translateY */
 @keyframes page-in {
   from { opacity: 1; transform: none; }
@@ -1226,25 +1150,7 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   word-break: normal;
 }
 
-/* Transição entre slides da apresentação narrada */
-@keyframes slide-swap-next {
-  from { opacity: 0; transform: translateX(28px) scale(0.97); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
-@keyframes slide-swap-prev {
-  from { opacity: 0; transform: translateX(-28px) scale(0.97); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
-
 /* ===== Direito Prime — landing (portado) ===== */
-@keyframes neonPulseText {
-  0%, 100% { text-shadow: 0 0 4px rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
-  33% { text-shadow: 0 0 16px rgba(255,255,255,0.6), 0 0 40px rgba(212,168,75,0.4); color: #fff; }
-}
-@keyframes lineGlow {
-  0%, 100% { opacity: 0.3; }
-  33% { opacity: 1; }
-}
 @keyframes shimmerSlide {
   0% { transform: translateX(-120%); }
   50% { transform: translateX(120%); }
