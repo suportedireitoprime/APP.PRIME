@@ -214,7 +214,6 @@ const InformativosSTF = lazy(() => import("./pages/InformativosTribunal.tsx").th
 const TesesSTJ = lazy(() => import("./pages/TesesTribunal.tsx").then(m => ({ default: m.TesesSTJ })));
 const TesesSTF = lazy(() => import("./pages/TesesTribunal.tsx").then(m => ({ default: m.TesesSTF })));
 const PesquisasProntasTema = lazy(() => import("./pages/PesquisasProntasTema.tsx"));
-const AdminPesquisasProntas = lazy(() => import("./pages/AdminPesquisasProntas.tsx"));
 const AdminQuestoes = lazy(() => import("./pages/AdminQuestoes.tsx"));
 const Questoes = lazy(() => import("./pages/Questoes.tsx"));
 const Simulados = lazy(() => import("./pages/Simulados.tsx"));
@@ -313,7 +312,6 @@ const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
 const AdminInstagramPosts = lazy(() => import("./pages/AdminInstagramPosts.tsx"));
 const AdminAulasInterativas = lazy(() => import("./pages/AdminAulasInterativas.tsx"));
-const AdminVadeMecum = lazy(() => import("./pages/AdminVadeMecum.tsx"));
 const AdminNarracaoConteudo = lazy(() => import("./pages/AdminNarracaoConteudo.tsx"));
 const AdminNarracaoBiblioteca = lazy(() => import("./pages/AdminNarracaoBiblioteca.tsx"));
 const AdminNarracaoBlog = lazy(() => import("./pages/AdminNarracaoBlog.tsx"));
@@ -324,10 +322,8 @@ const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
 const AdminUsuarios = lazy(() => import("./pages/AdminUsuarios.tsx"));
 const AdminMonitorUsuarios = lazy(() => import("./pages/AdminMonitorUsuarios.tsx"));
 const AdminMonitorApis = lazy(() => import("./pages/AdminMonitorApis.tsx"));
-const AdminJurisprudencia = lazy(() => import("./pages/AdminJurisprudencia.tsx"));
 
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
-const AdminHorusTemplate = lazy(() => import('./pages/AdminHorusTemplate'));
 const HorusWhatsApp = lazy(() => import("./pages/HorusWhatsApp.tsx"));
 const AdminBlogEdicao = lazy(() => import("./pages/AdminBlogEdicao.tsx"));
 const AdminOmniRouteTeste = lazy(() => import("./pages/AdminOmniRouteTeste.tsx"));
@@ -339,7 +335,6 @@ const AdminLeituraNativa = lazy(() => import("./pages/AdminLeituraNativa.tsx"));
 const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
 const Audioleis = lazyWithRetry(routePrefetch.audioleis);
-const AdminConteudoFila = lazy(() => import("./pages/AdminConteudoFila.tsx"));
 const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
 const PlanosAtivos = lazy(() => import("./pages/PlanosAtivos.tsx"));
 const DesktopPromo = lazy(routePrefetch.desktop);
@@ -981,7 +976,6 @@ function AnimatedRoutes() {
           <Route path="/jurisprudencia/:slugLei/:numeroArtigo" element={<ProtectedRoute><PageTransition><JurisprudenciaArtigo /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia/prontas/:tribunal" element={<ProtectedRoute><PageTransition><PesquisasProntasLista /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia/prontas/:tribunal/:slug" element={<ProtectedRoute><PageTransition><PesquisasProntasTema /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin/pesquisas-prontas" element={<ProtectedRoute><PageTransition><AdminPesquisasProntas /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia/sumulas-vinculantes" element={<ProtectedRoute><PageTransition><SumulasVinculantes /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia/sumulas-stf" element={<ProtectedRoute><PageTransition><SumulasSTF /></PageTransition></ProtectedRoute>} />
           <Route path="/jurisprudencia/sumulas-stj" element={<ProtectedRoute><PageTransition><SumulasSTJ /></PageTransition></ProtectedRoute>} />
@@ -1057,7 +1051,6 @@ function AnimatedRoutes() {
           <Route path="/admin-instagram-posts" element={<ProtectedRoute><PageTransition><AdminInstagramPosts /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-aulas-interativas" element={<ProtectedRoute><PageTransition><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-vade-mecum" element={<ProtectedRoute><PageTransition><AdminVadeMecum /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-vade-mecum-historico" element={<ProtectedRoute><PageTransition><AdminVadeMecumHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-mapeamento-leis" element={<ProtectedRoute><PageTransition><AdminMapeamentoLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao-leis" element={<ProtectedRoute><PageTransition><AdminNarracaoLeis /></PageTransition></ProtectedRoute>} />
@@ -1076,12 +1069,10 @@ function AnimatedRoutes() {
           <Route path="/opiniao" element={<ProtectedRoute><PageTransition><Opiniao /></PageTransition></ProtectedRoute>} />
           <Route path="/minha-cota" element={<ProtectedRoute><PageTransition><MinhaCota /></PageTransition></ProtectedRoute>} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-jurisprudencia" element={<ProtectedRoute><PageTransition><AdminJurisprudencia /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-push" element={<ProtectedRoute><PageTransition><AdminPush /></PageTransition></ProtectedRoute>} />
 
 
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-horus-template" element={<ProtectedRoute><PageTransition><AdminHorusTemplate /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />
 
           <Route path="/boletins" element={<ProtectedRoute><PageTransition><BoletinsJuridicos tipo="juridico" /></PageTransition></ProtectedRoute>} />
@@ -1091,9 +1082,6 @@ function AnimatedRoutes() {
           <Route path="/ajustes/horus" element={<ProtectedRoute><PageTransition><HorusWhatsApp /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-blog-edicao" element={<ProtectedRoute><PageTransition><AdminBlogEdicao /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin/omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
-          <Route path="/omniroute-teste" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
-          <Route path="/omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-flashcards-editar" element={<ProtectedRoute><PageTransition><AdminFlashcardsEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-design-imagens" element={<ProtectedRoute><PageTransition><AdminDesignImagens /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-editar" element={<ProtectedRoute><PageTransition><BibliotecaEditar /></PageTransition></ProtectedRoute>} />
@@ -1110,7 +1098,6 @@ function AnimatedRoutes() {
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/audioleis" element={<ProtectedRoute><PageTransition><Audioleis /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-conteudo-fila" element={<ProtectedRoute><PageTransition><AdminConteudoFila /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis/estadual" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeisEstaduais /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-biblioteca-leis/estadual/:uf" element={<ProtectedRoute><PageTransition><AdminBibliotecaLeisEstaduais /></PageTransition></ProtectedRoute>} />

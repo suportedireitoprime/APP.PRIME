@@ -17,16 +17,13 @@ import { Route as AdminAulasInterativasRouteImport } from './routes/admin-aulas-
 import { Route as AdminBibliotecaEditarRouteImport } from './routes/admin-biblioteca-editar'
 import { Route as AdminBibliotecaLeisRouteImport } from './routes/admin-biblioteca-leis'
 import { Route as AdminBlogEdicaoRouteImport } from './routes/admin-blog-edicao'
-import { Route as AdminConteudoFilaRouteImport } from './routes/admin-conteudo-fila'
 import { Route as AdminDesignImagensRouteImport } from './routes/admin-design-imagens'
 import { Route as AdminErrosQuestoesRouteImport } from './routes/admin-erros-questoes'
 import { Route as AdminFlashcardsEditarRouteImport } from './routes/admin-flashcards-editar'
 import { Route as AdminFuncoesRouteImport } from './routes/admin-funcoes'
 import { Route as AdminFuncoesAssinantesRouteImport } from './routes/admin-funcoes-assinantes'
 import { Route as AdminHorusRouteImport } from './routes/admin-horus'
-import { Route as AdminHorusTemplateRouteImport } from './routes/admin-horus-template'
 import { Route as AdminInstagramPostsRouteImport } from './routes/admin-instagram-posts'
-import { Route as AdminJurisprudenciaRouteImport } from './routes/admin-jurisprudencia'
 import { Route as AdminLeituraNativaRouteImport } from './routes/admin-leitura-nativa'
 import { Route as AdminMapeamentoLeisRouteImport } from './routes/admin-mapeamento-leis'
 import { Route as AdminMonitorRouteImport } from './routes/admin-monitor'
@@ -39,7 +36,6 @@ import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminQuestoesRouteImport } from './routes/admin-questoes'
 import { Route as AdminSimuladosRouteImport } from './routes/admin-simulados'
 import { Route as AdminUsuariosRouteImport } from './routes/admin-usuarios'
-import { Route as AdminVadeMecumRouteImport } from './routes/admin-vade-mecum'
 import { Route as AdminVadeMecumHistoricoRouteImport } from './routes/admin-vade-mecum-historico'
 import { Route as AnotacoesRouteImport } from './routes/anotacoes'
 import { Route as ApresentacoesRouteImport } from './routes/apresentacoes'
@@ -87,8 +83,6 @@ import { Route as NewsletterRouteImport } from './routes/newsletter'
 import { Route as NoticiasRouteImport } from './routes/noticias'
 import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as NovidadesRouteImport } from './routes/novidades'
-import { Route as OmnirouteRouteImport } from './routes/omniroute'
-import { Route as OmnirouteTesteRouteImport } from './routes/omniroute-teste'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OpiniaoRouteImport } from './routes/opiniao'
 import { Route as PerfilRouteImport } from './routes/perfil'
@@ -114,7 +108,6 @@ import { Route as AdminBibliotecaLeisGeralRouteImport } from './routes/admin-bib
 import { Route as AdminNarracaoApresentacaoRouteImport } from './routes/admin-narracao.apresentacao'
 import { Route as AdminNarracaoBibliotecaRouteImport } from './routes/admin-narracao.biblioteca'
 import { Route as AdminNarracaoBlogRouteImport } from './routes/admin-narracao.blog'
-import { Route as AdminPesquisasProntasRouteImport } from './routes/admin.pesquisas-prontas'
 import { Route as AdminPilulasRouteImport } from './routes/admin.pilulas'
 import { Route as AjustesExcluirContaRouteImport } from './routes/ajustes.excluir-conta'
 import { Route as AjustesHorusRouteImport } from './routes/ajustes.horus'
@@ -284,11 +277,6 @@ const AdminBlogEdicaoRoute = AdminBlogEdicaoRouteImport.update({
   path: '/admin-blog-edicao',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminConteudoFilaRoute = AdminConteudoFilaRouteImport.update({
-  id: '/admin-conteudo-fila',
-  path: '/admin-conteudo-fila',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminDesignImagensRoute = AdminDesignImagensRouteImport.update({
   id: '/admin-design-imagens',
   path: '/admin-design-imagens',
@@ -319,19 +307,9 @@ const AdminHorusRoute = AdminHorusRouteImport.update({
   path: '/admin-horus',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminHorusTemplateRoute = AdminHorusTemplateRouteImport.update({
-  id: '/admin-horus-template',
-  path: '/admin-horus-template',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminInstagramPostsRoute = AdminInstagramPostsRouteImport.update({
   id: '/admin-instagram-posts',
   path: '/admin-instagram-posts',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminJurisprudenciaRoute = AdminJurisprudenciaRouteImport.update({
-  id: '/admin-jurisprudencia',
-  path: '/admin-jurisprudencia',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminLeituraNativaRoute = AdminLeituraNativaRouteImport.update({
@@ -392,11 +370,6 @@ const AdminSimuladosRoute = AdminSimuladosRouteImport.update({
 const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
   id: '/admin-usuarios',
   path: '/admin-usuarios',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminVadeMecumRoute = AdminVadeMecumRouteImport.update({
-  id: '/admin-vade-mecum',
-  path: '/admin-vade-mecum',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminVadeMecumHistoricoRoute = AdminVadeMecumHistoricoRouteImport.update({
@@ -634,16 +607,6 @@ const NovidadesRoute = NovidadesRouteImport.update({
   path: '/novidades',
   getParentRoute: () => rootRouteImport,
 } as any)
-const OmnirouteRoute = OmnirouteRouteImport.update({
-  id: '/omniroute',
-  path: '/omniroute',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OmnirouteTesteRoute = OmnirouteTesteRouteImport.update({
-  id: '/omniroute-teste',
-  path: '/omniroute-teste',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -771,11 +734,6 @@ const AdminNarracaoBlogRoute = AdminNarracaoBlogRouteImport.update({
   id: '/blog',
   path: '/blog',
   getParentRoute: () => AdminNarracaoRoute,
-} as any)
-const AdminPesquisasProntasRoute = AdminPesquisasProntasRouteImport.update({
-  id: '/admin/pesquisas-prontas',
-  path: '/admin/pesquisas-prontas',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPilulasRoute = AdminPilulasRouteImport.update({
   id: '/admin/pilulas',
@@ -1454,16 +1412,13 @@ export interface FileRoutesByFullPath {
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
-  '/admin-conteudo-fila': typeof AdminConteudoFilaRoute
   '/admin-design-imagens': typeof AdminDesignImagensRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
   '/admin-horus': typeof AdminHorusRoute
-  '/admin-horus-template': typeof AdminHorusTemplateRoute
   '/admin-instagram-posts': typeof AdminInstagramPostsRoute
-  '/admin-jurisprudencia': typeof AdminJurisprudenciaRoute
   '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
   '/admin-monitor': typeof AdminMonitorRoute
@@ -1476,7 +1431,6 @@ export interface FileRoutesByFullPath {
   '/admin-questoes': typeof AdminQuestoesRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
-  '/admin-vade-mecum': typeof AdminVadeMecumRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
   '/anotacoes': typeof AnotacoesRoute
   '/apresentacoes': typeof ApresentacoesRoute
@@ -1524,8 +1478,6 @@ export interface FileRoutesByFullPath {
   '/noticias': typeof NoticiasRoute
   '/notificacoes': typeof NotificacoesRoute
   '/novidades': typeof NovidadesRoute
-  '/omniroute': typeof OmnirouteRoute
-  '/omniroute-teste': typeof OmnirouteTesteRoute
   '/onboarding': typeof OnboardingRoute
   '/opiniao': typeof OpiniaoRoute
   '/perfil': typeof PerfilRoute
@@ -1551,7 +1503,6 @@ export interface FileRoutesByFullPath {
   '/admin-narracao/apresentacao': typeof AdminNarracaoApresentacaoRoute
   '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
-  '/admin/pesquisas-prontas': typeof AdminPesquisasProntasRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
   '/ajustes/horus': typeof AjustesHorusRoute
@@ -1690,16 +1641,13 @@ export interface FileRoutesByTo {
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
-  '/admin-conteudo-fila': typeof AdminConteudoFilaRoute
   '/admin-design-imagens': typeof AdminDesignImagensRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
   '/admin-horus': typeof AdminHorusRoute
-  '/admin-horus-template': typeof AdminHorusTemplateRoute
   '/admin-instagram-posts': typeof AdminInstagramPostsRoute
-  '/admin-jurisprudencia': typeof AdminJurisprudenciaRoute
   '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
   '/admin-monitor': typeof AdminMonitorRoute
@@ -1712,7 +1660,6 @@ export interface FileRoutesByTo {
   '/admin-questoes': typeof AdminQuestoesRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
-  '/admin-vade-mecum': typeof AdminVadeMecumRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
   '/anotacoes': typeof AnotacoesRoute
   '/apresentacoes': typeof ApresentacoesRoute
@@ -1760,8 +1707,6 @@ export interface FileRoutesByTo {
   '/noticias': typeof NoticiasRoute
   '/notificacoes': typeof NotificacoesRoute
   '/novidades': typeof NovidadesRoute
-  '/omniroute': typeof OmnirouteRoute
-  '/omniroute-teste': typeof OmnirouteTesteRoute
   '/onboarding': typeof OnboardingRoute
   '/opiniao': typeof OpiniaoRoute
   '/perfil': typeof PerfilRoute
@@ -1787,7 +1732,6 @@ export interface FileRoutesByTo {
   '/admin-narracao/apresentacao': typeof AdminNarracaoApresentacaoRoute
   '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
-  '/admin/pesquisas-prontas': typeof AdminPesquisasProntasRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
   '/ajustes/horus': typeof AjustesHorusRoute
@@ -1927,16 +1871,13 @@ export interface FileRoutesById {
   '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-biblioteca-leis': typeof AdminBibliotecaLeisRouteWithChildren
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
-  '/admin-conteudo-fila': typeof AdminConteudoFilaRoute
   '/admin-design-imagens': typeof AdminDesignImagensRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
   '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
   '/admin-horus': typeof AdminHorusRoute
-  '/admin-horus-template': typeof AdminHorusTemplateRoute
   '/admin-instagram-posts': typeof AdminInstagramPostsRoute
-  '/admin-jurisprudencia': typeof AdminJurisprudenciaRoute
   '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
   '/admin-monitor': typeof AdminMonitorRoute
@@ -1949,7 +1890,6 @@ export interface FileRoutesById {
   '/admin-questoes': typeof AdminQuestoesRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
-  '/admin-vade-mecum': typeof AdminVadeMecumRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
   '/anotacoes': typeof AnotacoesRoute
   '/apresentacoes': typeof ApresentacoesRoute
@@ -1997,8 +1937,6 @@ export interface FileRoutesById {
   '/noticias': typeof NoticiasRoute
   '/notificacoes': typeof NotificacoesRoute
   '/novidades': typeof NovidadesRoute
-  '/omniroute': typeof OmnirouteRoute
-  '/omniroute-teste': typeof OmnirouteTesteRoute
   '/onboarding': typeof OnboardingRoute
   '/opiniao': typeof OpiniaoRoute
   '/perfil': typeof PerfilRoute
@@ -2024,7 +1962,6 @@ export interface FileRoutesById {
   '/admin-narracao/apresentacao': typeof AdminNarracaoApresentacaoRoute
   '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
-  '/admin/pesquisas-prontas': typeof AdminPesquisasProntasRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
   '/ajustes/horus': typeof AjustesHorusRoute
@@ -2165,16 +2102,13 @@ export interface FileRouteTypes {
     | '/admin-biblioteca-editar'
     | '/admin-biblioteca-leis'
     | '/admin-blog-edicao'
-    | '/admin-conteudo-fila'
     | '/admin-design-imagens'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
     | '/admin-funcoes'
     | '/admin-funcoes-assinantes'
     | '/admin-horus'
-    | '/admin-horus-template'
     | '/admin-instagram-posts'
-    | '/admin-jurisprudencia'
     | '/admin-leitura-nativa'
     | '/admin-mapeamento-leis'
     | '/admin-monitor'
@@ -2187,7 +2121,6 @@ export interface FileRouteTypes {
     | '/admin-questoes'
     | '/admin-simulados'
     | '/admin-usuarios'
-    | '/admin-vade-mecum'
     | '/admin-vade-mecum-historico'
     | '/anotacoes'
     | '/apresentacoes'
@@ -2235,8 +2168,6 @@ export interface FileRouteTypes {
     | '/noticias'
     | '/notificacoes'
     | '/novidades'
-    | '/omniroute'
-    | '/omniroute-teste'
     | '/onboarding'
     | '/opiniao'
     | '/perfil'
@@ -2262,7 +2193,6 @@ export interface FileRouteTypes {
     | '/admin-narracao/apresentacao'
     | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
-    | '/admin/pesquisas-prontas'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
     | '/ajustes/horus'
@@ -2401,16 +2331,13 @@ export interface FileRouteTypes {
     | '/admin-biblioteca-editar'
     | '/admin-biblioteca-leis'
     | '/admin-blog-edicao'
-    | '/admin-conteudo-fila'
     | '/admin-design-imagens'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
     | '/admin-funcoes'
     | '/admin-funcoes-assinantes'
     | '/admin-horus'
-    | '/admin-horus-template'
     | '/admin-instagram-posts'
-    | '/admin-jurisprudencia'
     | '/admin-leitura-nativa'
     | '/admin-mapeamento-leis'
     | '/admin-monitor'
@@ -2423,7 +2350,6 @@ export interface FileRouteTypes {
     | '/admin-questoes'
     | '/admin-simulados'
     | '/admin-usuarios'
-    | '/admin-vade-mecum'
     | '/admin-vade-mecum-historico'
     | '/anotacoes'
     | '/apresentacoes'
@@ -2471,8 +2397,6 @@ export interface FileRouteTypes {
     | '/noticias'
     | '/notificacoes'
     | '/novidades'
-    | '/omniroute'
-    | '/omniroute-teste'
     | '/onboarding'
     | '/opiniao'
     | '/perfil'
@@ -2498,7 +2422,6 @@ export interface FileRouteTypes {
     | '/admin-narracao/apresentacao'
     | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
-    | '/admin/pesquisas-prontas'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
     | '/ajustes/horus'
@@ -2637,16 +2560,13 @@ export interface FileRouteTypes {
     | '/admin-biblioteca-editar'
     | '/admin-biblioteca-leis'
     | '/admin-blog-edicao'
-    | '/admin-conteudo-fila'
     | '/admin-design-imagens'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
     | '/admin-funcoes'
     | '/admin-funcoes-assinantes'
     | '/admin-horus'
-    | '/admin-horus-template'
     | '/admin-instagram-posts'
-    | '/admin-jurisprudencia'
     | '/admin-leitura-nativa'
     | '/admin-mapeamento-leis'
     | '/admin-monitor'
@@ -2659,7 +2579,6 @@ export interface FileRouteTypes {
     | '/admin-questoes'
     | '/admin-simulados'
     | '/admin-usuarios'
-    | '/admin-vade-mecum'
     | '/admin-vade-mecum-historico'
     | '/anotacoes'
     | '/apresentacoes'
@@ -2707,8 +2626,6 @@ export interface FileRouteTypes {
     | '/noticias'
     | '/notificacoes'
     | '/novidades'
-    | '/omniroute'
-    | '/omniroute-teste'
     | '/onboarding'
     | '/opiniao'
     | '/perfil'
@@ -2734,7 +2651,6 @@ export interface FileRouteTypes {
     | '/admin-narracao/apresentacao'
     | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
-    | '/admin/pesquisas-prontas'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
     | '/ajustes/horus'
@@ -2874,16 +2790,13 @@ export interface RootRouteChildren {
   AdminBibliotecaEditarRoute: typeof AdminBibliotecaEditarRoute
   AdminBibliotecaLeisRoute: typeof AdminBibliotecaLeisRouteWithChildren
   AdminBlogEdicaoRoute: typeof AdminBlogEdicaoRoute
-  AdminConteudoFilaRoute: typeof AdminConteudoFilaRoute
   AdminDesignImagensRoute: typeof AdminDesignImagensRoute
   AdminErrosQuestoesRoute: typeof AdminErrosQuestoesRoute
   AdminFlashcardsEditarRoute: typeof AdminFlashcardsEditarRoute
   AdminFuncoesRoute: typeof AdminFuncoesRoute
   AdminFuncoesAssinantesRoute: typeof AdminFuncoesAssinantesRoute
   AdminHorusRoute: typeof AdminHorusRoute
-  AdminHorusTemplateRoute: typeof AdminHorusTemplateRoute
   AdminInstagramPostsRoute: typeof AdminInstagramPostsRoute
-  AdminJurisprudenciaRoute: typeof AdminJurisprudenciaRoute
   AdminLeituraNativaRoute: typeof AdminLeituraNativaRoute
   AdminMapeamentoLeisRoute: typeof AdminMapeamentoLeisRoute
   AdminMonitorRoute: typeof AdminMonitorRoute
@@ -2896,7 +2809,6 @@ export interface RootRouteChildren {
   AdminQuestoesRoute: typeof AdminQuestoesRoute
   AdminSimuladosRoute: typeof AdminSimuladosRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
-  AdminVadeMecumRoute: typeof AdminVadeMecumRoute
   AdminVadeMecumHistoricoRoute: typeof AdminVadeMecumHistoricoRoute
   AnotacoesRoute: typeof AnotacoesRoute
   ApresentacoesRoute: typeof ApresentacoesRoute
@@ -2944,8 +2856,6 @@ export interface RootRouteChildren {
   NoticiasRoute: typeof NoticiasRoute
   NotificacoesRoute: typeof NotificacoesRoute
   NovidadesRoute: typeof NovidadesRoute
-  OmnirouteRoute: typeof OmnirouteRoute
-  OmnirouteTesteRoute: typeof OmnirouteTesteRoute
   OnboardingRoute: typeof OnboardingRoute
   OpiniaoRoute: typeof OpiniaoRoute
   PerfilRoute: typeof PerfilRoute
@@ -2966,7 +2876,6 @@ export interface RootRouteChildren {
   VadeMecumRoute: typeof VadeMecumRouteWithChildren
   VideoaulasRoute: typeof VideoaulasRouteWithChildren
   VisuaisRoute: typeof VisuaisRouteWithChildren
-  AdminPesquisasProntasRoute: typeof AdminPesquisasProntasRoute
   AdminPilulasRoute: typeof AdminPilulasRoute
   AjustesExcluirContaRoute: typeof AjustesExcluirContaRoute
   AjustesHorusRoute: typeof AjustesHorusRoute
@@ -3048,13 +2957,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminBlogEdicaoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-conteudo-fila': {
-      id: '/admin-conteudo-fila'
-      path: '/admin-conteudo-fila'
-      fullPath: '/admin-conteudo-fila'
-      preLoaderRoute: typeof AdminConteudoFilaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-design-imagens': {
       id: '/admin-design-imagens'
       path: '/admin-design-imagens'
@@ -3097,25 +2999,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHorusRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-horus-template': {
-      id: '/admin-horus-template'
-      path: '/admin-horus-template'
-      fullPath: '/admin-horus-template'
-      preLoaderRoute: typeof AdminHorusTemplateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-instagram-posts': {
       id: '/admin-instagram-posts'
       path: '/admin-instagram-posts'
       fullPath: '/admin-instagram-posts'
       preLoaderRoute: typeof AdminInstagramPostsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-jurisprudencia': {
-      id: '/admin-jurisprudencia'
-      path: '/admin-jurisprudencia'
-      fullPath: '/admin-jurisprudencia'
-      preLoaderRoute: typeof AdminJurisprudenciaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-leitura-nativa': {
@@ -3200,13 +3088,6 @@ declare module '@tanstack/react-router' {
       path: '/admin-usuarios'
       fullPath: '/admin-usuarios'
       preLoaderRoute: typeof AdminUsuariosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-vade-mecum': {
-      id: '/admin-vade-mecum'
-      path: '/admin-vade-mecum'
-      fullPath: '/admin-vade-mecum'
-      preLoaderRoute: typeof AdminVadeMecumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-vade-mecum-historico': {
@@ -3538,20 +3419,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NovidadesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/omniroute': {
-      id: '/omniroute'
-      path: '/omniroute'
-      fullPath: '/omniroute'
-      preLoaderRoute: typeof OmnirouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/omniroute-teste': {
-      id: '/omniroute-teste'
-      path: '/omniroute-teste'
-      fullPath: '/omniroute-teste'
-      preLoaderRoute: typeof OmnirouteTesteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -3726,13 +3593,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin-narracao/blog'
       preLoaderRoute: typeof AdminNarracaoBlogRouteImport
       parentRoute: typeof AdminNarracaoRoute
-    }
-    '/admin/pesquisas-prontas': {
-      id: '/admin/pesquisas-prontas'
-      path: '/admin/pesquisas-prontas'
-      fullPath: '/admin/pesquisas-prontas'
-      preLoaderRoute: typeof AdminPesquisasProntasRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/admin/pilulas': {
       id: '/admin/pilulas'
@@ -5275,16 +5135,13 @@ const rootRouteChildren: RootRouteChildren = {
   AdminBibliotecaEditarRoute: AdminBibliotecaEditarRoute,
   AdminBibliotecaLeisRoute: AdminBibliotecaLeisRouteWithChildren,
   AdminBlogEdicaoRoute: AdminBlogEdicaoRoute,
-  AdminConteudoFilaRoute: AdminConteudoFilaRoute,
   AdminDesignImagensRoute: AdminDesignImagensRoute,
   AdminErrosQuestoesRoute: AdminErrosQuestoesRoute,
   AdminFlashcardsEditarRoute: AdminFlashcardsEditarRoute,
   AdminFuncoesRoute: AdminFuncoesRoute,
   AdminFuncoesAssinantesRoute: AdminFuncoesAssinantesRoute,
   AdminHorusRoute: AdminHorusRoute,
-  AdminHorusTemplateRoute: AdminHorusTemplateRoute,
   AdminInstagramPostsRoute: AdminInstagramPostsRoute,
-  AdminJurisprudenciaRoute: AdminJurisprudenciaRoute,
   AdminLeituraNativaRoute: AdminLeituraNativaRoute,
   AdminMapeamentoLeisRoute: AdminMapeamentoLeisRoute,
   AdminMonitorRoute: AdminMonitorRoute,
@@ -5297,7 +5154,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminQuestoesRoute: AdminQuestoesRoute,
   AdminSimuladosRoute: AdminSimuladosRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
-  AdminVadeMecumRoute: AdminVadeMecumRoute,
   AdminVadeMecumHistoricoRoute: AdminVadeMecumHistoricoRoute,
   AnotacoesRoute: AnotacoesRoute,
   ApresentacoesRoute: ApresentacoesRoute,
@@ -5345,8 +5201,6 @@ const rootRouteChildren: RootRouteChildren = {
   NoticiasRoute: NoticiasRoute,
   NotificacoesRoute: NotificacoesRoute,
   NovidadesRoute: NovidadesRoute,
-  OmnirouteRoute: OmnirouteRoute,
-  OmnirouteTesteRoute: OmnirouteTesteRoute,
   OnboardingRoute: OnboardingRoute,
   OpiniaoRoute: OpiniaoRoute,
   PerfilRoute: PerfilRoute,
@@ -5367,7 +5221,6 @@ const rootRouteChildren: RootRouteChildren = {
   VadeMecumRoute: VadeMecumRouteWithChildren,
   VideoaulasRoute: VideoaulasRouteWithChildren,
   VisuaisRoute: VisuaisRouteWithChildren,
-  AdminPesquisasProntasRoute: AdminPesquisasProntasRoute,
   AdminPilulasRoute: AdminPilulasRoute,
   AjustesExcluirContaRoute: AjustesExcluirContaRoute,
   AjustesHorusRoute: AjustesHorusRoute,

@@ -12,7 +12,7 @@ import { HorusRankingTab } from '@/components/admin/horus/HorusRankingTab';
 import { HorusCanalTab } from '@/components/admin/horus/HorusCanalTab';
 import { HorusUsuariosTab } from '@/components/admin/horus/HorusUsuariosTab';
 import { AdminHorusHojeCards } from '@/components/admin/horus/AdminHorusHojeCards';
-import { Users, ImageIcon } from 'lucide-react';
+import { Users } from 'lucide-react';
 
 type Section = {
   id: string;
@@ -33,7 +33,6 @@ const SECTIONS: Section[] = [
   { id: 'conversas', label: 'Conversas', desc: 'Histórico e resposta manual', icon: MessagesSquare, color: '#10B981', Component: HorusConversasTab },
   { id: 'marketing', label: 'Marketing', desc: 'Campanhas e disparos em massa', icon: Megaphone, color: '#DC2626', Component: HorusMarketingTab },
   { id: 'canal', label: 'Canal', desc: 'Publicar no canal do WhatsApp (Direito Prime vade mecum)', icon: Radio, color: '#22C55E', Component: HorusCanalTab },
-  { id: 'template', label: 'Horus Templates 3D', desc: 'Pré-visualização e guias de cenas 3D do Horus', icon: ImageIcon, color: '#EAB308', route: '/admin-horus-template' },
   { id: 'usuarios', label: 'Pessoas Cadastradas', desc: 'Gerenciar usuários vinculados ao Horus', icon: Users, color: '#14B8A6', Component: HorusUsuariosTab },
   { id: 'notifs', label: 'Notificações', desc: 'Logs de envio e diagnóstico', icon: Bell, color: 'hsl(348 78% 38%)', Component: HorusNotificacoesTab },
 ];

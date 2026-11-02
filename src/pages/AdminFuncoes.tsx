@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   ChevronRight, Activity, ShieldCheck, ClipboardList, BookOpen,
-  Gamepad2, Brain, BookA, MessageCircle, BellRing, Mic, Lightbulb, Building2,
+  Gamepad2, Brain, MessageCircle, BellRing, Mic, Lightbulb, Building2,
   Rss, Palette, Users, GitBranch, Github, ImageIcon, KeyRound, Bug, Newspaper,
   Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
   Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
@@ -23,7 +23,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-monitor-apis': () => import('./AdminMonitorApis'),
   '/admin-push': () => import('./AdminPush'),
   '/admin-horus': () => import('./AdminHorus'),
-  '/admin-horus-template': () => import('./AdminHorusTemplate'),
 
   '/admin-blog-edicao': () => import('./AdminBlogEdicao'),
   '/admin-omniroute': () => import('./AdminOmniRouteTeste'),
@@ -35,7 +34,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-usuarios': () => import('./AdminUsuarios'),
   '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
   '/admin-simulados': () => import('./AdminSimulados'),
-  '/admin-jurisprudencia': () => import('./AdminJurisprudencia'),
   '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
   '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
   '/admin-biblioteca-leis': () => import('./AdminBibliotecaLeis'),
@@ -45,7 +43,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-biblioteca-editar': () => import('./BibliotecaEditar'),
   '/admin-leitura-nativa': () => import('./AdminLeituraNativa'),
   '/admin-audioaulas': () => import('./AdminAudioaulas'),
-  '/admin-vade-mecum': () => import('./AdminVadeMecum'),
   '/explicacao-lei': () => import('./ExplicacaoLei'),
   '/newsletter': () => import('./Newsletter'),
   '/configuracoes': () => import('./Configuracoes'),
@@ -172,9 +169,7 @@ const CATEGORIES: Category[] = [
       { id: 'biblioteca-editar', label: 'Biblioteca Editar', icon: BookOpen, desc: 'Sinopse, capa horizontal e análise técnica com IA', route: '/admin-biblioteca-editar' },
       { id: 'leitura-nativa', label: 'Leitura Nativa', icon: FileText, desc: 'Extração instantânea de PDFs em segundo plano com divisão de capítulos', route: '/admin-leitura-nativa' },
       { id: 'audioaulas', label: 'Audioaulas', icon: PlayCircle, desc: 'Gera títulos e prompts de podcast a partir da leitura nativa', route: '/admin-audioaulas' },
-      
-      // Estudo & Jogos
-      { id: 'dicionario', label: 'Dicionário Editar', icon: BookA, desc: 'Termos e definições' },
+
     ],
   },
   {
