@@ -219,7 +219,7 @@ const HomePraticarCarousel = () => {
         onScroll={handleScroll}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="relative -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-3 pt-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+        className="relative -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
         {loopedItems.map((item, i) => {
@@ -232,16 +232,16 @@ const HomePraticarCarousel = () => {
               key={`${item.id}-${i}`}
               type="button"
               onClick={() => handleCardClick(item, i)}
-              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-500 ease-out ${
+              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-400 ease-out ${
                 isActive
-                  ? 'scale-[1.04] sm:scale-[1.06] opacity-100 z-20 shadow-2xl ring-2 ring-white/30'
-                  : 'scale-[0.88] opacity-60 z-0 shadow-md'
+                  ? 'scale-[1.02] opacity-100 z-10 shadow-xl'
+                  : 'scale-[0.94] opacity-75 z-0 shadow-sm'
               }`}
             >
               {/* Gradiente de fundo com marca d'água */}
               <div
                 className={`absolute inset-0 rounded-2xl overflow-hidden pointer-events-none transition-all duration-300 ${
-                  isActive ? 'shadow-xl ring-1 ring-white/20' : 'shadow-md group-hover:opacity-100 opacity-95'
+                  isActive ? 'shadow-lg ring-1 ring-white/15' : 'shadow-sm group-hover:opacity-100 opacity-95'
                 }`}
                 style={{
                   background: `linear-gradient(135deg, ${baseColor} 0%, ${shade(baseColor, -0.3)} 100%)`,
@@ -254,13 +254,13 @@ const HomePraticarCarousel = () => {
                 <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-xl group-hover:bg-white/20 transition-all" />
               </div>
 
-              {/* Personagem 3D com Zoom-In Orgânico + Leve Recuo Spring ao centralizar */}
+              {/* Personagem 3D com Zoom Suave e Equilibrado ao centralizar */}
               {item.image && (
                 <div
-                  className={`absolute right-0 w-auto h-[120px] sm:h-[130px] max-w-none pointer-events-none z-10 transform-gpu origin-bottom transition-all duration-600 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                  className={`absolute right-0 w-auto h-[102px] sm:h-[108px] max-w-none pointer-events-none z-10 transform-gpu origin-bottom transition-all duration-500 ease-out ${
                     isActive
-                      ? 'scale-[1.32] sm:scale-[1.38] -top-9 sm:-top-11 drop-shadow-[0_16px_28px_rgba(0,0,0,0.85)] opacity-100'
-                      : 'scale-[0.72] -top-1 drop-shadow-[0_4px_10px_rgba(0,0,0,0.35)] opacity-50'
+                      ? 'scale-[1.08] sm:scale-[1.10] -top-3.5 sm:-top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.65)] opacity-100'
+                      : 'scale-[0.86] -top-0.5 drop-shadow-[0_2px_6px_rgba(0,0,0,0.3)] opacity-60'
                   }`}
                 >
                   <img
