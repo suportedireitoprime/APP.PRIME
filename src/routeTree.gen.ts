@@ -612,14 +612,14 @@ const VisuaisRoute = VisuaisRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminNarracaoBibliotecaRoute = AdminNarracaoBibliotecaRouteImport.update({
-  id: '/biblioteca',
-  path: '/biblioteca',
-  getParentRoute: () => AdminNarracaoRoute,
+  id: '/admin-narracao/biblioteca',
+  path: '/admin-narracao/biblioteca',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminNarracaoBlogRoute = AdminNarracaoBlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
-  getParentRoute: () => AdminNarracaoRoute,
+  id: '/admin-narracao/blog',
+  path: '/admin-narracao/blog',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPilulasRoute = AdminPilulasRouteImport.update({
   id: '/admin/pilulas',
@@ -2485,6 +2485,8 @@ export interface RootRouteChildren {
   VadeMecumRoute: typeof VadeMecumRouteWithChildren
   VideoaulasRoute: typeof VideoaulasRouteWithChildren
   VisuaisRoute: typeof VisuaisRouteWithChildren
+  AdminNarracaoBibliotecaRoute: typeof AdminNarracaoBibliotecaRoute
+  AdminNarracaoBlogRoute: typeof AdminNarracaoBlogRoute
   AdminPilulasRoute: typeof AdminPilulasRoute
   AjustesExcluirContaRoute: typeof AjustesExcluirContaRoute
   AjustesHorusRoute: typeof AjustesHorusRoute
@@ -3075,17 +3077,17 @@ declare module '@tanstack/react-router' {
     }
     '/admin-narracao/biblioteca': {
       id: '/admin-narracao/biblioteca'
-      path: '/biblioteca'
+      path: '/admin-narracao/biblioteca'
       fullPath: '/admin-narracao/biblioteca'
       preLoaderRoute: typeof AdminNarracaoBibliotecaRouteImport
-      parentRoute: typeof AdminNarracaoRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin-narracao/blog': {
       id: '/admin-narracao/blog'
-      path: '/blog'
+      path: '/admin-narracao/blog'
       fullPath: '/admin-narracao/blog'
       preLoaderRoute: typeof AdminNarracaoBlogRouteImport
-      parentRoute: typeof AdminNarracaoRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/pilulas': {
       id: '/admin/pilulas'
@@ -4503,6 +4505,8 @@ const rootRouteChildren: RootRouteChildren = {
   VadeMecumRoute: VadeMecumRouteWithChildren,
   VideoaulasRoute: VideoaulasRouteWithChildren,
   VisuaisRoute: VisuaisRouteWithChildren,
+  AdminNarracaoBibliotecaRoute: AdminNarracaoBibliotecaRoute,
+  AdminNarracaoBlogRoute: AdminNarracaoBlogRoute,
   AdminPilulasRoute: AdminPilulasRoute,
   AjustesExcluirContaRoute: AjustesExcluirContaRoute,
   AjustesHorusRoute: AjustesHorusRoute,

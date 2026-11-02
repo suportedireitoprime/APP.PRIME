@@ -18,6 +18,8 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
+import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
+import { telaAcesa } from '@/lib/nativo/telaAcordada';
 import { AudiobookCapitulo, AudiobookLivro } from '@/data/audiobooksCatalogo';
 
 interface AudiobookPlayerModalProps {
@@ -183,6 +185,89 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
     return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
+  const fecharPlayer = useCallback(() => {
+    haptic.selection();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+      clearMediaSession(audioRef.current);
+    }
+    void telaAcesa('audiobook', false);
+    onClose();
+  }, [onClose]);
+
+  // Tecla Esc para fechar e Espaço para Play/Pause no Desktop
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        fecharPlayer();
+      } else if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT') {
+        e.preventDefault();
+        togglePlay();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, fecharPlayer, togglePlay]);
+
+  // Gerenciamento de WakeLock (mantém a tela acesa enquanto o usuário ouve/lê as legendas)
+  useEffect(() => {
+    if (!isOpen) {
+      void telaAcesa('audiobook', false);
+      return;
+    }
+    void telaAcesa('audiobook', isPlaying);
+    return () => {
+      void telaAcesa('audiobook', false);
+    };
+  }, [isOpen, isPlaying]);
+
+  // MediaSession API & Notificação Nativa em Segundo Plano (Lockscreen / Central de Controle)
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!isOpen || !el || !capituloAtual) return;
+
+    registrarMidia({
+      titulo: capituloAtual.titulo,
+      subtitulo: `${livro.autor} • Cap. ${capituloIndex + 1} de ${livro.capitulos.length}`,
+      album: livro.titulo,
+      capaUrl: imagemAtual || livro.capaUrl,
+      audio: el,
+      onNext: capituloIndex < livro.capitulos.length - 1 ? proximoCapitulo : undefined,
+      onPrev: capituloIndex > 0 ? capituloAnterior : undefined,
+      onSeek: (timeSec) => {
+        if (audioRef.current) {
+          audioRef.current.currentTime = timeSec;
+          setCurrentTime(timeSec);
+          salvarProgresso(timeSec);
+        }
+      },
+      onStop: () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+        setIsPlaying(false);
+      },
+    });
+
+    return () => {
+      clearMediaSession(el);
+    };
+  }, [
+    isOpen,
+    capituloAtual,
+    capituloIndex,
+    livro.autor,
+    livro.titulo,
+    livro.capitulos.length,
+    livro.capaUrl,
+    imagemAtual,
+    proximoCapitulo,
+    capituloAnterior,
+    salvarProgresso,
+  ]);
+
   if (!isOpen) return null;
 
   return (
@@ -192,6 +277,8 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
         ref={audioRef}
         src={capituloAtual.audioUrl}
         preload="metadata"
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
         onTimeUpdate={() => {
           if (audioRef.current) {
             const t = audioRef.current.currentTime;
@@ -221,10 +308,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
       <header className="pt-[calc(0.75rem+var(--sai-top,0px))] px-4 pb-2 flex items-center justify-between border-b border-white/5 bg-[#0A0A0C]/80 backdrop-blur-md z-30 shrink-0">
         <button
           type="button"
-          onClick={() => {
-            haptic.selection();
-            onClose();
-          }}
+          onClick={fecharPlayer}
           className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-white/10 active:scale-95 transition-all text-white/80 hover:text-white"
           aria-label="Minimizar player"
         >
