@@ -446,10 +446,6 @@ body {
     background: linear-gradient(135deg, hsl(46 65% 22%) 0%, hsl(46 65% 34%) 50%, hsl(46 65% 46%) 100%);
     color: #fff;
   }
-  .bg-hero-yellow-soft {
-    background: linear-gradient(135deg, hsl(46 65% 22% / 0.9) 0%, hsl(46 65% 34% / 0.9) 50%, hsl(46 65% 46% / 0.9) 100%);
-    color: #fff;
-  }
   .tab-hero-yellow[data-state="active"] {
     background: linear-gradient(135deg, hsl(46 65% 32%) 0%, hsl(46 65% 44%) 50%, hsl(46 65% 52%) 100%) !important;
     color: #1a1a1a !important;
@@ -460,16 +456,6 @@ body {
     background: linear-gradient(135deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 50%, hsl(348 80% 50%) 100%);
   }
 
-  /* Painel de navegação inferior (simétrico, luz no centro) */
-  .bg-nav-panel {
-    background: linear-gradient(90deg, hsl(350 68% 32%) 0%, hsl(350 74% 42%) 25%, hsl(348 80% 50%) 50%, hsl(350 74% 42%) 75%, hsl(350 68% 32%) 100%);
-  }
-
-  /* Vermelho do rodapé/painel em cor sólida — mais vivo e vibrante nos ícones do menu */
-  .text-hero-panel {
-    color: #ff2d55;
-  }
-
   /* Mesmo painel, versão amarela/dourada (Vade Mecum) */
  .bg-hero-panel-yellow {
     background: linear-gradient(135deg, hsl(48 90% 30%) 0%, hsl(50 98% 44%) 50%, hsl(51 100% 50%) 100%);
@@ -477,10 +463,6 @@ body {
   /* Mesmo painel, versão ciano (Resumos Jurídicos — #22D3EE) */
   .bg-hero-panel-cyan {
     background: linear-gradient(135deg, hsl(190 80% 18%) 0%, hsl(188 82% 30%) 50%, hsl(187 86% 42%) 100%);
-  }
-  /* Mesmo painel, versão marrom elegante (Biblioteca) */
-  .bg-hero-panel-brown {
-    background: linear-gradient(135deg, hsl(28 68% 32%) 0%, hsl(28 74% 42%) 50%, hsl(26 80% 50%) 100%);
   }
   /* Mesmo painel, versão roxa (Questões) */
   .bg-hero-panel-violet {
@@ -522,11 +504,6 @@ body {
     --ring: 350 89% 60%;
   }
 
-  .bg-tab-active {
-    background: linear-gradient(180deg, hsl(350 85% 45%) 0%, hsl(350 88% 55%) 50%, hsl(350 89% 60%) 100%);
-  }
-
-
   @keyframes vade-mecum-shine {
     0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
     35% { opacity: 1; }
@@ -545,12 +522,6 @@ body {
 
 
 
-
-  .hazard-tape {
-    background: var(--stripe-tape);
-  }
-
-  .shadow-hazard { box-shadow: var(--shadow-hazard); }
 
   .cv-auto {
     content-visibility: auto;
@@ -699,11 +670,6 @@ body {
   10%  { opacity: 0.85; }
   90%  { opacity: 0.85; }
   100% { clip-path: polygon(110% 0%, 130% 0%, 130% 100%, 110% 100%); opacity: 0; }
-}
-.shimmer-icon-sweep {
-  animation: icon-sweep 1.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s 1 both;
-  mix-blend-mode: screen;
-  opacity: 0;
 }
 
 /* Reflexo contínuo sobre ícones de matérias na tela Aprender */
@@ -1412,32 +1378,6 @@ html.light .bg-\[\#212121\]\/95 { background-color: hsl(var(--card) / 0.95) !imp
   .auth-laws-track { animation: none; }
 }
 
-/* Landing mobile: infinite horizontal law tags marquee (right -> left) */
-@keyframes tags-marquee-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.tags-marquee-track {
-  animation: tags-marquee-scroll 45s linear infinite;
-  will-change: transform;
-}
-@media (prefers-reduced-motion: reduce) {
-  .tags-marquee-track { animation: none; }
-}
-
-/* Landing: brasões de cargos - carrossel lento */
-@keyframes badges-marquee-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-33.333%); }
-}
-.badges-marquee-track {
-  animation: badges-marquee-scroll 60s linear infinite;
-  will-change: transform;
-}
-@media (prefers-reduced-motion: reduce) {
-  .badges-marquee-track { animation: none; }
-}
-
 /* Reflexo suave nos brasões */
 .badge-shine {
   position: relative;
@@ -1778,144 +1718,6 @@ html[data-route-transitioning="true"] * {
   /* Degradê simétrico do menu de rodapé (BottomNav): claro nas extremidades (Blog e Pílulas) e escurecendo em direção ao centro (Vade Mecum) */
   .bg-bottomnav-gradient {
     background-image: linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--brand-burgundy-bright)) 30%, hsl(var(--brand-burgundy-bright)) 70%, hsl(var(--primary)) 100%);
-  }
-}
-
-/* ==========================================================================
-   ANIMAÇÃO CINEMATOGRÁFICA 3D RIFFLE SHUFFLE (Folheamento Realista a 120fps)
-   Simula o movimento tridimensional de um baralho sendo folheado e embaralhado
-   ========================================================================== */
-@keyframes deck-riffle-left {
-  0%, 100% {
-    transform: translate3d(-14px, 3px, -4px) rotateZ(-5deg) rotateY(2deg);
-  }
-  16% {
-    /* Puxada para fora inicial */
-    transform: translate3d(-28px, -4px, 12px) rotateZ(-11deg) rotateY(6deg);
-  }
-  28% {
-    /* Abertura máxima do leque para o corte */
-    transform: translate3d(-46px, -12px, 22px) rotateZ(-17deg) rotateY(12deg);
-  }
-  42% {
-    /* Folheamento rápido (Riffle flick 1) */
-    transform: translate3d(-34px, -2px, 15px) rotateZ(-12deg) rotateY(7deg);
-  }
-  54% {
-    /* Folheamento rápido (Riffle flick 2) */
-    transform: translate3d(-24px, 6px, 8px) rotateZ(-7deg) rotateY(3deg);
-  }
-  68% {
-    /* Encaixe e batida de volta no maço com leve impacto */
-    transform: translate3d(-6px, 1px, 2px) rotateZ(-2deg) rotateY(1deg);
-  }
-  80% {
-    /* Alinhamento de repouso no leque */
-    transform: translate3d(-14px, 3px, -4px) rotateZ(-5deg) rotateY(2deg);
-  }
-}
-
-@keyframes deck-riffle-right {
-  0%, 100% {
-    transform: translate3d(14px, 3px, -4px) rotateZ(5deg) rotateY(-2deg);
-  }
-  16% {
-    /* Puxada para fora inicial */
-    transform: translate3d(28px, -4px, 12px) rotateZ(11deg) rotateY(-6deg);
-  }
-  28% {
-    /* Abertura máxima do leque para o corte */
-    transform: translate3d(46px, -12px, 22px) rotateZ(17deg) rotateY(-12deg);
-  }
-  42% {
-    /* Folheamento rápido (Riffle flick 1) */
-    transform: translate3d(34px, -2px, 15px) rotateZ(12deg) rotateY(-7deg);
-  }
-  54% {
-    /* Folheamento rápido (Riffle flick 2) */
-    transform: translate3d(24px, 6px, 8px) rotateZ(7deg) rotateY(-3deg);
-  }
-  68% {
-    /* Encaixe e batida de volta no maço com leve impacto */
-    transform: translate3d(6px, 1px, 2px) rotateZ(2deg) rotateY(-1deg);
-  }
-  80% {
-    /* Alinhamento de repouso no leque */
-    transform: translate3d(14px, 3px, -4px) rotateZ(5deg) rotateY(-2deg);
-  }
-}
-
-@keyframes deck-riffle-front {
-  0%, 100% {
-    transform: translate3d(0, 0, 15px) scale(1);
-  }
-  16% {
-    transform: translate3d(0, -4px, 20px) scale(1.015);
-  }
-  28% {
-    /* Corte e elevação da carta de topo */
-    transform: translate3d(0, -12px, 35px) scale(1.04);
-  }
-  42% {
-    transform: translate3d(1px, -5px, 24px) scale(1.02);
-  }
-  54% {
-    transform: translate3d(-1px, -2px, 18px) scale(1.01);
-  }
-  68% {
-    /* Assentamento suave com snap elástico no maço */
-    transform: translate3d(0, 3px, 10px) scale(0.995);
-  }
-  80% {
-    transform: translate3d(0, 0, 15px) scale(1);
-  }
-}
-
-/* Brilho holográfico que varre a carta frontal após o encaixe */
-@keyframes deck-holo-glint {
-  0%, 65% {
-    opacity: 0;
-    transform: translateX(-150%) skewX(-25deg);
-  }
-  75% {
-    opacity: 0.45;
-  }
-  88%, 100% {
-    opacity: 0;
-    transform: translateX(200%) skewX(-25deg);
-  }
-}
-
-.anim-deck-shuffle-left {
-  animation: deck-riffle-left 3.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
-  will-change: transform;
-  transform-style: preserve-3d;
-}
-
-.anim-deck-shuffle-right {
-  animation: deck-riffle-right 3.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
-  will-change: transform;
-  transform-style: preserve-3d;
-}
-
-.anim-deck-shuffle-front {
-  animation: deck-riffle-front 3.8s cubic-bezier(0.35, 0, 0.25, 1) infinite;
-  will-change: transform;
-  transform-style: preserve-3d;
-}
-
-.anim-deck-glint {
-  animation: deck-holo-glint 3.8s ease-in-out infinite;
-  will-change: transform, opacity;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .anim-deck-shuffle-left,
-  .anim-deck-shuffle-right,
-  .anim-deck-shuffle-front,
-  .anim-deck-glint {
-    animation: none !important;
   }
 }
 
