@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
 import { GRID_CATS, EMALTA_CATS, Cat } from './homeSectionsData';
 import HomePraticarCarousel from '@/components/vademecum/home/carousel/HomePraticarCarousel';
+import HomeAulasInterativasBanner from '@/components/vademecum/home/HomeAulasInterativasBanner';
 interface HomeTabEstudosProps {
   emAltaLeis?: boolean;
   hideBlog?: boolean;
@@ -42,8 +43,13 @@ const HomeTabEstudos = ({
       transition={{ duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
       className="space-y-6"
     >
-      {/* Carrossel Praticar no topo */}
+      {/* Botão de Aulas Interativas abaixo do painel */}
       <div className="pt-2">
+        <HomeAulasInterativasBanner />
+      </div>
+
+      {/* Carrossel Praticar no topo */}
+      <div>
         <HomePraticarCarousel />
       </div>
 
