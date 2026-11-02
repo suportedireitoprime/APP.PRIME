@@ -271,7 +271,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#0A0A0C] text-white overflow-hidden select-none">
+    <div className="fixed inset-0 z-[2000] flex flex-col bg-[#0A0A0C] text-white overflow-hidden select-none">
       {/* Elemento de áudio nativo */}
       <audio
         ref={audioRef}
@@ -557,7 +557,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
       {/* Drawer / Bottom Sheet de Seleção de Capítulos */}
       <AnimatePresence>
         {showCapitulosSheet && (
-          <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[2050] flex items-end justify-center bg-black/70 backdrop-blur-sm">
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}

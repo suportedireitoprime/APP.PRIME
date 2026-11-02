@@ -1,0 +1,433 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ArrowLeft,
+  Heart,
+  History,
+  BarChart3,
+  Sparkles,
+  Play,
+  Clock,
+  BookOpen,
+  ChevronRight,
+  Flame,
+  Award,
+  Volume2,
+  Trash2,
+  CheckCircle2,
+} from 'lucide-react';
+import { haptic } from '@/lib/nativeHaptics';
+import { toast } from 'sonner';
+import {
+  audiobooksTracking,
+  AudiobookFavItem,
+  AudiobookRecenteItem,
+} from '@/lib/audiobooksTracking';
+import {
+  AUDIOBOOKS_CATALOGO,
+  O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
+  AudiobookLivro,
+} from '@/data/audiobooksCatalogo';
+
+export type AudiobookQuickActionType = 'favoritos' | 'recentes' | 'estatisticas' | 'outros';
+
+interface AudiobooksQuickActionSheetProps {
+  activeSheet: AudiobookQuickActionType | null;
+  onClose: () => void;
+  onSelectLivro: (livro: AudiobookLivro) => void;
+  onPlayLivro: (livro: AudiobookLivro, capituloIndex?: number) => void;
+}
+
+export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProps> = ({
+  activeSheet,
+  onClose,
+  onSelectLivro,
+  onPlayLivro,
+}) => {
+  const [tabAtiva, setTabAtiva] = useState<AudiobookQuickActionType>(activeSheet || 'favoritos');
+  const [favoritos, setFavoritos] = useState<AudiobookFavItem[]>(() =>
+    audiobooksTracking.getFavoritos()
+  );
+  const [recentes] = useState<AudiobookRecenteItem[]>(() =>
+    audiobooksTracking.getRecentes()
+  );
+  const stats = audiobooksTracking.getEstatisticas();
+
+  // Sincroniza tab ativa com prop activeSheet se mudar
+  React.useEffect(() => {
+    if (activeSheet) {
+      setTabAtiva(activeSheet);
+      setFavoritos(audiobooksTracking.getFavoritos());
+    }
+  }, [activeSheet]);
+
+  const removerFavorito = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    haptic.impact();
+    const livro = AUDIOBOOKS_CATALOGO.find((l) => l.id === id);
+    if (livro) {
+      audiobooksTracking.toggleFavorito(livro);
+      setFavoritos(audiobooksTracking.getFavoritos());
+      toast.info(`"${livro.titulo}" removido dos favoritos.`);
+    }
+  };
+
+  const titles: Record<AudiobookQuickActionType, { title: string; subtitle: string }> = {
+    favoritos: {
+      title: 'Meus Favoritos',
+      subtitle: 'Audiobooks salvos para ouvir quando quiser',
+    },
+    recentes: {
+      title: 'Ouvidos Recentemente',
+      subtitle: 'Histórico de capítulos e progresso de escuta',
+    },
+    estatisticas: {
+      title: 'Minhas Estatísticas',
+      subtitle: 'Tempo de audição, obras e evolução jurídica',
+    },
+    outros: {
+      title: 'Outros Recursos',
+      subtitle: 'Coleções, prévias e preferências de reprodução',
+    },
+  };
+
+  if (!activeSheet) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-[100] flex flex-col justify-end">
+        {/* Backdrop Escuro com Blur */}
+        <motion.div
+          key="audiobooks-sheet-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+        />
+
+        {/* Painel que desliza de baixo para cima */}
+        <motion.div
+          key="audiobooks-sheet-panel"
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+          className="relative z-10 w-full h-[92dvh] max-h-[92dvh] bg-[#0A0A0D] border-t border-purple-500/25 rounded-t-[32px] flex flex-col shadow-2xl overflow-hidden max-w-3xl mx-auto"
+        >
+          {/* Header Superior com Botão Voltar Padrão 48x48 */}
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/10 shrink-0 bg-[#0A0A0D]/95 backdrop-blur-md">
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                onClose();
+              }}
+              className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 hover:bg-white/10 active:scale-95 border border-white/15 flex items-center justify-center transition-all cursor-pointer shadow-md"
+              aria-label="Fechar"
+            >
+              <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
+            </button>
+
+            <div className="text-center flex-1 px-3 min-w-0">
+              <h2 className="font-display font-bold text-base sm:text-lg text-white truncate">
+                {titles[tabAtiva].title}
+              </h2>
+              <p className="text-[11px] sm:text-[12px] text-white/55 truncate">
+                {titles[tabAtiva].subtitle}
+              </p>
+            </div>
+
+            <div className="w-12 sm:w-[52px]" />
+          </div>
+
+          {/* Abas Rápidas no Topo do Sheet (Favoritos | Recentes | Estatísticas | Outros) */}
+          <div className="flex items-center gap-1.5 px-4 sm:px-6 py-2.5 border-b border-white/5 bg-zinc-950/70 overflow-x-auto [scrollbar-width:none] shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                setTabAtiva('favoritos');
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                tabAtiva === 'favoritos'
+                  ? 'bg-rose-500/20 border border-rose-500/40 text-rose-300 shadow-sm'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Heart className={`w-3.5 h-3.5 ${tabAtiva === 'favoritos' ? 'fill-rose-400 text-rose-400' : ''}`} />
+              Favoritos ({favoritos.length})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                setTabAtiva('recentes');
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                tabAtiva === 'recentes'
+                  ? 'bg-blue-500/20 border border-blue-500/40 text-blue-300 shadow-sm'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <History className="w-3.5 h-3.5 text-blue-400" />
+              Recentes
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                setTabAtiva('estatisticas');
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                tabAtiva === 'estatisticas'
+                  ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300 shadow-sm'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-amber-400" />
+              Estatísticas
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                haptic.selection();
+                setTabAtiva('outros');
+              }}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                tabAtiva === 'outros'
+                  ? 'bg-purple-500/20 border border-purple-500/40 text-purple-300 shadow-sm'
+                  : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              Outros
+            </button>
+          </div>
+
+          {/* Conteúdo Dinâmico com Scroll */}
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 [scrollbar-width:thin]">
+            {/* ── ABA 1: FAVORITOS ── */}
+            {tabAtiva === 'favoritos' && (
+              <div className="space-y-3">
+                {favoritos.length === 0 ? (
+                  <div className="text-center py-12 px-4 rounded-2xl bg-zinc-950/60 border border-white/5 flex flex-col items-center">
+                    <div className="w-14 h-14 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-3">
+                      <Heart className="w-6 h-6 text-rose-400" />
+                    </div>
+                    <h3 className="font-display font-bold text-white text-base">
+                      Nenhum audiobook favoritado
+                    </h3>
+                    <p className="text-xs text-white/50 max-w-xs mt-1.5">
+                      Toque no ícone de coração de qualquer livro no catálogo para salvá-lo aqui e ter acesso rápido.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Favorita o clássico disponível para demonstração
+                        audiobooksTracking.toggleFavorito(O_CASO_DOS_EXPLORADORES_DE_CAVERNAS);
+                        setFavoritos(audiobooksTracking.getFavoritos());
+                        toast.success('Obra adicionada aos favoritos!');
+                      }}
+                      className="mt-4 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+                    >
+                      Favoritar &quot;Exploradores de Cavernas&quot;
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {favoritos.map((fav) => {
+                      const livroCompleto = AUDIOBOOKS_CATALOGO.find((l) => l.id === fav.id) || O_CASO_DOS_EXPLORADORES_DE_CAVERNAS;
+                      return (
+                        <div
+                          key={`fav-${fav.id}`}
+                          onClick={() => {
+                            haptic.selection();
+                            onClose();
+                            onSelectLivro(livroCompleto);
+                          }}
+                          className="p-3 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-purple-500/40 transition-all flex items-center gap-3 cursor-pointer group shadow-sm"
+                        >
+                          <img
+                            src={fav.capaUrl}
+                            alt={fav.titulo}
+                            className="w-14 h-18 rounded-xl object-cover shrink-0 border border-white/15"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-serif italic font-bold text-sm text-white group-hover:text-purple-300 transition-colors line-clamp-1">
+                              {fav.titulo}
+                            </h4>
+                            <p className="text-[11px] text-white/50 truncate mt-0.5">
+                              {fav.autor}
+                            </p>
+                            <div className="mt-2 flex items-center gap-2">
+                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                                <Play className="w-2 h-2 fill-emerald-300" />
+                                Ouvir
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => removerFavorito(fav.id, e)}
+                            className="p-2 rounded-lg text-white/40 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                            aria-label="Remover favorito"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── ABA 2: RECENTES ── */}
+            {tabAtiva === 'recentes' && (
+              <div className="space-y-3">
+                {recentes.map((item) => {
+                  const livro = AUDIOBOOKS_CATALOGO.find((l) => l.id === item.id) || O_CASO_DOS_EXPLORADORES_DE_CAVERNAS;
+                  return (
+                    <div
+                      key={`rec-${item.id}`}
+                      onClick={() => {
+                        haptic.impact();
+                        onClose();
+                        onPlayLivro(livro, item.capituloIndex);
+                      }}
+                      className="p-3.5 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-blue-500/40 transition-all flex items-center gap-3.5 cursor-pointer group shadow-md"
+                    >
+                      <div className="relative w-14 h-18 rounded-xl overflow-hidden shrink-0 border border-white/15">
+                        <img
+                          src={item.capaUrl}
+                          alt={item.titulo}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                          <Play className="w-5 h-5 text-white fill-white drop-shadow-md group-hover:scale-110 transition-transform" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">
+                            Parou no Capítulo {item.capituloIndex + 1}
+                          </span>
+                        </div>
+                        <h4 className="font-serif italic font-bold text-sm sm:text-base text-white group-hover:text-blue-300 transition-colors truncate">
+                          {item.titulo}
+                        </h4>
+                        <p className="text-[11.5px] text-white/60 truncate mt-0.5">
+                          {item.capituloTitulo}
+                        </p>
+                        <div className="mt-2 w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                          <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-full w-[45%]" />
+                        </div>
+                      </div>
+                      <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white transition-colors shrink-0" />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* ── ABA 3: ESTATÍSTICAS ── */}
+            {tabAtiva === 'estatisticas' && (
+              <div className="space-y-4">
+                {/* Cards de Métricas */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-purple-500/20 text-center">
+                    <Clock className="w-5 h-5 text-purple-400 mx-auto mb-1.5" />
+                    <p className="font-display font-bold text-xl sm:text-2xl text-white">
+                      {stats.tempoMinutos} <span className="text-xs font-normal text-white/60">min</span>
+                    </p>
+                    <p className="text-[10.5px] text-white/50 uppercase tracking-wider mt-0.5">
+                      Tempo Ouvido
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-emerald-500/20 text-center">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 mx-auto mb-1.5" />
+                    <p className="font-display font-bold text-xl sm:text-2xl text-white">
+                      {stats.capitulosConcluidos}/{stats.totalCapitulosDisponiveis}
+                    </p>
+                    <p className="text-[10.5px] text-white/50 uppercase tracking-wider mt-0.5">
+                      Capítulos
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-amber-500/20 text-center">
+                    <Flame className="w-5 h-5 text-amber-400 mx-auto mb-1.5" />
+                    <p className="font-display font-bold text-xl sm:text-2xl text-white">
+                      {stats.diasConsecutivos} <span className="text-xs font-normal text-white/60">dias</span>
+                    </p>
+                    <p className="text-[10.5px] text-white/50 uppercase tracking-wider mt-0.5">
+                      Sequência
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-blue-500/20 text-center">
+                    <BookOpen className="w-5 h-5 text-blue-400 mx-auto mb-1.5" />
+                    <p className="font-display font-bold text-xl sm:text-2xl text-white">
+                      {stats.obrasIniciadas}
+                    </p>
+                    <p className="text-[10.5px] text-white/50 uppercase tracking-wider mt-0.5">
+                      Obras em Foco
+                    </p>
+                  </div>
+                </div>
+
+                {/* Selo de Evolução */}
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-900/40 via-purple-950/30 to-black/80 border border-purple-500/30 flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center shrink-0">
+                    <Award className="w-6 h-6 text-purple-300" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-display font-bold text-white text-sm">
+                      Nível de Ouvinte: Fundamentos do Direito
+                    </h4>
+                    <p className="text-xs text-white/60 leading-snug mt-0.5">
+                      Você está avançando na audição de obras clássicas essenciais para o raciocínio dogmático e argumentativo.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── ABA 4: OUTROS RECURSOS ── */}
+            {tabAtiva === 'outros' && (
+              <div className="space-y-3">
+                <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/10 space-y-3">
+                  <h4 className="font-display font-bold text-white text-sm flex items-center gap-2">
+                    <Volume2 className="w-4 h-4 text-purple-400" />
+                    Qualidade de Estúdio &amp; Narração
+                  </h4>
+                  <p className="text-xs text-white/60 leading-relaxed">
+                    Todos os nossos audiobooks são produzidos com locução humana profissional em estúdio acústico, trilha incidental clássica e legendas sincronizadas palavra por palavra.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/10 flex items-center justify-between">
+                  <div>
+                    <h5 className="font-semibold text-white text-xs">Acervo em Expansão</h5>
+                    <p className="text-[11px] text-white/50 mt-0.5">
+                      34 novas obras clássicas estão sendo gravadas em estúdio.
+                    </p>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30">
+                    35 Livros
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
+};

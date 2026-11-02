@@ -2,17 +2,16 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   Headphones,
   Play,
   Clock,
-  Sparkles,
   Search,
   Bell,
   ChevronRight,
   X,
   LayoutList,
   LayoutGrid,
+  Heart,
 } from "lucide-react";
 import { toast } from "sonner";
 import ShapeGrid from "@/components/ui/ShapeGrid";
@@ -26,6 +25,11 @@ import { AudiobookPlayerModal } from "@/components/audiobooks/AudiobookPlayerMod
 import { AudiobookDetailSheet } from "@/components/audiobooks/AudiobookDetailSheet";
 import { AudiobooksHeroPanel } from "@/components/audiobooks/AudiobooksHeroPanel";
 import { AudiobooksContinuarOuvindoCard } from "@/components/audiobooks/AudiobooksContinuarOuvindoCard";
+import {
+  AudiobooksQuickActionSheet,
+  AudiobookQuickActionType,
+} from "@/components/audiobooks/AudiobooksQuickActionSheet";
+import { audiobooksTracking } from "@/lib/audiobooksTracking";
 
 export default function AudiobooksPage() {
   const navigate = useNavigate();
@@ -42,8 +46,16 @@ export default function AudiobooksPage() {
   const [playerOpen, setPlayerOpen] = useState(false);
   const [selectedCapituloIndex, setSelectedCapituloIndex] = useState(0);
 
+  // Sheet de Ações Rápidas do Painel Hero (Favoritos | Recentes | Estatísticas | Outros)
+  const [activeQuickSheet, setActiveQuickSheet] = useState<AudiobookQuickActionType | null>(null);
+
   // Modo de visualização do catálogo: Lista (Padrão Biblioteca) vs Grade (Capas)
   const [visualizacao, setVisualizacao] = useState<"lista" | "grade">("lista");
+
+  // IDs favoritados
+  const [favIds, setFavIds] = useState<Set<string>>(() =>
+    new Set(audiobooksTracking.getFavoritos().map((f) => f.id))
+  );
 
   // Lembretes de notificação salvos em localStorage
   const [notificados, setNotificados] = useState<Record<string, boolean>>(() => {
@@ -79,7 +91,22 @@ export default function AudiobooksPage() {
     haptic.selection();
     setLivroPlayer(O_CASO_DOS_EXPLORADORES_DE_CAVERNAS);
     setSelectedCapituloIndex(index);
+    setLivroSelecionado(null);
+    setActiveQuickSheet(null);
     setPlayerOpen(true);
+  }, []);
+
+  // Alterna favorito de uma obra
+  const toggleFavorito = useCallback((livro: AudiobookLivro, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    haptic.impact();
+    const added = audiobooksTracking.toggleFavorito(livro);
+    setFavIds(new Set(audiobooksTracking.getFavoritos().map((f) => f.id)));
+    if (added) {
+      toast.success(`"${livro.titulo}" adicionado aos favoritos!`);
+    } else {
+      toast.info(`"${livro.titulo}" removido dos favoritos.`);
+    }
   }, []);
 
   // Alterna notificação do usuário para obras "Em Breve"
@@ -147,23 +174,16 @@ export default function AudiobooksPage() {
         <ShapeGrid />
       </div>
 
-      {/* Painel Hero Estilo Vade Mecum (Full-Bleed, sem margens laterais, botão de voltar embutido) */}
+      {/* Painel Hero Estilo Vade Mecum (Full-Bleed, sem margens laterais, botão de voltar embutido e 4 funções) */}
       <AudiobooksHeroPanel
         onBack={() => {
           haptic.selection();
           navigate(-1);
         }}
-        onOpenLivro={(livro) => {
-          setLivroSelecionado(livro);
+        onSelectAction={(action) => {
+          setActiveQuickSheet(action);
         }}
-        onPlayDisponivel={() => {
-          const idx = progressoSalvo?.capituloIndex ?? 0;
-          abrirCapitulo(idx);
-        }}
-        onFiltrarStatus={setFiltroStatus}
-        filtroStatus={filtroStatus}
-        totalCount={totalCount}
-        emBreveCount={emBreveCount}
+        activeAction={activeQuickSheet}
       />
 
       {/* Conteúdo Principal com Margens Laterais e Layout Fluido */}
@@ -194,10 +214,11 @@ export default function AudiobooksPage() {
           <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
             {livrosRecomendados.map((livro) => {
               const isDisponivel = livro.status === "disponivel";
+              const isFav = favIds.has(livro.id);
+
               return (
-                <button
+                <div
                   key={`rec-${livro.id}`}
-                  type="button"
                   onClick={() => handleCardClick(livro)}
                   className="snap-start shrink-0 w-[122px] sm:w-[136px] flex flex-col text-left group cursor-pointer focus-visible:outline-none"
                 >
@@ -209,6 +230,8 @@ export default function AudiobooksPage() {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
+                    
+                    {/* Badge de Status no topo esquerdo */}
                     <div className="absolute top-2 left-2">
                       {isDisponivel ? (
                         <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
@@ -222,6 +245,20 @@ export default function AudiobooksPage() {
                         </span>
                       )}
                     </div>
+
+                    {/* Botão de Favorito no topo direito */}
+                    <button
+                      type="button"
+                      onClick={(e) => toggleFavorito(livro, e)}
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/70 hover:text-rose-400 hover:scale-110 active:scale-90 transition-all z-10"
+                      aria-label="Favoritar"
+                    >
+                      <Heart
+                        className={`w-3.5 h-3.5 ${
+                          isFav ? "fill-rose-500 text-rose-500" : ""
+                        }`}
+                      />
+                    </button>
                   </div>
                   <p className="font-serif italic font-semibold text-xs sm:text-[13px] text-white group-hover:text-purple-300 transition-colors line-clamp-2 mt-2 leading-tight">
                     {livro.titulo}
@@ -229,7 +266,7 @@ export default function AudiobooksPage() {
                   <p className="text-[10.5px] text-white/50 truncate mt-0.5">
                     {livro.autor}
                   </p>
-                </button>
+                </div>
               );
             })}
           </div>
@@ -375,13 +412,14 @@ export default function AudiobooksPage() {
               {livrosFiltrados.map((livro, index) => {
                 const isDisponivel = livro.status === "disponivel";
                 const isNotificado = notificados[livro.id];
+                const isFav = favIds.has(livro.id);
                 const pct =
                   isDisponivel && progressoSalvo
                     ? Math.round(((progressoSalvo.capituloIndex + 1) / 8) * 100)
                     : 0;
 
                 return (
-                  <motion.button
+                  <motion.div
                     key={livro.id}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -455,15 +493,28 @@ export default function AudiobooksPage() {
                       </div>
                     </div>
 
-                    {/* Botão de Ação à Direita (Padrão Biblioteca) */}
-                    <div className="flex flex-col items-center justify-center pl-2 pr-1 shrink-0">
+                    {/* Botões de Ação à Direita: Favorito e Abrir */}
+                    <div className="flex flex-col items-center justify-between py-1 pl-1 pr-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => toggleFavorito(livro, e)}
+                        className="p-1.5 rounded-full hover:bg-white/10 text-white/50 hover:text-rose-400 active:scale-90 transition-all"
+                        aria-label="Favoritar"
+                      >
+                        <Heart
+                          className={`w-4 h-4 ${
+                            isFav ? "fill-rose-500 text-rose-500" : ""
+                          }`}
+                        />
+                      </button>
+
                       {isDisponivel ? (
-                        <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3.5 py-1.5 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors shadow-md shadow-purple-600/20 flex items-center gap-1">
+                        <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors shadow-md shadow-purple-600/20 flex items-center gap-1">
                           <Play className="w-3 h-3 fill-white" />
                           Ouvir
                         </span>
                       ) : (
-                        <span className="text-[11px] uppercase tracking-wide font-semibold text-white/70 px-3 py-1.5 rounded-full bg-white/5 group-hover:bg-white/10 border border-white/10 transition-colors flex items-center gap-1">
+                        <span className="text-[11px] uppercase tracking-wide font-semibold text-white/70 px-2.5 py-1.5 rounded-full bg-white/5 group-hover:bg-white/10 border border-white/10 transition-colors flex items-center gap-1">
                           <Clock className="w-3 h-3 text-amber-400" />
                           Painel
                         </span>
@@ -479,7 +530,7 @@ export default function AudiobooksPage() {
                         />
                       </div>
                     )}
-                  </motion.button>
+                  </motion.div>
                 );
               })}
             </div>
@@ -490,6 +541,7 @@ export default function AudiobooksPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-5">
               {livrosFiltrados.map((livro) => {
                 const isDisponivel = livro.status === "disponivel";
+                const isFav = favIds.has(livro.id);
 
                 return (
                   <motion.div
@@ -521,6 +573,19 @@ export default function AudiobooksPage() {
                           </span>
                         )}
                       </div>
+
+                      <button
+                        type="button"
+                        onClick={(e) => toggleFavorito(livro, e)}
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/70 hover:text-rose-400 hover:scale-110 active:scale-90 transition-all z-10"
+                        aria-label="Favoritar"
+                      >
+                        <Heart
+                          className={`w-3.5 h-3.5 ${
+                            isFav ? "fill-rose-500 text-rose-500" : ""
+                          }`}
+                        />
+                      </button>
                     </div>
 
                     <div className="p-3 flex-1 flex flex-col justify-between">
@@ -555,6 +620,22 @@ export default function AudiobooksPage() {
           )}
         </section>
       </main>
+
+      {/* ======================================================== */}
+      {/* SHEET DE AÇÕES RÁPIDAS (FAVORITOS, RECENTES, ESTATÍSTICAS, OUTROS) */}
+      {/* ======================================================== */}
+      <AudiobooksQuickActionSheet
+        activeSheet={activeQuickSheet}
+        onClose={() => setActiveQuickSheet(null)}
+        onSelectLivro={(livro) => {
+          setLivroSelecionado(livro);
+        }}
+        onPlayLivro={(livro, idx) => {
+          setLivroPlayer(livro);
+          setSelectedCapituloIndex(idx ?? 0);
+          setPlayerOpen(true);
+        }}
+      />
 
       {/* ======================================================== */}
       {/* PAINEL DE AJUSTE / DETALHES DO AUDIOBOOK (PADRÃO BIBLIOTECA) */}

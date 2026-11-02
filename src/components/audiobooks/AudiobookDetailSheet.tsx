@@ -11,11 +11,8 @@ import {
   ChevronRight,
   Headphones,
   BookOpen,
-  Calendar,
   Share2,
-  FileText
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
 import { haptic } from '@/lib/nativeHaptics';
@@ -49,6 +46,11 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
 
   const isDisponivel = livro.status === 'disponivel';
   const capitulos = livro.capitulos || [];
+
+  // Imagem oficial do cenário dos capítulos (da pasta criada para os capítulos)
+  const imagemCenario =
+    livro.capitulos?.[0]?.imagens?.[0]?.url ||
+    livro.capaUrl;
 
   const handleToggleFav = () => {
     haptic.selection();
@@ -116,7 +118,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
           type="button"
           onClick={handleToggleFav}
           aria-label="Favoritar"
-          className="w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-xl border border-white/20 flex items-center justify-center transition-transform active:scale-95 shadow-lg cursor-pointer"
+          className="w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center transition-transform active:scale-95 shadow-lg cursor-pointer"
         >
           <Heart
             className={`w-4 h-4 transition-colors ${
@@ -129,23 +131,23 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
       {/* Conteúdo com Scroll Suave */}
       <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain text-white pb-[calc(2rem+var(--sai-bottom,0px))]">
         {/* ======================================================== */}
-        {/* HEADER BACKDROP CINEMATOGRÁFICO (PADRÃO BIBLIOTECA)      */}
+        {/* HEADER BACKDROP CINEMATOGRÁFICO COM CENÁRIO DOS CAPÍTULOS */}
         {/* ======================================================== */}
-        <div className="relative w-full h-[220px] sm:h-[260px] overflow-hidden bg-neutral-950">
-          {/* Imagem de fundo borrada */}
+        <div className="relative w-full h-[235px] sm:h-[275px] overflow-hidden bg-neutral-950">
+          {/* Imagem do Cenário dos Capítulos da Obra em Alta Resolução */}
           <img
-            src={livro.capaUrl}
-            alt=""
-            aria-hidden
-            className="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-40"
+            src={imagemCenario}
+            alt="Cenário dos Capítulos"
+            className="absolute inset-0 w-full h-full object-cover opacity-65 scale-105"
           />
-          {/* Gradientes de atmosfera */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/70 to-[#0F0F12]" />
-          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-80 h-36 bg-purple-600/25 rounded-full blur-3xl pointer-events-none" />
+          {/* Gradientes cinematográficos de atmosfera e fusão */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F12] via-[#0F0F12]/50 to-black/70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-black/80" />
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-80 h-36 bg-purple-600/35 rounded-full blur-3xl pointer-events-none" />
 
           {/* Capa 3D Vertical em Destaque com sombra e selo */}
           <div className="relative h-full flex items-end justify-center pb-4 z-10">
-            <div className="w-[110px] sm:w-[130px] aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border border-white/25 bg-black relative group">
+            <div className="w-[110px] sm:w-[130px] aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border border-white/25 bg-black relative group shadow-black">
               <img
                 src={livro.capaUrl}
                 alt={livro.titulo}
@@ -210,7 +212,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
           </div>
 
           {/* ======================================================== */}
-          {/* BOTÃO PRIMÁRIO DE AÇÃO                                   */}
+          {/* BOTÃO PRIMÁRIO DE AÇÃO COLORIDO & VIBRANTE               */}
           {/* ======================================================== */}
           <div className="pt-1">
             {isDisponivel ? (
@@ -219,12 +221,17 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                 onClick={() => {
                   haptic.impact();
                   const targetIndex = progressoSalvo?.capituloIndex ?? 0;
+                  onClose();
                   onPlayCapitulo(targetIndex);
                 }}
-                className="w-full min-h-[50px] px-6 py-3.5 rounded-2xl bg-purple-600 hover:bg-purple-500 active:scale-[0.98] text-white font-display font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2.5 shadow-xl shadow-purple-900/40 transition-all cursor-pointer"
+                style={{
+                  background: 'linear-gradient(135deg, #9333EA 0%, #7C3AED 50%, #6D28D9 100%)',
+                  boxShadow: '0 8px 25px -4px rgba(124, 58, 237, 0.65)',
+                }}
+                className="w-full min-h-[52px] px-6 py-3.5 rounded-2xl text-white font-display font-bold text-sm sm:text-base uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] cursor-pointer border border-purple-400/40 hover:brightness-110"
               >
-                <Play className="w-4 h-4 fill-white" />
-                <span>
+                <Play className="w-4 h-4 fill-white text-white drop-shadow-md" />
+                <span className="drop-shadow-md">
                   {progressoSalvo
                     ? `Continuar Capítulo ${progressoSalvo.capituloIndex + 1}`
                     : 'Começar Audiobook'}
@@ -238,7 +245,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                     onToggleNotificacao(livro.id, livro.titulo);
                   }
                 }}
-                className={`w-full min-h-[50px] px-6 py-3.5 rounded-2xl font-display font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-lg active:scale-[0.98] ${
+                className={`w-full min-h-[52px] px-6 py-3.5 rounded-2xl font-display font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-lg active:scale-[0.98] ${
                   isNotificado
                     ? 'bg-amber-600/25 border border-amber-500/50 text-amber-300'
                     : 'bg-white/10 hover:bg-white/15 border border-white/15 text-white'
@@ -315,6 +322,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                         type="button"
                         onClick={() => {
                           haptic.selection();
+                          onClose();
                           onPlayCapitulo(index);
                         }}
                         className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl text-left border transition-all active:scale-[0.99] group cursor-pointer ${
@@ -448,4 +456,3 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
     </PrimeBottomSheet>
   );
 };
-
