@@ -114,9 +114,10 @@ const AUTOPLAY_MS = 5000;
 
 interface HomeEmAltaCarouselProps {
   onSelectItem?: (item: EmAltaItem) => void;
+  onOpenLei?: (id: string) => void;
 }
 
-const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
+const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps) => {
   const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -158,6 +159,10 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
   const handleOpenItem = useCallback(
     (item: EmAltaItem) => {
       haptic.selection();
+      if (onOpenLei) {
+        onOpenLei(item.id);
+        return;
+      }
       if (onSelectItem) {
         onSelectItem(item);
         return;
@@ -169,7 +174,7 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
         navigate(`/legislacao/${item.tipo}`);
       }
     },
-    [navigate, onSelectItem]
+    [navigate, onSelectItem, onOpenLei]
   );
 
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
@@ -380,6 +385,10 @@ const HomeEmAltaCarousel = ({ onSelectItem }: HomeEmAltaCarouselProps) => {
         isOpen={isRecentesOpen}
         onClose={() => setIsRecentesOpen(false)}
         onOpenLei={(leiId) => {
+          if (onOpenLei) {
+            onOpenLei(leiId);
+            return;
+          }
           const targetLei = LEIS_CATALOG.find((l) => l.id === leiId);
           if (targetLei) {
             navigate(leiPath(targetLei));
