@@ -107,14 +107,14 @@ function formatEventLabel(ts: number) {
 }
 const METAS_MOCK = [
   { id: 'm1', type: 'Missão de Leitura', title: 'Crime e Castigo', subtitle: 'Meta: Ler 15 páginas hoje (Págs 45 a 60)', progress: 0, path: '/pessoal/livros', icon: BookOpen },
-  { id: 'm2', type: 'Trilha de Videoaula', title: 'Processo Penal: Inquérito', subtitle: 'Continuar Aula 04: Prazos do Inquérito', progress: 65, path: '/minhas-videoaulas', icon: Video },
+  { id: 'm2', type: 'Trilha de Videoaula', title: 'Processo Penal: Inquérito', subtitle: 'Continuar Aula 04: Prazos do Inquérito', progress: 65, path: '/videoaulas', icon: Video },
   { id: 'm3', type: 'Revisão e Exercícios', title: 'Direito Civil: Contratos', subtitle: '10 exercícios separados para hoje', progress: 100, path: '/pessoal/anotacoes', icon: FileText },
 ];
 
 const QUICK = [
-  { label: 'Minhas Leituras', icon: BookOpen, path: '/minhas-leituras', color: '#FFD400' },
-  { label: 'Meus Resumos', icon: NotebookPen, path: '/meus-resumos', color: '#22D3EE' },
-  { label: 'Videoaulas', icon: Video, path: '/minhas-videoaulas', color: '#FF2D78' },
+  { label: 'Minhas Leituras', icon: BookOpen, path: '/pessoal/livros', color: '#FFD400' },
+  { label: 'Meus Resumos', icon: NotebookPen, path: '/resumos', color: '#22D3EE' },
+  { label: 'Videoaulas', icon: Video, path: '/videoaulas', color: '#FF2D78' },
   { label: 'Minhas anotações', icon: StickyNote, path: '/pessoal/anotacoes' },
   { label: 'Meus grifos', icon: Highlighter, path: '/pessoal/grifos' },
   { label: 'Livros Salvos', icon: BookMarked, path: '/pessoal/livros' },
@@ -526,7 +526,7 @@ const MeuEspaco = () => {
                   icon={BookOpen}
                   label="Leituras"
                   value={leiturasCount.toString()}
-                  onClick={() => go('/minhas-leituras')}
+                  onClick={() => go('/pessoal/livros')}
                 />
               </div>
 

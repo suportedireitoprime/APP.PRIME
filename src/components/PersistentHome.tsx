@@ -5,9 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { resetGlobalScroll } from "@/lib/scrollUtils";
 
 const HEAVY_GPU_PATHS = new Set([
-  "/grafo-artigos",
-  "/apresentacoes",
-  "/modo-offline/apresentacoes",
   "/admin/laboratorio",
   "/admin-laboratorio",
 ]);
@@ -57,10 +54,7 @@ const PersistentHome = () => {
   if (isPublic) return null;
 
   // Em rotas com Three.js / WebGL pesado, libera a VRAM do compositor mantendo o estado React
-  const isHeavyGpuRoute =
-    HEAVY_GPU_PATHS.has(location.pathname) ||
-    location.pathname.startsWith("/apresentacoes/") ||
-    location.pathname.startsWith("/grafo-artigos");
+  const isHeavyGpuRoute = HEAVY_GPU_PATHS.has(location.pathname);
 
   if (isHeavyGpuRoute) {
     return (

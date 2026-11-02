@@ -25,7 +25,6 @@ import AtualizacaoTab from '@/components/vademecum/outros/AtualizacaoTab';
 import DesktopEstudosGrid from '@/components/desktop/DesktopEstudosGrid';
 import NoticiasJuridicasCarousel from '@/components/vademecum/blog/NoticiasJuridicasCarousel';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import HomeApresentacoesTimeline from '@/components/vademecum/home/sections/HomeApresentacoesTimeline';
 import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 
 import { tipoToSlug, leiToSlug } from '@/lib/legislacaoSlugs';
@@ -159,12 +158,6 @@ const IndexDesktop = () => {
                         onChatClick={() => setAssistenteOpen(true)}
                         onFerramentasClick={() => setActiveTab('ferramentas')}
                       />
-                    </div>
-
-                    <div className="space-y-12 w-full mx-auto pb-16 pt-8">
-                      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
-                        <HomeApresentacoesTimeline />
-                      </div>
                     </div>
                   </>
                 )}

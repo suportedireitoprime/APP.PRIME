@@ -6,11 +6,6 @@ export function useFerramentasNavigation() {
   const navigate = useNavigate();
   const [dicionarioOpen, setDicionarioOpen] = useState(false);
   const handleToolClick = useCallback((id: string, route?: string) => {
-    if (id === 'boletins') {
-      navigate('/boletins');
-      return;
-    }
-
     if (id === 'dicionario-modal') {
       setDicionarioOpen(true);
       return;

@@ -16,7 +16,7 @@ const RULES: { test: RegExp; label: string; grupo: string }[] = [
   { test: /^\/dicionario|^\/termo/, label: 'Dicionário Jurídico', grupo: 'Pesquisa' },
   { test: /^\/biblioteca-offline|^\/modo-offline/, label: 'Modo Offline', grupo: 'Biblioteca' },
   { test: /^\/biblioteca|^\/bibliotecas/, label: 'Biblioteca', grupo: 'Biblioteca' },
-  { test: /^\/noticias|^\/boletins|^\/blog|^\/opiniao|^\/novidades/, label: 'Notícias e Boletins', grupo: 'Conteúdo' },
+  { test: /^\/noticias|^\/blog|^\/novidades/, label: 'Notícias e Blog', grupo: 'Conteúdo' },
   { test: /^\/radar/, label: 'Radar Legislativo', grupo: 'Conteúdo' },
   { test: /^\/assistente-horus|^\/ajustes\/horus/, label: 'Horus (WhatsApp)', grupo: 'IA' },
   { test: /^\/assistente/, label: 'Assistente IA', grupo: 'IA' },

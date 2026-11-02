@@ -119,8 +119,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     }
 
     if (id === 'opiniao') {
-      navigate('/opiniao');
-      onClose();
+      setOpiniaoOpen(true);
       return;
     }
 

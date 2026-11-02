@@ -20,8 +20,6 @@ function isLongListRoute(pathname: string): boolean {
     '/legislacao-estadual',
     '/blog',
     '/noticias',
-    '/boletins',
-    '/boletins-noticias',
     '/radar',
     '/jurisprudencia',
     '/resumos-juridicos',

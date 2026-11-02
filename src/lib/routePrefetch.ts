@@ -5,7 +5,6 @@
 
 export const routePrefetch = {
   radares:  () => import("@/pages/Radares.tsx"),
-  boletins: () => import("@/pages/BoletinsJuridicos.tsx"),
   noticias: () => import("@/pages/Noticias.tsx"),
   desktop:  () => import("@/pages/DesktopPromo.tsx"),
   blog:     () => import("@/pages/Blog.tsx"),
@@ -26,7 +25,6 @@ export const routePrefetch = {
   leiSecaLembretes: () => import("@/pages/LeiSeca/LeiSecaLembretes.tsx"),
 
   radar360: () => import("@/pages/Radar360.tsx"),
-  newsletter: () => import("@/pages/Newsletter.tsx"),
 
   jurisprudencia: () => import("@/pages/Jurisprudencia.tsx"),
   sumulasTribunal: () => import("@/pages/SumulasTribunal.tsx"),
@@ -56,7 +54,6 @@ export const routePrefetch = {
   vadeMecumFavoritos: () => import("@/pages/VadeMecumFavoritos.tsx"),
   vadeMecumRecentes: () => import("@/pages/VadeMecumRecentes.tsx"),
   meExplique: () => import("@/pages/MeExplique.tsx"),
-  apresentacoes: () => import("@/pages/Apresentacoes.tsx"),
   audioleis: () => import("@/pages/Audioleis.tsx"),
   aulas: () => import("@/pages/AdminAulasInterativas.tsx"),
 } as const;
@@ -77,7 +74,6 @@ const MAIN_TAB_KEYS: PrefetchKey[] = [
   'biblioteca',
   'leiSeca',
   'dicionario',
-  'boletins',
   'radar360',
   'vademecum',
   'ferramentas',

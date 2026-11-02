@@ -37,14 +37,10 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
   '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
   '/admin-biblioteca-leis': () => import('./AdminBibliotecaLeis'),
-
-  '/boletins': () => import('./BoletinsJuridicos'),
-  
   '/admin-biblioteca-editar': () => import('./BibliotecaEditar'),
   '/admin-leitura-nativa': () => import('./AdminLeituraNativa'),
   '/admin-audioaulas': () => import('./AdminAudioaulas'),
   '/explicacao-lei': () => import('./ExplicacaoLei'),
-  '/newsletter': () => import('./Newsletter'),
   '/configuracoes': () => import('./Configuracoes'),
 };
 const prefetched = new Set<string>();
@@ -234,17 +230,6 @@ const CATEGORIES: Category[] = [
       { id: 'admin-biblioteca-leis', label: 'Biblioteca de Leis', icon: BookOpen, desc: 'Auditoria, verificação de atualização e sugestões do Radar', route: '/admin-biblioteca-leis' },
     ],
   },
-  {
-    id: 'boletins-juridicos',
-    title: 'Boletins Jurídicos',
-    desc: 'Geração diária de boletins em áudio e vídeo',
-    icon: Mic,
-    items: [
-      { id: 'boletins', label: 'Boletins Editar (News)', icon: Rss, desc: 'Newsletters antigas e boletins', route: '/newsletter' },
-      { id: 'boletins-player', label: 'Player de Boletins', icon: Rss, desc: 'Visualizar boletins publicados no app', route: '/boletins' },
-    ],
-  },
-
   {
     id: 'configuracoes',
     title: 'Configurações',

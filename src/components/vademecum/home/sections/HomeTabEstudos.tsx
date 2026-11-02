@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import HomeCard from '@/components/vademecum/home/HomeCard';
-import HomeApresentacoesTimeline from './HomeApresentacoesTimeline';
 import { toast } from '@/hooks/use-toast';
 import HomeNoticiasCarousel from '@/components/vademecum/home/HomeNoticiasCarousel';
 import HomeLivrosCarousel from '@/components/ferramentas/FerramentasLivrosCarrossel';
@@ -244,10 +243,7 @@ const HomeTabEstudos = ({
       <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
       </div>
 
-      {/* Linha do Tempo de ApresentaÃ§Ãµes (Logo apÃ³s TrÃªs Poderes) */}
-      <HomeApresentacoesTimeline />
-
-      {/* EspaÃ§o de seguranÃ§a para garantir que o Ãºltimo elemento nÃ£o fique atrÃ¡s do BottomNav */}
+      {/* Espaço de segurança para garantir que o último elemento não fique atrás do BottomNav */}
       <div className="h-28 w-full shrink-0 pointer-events-none" />
     </motion.div>
   );

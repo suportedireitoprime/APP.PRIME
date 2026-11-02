@@ -39,7 +39,7 @@ export const VideoaulasAtalhos = React.memo(function VideoaulasAtalhos({ onShowD
           }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => { haptic.selection(); navigate('/minhas-videoaulas'); }}
+          onClick={() => { haptic.selection(); navigate('/videoaulas'); }}
           className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-colors gap-2 text-center focus-visible:outline-none"
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
@@ -57,7 +57,7 @@ export const VideoaulasAtalhos = React.memo(function VideoaulasAtalhos({ onShowD
           }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => { haptic.selection(); navigate('/minhas-videoaulas'); }}
+          onClick={() => { haptic.selection(); navigate('/videoaulas'); }}
           className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-colors gap-2 text-center focus-visible:outline-none"
         >
           <div className="relative w-10 h-10 flex items-center justify-center">
@@ -75,7 +75,7 @@ export const VideoaulasAtalhos = React.memo(function VideoaulasAtalhos({ onShowD
           }}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => { haptic.selection(); if (onShowDesempenho) { onShowDesempenho(); } else { navigate('/minhas-videoaulas'); } }}
+          onClick={() => { haptic.selection(); if (onShowDesempenho) { onShowDesempenho(); } else { navigate('/videoaulas'); } }}
           className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-amber-500/50 transition-colors gap-2 text-center focus-visible:outline-none"
         >
           <div className="relative w-10 h-10 flex items-center justify-center">

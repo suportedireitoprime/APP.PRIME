@@ -121,7 +121,7 @@ async function fetchTodayNotifications(): Promise<NotifItem[]> {
   // (evita mostrar leis "de ontem" quando o ingest roda madrugada).
   const hojeLocal = new Date().toLocaleDateString('en-CA');
 
-  const [diario, noticias, boletins, blog] = await Promise.all([
+  const [diario, noticias, blog] = await Promise.all([
     resenhaSelect<any>({
       select: 'id,tipo_ato,numero_ato,ementa,created_at,data_dou',
       data_dou: `eq.${hojeLocal}`,
@@ -133,12 +133,6 @@ async function fetchTodayNotifications(): Promise<NotifItem[]> {
       .gte('created_at', since)
       .order('created_at', { ascending: false })
       .limit(20),
-    supabase.from('boletins_juridicos' as any)
-      .select('id,titulo,subtitulo,thumb_url,thumbnail_url,created_at,status')
-      .gte('created_at', since)
-      .eq('status', 'pronto')
-      .order('created_at', { ascending: false })
-      .limit(10),
     supabase.from('blog_edicao_posts' as any)
       .select('id,titulo,resumo,imagem_thumb_url,imagem_url,data_publicacao,publicado')
       .eq('publicado', true)
@@ -175,17 +169,6 @@ async function fetchTodayNotifications(): Promise<NotifItem[]> {
       createdAt: r.created_at,
       to: `/noticias?item=${encodeURIComponent(r.id)}`,
       image: r.imagem_url || undefined,
-    });
-  }
-  for (const r of (boletins.data as any[] | null) ?? []) {
-    items.push({
-      id: `boletim:${r.id}`,
-      kind: 'boletim',
-      title: r.titulo,
-      subtitle: r.subtitulo,
-      createdAt: r.created_at,
-      to: `/boletins?item=${encodeURIComponent(r.id)}`,
-      image: r.thumb_url || r.thumbnail_url || undefined,
     });
   }
   for (const r of (blog.data as any[] | null) ?? []) {

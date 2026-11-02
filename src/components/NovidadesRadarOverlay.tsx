@@ -163,21 +163,12 @@ export default function NovidadesRadarOverlay() {
       const meta = user?.user_metadata as Record<string, any>;
       if (meta?.radar_last_seen_date === todayISO) return;
 
-      const [rawRadar, resBoletins] = await Promise.all([
-        resenhaSelect<any>({
-          select: 'id,tipo_ato,numero_ato,ementa,data_dou,created_at',
-          created_at: `gt.${lastSeen}`,
-          order: 'created_at.desc',
-          limit: '8',
-        }),
-        supabase
-          .from('boletins_juridicos')
-          .select('id,tipo,titulo,subtitulo,data_ref,created_at')
-          .in('status', ['pronto', 'sem_leis'])
-          .gte('created_at', lastSeen)
-          .order('created_at', { ascending: false })
-          .limit(5),
-      ]);
+      const rawRadar = await resenhaSelect<any>({
+        select: 'id,tipo_ato,numero_ato,ementa,data_dou,created_at',
+        created_at: `gt.${lastSeen}`,
+        order: 'created_at.desc',
+        limit: '8',
+      });
 
       const list: OverlayItem[] = [];
 
@@ -199,29 +190,6 @@ export default function NovidadesRadarOverlay() {
           data_ref: it.data_dou,
           url: `/radar-360?lei=${it.id}`,
         });
-      }
-
-      // 2) Boletins
-      if (resBoletins.data) {
-        const boletinsFiltrados = resBoletins.data.filter((it) => {
-          if (seen.has(it.id)) return false;
-          if (String(it.data_ref).slice(0, 10) !== todayISO) return false;
-          const isN = it.tipo === 'noticias';
-          const topicKey = `${isN ? 'Boletim de Notícias' : 'Boletim Jurídico'}::${todayISO}`;
-          if (seenTopics.has(topicKey)) return false;
-          return true;
-        });
-        for (const b of boletinsFiltrados) {
-          const isNoticias = b.tipo === 'noticias';
-          list.push({
-            id: b.id,
-            origem: isNoticias ? 'boletim_noticia' : 'boletim_juridico',
-            tipo_label: isNoticias ? 'Boletim de Notícias' : 'Boletim Jurídico',
-            ementa: b.titulo || b.subtitulo || 'Novo boletim diário',
-            data_ref: b.data_ref,
-            url: `/boletins/${isNoticias ? 'noticias' : 'juridico'}`,
-          });
-        }
       }
 
 

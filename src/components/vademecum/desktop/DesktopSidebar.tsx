@@ -47,8 +47,6 @@ const CATEGORIAS = [
 const CONTEUDO_ITEMS = [
   { id: 'explicacao', label: 'Artigos e Análises', icon: FileText, color: '#6366F1' },
   { id: 'atualizacao', label: 'Notícias Jurídicas', icon: Newspaper, route: '/noticias', color: '#EC4899' },
-  { id: 'boletins', label: 'Boletins Jurídicos', icon: MicVocal, route: '/boletins', color: 'hsl(348 78% 38%)' },
-  { id: 'newsletter', label: 'Newsletter', icon: Mail, route: '/newsletter', color: '#F97316' },
   { id: 'blog', label: 'Blog', icon: BookOpen, route: '/blog', color: '#0EA5E9' },
   { id: 'novidades', label: 'Novidades', icon: Bell, route: '/novidades', color: '#8B5CF6' },
 ];
@@ -63,7 +61,6 @@ const FERRAMENTAS_ITEMS = [
 const CONTA_ITEMS = [
   { id: 'assinatura', label: 'Assinatura', icon: CreditCard, route: '/assinatura', color: '#10B981' },
   { id: 'suporte', label: 'Suporte', icon: LifeBuoy, route: '/suporte', color: '#EC4899' },
-  { id: 'opiniao', label: 'Opinião', icon: MessageSquare, route: '/opiniao', color: '#0891B2' },
 ];
 
 const CONFIG_ITEMS = [

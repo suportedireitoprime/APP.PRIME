@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen, ChevronRight, CloudDownload, CloudOff, Headphones, Library, Music, PenLine, Presentation, WifiOff, Wifi, Download, Database } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronRight, CloudDownload, CloudOff, Headphones, Library, Music, PenLine, WifiOff, Wifi, Download, Database } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
@@ -36,15 +36,6 @@ export default function ModoOffline() {
       desc: 'Baixe as aulas em áudio para ouvir sem conexão',
       meta: meta(d.audioaulas, 'Nenhuma aula baixada ainda'),
       to: '/modo-offline/audioaulas',
-    },
-    {
-      id: 'apresentacoes',
-      icon: Presentation,
-      color: '#06b6d4',
-      title: 'Apresentações narradas',
-      desc: 'Baixe o áudio dos slides antes de assistir',
-      meta: meta(d.apresentacoes, 'Nenhuma apresentação baixada'),
-      to: '/modo-offline/apresentacoes',
     },
     {
       id: 'livros',
