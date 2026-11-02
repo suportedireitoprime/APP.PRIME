@@ -67,7 +67,8 @@ export const AulasTabFavoritos: React.FC<AulasTabFavoritosProps> = ({
               <img
                 src={aula.capaUrl}
                 alt={aula.titulo}
-                loading="lazy"
+                loading="eager"
+                fetchPriority="high"
                 decoding="async"
                 className="w-full h-full object-cover"
               />

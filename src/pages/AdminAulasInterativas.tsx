@@ -384,6 +384,58 @@ export default function AdminAulasInterativas() {
     ? AULAS_CATALOGO.filter(a => a.materiaId === materiaAtual.id) 
     : [];
 
+  // ⚡ Pré-aquecimento em memória (Prefetch 0ms) das capas das aulas, matérias e disciplinas
+  useEffect(() => {
+    // 1. Capas das 4 disciplinas principais
+    DISCIPLINAS_CATALOGO.forEach((disc) => {
+      if (disc.capaHeroUrl) {
+        const img = new Image();
+        img.src = disc.capaHeroUrl;
+      }
+    });
+
+    // 2. Capas das primeiras matérias de cada disciplina para carregamento imediato
+    const topMaterias = MATERIAS_CATALOGO.slice(0, 24);
+    topMaterias.forEach((mat) => {
+      if (mat.capaUrl) {
+        const img = new Image();
+        img.src = mat.capaUrl;
+      }
+    });
+  }, []);
+
+  // Ao selecionar uma disciplina, pré-carrega todas as matérias e as primeiras aulas dela
+  useEffect(() => {
+    if (!disciplinaSelecionadaId) return;
+    const mats = MATERIAS_CATALOGO.filter((m) => m.disciplinaId === disciplinaSelecionadaId);
+    mats.forEach((m) => {
+      if (m.capaUrl) {
+        const img = new Image();
+        img.src = m.capaUrl;
+      }
+    });
+    // Pré-aquece as primeiras 30 aulas desta disciplina
+    const aulas = AULAS_CATALOGO.filter((a) => a.disciplinaId === disciplinaSelecionadaId).slice(0, 30);
+    aulas.forEach((a) => {
+      if (a.capaUrl) {
+        const img = new Image();
+        img.src = a.capaUrl;
+      }
+    });
+  }, [disciplinaSelecionadaId]);
+
+  // Ao selecionar uma matéria, pré-carrega instantaneamente todas as capas de aulas dela
+  useEffect(() => {
+    if (!materiaSelecionadaId) return;
+    const aulas = AULAS_CATALOGO.filter((a) => a.materiaId === materiaSelecionadaId);
+    aulas.forEach((a) => {
+      if (a.capaUrl) {
+        const img = new Image();
+        img.src = a.capaUrl;
+      }
+    });
+  }, [materiaSelecionadaId]);
+
     const getBotaoIniciarClass = (aula: AulaItem, aulaTerminada: boolean) => {
     if (aulaTerminada) {
       return 'bg-[#1b1c22] hover:bg-[#252830] text-zinc-200 border border-white/15';
@@ -835,7 +887,8 @@ export default function AdminAulasInterativas() {
                             <img
                               src={disc.capaHeroUrl}
                               alt={disc.nome}
-                              loading="lazy"
+                              loading="eager"
+                              fetchPriority="high"
                               decoding="async"
                               className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
                             />
@@ -1280,7 +1333,8 @@ export default function AdminAulasInterativas() {
                               <img
                                 src={mat.capaUrl}
                                 alt={mat.titulo}
-                                loading="lazy"
+                                loading={i < 10 ? "eager" : "lazy"}
+                                fetchPriority={i < 6 ? "high" : "auto"}
                                 decoding="async"
                                 className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
                               />
@@ -1693,7 +1747,8 @@ export default function AdminAulasInterativas() {
                               <img
                                 src={aula.capaUrl}
                                 alt={aula.titulo}
-                                loading="lazy"
+                                loading={i < 10 ? "eager" : "lazy"}
+                                fetchPriority={i < 6 ? "high" : "auto"}
                                 decoding="async"
                                 className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
                               />
@@ -2067,6 +2122,9 @@ export default function AdminAulasInterativas() {
               <img 
                 src={aulaPendenteModal.capaUrl} 
                 alt={aulaPendenteModal.titulo}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#131318] via-transparent to-transparent" />

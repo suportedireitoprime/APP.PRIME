@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Headphones,
@@ -12,18 +12,19 @@ import {
   ChevronRight,
   X,
   LayoutList,
-  LayoutGrid
-} from 'lucide-react';
-import { toast } from 'sonner';
-import ShapeGrid from '@/components/ui/ShapeGrid';
-import { haptic } from '@/lib/nativeHaptics';
+  LayoutGrid,
+} from "lucide-react";
+import { toast } from "sonner";
+import ShapeGrid from "@/components/ui/ShapeGrid";
+import { haptic } from "@/lib/nativeHaptics";
 import {
   AUDIOBOOKS_CATALOGO,
   O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
-  AudiobookLivro
-} from '@/data/audiobooksCatalogo';
-import { AudiobookPlayerModal } from '@/components/audiobooks/AudiobookPlayerModal';
-import { AudiobookDetailSheet } from '@/components/audiobooks/AudiobookDetailSheet';
+  AudiobookLivro,
+} from "@/data/audiobooksCatalogo";
+import { AudiobookPlayerModal } from "@/components/audiobooks/AudiobookPlayerModal";
+import { AudiobookDetailSheet } from "@/components/audiobooks/AudiobookDetailSheet";
+import { AudiobooksHeroPanel } from "@/components/audiobooks/AudiobooksHeroPanel";
 
 export default function AudiobooksPage() {
   const navigate = useNavigate();
@@ -32,19 +33,21 @@ export default function AudiobooksPage() {
   const [livroSelecionado, setLivroSelecionado] = useState<AudiobookLivro | null>(null);
 
   // Livro ativo no Player em Tela Cheia
-  const [livroPlayer, setLivroPlayer] = useState<AudiobookLivro>(O_CASO_DOS_EXPLORADORES_DE_CAVERNAS);
+  const [livroPlayer, setLivroPlayer] = useState<AudiobookLivro>(
+    O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
+  );
 
   // Modal do Player
   const [playerOpen, setPlayerOpen] = useState(false);
   const [selectedCapituloIndex, setSelectedCapituloIndex] = useState(0);
 
   // Modo de visualização do catálogo: Lista (Padrão Biblioteca) vs Grade (Capas)
-  const [visualizacao, setVisualizacao] = useState<'lista' | 'grade'>('lista');
+  const [visualizacao, setVisualizacao] = useState<"lista" | "grade">("lista");
 
   // Lembretes de notificação salvos em localStorage
   const [notificados, setNotificados] = useState<Record<string, boolean>>(() => {
     try {
-      const raw = localStorage.getItem('audiobooks_notificacoes');
+      const raw = localStorage.getItem("audiobooks_notificacoes");
       return raw ? JSON.parse(raw) : {};
     } catch {
       return {};
@@ -52,12 +55,15 @@ export default function AudiobooksPage() {
   });
 
   // Busca e Filtros
-  const [termoBusca, setTermoBusca] = useState('');
-  const [filtroStatus, setFiltroStatus] = useState<'todos' | 'disponivel' | 'em_breve'>('todos');
+  const [termoBusca, setTermoBusca] = useState("");
+  const [filtroStatus, setFiltroStatus] = useState<"todos" | "disponivel" | "em_breve">("todos");
 
   // Recupera onde o usuário parou em O Caso dos Exploradores de Cavernas
   const storageKey = `audiobook_prog_${O_CASO_DOS_EXPLORADORES_DE_CAVERNAS.id}`;
-  const [progressoSalvo, setProgressoSalvo] = useState<{ capituloIndex: number; time: number } | null>(null);
+  const [progressoSalvo, setProgressoSalvo] = useState<{
+    capituloIndex: number;
+    time: number;
+  } | null>(null);
 
   useEffect(() => {
     try {
@@ -82,7 +88,7 @@ export default function AudiobooksPage() {
       const novoEstado = !prev[livroId];
       const atualizado = { ...prev, [livroId]: novoEstado };
       try {
-        localStorage.setItem('audiobooks_notificacoes', JSON.stringify(atualizado));
+        localStorage.setItem("audiobooks_notificacoes", JSON.stringify(atualizado));
       } catch {}
 
       if (novoEstado) {
@@ -99,8 +105,8 @@ export default function AudiobooksPage() {
   const livrosFiltrados = useMemo(() => {
     return AUDIOBOOKS_CATALOGO.filter((livro) => {
       // Filtro de Status
-      if (filtroStatus === 'disponivel' && livro.status !== 'disponivel') return false;
-      if (filtroStatus === 'em_breve' && livro.status !== 'em_breve') return false;
+      if (filtroStatus === "disponivel" && livro.status !== "disponivel") return false;
+      if (filtroStatus === "em_breve" && livro.status !== "em_breve") return false;
 
       // Filtro de Busca por Título ou Autor
       if (termoBusca.trim()) {
@@ -117,7 +123,10 @@ export default function AudiobooksPage() {
 
   // Contadores para as abas
   const totalCount = AUDIOBOOKS_CATALOGO.length;
-  const disponivelCount = useMemo(() => AUDIOBOOKS_CATALOGO.filter((l) => l.status === 'disponivel').length, []);
+  const disponivelCount = useMemo(
+    () => AUDIOBOOKS_CATALOGO.filter((l) => l.status === "disponivel").length,
+    [],
+  );
   const emBreveCount = totalCount - disponivelCount;
 
   const handleCardClick = (livro: AudiobookLivro) => {
@@ -148,7 +157,7 @@ export default function AudiobooksPage() {
           </button>
 
           <div className="flex flex-col items-center text-center">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-[#E11D48] flex items-center gap-1.5">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-purple-400 flex items-center gap-1.5">
               <Headphones className="w-3.5 h-3.5" />
               Direito Prime Audiobooks
             </span>
@@ -160,55 +169,21 @@ export default function AudiobooksPage() {
           <div className="w-12 sm:w-[52px]" />
         </header>
 
-        {/* Banner Hero Compacto Padrão Biblioteca */}
-        <section className="mt-4 p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-neutral-900 via-neutral-950 to-neutral-900 border border-white/10 shadow-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-72 h-72 bg-[#E11D48]/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E11D48]/15 border border-[#E11D48]/30 text-[#E11D48] text-[11px] font-bold uppercase tracking-wider mb-2">
-                <Headphones className="w-3.5 h-3.5" />
-                Coleção Clássicos do Direito
-              </div>
-              <h2 className="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight">
-                Audiobooks Jurídicos
-              </h2>
-              <p className="text-white/60 text-xs sm:text-sm mt-1 max-w-lg leading-relaxed">
-                Obras fundamentais da filosofia e teoria do direito com narração profissional, legendas sincronizadas e imagens em alta definição.
-              </p>
-            </div>
-
-            {/* Destaque Rápido para Abrir o Painel de O Caso dos Exploradores */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.impact();
-                setLivroSelecionado(O_CASO_DOS_EXPLORADORES_DE_CAVERNAS);
-              }}
-              className="shrink-0 flex items-center gap-3 p-2.5 pr-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 active:scale-95 transition-all text-left group cursor-pointer shadow-md"
-            >
-              <div className="w-12 h-16 rounded-lg overflow-hidden border border-white/20 bg-black shrink-0 relative">
-                <img
-                  src={O_CASO_DOS_EXPLORADORES_DE_CAVERNAS.capaUrl}
-                  alt=""
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                />
-                <span className="absolute bottom-0 inset-x-0 bg-[#E11D48] text-[8px] font-black uppercase text-center text-white py-0.5">
-                  ÁUDIO
-                </span>
-              </div>
-              <div className="min-w-0">
-                <span className="text-[10px] text-emerald-400 font-bold uppercase flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Disponível Agora
-                </span>
-                <p className="text-xs font-bold text-white group-hover:text-[#E11D48] transition-colors truncate max-w-[150px]">
-                  Exploradores de Cavernas
-                </p>
-                <span className="text-[10px] text-white/50">8 capítulos gravados</span>
-              </div>
-              <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-all ml-1" />
-            </button>
-          </div>
+        {/* Banner Hero Painel Vade Mecum (Roxo Oficial) */}
+        <section className="mt-4">
+          <AudiobooksHeroPanel
+            onOpenLivro={(livro) => {
+              setLivroSelecionado(livro);
+            }}
+            onPlayDisponivel={() => {
+              const idx = progressoSalvo?.capituloIndex ?? 0;
+              abrirCapitulo(idx);
+            }}
+            onFiltrarStatus={setFiltroStatus}
+            filtroStatus={filtroStatus}
+            totalCount={totalCount}
+            emBreveCount={emBreveCount}
+          />
         </section>
 
         {/* ======================================================== */}
@@ -217,12 +192,12 @@ export default function AudiobooksPage() {
         <section className="mt-8">
           {/* Header da Seção Idêntico à Biblioteca */}
           <div className="mb-4">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-[#E11D48] font-bold">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-purple-400 font-bold">
               ACERVO DE AUDIOBOOKS
             </p>
             <div className="flex items-center justify-between gap-3 mt-1">
               <div className="flex items-center gap-2">
-                <span className="w-1 h-6 rounded-full bg-[#E11D48]" />
+                <span className="w-1 h-6 rounded-full bg-purple-500" />
                 <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
                   Todos os livros
                 </h2>
@@ -234,12 +209,12 @@ export default function AudiobooksPage() {
                   type="button"
                   onClick={() => {
                     haptic.selection();
-                    setVisualizacao('lista');
+                    setVisualizacao("lista");
                   }}
                   className={`p-1.5 rounded-lg transition-all ${
-                    visualizacao === 'lista'
-                      ? 'bg-[#E11D48] text-white shadow-sm'
-                      : 'text-white/60 hover:text-white'
+                    visualizacao === "lista"
+                      ? "bg-purple-600 text-white shadow-sm"
+                      : "text-white/60 hover:text-white"
                   }`}
                   aria-label="Visualização em Lista"
                   title="Modo Lista (Padrão Biblioteca)"
@@ -250,12 +225,12 @@ export default function AudiobooksPage() {
                   type="button"
                   onClick={() => {
                     haptic.selection();
-                    setVisualizacao('grade');
+                    setVisualizacao("grade");
                   }}
                   className={`p-1.5 rounded-lg transition-all ${
-                    visualizacao === 'grade'
-                      ? 'bg-[#E11D48] text-white shadow-sm'
-                      : 'text-white/60 hover:text-white'
+                    visualizacao === "grade"
+                      ? "bg-purple-600 text-white shadow-sm"
+                      : "text-white/60 hover:text-white"
                   }`}
                   aria-label="Visualização em Grade"
                   title="Modo Grade"
@@ -277,12 +252,12 @@ export default function AudiobooksPage() {
               value={termoBusca}
               onChange={(e) => setTermoBusca(e.target.value)}
               placeholder="Buscar livro, autor ou tema…"
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-[#E11D48]/60 transition-colors shadow-sm"
+              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-500/60 transition-colors shadow-sm"
             />
             {termoBusca && (
               <button
                 type="button"
-                onClick={() => setTermoBusca('')}
+                onClick={() => setTermoBusca("")}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
               >
                 <X className="w-4 h-4" />
@@ -296,12 +271,12 @@ export default function AudiobooksPage() {
               type="button"
               onClick={() => {
                 haptic.selection();
-                setFiltroStatus('todos');
+                setFiltroStatus("todos");
               }}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
-                filtroStatus === 'todos'
-                  ? 'bg-[#E11D48] border-[#E11D48] text-white shadow-md'
-                  : 'bg-white/5 border-white/10 text-white/70 hover:text-white'
+                filtroStatus === "todos"
+                  ? "bg-purple-600 border-purple-500 text-white shadow-md"
+                  : "bg-white/5 border-white/10 text-white/70 hover:text-white"
               }`}
             >
               Todos ({totalCount})
@@ -310,12 +285,12 @@ export default function AudiobooksPage() {
               type="button"
               onClick={() => {
                 haptic.selection();
-                setFiltroStatus('disponivel');
+                setFiltroStatus("disponivel");
               }}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
-                filtroStatus === 'disponivel'
-                  ? 'bg-emerald-600 border-emerald-600 text-white shadow-md'
-                  : 'bg-white/5 border-white/10 text-white/70 hover:text-white'
+                filtroStatus === "disponivel"
+                  ? "bg-emerald-600 border-emerald-600 text-white shadow-md"
+                  : "bg-white/5 border-white/10 text-white/70 hover:text-white"
               }`}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
@@ -325,12 +300,12 @@ export default function AudiobooksPage() {
               type="button"
               onClick={() => {
                 haptic.selection();
-                setFiltroStatus('em_breve');
+                setFiltroStatus("em_breve");
               }}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
-                filtroStatus === 'em_breve'
-                  ? 'bg-amber-600 border-amber-600 text-white shadow-md'
-                  : 'bg-white/5 border-white/10 text-white/70 hover:text-white'
+                filtroStatus === "em_breve"
+                  ? "bg-amber-600 border-amber-600 text-white shadow-md"
+                  : "bg-white/5 border-white/10 text-white/70 hover:text-white"
               }`}
             >
               <Clock className="w-3 h-3 text-amber-300" />
@@ -343,15 +318,18 @@ export default function AudiobooksPage() {
             <div className="py-16 text-center text-white/50 text-sm bg-white/[0.02] border border-white/5 rounded-3xl">
               Nenhum livro encontrado com o termo informado.
             </div>
-          ) : visualizacao === 'lista' ? (
+          ) : visualizacao === "lista" ? (
             /* ======================================================== */
             /* MODO LISTA: DESIGN IDÊNTICO AO DA BIBLIOTECA DO APP     */
             /* ======================================================== */
             <div className="flex flex-col gap-2.5">
               {livrosFiltrados.map((livro, index) => {
-                const isDisponivel = livro.status === 'disponivel';
+                const isDisponivel = livro.status === "disponivel";
                 const isNotificado = notificados[livro.id];
-                const pct = isDisponivel && progressoSalvo ? Math.round(((progressoSalvo.capituloIndex + 1) / 8) * 100) : 0;
+                const pct =
+                  isDisponivel && progressoSalvo
+                    ? Math.round(((progressoSalvo.capituloIndex + 1) / 8) * 100)
+                    : 0;
 
                 return (
                   <motion.button
@@ -361,15 +339,15 @@ export default function AudiobooksPage() {
                     transition={{
                       duration: 0.3,
                       delay: Math.min(index * 0.03, 0.3),
-                      type: 'spring',
+                      type: "spring",
                       stiffness: 300,
                       damping: 24,
                     }}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.985 }}
                     onClick={() => handleCardClick(livro)}
-                    aria-label={`Abrir audiobook ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ''}`}
-                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416] hover:bg-[#1A1A1E] border border-white/10 hover:border-[#E11D48]/40 transition-colors text-left w-full relative overflow-hidden shadow-sm cursor-pointer select-none"
+                    aria-label={`Abrir audiobook ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ""}`}
+                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416] hover:bg-[#1A1A1E] border border-white/10 hover:border-purple-500/40 transition-colors text-left w-full relative overflow-hidden shadow-sm cursor-pointer select-none"
                   >
                     {/* Capa Retangular à Esquerda (Padrão 72px x 100px) */}
                     <div className="w-[72px] sm:w-[80px] h-[100px] sm:h-[110px] shrink-0 rounded-xl overflow-hidden bg-zinc-950 border border-white/10 shadow-md relative">
@@ -392,7 +370,7 @@ export default function AudiobooksPage() {
 
                     {/* Informações Centrais da Obra */}
                     <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
-                      <p className="text-[14px] sm:text-[15.5px] font-bold text-white line-clamp-2 leading-snug group-hover:text-[#E11D48] transition-colors break-words">
+                      <p className="text-[14px] sm:text-[15.5px] font-bold text-white line-clamp-2 leading-snug group-hover:text-purple-300 transition-colors break-words">
                         {livro.titulo}
                       </p>
 
@@ -403,14 +381,13 @@ export default function AudiobooksPage() {
                       <div className="mt-2 flex items-center gap-1.5 flex-wrap">
                         {/* Tag de Coleção */}
                         <span className="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/5 text-white/70 font-bold border border-white/10">
-                          {livro.tags?.[0] || 'CLÁSSICO'}
+                          {livro.tags?.[0] || "CLÁSSICO"}
                         </span>
 
                         {/* Status: Disponível vs Em Breve */}
                         {isDisponivel ? (
                           <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                            <Headphones className="w-2.5 h-2.5" />
-                            8 Capítulos Gravados
+                            <Headphones className="w-2.5 h-2.5" />8 Capítulos Gravados
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30">
@@ -420,7 +397,7 @@ export default function AudiobooksPage() {
                         )}
 
                         {isNotificado && !isDisponivel && (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-[#E11D48]/15 text-[#E11D48] border border-[#E11D48]/30">
+                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/30">
                             <Bell className="w-2.5 h-2.5 fill-current" />
                             Aviso Ativo
                           </span>
@@ -431,7 +408,7 @@ export default function AudiobooksPage() {
                     {/* Botão de Ação à Direita (Padrão Biblioteca) */}
                     <div className="flex flex-col items-center justify-center pl-2 pr-1 shrink-0">
                       {isDisponivel ? (
-                        <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3.5 py-1.5 rounded-full bg-[#E11D48] hover:bg-[#E11D48]/90 transition-colors shadow-md shadow-[#E11D48]/20 flex items-center gap-1">
+                        <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3.5 py-1.5 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors shadow-md shadow-purple-600/20 flex items-center gap-1">
                           <Play className="w-3 h-3 fill-white" />
                           Ouvir
                         </span>
@@ -447,7 +424,7 @@ export default function AudiobooksPage() {
                     {pct > 0 && (
                       <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/10">
                         <div
-                          className="h-full bg-[#E11D48] transition-all duration-500"
+                          className="h-full bg-purple-500 transition-all duration-500"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -462,7 +439,7 @@ export default function AudiobooksPage() {
             /* ======================================================== */
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-5">
               {livrosFiltrados.map((livro) => {
-                const isDisponivel = livro.status === 'disponivel';
+                const isDisponivel = livro.status === "disponivel";
 
                 return (
                   <motion.div
@@ -470,7 +447,7 @@ export default function AudiobooksPage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleCardClick(livro)}
-                    className="group relative flex flex-col bg-[#141416] hover:bg-[#1C1C20] border border-white/10 hover:border-[#E11D48]/40 rounded-2xl overflow-hidden shadow-lg transition-all cursor-pointer select-none"
+                    className="group relative flex flex-col bg-[#141416] hover:bg-[#1C1C20] border border-white/10 hover:border-purple-500/40 rounded-2xl overflow-hidden shadow-lg transition-all cursor-pointer select-none"
                   >
                     <div className="relative aspect-[3/4] w-full overflow-hidden bg-zinc-950">
                       <img
@@ -498,7 +475,7 @@ export default function AudiobooksPage() {
 
                     <div className="p-3 flex-1 flex flex-col justify-between">
                       <div>
-                        <h4 className="font-display font-bold text-xs sm:text-sm text-white group-hover:text-[#E11D48] transition-colors line-clamp-2 leading-snug">
+                        <h4 className="font-display font-bold text-xs sm:text-sm text-white group-hover:text-purple-300 transition-colors line-clamp-2 leading-snug">
                           {livro.titulo}
                         </h4>
                         <p className="text-[11px] text-white/50 truncate mt-1">
@@ -540,9 +517,7 @@ export default function AudiobooksPage() {
           abrirCapitulo(index);
         }}
         progressoSalvo={
-          livroSelecionado?.id === O_CASO_DOS_EXPLORADORES_DE_CAVERNAS.id
-            ? progressoSalvo
-            : null
+          livroSelecionado?.id === O_CASO_DOS_EXPLORADORES_DE_CAVERNAS.id ? progressoSalvo : null
         }
         isNotificado={livroSelecionado ? !!notificados[livroSelecionado.id] : false}
         onToggleNotificacao={toggleNotificacao}

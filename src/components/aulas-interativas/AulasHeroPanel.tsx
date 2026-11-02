@@ -59,6 +59,14 @@ export const AulasHeroPanel: React.FC<AulasHeroPanelProps> = ({
 }) => {
   const [heroIdx, setHeroIdx] = useState(0);
 
+  // Pré-aquecimento em memória de todas as ilustrações do Hero
+  useEffect(() => {
+    HERO_ILLUSTRATIONS.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  }, []);
+
   // Se não tiver capa única especificada, rotaciona as ilustrações dinâmicas
   useEffect(() => {
     if (capaUrl) return;

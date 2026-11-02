@@ -30,7 +30,7 @@ const PRATICAR_ITEMS: PraticarItem[] = [
     title: 'QUESTÕES',
     subtitle: 'Fixação e treino',
     icon: FileQuestion,
-    color: '#059669', // emerald (card central)
+    color: '#059669', // emerald
     image: '/assets/praticar-questoes.webp',
     path: '/questoes',
   },
@@ -54,7 +54,7 @@ const PRATICAR_ITEMS: PraticarItem[] = [
   },
 ];
 
-const AUTOPLAY_MS = 5000;
+const AUTOPLAY_MS = 4000;
 
 const HomePraticarCarousel = () => {
   const navigate = useNavigate();
@@ -62,13 +62,20 @@ const HomePraticarCarousel = () => {
   const isInteractingRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 4 cópias para permitir rolagem contínua infinita sem bater nas bordas
+  // 6 cópias (24 itens) para permitir loop infinito seguro sem bater nas bordas
   const loopedItems = useMemo(() => {
-    return [...PRATICAR_ITEMS, ...PRATICAR_ITEMS, ...PRATICAR_ITEMS, ...PRATICAR_ITEMS];
+    return [
+      ...PRATICAR_ITEMS,
+      ...PRATICAR_ITEMS,
+      ...PRATICAR_ITEMS,
+      ...PRATICAR_ITEMS,
+      ...PRATICAR_ITEMS,
+      ...PRATICAR_ITEMS,
+    ];
   }, []);
 
-  // Questões no 2º bloco (índice 4 + 1 = 5) centralizado por padrão
-  const [activeIndex, setActiveIndex] = useState(PRATICAR_ITEMS.length + 1);
+  // Começa no bloco 2 (Questões: índice 4*2 + 1 = 9) centralizado por padrão
+  const [activeIndex, setActiveIndex] = useState(PRATICAR_ITEMS.length * 2 + 1);
   const [isReady, setIsReady] = useState(false);
 
   const pauseAutoplay = useCallback(() => {
@@ -76,21 +83,28 @@ const HomePraticarCarousel = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => {
       isInteractingRef.current = false;
-    }, 10000);
+    }, 4000);
   }, []);
 
+  // Scroll preciso baseado em getBoundingClientRect() independente de offsetParent ou zoom
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
     const el = scrollerRef.current;
     if (!el) return;
     const child = el.children[idx] as HTMLElement | undefined;
     if (!child) return;
-    const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
-    el.scrollTo({ left: target, behavior });
+
+    const elRect = el.getBoundingClientRect();
+    const childRect = child.getBoundingClientRect();
+    const delta = childRect.left + childRect.width / 2 - (elRect.left + elRect.width / 2);
+
+    if (Math.abs(delta) > 1) {
+      el.scrollBy({ left: delta, behavior });
+    }
   }, []);
 
-  // Centraliza em Questões no 2º bloco no carregamento inicial
+  // Centralização inicial com 0ms no mount
   useEffect(() => {
-    const initialIndex = PRATICAR_ITEMS.length + 1;
+    const initialIndex = PRATICAR_ITEMS.length * 2 + 1;
     setActiveIndex(initialIndex);
     const timer = setTimeout(() => {
       scrollToIndex(initialIndex, 'instant' as ScrollBehavior);
@@ -99,15 +113,22 @@ const HomePraticarCarousel = () => {
     return () => clearTimeout(timer);
   }, [scrollToIndex]);
 
-  // Autoplay automático contínuo a cada 5 segundos (igual Leis em Alta)
+  // Autoplay contínuo a cada 4 segundos com proteção contra estouro de array
   useEffect(() => {
     if (!isReady) return;
 
     const interval = setInterval(() => {
       if (isInteractingRef.current || document.hidden) return;
+
       setActiveIndex((prev) => {
-        const nextIndex = prev + 1;
-        scrollToIndex(nextIndex);
+        let nextIndex = prev + 1;
+        // Se estiver perto do final dos 6 blocos, teletransporta suavemente de volta ao bloco 2
+        if (nextIndex >= loopedItems.length - PRATICAR_ITEMS.length) {
+          nextIndex = (nextIndex % PRATICAR_ITEMS.length) + PRATICAR_ITEMS.length * 2;
+          scrollToIndex(nextIndex, 'instant' as ScrollBehavior);
+        } else {
+          scrollToIndex(nextIndex, 'smooth');
+        }
         return nextIndex;
       });
     }, AUTOPLAY_MS);
@@ -116,49 +137,50 @@ const HomePraticarCarousel = () => {
       clearInterval(interval);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [isReady, scrollToIndex]);
+  }, [isReady, scrollToIndex, loopedItems.length]);
 
+  // Detector de scroll em tempo real com getBoundingClientRect() e wrap-around infinito
   const handleScroll = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
-    const center = el.scrollLeft + el.clientWidth / 2;
-    let best = 1;
+
+    const elRect = el.getBoundingClientRect();
+    const elCenter = elRect.left + elRect.width / 2;
+    let best = 0;
     let bestDist = Infinity;
+
     for (let i = 0; i < el.children.length; i++) {
       const child = el.children[i] as HTMLElement;
-      const mid = child.offsetLeft + child.clientWidth / 2;
-      const dist = Math.abs(mid - center);
+      const childRect = child.getBoundingClientRect();
+      const childCenter = childRect.left + childRect.width / 2;
+      const dist = Math.abs(childCenter - elCenter);
       if (dist < bestDist) {
         bestDist = dist;
         best = i;
       }
     }
 
-    // Lógica de carrossel infinito sem emendas
     const N = PRATICAR_ITEMS.length;
-    if (N > 0) {
-      if (best <= 1) {
-        const jumpTo = best + N * 2;
-        const child = el.children[jumpTo] as HTMLElement;
-        if (child) {
-          el.scrollTo({
-            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
-            behavior: 'auto',
-          });
-          setActiveIndex(jumpTo);
-          return;
-        }
-      } else if (best >= loopedItems.length - 2) {
-        const jumpTo = best - N * 2;
-        const child = el.children[jumpTo] as HTMLElement;
-        if (child) {
-          el.scrollTo({
-            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
-            behavior: 'auto',
-          });
-          setActiveIndex(jumpTo);
-          return;
-        }
+    // Teleporte instantâneo nas extremidades (mantém sempre nos blocos do meio)
+    if (best < N) {
+      const jumpTo = best + N * 2;
+      const child = el.children[jumpTo] as HTMLElement | undefined;
+      if (child) {
+        const childRect = child.getBoundingClientRect();
+        const delta = childRect.left + childRect.width / 2 - elCenter;
+        el.scrollBy({ left: delta, behavior: 'instant' as ScrollBehavior });
+        setActiveIndex(jumpTo);
+        return;
+      }
+    } else if (best >= loopedItems.length - N) {
+      const jumpTo = best - N * 2;
+      const child = el.children[jumpTo] as HTMLElement | undefined;
+      if (child) {
+        const childRect = child.getBoundingClientRect();
+        const delta = childRect.left + childRect.width / 2 - elCenter;
+        el.scrollBy({ left: delta, behavior: 'instant' as ScrollBehavior });
+        setActiveIndex(jumpTo);
+        return;
       }
     }
 
@@ -191,13 +213,13 @@ const HomePraticarCarousel = () => {
         </div>
       </div>
 
-      {/* Faixa Carrossel Horizontal Infinito com Autoplay */}
+      {/* Faixa Carrossel Horizontal Infinito com Autoplay (idêntica a Leis em Alta) */}
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] md:px-0 flex md:justify-center gap-2.5 sm:gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="relative -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-3 pt-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
         {loopedItems.map((item, i) => {
@@ -210,16 +232,16 @@ const HomePraticarCarousel = () => {
               key={`${item.id}-${i}`}
               type="button"
               onClick={() => handleCardClick(item, i)}
-              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col shadow-md rounded-2xl group transition-all duration-500 ease-out ${
+              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-500 ease-out ${
                 isActive
-                  ? 'scale-100 sm:scale-105 opacity-100 z-10 shadow-xl'
-                  : 'scale-[0.92] opacity-75 z-0'
+                  ? 'scale-[1.04] sm:scale-[1.06] opacity-100 z-20 shadow-2xl ring-2 ring-white/30'
+                  : 'scale-[0.88] opacity-60 z-0 shadow-md'
               }`}
             >
               {/* Gradiente de fundo com marca d'água */}
               <div
                 className={`absolute inset-0 rounded-2xl overflow-hidden pointer-events-none transition-all duration-300 ${
-                  isActive ? 'shadow-xl' : 'shadow-md group-hover:opacity-100 opacity-95'
+                  isActive ? 'shadow-xl ring-1 ring-white/20' : 'shadow-md group-hover:opacity-100 opacity-95'
                 }`}
                 style={{
                   background: `linear-gradient(135deg, ${baseColor} 0%, ${shade(baseColor, -0.3)} 100%)`,
@@ -232,13 +254,13 @@ const HomePraticarCarousel = () => {
                 <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-xl group-hover:bg-white/20 transition-all" />
               </div>
 
-              {/* Personagem 3D com destaque e efeito elástico: menor nas laterais e zoom-in + leve zoom-out ao centralizar */}
+              {/* Personagem 3D com Zoom-In Orgânico + Leve Recuo Spring ao centralizar */}
               {item.image && (
                 <div
-                  className={`absolute right-0 w-auto h-[105px] max-w-none pointer-events-none z-10 transform-gpu origin-bottom transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                  className={`absolute right-0 w-auto h-[120px] sm:h-[130px] max-w-none pointer-events-none z-10 transform-gpu origin-bottom transition-all duration-600 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
                     isActive
-                      ? 'scale-[1.12] -top-5 drop-shadow-[0_14px_28px_rgba(0,0,0,0.75)] opacity-100'
-                      : 'scale-[0.80] -top-2 drop-shadow-[0_4px_10px_rgba(0,0,0,0.4)] opacity-60'
+                      ? 'scale-[1.32] sm:scale-[1.38] -top-9 sm:-top-11 drop-shadow-[0_16px_28px_rgba(0,0,0,0.85)] opacity-100'
+                      : 'scale-[0.72] -top-1 drop-shadow-[0_4px_10px_rgba(0,0,0,0.35)] opacity-50'
                   }`}
                 >
                   <img
@@ -282,8 +304,8 @@ const HomePraticarCarousel = () => {
         })}
       </div>
 
-      {/* Indicador de pontos no mobile (respeita o item real no loop) */}
-      <div className="flex md:hidden justify-center items-center gap-1.5 pt-1">
+      {/* Indicador de pontos (respeita o item real no loop) */}
+      <div className="flex justify-center items-center gap-1.5 pt-1">
         {PRATICAR_ITEMS.map((item, idx) => {
           const isCurrentActive = idx === activeIndex % PRATICAR_ITEMS.length;
           return (
@@ -301,7 +323,7 @@ const HomePraticarCarousel = () => {
               aria-label={`Ir para ${item.title}`}
               className={`transition-all duration-300 rounded-full ${
                 isCurrentActive
-                  ? 'w-6 h-1.5 bg-primary'
+                  ? 'w-6 h-1.5 bg-[#E11D48]'
                   : 'w-1.5 h-1.5 bg-white/20 hover:bg-white/40'
               }`}
             />
@@ -313,4 +335,3 @@ const HomePraticarCarousel = () => {
 };
 
 export default memo(HomePraticarCarousel);
-
