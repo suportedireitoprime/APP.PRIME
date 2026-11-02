@@ -1,24 +1,18 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Headphones,
   Play,
   Clock,
-  BookOpen,
   Sparkles,
   Search,
   Bell,
-  CheckCircle2,
-  Layers,
   ChevronRight,
-  Info,
   X,
-  Volume2,
   LayoutList,
-  LayoutGrid,
-  Bookmark
+  LayoutGrid
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -29,19 +23,20 @@ import {
   AudiobookLivro
 } from '@/data/audiobooksCatalogo';
 import { AudiobookPlayerModal } from '@/components/audiobooks/AudiobookPlayerModal';
+import { AudiobookDetailSheet } from '@/components/audiobooks/AudiobookDetailSheet';
 
 export default function AudiobooksPage() {
   const navigate = useNavigate();
 
-  // Livro ativo no Hero
-  const [livroAtivo, setLivroAtivo] = useState<AudiobookLivro>(O_CASO_DOS_EXPLORADORES_DE_CAVERNAS);
+  // Livro aberto no Painel de Detalhes (Padrão Biblioteca)
+  const [livroSelecionado, setLivroSelecionado] = useState<AudiobookLivro | null>(null);
+
+  // Livro ativo no Player em Tela Cheia
+  const [livroPlayer, setLivroPlayer] = useState<AudiobookLivro>(O_CASO_DOS_EXPLORADORES_DE_CAVERNAS);
 
   // Modal do Player
   const [playerOpen, setPlayerOpen] = useState(false);
   const [selectedCapituloIndex, setSelectedCapituloIndex] = useState(0);
-
-  // Modal de Detalhes "Em Breve"
-  const [livroEmBreveModal, setLivroEmBreveModal] = useState<AudiobookLivro | null>(null);
 
   // Modo de visualização do catálogo: Lista (Padrão Biblioteca) vs Grade (Capas)
   const [visualizacao, setVisualizacao] = useState<'lista' | 'grade'>('lista');
@@ -60,9 +55,6 @@ export default function AudiobooksPage() {
   const [termoBusca, setTermoBusca] = useState('');
   const [filtroStatus, setFiltroStatus] = useState<'todos' | 'disponivel' | 'em_breve'>('todos');
 
-  // Ref da seção do Hero para scroll suave
-  const heroRef = useRef<HTMLDivElement | null>(null);
-
   // Recupera onde o usuário parou em O Caso dos Exploradores de Cavernas
   const storageKey = `audiobook_prog_${O_CASO_DOS_EXPLORADORES_DE_CAVERNAS.id}`;
   const [progressoSalvo, setProgressoSalvo] = useState<{ capituloIndex: number; time: number } | null>(null);
@@ -78,16 +70,10 @@ export default function AudiobooksPage() {
 
   const abrirCapitulo = useCallback((index: number) => {
     haptic.selection();
+    setLivroPlayer(O_CASO_DOS_EXPLORADORES_DE_CAVERNAS);
     setSelectedCapituloIndex(index);
     setPlayerOpen(true);
   }, []);
-
-  const iniciarOuContinuar = useCallback(() => {
-    haptic.impact();
-    const idx = progressoSalvo?.capituloIndex || 0;
-    setSelectedCapituloIndex(idx);
-    setPlayerOpen(true);
-  }, [progressoSalvo]);
 
   // Alterna notificação do usuário para obras "Em Breve"
   const toggleNotificacao = useCallback((livroId: string, titulo: string) => {
@@ -118,29 +104,25 @@ export default function AudiobooksPage() {
 
       // Filtro de Busca por Título ou Autor
       if (termoBusca.trim()) {
-        const query = termoBusca.toLowerCase().trim();
+        const query = termoBusca.toLowerCase();
         const matchTitulo = livro.titulo.toLowerCase().includes(query);
-        const matchAutor = livro.autor.toLowerCase().includes(query);
-        if (!matchTitulo && !matchAutor) return false;
+        const matchAutor = livro.autor?.toLowerCase().includes(query);
+        const matchTag = livro.tags?.some((t) => t.toLowerCase().includes(query));
+        return matchTitulo || matchAutor || matchTag;
       }
 
       return true;
     });
-  }, [filtroStatus, termoBusca]);
+  }, [termoBusca, filtroStatus]);
 
   // Contadores para as abas
   const totalCount = AUDIOBOOKS_CATALOGO.length;
   const disponivelCount = useMemo(() => AUDIOBOOKS_CATALOGO.filter((l) => l.status === 'disponivel').length, []);
-  const emBreveCount = useMemo(() => AUDIOBOOKS_CATALOGO.filter((l) => l.status === 'em_breve').length, []);
+  const emBreveCount = totalCount - disponivelCount;
 
   const handleCardClick = (livro: AudiobookLivro) => {
     haptic.selection();
-    if (livro.status === 'disponivel') {
-      setLivroAtivo(livro);
-      heroRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      setLivroEmBreveModal(livro);
-    }
+    setLivroSelecionado(livro);
   };
 
   return (
@@ -178,163 +160,61 @@ export default function AudiobooksPage() {
           <div className="w-12 sm:w-[52px]" />
         </header>
 
-        {/* Hero Card do Livro em Destaque */}
-        <div ref={heroRef}>
-          <section className="mt-6 p-5 sm:p-7 rounded-3xl bg-gradient-to-br from-[#1C1C20] via-[#161619] to-[#101012] border border-white/10 shadow-2xl relative overflow-hidden">
-            <div className="flex flex-col md:flex-row gap-6 items-center md:items-start relative z-10">
-              {/* Capa do Livro em Destaque */}
-              <div className="w-44 sm:w-52 shrink-0 rounded-2xl overflow-hidden shadow-2xl border border-white/15 bg-zinc-950 aspect-[3/4] relative group">
-                <img
-                  src={livroAtivo.capaUrl}
-                  alt={livroAtivo.titulo}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
-                  <span className="text-[10px] sm:text-[11px] font-bold text-white/90 uppercase tracking-widest flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-[#E11D48]" />
-                    Edição Especial
-                  </span>
-                </div>
+        {/* Banner Hero Compacto Padrão Biblioteca */}
+        <section className="mt-4 p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-neutral-900 via-neutral-950 to-neutral-900 border border-white/10 shadow-xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-72 h-72 bg-[#E11D48]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E11D48]/15 border border-[#E11D48]/30 text-[#E11D48] text-[11px] font-bold uppercase tracking-wider mb-2">
+                <Headphones className="w-3.5 h-3.5" />
+                Coleção Clássicos do Direito
               </div>
-
-              {/* Metadados e Sinopse */}
-              <div className="flex-1 flex flex-col justify-between text-center md:text-left">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E11D48]/15 border border-[#E11D48]/30 text-[#E11D48] text-xs font-bold uppercase tracking-wider mb-2">
-                    <Sparkles className="w-3 h-3" />
-                    Obra Prima da Filosofia do Direito
-                  </div>
-
-                  <h2 className="font-serif italic text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
-                    {livroAtivo.titulo}
-                  </h2>
-
-                  <p className="text-white/60 text-sm mt-1 font-medium">
-                    Por <span className="text-white font-semibold">{livroAtivo.autor}</span> {livroAtivo.ano && `(${livroAtivo.ano})`}
-                  </p>
-
-                  <p className="text-white/80 text-xs sm:text-sm mt-3 leading-relaxed line-clamp-3 md:line-clamp-none">
-                    {livroAtivo.descricao}
-                  </p>
-                </div>
-
-                {/* Informações de Duração e Capítulos */}
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-5 pt-4 border-t border-white/10 text-xs text-white/70">
-                  <div className="flex items-center gap-1.5">
-                    <Layers className="w-4 h-4 text-[#E11D48]" />
-                    <span>{livroAtivo.totalCapitulos} Capítulos</span>
-                  </div>
-                  {livroAtivo.duracaoTotalFormatada && (
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-[#E11D48]" />
-                      <span>Duração: {livroAtivo.duracaoTotalFormatada}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Botão de Ação Primária */}
-                <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                  <button
-                    type="button"
-                    onClick={iniciarOuContinuar}
-                    className="flex-1 min-h-[48px] px-6 py-3 rounded-2xl bg-[#E11D48] hover:bg-[#E11D48]/90 active:scale-95 text-white font-display font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2.5 shadow-xl shadow-[#E11D48]/25 transition-all cursor-pointer"
-                  >
-                    <Play className="w-4 h-4 fill-white" />
-                    <span>
-                      {progressoSalvo
-                        ? `Continuar Capítulo ${progressoSalvo.capituloIndex + 1}`
-                        : 'Começar Audiobook'}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Sinopse da Obra em Destaque */}
-          {livroAtivo.sinopse && (
-            <div className="mt-4 p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-start gap-3">
-              <Info className="w-5 h-5 text-[#E11D48] shrink-0 mt-0.5" />
-              <p className="text-xs text-white/70 leading-relaxed">
-                {livroAtivo.sinopse}
+              <h2 className="font-display font-bold text-2xl sm:text-3xl text-white tracking-tight">
+                Audiobooks Jurídicos
+              </h2>
+              <p className="text-white/60 text-xs sm:text-sm mt-1 max-w-lg leading-relaxed">
+                Obras fundamentais da filosofia e teoria do direito com narração profissional, legendas sincronizadas e imagens em alta definição.
               </p>
             </div>
-          )}
 
-          {/* Lista de Capítulos do Livro Ativo */}
-          {livroAtivo.capitulos && livroAtivo.capitulos.length > 0 && (
-            <section className="mt-8 space-y-3">
-              <div className="flex items-center justify-between px-1">
-                <h3 className="font-display font-bold text-lg text-white uppercase tracking-wider flex items-center gap-2">
-                  <span className="w-1 h-5 rounded-full bg-[#E11D48]" />
-                  Capítulos Gravados ({livroAtivo.totalCapitulos})
-                </h3>
-                <span className="text-xs text-white/50">Toque para reproduzir</span>
+            {/* Destaque Rápido para Abrir o Painel de O Caso dos Exploradores */}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.impact();
+                setLivroSelecionado(O_CASO_DOS_EXPLORADORES_DE_CAVERNAS);
+              }}
+              className="shrink-0 flex items-center gap-3 p-2.5 pr-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 active:scale-95 transition-all text-left group cursor-pointer shadow-md"
+            >
+              <div className="w-12 h-16 rounded-lg overflow-hidden border border-white/20 bg-black shrink-0 relative">
+                <img
+                  src={O_CASO_DOS_EXPLORADORES_DE_CAVERNAS.capaUrl}
+                  alt=""
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+                <span className="absolute bottom-0 inset-x-0 bg-[#E11D48] text-[8px] font-black uppercase text-center text-white py-0.5">
+                  ÁUDIO
+                </span>
               </div>
-
-              <div className="space-y-2.5">
-                {livroAtivo.capitulos.map((cap, index) => {
-                  const isCurrent = progressoSalvo?.capituloIndex === index;
-                  return (
-                    <button
-                      key={cap.id}
-                      type="button"
-                      onClick={() => abrirCapitulo(index)}
-                      className={`w-full flex items-center gap-3.5 p-4 rounded-2xl text-left border transition-all active:scale-[0.99] group cursor-pointer ${
-                        isCurrent
-                          ? 'bg-[#E11D48]/15 border-[#E11D48]/35 shadow-lg'
-                          : 'bg-[#18181B] hover:bg-[#202024] border-white/5 hover:border-white/10'
-                      }`}
-                    >
-                      {/* Círculo do número do capítulo */}
-                      <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 font-display font-bold text-sm transition-transform group-hover:scale-105 ${
-                          isCurrent
-                            ? 'bg-[#E11D48] text-white shadow-md'
-                            : 'bg-white/10 text-white/80 group-hover:bg-[#E11D48] group-hover:text-white'
-                        }`}
-                      >
-                        <Play className="w-4 h-4 fill-current translate-x-0.5" />
-                      </div>
-
-                      {/* Informações do Capítulo */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#E11D48]">
-                            Capítulo {cap.numero}
-                          </span>
-                          <span className="text-[10px] text-white/40">•</span>
-                          <span className="text-[10px] text-white/50 truncate">{cap.autor}</span>
-                        </div>
-
-                        <h4 className="font-display font-bold text-[15px] sm:text-[16px] text-white truncate mt-0.5 group-hover:text-[#E11D48] transition-colors">
-                          {cap.titulo}
-                        </h4>
-
-                        <p className="text-xs text-white/60 truncate mt-0.5 font-sans">
-                          {cap.descricao}
-                        </p>
-                      </div>
-
-                      {/* Duração formatada e seta */}
-                      <div className="shrink-0 flex items-center gap-2">
-                        <span className="font-mono text-xs text-white/50">
-                          {cap.duracaoFormatada}
-                        </span>
-                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-                      </div>
-                    </button>
-                  );
-                })}
+              <div className="min-w-0">
+                <span className="text-[10px] text-emerald-400 font-bold uppercase flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Disponível Agora
+                </span>
+                <p className="text-xs font-bold text-white group-hover:text-[#E11D48] transition-colors truncate max-w-[150px]">
+                  Exploradores de Cavernas
+                </p>
+                <span className="text-[10px] text-white/50">8 capítulos gravados</span>
               </div>
-            </section>
-          )}
-        </div>
+              <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-all ml-1" />
+            </button>
+          </div>
+        </section>
 
         {/* ======================================================== */}
         {/* SEÇÃO DO ACERVO NO FORMATO PADRÃO DA BIBLIOTECA         */}
         {/* ======================================================== */}
-        <section className="mt-14 pt-8 border-t border-white/10">
+        <section className="mt-8">
           {/* Header da Seção Idêntico à Biblioteca */}
           <div className="mb-4">
             <p className="text-[10px] uppercase tracking-[0.22em] text-[#E11D48] font-bold">
@@ -385,7 +265,7 @@ export default function AudiobooksPage() {
               </div>
             </div>
             <p className="text-sm text-white/60 mt-1 ml-3">
-              Toque em um livro para ouvir o audiobook ou ser avisado assim que o áudio for lançado.
+              Toque em qualquer livro para abrir o painel de detalhes, sinopse e capítulos.
             </p>
           </div>
 
@@ -558,7 +438,7 @@ export default function AudiobooksPage() {
                       ) : (
                         <span className="text-[11px] uppercase tracking-wide font-semibold text-white/70 px-3 py-1.5 rounded-full bg-white/5 group-hover:bg-white/10 border border-white/10 transition-colors flex items-center gap-1">
                           <Clock className="w-3 h-3 text-amber-400" />
-                          Em breve
+                          Painel
                         </span>
                       )}
                     </div>
@@ -583,7 +463,6 @@ export default function AudiobooksPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-5">
               {livrosFiltrados.map((livro) => {
                 const isDisponivel = livro.status === 'disponivel';
-                const isNotificado = notificados[livro.id];
 
                 return (
                   <motion.div
@@ -615,12 +494,6 @@ export default function AudiobooksPage() {
                           </span>
                         )}
                       </div>
-
-                      {isNotificado && !isDisponivel && (
-                        <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#E11D48] text-white flex items-center justify-center shadow-md">
-                          <Bell className="w-2.5 h-2.5" />
-                        </div>
-                      )}
                     </div>
 
                     <div className="p-3 flex-1 flex flex-col justify-between">
@@ -657,123 +530,27 @@ export default function AudiobooksPage() {
       </div>
 
       {/* ======================================================== */}
-      {/* MODAL DETALHADO DO LIVRO EM BREVE                        */}
+      {/* PAINEL DE AJUSTE / DETALHES DO AUDIOBOOK (PADRÃO BIBLIOTECA) */}
       {/* ======================================================== */}
-      <AnimatePresence>
-        {livroEmBreveModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg bg-[#141416] border border-white/10 rounded-3xl p-6 shadow-2xl overflow-hidden max-h-[90dvh] flex flex-col"
-            >
-              {/* Botão de Fechar */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  setLivroEmBreveModal(null);
-                }}
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 flex items-center justify-center text-white/70 hover:text-white transition-all cursor-pointer z-20"
-                aria-label="Fechar"
-              >
-                <X className="w-5 h-5" />
-              </button>
+      <AudiobookDetailSheet
+        open={!!livroSelecionado}
+        livro={livroSelecionado}
+        onClose={() => setLivroSelecionado(null)}
+        onPlayCapitulo={(index) => {
+          abrirCapitulo(index);
+        }}
+        progressoSalvo={
+          livroSelecionado?.id === O_CASO_DOS_EXPLORADORES_DE_CAVERNAS.id
+            ? progressoSalvo
+            : null
+        }
+        isNotificado={livroSelecionado ? !!notificados[livroSelecionado.id] : false}
+        onToggleNotificacao={toggleNotificacao}
+      />
 
-              <div className="overflow-y-auto pr-1 space-y-5">
-                {/* Header do Modal com Capa e Título */}
-                <div className="flex gap-4 items-start">
-                  <div className="w-24 sm:w-28 shrink-0 rounded-xl overflow-hidden bg-zinc-950 aspect-[3/4] border border-white/10 shadow-lg">
-                    <img
-                      src={livroEmBreveModal.capaUrl}
-                      alt={livroEmBreveModal.titulo}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  <div className="flex-1 min-w-0 pr-6">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">
-                      <Clock className="w-3 h-3" />
-                      Audiobook em Breve
-                    </div>
-                    <h3 className="font-serif italic font-bold text-lg sm:text-xl text-white leading-tight">
-                      {livroEmBreveModal.titulo}
-                    </h3>
-                    <p className="text-white/60 text-xs mt-1">
-                      Por <span className="text-white font-medium">{livroEmBreveModal.autor}</span>
-                      {livroEmBreveModal.ano && ` (${livroEmBreveModal.ano})`}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Card Informativo sobre a Produção */}
-                <div className="p-4 rounded-2xl bg-[#E11D48]/10 border border-[#E11D48]/25 flex items-start gap-3">
-                  <Volume2 className="w-5 h-5 text-[#E11D48] shrink-0 mt-0.5" />
-                  <div className="text-xs text-white/80 leading-relaxed space-y-1">
-                    <p className="font-bold text-white">Audiobook em Fase de Gravação</p>
-                    <p className="text-white/70">
-                      Nossos audiobooks contam com narração profissional imersiva em estúdio, trilha orquestrada, divisão em capítulos e legendas sincronizadas para estudo ativo.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Sinopse da Obra */}
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-white/50 mb-1.5">
-                    Sobre a Obra
-                  </h4>
-                  <p className="text-xs sm:text-sm text-white/75 leading-relaxed bg-white/[0.02] border border-white/5 p-3.5 rounded-2xl">
-                    {livroEmBreveModal.sinopse || livroEmBreveModal.descricao}
-                  </p>
-                </div>
-
-                {/* Ações: Notificar no Lançamento + Ler na Biblioteca */}
-                <div className="space-y-2.5 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => toggleNotificacao(livroEmBreveModal.id, livroEmBreveModal.titulo)}
-                    className={`w-full min-h-[48px] px-4 py-3 rounded-2xl font-display font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                      notificados[livroEmBreveModal.id]
-                        ? 'bg-emerald-600 text-white shadow-lg'
-                        : 'bg-[#E11D48] hover:bg-[#E11D48]/90 text-white shadow-lg shadow-[#E11D48]/25'
-                    }`}
-                  >
-                    {notificados[livroEmBreveModal.id] ? (
-                      <>
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span>✓ Notificação Ativada (Você será avisado)</span>
-                      </>
-                    ) : (
-                      <>
-                        <Bell className="w-4 h-4" />
-                        <span>Quero Ser Avisado no Lançamento</span>
-                      </>
-                    )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      setLivroEmBreveModal(null);
-                      navigate('/bibliotecas/classicos');
-                    }}
-                    className="w-full min-h-[44px] px-4 py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 active:scale-98 text-white/80 hover:text-white border border-white/10 font-semibold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
-                  >
-                    <BookOpen className="w-4 h-4 text-white/60" />
-                    <span>Ler Obra em Texto na Biblioteca</span>
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Modal Player em Tela Cheia para o Livro Disponível */}
+      {/* Modal Player em Tela Cheia com Narração e Legendas */}
       <AudiobookPlayerModal
-        livro={livroAtivo}
+        livro={livroPlayer}
         capituloInicialIndex={selectedCapituloIndex}
         isOpen={playerOpen}
         onClose={() => setPlayerOpen(false)}

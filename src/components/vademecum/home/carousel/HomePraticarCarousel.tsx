@@ -54,9 +54,13 @@ const PRATICAR_ITEMS: PraticarItem[] = [
   },
 ];
 
+const AUTOPLAY_MS = 5000;
+
 const HomePraticarCarousel = () => {
   const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const isInteractingRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 4 cópias para permitir rolagem contínua infinita sem bater nas bordas
   const loopedItems = useMemo(() => {
@@ -66,6 +70,14 @@ const HomePraticarCarousel = () => {
   // Questões no 2º bloco (índice 4 + 1 = 5) centralizado por padrão
   const [activeIndex, setActiveIndex] = useState(PRATICAR_ITEMS.length + 1);
   const [isReady, setIsReady] = useState(false);
+
+  const pauseAutoplay = useCallback(() => {
+    isInteractingRef.current = true;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 10000);
+  }, []);
 
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
     const el = scrollerRef.current;
@@ -86,6 +98,25 @@ const HomePraticarCarousel = () => {
     }, 40);
     return () => clearTimeout(timer);
   }, [scrollToIndex]);
+
+  // Autoplay automático contínuo a cada 5 segundos (igual Leis em Alta)
+  useEffect(() => {
+    if (!isReady) return;
+
+    const interval = setInterval(() => {
+      if (isInteractingRef.current || document.hidden) return;
+      setActiveIndex((prev) => {
+        const nextIndex = prev + 1;
+        scrollToIndex(nextIndex);
+        return nextIndex;
+      });
+    }, AUTOPLAY_MS);
+
+    return () => {
+      clearInterval(interval);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [isReady, scrollToIndex]);
 
   const handleScroll = useCallback(() => {
     const el = scrollerRef.current;
@@ -136,12 +167,13 @@ const HomePraticarCarousel = () => {
 
   const handleCardClick = useCallback(
     (item: PraticarItem, index: number) => {
+      pauseAutoplay();
       haptic.selection();
       setActiveIndex(index);
       scrollToIndex(index);
       navigate(item.path);
     },
-    [navigate, scrollToIndex]
+    [navigate, pauseAutoplay, scrollToIndex]
   );
 
   return (
@@ -159,10 +191,12 @@ const HomePraticarCarousel = () => {
         </div>
       </div>
 
-      {/* Faixa Carrossel Horizontal Infinito */}
+      {/* Faixa Carrossel Horizontal Infinito com Autoplay */}
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
+        onPointerDown={pauseAutoplay}
+        onTouchStart={pauseAutoplay}
         className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] md:px-0 flex md:justify-center gap-2.5 sm:gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 pt-8 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
@@ -257,6 +291,7 @@ const HomePraticarCarousel = () => {
               key={item.id}
               type="button"
               onClick={() => {
+                pauseAutoplay();
                 haptic.selection();
                 const currentBlock = Math.floor(activeIndex / PRATICAR_ITEMS.length);
                 const targetIndex = currentBlock * PRATICAR_ITEMS.length + idx;

@@ -275,20 +275,20 @@ const BottomNav = () => {
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Notícias</span>
           </button>
 
-          {/* Slot 2: Lições */}
+          {/* Slot 2: Chat */}
           <button
-            onPointerDown={() => prefetchRoute('leiSeca')}
-            onMouseEnter={() => prefetchRoute('leiSeca')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/lei-seca')); }}
+            onPointerDown={() => prefetchRoute('chatJuridico')}
+            onMouseEnter={() => prefetchRoute('chatJuridico')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/chat-juridico')); }}
             data-track="bottom_nav_click"
-            data-track-destino="lei-seca"
+            data-track-destino="chat-juridico"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              path.startsWith('/lei-seca') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              path.startsWith('/chat-juridico') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Lições"
+            aria-label="Chat"
           >
-            <Pencil className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/lei-seca') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} fill={path.startsWith('/lei-seca') ? 'currentColor' : 'none'} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Lições</span>
+            <MessageCircle className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${path.startsWith('/chat-juridico') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} fill={path.startsWith('/chat-juridico') ? 'currentColor' : 'none'} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Chat</span>
           </button>
 
           {/* Slot 3: Vade Mecum (destaque flutuante central no mobile, normal no tablet) */}
