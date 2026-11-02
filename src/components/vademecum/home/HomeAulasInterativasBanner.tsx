@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { GraduationCap, ArrowRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { AULAS_CATALOGO_COMPLETO } from '@/data/aulasInterativasCatalogoCompleto';
 
@@ -39,13 +39,8 @@ const HomeAulasInterativasBanner = () => {
     navigate('/aulas');
   };
 
-  const displayNome = aulaRecente
-    ? aulaRecente.aula.titulo
-    : 'Aprenda Direito com Visual e Narração';
-
-  const displaySubtitulo = aulaRecente
-    ? `Continuar na etapa ${aulaRecente.etapaAtual} de ${aulaRecente.aula.etapas}`
-    : 'Slides ilustrados, flashcards e questões ativas';
+  const displayNome = 'Aulas de Direito';
+  const displaySubtitulo = 'Domine as matérias';
 
   return (
     <motion.button
@@ -60,11 +55,11 @@ const HomeAulasInterativasBanner = () => {
       }}
       className="w-full flex items-center gap-3 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-transform overflow-hidden relative shadow-lg group cursor-pointer"
     >
-      {/* Ícone principal à esquerda */}
+      {/* Ícone principal à esquerda — Chapéu de Formatura */}
       <div className="flex items-center justify-center shrink-0 z-10">
-        <Sparkles
+        <GraduationCap
           className="w-7 h-7 sm:w-8 sm:h-8 drop-shadow-sm text-red-400 group-hover:scale-105 transition-transform"
-          strokeWidth={1.6}
+          strokeWidth={1.7}
         />
       </div>
 
@@ -82,10 +77,10 @@ const HomeAulasInterativasBanner = () => {
         </p>
       </div>
 
-      {/* Seta indicativa à direita */}
+      {/* Seta indicativa à direita ampliada */}
       <ArrowRight
-        className="w-5 h-5 shrink-0 z-10 text-red-400 group-hover:translate-x-0.5 transition-transform"
-        strokeWidth={2}
+        className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 z-10 text-red-400 group-hover:translate-x-1 transition-transform"
+        strokeWidth={2.4}
       />
 
       {/* Decoração de fundo — SVG translúcido no lado direito com glow vermelho */}
@@ -95,7 +90,7 @@ const HomeAulasInterativasBanner = () => {
           filter: `drop-shadow(0 4px 12px rgba(0,0,0,0.9)) drop-shadow(0 0 10px ${RED_COLOR}40)`,
         }}
       >
-        <Sparkles
+        <GraduationCap
           className="w-24 h-24 opacity-25 text-red-500"
           strokeWidth={1.2}
         />

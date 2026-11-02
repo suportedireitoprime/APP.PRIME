@@ -4,6 +4,7 @@ import { ChevronRight, ScrollText, BookMarked, Landmark, Scale, Briefcase, Car, 
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import HomeCard from '@/components/vademecum/home/HomeCard';
 import HomeEmAltaCarousel from '@/components/vademecum/home/carousel/HomeEmAltaCarousel';
+import HomeVadeMecumRecenteBanner from '@/components/vademecum/home/HomeVadeMecumRecenteBanner';
 import { AREA_CATS, RADAR_CATS, Cat, AreaCat } from './homeSectionsData';
 import { LEIS_CATALOG } from '@/data/leisCatalog';
 
@@ -48,6 +49,11 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
 
   return (
     <div className="space-y-6 pb-8">
+      {/* Botão da Última Lei Acessada (Continuar Leitura) */}
+      <div className="pt-1">
+        <HomeVadeMecumRecenteBanner onOpenLei={onOpenLei} />
+      </div>
+
       {/* 1. CARROSSEL DE LEIS EM ALTA */}
       <HomeEmAltaCarousel onOpenLei={onOpenLei} />
 
