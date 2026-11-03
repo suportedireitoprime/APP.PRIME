@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,8 +19,11 @@ import {
 export default function FerramentasSimuladosResolver() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialSimulado = location.state?.simulado;
   const [rodando, setRodando] = useState(true);
   const [segundos, setSegundos] = useState(0);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const { user } = useAuth();
   const [historicoId, setHistoricoId] = useState<string | null>(null);
   
@@ -85,6 +88,9 @@ export default function FerramentasSimuladosResolver() {
 
   const { data: simulado, isLoading: loadingSimulado } = useQuery({
     queryKey: ['simulados', id],
+    initialData: initialSimulado,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('simulados')
@@ -102,15 +108,26 @@ export default function FerramentasSimuladosResolver() {
 
   const { data: questoesData, isLoading: loadingQuestoes } = useQuery({
     queryKey: ['simulado_questions', id],
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    retry: 1,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('simulado_questions')
-        .select('*')
-        .eq('simulado_id', id);
-        // .order('numero_questao', { ascending: true }); // There is no numero_questao column in our schema yet
-      
-      if (error) throw error;
-      return data as any[];
+      try {
+        const { data, error } = await supabase
+          .from('simulado_questions')
+          .select('*')
+          .eq('simulado_id', id)
+          .order('created_at', { ascending: true });
+        
+        if (error) {
+          console.warn('Erro ao buscar questões:', error);
+          return [];
+        }
+        return data as any[];
+      } catch (err) {
+        console.warn('Falha na query de questões:', err);
+        return [];
+      }
     },
     enabled: !!id
   });

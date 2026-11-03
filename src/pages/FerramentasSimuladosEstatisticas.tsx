@@ -12,13 +12,22 @@ export default function FerramentasSimuladosEstatisticas() {
 
   const { data: stats, isLoading } = useQuery({
     queryKey: ['simulados_stats', user?.id],
+    staleTime: 5 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
     queryFn: async () => {
       if (!user) throw new Error("Não autenticado");
 
-      // Buscar histórico finalizado do usuário
+      // Buscar histórico finalizado do usuário com relações corretas
       const { data: historicos, error: histError } = await supabase
         .from('user_simulados_historico')
-        .select('*, simulados(title)')
+        .select(`
+          *,
+          simulados:simulado_id (
+            id,
+            year,
+            exam:simulado_exams(name)
+          )
+        `)
         .eq('user_id', user.id)
         .eq('status', 'finalizado')
         .order('completed_at', { ascending: false });
@@ -202,7 +211,9 @@ export default function FerramentasSimuladosEstatisticas() {
                   {stats.historicos.slice(0, 5).map((h: any) => (
                     <div key={h.id} className="p-3 border border-border/50 rounded-lg bg-background/50 flex justify-between items-center">
                       <div>
-                        <p className="font-medium text-sm text-foreground line-clamp-1">{h.simulados?.title || 'Simulado'}</p>
+                        <p className="font-medium text-sm text-foreground line-clamp-1">
+                          {h.simulados?.exam?.name ? `${h.simulados.exam.name} ${h.simulados.year || ''}`.trim() : 'Simulado'}
+                        </p>
                         <p className="text-xs text-muted-foreground mt-0.5">
                           {new Date(h.completed_at).toLocaleDateString('pt-BR')}
                         </p>
