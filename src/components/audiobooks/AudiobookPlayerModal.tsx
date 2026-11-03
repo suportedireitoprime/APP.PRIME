@@ -1,5 +1,5 @@
-import React, { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { memo, useState, useEffect, useRef, useMemo, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
   Play,
@@ -15,12 +15,12 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
-  ChevronDown
-} from 'lucide-react';
-import { haptic } from '@/lib/nativeHaptics';
-import { registrarMidia, clearMediaSession } from '@/lib/mediaSession';
-import { telaAcesa } from '@/lib/nativo/telaAcordada';
-import { AudiobookCapitulo, AudiobookLivro } from '@/data/audiobooksCatalogo';
+  ChevronDown,
+} from "lucide-react";
+import { haptic } from "@/lib/nativeHaptics";
+import { registrarMidia, clearMediaSession } from "@/lib/mediaSession";
+import { telaAcesa } from "@/lib/nativo/telaAcordada";
+import { AudiobookCapitulo, AudiobookLivro } from "@/data/audiobooksCatalogo";
 
 interface AudiobookPlayerModalProps {
   livro: AudiobookLivro;
@@ -44,7 +44,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
   const [duration, setDuration] = useState(0);
   const [velocidadeIndex, setVelocidadeIndex] = useState(0);
   const [showCapitulosSheet, setShowCapitulosSheet] = useState(false);
-  const [viewMode, setViewMode] = useState<'cena' | 'legenda'>('cena');
+  const [viewMode, setViewMode] = useState<"cena" | "legenda">("cena");
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const transcriptContainerRef = useRef<HTMLDivElement | null>(null);
@@ -55,9 +55,10 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
   }, [livro, capituloIndex]);
 
   // Áudio ativo: toca primeiro o áudio de título do capítulo (~3s), depois a narração completa
-  const activeAudioSrc = (isPlayingTitulo && capituloAtual.audioTituloUrl)
-    ? capituloAtual.audioTituloUrl
-    : capituloAtual.audioUrl;
+  const activeAudioSrc =
+    isPlayingTitulo && capituloAtual.audioTituloUrl
+      ? capituloAtual.audioTituloUrl
+      : capituloAtual.audioUrl;
 
   // Salva e restaura progresso do livro
   const storageKey = `audiobook_prog_${livro.id}`;
@@ -72,7 +73,10 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
       const raw = localStorage.getItem(storageKey);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (typeof parsed.capituloIndex === 'number' && parsed.capituloIndex === capituloInicialIndex) {
+        if (
+          typeof parsed.capituloIndex === "number" &&
+          parsed.capituloIndex === capituloInicialIndex
+        ) {
           savedTime = parsed.time || 0;
         }
       }
@@ -93,19 +97,22 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
     }
   }, [isOpen, capituloInicialIndex, livro.capitulos, storageKey]);
 
-  const salvarProgresso = useCallback((time: number) => {
-    if (isPlayingTitulo) return;
-    try {
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify({
-          capituloIndex,
-          time,
-          updatedAt: Date.now(),
-        })
-      );
-    } catch {}
-  }, [capituloIndex, isPlayingTitulo, storageKey]);
+  const salvarProgresso = useCallback(
+    (time: number) => {
+      if (isPlayingTitulo) return;
+      try {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            capituloIndex,
+            time,
+            updatedAt: Date.now(),
+          }),
+        );
+      } catch {}
+    },
+    [capituloIndex, isPlayingTitulo, storageKey],
+  );
 
   // Imagem atual calculada pelos timestamps das cenas
   const imagemAtual = useMemo(() => {
@@ -113,7 +120,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
       return livro.capaUrl;
     }
     const hit = capituloAtual.imagens.find(
-      (img) => currentTime >= img.startTime && currentTime <= img.endTime
+      (img) => currentTime >= img.startTime && currentTime <= img.endTime,
     );
     return hit ? hit.url : capituloAtual.imagens[0].url;
   }, [capituloAtual, currentTime, livro.capaUrl]);
@@ -121,17 +128,15 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
   // Legenda atual em tempo real
   const cueAtual = useMemo(() => {
     if (!capituloAtual.cues || capituloAtual.cues.length === 0) return null;
-    return capituloAtual.cues.find(
-      (c) => currentTime >= c.start && currentTime <= c.end
-    );
+    return capituloAtual.cues.find((c) => currentTime >= c.start && currentTime <= c.end);
   }, [capituloAtual, currentTime]);
 
   // Auto-scroll da transcrição no modo legenda
   useEffect(() => {
-    if (viewMode === 'legenda' && activeCueRef.current && transcriptContainerRef.current) {
+    if (viewMode === "legenda" && activeCueRef.current && transcriptContainerRef.current) {
       activeCueRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
+        behavior: "smooth",
+        block: "center",
       });
     }
   }, [cueAtual, viewMode]);
@@ -146,22 +151,27 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
       el.pause();
       setIsPlaying(false);
     } else {
-      el.play().then(() => setIsPlaying(true)).catch(() => {});
+      el.play()
+        .then(() => setIsPlaying(true))
+        .catch(() => {});
     }
   }, [isPlaying]);
 
-  const pularSegundos = useCallback((delta: number) => {
-    haptic.selection();
-    if (isPlayingTitulo) {
-      setIsPlayingTitulo(false);
-    }
-    const el = audioRef.current;
-    if (!el) return;
-    const novo = Math.max(0, Math.min(duration || el.duration || 9999, el.currentTime + delta));
-    el.currentTime = novo;
-    setCurrentTime(novo);
-    salvarProgresso(novo);
-  }, [duration, isPlayingTitulo, salvarProgresso]);
+  const pularSegundos = useCallback(
+    (delta: number) => {
+      haptic.selection();
+      if (isPlayingTitulo) {
+        setIsPlayingTitulo(false);
+      }
+      const el = audioRef.current;
+      if (!el) return;
+      const novo = Math.max(0, Math.min(duration || el.duration || 9999, el.currentTime + delta));
+      el.currentTime = novo;
+      setCurrentTime(novo);
+      salvarProgresso(novo);
+    },
+    [duration, isPlayingTitulo, salvarProgresso],
+  );
 
   const mudarVelocidade = useCallback(() => {
     haptic.selection();
@@ -173,22 +183,28 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
     }
   }, [velocidadeIndex]);
 
-  const selecionarCapitulo = useCallback((idx: number) => {
-    haptic.selection();
-    setCapituloIndex(idx);
-    setCurrentTime(0);
-    setShowCapitulosSheet(false);
-    const proxCap = livro.capitulos[idx];
-    const temTitulo = Boolean(proxCap?.audioTituloUrl);
-    setIsPlayingTitulo(temTitulo);
+  const selecionarCapitulo = useCallback(
+    (idx: number) => {
+      haptic.selection();
+      setCapituloIndex(idx);
+      setCurrentTime(0);
+      setShowCapitulosSheet(false);
+      const proxCap = livro.capitulos[idx];
+      const temTitulo = Boolean(proxCap?.audioTituloUrl);
+      setIsPlayingTitulo(temTitulo);
 
-    setTimeout(() => {
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-      }
-    }, 150);
-  }, [livro.capitulos]);
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          audioRef.current
+            .play()
+            .then(() => setIsPlaying(true))
+            .catch(() => {});
+        }
+      }, 150);
+    },
+    [livro.capitulos],
+  );
 
   const proximoCapitulo = useCallback(() => {
     if (capituloIndex < livro.capitulos.length - 1) {
@@ -203,10 +219,10 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
   }, [capituloIndex, selecionarCapitulo]);
 
   const formatTempo = (secs: number) => {
-    if (isNaN(secs) || secs < 0) return '00:00';
+    if (isNaN(secs) || secs < 0) return "00:00";
     const m = Math.floor(secs / 60);
     const s = Math.floor(secs % 60);
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
   };
 
   const fecharPlayer = useCallback(() => {
@@ -216,7 +232,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
       setIsPlaying(false);
       clearMediaSession(audioRef.current);
     }
-    void telaAcesa('audiobook', false);
+    void telaAcesa("audiobook", false);
     onClose();
   }, [onClose]);
 
@@ -224,26 +240,26 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         fecharPlayer();
-      } else if (e.code === 'Space' && (e.target as HTMLElement).tagName !== 'INPUT') {
+      } else if (e.code === "Space" && (e.target as HTMLElement).tagName !== "INPUT") {
         e.preventDefault();
         togglePlay();
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, fecharPlayer, togglePlay]);
 
   // Gerenciamento de WakeLock (mantém a tela acesa enquanto o usuário ouve/lê as legendas)
   useEffect(() => {
     if (!isOpen) {
-      void telaAcesa('audiobook', false);
+      void telaAcesa("audiobook", false);
       return;
     }
-    void telaAcesa('audiobook', isPlaying);
+    void telaAcesa("audiobook", isPlaying);
     return () => {
-      void telaAcesa('audiobook', false);
+      void telaAcesa("audiobook", false);
     };
   }, [isOpen, isPlaying]);
 
@@ -253,10 +269,8 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
     if (!isOpen || !el || !capituloAtual) return;
 
     registrarMidia({
-      titulo: isPlayingTitulo
-        ? `${capituloAtual.titulo} (Apresentação)`
-        : capituloAtual.titulo,
-      subtitulo: `${livro.autor} • ${capituloAtual.numero > 0 ? `Cap. ${capituloAtual.numero}` : 'Preliminar'}`,
+      titulo: isPlayingTitulo ? `${capituloAtual.titulo} (Apresentação)` : capituloAtual.titulo,
+      subtitulo: `${livro.autor} • ${capituloAtual.numero > 0 ? `Cap. ${capituloAtual.numero}` : "Preliminar"}`,
       album: livro.titulo,
       capaUrl: imagemAtual || livro.capaUrl,
       audio: el,
@@ -333,7 +347,10 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
             setTimeout(() => {
               if (audioRef.current) {
                 audioRef.current.currentTime = 0;
-                audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+                audioRef.current
+                  .play()
+                  .then(() => setIsPlaying(true))
+                  .catch(() => {});
               }
             }, 60);
           } else if (capituloIndex < livro.capitulos.length - 1) {
@@ -354,7 +371,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
             initial={{ opacity: 0, scale: 1.15 }}
             animate={{ opacity: 0.45, scale: 1.05 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="w-full h-full object-cover object-center filter blur-2xl transform-gpu"
           />
         </AnimatePresence>
@@ -402,12 +419,12 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
 
       {/* Área Central: Cena Visual / Capa Elevada e Legenda Flutuante com Glassmorphism */}
       <div className="relative z-10 flex-1 min-h-0 flex flex-col justify-between p-4 max-w-xl mx-auto w-full">
-        {viewMode === 'cena' ? (
+        {viewMode === "cena" ? (
           <div className="w-full h-full flex flex-col items-center justify-center py-1">
             {/* Capa Centralizada com Efeito de Card 3D e Respiração */}
             <motion.div
               animate={isPlaying ? { scale: [1, 1.018, 1], rotate: [0, 0.3, 0] } : { scale: 1 }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
               className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-3xl overflow-hidden shadow-[0_22px_55px_rgba(0,0,0,0.95)] border border-white/15 my-auto shrink-0 ring-1 ring-purple-500/20"
             >
               <img
@@ -419,7 +436,9 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
               {isPlaying && (
                 <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20 flex items-center gap-1.5 shadow-lg">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="text-[9.5px] font-bold text-white tracking-wider uppercase font-mono">Tocando</span>
+                  <span className="text-[9.5px] font-bold text-white tracking-wider uppercase font-mono">
+                    Tocando
+                  </span>
                 </div>
               )}
             </motion.div>
@@ -468,7 +487,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                 type="button"
                 onClick={() => {
                   haptic.selection();
-                  setViewMode('legenda');
+                  setViewMode("legenda");
                 }}
                 className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition-all text-xs font-semibold text-white/90 hover:text-white flex items-center gap-2 border border-white/15 backdrop-blur-md shadow-lg"
               >
@@ -502,8 +521,8 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                     }}
                     className={`p-3.5 rounded-xl transition-all cursor-pointer text-left ${
                       isActive
-                        ? 'bg-purple-600/25 border border-purple-500/50 shadow-lg text-white font-semibold scale-[1.01]'
-                        : 'text-white/65 hover:text-white/95 hover:bg-white/5 border border-transparent'
+                        ? "bg-purple-600/25 border border-purple-500/50 shadow-lg text-white font-semibold scale-[1.01]"
+                        : "text-white/65 hover:text-white/95 hover:bg-white/5 border border-transparent"
                     }`}
                   >
                     <span className="text-[10px] font-mono text-white/40 block mb-0.5">
@@ -520,7 +539,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                 type="button"
                 onClick={() => {
                   haptic.selection();
-                  setViewMode('cena');
+                  setViewMode("cena");
                 }}
                 className="px-4 py-2 rounded-full bg-black/60 hover:bg-black/80 active:scale-95 transition-all text-xs font-semibold text-white/85 hover:text-white flex items-center gap-1.5 border border-white/15 backdrop-blur-md shadow-lg"
               >
@@ -545,15 +564,13 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
               <span className="text-[11px] font-bold uppercase tracking-wider text-white/50 block">
                 {capituloAtual.numero > 0
                   ? `Capítulo ${capituloAtual.numero} de ${livro.totalCapitulos}`
-                  : 'Faixa Preliminar'}
+                  : "Faixa Preliminar"}
               </span>
             )}
             <h2 className="font-display text-[17px] sm:text-[19px] font-bold text-white truncate leading-tight">
               {capituloAtual.titulo}
             </h2>
-            <p className="text-[12px] text-white/70 font-sans truncate">
-              {capituloAtual.autor}
-            </p>
+            <p className="text-[12px] text-white/70 font-sans truncate">{capituloAtual.autor}</p>
           </div>
 
           <button
@@ -623,11 +640,11 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
               type="button"
               onClick={togglePlay}
               style={{
-                background: 'linear-gradient(135deg, #A855F7 0%, #7C3AED 50%, #6D28D9 100%)',
-                boxShadow: '0 8px 32px -4px rgba(147, 51, 234, 0.75)',
+                background: "linear-gradient(135deg, #A855F7 0%, #7C3AED 50%, #6D28D9 100%)",
+                boxShadow: "0 8px 32px -4px rgba(147, 51, 234, 0.75)",
               }}
               className="relative z-10 w-16 h-16 rounded-full flex items-center justify-center text-white active:scale-95 transition-all cursor-pointer border border-purple-300/40 hover:scale-105 hover:brightness-110"
-              aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
+              aria-label={isPlaying ? "Pausar" : "Reproduzir"}
             >
               {isPlaying ? (
                 <Pause className="w-7 h-7 fill-white drop-shadow-md" />
@@ -666,10 +683,10 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
         {showCapitulosSheet && (
           <div className="fixed inset-0 z-[2050] flex items-end justify-center bg-black/70 backdrop-blur-sm">
             <motion.div
-              initial={{ y: '100%' }}
+              initial={{ y: "100%" }}
               animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 26, stiffness: 280 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 26, stiffness: 280 }}
               className="w-full max-w-lg bg-[#141416] rounded-t-3xl border-t border-white/10 p-5 max-h-[80vh] flex flex-col"
             >
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
@@ -696,16 +713,18 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                       onClick={() => selecionarCapitulo(idx)}
                       className={`w-full flex items-center gap-3 p-3 rounded-2xl text-left transition-all ${
                         isCurrent
-                          ? 'bg-purple-600/20 border border-purple-500/40 text-white shadow-lg'
-                          : 'bg-white/5 hover:bg-white/10 text-white/80 border border-transparent'
+                          ? "bg-purple-600/20 border border-purple-500/40 text-white shadow-lg"
+                          : "bg-white/5 hover:bg-white/10 text-white/80 border border-transparent"
                       }`}
                     >
                       <div
                         className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-xs ${
-                          isCurrent ? 'bg-purple-600 text-white shadow-md' : 'bg-white/10 text-white/60'
+                          isCurrent
+                            ? "bg-purple-600 text-white shadow-md"
+                            : "bg-white/10 text-white/60"
                         }`}
                       >
-                        {cap.numero > 0 ? cap.numero : 'P'}
+                        {cap.numero > 0 ? cap.numero : "P"}
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -729,4 +748,3 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
 };
 
 export default memo(AudiobookPlayerModal);
-
