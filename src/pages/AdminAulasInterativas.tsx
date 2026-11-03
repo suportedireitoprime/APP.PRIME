@@ -7,7 +7,7 @@ import {
   Sparkles, Play, BookOpen, Layers, 
   ArrowLeft, Check, Lock, HelpCircle, 
   AlertCircle, Unlock, ChevronRight, ChevronLeft,
-  Search, X, Star, List, LayoutGrid, Headphones
+  Search, X, Star, List, LayoutGrid, Headphones, Home
 } from 'lucide-react';
 import { AulasMenuAlternancia, AbaAulas } from '@/components/aulas-interativas/AulasMenuAlternancia';
 import { AulasHeroPanel } from '@/components/aulas-interativas/AulasHeroPanel';
@@ -1337,13 +1337,16 @@ export default function AdminAulasInterativas() {
                   <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
                 </button>
 
-                {/* Badge do total de aulas */}
-                <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-                  <BookOpen className="w-3.5 h-3.5" style={{ color: disciplinaAtual.corDestaque }} />
-                  <span className="text-[11px] font-bold text-zinc-300">
-                    {totalAulasDisc} {totalAulasDisc === 1 ? 'Aula' : 'Aulas'}
-                  </span>
-                </div>
+                {/* Botão de Atalho para o Início do Aplicativo (Home) */}
+                <button
+                  type="button"
+                  onClick={() => navigate('/')}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
+                  aria-label="Voltar para o Início do aplicativo"
+                  title="Início do aplicativo"
+                >
+                  <Home className="w-5 h-5 sm:w-5.5 sm:h-5.5" strokeWidth={2.2} />
+                </button>
               </div>
             </div>
 
