@@ -233,7 +233,9 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                 <Play className="w-4 h-4 fill-white text-white drop-shadow-md" />
                 <span className="drop-shadow-md">
                   {progressoSalvo
-                    ? `Continuar Capítulo ${progressoSalvo.capituloIndex + 1}`
+                    ? (capitulos[progressoSalvo.capituloIndex]?.numero > 0
+                        ? `Continuar Capítulo ${capitulos[progressoSalvo.capituloIndex].numero}`
+                        : 'Continuar Reprodução')
                     : 'Começar Audiobook'}
                 </span>
               </button>
@@ -344,7 +346,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">
-                              Capítulo {cap.numero}
+                              {cap.numero > 0 ? `Capítulo ${cap.numero}` : 'Preliminar'}
                             </span>
                             <span className="text-[10px] text-white/40">•</span>
                             <span className="text-[10px] text-white/50 truncate">

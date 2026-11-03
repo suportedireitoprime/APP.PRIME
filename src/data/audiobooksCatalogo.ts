@@ -25,8 +25,8 @@ export interface AudiobookCapitulo {
   duracaoSegundos: number;
   duracaoFormatada: string;
   audioUrl: string;
-  audioTituloUrl: string;
-  srtUrl: string;
+  audioTituloUrl?: string;
+  srtUrl?: string;
   cues: AudiobookCue[];
   imagens: AudiobookImagem[];
 }
@@ -61,8 +61,8 @@ export const O_CASO_DOS_EXPLORADORES_DE_CAVERNAS: AudiobookLivro = {
   "sinopse": "Publicado na Harvard Law Review em 1949, o livro simula o julgamento dos sobreviventes perante a Suprema Corte de Newgarth, confrontando as maiores correntes do pensamento jurídico mundial: o Positivismo, o Jusnaturalismo, o Formalismo e o Realismo Jurídico.",
   "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-caso-dos-exploradores-de-cavernas/capa-do-livro.jpg",
   "totalCapitulos": 8,
-  "duracaoTotalSegundos": 6400,
-  "duracaoTotalFormatada": "106 min",
+  "duracaoTotalSegundos": 6479,
+  "duracaoTotalFormatada": "108 min",
   "tags": [
     "Filosofia do Direito",
     "Jusnaturalismo",
@@ -71,6 +71,108 @@ export const O_CASO_DOS_EXPLORADORES_DE_CAVERNAS: AudiobookLivro = {
     "Harvard Law"
   ],
   "capitulos": [
+    {
+      "numero": 0,
+      "id": "capitulo-00-apresentacao",
+      "titulo": "Apresentação da Obra",
+      "autor": "Lon L. Fuller",
+      "descricao": "Apresentação do livro: título, autor, tradutor, edição brasileira e contexto histórico.",
+      "duracaoSegundos": 28,
+      "duracaoFormatada": "00:28",
+      "audioUrl": "/audiobooks/o-caso-dos-exploradores-de-cavernas/apresentacao-do-livro.mp3",
+      "cues": [
+        {
+          "id": 1,
+          "start": 0,
+          "end": 5.56,
+          "text": "Bem-vindo ao audiobook de O Caso dos Exploradores de Cavernas, de Lon L."
+        },
+        {
+          "id": 2,
+          "start": 5.56,
+          "end": 6.1,
+          "text": "Fuller."
+        },
+        {
+          "id": 3,
+          "start": 6.1,
+          "end": 12.12,
+          "text": "Tradução e notas de Claudio Blanc, apresentação e comentários de Célio Egídio."
+        },
+        {
+          "id": 4,
+          "start": 12.12,
+          "end": 17.75,
+          "text": "Título original: The Case of the Speluncean Explorers, publicado em 1949."
+        },
+        {
+          "id": 5,
+          "start": 17.75,
+          "end": 21.46,
+          "text": "Edição brasileira da Geração Editorial, de 2018."
+        },
+        {
+          "id": 6,
+          "start": 21.46,
+          "end": 27.55,
+          "text": "A narração a seguir começa pela Apresentação e segue o texto original do livro."
+        }
+      ],
+      "imagens": [
+        {
+          "url": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-caso-dos-exploradores-de-cavernas/capa-do-livro.jpg",
+          "startTime": 0,
+          "endTime": 28,
+          "ordem": 1,
+          "arquivo": "capa-do-livro.jpg"
+        }
+      ]
+    },
+    {
+      "numero": 0,
+      "id": "capitulo-00-sumario",
+      "titulo": "Sumário da Suprema Corte",
+      "autor": "Direito Prime",
+      "descricao": "Sumário e roteiro cronológico da Suprema Corte de Newgarth, ano 4300.",
+      "duracaoSegundos": 22,
+      "duracaoFormatada": "00:22",
+      "audioUrl": "/audiobooks/o-caso-dos-exploradores-de-cavernas/sumario.mp3",
+      "cues": [
+        {
+          "id": 1,
+          "start": 0,
+          "end": 1.41,
+          "text": "Este é o sumário."
+        },
+        {
+          "id": 2,
+          "start": 1.41,
+          "end": 5.58,
+          "text": "O livro começa com a Apresentação de Célio Egídio."
+        },
+        {
+          "id": 3,
+          "start": 5.58,
+          "end": 19.06,
+          "text": "Depois, a Suprema Corte de Newgarth, ano 4300, com os votos de Truepenny, presidente, Foster, Tatting, Keen, Handy e, novamente, Tatting, seguidos do Pós-escrito."
+        },
+        {
+          "id": 4,
+          "start": 19.06,
+          "end": 21.72,
+          "text": "Vamos começar pela Apresentação."
+        }
+      ],
+      "imagens": [
+        {
+          "url": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-caso-dos-exploradores-de-cavernas/capa-do-livro.jpg",
+          "startTime": 0,
+          "endTime": 22,
+          "ordem": 1,
+          "arquivo": "capa-do-livro.jpg"
+        }
+      ]
+    },
     {
       "numero": 1,
       "id": "capitulo-01",
