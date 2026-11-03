@@ -25,133 +25,131 @@ export const BlogEmAltaCarousel: React.FC<BlogEmAltaCarouselProps> = ({
   if (!posts || posts.length === 0) return null;
 
   return (
-    <section className="w-full pt-4 pb-2">
-      {/* Cabeçalho da Seção com Título e Botão Ver Todos */}
-      <div className="flex items-center justify-between px-4 mb-3 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-red-500/20">
-            <Flame className="w-4 h-4 fill-white" />
-          </div>
+    <section className="w-full space-y-3">
+      {/* Cabeçalho da Seção Idêntico ao Audiobooks (Recomendações / Em Alta) */}
+      <div className="flex items-center justify-between gap-2 px-1">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-base sm:text-lg font-bold font-display uppercase tracking-widest text-foreground">
-              EM ALTA
-            </h2>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30">
-              TOP 20
-            </span>
+            <span className="w-1 h-5 rounded-full bg-red-600 shrink-0" />
+            <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
+              <span>RECOMENDAÇÕES & EM ALTA</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/30">
+                TOP 20
+              </span>
+            </h3>
           </div>
+          <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate mt-0.5">
+            Artigos fundamentais e mais recomendados para a sua formação
+          </p>
         </div>
 
+        {/* Botão Ver Todos com Fundo Translúcido e Ícone Vazado */}
         <button
           onClick={() => {
             haptic.impact();
             setSheetOpen(true);
           }}
-          className="flex items-center gap-1 text-xs font-semibold text-primary hover:text-primary/80 transition-colors py-1 px-2.5 rounded-full hover:bg-primary/10 active:scale-95"
+          className="flex items-center gap-1.5 text-xs font-bold text-zinc-200 bg-white/[0.08] hover:bg-white/[0.14] border border-white/15 hover:border-white/25 transition-all py-1.5 px-3.5 rounded-full active:scale-95 shadow-sm group cursor-pointer shrink-0"
           aria-label="Ver todos os artigos em alta"
         >
+          <Flame className="w-3.5 h-3.5 text-red-500 fill-none stroke-[2.2]" />
           <span>Ver todos</span>
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3.5 h-3.5 text-red-400 group-hover:translate-x-0.5 transition-transform" />
         </button>
       </div>
 
-      {/* Carrossel Horizontal com Snap e Deslize Infinito/Fluido */}
-      <div className="w-full overflow-x-auto no-scrollbar scroll-smooth px-4 pb-2">
-        <div className="flex gap-3.5 w-max">
-          {posts.slice(0, 20).map((post, index) => {
-            const rank = index + 1;
-            const views = getViewCount(post.id);
-            const c = TEMA_COLORS[post.tema] || { chip: '#444', chipText: '#fff' };
+      {/* Carrossel Horizontal com Snap e Deslize Rápido Idêntico ao Audiobooks */}
+      <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+        {posts.slice(0, 20).map((post, index) => {
+          const rank = index + 1;
+          const views = getViewCount(post.id);
+          const c = TEMA_COLORS[post.tema] || { chip: '#444', chipText: '#fff' };
 
-            const isTop1 = rank === 1;
-            const isTop2 = rank === 2;
-            const isTop3 = rank === 3;
+          const isTop1 = rank === 1;
+          const isTop2 = rank === 2;
+          const isTop3 = rank === 3;
 
-            return (
-              <div
-                key={post.id}
-                onClick={() => {
-                  haptic.impact();
-                  onRegisterClick(post.id);
-                  onSelectPost(post);
-                }}
-                className="group relative w-[170px] sm:w-[195px] flex-shrink-0 flex flex-col rounded-2xl overflow-hidden bg-card/80 border border-border/60 hover:border-primary/50 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer select-none"
-              >
-                {/* Capa com Proporção Vertical de Destaque */}
-                <div className="relative w-full aspect-[4/3] overflow-hidden bg-zinc-950">
-                  <BlogCoverImage
-                    postId={post.id}
-                    remoteUrl={blogThumb(post.imagem_url, 320)}
-                    alt={post.titulo}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading={index < 4 ? 'eager' : 'lazy'}
-                  />
+          return (
+            <div
+              key={post.id}
+              onClick={() => {
+                haptic.impact();
+                onRegisterClick(post.id);
+                onSelectPost(post);
+              }}
+              className="snap-start shrink-0 w-[140px] sm:w-[155px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
+            >
+              {/* Capa com Proporção Vertical de Destaque */}
+              <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-red-500/50 transition-all shadow-md group-hover:shadow-red-950/40">
+                <BlogCoverImage
+                  postId={post.id}
+                  remoteUrl={blogThumb(post.imagem_url, 320)}
+                  alt={post.titulo}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading={index < 4 ? 'eager' : 'lazy'}
+                />
 
-                  {/* Gradiente escuro sobre a imagem para contraste */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none" />
+                {/* Gradiente escuro sobre a imagem para contraste */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none" />
 
-                  {/* Badge de Ranking no topo esquerdo */}
-                  <div className="absolute top-2 left-2 z-10">
-                    {isTop1 ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-black px-2 py-0.5 rounded-lg bg-amber-500 text-black shadow-lg shadow-amber-500/40">
-                        <Trophy className="w-3 h-3 fill-black" />
-                        #1
-                      </span>
-                    ) : isTop2 ? (
-                      <span className="inline-flex items-center text-[11px] font-black px-2 py-0.5 rounded-lg bg-slate-300 text-slate-900 shadow-md">
-                        #2
-                      </span>
-                    ) : isTop3 ? (
-                      <span className="inline-flex items-center text-[11px] font-black px-2 py-0.5 rounded-lg bg-amber-700 text-amber-100 shadow-md">
-                        #3
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-zinc-300 border border-white/10">
-                        #{rank}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Badge de Tema no topo direito */}
-                  <div className="absolute top-2 right-2 z-10">
-                    <span
-                      className="text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider backdrop-blur-md"
-                      style={{
-                        backgroundColor: `${c.chip}dd`,
-                        color: c.chipText,
-                      }}
-                    >
-                      {post.tema}
+                {/* Badge de Ranking no topo esquerdo */}
+                <div className="absolute top-2 left-2 z-10">
+                  {isTop1 ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-black px-2 py-0.5 rounded-lg bg-amber-500 text-black shadow-lg shadow-amber-500/40">
+                      <Trophy className="w-2.5 h-2.5 fill-black" />
+                      #1
                     </span>
-                  </div>
-
-                  {/* Métrica de Leituras sobre a base da capa */}
-                  <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-between text-[11px] text-white/90">
-                    <span className="flex items-center gap-1 font-semibold text-amber-300 drop-shadow">
-                      <Eye className="w-3 h-3" />
-                      {views > 1000 ? `${(views / 1000).toFixed(1)}k` : views}
+                  ) : isTop2 ? (
+                    <span className="inline-flex items-center text-[10px] font-black px-2 py-0.5 rounded-lg bg-slate-300 text-slate-900 shadow-md">
+                      #2
                     </span>
-                    <span className="flex items-center gap-1 text-zinc-300 text-[10px]">
-                      <Clock className="w-3 h-3 text-zinc-400" />
-                      {post.tempo_leitura_min}m
+                  ) : isTop3 ? (
+                    <span className="inline-flex items-center text-[10px] font-black px-2 py-0.5 rounded-lg bg-amber-700 text-amber-100 shadow-md">
+                      #3
                     </span>
-                  </div>
+                  ) : (
+                    <span className="inline-flex items-center text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-black/70 backdrop-blur-md text-zinc-300 border border-white/10">
+                      #{rank}
+                    </span>
+                  )}
                 </div>
 
-                {/* Título e Rodapé do Card */}
-                <div className="p-3 flex-1 flex flex-col justify-between gap-1.5">
-                  <h3 className="font-display text-xs sm:text-[13px] font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                    {post.titulo}
-                  </h3>
-                  <div className="pt-1 flex items-center justify-between text-[10px] text-muted-foreground border-t border-border/30">
-                    <span className="truncate">{post.autor}</span>
-                    <span className="text-primary font-bold">Ler →</span>
-                  </div>
+                {/* Badge de Tema no topo direito */}
+                <div className="absolute top-2 right-2 z-10">
+                  <span
+                    className="text-[8.5px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider backdrop-blur-md"
+                    style={{
+                      backgroundColor: `${c.chip}dd`,
+                      color: c.chipText,
+                    }}
+                  >
+                    {post.tema}
+                  </span>
+                </div>
+
+                {/* Métrica de Leituras sobre a base da capa */}
+                <div className="absolute bottom-2 left-2 right-2 z-10 flex items-center justify-between text-[11px] text-white/90">
+                  <span className="flex items-center gap-1 font-semibold text-amber-300 drop-shadow">
+                    <Eye className="w-3 h-3" />
+                    {views > 1000 ? `${(views / 1000).toFixed(1)}k` : views}
+                  </span>
+                  <span className="flex items-center gap-1 text-zinc-300 text-[10px]">
+                    <Clock className="w-3 h-3 text-zinc-400" />
+                    {post.tempo_leitura_min}m
+                  </span>
                 </div>
               </div>
-            );
-          })}
-        </div>
+
+              {/* Título e Autor do Card */}
+              <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-red-300 transition-colors line-clamp-2 mt-2 leading-snug">
+                {post.titulo}
+              </p>
+              <p className="text-[10.5px] text-white/50 truncate mt-0.5">
+                {post.autor}
+              </p>
+            </div>
+          );
+        })}
       </div>
 
       {/* Sheet "Ver Todos" de baixo para cima */}
@@ -165,4 +163,5 @@ export const BlogEmAltaCarousel: React.FC<BlogEmAltaCarouselProps> = ({
     </section>
   );
 };
+
 export default BlogEmAltaCarousel;

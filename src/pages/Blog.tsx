@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import type { BlogPost, BlogTema } from "@/data/blogPosts";
 import BlogPostSheet from "@/components/vademecum/blog/BlogPostSheet";
-import BlogHeroHeader from "@/components/vademecum/blog/BlogHeroHeader";
 import { useBlogPostsCache } from "@/hooks/useBlogPostsCache";
 import { useFeatureLimit } from "@/hooks/useFeatureLimit";
 import PremiumGate from "@/components/PremiumGate";
@@ -12,43 +11,29 @@ import { KeepAlive } from "@/components/ui/KeepAlive";
 import { recordActivity } from "@/lib/continuity";
 import { useGoBack } from "@/hooks/useGoBack";
 import { blogThumb } from "@/lib/blogImg";
+import ShapeGrid from "@/components/ui/ShapeGrid";
 
-// Novos componentes arquiteturais do Blog
-import type { BlogMainTab } from "@/components/vademecum/blog/BlogNavTabs";
+// Novos componentes arquiteturais do Blog com Layout & Design idêntico ao Audiobooks
+import { BlogHeroPanel, type BlogQuickActionType } from "@/components/vademecum/blog/BlogHeroPanel";
+import { BlogContinuarLendoCard } from "@/components/vademecum/blog/BlogContinuarLendoCard";
+import { BlogQuickActionSheet } from "@/components/vademecum/blog/BlogQuickActionSheet";
 import BlogEmAltaCarousel from "@/components/vademecum/blog/BlogEmAltaCarousel";
 import BlogCategoriasListSection from "@/components/vademecum/blog/BlogCategoriasListSection";
 import BlogCategoriaSheet from "@/components/vademecum/blog/BlogCategoriaSheet";
-import BlogFavoritesFab from "@/components/vademecum/blog/BlogFavoritesFab";
-import BlogFavoritesSheet from "@/components/vademecum/blog/BlogFavoritesSheet";
 
-// Hooks de trending dinâmico e filtragem
+// Tracking e métricas unificadas do blog
+import { blogTracking, type BlogRecenteItem } from "@/lib/blogTracking";
 import { useBlogDynamicTrending } from "@/hooks/useBlogDynamicTrending";
 import { useBlogTrending } from "@/hooks/useBlogTrending";
 import { useBlogPostsFilter } from "@/hooks/useBlogPostsFilter";
 
-// Chunks modulares
+// Chunks modulares adicionais (biografia, feed etc.)
 import {
   type BlogFilter,
-  BlogInfoHeader,
-  BlogFiltersBar,
   BlogBioTabContainer,
-  BlogFeedView,
 } from "@/components/vademecum/blog/chunks";
 
 export type { BlogFilter };
-
-function readFavoritesFromStorage(): string[] {
-  try {
-    const raw = localStorage.getItem("blog:favorites");
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch {
-    /* ignore */
-  }
-  return [];
-}
 
 const Blog = () => {
   const goBack = useGoBack();
@@ -57,39 +42,29 @@ const Blog = () => {
 
   const [selectedFilter, setSelectedFilter] = useState<BlogFilter>("todos");
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  const [infoOpen, setInfoOpen] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
 
-  // Menu de alternância principal: Artigos | Categorias | Carreiras | Biografia
-  const [mainTab, setMainTab] = useState<BlogMainTab>("artigos");
+  // Sheet de Ações Rápidas do Painel Hero (Favoritos | Recentes | Estatísticas | Temas)
+  const [activeQuickSheet, setActiveQuickSheet] = useState<BlogQuickActionType | null>(null);
+
+  // Sub-abas extras caso acionadas externamente (biografia, categorias em grade)
+  const [mainTab, setMainTab] = useState<string>("artigos");
   const [selectedBioCategory, setSelectedBioCategory] = useState<string | null>(null);
   const [selectedBioPerson, setSelectedBioPerson] = useState<string | null>(null);
 
   // Categoria selecionada para visualização de artigos em tela dedicada
   const [selectedCategorySheet, setSelectedCategorySheet] = useState<BlogTema | string | null>(null);
 
-  // Favoritos (Botão Flutuante)
-  const [favoritesOpen, setFavoritesOpen] = useState(false);
-  const [favoriteIds, setFavoriteIds] = useState<string[]>(() => readFavoritesFromStorage());
-
   const { canUse, register, used, config } = useFeatureLimit("blog_read");
   const { posts: dbPosts, loaded: blogLoaded } = useBlogPostsCache();
 
-  // Custom hooks gerenciam o cache de trending e filtragem final de postagens
+  // Custom hooks gerenciam o cache de trending e filtragem de postagens
   const { trendingIds } = useBlogTrending(selectedFilter);
-
-  // Mapeia mainTab para a aba esperada pelo filtro
-  const bottomTabMapped = useMemo(() => {
-    if (mainTab === "carreiras") return "carreiras";
-    if (mainTab === "biografia") return "biografia";
-    if (mainTab === "categorias") return "categorias";
-    return "blogger";
-  }, [mainTab]);
 
   const { allPosts, posts, visiblePosts } = useBlogPostsFilter(
     dbPosts,
     selectedFilter,
-    bottomTabMapped,
+    "blogger",
     trendingIds,
     blogLoaded,
   );
@@ -97,8 +72,32 @@ const Blog = () => {
   // Métrica dinâmica para os artigos em alta
   const { topTrendingPosts, registerPostClick, getPostViewCount } = useBlogDynamicTrending(allPosts);
 
-  // Categorias criadas disponíveis com contagem de artigos
-  const { categoriasDisponiveis, countsByTema } = useMemo(() => {
+  // Último artigo lido para atualizar dinamicamente o Continuar Lendo
+  const [ultimoLido, setUltimoLido] = useState<BlogRecenteItem | null>(() =>
+    blogTracking.getUltimoLido()
+  );
+
+  useEffect(() => {
+    const handleRecUpdate = () => {
+      setUltimoLido(blogTracking.getUltimoLido());
+    };
+    window.addEventListener("blog:recentes-updated", handleRecUpdate);
+    return () => {
+      window.removeEventListener("blog:recentes-updated", handleRecUpdate);
+    };
+  }, []);
+
+  // Determina o artigo exibido no card "Continuar Lendo"
+  const postContinuarLendo = useMemo(() => {
+    if (ultimoLido) {
+      const match = allPosts.find((p) => p.id === ultimoLido.id);
+      if (match) return match;
+    }
+    return topTrendingPosts[0] || allPosts[0] || null;
+  }, [ultimoLido, allPosts, topTrendingPosts]);
+
+  // Categorias disponíveis com contagem de artigos
+  const { categoriasDisponiveis } = useMemo(() => {
     const counts: Record<string, number> = {};
     allPosts.forEach((p) => {
       if (p.tema) {
@@ -106,7 +105,7 @@ const Blog = () => {
       }
     });
     const sorted = Object.keys(counts).sort((a, b) => a.localeCompare(b, "pt-BR"));
-    return { categoriasDisponiveis: sorted, countsByTema: counts };
+    return { categoriasDisponiveis: sorted };
   }, [allPosts]);
 
   // Posts filtrados da categoria aberta no sheet
@@ -118,47 +117,12 @@ const Blog = () => {
     return allPosts.filter((p) => p.tema === selectedCategorySheet);
   }, [allPosts, selectedCategorySheet]);
 
-  // Posts favoritados
-  const favoritePosts = useMemo(() => {
-    if (!favoriteIds.length || !allPosts.length) return [];
-    const favSet = new Set(favoriteIds);
-    return allPosts.filter((p) => favSet.has(p.id));
-  }, [allPosts, favoriteIds]);
-
-  // Listener para sincronizar os favoritos em tempo real
-  useEffect(() => {
-    const syncFavs = () => {
-      setFavoriteIds(readFavoritesFromStorage());
-    };
-    window.addEventListener("blog:favorites-updated", syncFavs);
-    window.addEventListener("storage", syncFavs);
-    return () => {
-      window.removeEventListener("blog:favorites-updated", syncFavs);
-      window.removeEventListener("storage", syncFavs);
-    };
-  }, []);
-
-  const handleRemoveFavorite = useCallback((postId: string) => {
-    try {
-      const current = readFavoritesFromStorage().filter((id) => id !== postId);
-      localStorage.setItem("blog:favorites", JSON.stringify(current));
-      setFavoriteIds(current);
-      window.dispatchEvent(new Event("blog:favorites-updated"));
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
   // SEO
   useEffect(() => {
     if (selectedPost) {
       document.title = `${selectedPost.titulo} | Blogger Jurídico`;
-    } else if (mainTab === "carreiras") {
-      document.title = "Carreiras Jurídicas | Blogger Jurídico";
     } else if (mainTab === "biografia") {
       document.title = "Biografias do Direito | Blogger Jurídico";
-    } else if (mainTab === "categorias") {
-      document.title = "Categorias | Blogger Jurídico";
     } else if (selectedFilter === "trending") {
       document.title = "Blogger Jurídico - Em Alta | Vade Mecum PRIME";
     } else if (selectedFilter !== "todos") {
@@ -168,7 +132,7 @@ const Blog = () => {
     }
   }, [selectedPost, selectedFilter, mainTab]);
 
-  // Compartilhamento via query string
+  // Compartilhamento via query string (?post=...)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const id = params.get("post");
@@ -197,6 +161,7 @@ const Blog = () => {
         setGateOpen(true);
         return;
       }
+      blogTracking.registrarLeitura(post);
       registerPostClick(post.id);
       setSelectedPost(post);
       register(post.id);
@@ -220,57 +185,63 @@ const Blog = () => {
     setSelectedFilter("todos");
   }, []);
 
-  const handleSelectCategoryFromList = useCallback((tema: BlogTema) => {
-    handleOpenCategory(tema);
-  }, [handleOpenCategory]);
-
   return (
-    <div className="min-h-dvh bg-background pb-16">
-      <BlogInfoHeader
-        infoOpen={infoOpen}
-        onToggleInfo={() => setInfoOpen((v) => !v)}
+    <div className="min-h-dvh bg-[#0D0D0D] text-white relative overflow-x-hidden pb-[calc(7rem+var(--sai-bottom,0px))]">
+      {/* Fundo ShapeGrid Dinâmico padrão do app (idêntico a Audiobooks) */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <ShapeGrid
+          speed={0.5}
+          squareSize={40}
+          direction="diagonal"
+          borderColor="rgba(226, 62, 87, 0.06)"
+        />
+      </div>
+
+      {/* Painel Hero com Design & Layout Idêntico a Audiobooks (Full-Bleed, corte diagonal vermelho, botão de voltar premium e 4 botões de ação) */}
+      <BlogHeroPanel
         onBack={() => goBack()}
+        onSelectAction={(action) => setActiveQuickSheet(action)}
+        activeAction={activeQuickSheet}
       />
 
-      {mainTab === "artigos" && (
-        <BlogHeroHeader
-          selectedTema={
-            selectedFilter === "trending" || selectedFilter === "todos" ? null : selectedFilter
-          }
+      {/* Conteúdo Principal com Margens Laterais e Layout Fluido Idêntico a Audiobooks */}
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
+        {/* Banner Continuar Lendo Dinâmico (atualiza ao abrir qualquer artigo) */}
+        {postContinuarLendo && (
+          <BlogContinuarLendoCard
+            post={postContinuarLendo}
+            onOpen={handleOpenPost}
+          />
+        )}
+
+        {/* Seção Em Alta / Recomendações com Carrossel Fluido */}
+        <BlogEmAltaCarousel
+          posts={topTrendingPosts}
+          onSelectPost={handleOpenPost}
+          getViewCount={getPostViewCount}
+          onRegisterClick={registerPostClick}
         />
-      )}
 
-      {mainTab === "artigos" && (
-        <>
-          {/* Seção Em Alta em Carrossel Infinito com Métrica Dinâmica */}
-          <BlogEmAltaCarousel
-            posts={topTrendingPosts}
-            onSelectPost={handleOpenPost}
-            getViewCount={getPostViewCount}
-            onRegisterClick={registerPostClick}
-          />
+        {/* Seção do Acervo de Categorias em Lista com Capas */}
+        <BlogCategoriasListSection
+          posts={allPosts}
+          selectedCategory={selectedCategorySheet}
+          onSelectCategory={handleOpenCategory}
+          temas={categoriasDisponiveis}
+        />
+      </main>
 
-          {/* Menu de Alternância por Categoria logo abaixo de Em Alta */}
-          <BlogFiltersBar
-            selectedFilter={selectedCategorySheet ? (selectedCategorySheet as BlogFilter) : "todos"}
-            onSelectFilter={(filter) => {
-              handleOpenCategory(filter);
-            }}
-            categorias={categoriasDisponiveis}
-            countsByTema={countsByTema}
-          />
+      {/* Sheet de Ações Rápidas do Painel Hero (Favoritos | Recentes | Estatísticas | Temas) */}
+      <BlogQuickActionSheet
+        activeSheet={activeQuickSheet}
+        onClose={() => setActiveQuickSheet(null)}
+        allPosts={allPosts}
+        temas={categoriasDisponiveis}
+        onSelectPost={handleOpenPost}
+        onSelectTema={handleOpenCategory}
+      />
 
-          {/* Exibição das Categorias quando em Todas (não exibe todos os artigos de uma vez) */}
-          <BlogCategoriasListSection
-            posts={allPosts}
-            selectedCategory={selectedCategorySheet}
-            onSelectCategory={handleOpenCategory}
-            temas={categoriasDisponiveis}
-          />
-        </>
-      )}
-
-      {/* Sheet de Artigos da Categoria Selecionada (sobe de baixo para cima com voltar à esquerda) */}
+      {/* Sheet de Artigos da Categoria Selecionada */}
       <BlogCategoriaSheet
         open={Boolean(selectedCategorySheet)}
         onClose={handleCloseCategorySheet}
@@ -281,7 +252,7 @@ const Blog = () => {
         isDesktop={isDesktop}
       />
 
-      {/* Aba de Biografia */}
+      {/* Aba de Biografia se acionada */}
       <KeepAlive active={mainTab === "biografia"}>
         <BlogBioTabContainer
           selectedBioPerson={selectedBioPerson}
@@ -291,11 +262,11 @@ const Blog = () => {
         />
       </KeepAlive>
 
-      {/* Aba de Categorias (Visualização em Grade) */}
+      {/* Aba de Categorias se acionada */}
       <KeepAlive active={mainTab === "categorias"}>
         <BlogCategoriasView
           posts={posts}
-          onSelectCategoria={handleSelectCategoryFromList}
+          onSelectCategoria={handleOpenCategory}
         />
       </KeepAlive>
 
@@ -311,24 +282,8 @@ const Blog = () => {
           config ? `Você leu ${used} de ${config.limit_value} artigos este mês` : undefined
         }
       />
-
-      {/* Botão Flutuante de Favoritos (FAB) */}
-      <BlogFavoritesFab
-        count={favoriteIds.length}
-        onClick={() => setFavoritesOpen(true)}
-      />
-
-      {/* Sheet de Favoritos (Abre de baixo para cima) */}
-      <BlogFavoritesSheet
-        open={favoritesOpen}
-        onClose={() => setFavoritesOpen(false)}
-        favoritePosts={favoritePosts}
-        onSelectPost={handleOpenPost}
-        onRemoveFavorite={handleRemoveFavorite}
-      />
     </div>
   );
 };
 
 export default Blog;
-

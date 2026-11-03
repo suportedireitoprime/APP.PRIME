@@ -55,9 +55,9 @@ export interface SlideItem {
   centro?: string;
   ramos?: { nome: string; texto: string; chips: string[] }[];
   // Desafio Quiz
-  perguntas?: { q: string; ops: string[]; certa: number; exp: string }[];
-  // Explorar / Hotspots
-  pontos?: { x: number; y: number; titulo: string; texto: string }[];
+  perguntas?: any[];
+  // Explorar / Hotspots / Pontos principais
+  pontos?: any[];
   // Toque e revele
   cartas?: { p: string; r: string }[];
   // Frases de karaokê
