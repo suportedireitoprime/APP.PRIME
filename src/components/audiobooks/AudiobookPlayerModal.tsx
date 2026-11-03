@@ -118,12 +118,19 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
     return hit ? hit.url : capituloAtual.imagens[0].url;
   }, [capituloAtual, currentTime, livro.capaUrl]);
 
-  // Legenda atual em tempo real
+  // Legenda atual em tempo real com retenção inteligente de respiração/pausas curtas (elimina flicker e cortes bruscos)
   const cueAtual = useMemo(() => {
     if (!capituloAtual.cues || capituloAtual.cues.length === 0) return null;
-    return capituloAtual.cues.find(
+    const exact = capituloAtual.cues.find(
       (c) => currentTime >= c.start && currentTime <= c.end
     );
+    if (exact) return exact;
+
+    // Se estiver em intervalo curto entre frases (< 1.2s), mantém a última frase suavemente
+    const recent = capituloAtual.cues.find(
+      (c) => currentTime > c.end && currentTime <= c.end + 1.2
+    );
+    return recent || null;
   }, [capituloAtual, currentTime]);
 
   // Auto-scroll da transcrição no modo legenda
@@ -400,15 +407,15 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
         </button>
       </header>
 
-      {/* Área Central: Cena Visual / Capa Elevada e Legenda Flutuante com Glassmorphism */}
-      <div className="relative z-10 flex-1 min-h-0 flex flex-col justify-between p-4 max-w-xl mx-auto w-full">
+      {/* Área Central: Cena Visual / Capa Elevada e Legenda Flutuante Ultra-Responsiva com Glassmorphism */}
+      <div className="relative z-10 flex-1 min-h-0 flex flex-col justify-between px-4 sm:px-6 py-2 sm:py-3 max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto w-full">
         {viewMode === 'cena' ? (
-          <div className="w-full h-full flex flex-col items-center justify-center py-1">
+          <div className="w-full h-full flex flex-col md:flex-row items-center justify-evenly md:justify-center md:gap-8 lg:gap-14 py-1">
             {/* Capa Centralizada com Efeito de Card 3D e Respiração */}
             <motion.div
               animate={isPlaying ? { scale: [1, 1.018, 1], rotate: [0, 0.3, 0] } : { scale: 1 }}
               transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-              className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-3xl overflow-hidden shadow-[0_22px_55px_rgba(0,0,0,0.95)] border border-white/15 my-auto shrink-0 ring-1 ring-purple-500/20"
+              className="relative w-36 h-36 xs:w-44 xs:h-44 sm:w-52 sm:h-52 md:w-64 md:h-64 lg:w-76 lg:h-76 max-h-[26vh] md:max-h-[42vh] aspect-square rounded-2xl xs:rounded-3xl overflow-hidden shadow-[0_22px_55px_rgba(0,0,0,0.95)] border border-white/15 shrink-0 ring-1 ring-purple-500/20"
             >
               <img
                 src={imagemAtual}
@@ -424,57 +431,88 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
               )}
             </motion.div>
 
-            {/* Faixa de Legenda em Tempo Real / Apresentação de Título */}
-            <div className="w-full flex flex-col items-center mt-auto pb-1">
-              {isPlayingTitulo ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  className="w-full max-w-lg bg-[#141418]/85 backdrop-blur-2xl rounded-2xl px-5 py-3.5 border border-purple-500/40 text-center shadow-[0_15px_35px_rgba(0,0,0,0.8)] mb-2.5"
-                >
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block mb-1">
-                    Apresentação do Capítulo
-                  </span>
-                  <p className="text-[14px] sm:text-[15px] font-sans font-semibold leading-snug text-white drop-shadow-md">
-                    {capituloAtual.titulo}
-                  </p>
-                </motion.div>
-              ) : cueAtual ? (
-                <motion.div
-                  key={cueAtual.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.22 }}
-                  className="w-full max-w-lg bg-[#141418]/85 backdrop-blur-2xl rounded-2xl px-5 py-3.5 border border-white/15 text-center shadow-[0_15px_35px_rgba(0,0,0,0.8)] mb-2.5 relative overflow-hidden"
-                >
-                  {/* Visualizador de áudio sutil */}
-                  {isPlaying && (
-                    <div className="flex items-center justify-center gap-1 mb-2 opacity-75">
-                      <span className="w-1 h-2 bg-purple-400 rounded-full animate-pulse" />
-                      <span className="w-1 h-3.5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                      <span className="w-1 h-2 bg-purple-400 rounded-full animate-pulse [animation-delay:-0.3s]" />
-                    </div>
-                  )}
-                  <p className="text-[14.5px] sm:text-[15.5px] font-sans font-medium leading-relaxed text-white/95 drop-shadow-md">
-                    {cueAtual.text}
-                  </p>
-                </motion.div>
-              ) : null}
+            {/* Faixa de Legenda em Tempo Real / Apresentação de Título com Entrada Ultra Fluida */}
+            <div className="w-full max-w-lg md:max-w-md lg:max-w-lg flex flex-col items-center gap-2 xs:gap-2.5">
+              {/* Card de Legenda Sincronizada com Altura Estável e Glassmorphism */}
+              <div className="w-full min-h-[96px] xs:min-h-[104px] sm:min-h-[114px] md:min-h-[120px] bg-[#121217]/85 backdrop-blur-2xl rounded-2xl sm:rounded-3xl p-4 sm:p-5 border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.85)] ring-1 ring-white/5 relative overflow-hidden flex flex-col items-center justify-center">
+                {/* Glow decorativo sutil de fundo */}
+                <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-48 h-20 bg-purple-600/15 blur-2xl pointer-events-none rounded-full" />
+
+                {/* Equalizador pulsante discreto */}
+                {isPlaying && (
+                  <div className="flex items-center justify-center gap-1 mb-2 opacity-80 shrink-0">
+                    <span className="w-1 h-2 bg-purple-400 rounded-full animate-pulse" />
+                    <span className="w-1 h-3.5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-1 h-2 bg-purple-400 rounded-full animate-pulse [animation-delay:-0.3s]" />
+                  </div>
+                )}
+
+                {/* Transição ultra-fluida das frases com AnimatePresence e Crossfade com Blur */}
+                <div className="w-full relative flex items-center justify-center min-h-[50px] sm:min-h-[58px]">
+                  <AnimatePresence mode="wait" initial={false}>
+                    {isPlayingTitulo ? (
+                      <motion.div
+                        key="titulo-apresentacao"
+                        initial={{ opacity: 0, y: 10, filter: 'blur(5px)' }}
+                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
+                        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        className="w-full text-center"
+                      >
+                        <span className="text-[10px] xs:text-[11px] font-bold uppercase tracking-widest text-purple-400 block mb-1">
+                          Apresentação do Capítulo
+                        </span>
+                        <p className="text-[14px] xs:text-[15px] sm:text-[16px] font-sans font-semibold leading-snug text-white drop-shadow-md">
+                          {capituloAtual.titulo}
+                        </p>
+                      </motion.div>
+                    ) : cueAtual ? (
+                      <motion.div
+                        key={cueAtual.id}
+                        initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
+                        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, y: -6, filter: 'blur(4px)' }}
+                        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+                        className="w-full text-center"
+                      >
+                        <p className="text-[14px] xs:text-[15px] sm:text-[16px] md:text-[17px] font-sans font-medium leading-relaxed sm:leading-loose text-white/95 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] tracking-wide">
+                          {cueAtual.text}
+                        </p>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="aguardando"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 0.55 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="w-full text-center"
+                      >
+                        <p className="text-[12.5px] xs:text-[13.5px] font-sans font-normal text-white/50 italic tracking-wide">
+                          {capituloAtual.cues && capituloAtual.cues.length > 0
+                            ? 'Ouvindo narração...'
+                            : 'Capítulo sem transcrição sincronizada'}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
 
               {/* Botão de Alternar para Transcrição */}
-              <button
-                type="button"
-                onClick={() => {
-                  haptic.selection();
-                  setViewMode('legenda');
-                }}
-                className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition-all text-xs font-semibold text-white/90 hover:text-white flex items-center gap-2 border border-white/15 backdrop-blur-md shadow-lg"
-              >
-                <Subtitles className="w-3.5 h-3.5 text-purple-400" />
-                <span>Ver Transcrição / Legenda</span>
-              </button>
+              {capituloAtual.cues && capituloAtual.cues.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    setViewMode('legenda');
+                  }}
+                  className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition-all text-xs font-semibold text-white/90 hover:text-white flex items-center gap-2 border border-white/15 backdrop-blur-md shadow-lg"
+                >
+                  <Subtitles className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Ver Transcrição / Legenda</span>
+                </button>
+              )}
             </div>
           </div>
         ) : (
@@ -482,7 +520,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
           <div className="w-full h-full flex flex-col justify-between py-2">
             <div
               ref={transcriptContainerRef}
-              className="w-full flex-1 max-h-[52dvh] rounded-3xl overflow-y-auto px-4 py-5 bg-black/80 border border-white/15 backdrop-blur-xl space-y-3.5 no-scrollbar shadow-2xl"
+              className="w-full flex-1 max-h-[50dvh] md:max-h-[56dvh] rounded-2xl sm:rounded-3xl overflow-y-auto px-4 py-5 bg-black/80 border border-white/15 backdrop-blur-xl space-y-3.5 no-scrollbar shadow-2xl"
             >
               {capituloAtual.cues.map((cue) => {
                 const isActive = currentTime >= cue.start && currentTime <= cue.end;
@@ -500,7 +538,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                         setCurrentTime(cue.start);
                       }
                     }}
-                    className={`p-3.5 rounded-xl transition-all cursor-pointer text-left ${
+                    className={`p-3.5 sm:p-4 rounded-xl sm:rounded-2xl transition-all cursor-pointer text-left ${
                       isActive
                         ? 'bg-purple-600/25 border border-purple-500/50 shadow-lg text-white font-semibold scale-[1.01]'
                         : 'text-white/65 hover:text-white/95 hover:bg-white/5 border border-transparent'
@@ -509,7 +547,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                     <span className="text-[10px] font-mono text-white/40 block mb-0.5">
                       {formatTempo(cue.start)}
                     </span>
-                    <p className="text-[14px] leading-relaxed">{cue.text}</p>
+                    <p className="text-[13.5px] sm:text-[14.5px] leading-relaxed">{cue.text}</p>
                   </div>
                 );
               })}
@@ -533,7 +571,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
       </div>
 
       {/* Painel Inferior: Metadados, Scrub e Controles sobre o degradê preto */}
-      <div className="relative z-20 w-full max-w-xl mx-auto px-6 pb-[calc(1.25rem+var(--sai-bottom,0px))] pt-1 flex flex-col gap-3 shrink-0">
+      <div className="relative z-20 w-full max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto px-5 sm:px-6 pb-[calc(1.25rem+var(--sai-bottom,0px))] pt-1 flex flex-col gap-3 shrink-0">
         {/* Informações do Capítulo */}
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
