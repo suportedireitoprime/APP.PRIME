@@ -115,26 +115,26 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-[2000] flex flex-col bg-[#0A0A0C] text-white overflow-hidden select-none">
-      {/* IMAGEM EM TELA TODA (FULL SCREEN BACKGROUND) COM AMBIENT GLOW E DEGRADÊ DE LUXO */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
-        <AnimatePresence mode="wait">
+      {/* IMAGEM EM TELA TODA (FULL SCREEN BACKGROUND) NÍTIDA E SEM BLUR */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none bg-black">
+        <AnimatePresence mode="popLayout">
           <motion.img
             key={imagemAtual}
             src={imagemAtual}
             alt={capituloAtual.titulo}
-            initial={{ opacity: 0, scale: 1.15 }}
-            animate={{ opacity: 0.45, scale: 1.05 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full h-full object-cover object-center filter blur-2xl transform-gpu"
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            className="w-full h-full object-cover object-center transform-gpu"
           />
         </AnimatePresence>
 
-        {/* Degradê preto profundo que valoriza os cards e controles */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/90 via-45% to-black/60" />
+        {/* Vinheta superior suave para contraste do header */}
+        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none z-10" />
 
-        {/* Vinheta superior suave */}
-        <div className="absolute top-0 inset-x-0 h-36 bg-gradient-to-b from-black/80 to-transparent" />
+        {/* Degradê inferior para proteger as legendas e controles de áudio */}
+        <div className="absolute bottom-0 inset-x-0 h-[65%] bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/85 via-45% to-transparent pointer-events-none z-10" />
       </div>
 
       {/* Header superior translúcido */}
@@ -172,40 +172,26 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
         </button>
       </header>
 
-      {/* Área Central: Cena Visual / Capa Elevada e Legenda Flutuante com Glassmorphism */}
-      <div className="relative z-10 flex-1 min-h-0 flex flex-col justify-between p-4 max-w-xl mx-auto w-full">
+      {/* Área Central: Cena Visual em Tela Toda e Legenda Flutuante com Glassmorphism */}
+      <div className="relative z-10 flex-1 min-h-0 flex flex-col justify-end p-4 max-w-xl mx-auto w-full">
         {viewMode === "cena" ? (
-          <div className="w-full h-full flex flex-col items-center justify-center py-1">
-            {/* Capa Centralizada com Efeito de Card 3D e Respiração */}
-            <motion.div
-              animate={player.tocando ? { scale: [1, 1.018, 1], rotate: [0, 0.3, 0] } : { scale: 1 }}
-              transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-              className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-3xl overflow-hidden shadow-[0_22px_55px_rgba(0,0,0,0.95)] border border-white/15 my-auto shrink-0 ring-1 ring-purple-500/20"
-            >
-              <img
-                src={imagemAtual}
-                alt={capituloAtual.titulo}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
-              {player.tocando && (
-                <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20 flex items-center gap-1.5 shadow-lg">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                  <span className="text-[9.5px] font-bold text-white tracking-wider uppercase font-mono">
-                    Tocando
-                  </span>
-                </div>
-              )}
-            </motion.div>
+          <div className="w-full flex flex-col justify-end">
+            {/* Tag Indicadora da Cena Atual no Topo Esquerdo */}
+            <div className="self-start mb-auto pt-2 pb-6">
+              <span className="px-3 py-1 rounded-full bg-black/55 backdrop-blur-md border border-white/15 text-[10.5px] font-medium text-white/90 shadow-md flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Cena do Capítulo</span>
+              </span>
+            </div>
 
             {/* Faixa de Legenda em Tempo Real / Apresentação de Título */}
-            <div className="w-full flex flex-col items-center mt-auto pb-1">
+            <div className="w-full flex flex-col items-center pb-1">
               {player.isPlayingTitulo ? (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
-                  className="w-full max-w-lg bg-[#141418]/85 backdrop-blur-2xl rounded-2xl px-5 py-3.5 border border-purple-500/40 text-center shadow-[0_15px_35px_rgba(0,0,0,0.8)] mb-2.5"
+                  className="w-full max-w-lg bg-black/60 backdrop-blur-xl rounded-2xl px-5 py-3.5 border border-purple-500/40 text-center shadow-2xl mb-2.5"
                 >
                   <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block mb-1">
                     Apresentação do Capítulo
@@ -221,7 +207,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.22 }}
-                  className="w-full max-w-lg bg-[#141418]/85 backdrop-blur-2xl rounded-2xl px-5 py-3.5 border border-white/15 text-center shadow-[0_15px_35px_rgba(0,0,0,0.8)] mb-2.5 relative overflow-hidden"
+                  className="w-full max-w-lg bg-black/60 backdrop-blur-xl rounded-2xl px-5 py-3.5 border border-white/15 text-center shadow-2xl mb-2.5 relative overflow-hidden"
                 >
                   {/* Visualizador de áudio sutil */}
                   {player.tocando && (
@@ -244,7 +230,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                   haptic.selection();
                   setViewMode("legenda");
                 }}
-                className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition-all text-xs font-semibold text-white/90 hover:text-white flex items-center gap-2 border border-white/15 backdrop-blur-md shadow-lg"
+                className="px-4 py-2 rounded-full bg-black/50 hover:bg-black/70 active:scale-95 transition-all text-xs font-semibold text-white/90 hover:text-white flex items-center gap-2 border border-white/15 backdrop-blur-md shadow-lg"
               >
                 <Subtitles className="w-3.5 h-3.5 text-purple-400" />
                 <span>Ver Transcrição / Legenda</span>
