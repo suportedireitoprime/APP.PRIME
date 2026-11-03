@@ -103,11 +103,6 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
       <div className="relative z-10 px-4 sm:px-6 md:px-8 pt-3 sm:pt-4 pb-3 flex flex-col justify-start min-h-[115px]">
         {/* Marca à Esquerda (dentro da área roxa com o fundo dos filósofos respirando à direita) */}
         <div className="flex flex-col items-start text-left z-10 w-[50%] max-w-[280px]">
-          {/* Ícone com Glow */}
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-lg shadow-purple-950/60 mb-2">
-            <Headphones className="w-5 h-5 sm:w-6 sm:h-6 text-white drop-shadow-md" strokeWidth={2.2} />
-          </div>
-
           <h2 className="font-serif italic text-white text-2xl sm:text-3xl leading-[1.05] font-black tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
             Audiobooks
           </h2>

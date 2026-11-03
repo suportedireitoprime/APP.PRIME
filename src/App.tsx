@@ -86,6 +86,8 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { RecordingProvider } from "@/contexts/RecordingContext";
 import { UniversalMediaPlayerProvider } from "@/contexts/UniversalMediaPlayerProvider";
 const GlobalAudioaulasMiniPlayer = lazy(() => import("@/components/audioaulas/GlobalAudioaulasMiniPlayer"));
+const GlobalAudiobookMiniPlayer = lazy(() => import("@/components/audiobooks/GlobalAudiobookMiniPlayer"));
+const AudiobookPlayerModal = lazy(() => import("@/components/audiobooks/AudiobookPlayerModal"));
 const GlobalResumoMiniPlayer = lazy(() => import("./components/biblioteca/GlobalResumoMiniPlayer.tsx").then(m => ({ default: m.GlobalResumoMiniPlayer })));
 const ResumoLivroAudioSheet = lazy(() => import("./components/biblioteca/ResumoLivroAudioSheet.tsx"));
 const GlobalVideoaulaMiniPlayer = lazy(() => import("@/components/videoaulas/GlobalVideoaulaMiniPlayer"));
@@ -167,9 +169,11 @@ function AppWarmupInitializer() {
 const LazyMediaPlayers = () => (
   <Suspense fallback={null}>
     <GlobalAudioaulasMiniPlayer />
+    <GlobalAudiobookMiniPlayer />
     <GlobalResumoMiniPlayer />
     <ResumoLivroAudioSheet />
     <GlobalVideoaulaMiniPlayer />
+    <AudiobookPlayerModal />
   </Suspense>
 );
 

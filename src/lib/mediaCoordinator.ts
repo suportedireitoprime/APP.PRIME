@@ -1,4 +1,4 @@
-export type MediaType = 'audioaula' | 'leiscantadas' | 'pilulas' | 'videoaula' | 'resumolivro';
+export type MediaType = 'audioaula' | 'leiscantadas' | 'pilulas' | 'videoaula' | 'resumolivro' | 'audiobook';
 
 type Listener = (activeType: MediaType) => void;
 const listeners = new Set<Listener>();
