@@ -3328,10 +3328,10 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
   {
     "id": "urbanistico-mat-04",
     "disciplinaId": "urbanistico",
-    "numeroMateria": "04",
-    "titulo": "04",
+    "numeroMateria": "MÓDULO 04",
+    "titulo": "Função Social da Propriedade Urbana (FSPU)",
     "subtitulo": "Módulo 04 · 3 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre 04.",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre a Função Social da Propriedade Urbana.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-urbanistico/04/aula-06-a-funcao-social-da-propriedade-urbana-fspu/capa-3x4.webp"
   },
   {
@@ -3346,19 +3346,19 @@ export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = [
   {
     "id": "urbanistico-mat-06",
     "disciplinaId": "urbanistico",
-    "numeroMateria": "05",
-    "titulo": "05",
+    "numeroMateria": "MÓDULO 06",
+    "titulo": "Direito dos Desastres e Defesa Civil",
     "subtitulo": "Módulo 06 · 10 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre 05.",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Direito dos Desastres e Defesa Civil.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-urbanistico/05/aula-04-direito-dos-desastres/capa-3x4.webp"
   },
   {
     "id": "urbanistico-mat-07",
     "disciplinaId": "urbanistico",
-    "numeroMateria": "06",
-    "titulo": "06",
+    "numeroMateria": "MÓDULO 07",
+    "titulo": "Instrumentos de Política Urbana e Gestão do Solo",
     "subtitulo": "Módulo 07 · 10 aulas",
-    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre 06.",
+    "descricao": "Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre Instrumentos de Política Urbana e Gestão do Solo.",
     "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/aulas-interativas/direito-urbanistico/06/aula-06-consorcio-imobiliario-no-estatuto-da-cidade/capa-3x4.webp"
   }
 ];

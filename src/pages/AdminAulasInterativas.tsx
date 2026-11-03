@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 import { 
   Sparkles, Play, BookOpen, Layers, 
   ArrowLeft, Check, Lock, HelpCircle, 
-  AlertCircle, Unlock, ChevronRight, 
-  Search, X, Star 
+  AlertCircle, Unlock, ChevronRight, ChevronLeft,
+  Search, X, Star, List, LayoutGrid, Headphones
 } from 'lucide-react';
 import { AulasMenuAlternancia, AbaAulas } from '@/components/aulas-interativas/AulasMenuAlternancia';
 import { AulasHeroPanel } from '@/components/aulas-interativas/AulasHeroPanel';
@@ -441,6 +441,7 @@ export default function AdminAulasInterativas() {
   const [disciplinaSelecionadaId, setDisciplinaSelecionadaId] = useState<string | null>(null);
   const [materiaSelecionadaId, setMateriaSelecionadaId] = useState<string | null>(null);
   const [aulaAtiva, setAulaAtiva] = useState<AulaItem | null>(null);
+  const [modoVisualizacaoAulas, setModoVisualizacaoAulas] = useState<'lista' | 'carrossel'>('lista');
   const [aulaPendenteModal, setAulaPendenteModal] = useState<AulaItem | null>(null);
   const [buscaTermo, setBuscaTermo] = useState('');
   const [abaAtiva, setAbaAtiva] = useState<AbaAulas>('trilhas');
@@ -1202,7 +1203,7 @@ export default function AdminAulasInterativas() {
                               </span>
                             </div>
 
-                            <h3 className="font-sans font-medium text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-2">
+                            <h3 className="font-sans font-bold text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md">
                               {disc.nome}
                             </h3>
 
@@ -1633,7 +1634,7 @@ export default function AdminAulasInterativas() {
                                 </span>
                               </div>
 
-                              <h3 className="font-serif font-bold text-[17px] xs:text-[19px] sm:text-[22px] md:text-[24px] leading-tight text-white group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-3">
+                              <h3 className="font-serif font-bold text-[17px] xs:text-[19px] sm:text-[22px] md:text-[24px] leading-tight text-white group-hover:text-amber-200 transition-colors drop-shadow-md break-words">
                                 {mat.titulo}
                               </h3>
 
@@ -1803,11 +1804,11 @@ export default function AdminAulasInterativas() {
                 <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: disciplinaAtual.corDestaque }} />
 
                 <div 
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.08] border border-white/15 text-[11px] sm:text-xs font-bold flex items-center gap-1.5 truncate max-w-[240px] sm:max-w-none"
+                  className="px-2.5 py-1 rounded-lg bg-white/[0.08] border border-white/15 text-[11px] sm:text-xs font-bold flex items-center gap-1.5"
                   style={{ color: disciplinaAtual.corDestaque }}
                 >
                   <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: disciplinaAtual.corDestaque }} />
-                  <span className="truncate">{materiaAtual.titulo}</span>
+                  <span className="break-words">{materiaAtual.titulo}</span>
                 </div>
               </nav>
 
@@ -1857,210 +1858,151 @@ export default function AdminAulasInterativas() {
                 </div>
               </div>
 
-              {/* Header da Seção: Selecione a Aula */}
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" style={{ color: disciplinaAtual.corDestaque }} />
-                  <span>SELECIONE A AULA ({aulasFiltradas.length})</span>
-                </h3>
-                {pctMat > 0 && (
-                  <span className="text-xs font-bold text-zinc-400">
-                    Progresso da Matéria: <span style={{ color: disciplinaAtual.corDestaque }}>{pctMat}%</span>
-                  </span>
-                )}
+              {/* Header da Seção: Selecione a Aula + Alternância Lista/Carrossel */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 shrink-0" style={{ color: disciplinaAtual.corDestaque }} />
+                  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-200">
+                    AULAS DA MATÉRIA ({aulasFiltradas.length})
+                  </h3>
+                  {pctMat > 0 && (
+                    <span className="text-xs font-bold text-zinc-400 ml-2">
+                      · <span style={{ color: disciplinaAtual.corDestaque }}>{pctMat}% concluído</span>
+                    </span>
+                  )}
+                </div>
+
+                {/* Alternância Elegante: Lista Estruturada vs Carrossel */}
+                <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/10 self-start sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => setModoVisualizacaoAulas('lista')}
+                    className={cn(
+                      "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
+                      modoVisualizacaoAulas === 'lista'
+                        ? "bg-white/15 text-white shadow-md"
+                        : "text-zinc-400 hover:text-white hover:bg-white/5"
+                    )}
+                    style={modoVisualizacaoAulas === 'lista' ? { color: disciplinaAtual.corDestaque } : undefined}
+                  >
+                    <List className="w-3.5 h-3.5" />
+                    <span>Lista com Capas</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setModoVisualizacaoAulas('carrossel')}
+                    className={cn(
+                      "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
+                      modoVisualizacaoAulas === 'carrossel'
+                        ? "bg-white/15 text-white shadow-md"
+                        : "text-zinc-400 hover:text-white hover:bg-white/5"
+                    )}
+                    style={modoVisualizacaoAulas === 'carrossel' ? { color: disciplinaAtual.corDestaque } : undefined}
+                  >
+                    <LayoutGrid className="w-3.5 h-3.5" />
+                    <span>Carrossel</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Trilha Serpenteante em Linha do Tempo das Aulas */}
-              <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
-                <div className="w-full min-w-0 relative z-[2] flex flex-col">
+              {/* MODO 1: LISTA ESTRUTURADA COM CAPA AO LADO (PADRÃO PRINCIPAL) */}
+              {modoVisualizacaoAulas === 'lista' && (
+                <div className="w-full flex flex-col gap-3.5 sm:gap-4">
                   {aulasFiltradas.map((aula, i) => {
-                    const isLeft = i % 2 === 0;
                     const prog = calcularProgressoCiclo(aula);
                     const flashcardsLiberados = prog.aulaTerminada || modoLivreTeste;
                     const questoesLiberadas = (prog.aulaTerminada && prog.fcOk) || modoLivreTeste;
                     const conteudo = CONTEUDO_AULAS[aula.id];
                     const totalCards = conteudo?.flashcards.length || 18;
                     const totalQuestoes = conteudo?.questoes.length || 12;
-
-                    const conteudoReal = AULAS_CONTEUDO_REAL[aula.id];
-                    const kickersReais = conteudoReal?.slides
-                      ? new Set(
-                          conteudoReal.slides
-                            .map(s => s.kicker)
-                            .filter(k => k && !/^questão/i.test(k) && !/^flashcard/i.test(k) && !/^etapa/i.test(k) && !/^memorização/i.test(k) && !/^fixação/i.test(k))
-                        )
-                      : null;
-                    const qtdTopicos = Math.min(6, Math.max(3, 
-                      aula.topicosQtd || (kickersReais && kickersReais.size >= 2
-                        ? Math.min(6, kickersReais.size)
-                        : Math.floor((aula.etapas || 32) / 8) + (i % 3 === 0 ? 1 : 0))
-                    ));
+                    const descFormatada = formatDescricaoExata(aula.descricao, aula.titulo);
 
                     return (
-                      <div key={aula.id} className="w-full flex flex-col">
-                        <div
-                          className={cn(
-                            "relative z-10 flex w-full items-center justify-between gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
-                            isLeft ? "flex-row" : "flex-row-reverse"
-                          )}
-                        >
-                          {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA AULA */}
+                      <div
+                        key={aula.id}
+                        className={cn(
+                          "w-full rounded-2xl p-3.5 sm:p-4.5 border transition-all duration-300 relative group overflow-hidden",
+                          "bg-[#131418]/90 hover:bg-[#181920]/95 border-white/10 hover:border-white/25",
+                          "shadow-lg hover:shadow-[0_12px_32px_rgba(0,0,0,0.65)] backdrop-blur-md"
+                        )}
+                      >
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3.5 sm:gap-5">
+                          {/* 1. Capa ao Lado (3:4) */}
                           <div
                             onClick={() => iniciarAula(aula)}
-                            className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.95] hover:-translate-y-1.5 transition-transform duration-300 ease-out"
+                            className="relative shrink-0 w-24 xs:w-28 sm:w-32 md:w-36 h-32 xs:h-36 sm:h-44 md:h-48 rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer select-none border border-white/15 bg-black/60 shadow-md group-hover:border-white/30 transition-all self-center sm:self-auto"
                           >
-                            {/* Carta 1 (Fundo) */}
-                            <div
-                              className={cn("absolute inset-0 rounded-2xl border border-white/10 opacity-40 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
-                                isLeft
-                                  ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
-                                  : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
-                              )}
-                              style={{
-                                background: disciplinaAtual.corFundoCard,
-                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                              }}
-                            >
-                              <div className="absolute inset-0 bg-black/50 pointer-events-none z-[1]" />
-                              <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
-                                <Layers className="w-5 h-5 text-white/30" />
-                              </div>
-                            </div>
+                            <img
+                              src={aula.capaUrl}
+                              alt={aula.titulo}
+                              loading={i < 8 ? "eager" : "lazy"}
+                              decoding="async"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40 pointer-events-none" />
 
-                            {/* Carta 2 (Meio) */}
-                            <div
-                              className={cn("absolute inset-0 rounded-2xl border border-white/15 opacity-75 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
-                                isLeft
-                                  ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
-                                  : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
-                              )}
-                              style={{
-                                background: disciplinaAtual.corFundoCard,
-                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                              }}
-                            >
-                              <div className="absolute inset-0 bg-black/25 pointer-events-none z-[1]" />
-                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
-                                <Layers className="w-5 h-5 text-white/40" />
-                              </div>
-                            </div>
-
-                            {/* Carta 3 (Frontal Principal com Capa da Aula) */}
-                            <div
-                              className={cn("relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 spring-card transition-all origin-bottom hover-shimmer-effect",
-                                isLeft
-                                  ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-                                  : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-                              )}
-                              style={{
-                                background: disciplinaAtual.corFundoCard,
-                                borderColor: `${disciplinaAtual.corDestaque}50`
-                              }}
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
-                              <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
-
-                              <img
-                                src={aula.capaUrl}
-                                alt={aula.titulo}
-                                loading={i < 10 ? "eager" : "lazy"}
-                                fetchPriority={i < 6 ? "high" : "auto"}
-                                decoding="async"
-                                className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
-
-                              {/* Topo da Carta: Porcentagem Elegante no Canto Superior Esquerdo */}
-                              <div className="relative z-10 flex items-center justify-between w-full">
-                                <div className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 shadow-md flex items-center gap-1">
-                                  <span className="text-[10px] sm:text-[11px] font-black tracking-tight" style={{ color: disciplinaAtual.corDestaque }}>
-                                    {prog.porcentagemTotal}%
-                                  </span>
-                                </div>
-                                {prog.cicloCompleto && (
-                                  <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wider bg-emerald-500 text-white shadow-sm flex items-center gap-1">
+                            {/* Badge de Progresso flutuante no topo da capa */}
+                            <div className="absolute top-2 left-2 z-10">
+                              <span
+                                className={cn(
+                                  "px-2 py-0.5 rounded-full text-[10px] font-black tracking-tight border shadow-md flex items-center gap-1",
+                                  prog.cicloCompleto
+                                    ? "bg-emerald-500/90 text-white border-emerald-400"
+                                    : "bg-black/80 text-white border-white/20"
+                                )}
+                                style={!prog.cicloCompleto ? { color: disciplinaAtual.corDestaque } : undefined}
+                              >
+                                {prog.cicloCompleto ? (
+                                  <>
                                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                                     <span>100%</span>
-                                  </span>
+                                  </>
+                                ) : (
+                                  <span>{prog.porcentagemTotal}%</span>
                                 )}
-                              </div>
+                              </span>
+                            </div>
 
-                              {/* Centro da Capa Limpo (Sem Botão de Play Conforme Solicitado) */}
-                              <div className="my-auto py-2 z-[1] w-full" />
-
-                              {/* Rodapé da Carta: Progresso Ponderado */}
-                              <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
-                                <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-bold text-white/95 mb-1">
-                                  <span className="truncate">
-                                    {prog.cicloCompleto ? 'Finalizado' : `${prog.fasesConcluidasCount} de 3 fases`}
-                                  </span>
-                                </div>
-                                <div className="w-full bg-black/60 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
-                                  <div
-                                    className={cn(
-                                      "h-full rounded-full transition-all duration-500",
-                                      prog.cicloCompleto ? "bg-emerald-500" : "bg-gradient-to-r from-red-500 to-amber-500"
-                                    )}
-                                    style={{
-                                      width: `${Math.max(prog.porcentagemTotal, 8)}%`,
-                                      backgroundColor: prog.cicloCompleto ? '#10b981' : disciplinaAtual.corDestaque,
-                                    }}
-                                  />
-                                </div>
+                            {/* Ícone Play centralizado com hover glow */}
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all">
+                              <div
+                                className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-xl backdrop-blur-sm border border-white/30"
+                                style={{ backgroundColor: `${disciplinaAtual.corDestaque}cc` }}
+                              >
+                                <Play className="w-4 h-4 fill-white ml-0.5" />
                               </div>
+                            </div>
+
+                            {/* Rodapé da Capa: Etapas com ícone de fone */}
+                            <div className="absolute bottom-2 inset-x-2 z-10 flex items-center justify-between text-[10px] font-bold text-white/90">
+                              <span className="flex items-center gap-1 bg-black/70 px-2 py-0.5 rounded-md backdrop-blur-sm border border-white/10">
+                                <Headphones className="w-3 h-3 text-zinc-300" />
+                                <span>{aula.etapas} etapas</span>
+                              </span>
                             </div>
                           </div>
 
-                          {/* LINHA CONECTORA E INFORMAÇÕES + 3 BOTÕES NO LADO OPOSTO */}
-                          <div
-                            className={cn(
-                              "flex-1 min-w-0 flex items-center select-none py-2 transition-all",
-                              isLeft ? "flex-row pl-1.5 xs:pl-2 sm:pl-3" : "flex-row-reverse pr-1.5 xs:pr-2 sm:pr-3"
-                            )}
-                          >
-                            {/* Linha Conectora com Degradê */}
-                            <div
-                              className={cn(
-                                "flex items-center shrink-0 w-5 xs:w-7 sm:w-10 md:w-14",
-                                isLeft ? "flex-row" : "flex-row-reverse"
-                              )}
-                            >
-                              <div
-                                className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
-                                style={{
-                                  backgroundColor: disciplinaAtual.corDestaque,
-                                  boxShadow: `0 0 8px ${disciplinaAtual.corDestaque}`,
-                                }}
-                              />
-                              <div
-                                className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
-                                style={{
-                                  background: isLeft
-                                    ? `linear-gradient(to right, ${disciplinaAtual.corDestaque}, rgba(255,255,255,0.3), transparent)`
-                                    : `linear-gradient(to left, ${disciplinaAtual.corDestaque}, rgba(255,255,255,0.3), transparent)`,
-                                }}
-                              />
-                            </div>
+                          {/* 2. Informações Completas da Aula */}
+                          <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                            <div>
+                              {/* Linha de topo: Número da Aula + Concluída + Favorito */}
+                              <div className="flex items-center justify-between gap-2 mb-1.5">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span
+                                    className="px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-mono font-bold tracking-wider uppercase border border-white/10 bg-white/5"
+                                    style={{ color: disciplinaAtual.corDestaque }}
+                                  >
+                                    {aula.numeroAula}
+                                  </span>
+                                  {prog.cicloCompleto && (
+                                    <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                                      <Check className="w-3 h-3 stroke-[3]" />
+                                      <span>Ciclo Completo</span>
+                                    </span>
+                                  )}
+                                </div>
 
-                            {/* Informações da Aula e 3 Ações Interativas */}
-                            <div
-                              className={cn(
-                                "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
-                                "items-start text-left"
-                              )}
-                            >
-                              <div
-                                className={cn(
-                                  "flex items-center gap-1.5 mb-1 opacity-90",
-                                  "justify-start"
-                                )}
-                              >
-                                <span
-                                  className="text-[13px] sm:text-[15px] font-black uppercase tracking-wider"
-                                  style={{ color: disciplinaAtual.corDestaque }}
-                                >
-                                  {aula.numeroAula}
-                                </span>
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -2068,7 +2010,7 @@ export default function AdminAulasInterativas() {
                                     handleAlternarFavorito(aula);
                                   }}
                                   className={cn(
-                                    "p-1 rounded-full transition-all shrink-0 active:scale-90 ml-1.5",
+                                    "p-1.5 rounded-full transition-all shrink-0 active:scale-90",
                                     favoritosIds.has(aula.id)
                                       ? "text-amber-400 bg-amber-400/20"
                                       : "text-zinc-500 hover:text-zinc-200 hover:bg-white/10"
@@ -2076,30 +2018,68 @@ export default function AdminAulasInterativas() {
                                   title={favoritosIds.has(aula.id) ? "Remover dos favoritos" : "Salvar nos favoritos"}
                                   aria-label="Favoritar aula"
                                 >
-                                  <Star className={cn("w-3.5 h-3.5", favoritosIds.has(aula.id) ? "fill-current" : "")} />
+                                  <Star className={cn("w-4 h-4", favoritosIds.has(aula.id) ? "fill-current" : "")} />
                                 </button>
-                                
                               </div>
 
-                              <h3 
+                              {/* Título Completo sem cortes */}
+                              <h4
                                 onClick={() => iniciarAula(aula)}
-                                className="font-serif font-bold text-[15px] xs:text-[17px] sm:text-[19px] md:text-[21px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md cursor-pointer"
+                                className="font-serif font-bold text-base sm:text-lg md:text-xl text-white group-hover:text-amber-200 transition-colors cursor-pointer leading-snug break-words"
                               >
                                 {aula.titulo}
-                              </h3>
+                              </h4>
 
-                              <p className="text-[11px] sm:text-xs text-zinc-300/80 mt-1.5 leading-relaxed">
-                                {formatDescricaoExata(aula.descricao, aula.titulo)}
-                              </p>
+                              {/* Descrição rica */}
+                              {descFormatada && (
+                                <p className="text-xs sm:text-[13px] text-zinc-300/80 leading-relaxed mt-1.5 break-words">
+                                  {descFormatada}
+                                </p>
+                              )}
 
-                              {/* OS 3 BOTÕES DE AÇÃO: SEM NÚMEROS E SEM ABREVIAÇÕES */}
-                              <div 
-                                className={cn(
-                                  "flex flex-col sm:grid sm:grid-cols-3 gap-1.5 sm:gap-2 mt-3 pt-2.5 border-t border-white/10 w-full",
-                                  "justify-start"
-                                )}
-                              >
-                                {/* 1. Iniciar Aula */}
+                              {/* Pílulas de recursos */}
+                              <div className="flex items-center gap-2 mt-2.5 flex-wrap text-[11px] text-zinc-400">
+                                <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 flex items-center gap-1">
+                                  <Headphones className="w-3 h-3 text-amber-400" />
+                                  <span>Áudio Narrado</span>
+                                </span>
+                                <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 flex items-center gap-1">
+                                  <Layers className="w-3 h-3 text-purple-400" />
+                                  <span>{totalCards} Flashcards</span>
+                                </span>
+                                <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 flex items-center gap-1">
+                                  <HelpCircle className="w-3 h-3 text-emerald-400" />
+                                  <span>{totalQuestoes} Questões</span>
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Barra de Progresso e Ações */}
+                            <div className="mt-3 pt-3 border-t border-white/10">
+                              <div className="flex items-center justify-between text-[11px] font-medium text-zinc-400 mb-1.5">
+                                <span>
+                                  {prog.cicloCompleto ? 'Ciclo 100% Concluído' : `${prog.fasesConcluidasCount} de 3 fases concluídas`}
+                                </span>
+                                <span className="font-bold" style={{ color: disciplinaAtual.corDestaque }}>
+                                  {prog.porcentagemTotal}%
+                                </span>
+                              </div>
+                              <div className="w-full bg-black/60 h-2 rounded-full overflow-hidden border border-white/10 mb-3">
+                                <div
+                                  className={cn(
+                                    "h-full rounded-full transition-all duration-500",
+                                    prog.cicloCompleto ? "bg-emerald-500" : "bg-gradient-to-r from-red-500 to-amber-500"
+                                  )}
+                                  style={{
+                                    width: `${Math.max(prog.porcentagemTotal, 6)}%`,
+                                    backgroundColor: prog.cicloCompleto ? '#10b981' : disciplinaAtual.corDestaque
+                                  }}
+                                />
+                              </div>
+
+                              {/* Os 3 Botões de Ação Interativos */}
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                {/* 1. Iniciar / Ver Aula */}
                                 <button
                                   type="button"
                                   onClick={(e) => {
@@ -2107,150 +2087,231 @@ export default function AdminAulasInterativas() {
                                     iniciarAula(aula);
                                   }}
                                   className={cn(
-                                    "w-full h-9 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 shadow-md",
+                                    "h-10 sm:h-11 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 shadow-md",
                                     prog.aulaTerminada
                                       ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30"
                                       : "bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white border border-red-400/40 shadow-red-950/40"
                                   )}
-                                  title={prog.aulaTerminada ? 'Reassistir aula interativa' : 'Iniciar aula interativa'}
                                 >
                                   {prog.aulaTerminada ? (
-                                    <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3] shrink-0" />
+                                    <Check className="w-4 h-4 text-emerald-400 stroke-[3] shrink-0" />
                                   ) : (
-                                    <Play className="w-3.5 h-3.5 fill-current shrink-0" />
+                                    <Play className="w-4 h-4 fill-current shrink-0" />
                                   )}
-                                  <span className="whitespace-nowrap">{prog.aulaTerminada ? 'VER AULA' : 'INICIAR'}</span>
+                                  <span>{prog.aulaTerminada ? 'VER AULA' : 'INICIAR AULA'}</span>
                                 </button>
 
-                                {/* 2 & 3. Revisar + Praticar */}
-                                <div className="grid grid-cols-2 sm:contents gap-1.5">
-                                  {/* 2. Revisar (Cor invisível/transparente quando bloqueado) */}
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (!flashcardsLiberados) {
-                                        setModalBloqueioAula({ aula, motivo: 'revisar' });
-                                        return;
-                                      }
-                                      abrirRevisarFlashcards(aula);
-                                    }}
-                                    className={cn(
-                                      "w-full h-8.5 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-[0.96] transition-transform duration-100 ease-out border",
-                                      prog.fcOk
-                                        ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
-                                        : flashcardsLiberados
-                                          ? "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
-                                          : "bg-transparent text-zinc-400 border-white/10 hover:border-white/25 hover:bg-white/[0.04] cursor-pointer"
-                                    )}
-                                    title={!flashcardsLiberados ? 'Toque para ver como destravar' : 'Revisar com Flashcards'}
-                                  >
-                                    {flashcardsLiberados ? (
-                                      <Unlock className="w-3.5 h-3.5 text-amber-300 shrink-0 transition-transform group-hover/btn:rotate-12 duration-200" />
-                                    ) : (
-                                      <Lock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                                    )}
-                                    <span className="whitespace-nowrap">REVISAR</span>
-                                  </button>
+                                {/* 2. Revisar Flashcards */}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!flashcardsLiberados) {
+                                      setModalBloqueioAula({ aula, motivo: 'revisar' });
+                                      return;
+                                    }
+                                    abrirRevisarFlashcards(aula);
+                                  }}
+                                  className={cn(
+                                    "h-10 sm:h-11 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 border",
+                                    prog.fcOk
+                                      ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                                      : flashcardsLiberados
+                                        ? "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
+                                        : "bg-white/[0.03] text-zinc-400 border-white/10 hover:border-white/20 hover:bg-white/[0.06]"
+                                  )}
+                                >
+                                  {flashcardsLiberados ? (
+                                    <Unlock className="w-4 h-4 text-amber-300 shrink-0" />
+                                  ) : (
+                                    <Lock className="w-4 h-4 text-zinc-400 shrink-0" />
+                                  )}
+                                  <span>REVISAR ({totalCards})</span>
+                                </button>
 
-                                  {/* 3. Praticar (Cor invisível/transparente quando bloqueado) */}
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (!questoesLiberadas) {
-                                        setModalBloqueioAula({ aula, motivo: 'praticar' });
-                                        return;
-                                      }
-                                      abrirPraticarQuestoes(aula);
-                                    }}
-                                    className={cn(
-                                      "w-full h-8.5 sm:h-11 px-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-[0.96] transition-transform duration-100 ease-out border",
-                                      prog.questoesOk
-                                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
-                                        : questoesLiberadas
-                                          ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
-                                          : "bg-transparent text-zinc-400 border-white/10 hover:border-white/25 hover:bg-white/[0.04] cursor-pointer"
-                                    )}
-                                    title={!questoesLiberadas ? 'Toque para ver como destravar' : 'Praticar Questões'}
-                                  >
-                                    {questoesLiberadas ? (
-                                      <Unlock className="w-3.5 h-3.5 text-emerald-300 shrink-0 transition-transform group-hover/btn:rotate-12 duration-200" />
-                                    ) : (
-                                      <Lock className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                                    )}
-                                    <span className="whitespace-nowrap">PRATICAR</span>
-                                  </button>
-                                </div>
+                                {/* 3. Praticar Questões */}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!questoesLiberadas) {
+                                      setModalBloqueioAula({ aula, motivo: 'praticar' });
+                                      return;
+                                    }
+                                    abrirPraticarQuestoes(aula);
+                                  }}
+                                  className={cn(
+                                    "h-10 sm:h-11 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 border",
+                                    prog.questoesOk
+                                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
+                                      : questoesLiberadas
+                                        ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
+                                        : "bg-white/[0.03] text-zinc-400 border-white/10 hover:border-white/20 hover:bg-white/[0.06]"
+                                  )}
+                                >
+                                  {questoesLiberadas ? (
+                                    <Unlock className="w-4 h-4 text-emerald-300 shrink-0" />
+                                  ) : (
+                                    <Lock className="w-4 h-4 text-zinc-400 shrink-0" />
+                                  )}
+                                  <span>PRATICAR ({totalQuestoes})</span>
+                                </button>
                               </div>
                             </div>
                           </div>
                         </div>
-
-                        {/* SVG S-Curve Connector */}
-                        {i < aulasFiltradas.length - 1 && (
-                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-36 sm:h-44 md:h-52 -my-14 sm:-my-18 md:-my-22 pointer-events-none z-0 overflow-visible">
-                            <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
-                              <defs>
-                                <filter id={`trail-glow-aula-${i}`} x="-20%" y="-20%" width="140%" height="140%">
-                                  <feGaussianBlur stdDeviation="3" result="blur" />
-                                  <feMerge>
-                                    <feMergeNode in="blur" />
-                                    <feMergeNode in="SourceGraphic" />
-                                  </feMerge>
-                                </filter>
-                              </defs>
-                              <path
-                                d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
-                                fill="none"
-                                stroke="rgba(255, 255, 255, 0.08)"
-                                strokeWidth="4"
-                                strokeLinecap="round"
-                                vectorEffect="non-scaling-stroke"
-                              />
-                              <path
-                                d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
-                                fill="none"
-                                className="animate-trail-flow"
-                                stroke={pctMat >= 100 ? '#fbbf24' : disciplinaAtual.corDestaque} strokeWidth={pctMat >= 100 ? '3' : '2.5'}
-                                strokeDasharray="6 8"
-                                strokeLinecap="round"
-                                vectorEffect="non-scaling-stroke"
-                                filter={`url(#trail-glow-aula-${i})`}
-                              />
-                            </svg>
-                            <div
-                              className="absolute w-2.5 h-2.5 rounded-full pointer-events-none border border-white/80 bg-white shadow-lg animate-dot-pulse"
-                              style={{
-                                left: '50%',
-                                top: '50%',
-                                boxShadow: `0 0 14px ${disciplinaAtual.corDestaque}, 0 0 4px #ffffff`,
-                              }}
-                            />
-                          </div>
-                        )}
                       </div>
                     );
                   })}
-
-                  {aulasFiltradas.length === 0 && (
-                    <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
-                      <Search className="w-9 h-9 text-zinc-600 stroke-[1.5]" />
-                      <p className="text-zinc-400 text-sm">
-                        Nenhuma aula encontrada para "<span className="text-white font-semibold">{buscaTermo}</span>"
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setBuscaTermo('')}
-                        className="text-xs font-medium underline"
-                        style={{ color: disciplinaAtual.corDestaque }}
-                      >
-                        Limpar pesquisa
-                      </button>
-                    </div>
-                  )}
                 </div>
-              </div>
+              )}
+
+              {/* MODO 2: CARROSSEL VISUAL DE CAPAS (HORIZONTAL) */}
+              {modoVisualizacaoAulas === 'carrossel' && (
+                <div className="w-full relative py-2">
+                  <div className="w-full overflow-x-auto flex gap-4 pb-4 snap-x snap-mandatory scrollbar-thin">
+                    {aulasFiltradas.map((aula, i) => {
+                      const prog = calcularProgressoCiclo(aula);
+                      const flashcardsLiberados = prog.aulaTerminada || modoLivreTeste;
+                      const questoesLiberadas = (prog.aulaTerminada && prog.fcOk) || modoLivreTeste;
+                      const conteudo = CONTEUDO_AULAS[aula.id];
+                      const totalCards = conteudo?.flashcards.length || 18;
+                      const totalQuestoes = conteudo?.questoes.length || 12;
+
+                      return (
+                        <div
+                          key={aula.id}
+                          className="snap-start shrink-0 w-[240px] xs:w-[270px] sm:w-[300px] rounded-2xl bg-[#141418] border border-white/10 hover:border-white/25 p-3.5 flex flex-col justify-between shadow-xl group transition-all"
+                        >
+                          {/* Capa Grande */}
+                          <div
+                            onClick={() => iniciarAula(aula)}
+                            className="w-full aspect-[3/4] rounded-xl overflow-hidden relative border border-white/10 bg-black/60 shadow-md cursor-pointer mb-3"
+                          >
+                            <img
+                              src={aula.capaUrl}
+                              alt={aula.titulo}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30" />
+                            <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full bg-black/75 text-white text-[10px] font-black border border-white/20">
+                              {prog.porcentagemTotal}%
+                            </div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <div
+                                className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-xl backdrop-blur-sm border border-white/30"
+                                style={{ backgroundColor: `${disciplinaAtual.corDestaque}cc` }}
+                              >
+                                <Play className="w-5 h-5 fill-white ml-0.5" />
+                              </div>
+                            </div>
+                            <div className="absolute bottom-2 inset-x-2 flex items-center justify-between text-[10px] font-bold text-white">
+                              <span className="bg-black/70 px-2 py-0.5 rounded border border-white/10 font-mono">
+                                {aula.numeroAula}
+                              </span>
+                              <span className="bg-black/70 px-2 py-0.5 rounded border border-white/10 flex items-center gap-1">
+                                <Headphones className="w-3 h-3" />
+                                {aula.etapas} etapas
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Título & Descrição */}
+                          <div className="flex-1 flex flex-col">
+                            <h4
+                              onClick={() => iniciarAula(aula)}
+                              className="font-serif font-bold text-sm sm:text-base text-white group-hover:text-amber-200 transition-colors cursor-pointer leading-snug line-clamp-2"
+                            >
+                              {aula.titulo}
+                            </h4>
+                            <p className="text-[11px] text-zinc-400 line-clamp-2 mt-1 leading-relaxed">
+                              {formatDescricaoExata(aula.descricao, aula.titulo)}
+                            </p>
+                          </div>
+
+                          {/* 3 Botões Rápidos */}
+                          <div className="flex flex-col gap-1.5 mt-3 pt-2.5 border-t border-white/10">
+                            <button
+                              type="button"
+                              onClick={() => iniciarAula(aula)}
+                              className={cn(
+                                "w-full h-9 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5",
+                                prog.aulaTerminada
+                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                                  : "bg-gradient-to-r from-red-600 to-amber-600 text-white shadow-md"
+                              )}
+                            >
+                              <Play className="w-3.5 h-3.5 fill-current" />
+                              <span>{prog.aulaTerminada ? 'REASSISTIR' : 'INICIAR'}</span>
+                            </button>
+                            <div className="grid grid-cols-2 gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!flashcardsLiberados) {
+                                    setModalBloqueioAula({ aula, motivo: 'revisar' });
+                                    return;
+                                  }
+                                  abrirRevisarFlashcards(aula);
+                                }}
+                                className={cn(
+                                  "h-8 rounded-xl text-[10px] font-bold uppercase flex items-center justify-center gap-1 border",
+                                  prog.fcOk
+                                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                    : flashcardsLiberados
+                                      ? "bg-amber-600 text-white"
+                                      : "bg-white/[0.04] text-zinc-400 border-white/10"
+                                )}
+                              >
+                                {flashcardsLiberados ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                                <span>CARDS</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!questoesLiberadas) {
+                                    setModalBloqueioAula({ aula, motivo: 'praticar' });
+                                    return;
+                                  }
+                                  abrirPraticarQuestoes(aula);
+                                }}
+                                className={cn(
+                                  "h-8 rounded-xl text-[10px] font-bold uppercase flex items-center justify-center gap-1 border",
+                                  prog.questoesOk
+                                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                                    : questoesLiberadas
+                                      ? "bg-emerald-600 text-white"
+                                      : "bg-white/[0.04] text-zinc-400 border-white/10"
+                                )}
+                              >
+                                {questoesLiberadas ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                                <span>QUESTÕES</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {aulasFiltradas.length === 0 && (
+                <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
+                  <Search className="w-9 h-9 text-zinc-600 stroke-[1.5]" />
+                  <p className="text-zinc-400 text-sm">
+                    Nenhuma aula encontrada para "<span className="text-white font-semibold">{buscaTermo}</span>"
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setBuscaTermo('')}
+                    className="text-xs font-medium underline"
+                    style={{ color: disciplinaAtual.corDestaque }}
+                  >
+                    Limpar pesquisa
+                  </button>
+                </div>
+              )}
             </div>
           </>
         );
