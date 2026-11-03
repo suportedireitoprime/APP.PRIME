@@ -1,5 +1,23 @@
 export interface SlideItem {
-  tipo: 'Capa' | 'Conteúdo' | 'Questão' | 'Questão de banca' | 'Flashcard' | 'Ligar termos' | 'Encerramento' | string;
+  tipo:
+    | "Capa"
+    | "Conteúdo"
+    | "Questão"
+    | "Questão de banca"
+    | "Flashcard"
+    | "Ligar termos"
+    | "Completar"
+    | "Verdadeiro ou falso"
+    | "Linha do tempo"
+    | "Mapa mental"
+    | "Desafio"
+    | "Comparador"
+    | "Explorar"
+    | "Toque e revele"
+    | "Karaokê"
+    | "Encerramento"
+    | "Ouro"
+    | string;
   img?: string;
   imgUrl?: string;
   alt?: string;
@@ -12,6 +30,10 @@ export interface SlideItem {
   questao?: string;
   opcoes?: string[];
   correta?: number;
+  certa?: number;
+  feedback?: string;
+  explicacao?: string;
+  comentario?: string;
   frente?: string;
   verso?: string;
   instrucao?: string;
@@ -20,6 +42,26 @@ export interface SlideItem {
   rotuloL?: string;
   rotuloR?: string;
   img2?: string;
+  // Completar a frase
+  partes?: string[];
+  respostas?: string[];
+  banco?: string[];
+  fecho?: string;
+  // Verdadeiro ou falso
+  afirmacoes?: { t: string; v: boolean; exp: string }[];
+  // Linha do tempo
+  marcos?: { ano: string; titulo: string; texto: string }[];
+  // Mapa mental
+  centro?: string;
+  ramos?: { nome: string; texto: string; chips: string[] }[];
+  // Desafio Quiz
+  perguntas?: { q: string; ops: string[]; certa: number; exp: string }[];
+  // Explorar / Hotspots
+  pontos?: { x: number; y: number; titulo: string; texto: string }[];
+  // Toque e revele
+  cartas?: { p: string; r: string }[];
+  // Frases de karaokê
+  frases?: string[];
   [key: string]: any;
 }
 

@@ -12,6 +12,15 @@ import { loadAulaData, formatNarracaoParaHtml } from '@/utils/aulaDataLoader';
 import { haptic } from '@/lib/nativeHaptics';
 import { supabase } from '@/integrations/supabase/client';
 import { getLocalAulaProgress, saveLocalAulaProgress } from '@/lib/aprenderProgressoStorage';
+import {
+  EtapaCompletar,
+  EtapaVerdadeiroFalso,
+  EtapaLigarTermos,
+  EtapaLinhaDoTempo,
+  EtapaMapaMental,
+  EtapaDesafio,
+  EtapaComparador
+} from './EtapasInterativas';
 
 interface PlayerAulaNativoProps {
   aula: AulaItem;
@@ -194,6 +203,10 @@ export function PlayerAulaNativo({
     slideAtual?.tipo === 'Ligar termos' || 
     slideAtual?.tipo === 'Verdadeiro ou falso' || 
     slideAtual?.tipo === 'Completar' || 
+    slideAtual?.tipo === 'Linha do tempo' ||
+    slideAtual?.tipo === 'Mapa mental' ||
+    slideAtual?.tipo === 'Comparador' ||
+    Boolean(slideAtual?.pares && slideAtual.pares.length > 0) || 
     slideAtual?.tipo === 'Desafio' ||
     slideAtual?.tipo === 'Explorar' ||
     slideAtual?.tipo === 'Toque e revele' ||
@@ -301,7 +314,21 @@ export function PlayerAulaNativo({
   // HTML com o Grifo Leve e Elegante por cima na frase ativa (respeita a chavinha de ativar/desativar)
   const htmlComGrifo = useMemo(() => {
     // Flashcards, Karaokê e Questões têm renderização própria e não devem duplicar narração embaixo
-    if (isFlashcard || slideAtual?.tipo === 'Karaokê' || isQuestao) return '';
+    if (
+      isFlashcard || 
+      slideAtual?.tipo === 'Karaokê' || 
+      isQuestao ||
+      slideAtual?.tipo === 'Completar' ||
+      slideAtual?.tipo === 'Verdadeiro ou falso' ||
+      slideAtual?.tipo === 'Ligar termos' ||
+      slideAtual?.tipo === 'Linha do tempo' ||
+      slideAtual?.tipo === 'Mapa mental' ||
+      slideAtual?.tipo === 'Desafio' ||
+      slideAtual?.tipo === 'Comparador' ||
+      slideAtual?.tipo === 'Toque e revele' ||
+      slideAtual?.tipo === 'Explorar' ||
+      Boolean(slideAtual?.pares && slideAtual.pares.length > 0)
+    ) return '';
 
     let rawHtml = slideAtual?.corpo || '';
     if (!rawHtml.trim() && (slideAtual?.narr || slideAtual?.intro)) {
@@ -1141,7 +1168,7 @@ export function PlayerAulaNativo({
       </div>
 
       {/* ÁREA CENTRAL DE CONTEÚDO (ROLAGEM SUAVE SEM SCROLLBAR VISÍVEL COM PADDING SEGURO NO RODAPÉ) */}
-      <main ref={mainRef} className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 pb-44 sm:pb-48 max-w-3xl mx-auto scroll-smooth">
+      <main ref={mainRef} className="flex-1 w-full overflow-y-auto overflow-x-hidden p-4 sm:p-6 pb-56 sm:pb-64 max-w-3xl mx-auto scroll-smooth">
         {slideAtual && (
           <div key={idx} className="space-y-4 sm:space-y-5 animate-page-turn">
             {/* Tag / Kicker da Etapa limpo e elegante (Sem redundâncias de tags na direita) */}
@@ -1455,54 +1482,39 @@ export function PlayerAulaNativo({
               </div>
             )}
 
-            {/* Bloco de Ligar Termos Interativo */}
-            {slideAtual.pares && slideAtual.pares.length > 0 && (
-              <div className="rounded-3xl border border-white/15 p-5 sm:p-6 bg-gradient-to-b from-[#2e1219]/90 to-[#1d0810]/95 shadow-2xl space-y-4">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <span className="text-xs font-black uppercase tracking-widest text-[#d4af37] flex items-center gap-1.5">
-                    <Link2 className="w-4 h-4" />
-                    <span>Ligue os Termos Corretos</span>
-                  </span>
-                  <span className="text-[11px] font-bold text-zinc-400">
-                    Toque no termo e depois na definição
-                  </span>
-                </div>
+            {/* Bloco de Completar a Frase (Lacunas Interativas) */}
+            {slideAtual.tipo === 'Completar' && (
+              <EtapaCompletar slide={slideAtual} tema={tema} />
+            )}
 
-                <div className="space-y-3 pt-2">
-                  {slideAtual.pares.map(([termo, def], pi) => {
-                    const isConectado = paresConectados[pi] !== undefined;
-                    const isSelected = parSelecionadoL === pi;
+            {/* Bloco de Verdadeiro ou Falso (Arraste e Decida) */}
+            {slideAtual.tipo === 'Verdadeiro ou falso' && (
+              <EtapaVerdadeiroFalso slide={slideAtual} tema={tema} />
+            )}
 
-                    return (
-                      <div 
-                        key={pi}
-                        onClick={() => {
-                          if (isConectado) return;
-                          if (parSelecionadoL === null) {
-                            setParSelecionadoL(pi);
-                          } else if (parSelecionadoL === pi) {
-                            setParSelecionadoL(null);
-                          } else {
-                            // Conectar
-                            setParesConectados(prev => ({ ...prev, [parSelecionadoL]: pi }));
-                            setParSelecionadoL(null);
-                          }
-                        }}
-                        className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
-                          isConectado
-                            ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-200'
-                            : isSelected
-                            ? 'border-amber-400 bg-amber-400/20 text-white ring-1 ring-amber-400 shadow-md'
-                            : 'border-white/10 bg-white/5 hover:bg-white/10 text-zinc-200'
-                        }`}
-                      >
-                        <span className="font-bold text-sm sm:text-base text-amber-300">{termo}</span>
-                        <span className="text-xs sm:text-sm text-zinc-300 sm:text-right">{def}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+            {/* Bloco de Ligar Termos Interativo (2 Colunas com Validação) */}
+            {(slideAtual.tipo === 'Ligar termos' || (slideAtual.pares && slideAtual.pares.length > 0 && !isQuestao && !isFlashcard)) && (
+              <EtapaLigarTermos slide={slideAtual} tema={tema} />
+            )}
+
+            {/* Bloco de Linha do Tempo Cronológica */}
+            {slideAtual.tipo === 'Linha do tempo' && (
+              <EtapaLinhaDoTempo slide={slideAtual} tema={tema} />
+            )}
+
+            {/* Bloco de Mapa Mental Interativo */}
+            {slideAtual.tipo === 'Mapa mental' && (
+              <EtapaMapaMental slide={slideAtual} tema={tema} />
+            )}
+
+            {/* Bloco de Desafio Quiz */}
+            {slideAtual.tipo === 'Desafio' && (
+              <EtapaDesafio slide={slideAtual} tema={tema} />
+            )}
+
+            {/* Bloco de Comparador Visual (Antes/Depois) */}
+            {slideAtual.tipo === 'Comparador' && (
+              <EtapaComparador slide={slideAtual} tema={tema} />
             )}
 
             {/* Bloco de Toque e Revele (Cartas com Perguntas e Respostas) */}
@@ -1612,7 +1624,7 @@ export function PlayerAulaNativo({
             )}
 
             {/* Conteúdo Rico da Aula: 100% Tipografia Autêntica do HTML com Grifo Leve por cima (oculto em flashcards/karaokê/questões para zero duplicação) */}
-            {(slideAtual.corpo || htmlComGrifo) && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !isQuestao && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && (
+            {(slideAtual.corpo || htmlComGrifo) && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !isQuestao && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && slideAtual.tipo !== 'Completar' && slideAtual.tipo !== 'Verdadeiro ou falso' && slideAtual.tipo !== 'Linha do tempo' && slideAtual.tipo !== 'Mapa mental' && slideAtual.tipo !== 'Desafio' && slideAtual.tipo !== 'Comparador' && (
               <div 
                 className="aula-html-tipografia pt-1"
                 dangerouslySetInnerHTML={{ __html: htmlComGrifo }}
@@ -1620,7 +1632,7 @@ export function PlayerAulaNativo({
             )}
 
             {/* Fallback de Conteúdo de Texto caso não haja corpo HTML e não seja interativo */}
-            {!slideAtual.corpo && !htmlComGrifo && (slideAtual.texto || slideAtual.narr) && !isQuestao && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !slideAtual.frases && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && (
+            {!slideAtual.corpo && !htmlComGrifo && (slideAtual.texto || slideAtual.narr) && !isQuestao && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !slideAtual.frases && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && slideAtual.tipo !== 'Completar' && slideAtual.tipo !== 'Verdadeiro ou falso' && slideAtual.tipo !== 'Linha do tempo' && slideAtual.tipo !== 'Mapa mental' && slideAtual.tipo !== 'Desafio' && slideAtual.tipo !== 'Comparador' && (
               <div className="aula-html-tipografia pt-1 space-y-3">
                 <p className="text-base sm:text-lg leading-relaxed text-zinc-200">
                   {slideAtual.texto || slideAtual.narr}

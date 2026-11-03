@@ -661,6 +661,24 @@ body {
   mix-blend-mode: screen;
 }
 
+/* === Aulas Interativas: Efeitos de Animação (Shake, Blank Glow, Stamp) === */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+.animate-shake {
+  animation: shake 0.38s ease-in-out;
+}
+
+@keyframes blankglow {
+  0%, 100% { border-color: rgba(251, 191, 36, 0.4); }
+  50% { border-color: rgba(251, 191, 36, 1); box-shadow: 0 0 10px rgba(251, 191, 36, 0.35); }
+}
+.animate-blankglow {
+  animation: blankglow 1.2s ease-in-out infinite;
+}
+
 /* === Reflexo passando em loop (CTA overlay boletim) === */
 .btn-attention-shine-loop {
   position: relative;
