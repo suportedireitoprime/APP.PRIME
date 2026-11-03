@@ -437,9 +437,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                     Apresentação do Capítulo
                   </span>
                   <p className="text-[14px] sm:text-[15px] font-sans font-semibold leading-snug text-white drop-shadow-md">
-                    {capituloAtual.numero > 0
-                      ? `Você vai ouvir agora o capítulo ${capituloAtual.numero}, ${capituloAtual.titulo}.`
-                      : capituloAtual.titulo}
+                    {capituloAtual.titulo}
                   </p>
                 </motion.div>
               ) : cueAtual ? (

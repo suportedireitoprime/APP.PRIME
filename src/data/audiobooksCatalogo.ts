@@ -4202,7 +4202,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
   "descricao": "Marco iluminista que revolucionou a história do Direito Penal, propondo a proporcionalidade das penas, a abolição da tortura, o fim das acusações secretas e o combate à crueldade punitiva em prol da dignidade humana.",
   "sinopse": "Publicado em 1764 na Itália, Dos Delitos e das Penas é a obra mais influente da criminologia e da filosofia penal mundial. Cesare Beccaria desafiou o absolutismo e as práticas arcaicas da época com argumentos irrefutáveis sobre a utilidade da punição, a legalidade, a separação entre pecado e crime, a igualdade perante a lei e a prevenção como o verdadeiro fim das penas.",
   "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capa-do-livro.jpg",
-  "totalCapitulos": 48,
+  "totalCapitulos": 42,
   "duracaoTotalSegundos": 16668,
   "duracaoTotalFormatada": "4h 38min",
   "tags": [
@@ -4226,7 +4226,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 1,
+      "numero": 0,
       "id": "sumario",
       "titulo": "Sumário Narrado",
       "autor": "Cesare Beccaria",
@@ -4238,7 +4238,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 2,
+      "numero": 0,
       "id": "frente-apresentacao",
       "titulo": "Frente: Apresentação",
       "autor": "Cesare Beccaria",
@@ -4337,7 +4337,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 3,
+      "numero": 0,
       "id": "frente-biografia",
       "titulo": "Frente: Biografia do Autor",
       "autor": "Cesare Beccaria",
@@ -4460,7 +4460,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 4,
+      "numero": 0,
       "id": "frente-prefacio",
       "titulo": "Frente: Prefácio do Autor",
       "autor": "Cesare Beccaria",
@@ -4691,475 +4691,437 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 5,
+      "numero": 1,
       "id": "capitulo-01",
       "titulo": "Capítulo 01: Introdução",
       "autor": "Cesare Beccaria",
       "descricao": "Capítulo 01 do clássico Dos Delitos e das Penas: Introdução.",
       "duracaoSegundos": 401,
       "duracaoFormatada": "06:41",
-      "audioUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-capitulo-19-publicidade-e-presteza-das-penas.mp3",
-      "audioTituloUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/titulo-capitulo-19.mp3",
-      "srtUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-19-publicidade-e-presteza-das-penas.srt",
-      "cues": [
-        {
-          "id": 1,
-          "start": 0,
-          "end": 6.89,
-          "text": "QUANTO mais pronta for a pena e mais de perto seguir o delito, tanto mais justa e útil ela será."
-        },
-        {
-          "id": 2,
-          "start": 6.89,
-          "end": 7.68,
-          "text": "Mais justa."
-        },
-        {
-          "id": 3,
-          "start": 7.68,
-          "end": 20.03,
-          "text": "porque poupará ao acusado os cruéis tormentos da, incerteza, tormentos supérfluos, cujo horror aumenta para ele na razão da força de imaginação e do sentimento de fraqueza."
-        },
-        {
-          "id": 4,
-          "start": 20.03,
-          "end": 31.94,
-          "text": "A presteza do julgamento é justa ainda porque, a perda da liberdade sendo já uma pena, esta só deve preceder a condenação na estrita medida que a necessidade o exige."
-        },
-        {
-          "id": 5,
-          "start": 31.94,
-          "end": 45.08,
-          "text": "Se a prisão é apenas um meio de deter um cidadão até que ele seja julgado culpado, como esse meio é aflitivo e cruel, deve-se, tanto quanto possível, suavizar-lhe o rigor e a duração."
-        },
-        {
-          "id": 6,
-          "start": 45.08,
-          "end": 56.78,
-          "text": "Um cidadão detido só deve ficar na prisão o tempo necessário para a instrução do processo; e os mais antigos detidos têm direito de ser julgados em primeiro lugar."
-        },
-        {
-          "id": 7,
-          "start": 56.78,
-          "end": 65.97,
-          "text": "O acusado não deve ser encerrado senão na medida em que for necessário para o impedir de fugir ou de ocultar as provas do crime."
-        },
-        {
-          "id": 8,
-          "start": 65.97,
-          "end": 69.7,
-          "text": "O processo mesmo deve ser conduzido sem protelações."
-        },
-        {
-          "id": 9,
-          "start": 69.7,
-          "end": 75.44,
-          "text": "Que contraste hediondo entre a indolência de um juiz e a angústia de um acusado!"
-        },
-        {
-          "id": 10,
-          "start": 75.44,
-          "end": 87.29,
-          "text": "De um lado, um magistrado insensível, que passa os dias no bem-estar e nos prazeres, e de outro um infeliz que definha, a chorar no fundo de uma masmorra abominável."
-        },
-        {
-          "id": 11,
-          "start": 87.29,
-          "end": 101.64,
-          "text": "Os efeitos do castigo que se segue ao crime devem ser em geral impressionantes e sensíveis para os que o testemunharam; haverá, porém, necessidade de que esse castigo seja tão cruel para quem o sofre?"
-        },
-        {
-          "id": 12,
-          "start": 101.64,
-          "end": 112.91,
-          "text": "Quando os homens se reuniram em sociedade, foi para só se sujeitarem aos mínimos males possíveis; e não há país que possa negar esse princípio incontestável."
-        },
-        {
-          "id": 13,
-          "start": 112.91,
-          "end": 135.17,
-          "text": "Eu disse que a presteza da pena é útil; e é certo que, quanto menos tempo decorrer entre o delito e a pena, tanto mais os espíritos ficarão compenetrados da idéia de que não há crimes sem castigo; tanto mais se habituarão a considerar o crime como a causa da qual o castigo é o efeito necessário e inseparável."
-        },
-        {
-          "id": 14,
-          "start": 135.17,
-          "end": 140.55,
-          "text": "É a ligação das idéias que sustenta todo o edifício do entendimento humano."
-        },
-        {
-          "id": 15,
-          "start": 140.55,
-          "end": 147.94,
-          "text": "Sem ela, o prazer e a dor seriam sentimentos isolados, sem efeito, tão cedo esquecidos quanto sentidos."
-        },
-        {
-          "id": 16,
-          "start": 147.94,
-          "end": 160.36,
-          "text": "Os homens sem idéias gerais e princípios universais, isto é, os homens ignorantes e embrutecidos, não agem senão segundo as idéias mais vizinhas e mais imediatamente unidas."
-        },
-        {
-          "id": 17,
-          "start": 160.36,
-          "end": 171.92,
-          "text": "Negligenciam as relações distantes, e essas idéias complicadas, que só se apresentam ao homem fortemente apaixonado por um objeto, ou aos espíritos esclarecidos."
-        },
-        {
-          "id": 18,
-          "start": 171.92,
-          "end": 177.3,
-          "text": "A luz da atenção dissipa no homem apaixonado as trevas que cercam o vulgar."
-        },
-        {
-          "id": 19,
-          "start": 177.3,
-          "end": 193.88,
-          "text": "O homem instruído, acostumado a percorrer e a comparar rapidamente um grande número de idéias e de sentimentos opostos, tira do contraste um resultado que constitui a base de sua conduta, desde então menos incerta e menos perigosa."
-        },
-        {
-          "id": 20,
-          "start": 193.88,
-          "end": 210.25,
-          "text": "É, pois, da maior importância punir prontamente um crime cometido, se se quiser que, no espírito grosseiro do vulgo, a pintura sedutora das vantagens de uma ação criminosa desperte imediatamente a idéia de um castigo inevitável."
-        },
-        {
-          "id": 21,
-          "start": 210.25,
-          "end": 217.07,
-          "text": "Uma pena por demais retardada torna menos estreita a união dessas duas idéias: crime e castigo."
-        },
-        {
-          "id": 22,
-          "start": 217.07,
-          "end": 233.51,
-          "text": "Se o suplício de um acusado causa então alguma impressão, e somente como espetáculo, pois só se apresenta ao espectador quando o horror do crime, que contribui para fortificar o horror da pena, já está enfraquecido nos espíritos."
-        },
-        {
-          "id": 23,
-          "start": 233.51,
-          "end": 252.89,
-          "text": "Poder-se-ia ainda estreitar mais a ligação das idéias de crime e de castigo, dando à pena toda a conformidade possível com a natureza do delito, a fim de que o receio de um castigo especial afaste o espírito do caminho a que conduzia a perspectiva de um crime vantajoso."
-        },
-        {
-          "id": 24,
-          "start": 252.89,
-          "end": 261.86,
-          "text": "É preciso que a idéia do suplício esteja sempre presente no coração do homem fraco e domine o sentimento que o leva ao crime."
-        },
-        {
-          "id": 25,
-          "start": 261.86,
-          "end": 276.07,
-          "text": "Entre vários povos, punem-se os crimes pouco consideráveis com a prisão ou com a escravidão num país distante, isto é, manda-se o culpado levar um exemplo inútil a uma sociedade que ele não ofendeu."
-        },
-        {
-          "id": 26,
-          "start": 276.07,
-          "end": 294.59,
-          "text": "Como os homens não se entregam, a princípio, aos maiores crimes, a maior parte dos que assistem ao suplício de um celerado, acusado de algum crime monstruoso, não experimentam nenhum sentimento de terror ao verem um castigo que jamais imaginam poder merecer."
-        },
-        {
-          "id": 27,
-          "start": 294.59,
-          "end": 307.87,
-          "text": "Ao contrário, a punição pública dos pequenos delitos mais comuns causar-lhe-á na alma uma impressão salutar que os afastará de grandes crimes, desviando-os primeiro dos que o são menos."
-        }
-      ],
+      "audioUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-01-introducao.mp3",
+      "audioTituloUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/titulo-capitulo-01.mp3",
+      "cues": [],
       "imagens": []
     },
     {
-      "numero": 6,
+      "numero": 2,
       "id": "capitulo-02",
       "titulo": "Capítulo 02: Origem das penas e direito de punir",
       "autor": "Cesare Beccaria",
       "descricao": "Capítulo 02 do clássico Dos Delitos e das Penas: Origem das penas e direito de punir.",
       "duracaoSegundos": 280,
       "duracaoFormatada": "04:40",
-      "audioUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-capitulo-29-duelos.mp3",
-      "audioTituloUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/titulo-capitulo-29-duelos.mp3",
-      "srtUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-29-duelos.srt",
+      "audioUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-capitulo-cap02-origem-das-penas-e-direito-de-punir.mp3",
+      "audioTituloUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-titulo-cap02-origem-das-penas-e-direito-de-punir.mp3",
+      "srtUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-02-origem-das-penas-e-direito-de-punir.srt",
       "cues": [
         {
           "id": 1,
           "start": 0,
-          "end": 10.87,
-          "text": "A HONRA, que não é senão a necessidade dos sufrágios públicos, deu nascimento aos combates singulares, que só puderam estabelecer-se na desordem das más leis."
+          "end": 10.15,
+          "text": "A MORAL política não pode proporcionar à sociedade nenhuma vantagem durável, se não for fundada sobre sentimentos indeléveis do coração do homem."
         },
         {
           "id": 2,
-          "start": 10.87,
-          "end": 23.8,
-          "text": "Se os duelos não estiveram em uso na antigüidade, como algumas pessoas o crêem, é que os antigos não se reuniam armados com um ar de desconfiança, nos templos, no teatro e entre os amigos."
+          "start": 10.15,
+          "end": 18.4,
+          "text": "Toda lei que não for estabelecida sobre essa base encontrará sempre uma resistência à qual será constrangida a ceder."
         },
         {
           "id": 3,
-          "start": 23.8,
-          "end": 38.52,
-          "text": "Talvez também, sendo o duelo um espetáculo muito comum que vis escravos davam ao povo, os homens livres tivessem receio de que os combates singulares não bastassem para que eles fossem considerados homens honrados."
+          "start": 18.4,
+          "end": 27.78,
+          "text": "Assim, a menor força, continuamente aplicada, destrói por fim um corpo que pareça sólido, porque lhe comunicou um movimento violento."
         },
         {
           "id": 4,
-          "start": 38.52,
-          "end": 45.26,
-          "text": "Seja como for, é em vão que se experimentou entre os modernos impedir os duelos com pena de morte."
+          "start": 27.78,
+          "end": 34.77,
+          "text": "Consultemos, pois, o coração humano; acharemos nele os princípios fundamentais do direito de punir."
         },
         {
           "id": 5,
-          "start": 45.26,
-          "end": 53.86,
-          "text": "Essas leis severas não puderam destruir um costume fundado numa espécie de honra, mais cara aos homens do que a própria vida."
+          "start": 34.77,
+          "end": 42.12,
+          "text": "Ninguém fez gratuitamente o sacrifício de uma porção de sua liberdade visando unicamente ao bem público."
         },
         {
           "id": 6,
-          "start": 53.86,
-          "end": 73.81,
-          "text": "O cidadão que recusa um duelo vê-se presa do desprezo dos seus concidadãos; é forçado a levar uma vida solitária, a renunciar aos encantos da sociedade, ou a expor-se constantemente aos insultos e à vergonha, cujos repetidos golpes o afetam de maneira mais cruel do que a idéia do suplício."
+          "start": 42.12,
+          "end": 45.2,
+          "text": "Tais quimeras só se encontram nos romances."
         },
         {
           "id": 7,
-          "start": 73.81,
-          "end": 80.41,
-          "text": "Por que motivo serão os duelos menos freqüentes entre os homens do povo do que entre os grandes?"
+          "start": 45.2,
+          "end": 59.26,
+          "text": "Cada homem só por seus interesses está ligado às diferentes combinações políticas deste globo; e cada qual desejaria, se fosse possível, não estar ligado pelas convenções que obrigam os outros homens."
         },
         {
           "id": 8,
-          "start": 80.41,
-          "end": 93.69,
-          "text": "É somente porque o povo não traz espada, é porque tem menos necessidade de sufrágios públicos do que os homens de condição mais elevada, que se observam entre si com mais desconfiança e inveja."
+          "start": 59.26,
+          "end": 81.79,
+          "text": "Sendo a multiplicação do gênero humano, embora lenta e pouco considerável, muito superior aos meios que apresentava a natureza estéril e abandonada, para satisfazer necessidades que se tornavam cada dia mais numerosas e se cruzavam de mil maneiras, os primeiros homens, até então selvagens, se viram forçados a reunir-se."
         },
         {
           "id": 9,
-          "start": 93.69,
-          "end": 121.75,
-          "text": "Não é inútil repetir aqui o que já se disse certa vez: que o melhor meio de impedir o duelo é punir o agressor, isto é, aquele que deu lugar à querela, a declarar inocente aquele que, sem procurar tirar a espada, se viu constrangido a defender a própria honra, isto é, a opinião, que as leis não protegem suficientemente, e mostrar aos seus concidadãos que pode respeitar as leis, mas que não teme os homens."
+          "start": 81.79,
+          "end": 97.04,
+          "text": "Formadas algumas sociedades, logo se estabeleceram novas, na necessidade em que se ficou de resistir às primeiras, e assim viveram essas hordas, como tinham feito os indivíduos, num contínuo estado de guerra entre si."
+        },
+        {
+          "id": 10,
+          "start": 97.04,
+          "end": 105.23,
+          "text": "As leis foram as condições que reuniram os homens, a princípio independentes e isolados sobre a superfície da terra."
+        },
+        {
+          "id": 11,
+          "start": 105.23,
+          "end": 120.76,
+          "text": "Cansados de só viver no meio de temores e de encontrar inimigos por toda parte, fatigados de uma liberdade que a incerteza de conservá-la tornava inútil, sacrificaram uma parte dela para gozar do resto com mais segurança."
+        },
+        {
+          "id": 12,
+          "start": 120.76,
+          "end": 137.55,
+          "text": "A soma de todas essas porções de liberdade, sacrificadas assim ao bem geral, formou a soberania da nação; e aquele que foi encarregado pelas leis do depósito das liberdades e dos cuidados da administração foi proclamado o soberano do povo."
+        },
+        {
+          "id": 13,
+          "start": 137.55,
+          "end": 156.93,
+          "text": "Não bastava, porém, ter formado esse depósito; era preciso protegê-lo contra as usurpações de cada particular, pois tal é a tendência do homem para o despotismo, que ele procura sem cessar, não só retirar da massa comum sua porção de liberdade, mas ainda usurpar a dos outros."
+        },
+        {
+          "id": 14,
+          "start": 156.93,
+          "end": 167.71,
+          "text": "Eram necessários meios sensíveis e bastante poderosos para comprimir esse espírito despótico, que logo tornou a mergulhar a sociedade no seu antigo caos."
+        },
+        {
+          "id": 15,
+          "start": 167.71,
+          "end": 172.75,
+          "text": "Esses meios foram as penas estabelecidas contra os infratores das leis."
+        },
+        {
+          "id": 16,
+          "start": 172.75,
+          "end": 183.24,
+          "text": "Disse eu que esses meios tiveram de ser sensíveis, porque a experiência fez ver quanto a maioria está longe de adotar princípios estáveis de conduta."
+        },
+        {
+          "id": 17,
+          "start": 183.24,
+          "end": 207.66,
+          "text": "Nota-se, em todas as partes do mundo físico e moral, um princípio universal de dissolução, cuja ação só pode ser obstada nos seus efeitos sobre a sociedade por meios que impressionam imediatamente os sentidos e que se fixam nos espíritos, para contrabalançar por impressões vivas a força das paixões particulares, quase sempre opostas ao bem geral."
+        },
+        {
+          "id": 18,
+          "start": 207.66,
+          "end": 210.46,
+          "text": "Qualquer outro meio seria insuficiente."
+        },
+        {
+          "id": 19,
+          "start": 210.46,
+          "end": 225.64,
+          "text": "Quando as paixões são vivamente abaladas pelos objetos presentes, os mais sábios discursos, a eloqüência mais arrebatadora, as verdades mais sublimes, não passam, para elas, de um freio impotente que logo despedaçam."
+        },
+        {
+          "id": 20,
+          "start": 225.64,
+          "end": 244.95,
+          "text": "Por conseguinte, só a necessidade constrange os homens a ceder uma parte de sua liberdade; daí resulta que cada um só consente em pôr no depósito comum a menor porção possível dela, isto é, precisamente o que era preciso para empenhar os outros em mantê-lo na posse do resto."
+        },
+        {
+          "id": 21,
+          "start": 244.95,
+          "end": 251.39,
+          "text": "O conjunto de todas essas pequenas porções de liberdade é o fundamento do direito de punir."
+        },
+        {
+          "id": 22,
+          "start": 251.39,
+          "end": 262.58,
+          "text": "Todo exercício do poder que se afastar dessa base é abuso e não justiça; é um poder de fato e não de direito (8); é uma usurpação e não mais um poder legítimo."
+        },
+        {
+          "id": 23,
+          "start": 262.58,
+          "end": 279.86,
+          "text": "As penas que ultrapassam a necessidade de conservar o depósito da salvação pública são injustas por sua natureza; e tanto mais justas serão quanto mais sagrada e inviolável for a segurança e maior a liberdade que o soberano conservar aos súditos."
         }
       ],
       "imagens": []
     },
     {
-      "numero": 7,
+      "numero": 3,
       "id": "capitulo-03",
       "titulo": "Capítulo 03: Consequências desses princípios",
       "autor": "Cesare Beccaria",
       "descricao": "Capítulo 03 do clássico Dos Delitos e das Penas: Consequências desses princípios.",
       "duracaoSegundos": 123,
       "duracaoFormatada": "02:03",
-      "audioUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-capitulo-39-do-espirito-de-familia.mp3",
-      "audioTituloUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-39-titulo.mp3",
-      "srtUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-39-do-espirito-de-familia.srt",
+      "audioUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-capitulo-cap03-consequencias-desses-principios.mp3",
+      "audioTituloUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-titulo-cap03-consequencias-desses-principios.mp3",
+      "srtUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-03-consequencias-desses-principios.srt",
       "cues": [
         {
           "id": 1,
           "start": 0,
-          "end": 4.76,
-          "text": "O ESPIRÍTO da família é outra fonte geral de injustiças na legislação."
+          "end": 17,
+          "text": "A PRIMEIRA conseqüência desses princípios é que só as leis podem fixar as penas de cada delito e que o direito de fazer leis penais não pode residir senão na pessoa do legislador, que representa toda a sociedade unida por um contrato social."
         },
         {
           "id": 2,
-          "start": 4.76,
-          "end": 22.57,
-          "text": "Se as disposições cruéis e os outros vícios das leis penais foram aprovados pelos legisladores mais esclarecidos, nas repúblicas mais livres, é que se considerou o Estado antes como uma sociedade de famílias do que como a associação de um certo número de homens."
+          "start": 17,
+          "end": 37.31,
+          "text": "Ora, o magistrado, que também faz parte da sociedade, não pode com justiça infligir a outro membro dessa sociedade uma pena que não seja estatuída pela lei; e, do momento em que o juiz é mais severo do que a lei, ele é injusto, pois acrescenta um castigo novo ao que já está determinado."
         },
         {
           "id": 3,
-          "start": 22.57,
-          "end": 42.63,
-          "text": "Suponha-se uma nação composta de cem mil homens, distribuídos em vinte mil famílias de cinco pessoas cada uma, inclusive o chefe que a representa; se a associação é feita por famílias, haveria vinte mil cidadãos e oitenta mil escravos; se é feita por indivíduos, haveria cem mil cidadãos livres."
+          "start": 37.31,
+          "end": 46.61,
+          "text": "Segue-se que nenhum magistrado pode, mesmo sob o pretexto do bem público, aumentar a pena pronunciada contra o crime de um cidadão."
         },
         {
           "id": 4,
-          "start": 42.63,
-          "end": 64.04,
-          "text": "No primeiro caso, seria uma república composta de vinte mil pequenas monarquias; no segundo, tudo respirará o espírito de liberdade, que animará os cidadãos, não somente nas praças públicas e nas assembléias nacionais, mas ainda sob o teto doméstico, onde residem os principais elementos de felicidade e de miséria."
+          "start": 46.61,
+          "end": 60.58,
+          "text": "A segunda conseqüência é que o soberano, que representa a própria sociedade, só pode fazer leis gerais, às quais todos devem submeter-se; não lhe compete, porém, julgar se alguém violou essas leis."
         },
         {
           "id": 5,
-          "start": 64.04,
-          "end": 95.18,
-          "text": "Se a associação é feita por famílias, as leis e os costumes, que são sempre o resultado dos sentimentos habituais dos membros da sociedade política, serão obra dos chefes dessas famílias; ver-se-á em breve o espírito monárquico introduzir-se aos poucos na própria república, e os seus efeitos só encontrarão obstáculos na oposição dos interesses particulares, porque os sentimentos naturais de liberdade e de igualdade já terão deixado de viver nos corações."
+          "start": 60.58,
+          "end": 70.8,
+          "text": "Com efeito, no caso de um delito, há duas partes: o soberano, que afirma que o contrato social foi violado, e o acusado, que nega essa violação."
         },
         {
           "id": 6,
-          "start": 95.18,
-          "end": 114.28,
-          "text": "O espírito de família é um espirito de minúcia limitado pelos mais insignificantes pormenores; ao passo que o espírito público, ligado aos princípios gerais, vê os fatos com visão segura, coordena-os nos lugares respectivos e sabe tirar deles conseqüências úteis ao bem da maioria."
+          "start": 70.8,
+          "end": 76.16,
+          "text": "É preciso, pois, que haja entre ambos um terceiro que decida a contestação."
         },
         {
           "id": 7,
-          "start": 114.28,
-          "end": 125.63,
-          "text": "Nas sociedades compostas de famílias, as crianças ficam sob a autoridade do chefe e são obrigadas a esperar que a morte lhes dê uma existência que só depende das leis."
+          "start": 76.16,
+          "end": 85.4,
+          "text": "Esse terceiro é o magistrado, cujas sentenças devem ser sem apelo e que deve simplesmente pronunciar se há um delito ou se não há."
         },
         {
           "id": 8,
-          "start": 125.63,
-          "end": 155.48,
-          "text": "Habituadas a obedecer e a tremer, na idade da força, quando as paixões não são ainda refreadas pela moderação, espécie de temor prudente que é o fruto da experiência e da idade, como resistirão elas aos obstáculos que o vício opõe constantemente aos esforços da virtude, quando a velhice decrépita e medrosa tirar-lhes a coragem de tentar reformas ousadas, que aliás as seduzem pouco, porque não têm a esperança de recolher-lhes os frutos?"
-        },
-        {
-          "id": 9,
-          "start": 155.48,
-          "end": 189.81,
-          "text": "Nas repúblicas, em que todo homem é cidadão, a subordinação nas famílias não é efeito da força, mas de um contrato; e os filhos, uma vez saídos da idade em que a fraqueza e a necessidade de educação os mantêm sob a dependência natural dos pais, tornam-se desde então membros livres da sociedade: se ainda se submetem ao chefe da família, é apenas para participar das vantagens que esta lhes oferece, do mesmo modo que os cidadãos se sujeitam, sem perder a liberdade, ao chefe da grande sociedade política."
-        },
-        {
-          "id": 10,
-          "start": 189.81,
-          "end": 198.78,
-          "text": "Nas repúblicas compostas de famílias, os jovens, isto é, a parte mais considerável e mais útil da nação, ficam à discrição dos pais."
-        },
-        {
-          "id": 11,
-          "start": 198.78,
-          "end": 217.54,
-          "text": "Nas repúblicas de homens livres, os únicos laços que submetem os filhos ao pai são os sentimentos sagrados e invioláveis da natureza, que convidam os homens a ajudar-se mutuamente em suas necessidades recíprocas e que lhes inspiram o reconhecimento pelos benefícios recebidos."
-        },
-        {
-          "id": 12,
-          "start": 217.54,
-          "end": 228.01,
-          "text": "Esses santos deveres são muito mais alterados pelo vício das leis, que prescrevem uma submissão cega e obrigatória, do que pela maldade do coração humano."
-        },
-        {
-          "id": 13,
-          "start": 228.01,
-          "end": 243.17,
-          "text": "Essa oposição entre as leis fundamentais dos Estados políticos e as leis de família, é fonte de muitas outras contradições entre a moral pública e a moral particular, que se combatem continuamente no espírito de cada homem."
-        },
-        {
-          "id": 14,
-          "start": 243.17,
-          "end": 251.53,
-          "text": "A moral particular só inspira a submissão e o medo, ao passo que a moral pública anima a coragem e o espírito da liberdade."
-        },
-        {
-          "id": 15,
-          "start": 251.53,
-          "end": 260.37,
-          "text": "Guiado pela primeira, o homem limita seu bem-estar ao círculo estreito de um pequeno número de pessoas que ele nem mesmo escolheu."
-        },
-        {
-          "id": 16,
-          "start": 260.37,
-          "end": 266.42,
-          "text": "Inspirado pela outra, procura estender a felicidade sobre todas as classes da humanidade."
-        },
-        {
-          "id": 17,
-          "start": 266.42,
-          "end": 279.27,
-          "text": "A moral particular exige que cada qual se sacrifique continuamente a um falso ídolo que se chama o bem da família e que muitas vezes não é o bem real de nenhum dos indivíduos que a compõem."
-        },
-        {
-          "id": 18,
-          "start": 279.27,
-          "end": 294.09,
-          "text": "A moral pública ensina a procurar o bem-estar sem ferir as leis; e, se às vezes excita um cidadão a imolar-se pela pátria, recompensa-o pelo entusiasmo que lhe inspira antes do sacrifício e pela glória que lhe promete."
-        },
-        {
-          "id": 19,
-          "start": 294.09,
-          "end": 312.51,
-          "text": "Tantas contradições fazem que os homens desdenhem de praticar a virtude, que não podem reconhecer no meio das trevas de que a cercaram e que lhes parece distante, porque está envolta nessa obscuridade que oculta aos nossos olhos os objetos morais como os objetos físicos."
-        },
-        {
-          "id": 20,
-          "start": 312.51,
-          "end": 319.86,
-          "text": "Quantas vezes o cidadão que reflete sobre suas ações passadas não se terá admirado de achar-se um mau homem?"
-        },
-        {
-          "id": 21,
-          "start": 319.86,
-          "end": 332.37,
-          "text": "A medida que a sociedade cresce, cada um dos seus membros torna-se uma parte menor do todo, e o amor do bem público se enfraquece na mesma proporção, se as leis deixam de fortificá-lo."
-        },
-        {
-          "id": 22,
-          "start": 332.37,
-          "end": 343.38,
-          "text": "As sociedades políticas têm, como o corpo humano, um crescimento limitado; não poderiam estender-se além de certos limites, sem que sua economia fosse perturbada."
-        },
-        {
-          "id": 23,
-          "start": 343.38,
-          "end": 351.06,
-          "text": "Parece que a grandeza de um Estado deve estar na razão inversa do grau de atividade dos indivíduos que a compõem."
-        },
-        {
-          "id": 24,
-          "start": 351.06,
-          "end": 362.14,
-          "text": "Se essa atividade crescesse ao mesmo tempo que a população, as boas leis achariam um obstáculo, para prevenir os delitos, no próprio bem que tivessem podido fazer."
-        },
-        {
-          "id": 25,
-          "start": 362.14,
-          "end": 370.44,
-          "text": "Uma república muito vasta só pode escapar ao despotismo subdividindo-se num certo número de pequenos Estados confederados."
-        },
-        {
-          "id": 26,
-          "start": 370.44,
-          "end": 381.38,
-          "text": "Mas, para formar essa união, seria preciso um ditador poderoso, que tivesse a coragem de Sila (22), com tanto gênio para fundar quanto Sila o teve para destruir."
-        },
-        {
-          "id": 27,
-          "start": 381.38,
-          "end": 385.6,
-          "text": "Se tal homem for ambicioso, poderá esperar uma glória imortal."
-        },
-        {
-          "id": 28,
-          "start": 385.6,
-          "end": 394.16,
-          "text": "Se for filósofo, as bênçãos dos seus concidadãos o consolarão da perda de sua autoridade, mesmo sem pedir-lhes reconhecimento."
-        },
-        {
-          "id": 29,
-          "start": 394.16,
-          "end": 403.54,
-          "text": "Quando os sentimentos que nos unem à nação principiam a enfraquecer-se, os que nos ligam aos objetos que nos cercam adquirem novas forças."
-        },
-        {
-          "id": 30,
-          "start": 403.54,
-          "end": 417.14,
-          "text": "Assim, sob o despotismo feroz, os laços da amizade são mais duráveis; e as virtudes de família (virtudes sempre fracas) se tornam, então, as mais comuns, ou antes, são as únicas que ainda se praticam."
-        },
-        {
-          "id": 31,
-          "start": 417.14,
-          "end": 425.57,
-          "text": "Após todas essas observações, pode julgar-se quanto foram curtas e limitadas as opiniões da maioria dos nossos legisladores."
+          "start": 85.4,
+          "end": 123.48,
+          "text": "Em terceiro lugar, mesmo que a atrocidade das mesmas não fosse reprovada pela filosofia, mãe das virtudes benéficas e, por essa razão, esclarecida, que prefere governar homens felizes e livres a dominar covardemente um rebanho de tímidos escravos; mesmo que os castigos cruéis não se opusessem diretamente ao bem público e ao fim que se lhes atribui, o de impedir os crimes, bastará provar que essa crueldade é inútil, para que se deva considerá-la como odiosa, revoltante, contrária a toda justiça e à própria natureza do contrato social."
         }
       ],
       "imagens": []
     },
     {
-      "numero": 8,
+      "numero": 4,
       "id": "capitulo-04",
       "titulo": "Capítulo 04: Da interpretação das leis",
       "autor": "Cesare Beccaria",
       "descricao": "Capítulo 04 do clássico Dos Delitos e das Penas: Da interpretação das leis.",
       "duracaoSegundos": 363,
       "duracaoFormatada": "06:03",
-      "audioUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-capitulo-42-conclusao.mp3",
-      "audioTituloUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-42-titulo.mp3",
-      "srtUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-42-conclusao.srt",
+      "audioUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-capitulo-cap04-da-interpretacao-das-leis.mp3",
+      "audioTituloUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/audiobook-titulo-cap04-da-interpretacao-das-leis.mp3",
+      "srtUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/dos-delitos-e-das-penas/capitulo-04-da-interpretacao-das-leis.srt",
       "cues": [
         {
           "id": 1,
           "start": 0,
-          "end": 26.47,
-          "text": "DE tudo o que acaba de ser exposto, pode deduzir-se um teorema geral utilíssimo, mas conforme ao uso, que é o legislador ordinário das nações: É que, para não ser um ato de violência contra o cidadão, a pena deve ser essencialmente pública, pronta, necessária, a menor das penas aplicáveis nas circunstâncias dadas, proporcionada ao delito e determinada pela lei."
+          "end": 12.91,
+          "text": "RESULTA ainda, dos princípios estabelecidos precedentemente, que os juizes dos crimes não podem ter o direito de interpretar as leis penais, pela razão mesma de que não são legisladores."
+        },
+        {
+          "id": 2,
+          "start": 12.91,
+          "end": 24.84,
+          "text": "Os juizes não receberam as leis como uma tradição doméstica, ou como um testamento dos nossos antepassados, que aos seus descendentes deixaria apenas a missão de obedecer."
+        },
+        {
+          "id": 3,
+          "start": 24.84,
+          "end": 35.32,
+          "text": "Recebem- nas da sociedade viva, ou do soberano, que é representante dessa sociedade, como depositário legítimo do resultado atual da vontade de todos."
+        },
+        {
+          "id": 4,
+          "start": 35.32,
+          "end": 48.43,
+          "text": "Não se julgue que a autoridade das leis esteja fundada na obrigação de executar antigas convenções (9); essas velhas convenções são nulas, pois não puderam ligar vontades que não existiam."
+        },
+        {
+          "id": 5,
+          "start": 48.43,
+          "end": 57.45,
+          "text": "Não se pode sem injustiça exigir sua execução; seria reduzir os homens a não passar de um vil rebanho sem vontade e sem direitos."
+        },
+        {
+          "id": 6,
+          "start": 57.45,
+          "end": 70.28,
+          "text": "As leis emprestam sua força da necessidade de orientar os interesses particulares para o bem geral e do juramento formal ou tácito que os cidadãos vivos voluntariamente fizeram ao rei."
+        },
+        {
+          "id": 7,
+          "start": 70.28,
+          "end": 73.61,
+          "text": "Qual será, pois o legítimo intérprete das leis?"
+        },
+        {
+          "id": 8,
+          "start": 73.61,
+          "end": 86.1,
+          "text": "O soberano, isto é, o depositário das vontades atuais de todos; e não o juiz, cujo dever consiste exclusivamente em examinar se tal homem praticou ou não um ato contrário às leis."
+        },
+        {
+          "id": 9,
+          "start": 86.1,
+          "end": 88.95,
+          "text": "O juiz deve fazer um silogismo perfeito."
+        },
+        {
+          "id": 10,
+          "start": 88.95,
+          "end": 96.44,
+          "text": "A maior deve ser a lei geral; a menor, a ação conforme ou não à lei; a conseqüência, a liberdade ou a pena."
+        },
+        {
+          "id": 11,
+          "start": 96.44,
+          "end": 104.97,
+          "text": "Se o juiz for constrangido a fazer um raciocínio a mais, ou se o fizer por conta própria, tudo se torna incerto e obscuro."
+        },
+        {
+          "id": 12,
+          "start": 104.97,
+          "end": 111.08,
+          "text": "Nada mais perigoso do que o axioma comum, de que é preciso consultar o espírito da lei."
+        },
+        {
+          "id": 13,
+          "start": 111.08,
+          "end": 117.18,
+          "text": "Adotar tal axioma é romper todos os diques e abandonar as leis à torrente das opiniões."
+        },
+        {
+          "id": 14,
+          "start": 117.18,
+          "end": 120.93,
+          "text": "Essa verdade me parece demonstrada, embora pareça um."
+        },
+        {
+          "id": 15,
+          "start": 120.93,
+          "end": 135.78,
+          "text": "paradoxo aos espíritos vulgares que se impressionam mais fortemente com uma pequena desordem atual do que com conseqüências distantes, mas mil vezes mais funestas, de um só princípio falso estabelecido numa nação."
+        },
+        {
+          "id": 16,
+          "start": 135.78,
+          "end": 140.29,
+          "text": "Todos os nossos conhecimentos, todas as nossas idéias se mantêm."
+        },
+        {
+          "id": 17,
+          "start": 140.29,
+          "end": 145.42,
+          "text": "Quanto mais complicadas, tanto maiores são as suas relações e resultados."
+        },
+        {
+          "id": 18,
+          "start": 145.42,
+          "end": 153.54,
+          "text": "Cada homem tem sua maneira própria de ver; e o mesmo homem, em diferentes épocas, vê diversamente os mesmos objetos."
+        },
+        {
+          "id": 19,
+          "start": 153.54,
+          "end": 176.16,
+          "text": "O espírito de uma lei seria, pois, o resultado da boa ou má lógica de um juiz, de uma digestão fácil ou penosa, da fraqueza do acusado, da violência das paixões do magistrado, de suas relações com o ofendido, enfim, de todas as pequenas causas que mudam as aparências e desnaturam os objetos no espírito inconstante do homem."
+        },
+        {
+          "id": 20,
+          "start": 176.16,
+          "end": 188.09,
+          "text": "Veríamos, assim, a sorte de um cidadão mudar de face ao passar para outro tribunal, e a vida dos infelizes estaria à mercê de um falso raciocínio, ou do mau humor do juiz."
+        },
+        {
+          "id": 21,
+          "start": 188.09,
+          "end": 197.18,
+          "text": "Veríamos o magistrado interpretar apressadamente as leis, segundo as idéias vagas e confusas que se apresentassem ao seu espírito."
+        },
+        {
+          "id": 22,
+          "start": 197.18,
+          "end": 213.55,
+          "text": "Veríamos os mesmos delitos punidos diferentemente, em diferentes tempos, pelo mesmo tribunal, porque, em lugar de escutar a voz constante e invariável das leis, ele se entregaria à instabilidade enganosa das interpretações arbitrárias."
+        },
+        {
+          "id": 23,
+          "start": 213.55,
+          "end": 223.61,
+          "text": "Podem essas irregularidades funestas ser postas em paralelo com os inconvenientes momentâneos que às vezes produz a observação literal das leis?"
+        },
+        {
+          "id": 24,
+          "start": 223.61,
+          "end": 232.84,
+          "text": "Talvez esses inconvenientes passageiros obriguem o legislador a fazer, no texto equívoco de uma lei, correções necessárias e fáceis."
+        },
+        {
+          "id": 25,
+          "start": 232.84,
+          "end": 246.3,
+          "text": "Mas, seguindo a letra da lei, não se terá ao menos que temer esses raciocínios perniciosos, nem essa licença envenenada de tudo explicar de maneira arbitrária e muitas vezes com intenção venal."
+        },
+        {
+          "id": 26,
+          "start": 246.3,
+          "end": 302.29,
+          "text": "Quando as leis forem fixas e literais, quando só confiarem ao magistrado a missão de examinar os atos dos cidadãos, para decidir se tais atos são conformes ou contrários à lei escrita; quando, enfim, a regra do justo e do injusto, que deve dirigir em todos os seus atos o ignorante e o homem instruído, não for um motivo de controvérsia, mas simples questão de fato, então não mais se verão os cidadãos submetidos ao jugo de uma multidão de pequenos tiranos, tanto mais insuportáveis quanto menor é a distância entre o opressor e o oprimido; tanto mais cruéis quanto maior resistência encontram, porque a crueldade dos tiranos é proporcional, não às suas forças, mas aos obstáculos que se lhes opõem; tanto mais funestos quanto ninguém pode livrar-se do seu jugo senão submetendo-se ao despotismo de um só."
+        },
+        {
+          "id": 27,
+          "start": 302.29,
+          "end": 314.92,
+          "text": "Com leis penais executadas à letra, cada cidadão pode calcular exatamente os inconvenientes de uma ação reprovável; e isso é útil, porque tal conhecimento poderá desviá-lo do crime."
+        },
+        {
+          "id": 28,
+          "start": 314.92,
+          "end": 323.73,
+          "text": "Gozará com segurança de sua liberdade e dos seus bens; e isso é justo, porque é esse o fim da reunião dos homens em sociedade."
+        },
+        {
+          "id": 29,
+          "start": 323.73,
+          "end": 343.16,
+          "text": "É verdade, também, que os cidadãos adquirirão assim um certo espírito de independência e serão menos escravos dos que ousaram dar o nome sagrado de virtude à covardia, às fraquezas e às complacências cegas; estarão, porém, menos submetidos às leis e à autoridade dos magistrados."
+        },
+        {
+          "id": 30,
+          "start": 343.16,
+          "end": 353.98,
+          "text": "Tais princípios desagradarão sem dúvida aos déspotas subalternos que se arrogaram o direito de esmagar seus inferiores com o peso da tirania que sustentam."
+        },
+        {
+          "id": 31,
+          "start": 353.98,
+          "end": 363,
+          "text": "Tudo eu poderia recear, se esses pequenos tiranos se lembrassem um dia de ler o meu livro e entendê-lo; mas, os tiranos não lêem."
         }
       ],
       "imagens": []
     },
     {
-      "numero": 9,
+      "numero": 5,
       "id": "capitulo-05",
       "titulo": "Capítulo 05: Da obscuridade das leis",
       "autor": "Cesare Beccaria",
@@ -5276,7 +5238,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 10,
+      "numero": 6,
       "id": "capitulo-06",
       "titulo": "Capítulo 06: Da prisão",
       "autor": "Cesare Beccaria",
@@ -5387,7 +5349,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 11,
+      "numero": 7,
       "id": "capitulo-07",
       "titulo": "Capítulo 07: Dos indícios do delito e da forma dos julgamentos",
       "autor": "Cesare Beccaria",
@@ -5540,7 +5502,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 12,
+      "numero": 8,
       "id": "capitulo-08",
       "titulo": "Capítulo 08: Das testemunhas",
       "autor": "Cesare Beccaria",
@@ -5699,7 +5661,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 13,
+      "numero": 9,
       "id": "capitulo-09",
       "titulo": "Capítulo 09: Das acusações secretas",
       "autor": "Cesare Beccaria",
@@ -5900,7 +5862,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 14,
+      "numero": 10,
       "id": "capitulo-10",
       "titulo": "Capítulo 10: Dos interrogatórios sugestivos",
       "autor": "Cesare Beccaria",
@@ -5999,7 +5961,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 15,
+      "numero": 11,
       "id": "capitulo-11",
       "titulo": "Capítulo 11: Dos juramentos",
       "autor": "Cesare Beccaria",
@@ -6098,7 +6060,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 16,
+      "numero": 12,
       "id": "capitulo-12",
       "titulo": "Capítulo 12: Da questão ou tortura",
       "autor": "Cesare Beccaria",
@@ -6605,7 +6567,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 17,
+      "numero": 13,
       "id": "capitulo-13",
       "titulo": "Capítulo 13: Da duração do processo e da prescrição",
       "autor": "Cesare Beccaria",
@@ -6872,7 +6834,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 18,
+      "numero": 14,
       "id": "capitulo-14",
       "titulo": "Capítulo 14: Dos crimes começados, dos cúmplices, da impunidade",
       "autor": "Cesare Beccaria",
@@ -7013,7 +6975,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 19,
+      "numero": 15,
       "id": "capitulo-15",
       "titulo": "Capítulo 15: Da moderação das penas",
       "autor": "Cesare Beccaria",
@@ -7250,7 +7212,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 20,
+      "numero": 16,
       "id": "capitulo-16",
       "titulo": "Capítulo 16: Da pena de morte",
       "autor": "Cesare Beccaria",
@@ -7787,7 +7749,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 21,
+      "numero": 17,
       "id": "capitulo-17",
       "titulo": "Capítulo 17: Do banimento e das confiscações",
       "autor": "Cesare Beccaria",
@@ -7910,7 +7872,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 22,
+      "numero": 18,
       "id": "capitulo-18",
       "titulo": "Capítulo 18: Da infâmia",
       "autor": "Cesare Beccaria",
@@ -7997,7 +7959,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 23,
+      "numero": 19,
       "id": "capitulo-19",
       "titulo": "Capítulo 19: Da publicidade e da presteza das penas",
       "autor": "Cesare Beccaria",
@@ -8174,7 +8136,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 24,
+      "numero": 20,
       "id": "capitulo-20",
       "titulo": "Capítulo 20: Que o castigo deve ser inevitável, das graças",
       "autor": "Cesare Beccaria",
@@ -8303,7 +8265,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 25,
+      "numero": 21,
       "id": "capitulo-21",
       "titulo": "Capítulo 21: Dos asilos",
       "autor": "Cesare Beccaria",
@@ -8432,7 +8394,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 26,
+      "numero": 22,
       "id": "capitulo-22",
       "titulo": "Capítulo 22: Do uso de pôr a cabeça a prêmio",
       "autor": "Cesare Beccaria",
@@ -8555,7 +8517,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 27,
+      "numero": 23,
       "id": "capitulo-23",
       "titulo": "Capítulo 23: Que as penas devem ser proporcionadas aos delitos",
       "autor": "Cesare Beccaria",
@@ -8696,7 +8658,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 28,
+      "numero": 24,
       "id": "capitulo-24",
       "titulo": "Capítulo 24: Da medida dos delitos",
       "autor": "Cesare Beccaria",
@@ -8837,7 +8799,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 29,
+      "numero": 25,
       "id": "capitulo-25",
       "titulo": "Capítulo 25: Divisão dos delitos",
       "autor": "Cesare Beccaria",
@@ -8954,7 +8916,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 30,
+      "numero": 26,
       "id": "capitulo-26",
       "titulo": "Capítulo 26: Dos crimes de lesa-majestade",
       "autor": "Cesare Beccaria",
@@ -9005,7 +8967,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 31,
+      "numero": 27,
       "id": "capitulo-27",
       "titulo": "Capítulo 27: Dos atentados contra a segurança dos particulares",
       "autor": "Cesare Beccaria",
@@ -9200,7 +9162,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 32,
+      "numero": 28,
       "id": "capitulo-28",
       "titulo": "Capítulo 28: Das injúrias",
       "autor": "Cesare Beccaria",
@@ -9395,7 +9357,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 33,
+      "numero": 29,
       "id": "capitulo-29",
       "titulo": "Capítulo 29: Dos duelos",
       "autor": "Cesare Beccaria",
@@ -9464,7 +9426,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 34,
+      "numero": 30,
       "id": "capitulo-30",
       "titulo": "Capítulo 30: Do roubo",
       "autor": "Cesare Beccaria",
@@ -9539,7 +9501,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 35,
+      "numero": 31,
       "id": "capitulo-31",
       "titulo": "Capítulo 31: Do contrabando",
       "autor": "Cesare Beccaria",
@@ -9644,7 +9606,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 36,
+      "numero": 32,
       "id": "capitulo-32",
       "titulo": "Capítulo 32: Das falências",
       "autor": "Cesare Beccaria",
@@ -9827,7 +9789,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 37,
+      "numero": 33,
       "id": "capitulo-33",
       "titulo": "Capítulo 33: Dos delitos que perturbam a tranquilidade pública",
       "autor": "Cesare Beccaria",
@@ -9890,7 +9852,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 38,
+      "numero": 34,
       "id": "capitulo-34",
       "titulo": "Capítulo 34: Da ociosidade",
       "autor": "Cesare Beccaria",
@@ -9941,7 +9903,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 39,
+      "numero": 35,
       "id": "capitulo-35",
       "titulo": "Capítulo 35: Do suicídio",
       "autor": "Cesare Beccaria",
@@ -10154,7 +10116,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 40,
+      "numero": 36,
       "id": "capitulo-36",
       "titulo": "Capítulo 36: De certos delitos difíceis de constatar",
       "autor": "Cesare Beccaria",
@@ -10307,7 +10269,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 41,
+      "numero": 37,
       "id": "capitulo-37",
       "titulo": "Capítulo 37: De uma espécie particular de delito",
       "autor": "Cesare Beccaria",
@@ -10370,7 +10332,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 42,
+      "numero": 38,
       "id": "capitulo-38",
       "titulo": "Capítulo 38: De algumas fontes gerais de erros e de injustiças na legislação",
       "autor": "Cesare Beccaria",
@@ -10493,7 +10455,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 43,
+      "numero": 39,
       "id": "capitulo-39",
       "titulo": "Capítulo 39: Do espírito de família",
       "autor": "Cesare Beccaria",
@@ -10694,7 +10656,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 44,
+      "numero": 40,
       "id": "capitulo-40",
       "titulo": "Capítulo 40: Do espírito do fisco",
       "autor": "Cesare Beccaria",
@@ -10853,7 +10815,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 45,
+      "numero": 41,
       "id": "capitulo-41",
       "titulo": "Capítulo 41: Dos meios de prevenir crimes",
       "autor": "Cesare Beccaria",
@@ -11288,7 +11250,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 46,
+      "numero": 42,
       "id": "capitulo-42",
       "titulo": "Capítulo 42: Conclusão",
       "autor": "Cesare Beccaria",
@@ -11309,7 +11271,7 @@ export const DOS_DELITOS_E_DAS_PENAS: AudiobookLivro = {
       "imagens": []
     },
     {
-      "numero": 47,
+      "numero": 43,
       "id": "apendice",
       "titulo": "Apêndice",
       "autor": "Cesare Beccaria",
