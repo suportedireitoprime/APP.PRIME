@@ -1,6 +1,6 @@
-import { memo, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { memo, useMemo, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { GraduationCap, ArrowRight } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { AULAS_CATALOGO_COMPLETO } from '@/data/aulasInterativasCatalogoCompleto';
@@ -10,6 +10,32 @@ const RED_COLOR = '#E11D48';
 
 const HomeAulasInterativasBanner = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Contador para disparar a animação de reflexo sempre que entrar ou voltar para o Início
+  const [animKey, setAnimKey] = useState(0);
+
+  useEffect(() => {
+    // Dispara logo após o carregamento/retorno
+    const timer = setTimeout(() => {
+      setAnimKey((prev) => prev + 1);
+    }, 150);
+
+    const handleFocusOrVisible = () => {
+      if (document.visibilityState === 'visible') {
+        setAnimKey((prev) => prev + 1);
+      }
+    };
+
+    window.addEventListener('visibilitychange', handleFocusOrVisible);
+    window.addEventListener('focus', handleFocusOrVisible);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('visibilitychange', handleFocusOrVisible);
+      window.removeEventListener('focus', handleFocusOrVisible);
+    };
+  }, [location.pathname, location.key]);
 
   // Verifica se o usuário tem alguma aula recente em progresso
   const aulaRecente = useMemo(() => {
@@ -95,6 +121,57 @@ const HomeAulasInterativasBanner = () => {
           strokeWidth={1.2}
         />
       </div>
+
+      {/* 🌟 ANIMAÇÃO DE REFLEXO / SHIMMER LUMINOSO (Ao entrar ou voltar para o Início) */}
+      <AnimatePresence>
+        {animKey > 0 && (
+          <>
+            {/* Feixe Amplo de Reflexo Suave */}
+            <motion.div
+              key={`reflexo-broad-${animKey}`}
+              initial={{ x: '-160%', opacity: 0 }}
+              animate={{
+                x: ['-160%', '350%'],
+                opacity: [0, 0.85, 0.85, 0],
+              }}
+              transition={{
+                delay: 0.25,
+                duration: 1.15,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="pointer-events-none absolute inset-y-0 w-32 -skew-x-[25deg] bg-gradient-to-r from-transparent via-white/30 to-transparent z-20"
+              style={{
+                filter: 'blur(4px)',
+              }}
+            />
+
+            {/* Linha Fina Brilhante de Alta Intensidade */}
+            <motion.div
+              key={`reflexo-sharp-${animKey}`}
+              initial={{ x: '-160%', opacity: 0 }}
+              animate={{
+                x: ['-160%', '360%'],
+                opacity: [0, 1, 1, 0],
+              }}
+              transition={{
+                delay: 0.35,
+                duration: 0.95,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="pointer-events-none absolute inset-y-0 w-10 -skew-x-[25deg] bg-gradient-to-r from-transparent via-white/80 to-transparent z-20"
+            />
+
+            {/* Pulso Luminoso no Contorno do Botão durante o Reflexo */}
+            <motion.div
+              key={`reflexo-border-${animKey}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.75, 0] }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="pointer-events-none absolute inset-0 rounded-2xl border-2 border-white/50 z-20 shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+            />
+          </>
+        )}
+      </AnimatePresence>
     </motion.button>
   );
 };

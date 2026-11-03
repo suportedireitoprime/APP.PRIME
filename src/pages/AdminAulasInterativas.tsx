@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { cn } from '@/lib/utils';
 import { 
@@ -521,6 +522,10 @@ export default function AdminAulasInterativas() {
   const [modalBloqueioAula, setModalBloqueioAula] = useState<{ aula: AulaItem; motivo: 'revisar' | 'praticar' } | null>(null);
   const [toastAviso, setToastAviso] = useState<string | null>(null);
 
+  // Estados dos Bottom Sheets Deslizantes (Lista de Aulas da Matéria e Detalhe da Aula)
+  const [aulaSheetDetalhe, setAulaSheetDetalhe] = useState<AulaItem | null>(null);
+  const [buscaTermoAulas, setBuscaTermoAulas] = useState('');
+
   
   const [modoLivreTeste, setModoLivreTeste] = useState(false);
 
@@ -763,8 +768,11 @@ export default function AdminAulasInterativas() {
   // Botão voltar hierárquico
   const handleVoltar = () => {
     setBuscaTermo('');
+    setBuscaTermoAulas('');
     if (aulaAtiva) {
       setAulaAtiva(null);
+    } else if (aulaSheetDetalhe) {
+      setAulaSheetDetalhe(null);
     } else if (materiaSelecionadaId) {
       setMateriaSelecionadaId(null);
     } else if (disciplinaSelecionadaId) {
@@ -915,22 +923,23 @@ export default function AdminAulasInterativas() {
             </div>
           </div>
 
-          <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
-            {/* Painel Hero das Trilhas de Aprendizado */}
-            <AulasHeroPanel
-              subtitulo="SUA TRILHA DE APRENDIZADO"
-              titulo="AULAS"
-              tituloDestaque="EM TRILHAS"
-              descricao="Slides interativos narrados, flashcards de retenção e questões por matéria."
-              porcentagem={porcentagemGeral}
-              corDestaque="#fbbf24"
-              metricas={[
-                { label: 'Disciplinas', valor: DISCIPLINAS_CATALOGO.length },
-                { label: 'Aulas', valor: totalAulasGeral },
-                { label: 'Concluídas', valor: `${ciclosGeralCompletos}/${totalAulasGeral}` }
-              ]}
-            />
+          {/* Painel Hero sem margens laterais ou em cima (Full-bleed colado na barra) */}
+          <AulasHeroPanel
+            semMargens
+            subtitulo="SUA TRILHA DE APRENDIZADO"
+            titulo="AULAS"
+            tituloDestaque="EM TRILHAS"
+            descricao="Slides interativos narrados, flashcards de retenção e questões por matéria."
+            porcentagem={porcentagemGeral}
+            corDestaque="#fbbf24"
+            metricas={[
+              { label: 'Disciplinas', valor: DISCIPLINAS_CATALOGO.length },
+              { label: 'Aulas', valor: totalAulasGeral },
+              { label: 'Concluídas', valor: `${ciclosGeralCompletos}/${totalAulasGeral}` }
+            ]}
+          />
 
+          <div className="max-w-4xl mx-auto px-4 pt-3 sm:pt-4 pb-8 space-y-5">
             {/* Menu de Alternância (Trilhas, Progresso, Favoritos, Estatísticas) */}
             <AulasMenuAlternancia
               abaAtiva={abaAtiva}
@@ -1295,7 +1304,7 @@ export default function AdminAulasInterativas() {
       {/* ══════════════════════════════════════════════════════════════════════════
           NÍVEL 2: MATÉRIAS DA DISCIPLINA SELECIONADA
          ══════════════════════════════════════════════════════════════════════════ */}
-      {disciplinaSelecionadaId && !materiaSelecionadaId && disciplinaAtual && (() => {
+      {disciplinaSelecionadaId && disciplinaAtual && (() => {
         const aulasDaDisc = AULAS_CATALOGO.filter(a => a.disciplinaId === disciplinaAtual.id);
         const totalAulasDisc = aulasDaDisc.length;
         const somaPct = aulasDaDisc.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
@@ -1338,7 +1347,24 @@ export default function AdminAulasInterativas() {
               </div>
             </div>
 
-            <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
+            {/* Painel Hero da Área / Disciplina (SEM MARGENS LATERAIS OU EM CIMA - Full-Bleed) */}
+            <AulasHeroPanel
+              semMargens
+              subtitulo="TRILHA DE APRENDIZADO DA ÁREA"
+              titulo={disciplinaAtual.nome}
+              descricao={disciplinaAtual.descricao}
+              porcentagem={pctDisc}
+              corDestaque={disciplinaAtual.corDestaque}
+              corFundo={disciplinaAtual.corFundoCard}
+              capaUrl={disciplinaAtual.capaHeroUrl}
+              metricas={[
+                { label: 'Matérias', valor: materiasDaDisc.length },
+                { label: 'Aulas', valor: totalAulasDisc },
+                { label: 'Concluídas', valor: `${ciclosDiscCompletos}/${totalAulasDisc}` }
+              ]}
+            />
+
+            <div className="max-w-4xl mx-auto px-4 pt-3 sm:pt-4 pb-8 space-y-5">
               {/* Breadcrumb em Setas: Trilhas > Disciplina */}
               <nav 
                 aria-label="Caminho de navegação"
@@ -1365,22 +1391,6 @@ export default function AdminAulasInterativas() {
                   <span>{disciplinaAtual.nome}</span>
                 </div>
               </nav>
-
-              {/* Painel Hero Temático da Área / Disciplina (Pedido pelo Usuário) */}
-              <AulasHeroPanel
-                subtitulo="TRILHA DE APRENDIZADO DA ÁREA"
-                titulo={disciplinaAtual.nome}
-                descricao={disciplinaAtual.descricao}
-                porcentagem={pctDisc}
-                corDestaque={disciplinaAtual.corDestaque}
-                corFundo={disciplinaAtual.corFundoCard}
-                capaUrl={disciplinaAtual.capaHeroUrl}
-                metricas={[
-                  { label: 'Matérias', valor: materiasDaDisc.length },
-                  { label: 'Aulas', valor: totalAulasDisc },
-                  { label: 'Concluídas', valor: `${ciclosDiscCompletos}/${totalAulasDisc}` }
-                ]}
-              />
 
               {/* Menu de Alternância Temático da Disciplina */}
               <AulasMenuAlternancia
@@ -1493,7 +1503,11 @@ export default function AdminAulasInterativas() {
                         >
                           {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA MATÉRIA */}
                           <div
-                            onClick={() => { setMateriaSelecionadaId(mat.id); resetScrollToTop(); }}
+                            onClick={() => {
+                              setMateriaSelecionadaId(mat.id);
+                              setAulaSheetDetalhe(null);
+                              setBuscaTermoAulas('');
+                            }}
                             className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.95] hover:-translate-y-1.5 transition-transform duration-300 ease-out"
                           >
                             {/* Carta 1 (Fundo) */}
@@ -1592,7 +1606,8 @@ export default function AdminAulasInterativas() {
                           <div
                             onClick={() => {
                               setMateriaSelecionadaId(mat.id);
-                              resetScrollToTop();
+                              setAulaSheetDetalhe(null);
+                              setBuscaTermoAulas('');
                             }}
                             className={cn(
                               "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
@@ -1724,598 +1739,478 @@ export default function AdminAulasInterativas() {
       })()}
 
       {/* ══════════════════════════════════════════════════════════════════════════
-          NÍVEL 3: AULAS DA MATÉRIA SELECIONADA (FORMATO COM OS 3 BOTÕES)
+          NÍVEL 3 & 4: SHEETS DESLIZANTES DE BAIXO PARA CIMA
+          1. Sheet de Lista de Aulas da Matéria (sem painel em cima, lista 1, 2, 3...)
+          2. Sheet de Detalhe da Aula (capa em layout total, Iniciar + Revisar/Praticar)
          ══════════════════════════════════════════════════════════════════════════ */}
-      {disciplinaSelecionadaId && materiaSelecionadaId && materiaAtual && disciplinaAtual && (() => {
-        const totalAulasMat = aulasDaMateria.length;
-        const somaPctMat = aulasDaMateria.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
-        const pctMat = totalAulasMat > 0 ? Math.round(somaPctMat / totalAulasMat) : 0;
-        const ciclosCompletosMat = aulasDaMateria.filter(a => calcularProgressoCiclo(a).cicloCompleto).length;
-        const matsDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disciplinaAtual.id);
-        const numMateria = matsDaDisc.findIndex(m => m.id === materiaAtual.id) + 1;
-        const aulasFiltradas = aulasDaMateria.filter(aula => {
-          if (!termoBuscaNorm) return true;
-          const desc = ((aula as any).descricaoBreve || aula.descricao || '').toLowerCase();
-          return aula.titulo.toLowerCase().includes(termoBuscaNorm) || desc.includes(termoBuscaNorm);
-        });
+      <AnimatePresence>
+        {disciplinaSelecionadaId && materiaSelecionadaId && materiaAtual && disciplinaAtual && (() => {
+          const totalAulasMat = aulasDaMateria.length;
+          const somaPctMat = aulasDaMateria.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
+          const pctMat = totalAulasMat > 0 ? Math.round(somaPctMat / totalAulasMat) : 0;
+          const ciclosCompletosMat = aulasDaMateria.filter(a => calcularProgressoCiclo(a).cicloCompleto).length;
+          const matsDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disciplinaAtual.id);
+          const numMateria = matsDaDisc.findIndex(m => m.id === materiaAtual.id) + 1;
+          const termoFiltroAulas = buscaTermoAulas.toLowerCase().trim();
+          const aulasFiltradas = aulasDaMateria.filter(aula => {
+            if (!termoFiltroAulas) return true;
+            const desc = ((aula as any).descricaoBreve || aula.descricao || '').toLowerCase();
+            return aula.titulo.toLowerCase().includes(termoFiltroAulas) || desc.includes(termoFiltroAulas);
+          });
 
-        return (
-          <>
-            {/* Header Limpo de Topo Fixo (Título agora abaixo do cabeçalho) */}
-            <div 
-              className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3 transition-all shadow-xl"
-              style={{
-                paddingTop: 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
-              }}
-            >
-              <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={handleVoltar}
-                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
-                  aria-label="Voltar para matérias"
-                >
-                  <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
-                </button>
-
-                {/* Badge do total de aulas disponíveis */}
-                <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-                  <BookOpen className="w-3.5 h-3.5" style={{ color: disciplinaAtual.corDestaque }} />
-                  <span className="text-[11px] font-bold text-zinc-300">
-                    {totalAulasMat} {totalAulasMat === 1 ? 'Aula' : 'Aulas'}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="max-w-4xl mx-auto px-4 pt-4 sm:pt-6 pb-8 space-y-6">
-              {/* Breadcrumb em Setas (Rota Completa): Trilhas > Disciplina > Matéria */}
-              <nav 
-                aria-label="Caminho de navegação da matéria"
-                className="flex items-center flex-wrap gap-1.5 text-xs font-medium select-none"
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMateriaSelecionadaId(null);
-                    setDisciplinaSelecionadaId(null);
-                    resetScrollToTop();
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/10 text-zinc-400 hover:text-white border border-white/10 transition-all text-[11px] sm:text-xs font-semibold active:scale-95"
-                >
-                  Trilhas
-                </button>
-
-                <ChevronRight className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMateriaSelecionadaId(null);
-                    resetScrollToTop();
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/10 border border-white/10 transition-all flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold active:scale-95"
-                  style={{ color: disciplinaAtual.corDestaque }}
-                  title={`Voltar para matérias de ${disciplinaAtual.nome}`}
-                >
-                  <span>{disciplinaAtual.nome}</span>
-                </button>
-
-                <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: disciplinaAtual.corDestaque }} />
-
-                <div 
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.08] border border-white/15 text-[11px] sm:text-xs font-bold flex items-center gap-1.5"
-                  style={{ color: disciplinaAtual.corDestaque }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: disciplinaAtual.corDestaque }} />
-                  <span className="break-words">{materiaAtual.titulo}</span>
-                </div>
-              </nav>
-
-              {/* Painel Hero da Matéria em Destaque Antes da Barra de Pesquisa */}
-              <AulasHeroPanel
-                subtitulo={`TRILHA DA MATÉRIA · ${disciplinaAtual.nome.toUpperCase()}`}
-                titulo={materiaAtual.titulo}
-                descricao={materiaAtual.descricao || `Trilha de aulas de ${materiaAtual.titulo}. Conclua os slides interativos narrados, flashcards e questões para avançar.`}
-                porcentagem={pctMat}
-                corDestaque={disciplinaAtual.corDestaque}
-                corFundo={disciplinaAtual.corFundoCard}
-                capaUrl={materiaAtual.capaUrl}
-                metricas={[
-                  { label: 'Aulas', valor: totalAulasMat },
-                  { label: 'Concluídas', valor: `${ciclosCompletosMat}/${totalAulasMat}` },
-                  { label: 'Matéria', valor: `${numMateria > 0 ? numMateria : 1}/${matsDaDisc.length}` }
-                ]}
+          return (
+            <React.Fragment key={`sheet-materia-${materiaAtual.id}`}>
+              {/* Backdrop Escuro com Blur da Gaveta de Matérias */}
+              <motion.div
+                key="backdrop-sheet-materia"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.22 }}
+                onClick={() => {
+                  setAulaSheetDetalhe(null);
+                  setMateriaSelecionadaId(null);
+                  setBuscaTermoAulas('');
+                }}
+                className="fixed inset-0 z-40 bg-black/80 backdrop-blur-md"
+                style={{ touchAction: 'none' }}
               />
 
-              {/* Barra de Pesquisa Nível 3 (Imediatamente Após o Painel da Matéria) */}
-              <div className="relative w-full">
-                <div 
-                  className="relative flex items-center w-full bg-white/[0.04] hover:bg-white/[0.06] border border-white/10 focus-within:bg-white/[0.07] rounded-xl px-3.5 py-2.5 sm:py-3 transition-all shadow-lg backdrop-blur-md"
-                  style={{ borderColor: buscaTermo ? disciplinaAtual.corDestaque : undefined }}
-                >
-                  <Search 
-                    className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-zinc-400 shrink-0 mr-2.5 transition-colors" 
-                    style={{ color: buscaTermo ? disciplinaAtual.corDestaque : undefined }}
-                  />
-                  <input
-                    type="text"
-                    value={buscaTermo}
-                    onChange={(e) => setBuscaTermo(e.target.value)}
-                    placeholder={`Pesquisar aula em ${materiaAtual.titulo}...`}
-                    className="bg-transparent text-xs sm:text-sm text-white placeholder-zinc-500 outline-none w-full font-medium"
-                  />
-                  {buscaTermo && (
+              {/* SHEET 1: LISTA DE AULAS DA MATÉRIA (DESLIZA DE BAIXO PARA CIMA ATÉ O TETO) */}
+              <motion.div
+                key="sheet-materia-aulas"
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                className="fixed inset-x-0 bottom-0 z-50 h-[96vh] sm:h-[95vh] max-w-4xl mx-auto rounded-t-[28px] sm:rounded-t-[32px] border-t border-x flex flex-col shadow-[0_-24px_70px_rgba(0,0,0,0.95)] overflow-hidden"
+                style={{
+                  background: `linear-gradient(180deg, ${disciplinaAtual.corFundoCard || '#181920'} 0%, #0d0e12 100%)`,
+                  borderColor: `${disciplinaAtual.corDestaque}35`,
+                  paddingBottom: 'calc(1rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))'
+                }}
+              >
+                {/* Drag Handle Topo */}
+                <div className="pt-2.5 pb-1 flex justify-center shrink-0">
+                  <div className="w-12 h-1.5 rounded-full bg-white/20" />
+                </div>
+
+                {/* Cabeçalho Limpo e Elegante com Mesma Tonalidade do Painel */}
+                <div className="px-4 sm:px-6 pt-1 pb-3 border-b border-white/10 shrink-0 flex items-center justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      {/* Sem fundo atrás: apenas texto limpo na cor da disciplina */}
+                      <span 
+                        className="text-[11px] sm:text-xs font-bold uppercase tracking-wider"
+                        style={{ color: disciplinaAtual.corDestaque }}
+                      >
+                        {disciplinaAtual.nome} · MATÉRIA {numMateria > 0 ? numMateria : 1}
+                      </span>
+                      <span className="text-zinc-500 text-xs">·</span>
+                      <span className="text-[11px] sm:text-xs text-zinc-400 font-medium">
+                        {totalAulasMat} {totalAulasMat === 1 ? 'aula' : 'aulas'}
+                      </span>
+                      {ciclosCompletosMat > 0 && (
+                        <>
+                          <span className="text-zinc-500 text-xs">·</span>
+                          <span className="text-[11px] sm:text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                            <Check className="w-3 h-3 stroke-[3]" />
+                            {ciclosCompletosMat} concluída{ciclosCompletosMat > 1 ? 's' : ''}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {/* TÍTULO DA MATÉRIA: FONTE SANS MODERNA E CLARA */}
+                    <h3 className="font-sans font-extrabold text-xl sm:text-2xl text-white leading-tight break-words">
+                      {materiaAtual.titulo}
+                    </h3>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 flex items-center gap-1">
+                      <span className="text-[11px] font-bold" style={{ color: pctMat === 100 ? '#10b981' : disciplinaAtual.corDestaque }}>
+                        {pctMat}%
+                      </span>
+                    </div>
+
                     <button
                       type="button"
-                      onClick={() => setBuscaTermo('')}
-                      className="p-1 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition shrink-0"
-                      aria-label="Limpar pesquisa"
+                      onClick={() => {
+                        setAulaSheetDetalhe(null);
+                        setMateriaSelecionadaId(null);
+                        setBuscaTermoAulas('');
+                      }}
+                      className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95"
+                      aria-label="Fechar lista de aulas"
                     >
-                      <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <X className="w-4 h-4" />
                     </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Header da Seção: Selecione a Aula + Alternância Lista/Carrossel */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 shrink-0" style={{ color: disciplinaAtual.corDestaque }} />
-                  <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-200">
-                    AULAS DA MATÉRIA ({aulasFiltradas.length})
-                  </h3>
-                  {pctMat > 0 && (
-                    <span className="text-xs font-bold text-zinc-400 ml-2">
-                      · <span style={{ color: disciplinaAtual.corDestaque }}>{pctMat}% concluído</span>
-                    </span>
-                  )}
+                  </div>
                 </div>
 
-                {/* Alternância Elegante: Lista Estruturada vs Carrossel */}
-                <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/10 self-start sm:self-auto">
-                  <button
-                    type="button"
-                    onClick={() => setModoVisualizacaoAulas('lista')}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
-                      modoVisualizacaoAulas === 'lista'
-                        ? "bg-white/15 text-white shadow-md"
-                        : "text-zinc-400 hover:text-white hover:bg-white/5"
-                    )}
-                    style={modoVisualizacaoAulas === 'lista' ? { color: disciplinaAtual.corDestaque } : undefined}
-                  >
-                    <List className="w-3.5 h-3.5" />
-                    <span>Lista com Capas</span>
-                  </button>
+                {/* Campo de Busca Rápida Opcional */}
+                {totalAulasMat > 4 && (
+                  <div className="px-4 sm:px-6 pt-3 shrink-0">
+                    <div className="relative flex items-center w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2 transition-all">
+                      <Search className="w-3.5 h-3.5 text-zinc-400 shrink-0 mr-2" />
+                      <input
+                        type="text"
+                        value={buscaTermoAulas}
+                        onChange={(e) => setBuscaTermoAulas(e.target.value)}
+                        placeholder={`Filtrar nas ${totalAulasMat} aulas...`}
+                        className="bg-transparent text-xs text-white placeholder-zinc-500 outline-none w-full font-medium"
+                      />
+                      {buscaTermoAulas && (
+                        <button
+                          type="button"
+                          onClick={() => setBuscaTermoAulas('')}
+                          className="p-0.5 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
 
-                  <button
-                    type="button"
-                    onClick={() => setModoVisualizacaoAulas('carrossel')}
-                    className={cn(
-                      "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
-                      modoVisualizacaoAulas === 'carrossel'
-                        ? "bg-white/15 text-white shadow-md"
-                        : "text-zinc-400 hover:text-white hover:bg-white/5"
-                    )}
-                    style={modoVisualizacaoAulas === 'carrossel' ? { color: disciplinaAtual.corDestaque } : undefined}
-                  >
-                    <LayoutGrid className="w-3.5 h-3.5" />
-                    <span>Carrossel</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* MODO 1: LISTA ESTRUTURADA COM CAPA AO LADO (PADRÃO PRINCIPAL) */}
-              {modoVisualizacaoAulas === 'lista' && (
-                <div className="w-full flex flex-col gap-3.5 sm:gap-4">
-                  {aulasFiltradas.map((aula, i) => {
+                {/* LISTA VERTICAL DE AULAS TIPO 1, 2, 3... COM CAPA DO LADO E STATUS DE CONCLUSÃO */}
+                <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-3 space-y-2.5 overscroll-contain">
+                  {aulasFiltradas.map((aula, idx) => {
                     const prog = calcularProgressoCiclo(aula);
-                    const flashcardsLiberados = prog.aulaTerminada || modoLivreTeste;
-                    const questoesLiberadas = (prog.aulaTerminada && prog.fcOk) || modoLivreTeste;
-                    const conteudo = CONTEUDO_AULAS[aula.id];
-                    const totalCards = conteudo?.flashcards.length || 18;
-                    const totalQuestoes = conteudo?.questoes.length || 12;
-                    const descFormatada = formatDescricaoExata(aula.descricao, aula.titulo);
+                    const numeroExibicao = idx + 1;
 
                     return (
                       <div
                         key={aula.id}
+                        onClick={() => setAulaSheetDetalhe(aula)}
                         className={cn(
-                          "w-full rounded-2xl p-3.5 sm:p-4.5 border transition-all duration-300 relative group overflow-hidden",
-                          "bg-[#131418]/90 hover:bg-[#181920]/95 border-white/10 hover:border-white/25",
-                          "shadow-lg hover:shadow-[0_12px_32px_rgba(0,0,0,0.65)] backdrop-blur-md"
+                          "w-full rounded-2xl p-2.5 sm:p-3 border transition-all duration-200 cursor-pointer select-none group",
+                          "bg-white/[0.03] hover:bg-white/[0.07] border-white/10 hover:border-white/25 active:scale-[0.99]",
+                          "flex items-center gap-3 sm:gap-4 shadow-md"
                         )}
                       >
-                        <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3.5 sm:gap-5">
-                          {/* 1. Capa ao Lado (3:4) */}
-                          <div
-                            onClick={() => iniciarAula(aula)}
-                            className="relative shrink-0 w-24 xs:w-28 sm:w-32 md:w-36 h-32 xs:h-36 sm:h-44 md:h-48 rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer select-none border border-white/15 bg-black/60 shadow-md group-hover:border-white/30 transition-all self-center sm:self-auto"
-                          >
-                            <img
-                              src={aula.capaUrl}
-                              alt={aula.titulo}
-                              loading={i < 8 ? "eager" : "lazy"}
-                              decoding="async"
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40 pointer-events-none" />
+                        {/* 1. Capa ao lado (proporção 3:4 destacada, limpa e sem textos em cima) */}
+                        <div className="relative shrink-0 w-22 sm:w-26 h-26 sm:h-32 rounded-xl sm:rounded-2xl overflow-hidden border border-white/15 bg-black/70 shadow-md group-hover:border-white/35 transition-all">
+                          <img
+                            src={aula.capaUrl}
+                            alt={aula.titulo}
+                            loading={idx < 8 ? "eager" : "lazy"}
+                            decoding="async"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+                        </div>
 
-                            {/* Badge de Progresso flutuante no topo da capa */}
-                            <div className="absolute top-2 left-2 z-10">
-                              <span
-                                className={cn(
-                                  "px-2 py-0.5 rounded-full text-[10px] font-black tracking-tight border shadow-md flex items-center gap-1",
-                                  prog.cicloCompleto
-                                    ? "bg-emerald-500/90 text-white border-emerald-400"
-                                    : "bg-black/80 text-white border-white/20"
-                                )}
-                                style={!prog.cicloCompleto ? { color: disciplinaAtual.corDestaque } : undefined}
+                        {/* 2. Informações: Aula 1, 2, 3... Título claro + Status sem fundos pesados */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                          <div>
+                            {/* Linha 1: AULA 01 e Status (AMBOS SEM FUNDOS ATRÁS) */}
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              {/* Sem fundo cinza: apenas texto limpo e legível */}
+                              <span 
+                                className="text-[11px] sm:text-xs font-mono font-black tracking-wider uppercase"
+                                style={{ color: disciplinaAtual.corDestaque }}
                               >
-                                {prog.cicloCompleto ? (
-                                  <>
-                                    <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                    <span>100%</span>
-                                  </>
-                                ) : (
-                                  <span>{prog.porcentagemTotal}%</span>
-                                )}
+                                AULA {numeroExibicao < 10 ? `0${numeroExibicao}` : numeroExibicao}
                               </span>
+
+                              {/* Indicador de Status: Sem fundo amarelo, texto limpo */}
+                              {prog.cicloCompleto ? (
+                                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-emerald-400 flex items-center gap-1">
+                                  <Check className="w-3.5 h-3.5 stroke-[3]" />
+                                  <span>100% Concluída</span>
+                                </span>
+                              ) : prog.porcentagemTotal > 0 ? (
+                                <span className="text-[11px] sm:text-xs font-bold text-amber-400">
+                                  {prog.porcentagemTotal}% Em andamento
+                                </span>
+                              ) : (
+                                <span className="text-[11px] sm:text-xs font-medium text-zinc-400">
+                                  Não iniciada
+                                </span>
+                              )}
                             </div>
 
-                            {/* Ícone Play centralizado com hover glow */}
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all">
+                            {/* TÍTULO DA AULA: FONTE SANS FÁCIL DE ENTENDER (SEM RETICÊNCIAS) */}
+                            <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-amber-200 transition-colors leading-snug break-words mt-0.5">
+                              {aula.titulo}
+                            </h4>
+
+                            {/* Barra de progresso sutil */}
+                            <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden border border-white/10 mt-2">
                               <div
-                                className="w-10 h-10 rounded-full flex items-center justify-center text-white shadow-xl backdrop-blur-sm border border-white/30"
-                                style={{ backgroundColor: `${disciplinaAtual.corDestaque}cc` }}
-                              >
-                                <Play className="w-4 h-4 fill-white ml-0.5" />
-                              </div>
-                            </div>
-
-                            {/* Rodapé da Capa: Etapas com ícone de fone */}
-                            <div className="absolute bottom-2 inset-x-2 z-10 flex items-center justify-between text-[10px] font-bold text-white/90">
-                              <span className="flex items-center gap-1 bg-black/70 px-2 py-0.5 rounded-md backdrop-blur-sm border border-white/10">
-                                <Headphones className="w-3 h-3 text-zinc-300" />
-                                <span>{aula.etapas} etapas</span>
-                              </span>
+                                className={cn(
+                                  "h-full rounded-full transition-all duration-300",
+                                  prog.cicloCompleto ? "bg-emerald-500" : "bg-gradient-to-r from-red-500 to-amber-500"
+                                )}
+                                style={{
+                                  width: `${Math.max(prog.porcentagemTotal, prog.cicloCompleto ? 100 : 0)}%`,
+                                  backgroundColor: prog.cicloCompleto ? '#10b981' : disciplinaAtual.corDestaque
+                                }}
+                              />
                             </div>
                           </div>
 
-                          {/* 2. Informações Completas da Aula */}
-                          <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-                            <div>
-                              {/* Linha de topo: Número da Aula + Concluída + Favorito */}
-                              <div className="flex items-center justify-between gap-2 mb-1.5">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <span
-                                    className="px-2.5 py-0.5 rounded-md text-[11px] sm:text-xs font-mono font-bold tracking-wider uppercase border border-white/10 bg-white/5"
-                                    style={{ color: disciplinaAtual.corDestaque }}
-                                  >
-                                    {aula.numeroAula}
-                                  </span>
-                                  {prog.cicloCompleto && (
-                                    <span className="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                                      <Check className="w-3 h-3 stroke-[3]" />
-                                      <span>Ciclo Completo</span>
-                                    </span>
-                                  )}
-                                </div>
+                          {/* Rodapé do Item: Fases do ciclo e indicador de toque */}
+                          <div className="flex items-center justify-between gap-2 mt-2 pt-1 border-t border-white/5 text-[10px] text-zinc-400">
+                            <span className="flex items-center gap-1 text-zinc-400">
+                              <span>{prog.fasesConcluidasCount} de 3 fases concluídas</span>
+                            </span>
 
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleAlternarFavorito(aula);
-                                  }}
-                                  className={cn(
-                                    "p-1.5 rounded-full transition-all shrink-0 active:scale-90",
-                                    favoritosIds.has(aula.id)
-                                      ? "text-amber-400 bg-amber-400/20"
-                                      : "text-zinc-500 hover:text-zinc-200 hover:bg-white/10"
-                                  )}
-                                  title={favoritosIds.has(aula.id) ? "Remover dos favoritos" : "Salvar nos favoritos"}
-                                  aria-label="Favoritar aula"
-                                >
-                                  <Star className={cn("w-4 h-4", favoritosIds.has(aula.id) ? "fill-current" : "")} />
-                                </button>
-                              </div>
-
-                              {/* Título Completo sem cortes */}
-                              <h4
-                                onClick={() => iniciarAula(aula)}
-                                className="font-serif font-bold text-base sm:text-lg md:text-xl text-white group-hover:text-amber-200 transition-colors cursor-pointer leading-snug break-words"
-                              >
-                                {aula.titulo}
-                              </h4>
-
-                              {/* Descrição rica */}
-                              {descFormatada && (
-                                <p className="text-xs sm:text-[13px] text-zinc-300/80 leading-relaxed mt-1.5 break-words">
-                                  {descFormatada}
-                                </p>
-                              )}
-
-                              {/* Pílulas de recursos */}
-                              <div className="flex items-center gap-2 mt-2.5 flex-wrap text-[11px] text-zinc-400">
-                                <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 flex items-center gap-1">
-                                  <Headphones className="w-3 h-3 text-amber-400" />
-                                  <span>Áudio Narrado</span>
-                                </span>
-                                <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 flex items-center gap-1">
-                                  <Layers className="w-3 h-3 text-purple-400" />
-                                  <span>{totalCards} Flashcards</span>
-                                </span>
-                                <span className="px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/10 flex items-center gap-1">
-                                  <HelpCircle className="w-3 h-3 text-emerald-400" />
-                                  <span>{totalQuestoes} Questões</span>
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Barra de Progresso e Ações */}
-                            <div className="mt-3 pt-3 border-t border-white/10">
-                              <div className="flex items-center justify-between text-[11px] font-medium text-zinc-400 mb-1.5">
-                                <span>
-                                  {prog.cicloCompleto ? 'Ciclo 100% Concluído' : `${prog.fasesConcluidasCount} de 3 fases concluídas`}
-                                </span>
-                                <span className="font-bold" style={{ color: disciplinaAtual.corDestaque }}>
-                                  {prog.porcentagemTotal}%
-                                </span>
-                              </div>
-                              <div className="w-full bg-black/60 h-2 rounded-full overflow-hidden border border-white/10 mb-3">
-                                <div
-                                  className={cn(
-                                    "h-full rounded-full transition-all duration-500",
-                                    prog.cicloCompleto ? "bg-emerald-500" : "bg-gradient-to-r from-red-500 to-amber-500"
-                                  )}
-                                  style={{
-                                    width: `${Math.max(prog.porcentagemTotal, 6)}%`,
-                                    backgroundColor: prog.cicloCompleto ? '#10b981' : disciplinaAtual.corDestaque
-                                  }}
-                                />
-                              </div>
-
-                              {/* Os 3 Botões de Ação Interativos */}
-                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                                {/* 1. Iniciar / Ver Aula */}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    iniciarAula(aula);
-                                  }}
-                                  className={cn(
-                                    "h-10 sm:h-11 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 shadow-md",
-                                    prog.aulaTerminada
-                                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30"
-                                      : "bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white border border-red-400/40 shadow-red-950/40"
-                                  )}
-                                >
-                                  {prog.aulaTerminada ? (
-                                    <Check className="w-4 h-4 text-emerald-400 stroke-[3] shrink-0" />
-                                  ) : (
-                                    <Play className="w-4 h-4 fill-current shrink-0" />
-                                  )}
-                                  <span>{prog.aulaTerminada ? 'VER AULA' : 'INICIAR AULA'}</span>
-                                </button>
-
-                                {/* 2. Revisar Flashcards */}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (!flashcardsLiberados) {
-                                      setModalBloqueioAula({ aula, motivo: 'revisar' });
-                                      return;
-                                    }
-                                    abrirRevisarFlashcards(aula);
-                                  }}
-                                  className={cn(
-                                    "h-10 sm:h-11 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 border",
-                                    prog.fcOk
-                                      ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
-                                      : flashcardsLiberados
-                                        ? "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-400/50 shadow-md shadow-amber-950/40"
-                                        : "bg-white/[0.03] text-zinc-400 border-white/10 hover:border-white/20 hover:bg-white/[0.06]"
-                                  )}
-                                >
-                                  {flashcardsLiberados ? (
-                                    <Unlock className="w-4 h-4 text-amber-300 shrink-0" />
-                                  ) : (
-                                    <Lock className="w-4 h-4 text-zinc-400 shrink-0" />
-                                  )}
-                                  <span>REVISAR ({totalCards})</span>
-                                </button>
-
-                                {/* 3. Praticar Questões */}
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (!questoesLiberadas) {
-                                      setModalBloqueioAula({ aula, motivo: 'praticar' });
-                                      return;
-                                    }
-                                    abrirPraticarQuestoes(aula);
-                                  }}
-                                  className={cn(
-                                    "h-10 sm:h-11 px-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-1.5 active:scale-95 border",
-                                    prog.questoesOk
-                                      ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
-                                      : questoesLiberadas
-                                        ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white border-emerald-400/50 shadow-md shadow-emerald-950/40"
-                                        : "bg-white/[0.03] text-zinc-400 border-white/10 hover:border-white/20 hover:bg-white/[0.06]"
-                                  )}
-                                >
-                                  {questoesLiberadas ? (
-                                    <Unlock className="w-4 h-4 text-emerald-300 shrink-0" />
-                                  ) : (
-                                    <Lock className="w-4 h-4 text-zinc-400 shrink-0" />
-                                  )}
-                                  <span>PRATICAR ({totalQuestoes})</span>
-                                </button>
-                              </div>
-                            </div>
+                            <span className="flex items-center gap-1 text-xs font-semibold group-hover:translate-x-0.5 transition-transform" style={{ color: disciplinaAtual.corDestaque }}>
+                              <span>Ver aula</span>
+                              <ChevronRight className="w-3.5 h-3.5" />
+                            </span>
                           </div>
                         </div>
                       </div>
                     );
                   })}
+
+                  {aulasFiltradas.length === 0 && (
+                    <div className="py-12 text-center flex flex-col items-center justify-center gap-2">
+                      <Search className="w-8 h-8 text-zinc-600" />
+                      <p className="text-zinc-400 text-xs">Nenhuma aula encontrada para "{buscaTermoAulas}"</p>
+                      <button
+                        type="button"
+                        onClick={() => setBuscaTermoAulas('')}
+                        className="text-xs font-semibold underline text-amber-400"
+                      >
+                        Limpar pesquisa
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
+              </motion.div>
+            </React.Fragment>
+          );
+        })()}
 
-              {/* MODO 2: CARROSSEL VISUAL DE CAPAS (HORIZONTAL) */}
-              {modoVisualizacaoAulas === 'carrossel' && (
-                <div className="w-full relative py-2">
-                  <div className="w-full overflow-x-auto flex gap-4 pb-4 snap-x snap-mandatory scrollbar-thin">
-                    {aulasFiltradas.map((aula, i) => {
-                      const prog = calcularProgressoCiclo(aula);
-                      const flashcardsLiberados = prog.aulaTerminada || modoLivreTeste;
-                      const questoesLiberadas = (prog.aulaTerminada && prog.fcOk) || modoLivreTeste;
-                      const conteudo = CONTEUDO_AULAS[aula.id];
-                      const totalCards = conteudo?.flashcards.length || 18;
-                      const totalQuestoes = conteudo?.questoes.length || 12;
+        {/* SHEET 2: DETALHE DA AULA (DESLIZA TAMBÉM DE BAIXO PARA CIMA SOBRE A LISTA) */}
+        {aulaSheetDetalhe && disciplinaAtual && (() => {
+          const aula = aulaSheetDetalhe;
+          const prog = calcularProgressoCiclo(aula);
+          const flashcardsLiberados = prog.aulaTerminada || modoLivreTeste;
+          const questoesLiberadas = (prog.aulaTerminada && prog.fcOk) || modoLivreTeste;
+          const conteudo = CONTEUDO_AULAS[aula.id];
+          const totalCards = conteudo?.flashcards.length || 18;
+          const totalQuestoes = conteudo?.questoes.length || 12;
+          const descFormatada = formatDescricaoExata(aula.descricao, aula.titulo);
 
-                      return (
-                        <div
-                          key={aula.id}
-                          className="snap-start shrink-0 w-[240px] xs:w-[270px] sm:w-[300px] rounded-2xl bg-[#141418] border border-white/10 hover:border-white/25 p-3.5 flex flex-col justify-between shadow-xl group transition-all"
-                        >
-                          {/* Capa Grande */}
-                          <div
-                            onClick={() => iniciarAula(aula)}
-                            className="w-full aspect-[3/4] rounded-xl overflow-hidden relative border border-white/10 bg-black/60 shadow-md cursor-pointer mb-3"
-                          >
-                            <img
-                              src={aula.capaUrl}
-                              alt={aula.titulo}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/30" />
-                            <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full bg-black/75 text-white text-[10px] font-black border border-white/20">
-                              {prog.porcentagemTotal}%
-                            </div>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div
-                                className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-xl backdrop-blur-sm border border-white/30"
-                                style={{ backgroundColor: `${disciplinaAtual.corDestaque}cc` }}
-                              >
-                                <Play className="w-5 h-5 fill-white ml-0.5" />
-                              </div>
-                            </div>
-                            <div className="absolute bottom-2 inset-x-2 flex items-center justify-between text-[10px] font-bold text-white">
-                              <span className="bg-black/70 px-2 py-0.5 rounded border border-white/10 font-mono">
-                                {aula.numeroAula}
-                              </span>
-                              <span className="bg-black/70 px-2 py-0.5 rounded border border-white/10 flex items-center gap-1">
-                                <Headphones className="w-3 h-3" />
-                                {aula.etapas} etapas
-                              </span>
-                            </div>
-                          </div>
+          return (
+            <React.Fragment key={`sheet-detalhe-aula-${aula.id}`}>
+              {/* Backdrop do Detalhe da Aula */}
+              <motion.div
+                key="backdrop-sheet-aula-detalhe"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                onClick={() => setAulaSheetDetalhe(null)}
+                className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
+                style={{ touchAction: 'none' }}
+              />
 
-                          {/* Título & Descrição */}
-                          <div className="flex-1 flex flex-col">
-                            <h4
-                              onClick={() => iniciarAula(aula)}
-                              className="font-serif font-bold text-sm sm:text-base text-white group-hover:text-amber-200 transition-colors cursor-pointer leading-snug line-clamp-2"
-                            >
-                              {aula.titulo}
-                            </h4>
-                            <p className="text-[11px] text-zinc-400 line-clamp-2 mt-1 leading-relaxed">
-                              {formatDescricaoExata(aula.descricao, aula.titulo)}
-                            </p>
-                          </div>
-
-                          {/* 3 Botões Rápidos */}
-                          <div className="flex flex-col gap-1.5 mt-3 pt-2.5 border-t border-white/10">
-                            <button
-                              type="button"
-                              onClick={() => iniciarAula(aula)}
-                              className={cn(
-                                "w-full h-9 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-1.5",
-                                prog.aulaTerminada
-                                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                                  : "bg-gradient-to-r from-red-600 to-amber-600 text-white shadow-md"
-                              )}
-                            >
-                              <Play className="w-3.5 h-3.5 fill-current" />
-                              <span>{prog.aulaTerminada ? 'REASSISTIR' : 'INICIAR'}</span>
-                            </button>
-                            <div className="grid grid-cols-2 gap-1.5">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (!flashcardsLiberados) {
-                                    setModalBloqueioAula({ aula, motivo: 'revisar' });
-                                    return;
-                                  }
-                                  abrirRevisarFlashcards(aula);
-                                }}
-                                className={cn(
-                                  "h-8 rounded-xl text-[10px] font-bold uppercase flex items-center justify-center gap-1 border",
-                                  prog.fcOk
-                                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                                    : flashcardsLiberados
-                                      ? "bg-amber-600 text-white"
-                                      : "bg-white/[0.04] text-zinc-400 border-white/10"
-                                )}
-                              >
-                                {flashcardsLiberados ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                                <span>CARDS</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (!questoesLiberadas) {
-                                    setModalBloqueioAula({ aula, motivo: 'praticar' });
-                                    return;
-                                  }
-                                  abrirPraticarQuestoes(aula);
-                                }}
-                                className={cn(
-                                  "h-8 rounded-xl text-[10px] font-bold uppercase flex items-center justify-center gap-1 border",
-                                  prog.questoesOk
-                                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                                    : questoesLiberadas
-                                      ? "bg-emerald-600 text-white"
-                                      : "bg-white/[0.04] text-zinc-400 border-white/10"
-                                )}
-                              >
-                                {questoesLiberadas ? <Unlock className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
-                                <span>QUESTÕES</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {aulasFiltradas.length === 0 && (
-                <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
-                  <Search className="w-9 h-9 text-zinc-600 stroke-[1.5]" />
-                  <p className="text-zinc-400 text-sm">
-                    Nenhuma aula encontrada para "<span className="text-white font-semibold">{buscaTermo}</span>"
-                  </p>
+              {/* Gaveta de Detalhe da Aula com Capa Aproveitando Todo o Layout (Até o Teto) */}
+              <motion.div
+                key="sheet-aula-detalhe"
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                className="fixed inset-x-0 bottom-0 z-[70] h-[97vh] sm:h-[96vh] max-w-4xl mx-auto rounded-t-[28px] sm:rounded-t-[32px] border-t border-x flex flex-col shadow-[0_-28px_80px_rgba(0,0,0,0.98)] overflow-hidden"
+                style={{
+                  background: `linear-gradient(180deg, ${disciplinaAtual.corFundoCard || '#181920'} 0%, #0d0e12 100%)`,
+                  borderColor: `${disciplinaAtual.corDestaque}35`,
+                  paddingBottom: 'calc(1.25rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))'
+                }}
+              >
+                {/* Top Bar: Apenas UM botão no topo — o botão de FECHAR (X) */}
+                <div className="pt-2.5 pb-2 px-4 sm:px-6 shrink-0 flex items-center justify-between border-b border-white/10 bg-transparent">
+                  <div className="w-9 h-9 opacity-0 pointer-events-none" />
+                  <div className="w-12 h-1.5 rounded-full bg-white/20 -mr-2" />
                   <button
                     type="button"
-                    onClick={() => setBuscaTermo('')}
-                    className="text-xs font-medium underline"
-                    style={{ color: disciplinaAtual.corDestaque }}
+                    onClick={() => setAulaSheetDetalhe(null)}
+                    className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95"
+                    aria-label="Fechar"
                   >
-                    Limpar pesquisa
+                    <X className="w-4.5 h-4.5" />
                   </button>
                 </div>
-              )}
-            </div>
-          </>
-        );
-      })()}
+
+                {/* Conteúdo com Scroll: Capa à Esquerda com Bola Gigante de Porcentagem + Lado Direito com Título e Descrição */}
+                <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 sm:space-y-5 overscroll-contain">
+                  {/* LAYOUT DIVIDIDO: LADO ESQUERDO (CAPA COM BOLA GIGANTE) VS LADO DIREITO (TÍTULO E DESCRIÇÃO) */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-4 sm:gap-6">
+                    {/* LADO ESQUERDO: CAPA COM BOLA GIGANTE NO MEIO MOSTRANDO A PORCENTAGEM */}
+                    <div className="relative shrink-0 w-36 xs:w-40 sm:w-48 md:w-52 h-48 xs:h-52 sm:h-64 md:h-68 rounded-2xl overflow-hidden border border-white/15 bg-black shadow-2xl self-center sm:self-auto group">
+                      <img
+                        src={aula.capaUrl}
+                        alt={aula.titulo}
+                        loading="eager"
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-black/45 pointer-events-none" />
+
+                      {/* BOLA GIGANTE NO MEIO MOSTRANDO A PORCENTAGEM CONCLUÍDA */}
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                        <div 
+                          className={cn(
+                            "w-20 h-20 sm:w-24 sm:h-24 rounded-full backdrop-blur-md border-2 shadow-[0_0_28px_rgba(0,0,0,0.85)] flex flex-col items-center justify-center transition-all",
+                            prog.cicloCompleto 
+                              ? "bg-emerald-950/85 border-emerald-400"
+                              : prog.porcentagemTotal > 0
+                                ? "bg-black/85 border-amber-400"
+                                : "bg-black/80 border-white/30"
+                          )}
+                          style={{
+                            borderColor: prog.cicloCompleto ? '#34d399' : prog.porcentagemTotal > 0 ? disciplinaAtual.corDestaque : 'rgba(255,255,255,0.35)',
+                            boxShadow: `0 0 24px ${prog.cicloCompleto ? '#10b98160' : prog.porcentagemTotal > 0 ? disciplinaAtual.corDestaque + '50' : 'rgba(0,0,0,0.6)'}`
+                          }}
+                        >
+                          {prog.cicloCompleto ? (
+                            <>
+                              <Check className="w-6 h-6 text-emerald-300 stroke-[3] mb-0.5" />
+                              <span className="text-xs font-black text-emerald-200 uppercase tracking-tight">100%</span>
+                            </>
+                          ) : (
+                            <>
+                              <span 
+                                className="text-xl sm:text-2xl font-black font-sans tracking-tight"
+                                style={{ color: prog.porcentagemTotal > 0 ? disciplinaAtual.corDestaque : '#e4e4e7' }}
+                              >
+                                {prog.porcentagemTotal}%
+                              </span>
+                              <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5">
+                                {prog.porcentagemTotal > 0 ? 'Concluído' : 'Início'}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* LADO DIREITO: TÍTULO EM CIMA E DESCRIÇÃO DIVIDINDO O LAYOUT */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-start py-0.5 text-left">
+                      <span 
+                        className="text-[11px] sm:text-xs font-bold uppercase tracking-wider"
+                        style={{ color: disciplinaAtual.corDestaque }}
+                      >
+                        AULA {aula.numeroAula} · {disciplinaAtual.nome.toUpperCase()}
+                      </span>
+
+                      {/* TÍTULO DA AULA: FONTE SANS CLARA E NÍTIDA */}
+                      <h2 className="font-sans font-extrabold text-xl sm:text-2xl md:text-3xl text-white leading-tight break-words mt-1">
+                        {aula.titulo}
+                      </h2>
+
+                      {/* DESCRIÇÃO RICA DIVIDINDO O LADO DIREITO */}
+                      {descFormatada && (
+                        <p className="text-xs sm:text-sm text-zinc-300/85 leading-relaxed break-words mt-2.5">
+                          {descFormatada}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* OS BOTÕES EM ETAPAS (1. INICIAR -> 2. REVISAR -> 3. PRATICAR) PARA GUIAR A PESSOA */}
+                  <div className="space-y-2.5 pt-3">
+                    {/* ETAPA 1: INICIAR (ou REASSISTIR) */}
+                    <button
+                      type="button"
+                      onClick={() => iniciarAula(aula)}
+                      className={cn(
+                        "w-full h-13 sm:h-14 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 flex items-center justify-between px-5 active:scale-[0.98] shadow-xl",
+                        prog.aulaTerminada
+                          ? "bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400 shadow-emerald-950/40"
+                          : "bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white border border-red-400/50 shadow-red-950/50"
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {prog.aulaTerminada ? (
+                          <Check className="w-5 h-5 text-white stroke-[3]" />
+                        ) : (
+                          <Play className="w-5 h-5 fill-white" />
+                        )}
+                        <span>1. {prog.aulaTerminada ? 'REASSISTIR' : 'INICIAR'}</span>
+                      </div>
+                      <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-black/25 backdrop-blur-sm border border-white/20">
+                        {prog.aulaTerminada ? 'Concluído' : 'Etapa 1'}
+                      </span>
+                    </button>
+
+                    {/* ETAPA 2: REVISAR */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!flashcardsLiberados) {
+                          setModalBloqueioAula({ aula, motivo: 'revisar' });
+                          return;
+                        }
+                        abrirRevisarFlashcards(aula);
+                      }}
+                      className={cn(
+                        "w-full h-12 sm:h-13 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 flex items-center justify-between px-5 active:scale-[0.98] border shadow-md",
+                        prog.fcOk
+                          ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
+                          : flashcardsLiberados
+                            ? "bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white border-amber-400/50 shadow-amber-950/40"
+                            : "bg-white/[0.04] text-zinc-400 border-white/10 hover:border-white/20"
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {flashcardsLiberados ? (
+                          <Unlock className="w-4.5 h-4.5 text-amber-300 shrink-0" />
+                        ) : (
+                          <Lock className="w-4.5 h-4.5 text-zinc-400 shrink-0" />
+                        )}
+                        <span>2. REVISAR ({totalCards} Cards)</span>
+                      </div>
+                      <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-black/25 backdrop-blur-sm border border-white/15">
+                        {prog.fcOk ? '✓ Revisado' : 'Etapa 2'}
+                      </span>
+                    </button>
+
+                    {/* ETAPA 3: PRATICAR */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!questoesLiberadas) {
+                          setModalBloqueioAula({ aula, motivo: 'praticar' });
+                          return;
+                        }
+                        abrirPraticarQuestoes(aula);
+                      }}
+                      className={cn(
+                        "w-full h-12 sm:h-13 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 flex items-center justify-between px-5 active:scale-[0.98] border shadow-md",
+                        prog.questoesOk
+                          ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30"
+                          : questoesLiberadas
+                            ? "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white border-emerald-400/50 shadow-emerald-950/40"
+                            : "bg-white/[0.04] text-zinc-400 border-white/10 hover:border-white/20"
+                      )}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {questoesLiberadas ? (
+                          <Unlock className="w-4.5 h-4.5 text-emerald-300 shrink-0" />
+                        ) : (
+                          <Lock className="w-4.5 h-4.5 text-zinc-400 shrink-0" />
+                        )}
+                        <span>3. PRATICAR ({totalQuestoes} Questões)</span>
+                      </div>
+                      <span className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-black/25 backdrop-blur-sm border border-white/15">
+                        {prog.questoesOk ? '✓ Praticado' : 'Etapa 3'}
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </React.Fragment>
+          );
+        })()}
+      </AnimatePresence>
 
       {/* Modal 1: Revisar Flashcards (18 itens com flip 3D real) */}
       {modalFlashcardsAula && CONTEUDO_AULAS[modalFlashcardsAula.id] && (

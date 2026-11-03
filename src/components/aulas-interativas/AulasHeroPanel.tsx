@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 import hero1 from '@/assets/aprender-hero/hero-1.webp.asset.json';
 import hero2 from '@/assets/aprender-hero/hero-2.webp.asset.json';
 import hero3 from '@/assets/aprender-hero/hero-3.webp.asset.json';
@@ -44,6 +45,8 @@ interface AulasHeroPanelProps {
   corFundo?: string;
   capaUrl?: string;
   metricas: MetricaHero[];
+  semMargens?: boolean;
+  className?: string;
 }
 
 export const AulasHeroPanel: React.FC<AulasHeroPanelProps> = ({
@@ -55,7 +58,9 @@ export const AulasHeroPanel: React.FC<AulasHeroPanelProps> = ({
   corDestaque = '#fbbf24',
   corFundo,
   capaUrl,
-  metricas
+  metricas,
+  semMargens = false,
+  className
 }) => {
   const [heroIdx, setHeroIdx] = useState(0);
 
@@ -80,7 +85,13 @@ export const AulasHeroPanel: React.FC<AulasHeroPanelProps> = ({
 
   return (
     <section
-      className="relative isolate overflow-hidden rounded-2xl border shadow-xl transition-all"
+      className={cn(
+        "relative isolate overflow-hidden transition-all shadow-xl",
+        semMargens
+          ? "w-full rounded-none border-x-0 border-t-0 border-b"
+          : "rounded-2xl border",
+        className
+      )}
       style={{
         background: fundoEstilo,
         borderColor: `${corDestaque}40`
@@ -122,7 +133,7 @@ export const AulasHeroPanel: React.FC<AulasHeroPanelProps> = ({
         />
       </div>
 
-      <div className="relative p-4 sm:p-5">
+      <div className={cn("relative", semMargens ? "px-4 sm:px-6 md:px-8 py-3.5 sm:py-4 max-w-4xl mx-auto" : "p-4 sm:p-5")}>
         <div className="flex items-start gap-3.5">
           {/* Anel Circular de Progresso SVG */}
           <div className="relative shrink-0 w-[72px] h-[72px]">
