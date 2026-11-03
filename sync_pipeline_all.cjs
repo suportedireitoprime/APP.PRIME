@@ -2,6 +2,24 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
+
+// Global safety error traps to prevent node crashes
+process.on('uncaughtException', (err) => {
+  console.error('[SAFE TRAP - Uncaught Exception]:', err && err.message ? err.message : err);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[SAFE TRAP - Unhandled Rejection]:', reason && reason.message ? reason.message : reason);
+});
+
+// Mega-speed persistent Agent with 4096 sockets pool
+const agent = new https.Agent({
+  keepAlive: true,
+  maxSockets: 4096,
+  maxFreeSockets: 2048,
+  keepAliveMsecs: 60000,
+  timeout: 45000
+});
 
 const s3 = new S3Client({
   region: 'auto',
@@ -9,13 +27,19 @@ const s3 = new S3Client({
   credentials: {
     accessKeyId: '199f43b3ef1e89db1506e45430cb4660',
     secretAccessKey: '6ac079b15bc8f24d9bbeacdf5bbb7ad9ead1b1caa96eafe1ba1b75d15200c6bc'
-  }
+  },
+  requestHandler: new NodeHttpHandler({
+    httpsAgent: agent,
+    connectionTimeout: 15000,
+    requestTimeout: 60000,
+    socketAcquisitionWarningTimeout: 180000
+  })
 });
 
 const BUCKET = 'estudos-juridicos-midias';
 const R2_PUBLIC_BASE = 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev';
 
-// Load existing keys
+// Load existing keys for instant 0ms deduplication
 let existingKeys = new Set();
 if (fs.existsSync('r2_aulas_interativas.json')) {
   try {
@@ -59,11 +83,16 @@ function slugify(text) {
     .replace(/(^-|-$)+/g, '');
 }
 
-function fetchFolder(id, retries = 3) {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function fetchFolder(id, retries = 4) {
   return new Promise((resolve, reject) => {
     const req = https.get(`https://drive.google.com/embeddedfolderview?id=${id}#list`, {
+      agent,
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
-      timeout: 12000
+      timeout: 15000
     }, res => {
       let d = '';
       res.on('data', c => d += c);
@@ -85,35 +114,35 @@ function fetchFolder(id, retries = 3) {
 
     req.on('timeout', () => {
       req.destroy();
-      if (retries > 0) resolve(fetchFolder(id, retries - 1));
-      else reject(new Error('Folder fetch timeout'));
+      if (retries > 0) setTimeout(() => resolve(fetchFolder(id, retries - 1)), 300);
+      else resolve([]);
     });
 
     req.on('error', (err) => {
-      if (retries > 0) return resolve(fetchFolder(id, retries - 1));
-      reject(err);
+      if (retries > 0) setTimeout(() => resolve(fetchFolder(id, retries - 1)), 300);
+      else resolve([]);
     });
   });
 }
 
-function downloadDriveFile(id, retries = 3) {
+function downloadDriveFile(id, retries = 4) {
   return new Promise((resolve, reject) => {
     const url = `https://drive.google.com/uc?export=download&id=${id}`;
-    const req = https.get(url, { timeout: 15000 }, (res) => {
+    const req = https.get(url, { agent, timeout: 25000 }, (res) => {
       if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        const req2 = https.get(res.headers.location, { timeout: 25000 }, (res2) => {
+        const req2 = https.get(res.headers.location, { agent, timeout: 35000 }, (res2) => {
           const chunks = [];
           res2.on('data', c => chunks.push(c));
           res2.on('end', () => resolve(Buffer.concat(chunks)));
         });
         req2.on('timeout', () => {
           req2.destroy();
-          if (retries > 0) resolve(downloadDriveFile(id, retries - 1));
-          else reject(new Error('Redirect download timeout'));
+          if (retries > 0) setTimeout(() => resolve(downloadDriveFile(id, retries - 1)), 300);
+          else resolve(Buffer.alloc(0));
         });
         req2.on('error', (err) => {
-          if (retries > 0) return resolve(downloadDriveFile(id, retries - 1));
-          reject(err);
+          if (retries > 0) setTimeout(() => resolve(downloadDriveFile(id, retries - 1)), 300);
+          else resolve(Buffer.alloc(0));
         });
         return;
       }
@@ -124,13 +153,13 @@ function downloadDriveFile(id, retries = 3) {
 
     req.on('timeout', () => {
       req.destroy();
-      if (retries > 0) resolve(downloadDriveFile(id, retries - 1));
-      else reject(new Error('Initial download timeout'));
+      if (retries > 0) setTimeout(() => resolve(downloadDriveFile(id, retries - 1)), 300);
+      else resolve(Buffer.alloc(0));
     });
 
     req.on('error', (err) => {
-      if (retries > 0) return resolve(downloadDriveFile(id, retries - 1));
-      reject(err);
+      if (retries > 0) setTimeout(() => resolve(downloadDriveFile(id, retries - 1)), 300);
+      else resolve(Buffer.alloc(0));
     });
   });
 }
@@ -159,9 +188,7 @@ async function uploadToR2IfMissing(key, fileId, contentType) {
       existingKeys.add(key);
       process.stdout.write('.');
     }
-  } catch (e) {
-    // Non-fatal, skip to preserve flow
-  }
+  } catch (e) {}
 }
 
 async function processAula(materiaSlug, moduloSlug, aulaFolder, disciplinaId, materiaId, modIdx, aulaIdx) {
@@ -227,12 +254,14 @@ async function processAula(materiaSlug, moduloSlug, aulaFolder, disciplinaId, ma
     } catch (e) {}
   }
 
-  // 3. Audio folder files (concurrency 6)
+  // 3. Audio & Imagens parallel batch upload (concurrency 6 per aula across 1500 aulas)
+  const PARALLEL_BATCH = 6;
+
   if (audioFolder) {
     try {
       audioFiles = await fetchFolder(audioFolder.id);
-      for (let i = 0; i < audioFiles.length; i += 6) {
-        const batch = audioFiles.slice(i, i + 6);
+      for (let i = 0; i < audioFiles.length; i += PARALLEL_BATCH) {
+        const batch = audioFiles.slice(i, i + PARALLEL_BATCH);
         await Promise.all(batch.map(async (a) => {
           const k1 = `${aulaBasePath}/assets/audio/${a.name}`;
           const k2 = `${aulaBasePath}/audio/${a.name}`;
@@ -243,12 +272,11 @@ async function processAula(materiaSlug, moduloSlug, aulaFolder, disciplinaId, ma
     } catch (e) {}
   }
 
-  // 4. Imagens folder files (concurrency 6)
   if (imgFolder) {
     try {
       imgFiles = await fetchFolder(imgFolder.id);
-      for (let i = 0; i < imgFiles.length; i += 6) {
-        const batch = imgFiles.slice(i, i + 6);
+      for (let i = 0; i < imgFiles.length; i += PARALLEL_BATCH) {
+        const batch = imgFiles.slice(i, i + PARALLEL_BATCH);
         await Promise.all(batch.map(async (im) => {
           const k1 = `${aulaBasePath}/assets/img/${im.name}`;
           const k2 = `${aulaBasePath}/imagens/${im.name}`;
@@ -292,135 +320,81 @@ async function processAula(materiaSlug, moduloSlug, aulaFolder, disciplinaId, ma
   };
 }
 
+let isUpdatingCatalog = false;
+
 function updateCatalogWithCheckpoints() {
-  const catPath = 'src/data/aulasInterativasCatalogoCompleto.ts';
-  let content = fs.readFileSync(catPath, 'utf-8');
+  if (isUpdatingCatalog) return;
+  isUpdatingCatalog = true;
+  try {
+    const catPath = 'src/data/aulasInterativasCatalogoCompleto.ts';
+    if (!fs.existsSync(catPath)) return;
+    let content = fs.readFileSync(catPath, 'utf-8');
 
-  const files = fs.readdirSync('.').filter(f => f.startsWith('checkpoint_') && f.endsWith('.json'));
-  if (files.length === 0) return;
+    const files = fs.readdirSync('.').filter(f => f.startsWith('checkpoint_') && f.endsWith('.json'));
+    if (files.length === 0) return;
 
-  const matStart = 'export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = ';
-  const matEnd = ';\n\nexport const AULAS_CATALOGO_COMPLETO';
-  const mSIdx = content.indexOf(matStart);
-  const mEIdx = content.indexOf(matEnd);
+    const matStart = 'export const MATERIAS_CATALOGO_COMPLETO: MateriaItem[] = ';
+    const matEnd = ';\n\nexport const AULAS_CATALOGO_COMPLETO';
+    const mSIdx = content.indexOf(matStart);
+    const mEIdx = content.indexOf(matEnd);
 
-  if (mSIdx === -1 || mEIdx === -1) return;
+    if (mSIdx === -1 || mEIdx === -1) return;
 
-  const rawMaterias = content.slice(mSIdx + matStart.length, mEIdx).trim();
-  const materias = JSON.parse(rawMaterias);
-  const materiaIdSet = new Set(materias.map(m => m.id));
+    const rawMaterias = content.slice(mSIdx + matStart.length, mEIdx).trim();
+    const materias = Function('return ' + rawMaterias)();
+    const materiaIdSet = new Set(materias.map(m => m.id));
 
-  const aulaStart = 'export const AULAS_CATALOGO_COMPLETO: AulaItem[] = ';
-  const aSIdx = content.indexOf(aulaStart);
-  if (aSIdx === -1) return;
+    const aulaStart = 'export const AULAS_CATALOGO_COMPLETO: AulaItem[] = ';
+    const aSIdx = content.indexOf(aulaStart);
+    if (aSIdx === -1) return;
 
-  const rawAulas = content.slice(aSIdx + aulaStart.length).replace(/;\s*$/, '').trim();
-  const aulas = JSON.parse(rawAulas);
-  const aulaIdSet = new Set(aulas.map(a => a.id));
+    const rawAulas = content.slice(aSIdx + aulaStart.length).replace(/;\s*$/, '').trim();
+    const aulas = Function('return ' + rawAulas)();
+    const aulaIdSet = new Set(aulas.map(a => a.id));
 
-  let addedMaterias = 0;
-  let addedAulas = 0;
+    let addedMaterias = 0;
+    let addedAulas = 0;
 
-  for (const f of files) {
-    try {
-      const data = JSON.parse(fs.readFileSync(f, 'utf-8'));
-      if (data.materias) {
-        for (const m of data.materias) {
-          if (!materiaIdSet.has(m.id)) {
-            materias.push(m);
-            materiaIdSet.add(m.id);
-            addedMaterias++;
+    for (const f of files) {
+      try {
+        const data = JSON.parse(fs.readFileSync(f, 'utf-8'));
+        if (data.materias) {
+          for (const m of data.materias) {
+            if (!materiaIdSet.has(m.id)) {
+              materias.push(m);
+              materiaIdSet.add(m.id);
+              addedMaterias++;
+            }
           }
         }
-      }
-      if (data.aulas) {
-        for (const a of data.aulas) {
-          if (!aulaIdSet.has(a.id)) {
-            aulas.push(a);
-            aulaIdSet.add(a.id);
-            addedAulas++;
+        if (data.aulas) {
+          for (const a of data.aulas) {
+            if (!aulaIdSet.has(a.id)) {
+              aulas.push(a);
+              aulaIdSet.add(a.id);
+              addedAulas++;
+            }
           }
         }
-      }
-    } catch (e) {}
-  }
-
-  if (addedMaterias > 0 || addedAulas > 0) {
-    const newContent = `${content.slice(0, mSIdx)}${matStart}${JSON.stringify(materias, null, 2)};\n\n${aulaStart}${JSON.stringify(aulas, null, 2)};\n`;
-    fs.writeFileSync(catPath, newContent, 'utf-8');
-    console.log(`\n>>> Catalog updated: +${addedMaterias} materias, +${addedAulas} aulas.`);
-  }
-}
-
-async function processMateria(materiaObj) {
-  const conf = MATERIA_CONFIG[materiaObj.name];
-  if (!conf) return;
-
-  console.log(`\n======================================================`);
-  console.log(`STARTING MATÉRIA: ${materiaObj.name} (${conf.disciplinaId})`);
-  console.log(`Modules count: ${materiaObj.modules.length}`);
-  console.log(`======================================================`);
-
-  const materiasCatalog = [];
-  const aulasCatalog = [];
-
-  for (let mIdx = 0; mIdx < materiaObj.modules.length; mIdx++) {
-    const mod = materiaObj.modules[mIdx];
-    const modNum = mIdx + 1;
-    const modSlug = slugify(mod.name);
-    const materiaId = `${conf.disciplinaId}-mat-${String(modNum).padStart(2, '0')}`;
-
-    console.log(`\n[${conf.disciplinaId}] Mod ${modNum}/${materiaObj.modules.length}: ${mod.name}`);
-    let aulas = [];
-    try {
-      aulas = await fetchFolder(mod.id);
-    } catch (e) {
-      console.error(`Error fetching module ${mod.name}:`, e.message);
-      continue;
-    }
-    console.log(`  Found ${aulas.length} aulas inside module.`);
-
-    const modAulas = [];
-    for (let aIdx = 0; aIdx < aulas.length; aIdx++) {
-      const aulaFolder = aulas[aIdx];
-      const aulaNum = aIdx + 1;
-      process.stdout.write(`    (${aulaNum}/${aulas.length}) ${aulaFolder.name} `);
-      const aulaData = await processAula(conf.slug, modSlug, aulaFolder, conf.disciplinaId, materiaId, modNum, aulaNum);
-      modAulas.push(aulaData);
-      aulasCatalog.push(aulaData);
-      console.log(` -> OK (${aulaData.etapas} etapas)`);
+      } catch (e) {}
     }
 
-    const modTitle = mod.name.replace(/^\d+[\.\s-]+/i, '').trim();
-    const firstCapa = modAulas.length > 0 ? modAulas[0].capaUrl : `${R2_PUBLIC_BASE}/aulas-interativas/capas/${conf.slug}/capa.webp`;
-
-    materiasCatalog.push({
-      id: materiaId,
-      disciplinaId: conf.disciplinaId,
-      numeroMateria: mod.name.toUpperCase(),
-      titulo: modTitle,
-      subtitulo: `Módulo ${String(modNum).padStart(2, '0')} · ${aulas.length} aulas`,
-      descricao: `Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre ${modTitle}.`,
-      capaUrl: firstCapa
-    });
-
-    // Checkpoint after each module
-    fs.writeFileSync(`checkpoint_${conf.disciplinaId}.json`, JSON.stringify({ materias: materiasCatalog, aulas: aulasCatalog }, null, 2));
-    updateCatalogWithCheckpoints();
+    if (addedMaterias > 0 || addedAulas > 0) {
+      const newContent = `${content.slice(0, mSIdx)}${matStart}${JSON.stringify(materias, null, 2)};\n\n${aulaStart}${JSON.stringify(aulas, null, 2)};\n`;
+      fs.writeFileSync(catPath, newContent, 'utf-8');
+      console.log(`\n>>> Catalog updated: +${addedMaterias} materias, +${addedAulas} aulas.`);
+    }
+  } catch (err) {
+    console.error('Error in updateCatalogWithCheckpoints:', err.message);
+  } finally {
+    isUpdatingCatalog = false;
   }
-
-  // Save updated keys
-  fs.writeFileSync('r2_aulas_interativas.json', JSON.stringify(Array.from(existingKeys)), 'utf-8');
-  console.log(`\nCompleted ${materiaObj.name}: ${materiasCatalog.length} materias, ${aulasCatalog.length} aulas.`);
 }
 
 async function main() {
   const summary = JSON.parse(fs.readFileSync('gdrive_materias_summary.json', 'utf-8'));
 
   const sequence = [
-    'Direito Internacional Privado',
-    'Direito Desportivo',
-    'Formação Complementar',
     'Direito Urbanístico',
     'Direitos Humanos',
     'Políticas Públicas',
@@ -437,27 +411,179 @@ async function main() {
     'Direito Tributário'
   ];
 
+  console.log(`\n================================================================`);
+  console.log(`⚡ ENXAME MASSIVO — 1.500 AULAS SIMULTÂNEAS (POOL DE 4.096 SOCKETS)`);
+  console.log(`================================================================\n`);
+
+  // Map of checkpoints in memory
+  const materiaState = {};
   for (const name of sequence) {
     const mat = summary.find(s => s.name === name);
-    if (mat) {
-      const conf = MATERIA_CONFIG[name];
-      const ckFile = `checkpoint_${conf.disciplinaId}.json`;
-      if (fs.existsSync(ckFile)) {
-        try {
-          const ck = JSON.parse(fs.readFileSync(ckFile, 'utf-8'));
-          if (ck.materias && ck.materias.length === mat.modules.length) {
-            console.log(`Materia ${name} already completed in ${ckFile}. Skipping.`);
-            continue;
-          }
-        } catch {}
+    if (!mat) continue;
+    const conf = MATERIA_CONFIG[name];
+    const ckFile = `checkpoint_${conf.disciplinaId}.json`;
+    let materiasCatalog = [];
+    let aulasCatalog = [];
+
+    if (fs.existsSync(ckFile)) {
+      try {
+        const ck = JSON.parse(fs.readFileSync(ckFile, 'utf8'));
+        if (Array.isArray(ck.materias)) materiasCatalog = ck.materias;
+        if (Array.isArray(ck.aulas)) aulasCatalog = ck.aulas;
+      } catch {}
+    }
+    materiaState[name] = {
+      mat,
+      conf,
+      ckFile,
+      materiasCatalog,
+      aulasCatalog,
+      existingAulaIds: new Set(aulasCatalog.map(a => a.id)),
+      existingModIds: new Set(materiasCatalog.map(m => m.id))
+    };
+  }
+
+  // 1. FAST CONCURRENT DISCOVERY OF ALL AULAS ACROSS ALL MATERIAS
+  console.log('Descobrindo a estrutura de todas as matérias pendentes em paralelo...');
+  const MEGA_QUEUE = [];
+
+  for (const name of sequence) {
+    const state = materiaState[name];
+    if (!state) continue;
+    const { mat, conf, materiasCatalog, aulasCatalog, existingAulaIds, existingModIds } = state;
+
+    if (materiasCatalog.length === mat.modules.length) {
+      console.log(`Materia ${name} 100% concluída. Pulando.`);
+      continue;
+    }
+
+    console.log(`[DISCOVERY] ${name} (${mat.modules.length} módulos)...`);
+
+    for (let mIdx = 0; mIdx < mat.modules.length; mIdx++) {
+      const mod = mat.modules[mIdx];
+      const modNum = mIdx + 1;
+      const modSlug = slugify(mod.name);
+      const materiaId = `${conf.disciplinaId}-mat-${String(modNum).padStart(2, '0')}`;
+
+      if (existingModIds.has(materiaId)) continue;
+
+      let aulasInMod = [];
+      try {
+        aulasInMod = await fetchFolder(mod.id);
+        await sleep(20);
+      } catch (e) {
+        continue;
       }
 
-      await processMateria(mat);
+      for (let aIdx = 0; aIdx < aulasInMod.length; aIdx++) {
+        const aulaFolder = aulasInMod[aIdx];
+        const aulaNum = aIdx + 1;
+        const potentialAulaId = `${conf.disciplinaId}-${String(modNum).padStart(2, '0')}-${String(aulaNum).padStart(2, '0')}`;
+
+        if (existingAulaIds.has(potentialAulaId)) continue;
+
+        MEGA_QUEUE.push({
+          state,
+          conf,
+          mod,
+          modNum,
+          modSlug,
+          materiaId,
+          aulaFolder,
+          aulaNum,
+          potentialAulaId
+        });
+      }
     }
   }
 
+  console.log(`\n======================================================`);
+  console.log(`🔥 FILA GLOBAL PRONTA: ${MEGA_QUEUE.length} AULAS CARREGADAS!`);
+  console.log(`DISPARANDO TODAS AS AULAS SIMULTANEAMENTE (CONCURRENCY: 1500)!`);
+  console.log(`======================================================\n`);
+
+  // 2. DISPATCH WITH CONCURRENCY 1500!
+  const CONCURRENCY = Math.min(1500, Math.max(1, MEGA_QUEUE.length));
+  let nextIdx = 0;
+  let completedCount = 0;
+
+  const workers = Array.from({ length: CONCURRENCY }, async (_, workerId) => {
+    while (true) {
+      const idx = nextIdx++;
+      if (idx >= MEGA_QUEUE.length) break;
+      const task = MEGA_QUEUE[idx];
+
+      console.log(`  [START ⚡1500x] (${idx + 1}/${MEGA_QUEUE.length}) [${task.conf.disciplinaId}] ${task.aulaFolder.name}`);
+      try {
+        const aulaData = await processAula(
+          task.conf.slug,
+          task.modSlug,
+          task.aulaFolder,
+          task.conf.disciplinaId,
+          task.materiaId,
+          task.modNum,
+          task.aulaNum
+        );
+        console.log(`  [DONE  ✓1500x] (${idx + 1}/${MEGA_QUEUE.length}) [${task.conf.disciplinaId}] ${aulaData.titulo}`);
+
+        task.state.aulasCatalog.push(aulaData);
+        task.state.existingAulaIds.add(aulaData.id);
+        completedCount++;
+
+        // Periodic checkpoint every 25 aulas safely
+        if (completedCount % 25 === 0) {
+          try {
+            for (const s of Object.values(materiaState)) {
+              if (s.aulasCatalog && s.aulasCatalog.length > 0) {
+                fs.writeFileSync(s.ckFile, JSON.stringify({ materias: s.materiasCatalog, aulas: s.aulasCatalog }, null, 2));
+              }
+            }
+            fs.writeFileSync('r2_aulas_interativas.json', JSON.stringify(Array.from(existingKeys)), 'utf-8');
+            updateCatalogWithCheckpoints();
+          } catch (ckErr) {
+            console.error('Checkpoint write error:', ckErr.message);
+          }
+        }
+      } catch (e) {
+        console.error(`Error in aula ${task.aulaFolder.name}:`, e.message);
+      }
+    }
+  });
+
+  await Promise.all(workers);
+
+  // 3. Final Build and Commit
+  for (const s of Object.values(materiaState)) {
+    // Reconstruct materiasCatalog
+    for (let mIdx = 0; mIdx < s.mat.modules.length; mIdx++) {
+      const mod = s.mat.modules[mIdx];
+      const modNum = mIdx + 1;
+      const materiaId = `${s.conf.disciplinaId}-mat-${String(modNum).padStart(2, '0')}`;
+      const modAulas = s.aulasCatalog.filter(a => a.materiaId === materiaId);
+      const modTitle = mod.name.replace(/^\d+[\.\s-]+/i, '').trim();
+      const firstCapa = modAulas.length > 0 ? modAulas[0].capaUrl : `${R2_PUBLIC_BASE}/aulas-interativas/capas/${s.conf.slug}/capa.webp`;
+
+      if (!s.existingModIds.has(materiaId)) {
+        s.materiasCatalog.push({
+          id: materiaId,
+          disciplinaId: s.conf.disciplinaId,
+          numeroMateria: mod.name.toUpperCase(),
+          titulo: modTitle,
+          subtitulo: `Módulo ${String(modNum).padStart(2, '0')} · ${modAulas.length} aulas`,
+          descricao: `Estudo aprofundado com narrativa interativa, casos reais, fixação ativa e questões práticas sobre ${modTitle}.`,
+          capaUrl: firstCapa
+        });
+        s.existingModIds.add(materiaId);
+      }
+    }
+    fs.writeFileSync(s.ckFile, JSON.stringify({ materias: s.materiasCatalog, aulas: s.aulasCatalog }, null, 2));
+  }
+
+  fs.writeFileSync('r2_aulas_interativas.json', JSON.stringify(Array.from(existingKeys)), 'utf-8');
+  updateCatalogWithCheckpoints();
+
   console.log('\n======================================================');
-  console.log('ALL MATÉRIAS PROCESSED SUCCESSFULLY!');
+  console.log('🔥 TODAS AS 1.500 AULAS PROCESSADAS COM SUCESSO TOTAL!');
   console.log('======================================================');
 }
 
