@@ -87,14 +87,15 @@ export default function AudiobooksPage() {
     } catch {}
   }, [storageKey, playerOpen]);
 
-  const abrirCapitulo = useCallback((index: number) => {
+  const abrirCapitulo = useCallback((index: number, livroAlvo?: AudiobookLivro) => {
     haptic.selection();
-    setLivroPlayer(O_CASO_DOS_EXPLORADORES_DE_CAVERNAS);
+    const targetLivro = livroAlvo || livroSelecionado || O_CASO_DOS_EXPLORADORES_DE_CAVERNAS;
+    setLivroPlayer(targetLivro);
     setSelectedCapituloIndex(index);
     setLivroSelecionado(null);
     setActiveQuickSheet(null);
     setPlayerOpen(true);
-  }, []);
+  }, [livroSelecionado]);
 
   // Alterna favorito de uma obra
   const toggleFavorito = useCallback((livro: AudiobookLivro, e?: React.MouseEvent) => {
@@ -644,11 +645,20 @@ export default function AudiobooksPage() {
         open={!!livroSelecionado}
         livro={livroSelecionado}
         onClose={() => setLivroSelecionado(null)}
-        onPlayCapitulo={(index) => {
-          abrirCapitulo(index);
+        onPlayCapitulo={(index, livroAlvo) => {
+          abrirCapitulo(index, livroAlvo || livroSelecionado || undefined);
         }}
         progressoSalvo={
-          livroSelecionado?.id === O_CASO_DOS_EXPLORADORES_DE_CAVERNAS.id ? progressoSalvo : null
+          livroSelecionado
+            ? (() => {
+                try {
+                  const raw = localStorage.getItem(`audiobook_prog_${livroSelecionado.id}`);
+                  return raw ? JSON.parse(raw) : null;
+                } catch {
+                  return null;
+                }
+              })()
+            : null
         }
         isNotificado={livroSelecionado ? !!notificados[livroSelecionado.id] : false}
         onToggleNotificacao={toggleNotificacao}

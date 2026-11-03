@@ -344,46 +344,46 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
         }}
       />
 
-      {/* IMAGEM EM TELA TODA (FULL SCREEN BACKGROUND) COM DEGRADÊ PRETO DE BAIXO PARA CIMA */}
+      {/* IMAGEM EM TELA TODA (FULL SCREEN BACKGROUND) COM AMBIENT GLOW E DEGRADÊ DE LUXO */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
         <AnimatePresence mode="wait">
           <motion.img
             key={imagemAtual}
             src={imagemAtual}
             alt={capituloAtual.titulo}
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, scale: 1.15 }}
+            animate={{ opacity: 0.45, scale: 1.05 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="w-full h-full object-cover object-center"
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="w-full h-full object-cover object-center filter blur-2xl transform-gpu"
           />
         </AnimatePresence>
 
-        {/* Degradê preto profundo de baixo para cima */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/85 via-55% to-black/35" />
+        {/* Degradê preto profundo que valoriza os cards e controles */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/90 via-45% to-black/60" />
 
-        {/* Vinheta superior suave para proteger o header */}
-        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/85 to-transparent" />
+        {/* Vinheta superior suave */}
+        <div className="absolute top-0 inset-x-0 h-36 bg-gradient-to-b from-black/80 to-transparent" />
       </div>
 
       {/* Header superior translúcido com z-index acima da imagem */}
-      <header className="relative z-20 pt-[calc(0.75rem+var(--sai-top,0px))] px-4 pb-2 flex items-center justify-between border-b border-white/10 bg-black/40 backdrop-blur-md shrink-0">
+      <header className="relative z-20 pt-[calc(0.75rem+var(--sai-top,0px))] px-4 pb-2.5 flex items-center justify-between border-b border-white/10 bg-black/40 backdrop-blur-xl shrink-0">
         <button
           type="button"
           onClick={fecharPlayer}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white/90 hover:text-white"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white/90 hover:text-white shadow-sm"
           aria-label="Minimizar player"
         >
           <ChevronDown className="w-6 h-6" />
         </button>
 
-        <div className="flex flex-col items-center max-w-[65%] text-center">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-purple-400 flex items-center gap-1">
-            <Volume2 className="w-3 h-3 text-purple-400" />
-            Audiobook Oficial
-          </span>
-          <span className="text-[13px] font-display font-bold text-white truncate max-w-full drop-shadow">
+        <div className="flex flex-col items-center max-w-[70%] text-center">
+          <span className="text-[14px] sm:text-[15px] font-display font-black text-white truncate max-w-full tracking-wide drop-shadow-md">
             {livro.titulo}
+          </span>
+          <span className="text-[10.5px] uppercase tracking-widest text-purple-300/80 font-bold flex items-center gap-1.5 mt-0.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            {livro.autor}
           </span>
         </div>
 
@@ -393,61 +393,91 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
             haptic.selection();
             setShowCapitulosSheet(true);
           }}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white/90 hover:text-white"
+          className="w-10 h-10 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 active:scale-95 transition-all text-white/90 hover:text-white shadow-sm"
           aria-label="Lista de capítulos"
         >
           <ListOrdered className="w-5 h-5" />
         </button>
       </header>
 
-      {/* Área Central: Cena Visual / Legenda Flutuante vs Modo Transcrição Completa */}
-      <div className="relative z-10 flex-1 min-h-0 flex flex-col justify-end p-4 max-w-xl mx-auto w-full">
+      {/* Área Central: Cena Visual / Capa Elevada e Legenda Flutuante com Glassmorphism */}
+      <div className="relative z-10 flex-1 min-h-0 flex flex-col justify-between p-4 max-w-xl mx-auto w-full">
         {viewMode === 'cena' ? (
-          <div className="w-full flex flex-col items-center justify-end pb-2">
-            {/* Faixa inferior de Legenda em Tempo Real / Apresentação de Título */}
-            {isPlayingTitulo ? (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                className="w-full max-w-lg bg-black/85 backdrop-blur-md rounded-2xl px-5 py-3.5 border border-purple-500/35 text-center shadow-2xl mb-3"
-              >
-                <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block mb-1">
-                  Apresentação do Capítulo
-                </span>
-                <p className="text-[14px] sm:text-[15px] font-sans font-semibold leading-snug text-white/95 drop-shadow-md">
-                  {capituloAtual.numero > 0
-                    ? `Você vai ouvir agora o capítulo ${capituloAtual.numero}, ${capituloAtual.titulo}.`
-                    : capituloAtual.titulo}
-                </p>
-              </motion.div>
-            ) : cueAtual ? (
-              <motion.div
-                key={cueAtual.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.2 }}
-                className="w-full max-w-lg bg-black/85 backdrop-blur-md rounded-2xl px-5 py-3.5 border border-white/15 text-center shadow-2xl mb-3"
-              >
-                <p className="text-[14px] sm:text-[15px] font-sans font-medium leading-snug text-white/95 drop-shadow-md">
-                  {cueAtual.text}
-                </p>
-              </motion.div>
-            ) : null}
-
-            {/* Botão de Alternar para Transcrição */}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                setViewMode('legenda');
-              }}
-              className="px-4 py-2 rounded-full bg-black/60 hover:bg-black/80 active:scale-95 transition-all text-xs font-semibold text-white/85 hover:text-white flex items-center gap-1.5 border border-white/15 backdrop-blur-md shadow-lg"
+          <div className="w-full h-full flex flex-col items-center justify-center py-1">
+            {/* Capa Centralizada com Efeito de Card 3D e Respiração */}
+            <motion.div
+              animate={isPlaying ? { scale: [1, 1.018, 1], rotate: [0, 0.3, 0] } : { scale: 1 }}
+              transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+              className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-3xl overflow-hidden shadow-[0_22px_55px_rgba(0,0,0,0.95)] border border-white/15 my-auto shrink-0 ring-1 ring-purple-500/20"
             >
-              <Subtitles className="w-3.5 h-3.5 text-purple-400" />
-              <span>Ver Transcrição / Legenda</span>
-            </button>
+              <img
+                src={imagemAtual}
+                alt={capituloAtual.titulo}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+              {isPlaying && (
+                <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20 flex items-center gap-1.5 shadow-lg">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  <span className="text-[9.5px] font-bold text-white tracking-wider uppercase font-mono">Tocando</span>
+                </div>
+              )}
+            </motion.div>
+
+            {/* Faixa de Legenda em Tempo Real / Apresentação de Título */}
+            <div className="w-full flex flex-col items-center mt-auto pb-1">
+              {isPlayingTitulo ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="w-full max-w-lg bg-[#141418]/85 backdrop-blur-2xl rounded-2xl px-5 py-3.5 border border-purple-500/40 text-center shadow-[0_15px_35px_rgba(0,0,0,0.8)] mb-2.5"
+                >
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 block mb-1">
+                    Apresentação do Capítulo
+                  </span>
+                  <p className="text-[14px] sm:text-[15px] font-sans font-semibold leading-snug text-white drop-shadow-md">
+                    {capituloAtual.numero > 0
+                      ? `Você vai ouvir agora o capítulo ${capituloAtual.numero}, ${capituloAtual.titulo}.`
+                      : capituloAtual.titulo}
+                  </p>
+                </motion.div>
+              ) : cueAtual ? (
+                <motion.div
+                  key={cueAtual.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.22 }}
+                  className="w-full max-w-lg bg-[#141418]/85 backdrop-blur-2xl rounded-2xl px-5 py-3.5 border border-white/15 text-center shadow-[0_15px_35px_rgba(0,0,0,0.8)] mb-2.5 relative overflow-hidden"
+                >
+                  {/* Visualizador de áudio sutil */}
+                  {isPlaying && (
+                    <div className="flex items-center justify-center gap-1 mb-2 opacity-75">
+                      <span className="w-1 h-2 bg-purple-400 rounded-full animate-pulse" />
+                      <span className="w-1 h-3.5 bg-purple-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                      <span className="w-1 h-2 bg-purple-400 rounded-full animate-pulse [animation-delay:-0.3s]" />
+                    </div>
+                  )}
+                  <p className="text-[14.5px] sm:text-[15.5px] font-sans font-medium leading-relaxed text-white/95 drop-shadow-md">
+                    {cueAtual.text}
+                  </p>
+                </motion.div>
+              ) : null}
+
+              {/* Botão de Alternar para Transcrição */}
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  setViewMode('legenda');
+                }}
+                className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/15 active:scale-95 transition-all text-xs font-semibold text-white/90 hover:text-white flex items-center gap-2 border border-white/15 backdrop-blur-md shadow-lg"
+              >
+                <Subtitles className="w-3.5 h-3.5 text-purple-400" />
+                <span>Ver Transcrição / Legenda</span>
+              </button>
+            </div>
           </div>
         ) : (
           /* Modo Legenda / Transcrição Interativa (Karaokê Teleprompter com Glassmorphism) */
@@ -586,23 +616,28 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
             <span className="absolute text-[8px] font-bold font-mono">10</span>
           </button>
 
-          {/* Botão Play / Pause Gigante */}
-          <button
-            type="button"
-            onClick={togglePlay}
-            style={{
-              background: 'linear-gradient(135deg, #9333EA 0%, #7C3AED 50%, #6D28D9 100%)',
-              boxShadow: '0 8px 25px -4px rgba(124, 58, 237, 0.65)',
-            }}
-            className="w-16 h-16 rounded-full flex items-center justify-center text-white active:scale-95 transition-all cursor-pointer border border-purple-400/40 hover:brightness-110"
-            aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
-          >
-            {isPlaying ? (
-              <Pause className="w-7 h-7 fill-white drop-shadow-md" />
-            ) : (
-              <Play className="w-7 h-7 fill-white translate-x-0.5 drop-shadow-md" />
+          {/* Botão Play / Pause com Glowing Halo */}
+          <div className="relative flex items-center justify-center">
+            {isPlaying && (
+              <div className="absolute inset-0 rounded-full bg-purple-600/35 blur-xl animate-pulse pointer-events-none" />
             )}
-          </button>
+            <button
+              type="button"
+              onClick={togglePlay}
+              style={{
+                background: 'linear-gradient(135deg, #A855F7 0%, #7C3AED 50%, #6D28D9 100%)',
+                boxShadow: '0 8px 32px -4px rgba(147, 51, 234, 0.75)',
+              }}
+              className="relative z-10 w-16 h-16 rounded-full flex items-center justify-center text-white active:scale-95 transition-all cursor-pointer border border-purple-300/40 hover:scale-105 hover:brightness-110"
+              aria-label={isPlaying ? 'Pausar' : 'Reproduzir'}
+            >
+              {isPlaying ? (
+                <Pause className="w-7 h-7 fill-white drop-shadow-md" />
+              ) : (
+                <Play className="w-7 h-7 fill-white translate-x-0.5 drop-shadow-md" />
+              )}
+            </button>
+          </div>
 
           {/* Avançar 10s */}
           <button

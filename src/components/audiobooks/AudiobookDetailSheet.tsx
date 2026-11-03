@@ -23,7 +23,7 @@ interface AudiobookDetailSheetProps {
   open: boolean;
   livro: AudiobookLivro | null;
   onClose: () => void;
-  onPlayCapitulo: (index: number) => void;
+  onPlayCapitulo: (index: number, livro: AudiobookLivro) => void;
   progressoSalvo?: { capituloIndex: number; time: number } | null;
   isNotificado?: boolean;
   onToggleNotificacao?: (livroId: string, titulo: string) => void;
@@ -221,8 +221,8 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                 onClick={() => {
                   haptic.impact();
                   const targetIndex = progressoSalvo?.capituloIndex ?? 0;
+                  onPlayCapitulo(targetIndex, livro);
                   onClose();
-                  onPlayCapitulo(targetIndex);
                 }}
                 style={{
                   background: 'linear-gradient(135deg, #9333EA 0%, #7C3AED 50%, #6D28D9 100%)',
@@ -324,8 +324,8 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                         type="button"
                         onClick={() => {
                           haptic.selection();
+                          onPlayCapitulo(index, livro);
                           onClose();
-                          onPlayCapitulo(index);
                         }}
                         className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl text-left border transition-all active:scale-[0.99] group cursor-pointer ${
                           isCurrent
