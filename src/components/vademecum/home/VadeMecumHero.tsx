@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { memo, useMemo } from 'react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import { getVadeMecumHeroImage } from '@/lib/vademecumHeroImage';
+import { getVadeMecumHeroConfig } from '@/lib/vademecumHeroImage';
 
 import VadeMecumHeroHeader from './chunks/VadeMecumHeroHeader';
 import VadeMecumHeroBrand from './chunks/VadeMecumHeroBrand';
@@ -17,13 +17,13 @@ interface VadeMecumHeroProps {
 }
 
 const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuickAction, onOpenSearch }) => {
-  const heroImg = useMemo(() => getVadeMecumHeroImage(), []);
+  const heroConfig = useMemo(() => getVadeMecumHeroConfig(), []);
 
   return (
     <>
       {/* Shell sólido, opaco e com blindagem contra culling e overscroll */}
       <div
-        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top)] flex flex-col z-20"
+        className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
         style={{
           transform: 'translateZ(0)',
           backgroundColor: '#050505',
@@ -36,15 +36,15 @@ const VadeMecumHero: React.FC<VadeMecumHeroProps> = ({ onOpenMenu, onSelectQuick
           aria-hidden="true"
         />
 
-        {/* Imagem de Fundo (Metade do dia: Professor e Aluna vs Dois Advogados no Tribunal) */}
+        {/* Imagem de Fundo (Inverte a cada 12h com o Início) */}
         <img
-          src={heroImg}
+          src={heroConfig.src}
           alt="Vade Mecum Capa"
           aria-hidden="true"
           loading="eager"
-          fetchpriority="high"
+          fetchPriority="high"
           decoding="async"
-          className="absolute inset-0 w-full h-full object-cover object-center z-0"
+          className={heroConfig.className}
         />
 
         {/* Overlay vermelho com gradiente estilo menu e sombra */}

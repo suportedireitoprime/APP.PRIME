@@ -1,11 +1,11 @@
 // @ts-nocheck
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense, useMemo } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate } from 'react-router-dom';
 import { prefetchHeroRoutesIdle } from '@/lib/routePrefetch';
 import { pushRecente } from '@/lib/leisRecentes';
 import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
-import heroEstudanteImg from '@/assets/covers/hero-estudante-v3.webp';
+import { getHomeHeroConfig } from '@/lib/vademecumHeroImage';
 
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import HomeBrandBanner from './HomeBrandBanner';
@@ -33,6 +33,7 @@ interface HomeHeaderHeroProps {
 
 const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBanner = false }: HomeHeaderHeroProps = {}) => {
   const navigate = useNavigate();
+  const heroConfig = useMemo(() => getHomeHeroConfig(), []);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -74,15 +75,15 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
           aria-hidden="true"
         />
 
-        {/* Imagem de Capa do Painel do InÃ­cio (Substituindo o vÃ­deo anterior) */}
+        {/* Imagem de Capa do Painel do Início (Inverte a cada 12h com o Vade Mecum) */}
         <img
-          src={heroEstudanteImg}
+          src={heroConfig.src}
           alt=""
           aria-hidden="true"
           loading="eager"
           decoding="async"
-          fetchpriority="high"
-          className="absolute inset-0 w-full h-full object-cover object-[32%_center] md:object-center z-0 pointer-events-none translate-x-[12%] md:translate-x-[8%]"
+          fetchPriority="high"
+          className={heroConfig.className}
         />
 
         {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisÃ³ria diagonal) */}
@@ -110,11 +111,7 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
         </div>
 
         {/* Botões de Notificação e Menu — alinhados com Vade Mecum */}
-        <header className={`absolute top-0 right-0 left-0 z-20 pointer-events-none transition-all duration-300 ${
-          hasTopBanner 
-            ? 'pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] sm:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))]'
-            : 'pt-[calc(1.35rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.75rem+var(--sai-top,env(safe-area-inset-top,0px)))]'
-        }`}>
+        <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
           <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-end gap-2 sm:gap-3">
             <button
               onClick={() => { haptic.light(); setNotifOpen(true); }}
@@ -140,14 +137,12 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
         </header>
 
         {/* Conteúdo: Logo à esquerda — centralizado na área vermelha com recuo idêntico ao Vade Mecum */}
-        <div className={`relative z-10 transition-all duration-300 flex-1 flex flex-col justify-start min-h-[120px] ${
-          hasTopBanner ? 'pt-4 sm:pt-5' : 'pt-12 sm:pt-14'
-        }`}>
+        <div className="relative z-10 pt-8 sm:pt-10 flex-1 flex flex-col justify-start min-h-[120px]">
           <HomeBrandBanner />
         </div>
 
-        {/* Atalhos RÃ¡pidos: APRENDER, FLASHCARDS, QUESTÃ•ES, ME EXPLIQUE â€” dentro do painel */}
-        <div className="relative z-10 px-3 sm:px-5 pt-3 pb-5">
+        {/* Atalhos Rápidos — dentro do painel */}
+        <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3">
           <HomeActionShortcuts />
         </div>
 
