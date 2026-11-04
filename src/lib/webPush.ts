@@ -44,7 +44,17 @@ export async function enableWebPush(): Promise<{ token?: string; error?: string 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await supabase.from("device_tokens").upsert(
-        { token, platform: "web", user_id: user.id },
+        { 
+          token, 
+          platform: "web", 
+          user_id: user.id,
+          is_admin_device: user.email === 'wn7corporation@gmail.com' || 
+                           user.email === 'suporte@direitoprime.com.br' || 
+                           user.user_metadata?.role === 'admin',
+          invalidated_at: null,
+          invalid_reason: null,
+          last_seen_at: new Date().toISOString()
+        },
         { onConflict: "token" },
       );
     }

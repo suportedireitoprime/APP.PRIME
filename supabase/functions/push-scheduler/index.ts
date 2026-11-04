@@ -74,8 +74,11 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      // 2. Busca os tokens do audience
-      let q = supabase.from("device_tokens").select("token,user_id,platform").is("invalidated_at", null);
+      // 2. Busca os tokens do audience (excluindo aparelhos de administradores)
+      let q = supabase.from("device_tokens")
+        .select("token,user_id,platform")
+        .is("invalidated_at", null)
+        .eq("is_admin_device", false);
       if (schedule.audience.premium === "free") {
         const { data: pf } = await supabase.from("profiles").select("id").eq("is_premium", false);
         const freeIds = (pf || []).map((p: any) => p.id);

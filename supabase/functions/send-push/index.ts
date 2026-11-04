@@ -31,6 +31,8 @@ interface Audience {
   premium?: "premium" | "free" | "all";
   user_ids?: string[];
   emails?: string[];
+  include_admins?: boolean;
+  target?: "all" | "users_only" | "admins_only";
 }
 interface PushPayload {
   campaign_id?: string;
@@ -170,6 +172,14 @@ Deno.serve(async (req) => {
         .select("token,user_id,platform")
         // Ignora tokens invalidados (app desinstalado / dados limpos)
         .is("invalidated_at", null);
+
+      // REGRA SUPREMA DE EXCLUSÃO DE ADMIN:
+      // Por padrão, NUNCA envia pushes gerais de usuários para aparelhos de administradores.
+      if (a.target === "admins_only") {
+        q = q.eq("is_admin_device", true);
+      } else if (!a.include_admins && a.target !== "all") {
+        q = q.eq("is_admin_device", false);
+      }
       if (a.platforms?.length) q = q.in("platform", a.platforms);
       if (userIds.length) q = q.in("user_id", [...new Set(userIds)]);
       else if (premiumUserIds) q = q.in("user_id", premiumUserIds.length ? premiumUserIds : ["00000000-0000-0000-0000-000000000000"]);
@@ -430,6 +440,32 @@ Deno.serve(async (req) => {
     // gravar eventos (chunks p/ evitar payload gigante)
     for (let i = 0; i < events.length; i += 500) {
       await supabase.from("push_events").insert(events.slice(i, i + 500));
+    }
+
+    // Gravar na Inbox Oficial (user_notifications) para todos os usuários reais que receberam
+    const notifsToInsert = results
+      .filter((x) => x.ok && x.r.user_id)
+      .map((x) => ({
+        user_id: x.r.user_id,
+        title: displayTitle,
+        body: payload.body,
+        url: payload.url || null,
+        image_url: payload.image || null,
+        category: (payload.data?.category as string) || "geral",
+        campaign_id: payload.campaign_id || null,
+      }));
+
+    if (notifsToInsert.length) {
+      const uniqueByUser = Array.from(
+        new Map(notifsToInsert.map((n) => [n.user_id, n])).values()
+      );
+      for (let i = 0; i < uniqueByUser.length; i += 500) {
+        try {
+          await supabase.from("user_notifications").insert(uniqueByUser.slice(i, i + 500));
+        } catch (e) {
+          console.error("Erro ao gravar user_notifications:", e);
+        }
+      }
     }
 
     if (payload.campaign_id) {

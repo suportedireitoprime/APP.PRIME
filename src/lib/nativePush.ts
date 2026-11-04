@@ -153,7 +153,11 @@ export async function saveNativePushToken(token?: string): Promise<RegisterResul
   if (!token) return { ok: false, reason: 'empty_token' };
 
   const { data } = await supabase.auth.getSession();
-  const userId = data.session?.user?.id;
+  const user = data.session?.user;
+  const userId = user?.id;
+  const isAdmin = user?.email === 'wn7corporation@gmail.com' || 
+                  user?.email === 'suporte@direitoprime.com.br' || 
+                  user?.user_metadata?.role === 'admin';
 
   if (!userId) {
     window.localStorage.setItem(PENDING_TOKEN_KEY, token);
@@ -163,7 +167,7 @@ export async function saveNativePushToken(token?: string): Promise<RegisterResul
   const platform = Capacitor.getPlatform() as 'android' | 'ios' | 'web';
   const { error } = await supabase.from('device_tokens').upsert(
     // Reativa o token caso tenha sido marcado como invalidado (reinstalação)
-    { user_id: userId, token, platform, invalidated_at: null, invalid_reason: null },
+    { user_id: userId, token, platform, is_admin_device: isAdmin, invalidated_at: null, invalid_reason: null, last_seen_at: new Date().toISOString() },
     { onConflict: 'token' },
   );
 

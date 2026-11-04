@@ -3472,6 +3472,9 @@ export type Database = {
           id: string
           invalid_reason: string | null
           invalidated_at: string | null
+          is_admin_device: boolean
+          last_seen_at: string | null
+          app_version: string | null
           last_success_at: string | null
           platform: string
           token: string
@@ -3483,6 +3486,9 @@ export type Database = {
           id?: string
           invalid_reason?: string | null
           invalidated_at?: string | null
+          is_admin_device?: boolean
+          last_seen_at?: string | null
+          app_version?: string | null
           last_success_at?: string | null
           platform: string
           token: string
@@ -3494,6 +3500,9 @@ export type Database = {
           id?: string
           invalid_reason?: string | null
           invalidated_at?: string | null
+          is_admin_device?: boolean
+          last_seen_at?: string | null
+          app_version?: string | null
           last_success_at?: string | null
           platform?: string
           token?: string
@@ -10409,6 +10418,99 @@ export type Database = {
           highlights?: Json | null
           id?: string
           theme_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_notifications: {
+        Row: {
+          body: string
+          campaign_id: string | null
+          category: string
+          clicked: boolean
+          clicked_at: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          read: boolean
+          read_at: string | null
+          title: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          body: string
+          campaign_id?: string | null
+          category?: string
+          clicked?: boolean
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          read?: boolean
+          read_at?: string | null
+          title: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string
+          campaign_id?: string | null
+          category?: string
+          clicked?: boolean
+          clicked_at?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          read?: boolean
+          read_at?: string | null
+          title?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_push_preferences: {
+        Row: {
+          created_at: string
+          id: string
+          opt_in_estudos: boolean
+          opt_in_leis: boolean
+          opt_in_lembretes: boolean
+          opt_in_noticias: boolean
+          opt_in_promocoes: boolean
+          quiet_hours_enabled: boolean
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          opt_in_estudos?: boolean
+          opt_in_leis?: boolean
+          opt_in_lembretes?: boolean
+          opt_in_noticias?: boolean
+          opt_in_promocoes?: boolean
+          quiet_hours_enabled?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          opt_in_estudos?: boolean
+          opt_in_leis?: boolean
+          opt_in_lembretes?: boolean
+          opt_in_noticias?: boolean
+          opt_in_promocoes?: boolean
+          quiet_hours_enabled?: boolean
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
           updated_at?: string
           user_id?: string
         }
