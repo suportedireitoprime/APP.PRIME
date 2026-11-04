@@ -85,6 +85,9 @@ export function getDevSimulatedSubscriptionState(email?: string | null): {
   status: string | null;
   isAdminOverride: boolean;
   isTrial: boolean;
+  isTrialExpired: boolean;
+  trialExpiresAt: string | null;
+  trialRemainingMs: number;
 } | null {
   if (!isAdminEmail(email)) return null;
   const mode = getDevSimulationMode();
@@ -100,6 +103,9 @@ export function getDevSimulatedSubscriptionState(email?: string | null): {
       status: 'FREE_LIMITED',
       isAdminOverride: false,
       isTrial: false,
+      isTrialExpired: true,
+      trialExpiresAt: null,
+      trialRemainingMs: 0,
     };
   }
 
@@ -117,6 +123,9 @@ export function getDevSimulatedSubscriptionState(email?: string | null): {
     status: 'SUBSCRIPTION_STATE_ACTIVE',
     isAdminOverride: true,
     isTrial: false,
+    isTrialExpired: false,
+    trialExpiresAt: null,
+    trialRemainingMs: 0,
   };
 }
 

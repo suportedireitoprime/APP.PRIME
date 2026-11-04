@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { PRECO_MENSAL, PRECO_ANUAL, MAX_PARCELAS_ANUAL, parcelamento, brl, isAnual, type PlanoCheckout } from '@/lib/precos';
+import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, MAX_PARCELAS_ANUAL, parcelamento, brl, isAnual, isVitalicio, type PlanoCheckout } from '@/lib/precos';
 import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -130,14 +130,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     }
   }, [plan]);
 
-  const isPix = activePlan === 'anual_regular_pix' || activePlan === 'mensal_pix';
+  const isPix = activePlan === 'anual_regular_pix' || activePlan === 'mensal_pix' || activePlan === 'vitalicio_pix';
 
   useEffect(() => {
     if (installmentCount > MAX_PARCELAS_ANUAL) setInstallmentCount(MAX_PARCELAS_ANUAL);
   }, [installmentCount]);
 
   const getInstallmentDetails = (num: number) => {
-    const { total, parcela, parcelas } = parcelamento(num, PRECO_ANUAL);
+    const precoBase = isVitalicio(activePlan) ? PRECO_VITALICIO : PRECO_ANUAL;
+    const { total, parcela, parcelas } = parcelamento(num, precoBase);
     return {
       total,
       installmentValue: parcela,
@@ -652,6 +653,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const getPlanInfo = () => {
     if (activePlan === 'mensal' || activePlan === 'mensal_pix') return { title: 'Plano Mensal', price: brl(PRECO_MENSAL), sub: '/ mês' };
     if (isAnual(activePlan)) return { title: 'Plano Anual', price: brl(PRECO_ANUAL), sub: '/ ano' };
+    if (isVitalicio(activePlan)) return { title: 'Plano Vitalício', price: brl(PRECO_VITALICIO), sub: 'pagamento único' };
     return { title: 'Plano Prime', price: '', sub: '' };
   };
 

@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { isAdminEmail } from '@/lib/adminEmails';
 import { getDevSimulatedSubscriptionState, DEV_SIMULATION_EVENT } from '@/lib/devSimulation';
 
-interface SubscriptionState {
+export interface SubscriptionState {
   isPremium: boolean;
   loading: boolean;
   plano: string | null;
@@ -14,7 +14,39 @@ interface SubscriptionState {
   status: string | null;
   isAdminOverride: boolean;
   isTrial: boolean;
+  isTrialExpired: boolean;
+  trialExpiresAt: string | null;
+  trialRemainingMs: number;
   refresh: () => void;
+}
+
+export const TRIAL_DURATION_MS = 3 * 24 * 60 * 60 * 1000; // 3 dias de degustação completa
+
+export function calcTrial(createdAt?: string | null) {
+  if (!createdAt) {
+    return { inTrial: false, trialExpired: false, trialExpiresAt: null, trialRemainingMs: 0 };
+  }
+  const createdTime = new Date(createdAt).getTime();
+  if (isNaN(createdTime)) {
+    return { inTrial: false, trialExpired: false, trialExpiresAt: null, trialRemainingMs: 0 };
+  }
+  const trialEndTime = createdTime + TRIAL_DURATION_MS;
+  const now = Date.now();
+  const trialExpiresAt = new Date(trialEndTime).toISOString();
+  if (now < trialEndTime) {
+    return {
+      inTrial: true,
+      trialExpired: false,
+      trialExpiresAt,
+      trialRemainingMs: Math.max(0, trialEndTime - now),
+    };
+  }
+  return {
+    inTrial: false,
+    trialExpired: true,
+    trialExpiresAt,
+    trialRemainingMs: 0,
+  };
 }
 
 // Evita repetir o resgate de assinatura legada a cada montagem do hook.
@@ -73,14 +105,34 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           const isTooOld = Date.now() - (cached.__cache_timestamp || 0) > 48 * 60 * 60 * 1000;
           const isExpiredTrial = cached.isTrial && cached.expiresAt && new Date(cached.expiresAt).getTime() <= Date.now();
           if (!isTooOld && !isExpiredTrial) {
-            return { ...cached, loading: true };
+            return {
+              ...cached,
+              loading: true,
+              isTrialExpired: cached.isTrialExpired ?? false,
+              trialExpiresAt: cached.trialExpiresAt ?? cached.expiresAt ?? null,
+              trialRemainingMs: cached.trialRemainingMs ?? 0,
+            };
           } else {
             localStorage.removeItem(cacheKey);
           }
         }
       } catch { /* ignore */ }
     }
-    return { isPremium: false, loading: true, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false, isTrial: false };
+    const initialTrial = calcTrial(user?.created_at);
+    return {
+      isPremium: initialTrial.inTrial,
+      loading: true,
+      plano: initialTrial.inTrial ? 'trial_3dias' : null,
+      expiresAt: initialTrial.trialExpiresAt,
+      startedAt: user?.created_at ?? null,
+      source: null,
+      status: initialTrial.inTrial ? 'TRIAL_ACTIVE' : (initialTrial.trialExpired ? 'TRIAL_EXPIRED' : null),
+      isAdminOverride: false,
+      isTrial: initialTrial.inTrial,
+      isTrialExpired: initialTrial.trialExpired,
+      trialExpiresAt: initialTrial.trialExpiresAt,
+      trialRemainingMs: initialTrial.trialRemainingMs,
+    };
   });
   const persist = useCallback((s: Omit<SubscriptionState, 'refresh'>) => {
     setState(s);
@@ -103,7 +155,20 @@ export function useSubscription(options: Options = {}): SubscriptionState {
 
   useEffect(() => {
     if (!user) {
-      setState({ isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null, source: null, status: null, isAdminOverride: false, isTrial: false });
+      setState({
+        isPremium: false,
+        loading: false,
+        plano: null,
+        expiresAt: null,
+        startedAt: null,
+        source: null,
+        status: null,
+        isAdminOverride: false,
+        isTrial: false,
+        isTrialExpired: false,
+        trialExpiresAt: null,
+        trialRemainingMs: 0,
+      });
       return;
     }
     // Atalho instantâneo (0ms) para administradores / Modo Dev
@@ -192,6 +257,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
             isPremium: true, loading: false,
             plano: playRes.data.product_id, expiresAt: playRes.data.expires_at, startedAt: null, source: 'play',
             status: playRes.data.status as string, isAdminOverride: false, isTrial: false,
+            isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
           });
           return true;
         }
@@ -201,6 +267,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
             isPremium: true, loading: false,
             plano: appleRes.data.product_id, expiresAt: appleRes.data.expires_at, startedAt: appleRes.data.start_time, source: 'apple',
             status: appleRes.data.status as string, isAdminOverride: false, isTrial: false,
+            isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
           });
           return true;
         }
@@ -211,6 +278,7 @@ export function useSubscription(options: Options = {}): SubscriptionState {
             isPremium: true, loading: false,
             plano: l.plano, expiresAt: l.expires_at, startedAt: l.started_at, source: 'asaas',
             status: l.status, isAdminOverride: false, isTrial: false,
+            isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
           });
           return true;
         }
@@ -224,17 +292,31 @@ export function useSubscription(options: Options = {}): SubscriptionState {
             isPremium: true, loading: false,
             plano: planoFallback, expiresAt: legacyRow?.expires_at ?? null, startedAt: legacyRow?.created_at ?? null, source: 'asaas',
             status: 'ACTIVE', isAdminOverride: false, isTrial: false,
+            isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
           });
           return true;
         }
 
-        // Sem teste grátis: usuários gratuitos usam a cota mensal (Minha Cota).
+        const userCreatedAt = user.created_at || (profileRes.data as any)?.created_at;
+        const trial = calcTrial(userCreatedAt);
+
+        // Usuário com cancelamento ativo
         if (cancelRes.data) {
           persist({
-            isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
-            source: null, status: 'CANCELED', isAdminOverride: false, isTrial: false,
+            isPremium: trial.inTrial,
+            loading: false,
+            plano: trial.inTrial ? 'trial_3dias' : null,
+            expiresAt: trial.trialExpiresAt,
+            startedAt: userCreatedAt ?? null,
+            source: null,
+            status: 'CANCELED',
+            isAdminOverride: false,
+            isTrial: trial.inTrial,
+            isTrialExpired: trial.trialExpired,
+            trialExpiresAt: trial.trialExpiresAt,
+            trialRemainingMs: trial.trialRemainingMs,
           });
-          return true;
+          return trial.inTrial;
         }
 
         // 4. Sem plano: tenta resgatar (1× por sessão) uma assinatura do app antigo
@@ -260,10 +342,38 @@ export function useSubscription(options: Options = {}): SubscriptionState {
           } catch { /* ignore */ }
         }
 
-        // 6. Nenhuma assinatura encontrada
+        // 6. Teste Grátis de 3 Dias (Degustação Total) ou Expiração
+        if (trial.inTrial) {
+          persist({
+            isPremium: true,
+            loading: false,
+            plano: 'trial_3dias',
+            expiresAt: trial.trialExpiresAt,
+            startedAt: userCreatedAt ?? null,
+            source: null,
+            status: 'TRIAL_ACTIVE',
+            isAdminOverride: false,
+            isTrial: true,
+            isTrialExpired: false,
+            trialExpiresAt: trial.trialExpiresAt,
+            trialRemainingMs: trial.trialRemainingMs,
+          });
+          return true;
+        }
+
         persist({
-          isPremium: false, loading: false, plano: null, expiresAt: null, startedAt: null,
-          source: null, status: null, isAdminOverride: false, isTrial: false,
+          isPremium: false,
+          loading: false,
+          plano: null,
+          expiresAt: null,
+          startedAt: null,
+          source: null,
+          status: trial.trialExpired ? 'TRIAL_EXPIRED' : null,
+          isAdminOverride: false,
+          isTrial: false,
+          isTrialExpired: trial.trialExpired,
+          trialExpiresAt: trial.trialExpiresAt,
+          trialRemainingMs: 0,
         });
         return false;
 

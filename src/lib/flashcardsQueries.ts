@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
-import { getOfflineDecks } from '@/lib/flashcardsOfflineManager';
 import { saveOfflinePackage, getOfflinePackage } from '@/services/downloadManager';
 import { FALLBACK_FLASHCARDS_AREAS, FALLBACK_FLASHCARDS_DASH, type FlashcardsDash, type FlashcardsAreaRow } from './flashcardsConstants';
 export type { FlashcardsDash, FlashcardsAreaRow };
@@ -105,11 +104,11 @@ export const useFlashcardsSessao = (params: {
     queryFn: async () => {
       // --- MOCK INTERCEPT FOR AI GENERATED DECKS ---
       if (params.deckId) {
+        const { getOfflineDecks, getOfflineCards } = await import('@/lib/flashcardsOfflineManager');
         const offlineDecks = getOfflineDecks();
         const mockDeck = offlineDecks.find(d => d.id === params.deckId && d.filtros?.source);
 
         if (mockDeck) {
-          const { getOfflineCards } = await import('@/lib/flashcardsOfflineManager');
           await new Promise(r => setTimeout(r, 600)); // fake delay
           
           let cards = getOfflineCards(params.deckId);

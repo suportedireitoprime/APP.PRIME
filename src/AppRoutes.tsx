@@ -14,6 +14,8 @@ import { Capacitor } from '@capacitor/core';
 import { isAdminEmail } from "@/lib/adminEmails";
 import { shouldBypassAsAdmin, isSimulatingExpired } from "@/lib/devSimulation";
 import { useSubscription } from "@/hooks/useSubscription";
+import { TrialCountdownBar } from "@/components/subscription/TrialCountdownBar";
+import { TrialExpiredGate } from "@/components/subscription/TrialExpiredGate";
 
 
 
@@ -93,7 +95,7 @@ import PersistentHome from "./components/PersistentHome.tsx";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import Landing from "@/pages/Landing";
-import Onboarding from "./pages/Onboarding.tsx";
+const Onboarding = lazy(() => import("./pages/Onboarding.tsx"));
 
 const VadeMecum = lazy(() => import("./pages/VadeMecum.tsx"));
 const VadeMecumCodigos = lazy(() => import("./pages/VadeMecumCodigos.tsx"));
@@ -722,6 +724,15 @@ function DeepLinkBootstrap() {
 }
 
 function GlobalTrialGate() {
+  return (
+    <>
+      <TrialCountdownBar />
+      <TrialExpiredGate />
+    </>
+  );
+}
+
+function LegacyGlobalTrialGateDisabled() {
   // Conforme diretriz do usuário: quem não for assinante ou tiver os 3 dias encerrados
   // tem acesso ao aplicativo, com travas e cotas gratuitas mensais (ex: 10 por mês)
   // aplicadas pontualmente dentro de cada recurso, sem modal de bloqueio global de tela.

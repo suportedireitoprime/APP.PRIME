@@ -30,7 +30,8 @@ import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
 import { pickAsset, srcOf } from '@/lib/assetUrl';
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
-import { PricingCards } from '@/components/assinatura/PricingCards';
+import { PricingCards, type PlanOption } from '@/components/assinatura/PricingCards';
+import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, brl, type PlanoCheckout } from '@/lib/precos';
 import { FeaturesList } from '@/components/assinatura/FeaturesList';
 import { FaqAccordion } from '@/components/assinatura/FaqAccordion';
 
@@ -51,7 +52,7 @@ export default function Assinatura() {
 
   const isNewUser = !!(session?.user?.created_at && (Date.now() - new Date(session.user.created_at).getTime() < 24 * 60 * 60 * 1000));
 
-  const [tab, setTab] = useState<'mensal' | 'anual'>('anual');
+  const [tab, setTab] = useState<PlanOption>('anual');
 
   
   const [timeLeft, setTimeLeft] = useState(() => {
@@ -106,7 +107,7 @@ export default function Assinatura() {
   
   const [devSheetOpen, setDevSheetOpen] = useState(false);
   const [paymentMethodSheetOpen, setPaymentMethodSheetOpen] = useState(false);
-  const [checkoutPlan, setCheckoutPlan] = useState<'mensal' | 'mensal_pix' | 'anual' | 'anual_regular_pix' | null>(null);
+  const [checkoutPlan, setCheckoutPlan] = useState<PlanoCheckout | null>(null);
 
   const handleBack = () => {
     if (showWelcome) return closeWelcome();
@@ -147,7 +148,7 @@ export default function Assinatura() {
     setPaymentMethodSheetOpen(true);
   };
 
-  const startPurchase = async (plano: 'mensal' | 'mensal_pix' | 'anual' | 'anual_regular_pix') => {
+  const startPurchase = async (plano: PlanoCheckout) => {
     track('subscription_started', { plano, metodo: 'asaas', source: 'planos_page' });
     import('@/lib/appEvents')
       .then(({ appEvents }) => {
@@ -259,7 +260,7 @@ export default function Assinatura() {
                   Como prefere assinar?
                 </SheetTitle>
                 <SheetDescription className="text-sm font-medium mt-1.5 text-muted-foreground max-w-[290px]">
-                  Plano <strong className="text-foreground">{tab === 'anual' ? 'Anual Prime' : 'Mensal Prime'}</strong> selecionado. O acesso é liberado instantaneamente.
+                  Plano <strong className="text-foreground">{tab === 'vitalicio' ? 'Vitalício Prime' : (tab === 'anual' ? 'Anual Prime' : 'Mensal Prime')}</strong> selecionado. O acesso é liberado instantaneamente.
                 </SheetDescription>
               </SheetHeader>
 
@@ -269,7 +270,7 @@ export default function Assinatura() {
                   className="h-auto py-4 flex items-center justify-start gap-4 px-4.5 border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-950/20 via-[#121212] to-[#121212] hover:border-emerald-500 hover:bg-emerald-500/10 transition-all rounded-2xl group relative overflow-hidden shadow-lg text-left"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
-                    startPurchase(tab === 'anual' ? 'anual_regular_pix' : 'mensal_pix');
+                    startPurchase(tab === 'vitalicio' ? 'vitalicio_pix' : (tab === 'anual' ? 'anual_regular_pix' : 'mensal_pix'));
                   }}
                 >
                   <div className="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
@@ -285,7 +286,7 @@ export default function Assinatura() {
                       </span>
                     </div>
                     <span className="text-sm font-black text-emerald-400 mt-0.5">
-                      {tab === 'anual' ? 'R$ 199,90 à vista' : 'R$ 29,90 à vista'}
+                      {tab === 'vitalicio' ? `${brl(PRECO_VITALICIO)} à vista` : (tab === 'anual' ? `${brl(PRECO_ANUAL)} à vista` : `${brl(PRECO_MENSAL)} à vista`)}
                     </span>
                     <span className="text-[11px] text-muted-foreground mt-0.5 truncate">
                       Aprovação imediata • Sem necessidade de CEP
@@ -299,7 +300,7 @@ export default function Assinatura() {
                   className="h-auto py-4 flex items-center justify-start gap-4 px-4.5 border-2 border-primary/40 bg-gradient-to-r from-primary/10 via-[#121212] to-[#121212] hover:border-primary hover:bg-primary/15 transition-all rounded-2xl group relative overflow-hidden shadow-lg text-left"
                   onClick={() => {
                     setPaymentMethodSheetOpen(false);
-                    startPurchase(tab === 'anual' ? 'anual' : 'mensal');
+                    startPurchase(tab === 'vitalicio' ? 'vitalicio' : (tab === 'anual' ? 'anual' : 'mensal'));
                   }}
                 >
                   <div className="w-12 h-12 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0">
@@ -308,10 +309,10 @@ export default function Assinatura() {
                   <div className="flex flex-col items-start flex-1 min-w-0">
                     <span className="font-display font-black text-lg text-white">Cartão de Crédito</span>
                     <span className="text-sm font-black text-foreground mt-0.5">
-                      {tab === 'anual' ? 'R$ 199,90 em até 6x' : 'R$ 29,90 / mês'}
+                      {tab === 'vitalicio' ? `${brl(PRECO_VITALICIO)} em até 6x` : (tab === 'anual' ? `${brl(PRECO_ANUAL)} em até 6x` : `${brl(PRECO_MENSAL)} / mês`)}
                     </span>
                     <span className="text-[11px] text-muted-foreground mt-0.5 truncate">
-                      {tab === 'anual' ? 'Parcelamento em até 6x com juros' : 'Assinatura mensal sem fidelidade'}
+                      {tab === 'vitalicio' ? 'Acesso vitalício definitivo sem renovação' : (tab === 'anual' ? 'Parcelamento em até 6x com juros' : 'Assinatura mensal sem fidelidade')}
                     </span>
                   </div>
                   <ArrowRight className="w-5 h-5 text-primary group-hover:translate-x-1 transition-transform shrink-0" />
