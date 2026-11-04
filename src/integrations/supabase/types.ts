@@ -1498,48 +1498,6 @@ export type Database = {
         }
         Relationships: []
       }
-      audioaulas_acervo_backup: {
-        Row: {
-          area: string | null
-          created_at: string | null
-          descricao: string | null
-          id: number | null
-          imagem_miniatura: string | null
-          sequencia: number | null
-          tag: string | null
-          tema: string | null
-          titulo: string | null
-          updated_at: string | null
-          url_audio: string | null
-        }
-        Insert: {
-          area?: string | null
-          created_at?: string | null
-          descricao?: string | null
-          id?: number | null
-          imagem_miniatura?: string | null
-          sequencia?: number | null
-          tag?: string | null
-          tema?: string | null
-          titulo?: string | null
-          updated_at?: string | null
-          url_audio?: string | null
-        }
-        Update: {
-          area?: string | null
-          created_at?: string | null
-          descricao?: string | null
-          id?: number | null
-          imagem_miniatura?: string | null
-          sequencia?: number | null
-          tag?: string | null
-          tema?: string | null
-          titulo?: string | null
-          updated_at?: string | null
-          url_audio?: string | null
-        }
-        Relationships: []
-      }
       audioaulas_stats: {
         Row: {
           audio_id: number
@@ -1565,270 +1523,6 @@ export type Database = {
             columns: ["audio_id"]
             isOneToOne: true
             referencedRelation: "audioaulas_acervo"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      aula_entidades: {
-        Row: {
-          aula_id: string
-          created_at: string
-          id: string
-          ref: string | null
-          segundo: number | null
-          tipo: string
-          user_id: string
-          valor: string
-        }
-        Insert: {
-          aula_id: string
-          created_at?: string
-          id?: string
-          ref?: string | null
-          segundo?: number | null
-          tipo: string
-          user_id: string
-          valor: string
-        }
-        Update: {
-          aula_id?: string
-          created_at?: string
-          id?: string
-          ref?: string | null
-          segundo?: number | null
-          tipo?: string
-          user_id?: string
-          valor?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "aula_entidades_aula_id_fkey"
-            columns: ["aula_id"]
-            isOneToOne: false
-            referencedRelation: "aulas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      aula_marcadores: {
-        Row: {
-          aula_id: string
-          created_at: string
-          id: string
-          segundo: number
-          texto: string | null
-          tipo: string
-          user_id: string
-        }
-        Insert: {
-          aula_id: string
-          created_at?: string
-          id?: string
-          segundo?: number
-          texto?: string | null
-          tipo?: string
-          user_id: string
-        }
-        Update: {
-          aula_id?: string
-          created_at?: string
-          id?: string
-          segundo?: number
-          texto?: string | null
-          tipo?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "aula_marcadores_aula_id_fkey"
-            columns: ["aula_id"]
-            isOneToOne: false
-            referencedRelation: "aulas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      aula_materiais: {
-        Row: {
-          aula_id: string
-          conteudo: Json
-          created_at: string
-          id: string
-          pdf_path: string | null
-          tipo: string
-          user_id: string
-        }
-        Insert: {
-          aula_id: string
-          conteudo?: Json
-          created_at?: string
-          id?: string
-          pdf_path?: string | null
-          tipo: string
-          user_id: string
-        }
-        Update: {
-          aula_id?: string
-          conteudo?: Json
-          created_at?: string
-          id?: string
-          pdf_path?: string | null
-          tipo?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "aula_materiais_aula_id_fkey"
-            columns: ["aula_id"]
-            isOneToOne: false
-            referencedRelation: "aulas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      aula_midias: {
-        Row: {
-          aula_id: string
-          bytes: number | null
-          created_at: string
-          duracao_seg: number | null
-          id: string
-          mime: string | null
-          ocr_texto: string | null
-          ordem: number
-          storage_path: string | null
-          texto: string | null
-          tipo: string
-          user_id: string
-        }
-        Insert: {
-          aula_id: string
-          bytes?: number | null
-          created_at?: string
-          duracao_seg?: number | null
-          id?: string
-          mime?: string | null
-          ocr_texto?: string | null
-          ordem?: number
-          storage_path?: string | null
-          texto?: string | null
-          tipo: string
-          user_id: string
-        }
-        Update: {
-          aula_id?: string
-          bytes?: number | null
-          created_at?: string
-          duracao_seg?: number | null
-          id?: string
-          mime?: string | null
-          ocr_texto?: string | null
-          ordem?: number
-          storage_path?: string | null
-          texto?: string | null
-          tipo?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "aula_midias_aula_id_fkey"
-            columns: ["aula_id"]
-            isOneToOne: false
-            referencedRelation: "aulas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      aula_transcricoes: {
-        Row: {
-          aula_id: string
-          created_at: string
-          id: string
-          idioma: string | null
-          segmentos: Json
-          texto: string
-          user_id: string
-        }
-        Insert: {
-          aula_id: string
-          created_at?: string
-          id?: string
-          idioma?: string | null
-          segmentos?: Json
-          texto?: string
-          user_id: string
-        }
-        Update: {
-          aula_id?: string
-          created_at?: string
-          id?: string
-          idioma?: string | null
-          segmentos?: Json
-          texto?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "aula_transcricoes_aula_id_fkey"
-            columns: ["aula_id"]
-            isOneToOne: false
-            referencedRelation: "aulas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      aulas: {
-        Row: {
-          created_at: string
-          data: string
-          disciplina_id: string | null
-          duracao_seg: number
-          erro: string | null
-          gratuita: boolean
-          id: string
-          numero: number | null
-          professor: string | null
-          status: string
-          titulo: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          data?: string
-          disciplina_id?: string | null
-          duracao_seg?: number
-          erro?: string | null
-          gratuita?: boolean
-          id?: string
-          numero?: number | null
-          professor?: string | null
-          status?: string
-          titulo: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          data?: string
-          disciplina_id?: string | null
-          duracao_seg?: number
-          erro?: string | null
-          gratuita?: boolean
-          id?: string
-          numero?: number | null
-          professor?: string | null
-          status?: string
-          titulo?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "aulas_disciplina_id_fkey"
-            columns: ["disciplina_id"]
-            isOneToOne: false
-            referencedRelation: "disciplinas"
             referencedColumns: ["id"]
           },
         ]
@@ -4653,45 +4347,6 @@ export type Database = {
         }
         Relationships: []
       }
-      HISTORICO_ALTERACOES: {
-        Row: {
-          ano_alteracao: number | null
-          created_at: string | null
-          data_alteracao: string | null
-          id: number
-          lei_alteradora: string | null
-          numero_artigo: string
-          tabela_lei: string
-          texto_completo: string
-          tipo_alteracao: string
-          updated_at: string | null
-        }
-        Insert: {
-          ano_alteracao?: number | null
-          created_at?: string | null
-          data_alteracao?: string | null
-          id?: number
-          lei_alteradora?: string | null
-          numero_artigo: string
-          tabela_lei: string
-          texto_completo: string
-          tipo_alteracao: string
-          updated_at?: string | null
-        }
-        Update: {
-          ano_alteracao?: number | null
-          created_at?: string | null
-          data_alteracao?: string | null
-          id?: number
-          lei_alteradora?: string | null
-          numero_artigo?: string
-          tabela_lei?: string
-          texto_completo?: string
-          tipo_alteracao?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       home_curiosidades: {
         Row: {
           ativo: boolean
@@ -6543,67 +6198,6 @@ export type Database = {
           },
         ]
       }
-      locais_favoritos: {
-        Row: {
-          created_at: string
-          local_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          local_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          local_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "locais_favoritos_local_id_fkey"
-            columns: ["local_id"]
-            isOneToOne: false
-            referencedRelation: "locais_juridicos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      locais_fotos_usuario: {
-        Row: {
-          aprovada: boolean
-          created_at: string
-          id: string
-          local_id: string
-          storage_path: string
-          user_id: string
-        }
-        Insert: {
-          aprovada?: boolean
-          created_at?: string
-          id?: string
-          local_id: string
-          storage_path: string
-          user_id: string
-        }
-        Update: {
-          aprovada?: boolean
-          created_at?: string
-          id?: string
-          local_id?: string
-          storage_path?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "locais_fotos_usuario_local_id_fkey"
-            columns: ["local_id"]
-            isOneToOne: false
-            referencedRelation: "locais_juridicos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       locais_juridicos: {
         Row: {
           categoria: string
@@ -6699,107 +6293,6 @@ export type Database = {
           wikimedia_commons?: string | null
         }
         Relationships: []
-      }
-      locais_selos: {
-        Row: {
-          codigo: string
-          granted_at: string
-          id: string
-          metadata: Json
-          user_id: string
-        }
-        Insert: {
-          codigo: string
-          granted_at?: string
-          id?: string
-          metadata?: Json
-          user_id: string
-        }
-        Update: {
-          codigo?: string
-          granted_at?: string
-          id?: string
-          metadata?: Json
-          user_id?: string
-        }
-        Relationships: []
-      }
-      locais_trilhas: {
-        Row: {
-          ativa: boolean
-          cover_url: string | null
-          created_at: string
-          descricao: string | null
-          id: string
-          local_ids: string[]
-          selo_codigo: string | null
-          slug: string
-          titulo: string
-          updated_at: string
-        }
-        Insert: {
-          ativa?: boolean
-          cover_url?: string | null
-          created_at?: string
-          descricao?: string | null
-          id?: string
-          local_ids?: string[]
-          selo_codigo?: string | null
-          slug: string
-          titulo: string
-          updated_at?: string
-        }
-        Update: {
-          ativa?: boolean
-          cover_url?: string | null
-          created_at?: string
-          descricao?: string | null
-          id?: string
-          local_ids?: string[]
-          selo_codigo?: string | null
-          slug?: string
-          titulo?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      locais_trilhas_progresso: {
-        Row: {
-          certificado_url: string | null
-          concluida_em: string | null
-          id: string
-          local_ids_visitados: string[]
-          trilha_id: string
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          certificado_url?: string | null
-          concluida_em?: string | null
-          id?: string
-          local_ids_visitados?: string[]
-          trilha_id: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          certificado_url?: string | null
-          concluida_em?: string | null
-          id?: string
-          local_ids_visitados?: string[]
-          trilha_id?: string
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "locais_trilhas_progresso_trilha_id_fkey"
-            columns: ["trilha_id"]
-            isOneToOne: false
-            referencedRelation: "locais_trilhas"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       location_reminder_events: {
         Row: {
@@ -7199,45 +6692,6 @@ export type Database = {
         }
         Relationships: []
       }
-      narracao_testes_cache: {
-        Row: {
-          audio_url: string
-          created_at: string | null
-          duracao_segundos: number | null
-          estilo_id: string
-          estilo_nome: string | null
-          id: string
-          storage_path: string
-          texto: string
-          texto_hash: string
-          voz: string
-        }
-        Insert: {
-          audio_url: string
-          created_at?: string | null
-          duracao_segundos?: number | null
-          estilo_id: string
-          estilo_nome?: string | null
-          id: string
-          storage_path: string
-          texto: string
-          texto_hash: string
-          voz: string
-        }
-        Update: {
-          audio_url?: string
-          created_at?: string | null
-          duracao_segundos?: number | null
-          estilo_id?: string
-          estilo_nome?: string | null
-          id?: string
-          storage_path?: string
-          texto?: string
-          texto_hash?: string
-          voz?: string
-        }
-        Relationships: []
-      }
       narracao_vozes_config: {
         Row: {
           ativa: boolean
@@ -7307,6 +6761,45 @@ export type Database = {
         }
         Relationships: []
       }
+      narracao_testes_cache: {
+        Row: {
+          audio_url: string
+          created_at: string
+          duracao_segundos: number | null
+          estilo_id: string
+          estilo_nome: string
+          id: string
+          storage_path: string | null
+          texto: string
+          texto_hash: string
+          voz: string
+        }
+        Insert: {
+          audio_url: string
+          created_at?: string
+          duracao_segundos?: number | null
+          estilo_id: string
+          estilo_nome?: string
+          id?: string
+          storage_path?: string | null
+          texto: string
+          texto_hash: string
+          voz: string
+        }
+        Update: {
+          audio_url?: string
+          created_at?: string
+          duracao_segundos?: number | null
+          estilo_id?: string
+          estilo_nome?: string
+          id?: string
+          storage_path?: string | null
+          texto?: string
+          texto_hash?: string
+          voz?: string
+        }
+        Relationships: []
+      }
       narracoes_artigos: {
         Row: {
           artigo_numero: string
@@ -7338,39 +6831,6 @@ export type Database = {
           lei_nome?: string
           r2_key?: string | null
           tabela_nome?: string
-          titulo_artigo?: string | null
-          word_timings?: Json | null
-        }
-        Relationships: []
-      }
-      narracoes_artigos_backup: {
-        Row: {
-          artigo_numero: string | null
-          audio_url: string | null
-          created_at: string | null
-          id: string | null
-          lei_nome: string | null
-          tabela_nome: string | null
-          titulo_artigo: string | null
-          word_timings: Json | null
-        }
-        Insert: {
-          artigo_numero?: string | null
-          audio_url?: string | null
-          created_at?: string | null
-          id?: string | null
-          lei_nome?: string | null
-          tabela_nome?: string | null
-          titulo_artigo?: string | null
-          word_timings?: Json | null
-        }
-        Update: {
-          artigo_numero?: string | null
-          audio_url?: string | null
-          created_at?: string | null
-          id?: string | null
-          lei_nome?: string | null
-          tabela_nome?: string | null
           titulo_artigo?: string | null
           word_timings?: Json | null
         }
@@ -8259,82 +7719,6 @@ export type Database = {
           },
         ]
       }
-      push_schedules_assinatura: {
-        Row: {
-          created_at: string
-          days_of_week: number[]
-          id: string
-          is_active: boolean
-          template_id: string
-          time_of_day: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          days_of_week?: number[]
-          id?: string
-          is_active?: boolean
-          template_id: string
-          time_of_day: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          days_of_week?: number[]
-          id?: string
-          is_active?: boolean
-          template_id?: string
-          time_of_day?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "push_schedules_assinatura_template_id_fkey"
-            columns: ["template_id"]
-            isOneToOne: false
-            referencedRelation: "push_templates_assinatura"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      push_schedules_normal: {
-        Row: {
-          created_at: string
-          days_of_week: number[]
-          id: string
-          is_active: boolean
-          template_id: string
-          time_of_day: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          days_of_week?: number[]
-          id?: string
-          is_active?: boolean
-          template_id: string
-          time_of_day: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          days_of_week?: number[]
-          id?: string
-          is_active?: boolean
-          template_id?: string
-          time_of_day?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "push_schedules_normal_template_id_fkey"
-            columns: ["template_id"]
-            isOneToOne: false
-            referencedRelation: "push_templates_normal"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       push_subscriptions: {
         Row: {
           auth: string
@@ -8374,66 +7758,6 @@ export type Database = {
           updated_at?: string
           user_agent?: string | null
           user_id?: string
-        }
-        Relationships: []
-      }
-      push_templates_assinatura: {
-        Row: {
-          created_at: string
-          description: string | null
-          emoji: string | null
-          id: string
-          is_active: boolean
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          emoji?: string | null
-          id?: string
-          is_active?: boolean
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          emoji?: string | null
-          id?: string
-          is_active?: boolean
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      push_templates_normal: {
-        Row: {
-          created_at: string
-          description: string | null
-          emoji: string | null
-          id: string
-          is_active: boolean
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          emoji?: string | null
-          id?: string
-          is_active?: boolean
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          emoji?: string | null
-          id?: string
-          is_active?: boolean
-          name?: string
-          updated_at?: string
         }
         Relationships: []
       }
@@ -10180,99 +9504,6 @@ export type Database = {
         }
         Relationships: []
       }
-      stf_informativos: {
-        Row: {
-          created_at: string
-          data_publicacao: string | null
-          id: string
-          link_pdf: string | null
-          numero: string
-          titulo: string
-        }
-        Insert: {
-          created_at?: string
-          data_publicacao?: string | null
-          id?: string
-          link_pdf?: string | null
-          numero: string
-          titulo: string
-        }
-        Update: {
-          created_at?: string
-          data_publicacao?: string | null
-          id?: string
-          link_pdf?: string | null
-          numero?: string
-          titulo?: string
-        }
-        Relationships: []
-      }
-      stf_jurisprudencia: {
-        Row: {
-          created_at: string
-          data_julgamento: string | null
-          ementa: string | null
-          id: string
-          relator: string | null
-          titulo: string
-        }
-        Insert: {
-          created_at?: string
-          data_julgamento?: string | null
-          ementa?: string | null
-          id?: string
-          relator?: string | null
-          titulo: string
-        }
-        Update: {
-          created_at?: string
-          data_julgamento?: string | null
-          ementa?: string | null
-          id?: string
-          relator?: string | null
-          titulo?: string
-        }
-        Relationships: []
-      }
-      stf_live_sessions: {
-        Row: {
-          actual_start_time: string | null
-          created_at: string
-          description: string | null
-          id: string
-          scheduled_start_time: string | null
-          status: string
-          thumbnail_url: string | null
-          title: string
-          updated_at: string
-          youtube_video_id: string
-        }
-        Insert: {
-          actual_start_time?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          scheduled_start_time?: string | null
-          status: string
-          thumbnail_url?: string | null
-          title: string
-          updated_at?: string
-          youtube_video_id: string
-        }
-        Update: {
-          actual_start_time?: string | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          scheduled_start_time?: string | null
-          status?: string
-          thumbnail_url?: string | null
-          title?: string
-          updated_at?: string
-          youtube_video_id?: string
-        }
-        Relationships: []
-      }
       stf_ministros: {
         Row: {
           artigos_revistas: string | null
@@ -10485,30 +9716,6 @@ export type Database = {
           title?: string
           updated_at?: string | null
           youtube_video_id?: string | null
-        }
-        Relationships: []
-      }
-      stf_sumulas: {
-        Row: {
-          created_at: string
-          id: string
-          numero: string
-          texto: string
-          tipo: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          numero: string
-          texto: string
-          tipo?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          numero?: string
-          texto?: string
-          tipo?: string | null
         }
         Relationships: []
       }

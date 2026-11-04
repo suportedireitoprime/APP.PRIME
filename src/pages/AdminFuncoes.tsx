@@ -1,45 +1,87 @@
-import { useEffect, useState, useMemo } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useEffect, useState, useMemo } from "react";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
-  ChevronRight, Activity, ShieldCheck, ClipboardList, BookOpen,
-  Gamepad2, Brain, MessageCircle, BellRing, Mic, Lightbulb, Building2,
-  Rss, Palette, Users, GitBranch, Github, KeyRound, Bug, Newspaper,
-  Quote, Monitor, Send, RefreshCcw, Lock, Wrench, FileText, Crown, Search, Target, MapPin, PlayCircle,
-  Sparkles, UserPlus, GraduationCap, Scale, Store, Mail, FileSignature,
-  ListChecks, Headphones, ShieldAlert, Layers, Star, CloudDownload, Pill, UserCheck, Bird, FileSpreadsheet,
-  Gauge
-} from 'lucide-react';
+  ChevronRight,
+  Activity,
+  ShieldCheck,
+  ClipboardList,
+  BookOpen,
+  Gamepad2,
+  Brain,
+  MessageCircle,
+  BellRing,
+  Mic,
+  Lightbulb,
+  Building2,
+  Rss,
+  Palette,
+  Users,
+  GitBranch,
+  Github,
+  KeyRound,
+  Bug,
+  Newspaper,
+  Quote,
+  Monitor,
+  Send,
+  RefreshCcw,
+  Lock,
+  Wrench,
+  FileText,
+  Crown,
+  Search,
+  Target,
+  MapPin,
+  PlayCircle,
+  Sparkles,
+  UserPlus,
+  GraduationCap,
+  Scale,
+  Store,
+  Mail,
+  FileSignature,
+  ListChecks,
+  Headphones,
+  ShieldAlert,
+  Layers,
+  Star,
+  CloudDownload,
+  Pill,
+  UserCheck,
+  Bird,
+  FileSpreadsheet,
+  Gauge,
+} from "lucide-react";
 
-import { toast } from 'sonner';
-import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { AdminHojeCards } from '@/components/admin/AdminHojeCards';
-
+import { toast } from "sonner";
+import { PageHeader } from "@/components/vademecum/navigation/PageHeader";
+import { AdminHojeCards } from "@/components/admin/AdminHojeCards";
 
 // Prefetch map
 const PREFETCH: Record<string, () => Promise<unknown>> = {
-  '/admin-aulas-interativas': () => import('./AdminAulasInterativas'),
-  '/admin-monitor': () => import('./AdminMonitor'),
-  '/admin-monitor-usuarios': () => import('./AdminMonitorUsuarios'),
-  '/admin-monitor-apis': () => import('./AdminMonitorApis'),
-  '/admin-push': () => import('./AdminPush'),
-  '/admin-horus': () => import('./AdminHorus'),
+  "/admin-aulas-interativas": () => import("./AdminAulasInterativas"),
+  "/admin-monitor": () => import("./AdminMonitor"),
+  "/admin-monitor-usuarios": () => import("./AdminMonitorUsuarios"),
+  "/admin-monitor-apis": () => import("./AdminMonitorApis"),
+  "/admin-push": () => import("./AdminPush"),
+  "/admin-horus": () => import("./AdminHorus"),
 
-  '/admin-blog-edicao': () => import('./AdminBlogEdicao'),
-  '/admin-omniroute': () => import('./AdminOmniRouteTeste'),
-  '/admin/pilulas': () => import('./AdminPilulas'),
-  
-  '/admin-funcoes-assinantes': () => import('./AdminFuncoesAssinantes'),
-  '/admin-assinantes': () => import('./AdminAssinantes'),
-  '/admin-usuarios': () => import('./AdminUsuarios'),
-  '/admin-erros-questoes': () => import('./AdminErrosQuestoes'),
-  '/admin-simulados': () => import('./AdminSimulados'),
-  '/admin-mapeamento-leis': () => import('./AdminMapeamentoLeis'),
-  '/admin-narracao-leis': () => import('./AdminNarracaoLeis'),
-  '/admin-biblioteca-editar': () => import('./BibliotecaEditar'),
-  '/admin-leitura-nativa': () => import('./AdminLeituraNativa'),
-  '/admin-audioaulas': () => import('./AdminAudioaulas'),
-  '/explicacao-lei': () => import('./ExplicacaoLei'),
-  '/configuracoes': () => import('./Configuracoes'),
+  "/admin-blog-edicao": () => import("./AdminBlogEdicao"),
+  "/admin-omniroute": () => import("./AdminOmniRouteTeste"),
+  "/admin/pilulas": () => import("./AdminPilulas"),
+
+  "/admin-funcoes-assinantes": () => import("./AdminFuncoesAssinantes"),
+  "/admin-assinantes": () => import("./AdminAssinantes"),
+  "/admin-usuarios": () => import("./AdminUsuarios"),
+  "/admin-erros-questoes": () => import("./AdminErrosQuestoes"),
+  "/admin-simulados": () => import("./AdminSimulados"),
+  "/admin-mapeamento-leis": () => import("./AdminMapeamentoLeis"),
+  "/admin-narracao-leis": () => import("./AdminNarracaoLeis"),
+  "/admin-biblioteca-editar": () => import("./BibliotecaEditar"),
+  "/admin-leitura-nativa": () => import("./AdminLeituraNativa"),
+  "/admin-audioaulas": () => import("./AdminAudioaulas"),
+  "/explicacao-lei": () => import("./ExplicacaoLei"),
+  "/configuracoes": () => import("./Configuracoes"),
 };
 const prefetched = new Set<string>();
 const prefetching = new Map<string, Promise<unknown>>();
@@ -64,15 +106,30 @@ const prefetch = (route?: string): Promise<unknown> => {
 };
 
 const prefetchAllAdminRoutes = () => {
-  const routes = Array.from(new Set(CATEGORIES.flatMap((cat) => (cat.items || []).map((item) => item.route).filter(Boolean)))) as string[];
+  const routes = Array.from(
+    new Set(
+      CATEGORIES.flatMap((cat) => (cat.items || []).map((item) => item.route).filter(Boolean)),
+    ),
+  ) as string[];
   routes.forEach(prefetch);
 };
 
 /** Paleta de cores dos ícones — cada função ganha um tom próprio, sem fundo. */
 const ICON_HUES = [
-  '0 72% 58%', '18 88% 58%', '36 92% 55%', '48 90% 55%', '84 60% 50%',
-  '150 60% 45%', '168 66% 45%', '19348 80% 50%', '208 80% 58%', '224 76% 62%',
-  '258 70% 66%', '280 66% 64%', '310 66% 60%', '336 70% 58%',
+  "0 72% 58%",
+  "18 88% 58%",
+  "36 92% 55%",
+  "48 90% 55%",
+  "84 60% 50%",
+  "150 60% 45%",
+  "168 66% 45%",
+  "19348 80% 50%",
+  "208 80% 58%",
+  "224 76% 62%",
+  "258 70% 66%",
+  "280 66% 64%",
+  "310 66% 60%",
+  "336 70% 58%",
 ];
 function iconColor(seed: string): string {
   let h = 0;
@@ -99,131 +156,292 @@ type Category = {
 
 const CATEGORIES: Category[] = [
   {
-    id: 'assinaturas-financeiro',
-    title: 'Assinaturas & Financeiro',
-    desc: 'Lista de assinantes, limites free e paywall',
+    id: "assinaturas-financeiro",
+    title: "Assinaturas & Financeiro",
+    desc: "Lista de assinantes, limites free e paywall",
     icon: Crown,
     items: [
-      { id: 'admin-assinantes', label: 'Assinantes App', icon: Users, desc: 'Lista de todos os assinantes via banco local', route: '/admin-assinantes' },
-      { id: 'admin-usuarios', label: 'Usuários Cadastrados', icon: UserCheck, desc: 'Lista de todos os usuários cadastrados e status', route: '/admin-usuarios' },
-      { id: 'admin-funcoes-assinantes', label: 'Funções Assinantes', icon: Crown, desc: 'Limite de uso free por função', route: '/admin-funcoes-assinantes' },
+      {
+        id: "admin-assinantes",
+        label: "Assinantes App",
+        icon: Users,
+        desc: "Lista de todos os assinantes via banco local",
+        route: "/admin-assinantes",
+      },
+      {
+        id: "admin-usuarios",
+        label: "Usuários Cadastrados",
+        icon: UserCheck,
+        desc: "Lista de todos os usuários cadastrados e status",
+        route: "/admin-usuarios",
+      },
+      {
+        id: "admin-funcoes-assinantes",
+        label: "Funções Assinantes",
+        icon: Crown,
+        desc: "Limite de uso free por função",
+        route: "/admin-funcoes-assinantes",
+      },
     ],
   },
   {
-    id: 'aulas-interativas-cat',
-    title: 'Aulas Interativas',
-    desc: 'Catálogo de aulas com áudio narrado e conteúdos interativos',
+    id: "aulas-interativas-cat",
+    title: "Aulas Interativas",
+    desc: "Catálogo de aulas com áudio narrado e conteúdos interativos",
     icon: Sparkles,
-    route: '/admin-aulas-interativas',
+    route: "/admin-aulas-interativas",
     items: [
-      { id: 'aulas-interativas', label: 'Aulas Interativas', icon: Sparkles, desc: 'Aulas completas em HTML com narração e ilustrações', route: '/admin-aulas-interativas' },
+      {
+        id: "aulas-interativas",
+        label: "Aulas Interativas",
+        icon: Sparkles,
+        desc: "Aulas completas em HTML com narração e ilustrações",
+        route: "/admin-aulas-interativas",
+      },
     ],
   },
   {
-    id: 'push',
-    title: 'Notificações Push',
-    desc: 'Campanhas, agendamento e métricas',
+    id: "push",
+    title: "Notificações Push",
+    desc: "Campanhas, agendamento e métricas",
     icon: Send,
     items: [
-      { id: 'admin-push', label: 'Painel de Push', icon: BellRing, desc: 'Compor, agendar, campanhas e métricas', route: '/admin-push' },
+      {
+        id: "admin-push",
+        label: "Painel de Push",
+        icon: BellRing,
+        desc: "Compor, agendar, campanhas e métricas",
+        route: "/admin-push",
+      },
     ],
   },
   {
-    id: 'horus-exclusivo',
-    title: 'Horus',
-    desc: 'Assistente Horus no WhatsApp — instância, usuários e conversas',
+    id: "horus-exclusivo",
+    title: "Horus",
+    desc: "Assistente Horus no WhatsApp — instância, usuários e conversas",
     icon: Bird,
-    route: '/admin-horus',
+    route: "/admin-horus",
   },
   {
-    id: 'geracao-conteudo',
-    title: 'Geração de Conteúdo',
-    desc: 'IA, biblioteca e estudos',
+    id: "geracao-conteudo",
+    title: "Geração de Conteúdo",
+    desc: "IA, biblioteca e estudos",
     icon: Newspaper,
     items: [
       // Conteúdo & IA
-      { id: 'omniroute-admin', label: 'OmniRoute (Gateway de IA)', icon: Sparkles, desc: 'Central unificada de modelos e chaves de IA do aplicativo', route: '/admin-omniroute' },
-      { id: 'flashcards-edicao', label: 'Flashcards Editar', icon: Layers, desc: 'IA, bibliotecas, revisão e stats', route: '/admin-flashcards-editar' },
-      { id: 'blog-edicao', label: 'Blog Editar', icon: Newspaper, desc: 'Geração automática de artigos + push', route: '/admin-blog-edicao' },
-      { id: 'admin-pilulas', label: 'Pílulas (Clássicos)', icon: Pill, desc: 'Gerenciar áudios e prompts para pílulas de clássicos', route: '/admin/pilulas' },
-      { id: 'explicacao-lei', label: 'Explicações Editar (IA)', icon: Lightbulb, desc: 'Batch de explicações', route: '/explicacao-lei' },
-      
-      // Biblioteca
-      { id: 'biblioteca-editar', label: 'Biblioteca Editar', icon: BookOpen, desc: 'Sinopse, capa horizontal e análise técnica com IA', route: '/admin-biblioteca-editar' },
-      { id: 'leitura-nativa', label: 'Leitura Nativa', icon: FileText, desc: 'Extração instantânea de PDFs em segundo plano com divisão de capítulos', route: '/admin-leitura-nativa' },
-      { id: 'audioaulas', label: 'Audioaulas', icon: PlayCircle, desc: 'Gestão, auditoria e consulta do acervo real de 2.221 audioaulas', route: '/admin-audioaulas' },
+      {
+        id: "omniroute-admin",
+        label: "OmniRoute (Gateway de IA)",
+        icon: Sparkles,
+        desc: "Central unificada de modelos e chaves de IA do aplicativo",
+        route: "/admin-omniroute",
+      },
+      {
+        id: "flashcards-edicao",
+        label: "Flashcards Editar",
+        icon: Layers,
+        desc: "IA, bibliotecas, revisão e stats",
+        route: "/admin-flashcards-editar",
+      },
+      {
+        id: "blog-edicao",
+        label: "Blog Editar",
+        icon: Newspaper,
+        desc: "Geração automática de artigos + push",
+        route: "/admin-blog-edicao",
+      },
+      {
+        id: "admin-pilulas",
+        label: "Pílulas (Clássicos)",
+        icon: Pill,
+        desc: "Gerenciar áudios e prompts para pílulas de clássicos",
+        route: "/admin/pilulas",
+      },
+      {
+        id: "explicacao-lei",
+        label: "Explicações Editar (IA)",
+        icon: Lightbulb,
+        desc: "Batch de explicações",
+        route: "/explicacao-lei",
+      },
 
+      // Biblioteca
+      {
+        id: "biblioteca-editar",
+        label: "Biblioteca Editar",
+        icon: BookOpen,
+        desc: "Sinopse, capa horizontal e análise técnica com IA",
+        route: "/admin-biblioteca-editar",
+      },
+      {
+        id: "leitura-nativa",
+        label: "Leitura Nativa",
+        icon: FileText,
+        desc: "Extração instantânea de PDFs em segundo plano com divisão de capítulos",
+        route: "/admin-leitura-nativa",
+      },
+      {
+        id: "audioaulas",
+        label: "Audioaulas",
+        icon: PlayCircle,
+        desc: "Gestão, auditoria e consulta do acervo real de 2.221 audioaulas",
+        route: "/admin-audioaulas",
+      },
     ],
   },
   {
-    id: 'bases-juridicas',
-    title: 'Bases Jurídicas',
-    desc: 'Vade Mecum, Planalto e catalogação de leis',
+    id: "bases-juridicas",
+    title: "Bases Jurídicas",
+    desc: "Vade Mecum, Planalto e catalogação de leis",
     icon: Scale,
     items: [
-      { id: 'admin-mapeamento-leis', label: 'Mapeamento de Leis', icon: Building2, desc: 'Catálogo de códigos, estatutos e status de extração', route: '/admin-mapeamento-leis' },
-      { id: 'admin-vade-mecum-historico', label: 'Histórico de Atualizações', icon: Scale, desc: 'Resenha diária do Planalto, impactos e antes/depois', route: '/admin-vade-mecum-historico' },
-      { id: 'admin-narracao-leis', label: 'Narração de Leis', icon: Headphones, desc: 'Estúdio de narração fatiada, teste de vozes e automação cron', route: '/admin-narracao-leis' },
+      {
+        id: "admin-mapeamento-leis",
+        label: "Mapeamento de Leis",
+        icon: Building2,
+        desc: "Catálogo de códigos, estatutos e status de extração",
+        route: "/admin-mapeamento-leis",
+      },
+      {
+        id: "admin-vade-mecum-historico",
+        label: "Histórico de Atualizações",
+        icon: Scale,
+        desc: "Resenha diária do Planalto, impactos e antes/depois",
+        route: "/admin-vade-mecum-historico",
+      },
+      {
+        id: "admin-narracao-leis",
+        label: "Narração de Leis",
+        icon: Headphones,
+        desc: "Estúdio de narração fatiada, teste de vozes e automação cron",
+        route: "/admin-narracao-leis",
+      },
     ],
   },
   {
-    id: 'questoes',
-    title: 'Questões & Simulados',
-    desc: 'Importar questões e simulados, gerenciar cargos, e reportes',
+    id: "questoes",
+    title: "Questões & Simulados",
+    desc: "Importar questões e simulados, gerenciar cargos, e reportes",
     icon: ListChecks,
     items: [
-      { id: 'admin-questoes', label: 'Questões — Editar', icon: ListChecks, desc: 'Buscar mais questões, novos cargos e importar do Google Sheets', route: '/admin-questoes' },
-      { id: 'admin-erros-questoes', label: 'Reportes de Erro', icon: ShieldAlert, desc: 'Visualizar e resolver erros em questões reportados por alunos', route: '/admin-erros-questoes' },
-      { id: 'admin-simulados', label: 'Simulados — Editar', icon: FileSpreadsheet, desc: 'Importar simulados, gabaritos e provas do Google Sheets', route: '/admin-simulados' },
+      {
+        id: "admin-questoes",
+        label: "Questões — Editar",
+        icon: ListChecks,
+        desc: "Buscar mais questões, novos cargos e importar do Google Sheets",
+        route: "/admin-questoes",
+      },
+      {
+        id: "admin-erros-questoes",
+        label: "Reportes de Erro",
+        icon: ShieldAlert,
+        desc: "Visualizar e resolver erros em questões reportados por alunos",
+        route: "/admin-erros-questoes",
+      },
+      {
+        id: "admin-simulados",
+        label: "Simulados — Editar",
+        icon: FileSpreadsheet,
+        desc: "Importar simulados, gabaritos e provas do Google Sheets",
+        route: "/admin-simulados",
+      },
     ],
   },
   {
-    id: 'narracao-conteudo',
-    title: 'Narração de Conteúdo',
-    desc: 'Narrar livros da biblioteca e artigos do blog com vozes do Gemini',
+    id: "narracao-conteudo",
+    title: "Narração de Conteúdo",
+    desc: "Narrar livros da biblioteca e artigos do blog com vozes do Gemini",
     icon: Mic,
     items: [
-      { id: 'admin-narracao-biblioteca', label: 'Narração Biblioteca', icon: BookOpen, desc: 'Escolha o livro, a voz e narre página por página ou em fila', route: '/admin-narracao/biblioteca' },
-      { id: 'admin-narracao-blog', label: 'Narração Blog e Artigos', icon: Newspaper, desc: 'Prévia de voz e narração dos artigos do Blogger', route: '/admin-narracao/blog' },
+      {
+        id: "admin-narracao-biblioteca",
+        label: "Narração Biblioteca",
+        icon: BookOpen,
+        desc: "Escolha o livro, a voz e narre página por página ou em fila",
+        route: "/admin-narracao/biblioteca",
+      },
+      {
+        id: "admin-narracao-blog",
+        label: "Narração Blog e Artigos",
+        icon: Newspaper,
+        desc: "Prévia de voz e narração dos artigos do Blogger",
+        route: "/admin-narracao/blog",
+      },
     ],
   },
   {
-    id: 'utilitarios',
-    title: 'Utilitários',
-    desc: 'Funções restritas para admin',
+    id: "utilitarios",
+    title: "Utilitários",
+    desc: "Funções restritas para admin",
     icon: FileSignature,
     items: [
-      { id: 'offline', label: 'Modo Offline', icon: CloudDownload, desc: 'Baixe leis e livros para usar sem internet', route: '/modo-offline' },
+      {
+        id: "offline",
+        label: "Modo Offline",
+        icon: CloudDownload,
+        desc: "Baixe leis e livros para usar sem internet",
+        route: "/modo-offline",
+      },
     ],
   },
 
   {
-    id: 'monitoramento',
-    title: 'Monitoramento & Saúde',
-    desc: 'Saúde do sistema, usuários, métricas e APIs',
+    id: "monitoramento",
+    title: "Monitoramento & Saúde",
+    desc: "Saúde do sistema, usuários, métricas e APIs",
     icon: Monitor,
     items: [
-      { id: 'admin-monitor', label: 'Monitoramento', icon: Activity, desc: 'Status e saúde do sistema', route: '/admin-monitor' },
-      { id: 'monitor-usuarios', label: 'Usuários Online', icon: Users, desc: 'Monitoramento em tempo real', route: '/admin-monitor-usuarios' },
-      { id: 'monitor-apis', label: 'APIs', icon: Activity, desc: 'Funções que usam IA (custo, manual/auto)', route: '/admin-monitor-apis' },
+      {
+        id: "admin-monitor",
+        label: "Monitoramento",
+        icon: Activity,
+        desc: "Status e saúde do sistema",
+        route: "/admin-monitor",
+      },
+      {
+        id: "monitor-usuarios",
+        label: "Usuários Online",
+        icon: Users,
+        desc: "Monitoramento em tempo real",
+        route: "/admin-monitor-usuarios",
+      },
+      {
+        id: "monitor-apis",
+        label: "APIs",
+        icon: Activity,
+        desc: "Funções que usam IA (custo, manual/auto)",
+        route: "/admin-monitor-apis",
+      },
     ],
   },
   {
-    id: 'radares-admin',
-    title: 'Radares',
-    desc: 'Radar de Leis, cron e histórico',
+    id: "radares-admin",
+    title: "Radares",
+    desc: "Radar de Leis, cron e histórico",
     icon: Rss,
     items: [
-      { id: 'admin-mapeamento-leis', label: 'Catálogo de Leis', icon: BookOpen, desc: 'Mapeamento de códigos, estatutos e status de extração', route: '/admin-mapeamento-leis' },
+      {
+        id: "admin-mapeamento-leis",
+        label: "Catálogo de Leis",
+        icon: BookOpen,
+        desc: "Mapeamento de códigos, estatutos e status de extração",
+        route: "/admin-mapeamento-leis",
+      },
     ],
   },
   {
-    id: 'configuracoes',
-    title: 'Configurações',
-    desc: 'Paleta, tema e preferências',
+    id: "configuracoes",
+    title: "Configurações",
+    desc: "Paleta, tema e preferências",
     icon: Wrench,
     items: [
-      { id: 'paleta-cores', label: 'Paleta de Cores', icon: Palette, desc: 'Configurações visuais', route: '/configuracoes' },
+      {
+        id: "paleta-cores",
+        label: "Paleta de Cores",
+        icon: Palette,
+        desc: "Configurações visuais",
+        route: "/configuracoes",
+      },
     ],
   },
 ];
@@ -233,17 +451,17 @@ const AdminFuncoes = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const catParam = searchParams.get('cat') || (location.state as any)?.fromCat;
+  const catParam = searchParams.get("cat") || (location.state as any)?.fromCat;
   const initialCat = useMemo(() => {
     if (!catParam) return null;
-    return CATEGORIES.find(c => c.id === catParam) || null;
+    return CATEGORIES.find((c) => c.id === catParam) || null;
   }, [catParam]);
 
   const [openCat, setOpenCat] = useState<Category | null>(initialCat);
 
   useEffect(() => {
     if (catParam) {
-      const match = CATEGORIES.find(c => c.id === catParam);
+      const match = CATEGORIES.find((c) => c.id === catParam);
       if (match) setOpenCat(match);
     } else {
       setOpenCat(null);
@@ -252,9 +470,13 @@ const AdminFuncoes = () => {
 
   useEffect(() => {
     const run = () => prefetchAllAdminRoutes();
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
       const id = (window as any).requestIdleCallback(run, { timeout: 600 });
-      return () => { try { (window as any).cancelIdleCallback?.(id); } catch {} };
+      return () => {
+        try {
+          (window as any).cancelIdleCallback?.(id);
+        } catch {}
+      };
     }
     const t = globalThis.setTimeout(run, 250);
     return () => globalThis.clearTimeout(t);
@@ -262,7 +484,9 @@ const AdminFuncoes = () => {
 
   const handleClick = async (item: Item) => {
     if (item.route) {
-      try { await prefetch(item.route); } catch {}
+      try {
+        await prefetch(item.route);
+      } catch {}
       navigate(item.route, { state: { fromCat: openCat?.id } });
     }
   };
@@ -279,14 +503,13 @@ const AdminFuncoes = () => {
         />
 
         <div className="p-4">
-          <p className="font-body text-[12px] text-muted-foreground mb-3 px-1">
-            {openCat.desc}
-          </p>
+          <p className="font-body text-[12px] text-muted-foreground mb-3 px-1">{openCat.desc}</p>
 
           <div className="rounded-2xl border border-border/60 bg-secondary/30 divide-y divide-border/50 overflow-hidden">
-            {(openCat.items || []).map(item => {
+            {(openCat.items || []).map((item) => {
               const Icon = item.icon;
-              const disabled = !item.route && item.id !== 'github-abrir' && item.id !== 'crashlytics-test';
+              const disabled =
+                !item.route && item.id !== "github-abrir" && item.id !== "crashlytics-test";
               return (
                 <button
                   key={item.id}
@@ -295,7 +518,10 @@ const AdminFuncoes = () => {
                   disabled={disabled}
                   className="w-full flex items-center gap-4 px-4 py-5 min-h-[84px] text-left hover:bg-secondary/60 active:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <div className="w-14 h-14 flex items-center justify-center shrink-0" style={{ color: iconColor(item.id) }}>
+                  <div
+                    className="w-14 h-14 flex items-center justify-center shrink-0"
+                    style={{ color: iconColor(item.id) }}
+                  >
                     <Icon className="w-7 h-7" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -318,7 +544,7 @@ const AdminFuncoes = () => {
 
   return (
     <div className="min-h-dvh bg-background pb-8">
-      <PageHeader title="Funções Admin" onBack={() => navigate('/')} />
+      <PageHeader title="Funções Admin" onBack={() => navigate("/")} />
 
       <div className="p-4">
         <AdminHojeCards />
@@ -347,11 +573,14 @@ const AdminFuncoes = () => {
                 }}
                 onPointerDown={() => {
                   if (cat.route) prefetch(cat.route);
-                  (cat.items || []).forEach(i => prefetch(i.route));
+                  (cat.items || []).forEach((i) => prefetch(i.route));
                 }}
                 className="w-full flex items-center gap-4 px-4 py-5 min-h-[84px] text-left hover:bg-secondary/60 active:bg-secondary transition-colors"
               >
-                <div className="w-14 h-14 flex items-center justify-center shrink-0" style={{ color: iconColor(cat.id) }}>
+                <div
+                  className="w-14 h-14 flex items-center justify-center shrink-0"
+                  style={{ color: iconColor(cat.id) }}
+                >
                   <Icon className="w-7 h-7" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -359,7 +588,10 @@ const AdminFuncoes = () => {
                     {cat.title}
                   </div>
                   <div className="font-body text-[12px] text-muted-foreground truncate mt-0.5">
-                    {cat.desc} {(cat.items && cat.items.length > 0) ? `· ${cat.items.length} ${cat.items.length === 1 ? 'função' : 'funções'}` : ''}
+                    {cat.desc}{" "}
+                    {cat.items && cat.items.length > 0
+                      ? `· ${cat.items.length} ${cat.items.length === 1 ? "função" : "funções"}`
+                      : ""}
                   </div>
                 </div>
                 <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />

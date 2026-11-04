@@ -146,7 +146,7 @@ export const ArtigoActionMenuSheet = memo(function ArtigoActionMenuSheet({
               setActiveActionMenu(null);
               const cleanArt = String(artigoNumero || '').replace(/^art(?:igo)?\.?\s*/i, '').replace(/[º°ª]/g, '').trim();
               gateFeature('narracao', 'narracao', 'Áudio Leis', () =>
-                navigate(`/audioleis?tabela=${encodeURIComponent(tabelaNome || '')}&artigo=${encodeURIComponent(cleanArt)}`)
+                navigate(`/audiobooks?tabela=${encodeURIComponent(tabelaNome || '')}&artigo=${encodeURIComponent(cleanArt)}`)
               );
             },
           },

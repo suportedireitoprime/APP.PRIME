@@ -103,7 +103,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Tributos, competência, crédito e obrigações",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-tributario.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioleis?lei=ctn",
+    rota: "/audiobooks?lei=ctn",
   },
   {
     id: "cdc",
@@ -112,7 +112,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Relações de consumo e proteção do consumidor",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-do-consumidor.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioleis?lei=cdc",
+    rota: "/audiobooks?lei=cdc",
   },
   {
     id: "ccom",
@@ -130,7 +130,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Organização, garantias e processo eleitoral",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-eleitoral.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioleis?lei=ce",
+    rota: "/audiobooks?lei=ce",
   },
   {
     id: "adm",
@@ -184,7 +184,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Normas de conduta, infrações e penalidades",
     capa: "/assets/capa-lei-penal-especial.webp",
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioleis?lei=ctb",
+    rota: "/audiobooks?lei=ctb",
   },
 ];
 
@@ -215,7 +215,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     subtitulo: "Lei nº 10.741/2003 — Direitos e garantias",
     capa: "/assets/ei-idoso.webp",
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioleis?lei=ei",
+    rota: "/audiobooks?lei=ei",
   },
   {
     id: "epd",
@@ -224,7 +224,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     subtitulo: "Lei nº 13.146/2015 — Inclusão e acessibilidade",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direitos-humanos.webp`),
     aulasInfo: "Direitos Humanos",
-    rota: "/audioleis?lei=epd",
+    rota: "/audiobooks?lei=epd",
   },
   {
     id: "eir",
@@ -233,7 +233,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     subtitulo: "Lei nº 12.288/2010 — Reparação e igualdade",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direitos-humanos.webp`),
     aulasInfo: "Direitos Fundamentais",
-    rota: "/audioleis?lei=eir",
+    rota: "/audiobooks?lei=eir",
   },
   {
     id: "ec",
@@ -242,7 +242,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     subtitulo: "Lei nº 10.257/2001 — Política e plano diretor",
     capa: "/assets/biblioteca/areas/direito-urbanistico.webp",
     aulasInfo: "Direito Urbanístico",
-    rota: "/audioleis?lei=ec",
+    rota: "/audiobooks?lei=ec",
   },
   {
     id: "ed",
@@ -251,7 +251,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     subtitulo: "Lei nº 10.826/2003 — Registro, posse e porte",
     capa: "/assets/capa-lei-penal-especial.webp",
     aulasInfo: "Legislação Especial",
-    rota: "/audioleis?lei=ed",
+    rota: "/audiobooks?lei=ed",
   },
 ];
 

@@ -15,7 +15,7 @@ export const ATALHOS: AtalhoApp[] = [
   { id: 'vademecum', titulo: 'Vade Mecum', descricao: 'Leis e artigos', rota: '/vade-mecum' },
   { id: 'flashcards', titulo: 'Flashcards', descricao: 'Revisar hoje', rota: '/flashcards' },
   { id: 'assistente', titulo: 'Assistente', descricao: 'Perguntar à IA', rota: '/assistente' },
-  { id: 'audio', titulo: 'Continuar áudio', descricao: 'Audioaulas e audioleis', rota: '/audioaulas' },
+  { id: 'audio', titulo: 'Continuar áudio', descricao: 'Audioaulas e audiobooks', rota: '/audioaulas' },
 ];
 
 const ROTAS = new Map(ATALHOS.map((a) => [a.id, a.rota]));

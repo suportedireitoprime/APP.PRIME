@@ -55,7 +55,6 @@ export const routePrefetch = {
   vadeMecumRecentes: () => import("@/pages/VadeMecumRecentes.tsx"),
   meExplique: () => import("@/pages/MeExplique.tsx"),
   audiobooks: () => import("@/pages/Audiobooks.tsx"),
-  audioleis: () => import("@/pages/Audiobooks.tsx"),
   aulas: () => import("@/pages/AdminAulasInterativas.tsx"),
 } as const;
 
