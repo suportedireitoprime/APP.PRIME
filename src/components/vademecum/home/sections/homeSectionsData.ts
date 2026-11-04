@@ -2,7 +2,7 @@ import {
   Landmark, Gavel, BookMarked, Scale, Columns3, PocketKnife, Scroll, Stamp, FileWarning,
   ShieldAlert, House, CircleDollarSign, FileText, ShieldCheck, Briefcase, Store, Building,
   Vote, HeartPulse, TreePine, ShoppingCart, Baby, Shield, Globe, Map,
-  Library, Video, NotebookPen, Headphones, Brain, BookA, Presentation, Speech,
+  BookOpen, Video, NotebookPen, Headphones, Brain, BookA, Presentation, Speech,
   CalendarCheck, GraduationCap, PieChart, LayoutGrid, Flame, MessageCircle, type LucideIcon
 } from 'lucide-react';
 import { directImg } from '@/lib/cdnImg';
@@ -79,7 +79,7 @@ export const JURI_OPCOES = [
 
 export type EmAltaCat = Cat & { route: string; emBreve?: boolean };
 export const EMALTA_CATS: EmAltaCat[] = [
-  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',       icon: Library,     color: '#FFE600', route: '/bibliotecas' },
+  { id: 'ea-biblioteca',  label: 'Biblioteca',     sublabel: 'Obras',       icon: BookOpen,    color: '#FFE600', route: '/bibliotecas' },
   { id: 'ea-resumos',     label: 'Resumos',        sublabel: 'Anotações',   icon: NotebookPen, color: '#00D0FF', route: '/resumos-juridicos' },
   { id: 'ea-videoaulas',  label: 'Videoaulas',     sublabel: 'Aulas',             icon: Video,       color: '#FF2A2A', route: '/videoaulas' },
   { id: 'ea-me-explique', label: 'Me Explique (IA)', sublabel: 'Explicações com IA', icon: Speech,      color: '#F97316', route: '/me-explique' },

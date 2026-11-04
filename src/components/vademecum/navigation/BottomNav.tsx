@@ -197,7 +197,7 @@ const BottomNav = () => {
 
   const ESTUDOS_ITENS: Array<{ id: string; label: string; desc: string; icon: any; action: () => void; prefetch?: PrefetchKey }> = [
     { id: 'resumos', label: 'Resumos Jurídicos', desc: 'Biblioteca por área, tema e subtema', icon: FileText, action: () => navigate('/resumos-juridicos'), prefetch: 'resumosJuridicos' },
-    { id: 'biblioteca', label: 'Biblioteca', desc: 'Ebooks jurídicos com leitor Kindle', icon: Library, action: () => navigate('/biblioteca'), prefetch: 'biblioteca' },
+    { id: 'biblioteca', label: 'Biblioteca', desc: 'Ebooks jurídicos com leitor Kindle', icon: BookOpen, action: () => navigate('/biblioteca'), prefetch: 'biblioteca' },
     { id: 'videoaulas', label: 'Videoaulas', desc: 'Aulas em vídeo com transcrição', icon: Video, action: () => navigate('/estudos'), prefetch: 'estudos' },
   ];
 

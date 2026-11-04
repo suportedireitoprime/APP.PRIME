@@ -1,26 +1,36 @@
 // @ts-nocheck
-import { useState, useEffect, useRef, Suspense, useMemo } from 'react';
+import { useState, useEffect, useRef, Suspense, useMemo } from "react";
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
-import { useNavigate } from 'react-router-dom';
-import { prefetchHeroRoutesIdle } from '@/lib/routePrefetch';
-import { pushRecente } from '@/lib/leisRecentes';
-import { leiToSlug, tipoToSlug } from '@/lib/legislacaoSlugs';
-import { getHomeHeroConfig } from '@/lib/vademecumHeroImage';
+import { useNavigate } from "react-router-dom";
+import { prefetchHeroRoutesIdle } from "@/lib/routePrefetch";
+import { pushRecente } from "@/lib/leisRecentes";
+import { leiToSlug, tipoToSlug } from "@/lib/legislacaoSlugs";
+import { getHomeHeroConfig } from "@/lib/vademecumHeroImage";
 
-import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import HomeBrandBanner from './HomeBrandBanner';
-import HomeActionShortcuts from './HomeActionShortcuts';
-import { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
-import { Bell, Menu as MenuIcon } from 'lucide-react';
-import { haptic } from '@/lib/nativeHaptics';
+import HeroMotifs from "@/components/vademecum/home/HeroMotifs";
+import HomeBrandBanner from "./HomeBrandBanner";
+import HomeActionShortcuts from "./HomeActionShortcuts";
+import { useUnreadNotifCount } from "@/components/vademecum/outros/NotificationsSheet";
+import { Bell, Menu as MenuIcon } from "lucide-react";
+import { haptic } from "@/lib/nativeHaptics";
 
-const SideMenu = lazyWithRetry(() => import('@/components/vademecum/navigation/SideMenu'));
-const NotificationsSheet = lazyWithRetry(() => import('@/components/vademecum/outros/NotificationsSheet'));
-const SearchOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/SearchOverlay'));
-const RecentesOverlay = lazyWithRetry(() => import('@/components/vademecum/overlays/RecentesOverlay'));
+const SideMenu = lazyWithRetry(() => import("@/components/vademecum/navigation/SideMenu"));
+const NotificationsSheet = lazyWithRetry(
+  () => import("@/components/vademecum/outros/NotificationsSheet"),
+);
+const SearchOverlay = lazyWithRetry(() => import("@/components/vademecum/overlays/SearchOverlay"));
+const RecentesOverlay = lazyWithRetry(
+  () => import("@/components/vademecum/overlays/RecentesOverlay"),
+);
 
 // Re-exports for backward compatibility
-export { RotatingStatCard, PHILOSOPHER_QUOTES, LEGAL_CURIOSITIES, TERMOS_JURIDICOS, type CardItem } from './RotatingStatCard';
+export {
+  RotatingStatCard,
+  PHILOSOPHER_QUOTES,
+  LEGAL_CURIOSITIES,
+  TERMOS_JURIDICOS,
+  type CardItem,
+} from "./RotatingStatCard";
 
 // Fallback covers and hooks removed because they are not used in rendering
 
@@ -31,7 +41,12 @@ interface HomeHeaderHeroProps {
   hasTopBanner?: boolean;
 }
 
-const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBanner = false }: HomeHeaderHeroProps = {}) => {
+const HomeHeaderHero = ({
+  onSearchOpenChange,
+  onOpenMenu,
+  onOpenSearch,
+  hasTopBanner = false,
+}: HomeHeaderHeroProps = {}) => {
   const navigate = useNavigate();
   const heroConfig = useMemo(() => getHomeHeroConfig(), []);
 
@@ -43,15 +58,21 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
   const reduceMotion = useRef(false);
 
   useEffect(() => {
-    reduceMotion.current = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    reduceMotion.current =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }, []);
 
-  useEffect(() => { prefetchHeroRoutesIdle(); }, []);
+  useEffect(() => {
+    prefetchHeroRoutesIdle();
+  }, []);
 
   useEffect(() => {
     const w = window as unknown as { requestIdleCallback?: (cb: () => void) => number };
     const idle = w.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 500));
-    idle(() => { void import('@/components/vademecum/navigation/SideMenu').catch(() => {}); });
+    idle(() => {
+      void import("@/components/vademecum/navigation/SideMenu").catch(() => {});
+    });
   }, []);
 
   useEffect(() => {
@@ -64,14 +85,14 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
       <div
         className="bg-hero-panel relative overflow-hidden rounded-b-[36px] shadow-2xl shadow-black/60 pt-[var(--sai-top,env(safe-area-inset-top,0px))] flex flex-col z-20"
         style={{
-          transform: 'translateZ(0)',
-          backgroundColor: '#050505',
+          transform: "translateZ(0)",
+          backgroundColor: "#050505",
         }}
       >
         {/* Blindagem de overscroll superior contra vazamento do fundo */}
         <div
           className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
-          style={{ backgroundColor: '#050505' }}
+          style={{ backgroundColor: "#050505" }}
           aria-hidden="true"
         />
 
@@ -87,13 +108,16 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
         />
 
         {/* Overlay vermelho com gradiente estilo menu e sombra (drop-shadow real na divisÃ³ria diagonal) */}
-        <div 
+        <div
           className="absolute inset-0 z-[1] pointer-events-none"
-          style={{ filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))' }}
+          style={{
+            filter:
+              "drop-shadow(25px 0 25px rgba(0,0,0,0.8)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))",
+          }}
         >
-          <div 
+          <div
             className="absolute inset-0 overflow-hidden"
-            style={{ clipPath: 'polygon(0 0, 47% 0, 36% 100%, 0% 100%)' }}
+            style={{ clipPath: "polygon(0 0, 47% 0, 36% 100%, 0% 100%)" }}
           >
             <div className="absolute inset-0 bg-hero-panel" />
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,180,180,0.22),transparent_60%)]" />
@@ -103,10 +127,13 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
             <HeroMotifs />
 
             {/* Grid Pattern Background */}
-            <div className="absolute inset-0 opacity-10" style={{
-              backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)',
-              backgroundSize: '24px 24px'
-            }} />
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{
+                backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px)",
+                backgroundSize: "24px 24px",
+              }}
+            />
           </div>
         </div>
 
@@ -114,20 +141,28 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
         <header className="absolute top-0 right-0 left-0 z-20 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] md:pt-[calc(1rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
           <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-end gap-2 sm:gap-3">
             <button
-              onClick={() => { haptic.light(); setNotifOpen(true); }}
-              aria-label={`Abrir notificações${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ''}`}
+              onClick={() => {
+                haptic.light();
+                setNotifOpen(true);
+              }}
+              aria-label={`Abrir notificações${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ""}`}
               className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 relative"
             >
               <Bell className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none flex items-center justify-center border border-neutral-900 shadow">
-                  {unreadCount > 99 ? '99+' : unreadCount}
+                  {unreadCount > 99 ? "99+" : unreadCount}
                 </span>
               )}
             </button>
             <button
-              onPointerDown={() => { import('@/components/vademecum/navigation/SideMenu').catch(() => {}); }}
-              onClick={() => { haptic.light(); (onOpenMenu || (() => setMenuOpen(true)))(); }}
+              onPointerDown={() => {
+                import("@/components/vademecum/navigation/SideMenu").catch(() => {});
+              }}
+              onClick={() => {
+                haptic.light();
+                (onOpenMenu || (() => setMenuOpen(true)))();
+              }}
               aria-label="Abrir menu"
               className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70"
             >
@@ -145,8 +180,6 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
         <div className="relative z-10 px-3 sm:px-5 pt-3 pb-3">
           <HomeActionShortcuts />
         </div>
-
-
       </div>
 
       <Suspense fallback={null}>
@@ -158,7 +191,13 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
             onClose={() => setSearchOpen(false)}
             onSelectLei={(lei) => {
               setSearchOpen(false);
-              pushRecente({ tipo: lei.tipo, leiId: lei.leiId, nome: lei.nome, descricao: lei.descricao, tabela_nome: lei.tabela_nome });
+              pushRecente({
+                tipo: lei.tipo,
+                leiId: lei.leiId,
+                nome: lei.nome,
+                descricao: lei.descricao,
+                tabela_nome: lei.tabela_nome,
+              });
               const slug = leiToSlug({ id: lei.leiId, nome: lei.nome });
               const base = `/legislacao/${tipoToSlug(lei.tipo)}/${slug}`;
               navigate(lei.artigoNumero ? `${base}/${encodeURIComponent(lei.artigoNumero)}` : base);
@@ -171,7 +210,9 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
           onSelectLei={(lei) => {
             setRecentesOpen(false);
             pushRecente(lei);
-            navigate(`/legislacao/${tipoToSlug(lei.tipo)}/${leiToSlug({ id: lei.leiId, nome: lei.nome })}`);
+            navigate(
+              `/legislacao/${tipoToSlug(lei.tipo)}/${leiToSlug({ id: lei.leiId, nome: lei.nome })}`,
+            );
           }}
         />
       </Suspense>
@@ -180,4 +221,3 @@ const HomeHeaderHero = ({ onSearchOpenChange, onOpenMenu, onOpenSearch, hasTopBa
 };
 
 export default HomeHeaderHero;
-
