@@ -92,7 +92,7 @@ export default function ModoOffline() {
         Estude mesmo sem internet
       </h1>
       <p className="mt-1.5 text-[12.5px] leading-relaxed text-white">
-        Baixe antes o que você vai usar depois: narrações, audioaulas, leis cantadas, apresentações, livros e PDFs.
+        Baixe antes o que você vai usar depois: narrações, audioaulas, audiobooks, apresentações, livros e PDFs.
         Tudo o que estiver baixado abre na hora, sem conexão e sem gastar dados.
       </p>
     </div>

@@ -23,7 +23,7 @@ export const RECURSOS_OFFLINE_SEMPRE: { label: string; desc: string }[] = [
 /** Funciona offline, mas só depois que o usuário baixa o conteúdo. */
 export const RECURSOS_OFFLINE_APOS_DOWNLOAD: { label: string; desc: string }[] = [
   { label: 'Audioaulas', desc: 'Baixe as aulas que quiser ouvir sem conexão' },
-  { label: 'Leis cantadas', desc: 'Baixe as faixas para ouvir sem internet' },
+  { label: 'Audiobooks', desc: 'Baixe os capítulos para ouvir sem internet' },
   { label: 'Narrações de leis', desc: 'Baixe o áudio dos artigos narrados' },
   { label: 'Apresentações narradas', desc: 'Baixe o áudio dos slides antes de assistir' },
   { label: 'Livros e PDFs', desc: 'Baixe os livros da biblioteca para ler offline' },

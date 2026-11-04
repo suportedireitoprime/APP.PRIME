@@ -1,5 +1,5 @@
 /**
- * Download offline de áudio (leis cantadas / audioaulas / narrações).
+ * Download offline de áudio (audioaulas / narrações / audiobooks).
  * Nativo: grava o arquivo em Directory.Data e devolve a URI local para o
  * <audio> tocar sem internet. Web: no-op (retorna null e o player usa a URL remota).
  */
@@ -14,7 +14,7 @@ export interface AudioOffline {
   id: string;
   titulo: string;
   subtitulo?: string;
-  categoria: 'leis-cantadas' | 'audioaulas' | 'narracao' | 'outro';
+  categoria: 'audioaulas' | 'narracao' | 'audiobook' | 'outro';
   path: string;
   uri: string;
   bytes: number;

@@ -171,21 +171,6 @@ const CATEGORIZED_FEATURES = [
     ]
   },
   {
-    category: "Leis Cantadas",
-    icon: Mic,
-    badge: "Fixação Musical",
-    features: [
-      "Artigos musicados e cantados",
-      "Player com letra sincronizada",
-      "Fixação auditiva da lei seca",
-      "Áudios por matéria do Direito",
-      "Mini-player global flutuante",
-      "Reprodução contínua e offline",
-      "Velocidade de reprodução",
-      "Conteúdo exclusivo original"
-    ]
-  },
-  {
     category: "Audioaulas",
     icon: Headphones,
     badge: "Estude Ouvindo",

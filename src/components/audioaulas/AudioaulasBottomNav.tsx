@@ -11,7 +11,7 @@ const TABS: { id: AudioaulasTab; label: string; icon: typeof Headphones }[] = [
   { id: "buscar", label: "Buscar", icon: Search },
 ];
 
-/** Rodapé das Audioaulas — mesmo padrão visual do rodapé das Leis Cantadas. */
+/** Rodapé das Audioaulas. */
 const AudioaulasBottomNav = ({
   ativo,
   onSelect,

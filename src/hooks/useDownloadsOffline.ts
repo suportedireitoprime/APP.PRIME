@@ -16,7 +16,7 @@ export interface ResumoCategoria {
 
 export interface DownloadsOffline {
   audioaulas: ResumoCategoria;
-  leisCantadas: ResumoCategoria;
+  audiobooks: ResumoCategoria;
   apresentacoes: ResumoCategoria;
   narracoes: ResumoCategoria;
   livros: ResumoCategoria;
@@ -39,7 +39,7 @@ function agrupar(itens: AudioOffline[], categoria: AudioOffline['categoria']): R
 export function useDownloadsOffline(): DownloadsOffline {
   const [estado, setEstado] = useState({
     audioaulas: vazio,
-    leisCantadas: vazio,
+    audiobooks: vazio,
     apresentacoes: vazio,
     narracoes: vazio,
     livros: vazio,
@@ -56,7 +56,7 @@ export function useDownloadsOffline(): DownloadsOffline {
       
       setEstado({
         audioaulas: agrupar(audios, 'audioaulas'),
-        leisCantadas: agrupar(audios, 'leis-cantadas'),
+        audiobooks: agrupar(audios, 'audiobook'),
         apresentacoes: agrupar(audios, 'outro'),
         narracoes: {
           count: narr.count + agrupar(audios, 'narracao').count,

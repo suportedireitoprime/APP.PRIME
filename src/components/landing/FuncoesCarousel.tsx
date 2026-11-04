@@ -42,7 +42,7 @@ const FUNCOES: Funcao[] = [
     titulo: 'Áudio',
     legenda: 'estude ouvindo',
     Icone: Headphones,
-    topicos: ['Audioaulas', 'Leis cantadas', 'Narração de resumos', 'Player em segundo plano'],
+    topicos: ['Audioaulas', 'Audiobooks jurídicos', 'Narração de resumos', 'Player em segundo plano'],
   },
   {
     id: 'resumos',

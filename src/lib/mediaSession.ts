@@ -161,7 +161,7 @@ export type RegistrarMidiaArgs = {
   titulo: string;
   /** Linha secundária (lei, matéria, área…). */
   subtitulo?: string;
-  /** Agrupador opcional (ex.: "Leis Cantadas", "Audioaulas"). */
+  /** Agrupador opcional (ex.: "Audiobooks", "Audioaulas"). */
   album?: string;
   /** URL da capa/thumb. Relativa ou absoluta. */
   capaUrl?: string;
