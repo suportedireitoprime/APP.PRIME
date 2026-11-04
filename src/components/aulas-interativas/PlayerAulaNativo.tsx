@@ -206,10 +206,15 @@ export function PlayerAulaNativo({
     slideAtual?.tipo === 'Linha do tempo' ||
     slideAtual?.tipo === 'Mapa mental' ||
     slideAtual?.tipo === 'Comparador' ||
-    Boolean(slideAtual?.pares && slideAtual.pares.length > 0) || 
     slideAtual?.tipo === 'Desafio' ||
     slideAtual?.tipo === 'Explorar' ||
     slideAtual?.tipo === 'Toque e revele' ||
+    Boolean(slideAtual?.pares && slideAtual.pares.length > 0) || 
+    Boolean(slideAtual?.partes && slideAtual.partes.length > 0) ||
+    Boolean(slideAtual?.afirmacoes && slideAtual.afirmacoes.length > 0) ||
+    Boolean(slideAtual?.cartas && slideAtual.cartas.length > 0) ||
+    Boolean(slideAtual?.marcos && slideAtual.marcos.length > 0) ||
+    Boolean(slideAtual?.ramos && slideAtual.ramos.length > 0) ||
     Boolean(slideAtual?.frases && slideAtual.frases.length > 0)
   );
 
@@ -313,22 +318,8 @@ export function PlayerAulaNativo({
 
   // HTML com o Grifo Leve e Elegante por cima na frase ativa (respeita a chavinha de ativar/desativar)
   const htmlComGrifo = useMemo(() => {
-    // Flashcards, Karaokê e Questões têm renderização própria e não devem duplicar narração embaixo
-    if (
-      isFlashcard || 
-      slideAtual?.tipo === 'Karaokê' || 
-      isQuestao ||
-      slideAtual?.tipo === 'Completar' ||
-      slideAtual?.tipo === 'Verdadeiro ou falso' ||
-      slideAtual?.tipo === 'Ligar termos' ||
-      slideAtual?.tipo === 'Linha do tempo' ||
-      slideAtual?.tipo === 'Mapa mental' ||
-      slideAtual?.tipo === 'Desafio' ||
-      slideAtual?.tipo === 'Comparador' ||
-      slideAtual?.tipo === 'Toque e revele' ||
-      slideAtual?.tipo === 'Explorar' ||
-      Boolean(slideAtual?.pares && slideAtual.pares.length > 0)
-    ) return '';
+    // Etapas interativas têm renderização própria e não devem duplicar narração embaixo
+    if (isInterativo) return '';
 
     let rawHtml = slideAtual?.corpo || '';
     if (!rawHtml.trim() && (slideAtual?.narr || slideAtual?.intro)) {
@@ -619,11 +610,17 @@ export function PlayerAulaNativo({
 
   // Gestos de Touch (Swipe no celular)
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (isInterativo) return;
     touchStartXRef.current = e.touches[0].clientX;
     touchStartYRef.current = e.touches[0].clientY;
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    if (isInterativo) {
+      touchStartXRef.current = null;
+      touchStartYRef.current = null;
+      return;
+    }
     if (touchStartXRef.current === null || touchStartYRef.current === null) return;
     const diffX = e.changedTouches[0].clientX - touchStartXRef.current;
     const diffY = e.changedTouches[0].clientY - touchStartYRef.current;
@@ -1189,7 +1186,7 @@ export function PlayerAulaNativo({
             </div>
 
             {/* Imagem Cinematográfica com Altura Otimizada e Efeito de Zoom Suave "pra dentro" (Oculta em Questões/Flashcards para máximo espaço) */}
-            {imagemUrl && !isQuestao && !isFlashcard && (
+            {imagemUrl && !isQuestao && !isFlashcard && !isInterativo && (
               <div className="relative w-full aspect-[16/8] sm:aspect-[16/7.5] max-h-[190px] sm:max-h-[230px] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-2xl bg-[#250d14] group">
                 <img
                   key={`${idx}-${imagemUrl}`}
@@ -1624,7 +1621,7 @@ export function PlayerAulaNativo({
             )}
 
             {/* Conteúdo Rico da Aula: 100% Tipografia Autêntica do HTML com Grifo Leve por cima (oculto em flashcards/karaokê/questões para zero duplicação) */}
-            {(slideAtual.corpo || htmlComGrifo) && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !isQuestao && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && slideAtual.tipo !== 'Completar' && slideAtual.tipo !== 'Verdadeiro ou falso' && slideAtual.tipo !== 'Linha do tempo' && slideAtual.tipo !== 'Mapa mental' && slideAtual.tipo !== 'Desafio' && slideAtual.tipo !== 'Comparador' && (
+            {!isInterativo && (slideAtual.corpo || htmlComGrifo) && (
               <div 
                 className="aula-html-tipografia pt-1"
                 dangerouslySetInnerHTML={{ __html: htmlComGrifo }}
@@ -1632,7 +1629,7 @@ export function PlayerAulaNativo({
             )}
 
             {/* Fallback de Conteúdo de Texto caso não haja corpo HTML e não seja interativo */}
-            {!slideAtual.corpo && !htmlComGrifo && (slideAtual.texto || slideAtual.narr) && !isQuestao && !isFlashcard && slideAtual.tipo !== 'Karaokê' && !slideAtual.frases && !slideAtual.pares && !slideAtual.cartas && !slideAtual.pontos && slideAtual.tipo !== 'Completar' && slideAtual.tipo !== 'Verdadeiro ou falso' && slideAtual.tipo !== 'Linha do tempo' && slideAtual.tipo !== 'Mapa mental' && slideAtual.tipo !== 'Desafio' && slideAtual.tipo !== 'Comparador' && (
+            {!isInterativo && !slideAtual.corpo && !htmlComGrifo && (slideAtual.texto || slideAtual.narr) && (
               <div className="aula-html-tipografia pt-1 space-y-3">
                 <p className="text-base sm:text-lg leading-relaxed text-zinc-200">
                   {slideAtual.texto || slideAtual.narr}

@@ -122,17 +122,50 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
       resolvedImg = `${baseFolder}/${resolvedImg}`;
     }
 
+    let tipo = s.tipo;
+    if (s.partes && s.respostas) tipo = 'Completar';
+    else if (s.afirmacoes && s.afirmacoes.length > 0) tipo = 'Verdadeiro ou falso';
+    else if (s.pares && s.pares.length > 0 && !s.opcoes && !s.frente) tipo = 'Ligar termos';
+    else if (s.marcos && s.marcos.length > 0) tipo = 'Linha do tempo';
+    else if ((s.ramos && s.ramos.length > 0) || s.centro) tipo = 'Mapa mental';
+    else if (s.perguntas && s.perguntas.length > 0) tipo = 'Desafio';
+    else if (s.cartas && s.cartas.length > 0) tipo = 'Toque e revele';
+    else if (s.pontos && s.pontos.length > 0) tipo = 'Explorar';
+    else if (s.rotuloL && s.rotuloR) tipo = 'Comparador';
+    else if (s.frases && s.frases.length > 0) tipo = 'Karaokê';
+    else if (s.opcoes && s.opcoes.length > 0) tipo = s.tipo || 'Questão';
+    else if (s.frente && s.verso) tipo = 'Flashcard';
+    else if (!tipo) tipo = 'Conteúdo';
+
+    const isInteractive = [
+      'Completar', 'Verdadeiro ou falso', 'Ligar termos', 
+      'Linha do tempo', 'Mapa mental', 'Desafio', 'Comparador', 
+      'Toque e revele', 'Explorar', 'Questão', 'Questão de banca', 'Flashcard', 'Karaokê'
+    ].includes(tipo) || Boolean(s.partes) || Boolean(s.afirmacoes) || Boolean(s.pares);
+
     let corpo = s.corpo || '';
-    if (!corpo.trim() && (s.narr || s.intro)) {
+    if (!isInteractive && !corpo.trim() && (s.narr || s.intro)) {
       corpo = formatNarracaoParaHtml(s.narr || s.intro || '', s.titulo);
     }
 
     let kicker = s.kicker || '';
     if (!kicker || kicker.toLowerCase() === 'conteúdo' || kicker.toLowerCase() === 'conteudo') {
-      if (s.tipo === 'Questão' || s.tipo === 'Questão de banca' || s.opcoes) {
+      if (tipo === 'Questão' || tipo === 'Questão de banca' || s.opcoes) {
         kicker = 'Fixação Ativa';
-      } else if (s.tipo === 'Flashcard' || s.frente) {
+      } else if (tipo === 'Flashcard' || s.frente) {
         kicker = 'Memorização Ativa';
+      } else if (tipo === 'Completar') {
+        kicker = 'Completar · Lacunas';
+      } else if (tipo === 'Verdadeiro ou falso') {
+        kicker = 'Verdadeiro ou Falso · Reflexo Rápido';
+      } else if (tipo === 'Ligar termos') {
+        kicker = 'Ligar Termos · Conceitos';
+      } else if (tipo === 'Linha do tempo') {
+        kicker = 'Linha do Tempo · Marcos';
+      } else if (tipo === 'Mapa mental') {
+        kicker = 'Mapa Mental · Ramos';
+      } else if (tipo === 'Desafio') {
+        kicker = 'Desafio Final · Vale Pontos';
       } else if (s.bloco) {
         kicker = `Bloco ${s.bloco}`;
       } else if (idx === 0) {
@@ -144,6 +177,7 @@ export function parseAulaHtml(html: string, aulaId: string, disciplinaId: string
 
     return {
       ...s,
+      tipo,
       kicker,
       corpo,
       imgUrl: resolvedImg
@@ -240,10 +274,32 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
     .replace(/\/(?:aula\.json|aula\.html).*$/, '');
 
   // 2. Fonte de Altíssima Fidelidade: Conteúdo Curado Pré-Estruturado (0ms, zero latência, rico em HTML e interatividade)
-  if (AULAS_CONTEUDO_REAL[aula.id]) {
-    const rawData = AULAS_CONTEUDO_REAL[aula.id];
-    if (rawData.slides && rawData.slides.length > 0 && rawData.slides.some(s => s.corpo && s.corpo.length > 0)) {
+  const realData = AULAS_CONTEUDO_REAL[aula.id] || (aula.slug && AULAS_CONTEUDO_REAL[aula.slug]);
+  if (realData) {
+    const rawData = realData;
+    if (rawData.slides && rawData.slides.length > 0) {
       const normalizedSlides = rawData.slides.map((s, idx) => {
+        let tipo = s.tipo;
+        if (s.partes && s.respostas) tipo = 'Completar';
+        else if (s.afirmacoes && s.afirmacoes.length > 0) tipo = 'Verdadeiro ou falso';
+        else if (s.pares && s.pares.length > 0 && !s.opcoes && !s.frente) tipo = 'Ligar termos';
+        else if (s.marcos && s.marcos.length > 0) tipo = 'Linha do tempo';
+        else if ((s.ramos && s.ramos.length > 0) || s.centro) tipo = 'Mapa mental';
+        else if (s.perguntas && s.perguntas.length > 0) tipo = 'Desafio';
+        else if (s.cartas && s.cartas.length > 0) tipo = 'Toque e revele';
+        else if (s.pontos && s.pontos.length > 0) tipo = 'Explorar';
+        else if (s.rotuloL && s.rotuloR) tipo = 'Comparador';
+        else if (s.frases && s.frases.length > 0) tipo = 'Karaokê';
+        else if (s.opcoes && s.opcoes.length > 0) tipo = s.tipo || 'Questão';
+        else if (s.frente && s.verso) tipo = 'Flashcard';
+        else if (!tipo) tipo = 'Conteúdo';
+
+        const isInteractive = [
+          'Completar', 'Verdadeiro ou falso', 'Ligar termos', 
+          'Linha do tempo', 'Mapa mental', 'Desafio', 'Comparador', 
+          'Toque e revele', 'Explorar', 'Questão', 'Questão de banca', 'Flashcard', 'Karaokê'
+        ].includes(tipo) || Boolean(s.partes) || Boolean(s.afirmacoes) || Boolean(s.pares);
+
         let img = s.imgUrl || '';
         if (!img && s.img && baseFolder) {
           if (s.img === 'capa') {
@@ -259,16 +315,28 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
         }
 
         let corpo = s.corpo || '';
-        if (!corpo.trim() && (s.narr || s.intro)) {
+        if (!isInteractive && !corpo.trim() && (s.narr || s.intro)) {
           corpo = formatNarracaoParaHtml(s.narr || s.intro || '', s.titulo);
         }
 
         let kicker = s.kicker || '';
         if (!kicker || kicker.toLowerCase() === 'conteúdo' || kicker.toLowerCase() === 'conteudo') {
-          if (s.tipo === 'Questão' || s.tipo === 'Questão de banca' || s.opcoes) {
+          if (tipo === 'Questão' || tipo === 'Questão de banca' || s.opcoes) {
             kicker = 'Fixação Ativa';
-          } else if (s.tipo === 'Flashcard' || s.frente) {
+          } else if (tipo === 'Flashcard' || s.frente) {
             kicker = 'Memorização Ativa';
+          } else if (tipo === 'Completar') {
+            kicker = 'Completar · Lacunas';
+          } else if (tipo === 'Verdadeiro ou falso') {
+            kicker = 'Verdadeiro ou Falso · Reflexo Rápido';
+          } else if (tipo === 'Ligar termos') {
+            kicker = 'Ligar Termos · Conceitos';
+          } else if (tipo === 'Linha do tempo') {
+            kicker = 'Linha do Tempo · Marcos';
+          } else if (tipo === 'Mapa mental') {
+            kicker = 'Mapa Mental · Ramos';
+          } else if (tipo === 'Desafio') {
+            kicker = 'Desafio Final · Vale Pontos';
           } else if (s.bloco) {
             kicker = `Bloco ${s.bloco}`;
           } else if (idx === 0) {
@@ -280,6 +348,7 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
 
         return {
           ...s,
+          tipo,
           kicker,
           corpo,
           imgUrl: img
@@ -340,17 +409,50 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
               img = `${baseFolder}/${img}`;
             }
 
+            let tipo = e.tipo;
+            if (e.partes && e.respostas) tipo = 'Completar';
+            else if (e.afirmacoes && e.afirmacoes.length > 0) tipo = 'Verdadeiro ou falso';
+            else if (e.pares && e.pares.length > 0 && !e.opcoes && !e.frente) tipo = 'Ligar termos';
+            else if (e.marcos && e.marcos.length > 0) tipo = 'Linha do tempo';
+            else if ((e.ramos && e.ramos.length > 0) || e.centro) tipo = 'Mapa mental';
+            else if (e.perguntas && e.perguntas.length > 0) tipo = 'Desafio';
+            else if (e.cartas && e.cartas.length > 0) tipo = 'Toque e revele';
+            else if (e.pontos && e.pontos.length > 0) tipo = 'Explorar';
+            else if (e.rotuloL && e.rotuloR) tipo = 'Comparador';
+            else if (e.frases && e.frases.length > 0) tipo = 'Karaokê';
+            else if (e.opcoes && e.opcoes.length > 0) tipo = e.tipo || 'Questão';
+            else if (e.frente && e.verso) tipo = 'Flashcard';
+            else if (!tipo) tipo = 'Conteúdo';
+
+            const isInteractive = [
+              'Completar', 'Verdadeiro ou falso', 'Ligar termos', 
+              'Linha do tempo', 'Mapa mental', 'Desafio', 'Comparador', 
+              'Toque e revele', 'Explorar', 'Questão', 'Questão de banca', 'Flashcard', 'Karaokê'
+            ].includes(tipo) || Boolean(e.partes) || Boolean(e.afirmacoes) || Boolean(e.pares);
+
             let corpo = e.corpo || (e.texto ? `<p>${e.texto}</p>` : '');
-            if (!corpo.trim() && (e.narr || e.narracao || e.intro)) {
+            if (!isInteractive && !corpo.trim() && (e.narr || e.narracao || e.intro)) {
               corpo = formatNarracaoParaHtml(e.narr || e.narracao || e.intro || '', e.titulo);
             }
 
             let kicker = e.kicker || '';
             if (!kicker || kicker.toLowerCase() === 'conteúdo' || kicker.toLowerCase() === 'conteudo') {
-              if (e.tipo === 'Questão' || e.tipo === 'Questão de banca' || e.opcoes) {
+              if (tipo === 'Questão' || tipo === 'Questão de banca' || e.opcoes) {
                 kicker = 'Fixação Ativa';
-              } else if (e.tipo === 'Flashcard' || e.frente) {
+              } else if (tipo === 'Flashcard' || e.frente) {
                 kicker = 'Memorização Ativa';
+              } else if (tipo === 'Completar') {
+                kicker = 'Completar · Lacunas';
+              } else if (tipo === 'Verdadeiro ou falso') {
+                kicker = 'Verdadeiro ou Falso · Reflexo Rápido';
+              } else if (tipo === 'Ligar termos') {
+                kicker = 'Ligar Termos · Conceitos';
+              } else if (tipo === 'Linha do tempo') {
+                kicker = 'Linha do Tempo · Marcos';
+              } else if (tipo === 'Mapa mental') {
+                kicker = 'Mapa Mental · Ramos';
+              } else if (tipo === 'Desafio') {
+                kicker = 'Desafio Final · Vale Pontos';
               } else if (e.bloco) {
                 kicker = `Bloco ${e.bloco}`;
               } else if (idx === 0) {
@@ -361,22 +463,14 @@ export async function loadAulaData(aula: AulaItem): Promise<AulaData> {
             }
 
             return {
-              tipo: e.tipo || 'Conteúdo',
+              ...e,
+              tipo,
               titulo: e.titulo || '',
               kicker,
               corpo,
               narr: e.narr || e.narracao || '',
               imgUrl: img,
-              img: e.img,
-              alt: e.alt,
-              questao: e.questao,
-              opcoes: e.opcoes,
-              correta: e.certa !== undefined ? e.certa : e.correta,
-              frente: e.frente,
-              verso: e.verso,
-              feedback: e.feedback,
-              intro: e.intro,
-              pares: e.pares
+              correta: e.certa !== undefined ? e.certa : e.correta
             };
           });
 

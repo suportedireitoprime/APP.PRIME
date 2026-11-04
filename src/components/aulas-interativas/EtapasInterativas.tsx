@@ -252,7 +252,7 @@ export function EtapaVerdadeiroFalso({ slide, tema }: EtapaProps) {
       {!isFinalizado ? (
         <div className="space-y-4">
           {/* Card Interativo com Arraste */}
-          <div className="relative touch-pan-y">
+          <div className="relative touch-pan-y" onTouchStart={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
             <motion.div
               drag={!respondido ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
@@ -510,7 +510,7 @@ export function EtapaLigarTermos({ slide, tema }: EtapaProps) {
       </div>
 
       {/* Grid de 2 Colunas Limpas e Responsivas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-1">
+      <div className="grid grid-cols-2 gap-2 sm:gap-4 pt-1">
         {/* Coluna 1: Termos */}
         <div className="space-y-2.5">
           <span className="text-[11px] font-black uppercase tracking-wider text-amber-400/90 block px-1">
