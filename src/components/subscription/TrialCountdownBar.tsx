@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, memo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Crown, Sparkles, Lock, ArrowRight } from 'lucide-react';
+import { Crown, Sparkles, Lock, ArrowRight, Flame } from 'lucide-react';
 import { useSubscription, calcTrial } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
 import { haptic } from '@/lib/nativeHaptics';
@@ -42,6 +42,7 @@ export const TrialCountdownBar = memo(function TrialCountdownBar() {
 
   const inTrial = remainingMs > 0;
   const isExpired = !inTrial && (trialInfo.trialExpired || sub.isTrialExpired);
+  const isLast6Hours = inTrial && remainingMs <= 6 * 60 * 60 * 1000;
 
   // Formatação do tempo restante (dias, horas, minutos, segundos)
   const formattedTime = useMemo(() => {
@@ -141,26 +142,36 @@ export const TrialCountdownBar = memo(function TrialCountdownBar() {
                 <div className="flex flex-col text-left min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="font-display font-black text-[12px] sm:text-[13px] uppercase tracking-wider text-amber-300 leading-tight">
-                      {inTrial ? 'Degustação Premium' : 'Teste de 3 Dias Encerrado'}
+                      {isLast6Hours
+                        ? '⚡ Últimas 6h de Teste VIP'
+                        : inTrial
+                          ? 'Degustação Premium'
+                          : 'Teste de 3 Dias Encerrado'}
                     </span>
                     {inTrial && (
-                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-400/30 text-[10px] font-mono font-bold leading-none">
-                        <Sparkles className="w-2.5 h-2.5 text-amber-300" />
+                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-mono font-bold leading-none ${
+                        isLast6Hours
+                          ? 'bg-rose-500/25 text-amber-200 border border-amber-400/50 shadow-sm animate-pulse'
+                          : 'bg-amber-500/20 text-amber-200 border border-amber-400/30 text-amber-200'
+                      }`}>
+                        {isLast6Hours ? <Flame className="w-2.5 h-2.5 text-amber-300 animate-bounce" /> : <Sparkles className="w-2.5 h-2.5 text-amber-300" />}
                         {formattedTime}
                       </span>
                     )}
                   </div>
                   <p className="font-body text-[11px] sm:text-[12px] text-zinc-300 truncate mt-0.5">
-                    {inTrial
-                      ? 'Acesso total liberado · Garanta até 62% OFF'
-                      : 'Assine a partir de R$ 19,90/mês para continuar'}
+                    {isLast6Hours
+                      ? 'Vitalício R$ 149,90 ou Anual R$ 89,90 com 62% OFF'
+                      : inTrial
+                        ? 'Acesso total liberado · Garanta até 62% OFF'
+                        : 'Assine a partir de R$ 19,90/mês para continuar'}
                   </p>
                 </div>
               </div>
 
               {/* Lado direito: Botão de Ação */}
               <div className="shrink-0 flex items-center gap-1 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 px-2.5 py-1.5 sm:px-3 sm:py-1.5 font-display font-black text-[11px] sm:text-[12px] uppercase tracking-wide shadow-sm group-hover:scale-105 transition-transform">
-                <span>{inTrial ? 'Assinar' : 'Liberar'}</span>
+                <span>{isLast6Hours ? 'Garantir' : inTrial ? 'Assinar' : 'Liberar'}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
