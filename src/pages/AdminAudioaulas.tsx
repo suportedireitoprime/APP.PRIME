@@ -1,510 +1,350 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LEIS_CATALOG, resolveLeiRef } from '@/services/legislacaoService';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
-  Headphones, Loader2, Sparkles, Copy, ChevronDown, ChevronRight,
-  CheckCircle2, Clock, Link2, Eye, EyeOff, RefreshCcw, Table2, Download,
+  Headphones,
+  Loader2,
+  Copy,
+  ChevronRight,
+  ChevronDown,
+  Play,
+  Pause,
+  Search,
+  CheckCircle2,
+  Volume2,
+  FolderTree,
+  FileAudio,
+  Layers,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
-interface LivroRow {
+interface AudioaulaRow {
   id: number;
-  tema: string | null;
   area: string | null;
-  capa_livro: string | null;
-}
-interface CursoRow {
-  id: string;
-  area: string;
-  livro_id: string;
-  livro_tabela: string;
-  titulo: string;
-  publicado: boolean;
-  total_aulas: number;
-}
-interface ItemRow {
-  id: string;
-  curso_id: string;
-  numero: number;
-  titulo: string;
-  resumo: string | null;
-  prompt: string | null;
-  conteudo: string | null;
-  audio_url: string | null;
-  publicado: boolean;
+  tema: string | null;
+  sequencia: number | null;
+  titulo: string | null;
+  descricao: string | null;
+  url_audio: string | null;
 }
 
-const copiar = async (texto: string, label: string) => {
-  try {
-    await navigator.clipboard.writeText(texto);
-    toast.success(`${label} copiado`);
-  } catch {
-    toast.error('Não foi possível copiar');
-  }
-};
-
-const AdminAudioaulas = () => {
+export default function AdminAudioaulas() {
   const navigate = useNavigate();
-  const [livros, setLivros] = useState<LivroRow[]>([]);
-  const [cursos, setCursos] = useState<CursoRow[]>([]);
-  const [prontos, setProntos] = useState<Set<string>>(new Set());
+  const [aulas, setAulas] = useState<AudioaulaRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState('');
-  const [areaAberta, setAreaAberta] = useState<string | null>(null);
-  const [gerando, setGerando] = useState<string | null>(null);
-  const [cursoAberto, setCursoAberto] = useState<CursoRow | null>(null);
-  const [itens, setItens] = useState<ItemRow[]>([]);
-  const [carregandoItens, setCarregandoItens] = useState(false);
-  const [sheets, setSheets] = useState<'sync' | 'links' | null>(null);
+  const [areaSelecionada, setAreaSelecionada] = useState<string>('todas');
+  const [temaSelecionado, setTemaSelecionado] = useState<string>('todos');
+  const [aulaTocandoId, setAulaTocandoId] = useState<number | null>(null);
+  const [audioEl, setAudioEl] = useState<HTMLAudioElement | null>(null);
 
-  // Estados para a aba Leis
-  const [abaAtiva, setAbaAtiva] = useState<'materias' | 'leis'>('materias');
-  const [leiAberta, setLeiAberta] = useState<typeof LEIS_CATALOG[0] | null>(null);
-  const [artigosLei, setArtigosLei] = useState<any[]>([]);
-  const [carregandoArtigos, setCarregandoArtigos] = useState(false);
-  
-  // Controle de edição visual para o Robô
-  const [artigoAbertoId, setArtigoAbertoId] = useState<string | null>(null);
-
-  async function sincronizar(cursoId?: string) {
-    setSheets('sync');
-    try {
-      const { data, error } = await supabase.functions.invoke('audioaulas-sheets-sync', {
-        body: cursoId ? { curso_id: cursoId } : {},
-      });
-      if (error) throw error;
-      if ((data as any)?.error) throw new Error((data as any).error);
-      toast.success(`${(data as any).aulas ?? 0} aulas enviadas à planilha`);
-    } catch (e: any) {
-      toast.error(e?.message ?? 'Falha ao sincronizar planilha');
-    } finally {
-      setSheets(null);
-    }
-  }
-
-  async function buscarLinks() {
-    setSheets('links');
-    try {
-      const { data, error } = await supabase.functions.invoke('audioaulas-sheets-links', { body: {} });
-      if (error) throw error;
-      if ((data as any)?.error) throw new Error((data as any).error);
-      const n = (data as any).importados ?? 0;
-      toast.success(n ? `${n} links importados` : 'Nenhum link novo na planilha');
-      if (cursoAberto) await abrirCurso(cursoAberto);
-    } catch (e: any) {
-      toast.error(e?.message ?? 'Falha ao buscar links');
-    } finally {
-      setSheets(null);
-    }
-  }
-
-  const carregar = useCallback(async () => {
+  const carregarAulas = useCallback(async () => {
     setLoading(true);
-    const [{ data: livrosData }, { data: cursosData }, { data: nativaData }] = await Promise.all([
-      supabase.from('biblioteca_estudos').select('id, tema, area, capa_livro').order('ordem', { ascending: true }),
-      supabase.from('audioaulas_cursos').select('id, area, livro_id, livro_tabela, titulo, publicado, total_aulas'),
-      supabase.from('biblioteca_leitura_nativa').select('livro_id, livro_tabela, status, refino_status').eq('livro_tabela', 'biblioteca_estudos'),
-    ]);
-    setLivros((livrosData ?? []) as LivroRow[]);
-    setCursos((cursosData ?? []) as CursoRow[]);
-    setProntos(new Set(
-      (nativaData ?? [])
-        .filter((n: any) => n.status === 'pronto' || n.refino_status === 'pronto')
-        .map((n: any) => String(n.livro_id)),
-    ));
-    setLoading(false);
+    try {
+      const todas: AudioaulaRow[] = [];
+      const batchSize = 1000;
+      for (let from = 0; ; from += batchSize) {
+        const { data, error } = await supabase
+          .from('audioaulas_acervo')
+          .select('id, area, tema, sequencia, titulo, descricao, url_audio')
+          .order('area', { ascending: true })
+          .order('tema', { ascending: true })
+          .order('sequencia', { ascending: true })
+          .range(from, from + batchSize - 1);
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          todas.push(...(data as AudioaulaRow[]));
+        }
+        if (!data || data.length < batchSize) break;
+      }
+      setAulas(todas);
+    } catch (e: any) {
+      toast.error('Erro ao carregar acervo de audioaulas: ' + e?.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  useEffect(() => { carregar(); }, [carregar]);
+  useEffect(() => {
+    carregarAulas();
+    return () => {
+      if (audioEl) {
+        audioEl.pause();
+      }
+    };
+  }, [carregarAulas]);
 
-  const grupos = useMemo(() => {
+  const areas = useMemo(() => {
+    const set = new Set<string>();
+    aulas.forEach((a) => {
+      if (a.area) set.add(a.area);
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [aulas]);
+
+  const temasDaArea = useMemo(() => {
+    const set = new Set<string>();
+    aulas.forEach((a) => {
+      if ((areaSelecionada === 'todas' || a.area === areaSelecionada) && a.tema) {
+        set.add(a.tema);
+      }
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [aulas, areaSelecionada]);
+
+  const aulasFiltradas = useMemo(() => {
     const q = busca.trim().toLowerCase();
-    const map = new Map<string, LivroRow[]>();
-    for (const l of livros) {
-      const area = (l.area || 'Sem área').trim();
-      if (q && !`${l.tema ?? ''} ${area}`.toLowerCase().includes(q)) continue;
-      const arr = map.get(area) ?? [];
-      arr.push(l);
-      map.set(area, arr);
+    return aulas.filter((a) => {
+      if (areaSelecionada !== 'todas' && a.area !== areaSelecionada) return false;
+      if (temaSelecionado !== 'todos' && a.tema !== temaSelecionado) return false;
+      if (!q) return true;
+      const haystack = `${a.titulo ?? ''} ${a.tema ?? ''} ${a.area ?? ''} ${a.descricao ?? ''}`.toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [aulas, areaSelecionada, temaSelecionado, busca]);
+
+  const toggleTocar = (aula: AudioaulaRow) => {
+    if (!aula.url_audio) {
+      toast.error('Essa aula não possui URL de áudio cadastrada');
+      return;
     }
-    return Array.from(map.entries())
-      .map(([area, itens]) => ({ area, itens }))
-      .sort((a, b) => a.area.localeCompare(b.area, 'pt-BR'));
-  }, [livros, busca]);
 
-  const cursoDoLivro = (id: number) => cursos.find((c) => c.livro_id === String(id));
-
-  async function gerar(livro: LivroRow) {
-    setGerando(String(livro.id));
-    try {
-      const { data, error } = await supabase.functions.invoke('audioaulas-gerar', {
-        body: { livro_id: String(livro.id), livro_tabela: 'biblioteca_estudos' },
-      });
-      if (error) {
-        // supabase-js esconde o corpo do erro; lemos a resposta real da função
-        let detalhe = error.message;
-        const ctx: any = (error as any)?.context;
-        try {
-          if (ctx && typeof ctx.json === 'function') {
-            const body = await ctx.clone().json();
-            if (body?.error) detalhe = String(body.error);
-          }
-        } catch { /* ignora */ }
-        throw new Error(detalhe);
+    if (aulaTocandoId === aula.id) {
+      if (audioEl) {
+        audioEl.pause();
       }
-      if ((data as any)?.error) throw new Error((data as any).error);
-      toast.success(`${(data as any).total} audioaulas geradas`);
-      await carregar();
-    } catch (e: any) {
-      toast.error(e?.message ?? 'Falha ao gerar audioaulas', { duration: 8000 });
-    } finally {
-      setGerando(null);
+      setAulaTocandoId(null);
+      return;
     }
-  }
 
+    if (audioEl) {
+      audioEl.pause();
+    }
 
-  async function abrirCurso(curso: CursoRow) {
-    setCursoAberto(curso);
-    setCarregandoItens(true);
-    const { data } = await supabase
-      .from('audioaulas_itens')
-      .select('id, curso_id, numero, titulo, resumo, prompt, conteudo, audio_url, publicado')
-      .eq('curso_id', curso.id)
-      .order('ordem', { ascending: true });
-    setItens((data ?? []) as ItemRow[]);
-    setCarregandoItens(false);
-  }
+    const novoAudio = new Audio(aula.url_audio);
+    novoAudio.play().catch((err) => {
+      toast.error('Erro ao reproduzir áudio: ' + err?.message);
+    });
+    novoAudio.onended = () => setAulaTocandoId(null);
+    setAudioEl(novoAudio);
+    setAulaTocandoId(aula.id);
+  };
 
-  async function salvarItem(item: ItemRow, patch: Partial<ItemRow>) {
-    const { error } = await supabase.from('audioaulas_itens').update(patch).eq('id', item.id);
-    if (error) { toast.error(error.message); return; }
-    setItens((prev) => prev.map((i) => (i.id === item.id ? { ...i, ...patch } : i)));
-    toast.success('Salvo');
-  }
-
-  async function togglePublicarCurso(curso: CursoRow) {
-    const novo = !curso.publicado;
-    const { error } = await supabase.from('audioaulas_cursos').update({ publicado: novo }).eq('id', curso.id);
-    if (error) { toast.error(error.message); return; }
-    setCursos((prev) => prev.map((c) => (c.id === curso.id ? { ...c, publicado: novo } : c)));
-    setCursoAberto((c) => (c && c.id === curso.id ? { ...c, publicado: novo } : c));
-  }
-
-  if (leiAberta) {
-    return (
-      <div className="min-h-screen bg-background pb-28">
-        <PageHeader title="Leis" subtitle={leiAberta.nome} onBack={() => { setLeiAberta(null); setArtigosLei([]); setArtigoAbertoId(null); }} />
-        <div className="px-4 pt-4 space-y-4">
-          {carregandoArtigos ? (
-            <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
-          ) : artigosLei.length === 0 ? (
-            <div className="text-center text-muted-foreground py-10">Nenhum artigo encontrado nesta lei.</div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {artigosLei.map((art) => {
-                const isExpanded = artigoAbertoId === art.id;
-                return (
-                  <div key={art.id} className="border border-border/60 rounded-xl bg-card overflow-hidden">
-                    <button
-                      onClick={() => setArtigoAbertoId(isExpanded ? null : art.id)}
-                      className="w-full text-left px-4 py-3 font-semibold text-foreground flex items-center justify-between"
-                    >
-                      <span>Artigo {art.numero}</span>
-                      {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    </button>
-                    {isExpanded && (
-                      <div className="p-4 pt-0 space-y-4 border-t border-border/40 mt-2 bg-muted/20">
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase">Lei Seca Bruta</p>
-                          <div className="p-3 bg-background rounded-lg border border-border/50 text-sm leading-relaxed text-foreground max-h-48 overflow-y-auto">
-                            {art.texto}
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase">Prompt - O que os narradores devem falar</p>
-                          <Textarea 
-                            defaultValue="Explique este artigo de forma didática para leigos, trazendo exemplos práticos. Dê dicas e macetes para provas." 
-                            className="min-h-[100px] bg-background" 
-                          />
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-muted-foreground mb-1 uppercase">O que deve citar</p>
-                          <Textarea placeholder="Ex: Súmula 123 do STF..." className="min-h-[60px] bg-background" />
-                        </div>
-                        <div className="flex gap-2 items-center">
-                          <Link2 className="w-4 h-4 text-muted-foreground shrink-0" />
-                          <Input placeholder="Cole aqui o link do áudio (Drive)" className="bg-background" />
-                        </div>
-                        <div className="flex flex-wrap gap-2 pt-2">
-                          <Button 
-                            size="sm" 
-                            onClick={() => copiar(`TÍTULO: ${art.numero}\n\n=== LEI SECA ===\n${art.texto}\n\n=== PROMPT ===\nExplique este artigo de forma didática para leigos, trazendo exemplos práticos. Dê dicas e macetes para provas.`, 'Conteúdo copiado')}
-                          >
-                            <Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar Tudo (Lei + Prompt)
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  if (cursoAberto) {
-    return (
-      <div className="min-h-screen bg-background pb-28">
-        <PageHeader title="Audioaulas" subtitle={cursoAberto.titulo} onBack={() => setCursoAberto(null)} />
-        <div className="px-4 pt-4 space-y-4">
-          <div className="flex flex-wrap gap-2">
-            <Button variant={cursoAberto.publicado ? 'default' : 'outline'} size="sm" onClick={() => togglePublicarCurso(cursoAberto)}>
-              {cursoAberto.publicado ? <Eye className="w-4 h-4 mr-1.5" /> : <EyeOff className="w-4 h-4 mr-1.5" />}
-              {cursoAberto.publicado ? 'Publicado' : 'Rascunho'}
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => abrirCurso(cursoAberto)}>
-              <RefreshCcw className="w-4 h-4 mr-1.5" /> Recarregar
-            </Button>
-            <Button variant="outline" size="sm" disabled={sheets !== null} onClick={() => sincronizar(cursoAberto.id)}>
-              {sheets === 'sync'
-                ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                : <Table2 className="w-4 h-4 mr-1.5" />}
-              Enviar à planilha
-            </Button>
-            <Button variant="outline" size="sm" disabled={sheets !== null} onClick={buscarLinks}>
-              {sheets === 'links'
-                ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                : <Download className="w-4 h-4 mr-1.5" />}
-              Buscar links
-            </Button>
-          </div>
-
-          {carregandoItens ? (
-            <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
-          ) : (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {itens.map((item) => (
-                <div
-                  key={item.id}
-                  className="relative overflow-hidden rounded-2xl border border-border/60 bg-card p-4 pl-5 space-y-3"
-                >
-                  <span className="absolute left-0 top-0 h-full w-1 bg-primary/70" aria-hidden />
-
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-secondary border border-border/70 text-foreground flex items-center justify-center text-sm font-bold tabular-nums shrink-0">
-                      {item.numero}
-                    </div>
-                    <Input
-                      value={item.titulo}
-                      onChange={(e) => setItens((prev) => prev.map((i) => (i.id === item.id ? { ...i, titulo: e.target.value } : i)))}
-                      onBlur={() => salvarItem(item, { titulo: item.titulo })}
-                      className="font-semibold bg-background"
-                    />
-                  </div>
-
-                  {item.resumo && <p className="text-sm leading-relaxed text-muted-foreground">{item.resumo}</p>}
-
-                  <details className="rounded-xl bg-muted/40 border border-border/50">
-                    <summary className="px-3 py-2 text-sm font-medium text-muted-foreground cursor-pointer">Ver prompt</summary>
-                    <Textarea readOnly value={item.prompt ?? ''} className="min-h-[220px] text-xs font-mono border-0 bg-transparent" />
-                  </details>
-
-                  <div className="flex flex-wrap gap-2">
-                    <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground border border-border/60" onClick={() => copiar(item.titulo, 'Título')}>
-                      <Copy className="w-3.5 h-3.5 mr-1.5" /> Título
-                    </Button>
-                    <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground border border-border/60" onClick={() => copiar(item.prompt ?? '', 'Prompt')}>
-                      <Copy className="w-3.5 h-3.5 mr-1.5" /> Prompt
-                    </Button>
-                    <Button size="sm" variant="ghost" className="text-muted-foreground hover:text-foreground border border-border/60" onClick={() => copiar(item.conteudo ?? '', 'Conteúdo')}>
-                      <Copy className="w-3.5 h-3.5 mr-1.5" /> Conteúdo
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => copiar(
-                        `TÍTULO: ${item.titulo}\n\n=== PROMPT ===\n${item.prompt ?? ''}\n\n=== CONTEÚDO ===\n${item.conteudo ?? ''}`,
-                        'Tudo',
-                      )}
-                    >
-                      <Copy className="w-3.5 h-3.5 mr-1.5" /> Copiar tudo
-                    </Button>
-                  </div>
-
-                  <div className="flex gap-2 items-center">
-                    <Link2 className="w-4 h-4 text-muted-foreground shrink-0" />
-                    <Input
-                      placeholder="Cole aqui o link do áudio (mp3)"
-                      value={item.audio_url ?? ''}
-                      onChange={(e) => setItens((prev) => prev.map((i) => (i.id === item.id ? { ...i, audio_url: e.target.value } : i)))}
-                      className="bg-background"
-                    />
-                    <Button size="sm" variant="secondary" onClick={() => salvarItem(item, { audio_url: item.audio_url || null, publicado: Boolean(item.audio_url) })}>
-                      Salvar
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-xs">
-                    {item.publicado
-                      ? <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 text-emerald-500 px-2 py-1"><CheckCircle2 className="w-3.5 h-3.5" /> Publicada</span>
-                      : <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 text-amber-500 px-2 py-1"><Clock className="w-3.5 h-3.5" /> Não publicada</span>}
-                    <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => salvarItem(item, { publicado: !item.publicado })}>
-                      {item.publicado ? 'Despublicar' : 'Publicar'}
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  async function abrirLei(lei: typeof LEIS_CATALOG[0]) {
-    setLeiAberta(lei);
-    setCarregandoArtigos(true);
+  const copiar = async (texto: string, label: string) => {
     try {
-      const leiRef = await resolveLeiRef(lei.tabela_nome);
-      if (!leiRef) {
-        toast.error('Lei não encontrada no banco Vade Mecum');
-        return;
-      }
-      const { data: arts } = await supabase
-        .from('vade_mecum_artigos')
-        .select('id, numero, texto, ordem')
-        .eq('lei_id', leiRef.id)
-        .ilike('texto', 'Art%')
-        .order('ordem', { ascending: true })
-        .limit(500);
-      setArtigosLei(arts || []);
-    } catch (e: any) {
-      toast.error('Erro ao buscar artigos');
-    } finally {
-      setCarregandoArtigos(false);
+      await navigator.clipboard.writeText(texto);
+      toast.success(`${label} copiado`);
+    } catch {
+      toast.error('Não foi possível copiar');
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-background pb-28">
-      <PageHeader title="Audioaulas" subtitle="Gerar títulos e prompts a partir da leitura nativa" onBack={() => navigate(-1)} />
-      
-      <div className="px-4 pt-4">
-        <div className="flex bg-muted/40 p-1 rounded-xl mb-4">
-          <button
-            onClick={() => setAbaAtiva('materias')}
-            className={`flex-1 py-2 text-sm font-semibold rounded-lg transition ${abaAtiva === 'materias' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            Matérias
-          </button>
-          <button
-            onClick={() => setAbaAtiva('leis')}
-            className={`flex-1 py-2 text-sm font-semibold rounded-lg transition ${abaAtiva === 'leis' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            Leis Secas
-          </button>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#0D0D0D] text-white">
+      <PageHeader
+        title="Gestão de Audioaulas"
+        subtitle="Acervo Real de Produção"
+        onBack={() => navigate('/admin-funcoes')}
+      />
 
-      {abaAtiva === 'materias' && (
-        <div className="px-4 space-y-4">
-          <Input placeholder="Buscar livro ou área..." value={busca} onChange={(e) => setBusca(e.target.value)} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+        {/* Cards de Métricas Reais */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+              <FileAudio className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs text-white/50 uppercase tracking-wider font-semibold">Total de Aulas</p>
+              <p className="text-2xl font-black text-white">{loading ? '...' : aulas.length.toLocaleString('pt-BR')}</p>
+            </div>
+          </div>
 
-          <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" disabled={sheets !== null} onClick={() => sincronizar()}>
-            {sheets === 'sync' ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Table2 className="w-4 h-4 mr-1.5" />}
-            Enviar tudo à planilha
-          </Button>
-          <Button variant="outline" size="sm" disabled={sheets !== null} onClick={buscarLinks}>
-            {sheets === 'links' ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Download className="w-4 h-4 mr-1.5" />}
-            Buscar links dos áudios
-          </Button>
-        </div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+              <FolderTree className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs text-white/50 uppercase tracking-wider font-semibold">Áreas do Direito</p>
+              <p className="text-2xl font-black text-white">{loading ? '...' : areas.length}</p>
+            </div>
+          </div>
 
-        {loading ? (
-          <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
-        ) : (
-          grupos.map((g) => {
-            const aberto = areaAberta === g.area;
-            return (
-              <div key={g.area} className="rounded-2xl border border-border bg-card overflow-hidden">
-                <button
-                  onClick={() => setAreaAberta(aberto ? null : g.area)}
-                  className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
-                >
-                  <Headphones className="w-5 h-5 text-primary shrink-0" />
-                  <span className="flex-1 font-semibold text-foreground">{g.area}</span>
-                  <span className="text-xs text-muted-foreground">{g.itens.length}</span>
-                  {aberto ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                </button>
-                {aberto && (
-                  <div className="divide-y divide-border/60">
-                    {g.itens.map((l) => {
-                      const curso = cursoDoLivro(l.id);
-                      const temOcr = prontos.has(String(l.id));
-                      return (
-                        <div key={l.id} className="px-4 py-3 flex items-center gap-3">
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-foreground truncate">{l.tema}</div>
-                            <div className="text-[11px] text-muted-foreground">
-                              {curso ? `${curso.total_aulas} aulas${curso.publicado ? ' • publicado' : ''}` : temOcr ? 'Texto pronto' : 'Sem leitura nativa'}
-                            </div>
-                          </div>
-                          {curso && (
-                            <Button size="sm" variant="outline" onClick={() => abrirCurso(curso)}>Abrir</Button>
-                          )}
-                          <Button
-                            size="sm"
-                            disabled={!temOcr || gerando === String(l.id)}
-                            onClick={() => gerar(l)}
-                          >
-                            {gerando === String(l.id)
-                              ? <Loader2 className="w-4 h-4 animate-spin" />
-                              : <><Sparkles className="w-3.5 h-3.5 mr-1.5" />{curso ? 'Regerar' : 'Gerar'}</>}
-                          </Button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })
-        )}
-      </div>
-      )}
-
-      {abaAtiva === 'leis' && (
-        <div className="px-4 space-y-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            {LEIS_CATALOG.map((lei) => (
-              <button
-                key={lei.id}
-                onClick={() => abrirLei(lei)}
-                className="flex items-center gap-3 p-4 rounded-xl border border-border/60 bg-card text-left transition hover:bg-card/80 active:opacity-70"
-              >
-                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${lei.iconColor}20`, color: lei.iconColor }}>
-                  <Headphones className="w-5 h-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground truncate">{lei.nome}</p>
-                  <p className="text-xs text-muted-foreground truncate">{lei.sigla} • {lei.tipo}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </button>
-            ))}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-md flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <Layers className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs text-white/50 uppercase tracking-wider font-semibold">Módulos / Temas</p>
+              <p className="text-2xl font-black text-white">
+                {loading ? '...' : new Set(aulas.map((a) => `${a.area}::${a.tema}`).filter(Boolean)).size}
+              </p>
+            </div>
           </div>
         </div>
-      )}
+
+        {/* Barra de Filtros */}
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-md space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Campo de Busca */}
+            <div className="relative">
+              <Search className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Input
+                placeholder="Buscar por título, tema ou palavra-chave..."
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                className="pl-9 bg-black/40 border-white/10 text-white placeholder:text-white/40 rounded-xl"
+              />
+            </div>
+
+            {/* Seletor de Área */}
+            <div>
+              <select
+                value={areaSelecionada}
+                onChange={(e) => {
+                  setAreaSelecionada(e.target.value);
+                  setTemaSelecionado('todos');
+                }}
+                className="w-full h-10 px-3 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:outline-none focus:border-purple-500"
+              >
+                <option value="todas">Todas as Áreas ({areas.length})</option>
+                {areas.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Seletor de Tema */}
+            <div>
+              <select
+                value={temaSelecionado}
+                onChange={(e) => setTemaSelecionado(e.target.value)}
+                className="w-full h-10 px-3 rounded-xl bg-black/40 border border-white/10 text-white text-sm focus:outline-none focus:border-purple-500"
+              >
+                <option value="todos">Todos os Temas ({temasDaArea.length})</option>
+                {temasDaArea.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between text-xs text-white/50 pt-2 border-t border-white/5">
+            <span>
+              Exibindo <strong>{aulasFiltradas.length}</strong> de {aulas.length} audioaulas
+            </span>
+            {(areaSelecionada !== 'todas' || temaSelecionado !== 'todos' || busca) && (
+              <button
+                onClick={() => {
+                  setAreaSelecionada('todas');
+                  setTemaSelecionado('todos');
+                  setBusca('');
+                }}
+                className="text-purple-400 hover:text-purple-300 font-semibold"
+              >
+                Limpar filtros
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Lista de Audioaulas */}
+        {loading ? (
+          <div className="py-20 flex flex-col items-center justify-center text-white/50 gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+            <p className="text-sm">Carregando acervo de audioaulas...</p>
+          </div>
+        ) : aulasFiltradas.length === 0 ? (
+          <div className="py-16 text-center rounded-2xl border border-white/5 bg-white/[0.01]">
+            <p className="text-white/40 text-sm">Nenhuma audioaula encontrada com os filtros aplicados.</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {aulasFiltradas.slice(0, 100).map((aula) => {
+              const tocando = aulaTocandoId === aula.id;
+              return (
+                <div
+                  key={aula.id}
+                  className={cn(
+                    'p-4 rounded-2xl border transition-all flex items-center justify-between gap-4',
+                    tocando
+                      ? 'border-purple-500/50 bg-purple-500/[0.08]'
+                      : 'border-white/5 bg-white/[0.02] hover:bg-white/[0.04]',
+                  )}
+                >
+                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                    <button
+                      onClick={() => toggleTocar(aula)}
+                      className={cn(
+                        'w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-transform active:scale-95',
+                        tocando ? 'bg-purple-600 text-white' : 'bg-white/10 text-white/80 hover:bg-white/20',
+                      )}
+                      title={tocando ? 'Pausar' : 'Ouvir prévia'}
+                    >
+                      {tocando ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+                    </button>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/70">
+                          {aula.area ?? 'Geral'}
+                        </span>
+                        {aula.tema && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 truncate max-w-[200px]">
+                            {aula.tema}
+                          </span>
+                        )}
+                        {aula.sequencia && (
+                          <span className="text-[10px] text-white/40">Aula {aula.sequencia}</span>
+                        )}
+                      </div>
+
+                      <h4 className="text-sm font-bold text-white mt-1 truncate">{aula.titulo}</h4>
+                      {aula.descricao && (
+                        <p className="text-xs text-white/50 truncate mt-0.5">{aula.descricao}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {aula.url_audio ? (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => copiar(aula.url_audio!, 'Link do Áudio')}
+                        className="h-8 px-2.5 text-xs text-white/60 hover:text-white"
+                        title="Copiar URL do arquivo de áudio"
+                      >
+                        <Copy className="w-3.5 h-3.5 mr-1" />
+                        Copiar URL
+                      </Button>
+                    ) : (
+                      <span className="text-[11px] text-amber-400/80 bg-amber-400/10 px-2 py-1 rounded-md">
+                        Sem áudio
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {aulasFiltradas.length > 100 && (
+              <p className="text-center text-xs text-white/40 pt-4">
+                Mostrando as primeiras 100 de {aulasFiltradas.length} aulas. Use os filtros acima para refinar.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
-};
-
-export default AdminAudioaulas;
+}

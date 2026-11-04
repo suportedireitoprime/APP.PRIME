@@ -151,7 +151,7 @@ const CATEGORIES: Category[] = [
       // Biblioteca
       { id: 'biblioteca-editar', label: 'Biblioteca Editar', icon: BookOpen, desc: 'Sinopse, capa horizontal e análise técnica com IA', route: '/admin-biblioteca-editar' },
       { id: 'leitura-nativa', label: 'Leitura Nativa', icon: FileText, desc: 'Extração instantânea de PDFs em segundo plano com divisão de capítulos', route: '/admin-leitura-nativa' },
-      { id: 'audioaulas', label: 'Audioaulas', icon: PlayCircle, desc: 'Gera títulos e prompts de podcast a partir da leitura nativa', route: '/admin-audioaulas' },
+      { id: 'audioaulas', label: 'Audioaulas', icon: PlayCircle, desc: 'Gestão, auditoria e consulta do acervo real de 2.221 audioaulas', route: '/admin-audioaulas' },
 
     ],
   },
