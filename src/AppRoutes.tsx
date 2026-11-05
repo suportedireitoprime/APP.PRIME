@@ -123,9 +123,12 @@ const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistori
 const AdminMapeamentoLeis = lazy(() => import('./pages/AdminMapeamentoLeis.tsx'));
 const AdminNarracaoLeis = lazy(() => import('./pages/AdminNarracaoLeis.tsx'));
 const AdminSimulados = lazy(() => import("./pages/AdminSimulados.tsx"));
-const FerramentasSimulados = lazy(() => import("./pages/FerramentasSimulados.tsx"));
-const FerramentasSimuladosResolver = lazy(() => import("./pages/FerramentasSimuladosResolver.tsx"));
-const FerramentasSimuladosEstatisticas = lazy(() => import("./pages/FerramentasSimuladosEstatisticas.tsx"));
+const Simulados = lazy(() => import("./pages/Simulados.tsx"));
+const SimuladosResolver = lazy(() => import("./pages/SimuladosResolver.tsx"));
+const SimuladosEstatisticas = lazy(() => import("./pages/SimuladosEstatisticas.tsx"));
+const FerramentasSimulados = Simulados;
+const FerramentasSimuladosResolver = SimuladosResolver;
+const FerramentasSimuladosEstatisticas = SimuladosEstatisticas;
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
@@ -894,8 +897,8 @@ function AnimatedRoutes() {
           <Route path="/documentos" element={<ProtectedRoute><PageTransition><Documentos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition instant><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados/provas" element={<Navigate to="/simulados" replace />} />
-          <Route path="/simulados/estatisticas" element={<ProtectedRoute><PageTransition><FerramentasSimuladosEstatisticas /></PageTransition></ProtectedRoute>} />
-          <Route path="/simulados/resolver/:id" element={<ProtectedRoute><PageTransition><FerramentasSimuladosResolver /></PageTransition></ProtectedRoute>} />
+          <Route path="/simulados/estatisticas" element={<ProtectedRoute><PageTransition><SimuladosEstatisticas /></PageTransition></ProtectedRoute>} />
+          <Route path="/simulados/resolver/:id" element={<ProtectedRoute><PageTransition><SimuladosResolver /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition instant><PilulasHome /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/lista" element={<ProtectedRoute><PageTransition instant><PilulasLista /></PageTransition></ProtectedRoute>} />
@@ -993,7 +996,7 @@ function AnimatedRoutes() {
           <Route path="/resumos-juridicos/:area" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition instant><ResumosJuridicosTemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
           <Route path="/resumos-juridicos/:area/:tema" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition instant><ResumosJuridicosSubtemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
           <Route path="/questoes" element={<ProtectedRoute><PageTransition instant><Questoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/simulados" element={<ProtectedRoute><PageTransition instant><FerramentasSimulados /></PageTransition></ProtectedRoute>} />
+          <Route path="/simulados" element={<ProtectedRoute><PageTransition instant><Simulados /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/areas" element={<ProtectedRoute><PageTransition instant><QuestoesAreas /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/praticar" element={<ProtectedRoute><PageTransition instant><QuestoesPraticar /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/simulado" element={<ProtectedRoute><PageTransition instant><QuestoesSimulado /></PageTransition></ProtectedRoute>} />
