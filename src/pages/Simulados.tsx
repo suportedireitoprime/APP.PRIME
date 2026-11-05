@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,7 +8,8 @@ import {
   PlayCircle, Search, FileText, Scale, ChevronRight, ArrowLeft, History,
   BarChart3, ExternalLink, ChevronDown, ChevronUp, CheckCircle2, Sparkles,
   Filter, BookOpen, Layers, Award, X, Trophy, Target, TrendingUp,
-  RotateCcw, Check, Flame, Bookmark, Clock, Gavel, Heart, BellRing, ArrowRight
+  RotateCcw, Check, Flame, Bookmark, Clock, Gavel, Heart, BellRing, ArrowRight,
+  Shield, Compass
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
@@ -19,7 +20,9 @@ import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
 import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 import resumosHeroImg from '@/assets/covers/resumos-philosophers-hero.webp';
 import revisaoOabCover from '@/assets/biblioteca/areas/revisao-oab.webp';
-import constCover from '@/assets/biblioteca/areas/direito-constitucional.webp';
+import pfLogo from '@/assets/cargos/policia-federal.webp';
+import prfLogo from '@/assets/cargos/policia-rodoviaria-federal.webp';
+import pcDfLogo from '@/assets/cargos/policia-civil-df.webp';
 
 interface SimuladoItem {
   id: string;
@@ -34,22 +37,59 @@ interface SimuladoItem {
   simulado_questions?: { count: number }[];
 }
 
-// Converte números para algarismos romanos
-const toRoman = (num: number): string => {
-  const map: [number, string][] = [
-    [1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'],
-    [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'],
-    [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I'],
-  ];
-  let result = '';
-  for (const [val, roman] of map) {
-    while (num >= val) {
-      result += roman;
-      num -= val;
-    }
-  }
-  return result;
-};
+// 5 Carreiras Oficiais em Alta
+const CARREIRAS_EM_ALTA = [
+  {
+    id: 'oab',
+    nome: 'OAB (Exame de Ordem)',
+    badge: '47 Provas',
+    questoes: '3.820 Questões no App',
+    status: 'disponivel',
+    imagem: '/assets/eoab-woman-fixed.webp',
+    subtitulo: '1ª Fase Oficial • FGV',
+    filterChip: 'oab',
+  },
+  {
+    id: 'delegado',
+    nome: 'Delegado de Polícia',
+    badge: 'Em Breve',
+    questoes: 'Civil e Federal',
+    status: 'em_breve',
+    imagem: pcDfLogo,
+    subtitulo: 'Polícia Civil e Federal',
+    filterChip: null,
+  },
+  {
+    id: 'juiz',
+    nome: 'Juiz de Direito',
+    badge: '6 Concursos',
+    questoes: '600 Questões no App',
+    status: 'disponivel',
+    imagem: '/assets/praticar-juiz.webp',
+    subtitulo: 'Magistratura Estadual',
+    filterChip: 'juiz',
+  },
+  {
+    id: 'pf',
+    nome: 'Polícia Federal (PF)',
+    badge: 'Em Breve',
+    questoes: 'Agente e Escrivão',
+    status: 'em_breve',
+    imagem: pfLogo,
+    subtitulo: 'Cebraspe / Concurso PF',
+    filterChip: null,
+  },
+  {
+    id: 'prf',
+    nome: 'Polícia Rodoviária (PRF)',
+    badge: 'Em Breve',
+    questoes: 'Policial Rodoviário',
+    status: 'em_breve',
+    imagem: prfLogo,
+    subtitulo: 'Carreira Policial Rodoviária',
+    filterChip: null,
+  },
+];
 
 // Formata o título oficial legível do exame
 const getExamDisplayName = (sim: SimuladoItem) => {
@@ -110,6 +150,7 @@ export default function Simulados() {
   const { user } = useAuth();
   const gateSimulado = useGatedFeature('simulado', 'simulados');
   const unreadNotifs = useUnreadNotifCount();
+  const listRef = useRef<HTMLDivElement>(null);
 
   // Estados de Modais
   const [notifOpen, setNotifOpen] = useState(false);
@@ -121,7 +162,7 @@ export default function Simulados() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterChip, setFilterChip] = useState<string>('todos');
   const [onlyFavorites, setOnlyFavorites] = useState(false);
-  const [visibleCount, setVisibleCount] = useState<number>(24);
+  const [visibleCount, setVisibleCount] = useState<number>(30);
 
   // Raio-X e PDF
   const [selectedSimulado, setSelectedSimulado] = useState<SimuladoItem | null>(null);
@@ -286,27 +327,11 @@ export default function Simulados() {
         emAndamento: !h.data_fim,
       };
     }
-    // Fallback: o mais recente simulado da lista
     if (simuladosList && simuladosList.length > 0) {
       return simuladosList[0];
     }
     return null;
   }, [historicoRecente, simuladosList]);
-
-  // Simulados "Em Alta" (Seleção Curada dos 12 exames mais procurados)
-  const simuladosEmAlta = useMemo(() => {
-    if (!simuladosList || simuladosList.length === 0) return [];
-    // Prioriza exames recentes 2026, 2025, 2024 e Juiz TJSP
-    const oabProvas = simuladosList.filter((s) => (s.exam?.name || '').toLowerCase().includes('oab'));
-    const juizProvas = simuladosList.filter((s) => (s.exam?.name || '').toLowerCase().includes('juiz'));
-
-    const list: SimuladoItem[] = [];
-    if (oabProvas.length > 0) list.push(...oabProvas.slice(0, 8));
-    if (juizProvas.length > 0) list.push(...juizProvas.slice(0, 2));
-    if (oabProvas.length > 8) list.push(...oabProvas.slice(8, 12));
-
-    return list.slice(0, 12);
-  }, [simuladosList]);
 
   // Lista Filtrada para a Seção "TODOS OS SIMULADOS"
   const filteredSimulados = useMemo(() => {
@@ -360,6 +385,20 @@ export default function Simulados() {
       toast.info('Exibindo apenas simulados favoritos.');
     } else {
       toast.info('Exibindo todos os simulados.');
+    }
+  };
+
+  // Clique em uma carreira de "Em Alta"
+  const handleCarreiraClick = (carreira: typeof CARREIRAS_EM_ALTA[0]) => {
+    try { haptic.selection(); } catch {}
+    if (carreira.filterChip) {
+      setFilterChip(carreira.filterChip);
+      setOnlyFavorites(false);
+      setSearchTerm('');
+      toast.success(`Exibindo simulados de ${carreira.nome}`);
+      listRef.current?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      toast.info(`Simulados de ${carreira.nome} estão em preparação e chegarão em breve!`);
     }
   };
 
@@ -637,83 +676,73 @@ export default function Simulados() {
           </button>
         )}
 
-        {/* ── SEÇÃO EM ALTA (SIMULADOS EM ALTA) ─────────────────────────────────── */}
-        {simuladosEmAlta.length > 0 && !onlyFavorites && (
-          <section className="space-y-3">
-            <div className="flex items-center justify-between gap-2 px-1">
-              <div className="min-w-0 flex-1">
-                <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
-                  <span className="w-1 h-5 rounded-full bg-rose-500 shrink-0" />
-                  <span className="truncate">EM ALTA</span>
-                </h3>
-                <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate">
-                  Simulados e provas mais resolvidos para sua aprovação
-                </p>
-              </div>
+        {/* ── SEÇÃO EM ALTA: OAB, DELEGADO, JUIZ, PF E PRF ────────────────────── */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between gap-2 px-1">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
+                <span className="w-1 h-5 rounded-full bg-rose-500 shrink-0" />
+                <span className="truncate">EM ALTA</span>
+              </h3>
+              <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate">
+                Carreiras e simulados oficiais mais procurados
+              </p>
             </div>
+          </div>
 
-            {/* Carrossel Horizontal com Snap e Cards Verticais */}
-            <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
-              {simuladosEmAlta.map((sim, idx) => {
-                const title = getExamDisplayName(sim);
-                const isFav = favSimulados.has(sim.id);
-                const isJuiz = (sim.exam?.name || '').toLowerCase().includes('juiz');
-                const cover = isJuiz ? constCover : revisaoOabCover;
+          {/* Carrossel Horizontal com as 5 Carreiras */}
+          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+            {CARREIRAS_EM_ALTA.map((carreira, idx) => {
+              const isAvailable = carreira.status === 'disponivel';
+              return (
+                <div
+                  key={`em-alta-carreira-${carreira.id}`}
+                  onClick={() => handleCarreiraClick(carreira)}
+                  className="snap-start shrink-0 w-[130px] sm:w-[145px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
+                >
+                  <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
+                    <img
+                      src={carreira.imagem}
+                      alt={carreira.nome}
+                      loading={idx < 4 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
-                return (
-                  <div
-                    key={`em-alta-${sim.id}`}
-                    onClick={() => handleStartSimulado(sim)}
-                    className="snap-start shrink-0 w-[126px] sm:w-[140px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
-                  >
-                    <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
-                      <img
-                        src={cover}
-                        alt={title}
-                        loading={idx < 4 ? 'eager' : 'lazy'}
-                        decoding="async"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-
-                      {/* Botão de Favorito no topo direito */}
-                      <button
-                        type="button"
-                        onClick={(e) => toggleFavSimulado(sim.id, e)}
-                        className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/70 hover:text-rose-400 hover:scale-110 active:scale-90 transition-all z-10 cursor-pointer"
-                        aria-label="Favoritar Simulado"
-                      >
-                        <Heart
-                          className={`w-3.5 h-3.5 ${isFav ? 'fill-rose-500 text-rose-500' : ''}`}
-                        />
-                      </button>
-
-                      {/* Badge inferior com Ano e Questões */}
-                      <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between z-10">
-                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-rose-600/90 text-white shadow-sm">
-                          {sim.year}
-                        </span>
-                        <span className="text-[9px] font-bold text-white/90 drop-shadow">
-                          {isJuiz ? '100 Qs' : '80 Qs'}
-                        </span>
-                      </div>
+                    {/* Badge superior de Status */}
+                    <div className="absolute top-2 left-2 z-10">
+                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-md shadow-sm ${
+                        isAvailable
+                          ? 'bg-rose-600/95 text-white'
+                          : 'bg-zinc-800/90 text-zinc-300 border border-white/10'
+                      }`}>
+                        {carreira.badge}
+                      </span>
                     </div>
 
-                    <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-rose-300 transition-colors line-clamp-2 mt-2 leading-snug">
-                      {title}
-                    </p>
-                    <p className="text-[10.5px] text-white/50 truncate mt-0.5">
-                      {isJuiz ? 'Magistratura Estadual' : '1ª Fase Oficial • FGV'}
-                    </p>
+                    {/* Detalhes inferiores na capa */}
+                    <div className="absolute bottom-2 left-2 right-2 z-10">
+                      <p className="text-[10px] font-bold text-white/90 drop-shadow line-clamp-1">
+                        {carreira.questoes}
+                      </p>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          </section>
-        )}
 
-        {/* ── SEÇÃO "E LÁ EM BAIXO EM LISTA TODOS" ─────────────────────────────── */}
-        <section className="pt-2 space-y-4">
+                  <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-rose-300 transition-colors line-clamp-2 mt-2 leading-snug">
+                    {carreira.nome}
+                  </p>
+                  <p className="text-[10.5px] text-white/50 truncate mt-0.5">
+                    {carreira.subtitulo}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── SEÇÃO: "TODOS OS SIMULADOS" EM LISTA COMPACTA ────────────────────── */}
+        <section ref={listRef} className="pt-2 space-y-4">
           <div>
             <p className="text-[10px] uppercase tracking-[0.22em] text-rose-400 font-bold">
               ACERVO COMPLETO DE SIMULADOS
@@ -729,7 +758,7 @@ export default function Simulados() {
             </p>
           </div>
 
-          {/* Campo de Busca Rápida Idêntico a Resumos e Audiobooks */}
+          {/* Campo de Busca Rápida */}
           <div className="relative">
             <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
@@ -737,7 +766,7 @@ export default function Simulados() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por número do exame, banca, ano ou cargo…"
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
+              className="w-full pl-11 pr-10 h-13 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
             />
             {searchTerm && (
               <button
@@ -774,7 +803,7 @@ export default function Simulados() {
                     setFilterChip(chip.id);
                     setOnlyFavorites(false);
                   }}
-                  className={`shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                  className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     active
                       ? 'bg-rose-600 text-white shadow-md shadow-rose-950/40'
                       : 'bg-zinc-900/90 text-zinc-400 border border-white/10 hover:border-white/20 hover:text-white'
@@ -786,8 +815,8 @@ export default function Simulados() {
             })}
           </div>
 
-          {/* Listagem Completa de Simulados */}
-          <div className="space-y-3 pt-2">
+          {/* ── LISTA COMPACTA DE SIMULADOS ─────────────────────────────────────── */}
+          <div className="space-y-2 pt-1">
             {isLoading ? (
               <div className="flex items-center justify-center py-20 text-white/50">
                 <div className="w-6 h-6 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mr-3" />
@@ -804,7 +833,7 @@ export default function Simulados() {
                       setFilterChip('todos');
                       setOnlyFavorites(false);
                     }}
-                    className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold hover:bg-white/20 transition"
+                    className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold hover:bg-white/20 transition cursor-pointer"
                   >
                     Limpar todos os filtros
                   </button>
@@ -820,79 +849,91 @@ export default function Simulados() {
                 return (
                   <div
                     key={sim.id}
-                    className="group relative rounded-2xl bg-[#141416] border border-white/10 hover:border-rose-500/40 p-4 sm:p-5 transition-all duration-200 shadow-md space-y-4"
+                    className="group relative rounded-2xl bg-[#141416] border border-white/10 hover:border-rose-500/40 p-3 sm:p-3.5 transition-all duration-150 shadow-sm flex items-center justify-between gap-3 hover:bg-white/[0.03]"
                   >
-                    {/* Top row: Badges e Ações */}
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="px-2.5 py-0.5 rounded-md bg-white/10 text-white text-xs font-black">
+                    {/* Esquerda: Badge e Título */}
+                    <div
+                      className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
+                      onClick={() => handleStartSimulado(sim)}
+                    >
+                      {/* Badge quadrada de ano e órgão */}
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white/[0.04] border border-white/10 flex flex-col items-center justify-center shrink-0 group-hover:border-rose-500/40 transition-colors">
+                        <span className="text-[12px] sm:text-[13px] font-black text-white leading-none">
                           {sim.year}
                         </span>
-                        <span className="px-2.5 py-0.5 rounded-md bg-rose-500/15 border border-rose-500/30 text-rose-300 text-[11px] font-bold uppercase">
-                          {isJuiz ? 'Magistratura Estadual' : '1ª Fase Oficial'}
-                        </span>
-                        <span className="text-xs text-zinc-400 font-semibold">
-                          {isJuiz ? 'VUNESP / TJ' : 'FGV / CESPE'}
+                        <span className="text-[8.5px] sm:text-[9px] font-extrabold text-rose-400 uppercase tracking-tighter mt-0.5">
+                          {isJuiz ? 'JUIZ' : 'OAB'}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={(e) => toggleFavSimulado(sim.id, e)}
-                          className="p-2 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-rose-400 active:scale-95 transition cursor-pointer"
-                          title="Favoritar"
-                        >
-                          <Heart className={`w-4 h-4 ${isFav ? 'fill-rose-500 text-rose-500' : ''}`} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            try { haptic.selection(); } catch {}
-                            setSelectedSimulado(sim);
-                          }}
-                          className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-zinc-300 hover:text-white text-xs font-bold flex items-center gap-1.5 active:scale-95 transition cursor-pointer"
-                        >
-                          <BarChart3 className="w-3.5 h-3.5 text-amber-400" /> Raio-X
-                        </button>
+                      {/* Textos: Título e Detalhes */}
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-display font-bold text-sm sm:text-[15px] text-white truncate group-hover:text-rose-200 transition-colors">
+                          {title}
+                        </h4>
+
+                        <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5 truncate">
+                          <span className="font-semibold text-zinc-300">
+                            {questoesQtd} Questões
+                          </span>
+                          <span>•</span>
+                          <span>{isJuiz ? 'Magistratura Estadual' : '1ª Fase Oficial (FGV)'}</span>
+                          <span className="hidden md:inline">•</span>
+                          <span className="hidden md:inline">5h00 Oficial</span>
+                        </div>
                       </div>
                     </div>
 
-                    {/* Título e Detalhes */}
-                    <div>
-                      <h4 className="font-display font-black text-base sm:text-lg text-white leading-snug group-hover:text-rose-200 transition-colors">
-                        {title}
-                      </h4>
-                      <p className="text-xs text-zinc-400 mt-1 flex items-center gap-2 flex-wrap">
-                        <span>{questoesQtd} Questões no App</span>
-                        <span>•</span>
-                        <span>Tempo Oficial: 5h00</span>
-                        <span>•</span>
-                        <span>Caderno Digitalizado & Gabarito Comentado</span>
-                      </p>
-                    </div>
-
-                    {/* Botões de Ação */}
-                    <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-3 flex-wrap">
+                    {/* Direita: Ações Compactas */}
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {/* Botão Raio-X */}
                       <button
-                        onClick={() => handleStartSimulado(sim)}
-                        className="flex-1 min-w-[200px] h-12 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-rose-950/50 active:scale-[0.98] transition-all cursor-pointer"
+                        type="button"
+                        onClick={() => {
+                          try { haptic.selection(); } catch {}
+                          setSelectedSimulado(sim);
+                        }}
+                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-amber-400 active:scale-95 flex items-center justify-center transition cursor-pointer"
+                        title="Ver Raio-X de Matérias"
                       >
-                        <PlayCircle className="w-5 h-5 fill-white/20" /> Iniciar Simulado
+                        <BarChart3 className="w-4 h-4 text-amber-400" />
                       </button>
 
+                      {/* Botão Gabarito (se houver) */}
                       {sim.gabarito_url && (
                         <button
+                          type="button"
                           onClick={() => {
                             try { haptic.selection(); } catch {}
                             setPreviewPdfUrl(sim.gabarito_url);
                             setPreviewPdfTitle(`Gabarito Oficial - ${title}`);
                           }}
-                          className="px-4 h-12 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white text-xs font-bold flex items-center gap-1.5 active:scale-[0.98] transition cursor-pointer"
+                          className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-emerald-400 active:scale-95 flex items-center justify-center transition cursor-pointer"
+                          title="Gabarito Oficial em PDF"
                         >
-                          <FileText className="w-4 h-4 text-emerald-400" /> Gabarito
+                          <FileText className="w-4 h-4 text-emerald-400" />
                         </button>
                       )}
+
+                      {/* Botão Favoritar */}
+                      <button
+                        type="button"
+                        onClick={(e) => toggleFavSimulado(sim.id, e)}
+                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-rose-400 active:scale-95 flex items-center justify-center transition cursor-pointer"
+                        title="Favoritar Simulado"
+                      >
+                        <Heart className={`w-4 h-4 ${isFav ? 'fill-rose-500 text-rose-500' : ''}`} />
+                      </button>
+
+                      {/* Botão Primário: Iniciar Simulado Compacto */}
+                      <button
+                        type="button"
+                        onClick={() => handleStartSimulado(sim)}
+                        className="h-9 px-3.5 sm:px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs uppercase tracking-wide flex items-center gap-1.5 shadow-md shadow-rose-950/40 active:scale-95 transition-all cursor-pointer"
+                      >
+                        <PlayCircle className="w-4 h-4 fill-white/20" />
+                        <span className="hidden sm:inline">Iniciar</span>
+                      </button>
                     </div>
                   </div>
                 );
@@ -907,9 +948,9 @@ export default function Simulados() {
                     try { haptic.selection(); } catch {}
                     setVisibleCount((prev) => prev + 24);
                   }}
-                  className="px-6 py-3 rounded-2xl bg-zinc-900 border border-white/10 hover:border-white/20 text-white text-xs font-bold uppercase tracking-wider transition active:scale-95 shadow-lg cursor-pointer"
+                  className="px-6 py-2.5 rounded-2xl bg-zinc-900 border border-white/10 hover:border-white/20 text-white text-xs font-bold uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
                 >
-                  Carregar Mais Simulados ({filteredSimulados.length - visibleCount} restantes)
+                  Carregar Mais ({filteredSimulados.length - visibleCount} restantes)
                 </button>
               </div>
             )}
