@@ -421,7 +421,7 @@ export default function FerramentasSimulados() {
                         <BookOpen className="w-3.5 h-3.5 text-rose-400" /> {totalOABCount || 201} Provas disponíveis
                       </span>
                       <span className="px-3 py-1 rounded-lg bg-rose-950/40 border border-rose-900/50 text-xs font-semibold text-rose-300">
-                        ⚡ 400+ Questões interativas
+                        ⚡ 3.820 Questões no App (47 Exames)
                       </span>
                       <span className="px-2.5 py-1 rounded-lg bg-white/5 text-[11px] text-zinc-400">
                         1996 – 2026

@@ -117,7 +117,7 @@ export default function FerramentasSimuladosResolver() {
           .from('simulado_questions')
           .select('*')
           .eq('simulado_id', id)
-          .order('created_at', { ascending: true });
+          .order('numero_questao', { ascending: true, nullsFirst: false });
         
         if (error) {
           console.warn('Erro ao buscar questões:', error);
@@ -143,15 +143,26 @@ export default function FerramentasSimuladosResolver() {
     if (!questoesData) return [];
     const examName = simulado?.exam?.name || '';
     
+    const isOAB = examName.toLowerCase().includes('oab') || (simulado?.prova_url || '').toLowerCase().includes('oab');
+    const defaultBanca = isOAB ? ((simulado?.year || 2024) >= 2010 ? 'FGV' : 'CESPE/OAB') : 'VUNESP';
+    const defaultOrgao = isOAB ? 'OAB' : 'TJ';
+
     return questoesData.map(q => {
       // O banco salvou as opções como um JSONB object: { A: "", B: "", C: "", D: "", E: "" }
       const options = q.options || {};
       
+      const fullComentario = [
+        q.correct_comment ? `Gabarito Comentado:\n${q.correct_comment}` : '',
+        q.incorrect_comment ? `Análise das Demais Alternativas:\n${q.incorrect_comment}` : '',
+        q.base_legal ? `Base Legal: ${q.base_legal}` : '',
+      ].filter(Boolean).join('\n\n') || q.correct_comment || '';
+
       return {
         id: q.id,
-        banca: 'VUNESP', // hardcoded as fallback for now
-        cargo: examName,
-        orgao: 'TJSP',
+        numero_questao: q.numero_questao ? String(q.numero_questao) : undefined,
+        banca: defaultBanca,
+        cargo: examName || (isOAB ? 'Advogado (Exame de Ordem)' : 'Juiz Substituto'),
+        orgao: defaultOrgao,
         ano: simulado?.year || new Date().getFullYear(),
         disciplina: q.disciplina || '',
         enunciado: q.text || '',
@@ -161,8 +172,12 @@ export default function FerramentasSimuladosResolver() {
         alt_d: options.D || '',
         alt_e: options.E || '',
         gabarito_oficial: q.gabarito || 'A',
-        gabarito_comentado: q.correct_comment || '',
+        gabarito_comentado: fullComentario,
         comentario_incorretas: q.incorrect_comment || '',
+        base_legal: q.base_legal || '',
+        dificuldade: q.dificuldade || '',
+        status: q.status || '',
+        observacao: q.observacao || '',
         cargo_id: id,
         assunto: q.assunto || '',
         modalidade: (options.C && options.C !== '') ? 'multipla_escolha' : 'certo_errado',
