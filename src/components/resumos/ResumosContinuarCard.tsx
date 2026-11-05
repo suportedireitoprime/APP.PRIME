@@ -114,3 +114,4 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
 };
 
 export default memo(ResumosContinuarCard);
+

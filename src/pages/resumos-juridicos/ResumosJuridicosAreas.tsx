@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Loader2, Search, X, Flame, Heart } from "lucide-react";
+import { Loader2, Search, X, Heart } from "lucide-react";
 import { toast } from "sonner";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import ResumosHero from "@/components/resumos/ResumosHero";
@@ -157,14 +157,6 @@ export default function ResumosJuridicosAreas() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
-
-                      {/* Badge de Em Alta no topo esquerdo */}
-                      <div className="absolute top-2 left-2">
-                        <span className="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
-                          <Flame className="w-2.5 h-2.5 fill-white" />
-                          Em Alta
-                        </span>
-                      </div>
 
                       {/* Botão de Favorito no topo direito */}
                       <button
