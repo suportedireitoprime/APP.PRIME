@@ -871,6 +871,8 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/radar-concursos" element={<Navigate to="/radar-concursos" replace />} />
           <Route path="/radar-concursos/estatisticas" element={<ProtectedRoute><PageTransition><RadarEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/atualizacoes" element={<ProtectedRoute><PageTransition instant><Atualizacoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/boletim" element={<Navigate to="/atualizacoes" replace />} />
+          <Route path="/boletins" element={<Navigate to="/atualizacoes" replace />} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
           <Route path="/anotacoes" element={<Navigate to="/pessoal/anotacoes" replace />} />
           <Route path="/configuracoes" element={<ProtectedRoute><PageTransition><Configuracoes /></PageTransition></ProtectedRoute>} />

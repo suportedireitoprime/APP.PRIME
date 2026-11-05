@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Headphones, BookOpen, ScrollText, Gavel } from 'lucide-react';
+import { Headphones, BookOpen, ScrollText, Newspaper } from 'lucide-react';
 import { useShortcutBadges } from '@/hooks/useShortcutBadges';
 import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
@@ -9,7 +9,7 @@ const SHORTCUT_ITEMS = [
   { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       color: '#A855F7', badgeColor: null, badgeKey: null, prefetch: 'audioaulas' as PrefetchKey },
   { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       color: '#F43F5E', badgeColor: null, badgeKey: null, prefetch: 'audiobooks' as PrefetchKey },
   { label: 'Blog',        icon: ScrollText,            to: '/blog',             color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'blog' as PrefetchKey },
-  { label: 'Ferramentas', icon: Gavel,                 to: '/ferramentas',      color: '#38BDF8', badgeColor: null, badgeKey: null, prefetch: 'ferramentas' as PrefetchKey },
+  { label: 'Boletins',    icon: Newspaper,             to: '/atualizacoes',     color: '#38BDF8', badgeColor: '#EF4444', badgeKey: 'boletim' as const, prefetch: 'atualizacoes' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {

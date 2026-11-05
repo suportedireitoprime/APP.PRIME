@@ -45,6 +45,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BibliotecaRouteImport } from './routes/biblioteca'
 import { Route as BibliotecasRouteImport } from './routes/bibliotecas'
 import { Route as BlogRouteImport } from './routes/blog'
+import { Route as BoletimRouteImport } from './routes/boletim'
+import { Route as BoletinsRouteImport } from './routes/boletins'
 import { Route as ChatJuridicoRouteImport } from './routes/chat-juridico'
 import { Route as CompartilhadoRouteImport } from './routes/compartilhado'
 import { Route as ConcursosRouteImport } from './routes/concursos'
@@ -384,6 +386,16 @@ const BibliotecasRoute = BibliotecasRouteImport.update({
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoletimRoute = BoletimRouteImport.update({
+  id: '/boletim',
+  path: '/boletim',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoletinsRoute = BoletinsRouteImport.update({
+  id: '/boletins',
+  path: '/boletins',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChatJuridicoRoute = ChatJuridicoRouteImport.update({
@@ -1248,6 +1260,8 @@ export interface FileRoutesByFullPath {
   '/biblioteca': typeof BibliotecaRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
+  '/boletim': typeof BoletimRoute
+  '/boletins': typeof BoletinsRoute
   '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
   '/concursos': typeof ConcursosRoute
@@ -1446,6 +1460,8 @@ export interface FileRoutesByTo {
   '/biblioteca': typeof BibliotecaRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
+  '/boletim': typeof BoletimRoute
+  '/boletins': typeof BoletinsRoute
   '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
   '/concursos': typeof ConcursosRoute
@@ -1645,6 +1661,8 @@ export interface FileRoutesById {
   '/biblioteca': typeof BibliotecaRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/blog': typeof BlogRoute
+  '/boletim': typeof BoletimRoute
+  '/boletins': typeof BoletinsRoute
   '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
   '/concursos': typeof ConcursosRoute
@@ -1845,6 +1863,8 @@ export interface FileRouteTypes {
     | '/biblioteca'
     | '/bibliotecas'
     | '/blog'
+    | '/boletim'
+    | '/boletins'
     | '/chat-juridico'
     | '/compartilhado'
     | '/concursos'
@@ -2043,6 +2063,8 @@ export interface FileRouteTypes {
     | '/biblioteca'
     | '/bibliotecas'
     | '/blog'
+    | '/boletim'
+    | '/boletins'
     | '/chat-juridico'
     | '/compartilhado'
     | '/concursos'
@@ -2241,6 +2263,8 @@ export interface FileRouteTypes {
     | '/biblioteca'
     | '/bibliotecas'
     | '/blog'
+    | '/boletim'
+    | '/boletins'
     | '/chat-juridico'
     | '/compartilhado'
     | '/concursos'
@@ -2440,6 +2464,8 @@ export interface RootRouteChildren {
   BibliotecaRoute: typeof BibliotecaRoute
   BibliotecasRoute: typeof BibliotecasRouteWithChildren
   BlogRoute: typeof BlogRoute
+  BoletimRoute: typeof BoletimRoute
+  BoletinsRoute: typeof BoletinsRoute
   ChatJuridicoRoute: typeof ChatJuridicoRoute
   CompartilhadoRoute: typeof CompartilhadoRoute
   ConcursosRoute: typeof ConcursosRoute
@@ -2758,6 +2784,20 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/boletim': {
+      id: '/boletim'
+      path: '/boletim'
+      fullPath: '/boletim'
+      preLoaderRoute: typeof BoletimRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/boletins': {
+      id: '/boletins'
+      path: '/boletins'
+      fullPath: '/boletins'
+      preLoaderRoute: typeof BoletinsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chat-juridico': {
@@ -4460,6 +4500,8 @@ const rootRouteChildren: RootRouteChildren = {
   BibliotecaRoute: BibliotecaRoute,
   BibliotecasRoute: BibliotecasRouteWithChildren,
   BlogRoute: BlogRoute,
+  BoletimRoute: BoletimRoute,
+  BoletinsRoute: BoletinsRoute,
   ChatJuridicoRoute: ChatJuridicoRoute,
   CompartilhadoRoute: CompartilhadoRoute,
   ConcursosRoute: ConcursosRoute,

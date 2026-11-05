@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense, startTransition } from 'react';
 import { createPortal } from 'react-dom';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, Pencil, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks } from 'lucide-react';
+import { LayoutGrid, GraduationCap, Monitor, ChevronRight, ChevronDown, X, Search, Sparkles, MessageCircle, Bot, BookOpen, StickyNote, Newspaper, ScanEye, Scale, Library, Mic, FileText, FileSignature, Image as ImageIcon, Bell, Flame, Gavel, Star, Send, Video, Film, Clapperboard, Bird, Headphones, Layers, ScrollText, Pencil, User, ArrowLeftRight, MicVocal, Pill, BookMarked, Microscope, Stethoscope, Podcast, Crown, ListChecks, Wrench } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 import MentorOverlay from '@/components/vademecum/overlays/MentorOverlay';
@@ -318,20 +318,20 @@ const BottomNav = () => {
             <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center text-white/80 hover:text-white md:text-white/90 drop-shadow-sm truncate max-w-full px-0.5">Vade Mecum</span>
           </button>
 
-          {/* Slot 4: Aulas */}
+          {/* Slot 4: Ferramentas */}
           <button
-            onPointerDown={() => prefetchRoute('aulas')}
-            onMouseEnter={() => prefetchRoute('aulas')}
-            onClick={() => { haptic.selection(); startTransition(() => navigate('/aulas')); }}
+            onPointerDown={() => prefetchRoute('ferramentas')}
+            onMouseEnter={() => prefetchRoute('ferramentas')}
+            onClick={() => { haptic.selection(); startTransition(() => navigate('/ferramentas')); }}
             data-track="bottom_nav_click"
-            data-track-destino="aulas"
+            data-track-destino="ferramentas"
             className={`flex flex-col items-center justify-end gap-1.5 py-1.5 md:py-3 md:justify-center md:rounded-xl transition-all active:opacity-70 duration-100 touch-manipulation cursor-pointer relative ${
-              location.pathname.startsWith('/aulas') || location.pathname.startsWith('/admin-aulas-interativas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
+              location.pathname.startsWith('/ferramentas') ? 'text-white md:bg-white/15 md:ring-1 md:ring-white/25 md:shadow-sm' : 'text-white/80 hover:text-white md:hover:bg-white/10'
             }`}
-            aria-label="Aulas"
+            aria-label="Ferramentas"
           >
-            <GraduationCap className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${location.pathname.startsWith('/aprender') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
-            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Aulas</span>
+            <Wrench className={`w-7 h-7 sm:w-8 sm:h-8 md:w-8 md:h-8 transition-transform drop-shadow-md ${location.pathname.startsWith('/ferramentas') ? 'scale-110' : 'drop-shadow-sm'}`} strokeWidth={1.5} />
+            <span className="font-body text-[11px] sm:text-[12px] md:text-[12px] font-medium leading-tight text-center drop-shadow-sm truncate max-w-full px-0.5">Ferramentas</span>
           </button>
 
           {/* Slot 5: Pesquisar */}

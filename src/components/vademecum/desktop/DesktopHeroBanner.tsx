@@ -166,7 +166,7 @@ const DesktopHeroBanner = ({
                   color: "#34D399",
                 },
                 { label: "Questões", icon: ListChecks, route: "/questoes", color: "#F87171" },
-                { label: "Ferramentas", icon: Gavel, route: "/ferramentas", color: "#F97316" },
+                { label: "Boletins", icon: FileText, route: "/atualizacoes", color: "#38BDF8" },
               ].map((btn, i) => (
                 <button
                   key={i}
