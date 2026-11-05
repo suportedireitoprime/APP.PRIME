@@ -53,7 +53,7 @@ const CONTEUDO_ITEMS = [
 
 const FERRAMENTAS_ITEMS = [
   { id: 'me-explique', label: 'Me Explique (IA)', icon: Camera, route: '/me-explique', color: '#E11D48' },
-  { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Wrench, route: '/ferramentas', color: '#DC2626' },
+  { id: 'ferramentas', label: 'Todas as Ferramentas', icon: Gavel, route: '/ferramentas', color: '#DC2626' },
   { id: 'dicionario', label: 'Dicionário Jurídico', icon: BookOpenText, route: '/ferramentas/dicionario', color: '#3B82F6' },
   { id: 'offline', label: 'Modo Offline', icon: CloudDownload, route: '/modo-offline', color: '#64748B' },
 ];
