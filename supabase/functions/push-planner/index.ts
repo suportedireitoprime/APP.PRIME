@@ -33,15 +33,24 @@ Deno.serve(async (req) => {
     // Blog
     const { data: blogIds } = await admin.from("blog_posts").select("id, titulo, slug").eq("published", true);
 
+    const getBrasiliaDateStr = (dayOffset: number) => {
+      const now = new Date();
+      const bMs = now.getTime() - (3 * 3600 * 1000) + (dayOffset * 86400 * 1000);
+      const bDate = new Date(bMs);
+      const yyyy = bDate.getUTCFullYear();
+      const mm = String(bDate.getUTCMonth() + 1).padStart(2, "0");
+      const dd = String(bDate.getUTCDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    };
+
+    const getIsoForBrasiliaSlot = (dayOffset: number, hourBRT: number) => {
+      const dayStr = getBrasiliaDateStr(dayOffset);
+      const hh = String(hourBRT).padStart(2, "0");
+      return new Date(`${dayStr}T${hh}:00:00-03:00`).toISOString();
+    };
+
     for (let i = 0; i < diasPlanejamento; i++) {
-      const targetDate = new Date(hoje);
-      targetDate.setDate(targetDate.getDate() + i);
-      
-      const getDateWithHour = (hour: number) => {
-        const d = new Date(targetDate);
-        d.setHours(hour, 0, 0, 0);
-        return d.toISOString();
-      };
+      const getDateWithHour = (hour: number) => getIsoForBrasiliaSlot(i, hour);
 
       // 06:00 Boletim Matinal
       campanhasToInsert.push({
@@ -160,7 +169,7 @@ Deno.serve(async (req) => {
         title: "🦉 Coruja dos Concursos",
         body: `Ainda acordado(a)? Assista a esta aula rápida: ${videoItem.titulo}. Depois, vá descansar!`,
         status: "scheduled",
-        next_run_at: getDateWithHour(0),
+        next_run_at: getIsoForBrasiliaSlot(i + 1, 0),
         url: `/aprender`,
         audience: { all: true, target: 'all', include_admins: true },
         automation_key: "planner-video-madrugada"
@@ -168,20 +177,22 @@ Deno.serve(async (req) => {
     }
 
     // Antes de inserir, apagamos agendamentos futuros não enviados para evitar duplicidade
-    const deleteFrom = new Date(hoje);
-    deleteFrom.setHours(0,0,0,0);
-    
     await admin.from("push_campaigns")
       .delete()
       .eq("status", "scheduled")
-      .gte("next_run_at", deleteFrom.toISOString())
+      .gte("next_run_at", hoje.toISOString())
       .like("automation_key", "planner-%");
 
-    const { error: insertError } = await admin.from("push_campaigns").insert(campanhasToInsert);
+    // Filtra apenas agendamentos estritamente futuros para evitar disparos acumulados do passado
+    const futureOnly = campanhasToInsert.filter(
+      (c) => new Date(c.next_run_at).getTime() > hoje.getTime()
+    );
+
+    const { error: insertError } = await admin.from("push_campaigns").insert(futureOnly);
     
     if (insertError) throw insertError;
 
-    return json({ ok: true, generated: campanhasToInsert.length });
+    return json({ ok: true, generated: futureOnly.length });
   } catch (e) {
     return json({ error: String((e as Error)?.message || e) }, 500);
   }

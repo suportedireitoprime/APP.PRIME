@@ -110,13 +110,15 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
+  let payload: PushPayload | null = null;
+
   try {
     const raw = Deno.env.get("FCM_SERVICE_ACCOUNT_JSON");
     if (!raw) throw new Error("FCM_SERVICE_ACCOUNT_JSON not configured");
     const sa = JSON.parse(raw);
     const projectId = sa.project_id;
 
-    const payload = (await req.json()) as PushPayload;
+    payload = (await req.json()) as PushPayload;
     if (!payload.title || !payload.body) throw new Error("title e body são obrigatórios");
 
     // Prefix emoji no título (se informado e ainda não presente)
@@ -171,7 +173,8 @@ Deno.serve(async (req) => {
       let q = supabase.from("device_tokens")
         .select("token,user_id,platform")
         // Ignora tokens invalidados (app desinstalado / dados limpos)
-        .is("invalidated_at", null);
+        .is("invalidated_at", null)
+        .order("updated_at", { ascending: false, nullsFirst: false });
 
       // REGRA SUPREMA DE EXCLUSÃO DE ADMIN:
       // Por padrão, NUNCA envia pushes gerais de usuários para aparelhos de administradores.
@@ -195,8 +198,21 @@ Deno.serve(async (req) => {
     }
 
     // dedupe
-    const seen = new Set<string>();
-    rows = rows.filter((r) => (seen.has(r.token) ? false : (seen.add(r.token), true)));
+    const seenToken = new Set<string>();
+    const seenUserPlatform = new Set<string>();
+    const dedupedRows: Row[] = [];
+    for (const r of rows) {
+      if (seenToken.has(r.token)) continue;
+      seenToken.add(r.token);
+
+      if (r.user_id && r.platform && r.platform !== "unknown") {
+        const upKey = `${r.user_id}:::${r.platform}`;
+        if (seenUserPlatform.has(upKey)) continue;
+        seenUserPlatform.add(upKey);
+      }
+      dedupedRows.push(r);
+    }
+    rows = dedupedRows;
 
     if (!rows.length) {
       if (payload.campaign_id) {
@@ -262,6 +278,7 @@ Deno.serve(async (req) => {
 
     const invalidTokens: { token: string; reason: string }[] = [];
     const events: any[] = [];
+    const allResults: { ok: boolean; r: Row; err?: string }[] = [];
     let ok = 0, fail = 0;
 
     const BATCH = 100;
@@ -363,7 +380,9 @@ Deno.serve(async (req) => {
             };
           }
         }
-        try {
+
+
+  try {
           const resp = await fetch(url, {
             method: "POST",
             headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
@@ -389,6 +408,8 @@ Deno.serve(async (req) => {
         }
       }));
 
+
+      allResults.push(...results);
       for (const x of results) {
         if (x.ok) {
           ok++;
@@ -443,7 +464,7 @@ Deno.serve(async (req) => {
     }
 
     // Gravar na Inbox Oficial (user_notifications) para todos os usuários reais que receberam
-    const notifsToInsert = results
+    const notifsToInsert = allResults
       .filter((x) => x.ok && x.r.user_id)
       .map((x) => ({
         user_id: x.r.user_id,
@@ -455,12 +476,15 @@ Deno.serve(async (req) => {
         campaign_id: payload.campaign_id || null,
       }));
 
+
     if (notifsToInsert.length) {
       const uniqueByUser = Array.from(
         new Map(notifsToInsert.map((n) => [n.user_id, n])).values()
       );
       for (let i = 0; i < uniqueByUser.length; i += 500) {
-        try {
+
+
+  try {
           await supabase.from("user_notifications").insert(uniqueByUser.slice(i, i + 500));
         } catch (e) {
           console.error("Erro ao gravar user_notifications:", e);
@@ -521,9 +545,9 @@ Deno.serve(async (req) => {
     );
   } catch (e) {
     console.error("send-push error:", e);
-    if ((await req.clone().json().catch(() => ({})))?.campaign_id) {
+    if (payload?.campaign_id) {
       await supabase.from("push_campaigns").update({ status: "failed" })
-        .eq("id", (await req.clone().json().catch(() => ({} as any))).campaign_id);
+        .eq("id", payload.campaign_id);
     }
     return new Response(JSON.stringify({ error: String((e as Error).message ?? e) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });

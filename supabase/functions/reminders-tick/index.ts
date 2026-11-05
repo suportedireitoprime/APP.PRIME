@@ -616,6 +616,12 @@ Deno.serve(async (req) => {
           mirror_canal: c.mirror_canal,
         };
         const res = await sendPushAudienceWithRetry(payload);
+        if (!res.ok) {
+          await admin.from('push_campaigns').update({
+            status: 'failed',
+            last_run_at: now.toISOString(),
+          }).eq('id', c.id);
+        }
         pushFired.push({ id: c.id, ok: res.ok, attempts: res.attempts });
       }
     } catch (e) {
