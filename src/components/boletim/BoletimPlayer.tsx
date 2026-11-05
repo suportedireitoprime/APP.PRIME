@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, SkipForward, SkipBack, X, Clock, Heart, MessageCircle, ExternalLink, Send, Loader2 } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, X, Clock, Heart, MessageCircle, ExternalLink, Send, Loader2, User } from 'lucide-react';
 import brasaoImg from '@/assets/brasao-republica.webp';
 import swooshAsset from '@/assets/swoosh.mp3.asset.json';
 import swooshBundled from '@/assets/swoosh.mp3';
@@ -293,6 +293,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
 
 
   const isNorma = scene.kind === 'norma';
+  const isIntro = scene.kind === 'intro';
   const fonteLabel = (() => {
     if (!scene.url_fonte) return null;
     try {
@@ -306,14 +307,31 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
   })();
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black overflow-hidden flex flex-col pt-[var(--sai-top)] pb-safe">
+    <div className="fixed inset-0 z-[100] bg-[#0A0A0C] overflow-hidden flex flex-col">
+      {/* Background Image: 100% Fullscreen APENAS na capa/intro */}
+      {isIntro && (
+        <div className="fixed inset-0 z-0 bg-black overflow-hidden pointer-events-none">
+          <motion.img
+            key={`bg-img-${idx}`}
+            src={scene.imagem_url || brasaoImg}
+            alt=""
+            initial={{ scale: 1 }}
+            animate={{ scale: 1.08 }}
+            transition={{ duration: scene.duracao_s || 8, ease: 'linear' }}
+            className="w-full h-full object-cover object-center"
+          />
+          {/* Scrim sutil para contraste mantendo a visibilidade do jornal */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/35 to-black/85 pointer-events-none" />
+        </div>
+      )}
+
       {/* Top bar */}
-      <div className="relative z-20 flex items-center gap-3 p-4 bg-black/60 backdrop-blur border-b border-white/10">
+      <div className="relative z-20 flex items-center gap-3 px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 bg-gradient-to-b from-black/90 via-black/40 to-transparent">
         <div className="flex-1 flex gap-1">
           {scenes.map((_, i) => (
-            <div key={i} className="flex-1 h-1 rounded-full bg-white/20 overflow-hidden">
+            <div key={i} className="flex-1 h-1 rounded-full bg-white/25 overflow-hidden">
               <div
-                className="h-full bg-white transition-all"
+                className="h-full bg-white transition-all duration-200"
                 style={{ width: i < idx ? '100%' : i === idx ? '50%' : '0%' }}
               />
             </div>
@@ -321,114 +339,179 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
         </div>
         <button
           onClick={onClose}
-          className="w-10 h-10 rounded-full bg-white/10 backdrop-blur flex items-center justify-center hover:bg-white/20 transition"
+          className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/15 flex items-center justify-center hover:bg-black/70 active:scale-95 transition cursor-pointer"
         >
           <X className="w-5 h-5 text-white" />
         </button>
       </div>
 
       {/* Main content area */}
-      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto bg-black">
+      <div className="relative z-10 flex-1 min-h-0 overflow-y-auto no-scrollbar flex flex-col">
         <AnimatePresence mode="wait">
           <motion.div
             key={idx}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.4 }}
-            className="flex flex-col min-h-full pb-48"
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3 }}
+            className={`flex flex-col px-4 sm:px-6 pt-2 pb-36 ${
+              isIntro ? 'justify-center min-h-full my-auto' : 'justify-start my-auto'
+            }`}
           >
-            {/* Image Capa */}
-            <div className={`absolute inset-0 z-0 bg-neutral-900 overflow-hidden`}>
-               {scene.kind === 'norma' && scene.tipo !== 'legislativo' && (
-                 <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/50 to-black/30 pointer-events-none" />
-               )}
-               {scene.tipo === 'legislativo' && (
-                 <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-red-950/80 to-transparent pointer-events-none" />
-               )}
-               
-               <motion.img
-                  key={`img-${idx}`}
-                  src={scene.imagem_url || "https://legis.senado.leg.br/dadosabertos/senador/lista/atual.json"} // fallback se estiver vazio
-                  alt=""
-                  initial={{ scale: 1 }}
-                  animate={{ scale: scene.tipo === 'legislativo' ? 1.05 : 1.15 }}
-                  transition={{ duration: scene.duracao_s || 8, ease: 'linear' }}
-                  className={`absolute inset-0 w-full h-full ${scene.tipo === 'legislativo' ? 'object-contain object-bottom scale-110 drop-shadow-2xl opacity-90 mix-blend-luminosity' : 'object-cover'}`}
-               />
-               
-               {scene.tipo === 'legislativo' && (
-                 <div className="absolute inset-0 z-0 bg-red-900/40 mix-blend-multiply" />
-               )}
-               
-               {/* Intro special styling over image */}
-               {scene.kind === 'intro' && (
-                 <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/80 via-black/40 to-black pointer-events-none" />
-               )}
+            {isIntro ? (
+              /* Capa / Apresentação do Boletim */
+              <div className="flex flex-col items-center text-center max-w-xl mx-auto select-none py-6">
+                <img
+                  src={brasaoImg}
+                  alt="Brasão da República"
+                  className="w-20 h-20 sm:w-24 sm:h-24 object-contain mb-3 drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)]"
+                />
+                <span className="inline-block text-[10px] uppercase tracking-[0.3em] font-bold px-3 py-1 rounded-full mb-2 bg-black/50 backdrop-blur-md border border-white/15 text-white drop-shadow">
+                  Boletim Jurídico
+                </span>
+                <h1 className="font-display text-2xl sm:text-4xl font-black text-white leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] mb-4">
+                  {hoje}
+                </h1>
+                <p className="text-base sm:text-lg text-white font-body leading-relaxed max-w-lg mx-auto drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+                  {scene.texto}
+                </p>
+                <div className="mt-6 flex items-center justify-center gap-2 text-white/90 text-xs bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-lg">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span className="font-semibold">
+                    {totalMin > 0 ? `${totalMin}m ${totalSec.toString().padStart(2, '0')}s` : `${totalSec}s`}
+                  </span>
+                  <span className="text-white/40">·</span>
+                  <span>{scenes.filter((s) => s.kind === 'norma').length} normas</span>
+                </div>
+              </div>
+            ) : (
+              /* Notícias / Normas: Imagem em formato deitado 16:9 no topo */
+              <div className="w-full max-w-xl mx-auto flex flex-col">
+                {scene.imagem_url && (
+                  <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-white/15 bg-neutral-900 shadow-2xl mb-4 shrink-0">
+                    <motion.img
+                      key={`news-img-${idx}`}
+                      src={scene.imagem_url}
+                      alt={scene.titulo || ''}
+                      initial={{ scale: 1 }}
+                      animate={{ scale: 1.05 }}
+                      transition={{ duration: scene.duracao_s || 8, ease: 'linear' }}
+                      className="w-full h-full object-cover object-center"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/35 pointer-events-none" />
 
-               {/* Norma label / via */}
-               {scene.kind === 'norma' && fonteLabel && (
-                  <button type="button" onClick={abrirFonte} className="absolute top-3 right-3 z-20 inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-black/80 transition shadow-lg">
-                    VIA {fonteLabel}
-                  </button>
-               )}
-               {scene.kind === 'norma' && scene.tipo_label && (
-                  <div className="absolute bottom-4 left-4 z-20">
-                     <span className="inline-block text-[10px] uppercase tracking-[0.15em] font-bold px-3 py-1.5 rounded-full shadow-lg" style={{ backgroundColor: cor, color: '#fff' }}>
-                       {scene.tipo_label}
-                     </span>
-                  </div>
-               )}
-            </div>
-
-            {/* Content Text */}
-            <div className={`relative z-10 p-5 md:p-8 flex-1 flex flex-col justify-end pt-32 pb-8 ${scene.kind === 'intro' ? 'items-center text-center' : ''}`}>
-              {scene.kind === 'intro' ? (
-                <>
-                  <img src={brasaoImg} alt="Brasão da República" className="w-24 h-24 object-contain mb-4 drop-shadow-xl" />
-                  <span className="inline-block text-[10px] uppercase tracking-[0.3em] font-bold px-3 py-1 rounded-full mb-2 bg-white/20 backdrop-blur text-white">Boletim Jurídico</span>
-                  <h1 className="font-display text-3xl md:text-5xl font-black text-white leading-none drop-shadow-lg mb-8">{hoje}</h1>
-                  <p className="text-lg md:text-xl text-white/90 leading-relaxed font-body max-w-2xl mx-auto">{scene.texto}</p>
-                  <div className="mt-8 flex items-center justify-center gap-2 text-white/80 text-sm bg-white/10 backdrop-blur px-5 py-2.5 rounded-full border border-white/5">
-                    <Clock className="w-4 h-4" />
-                    <span className="font-semibold">{totalMin > 0 ? `${totalMin}m ${totalSec.toString().padStart(2, '0')}s` : `${totalSec}s`}</span>
-                    <span className="text-white/30">·</span>
-                    <span>{scenes.filter((s) => s.kind === 'norma').length} normas</span>
-                  </div>
-                </>
-              ) : (
-                <div className="w-full max-w-3xl mx-auto">
-                  <h1 className="font-display text-2xl md:text-4xl font-bold text-white leading-[1.2] mb-4 drop-shadow-md">{scene.titulo}</h1>
-                  {scene.autor_nome && (
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-6 h-6 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/30">
-                        <User className="w-3 h-3 text-red-400" />
-                      </div>
-                      <span className="text-sm font-semibold text-red-400/90 tracking-wide uppercase drop-shadow-md">{scene.autor_nome}</span>
+                    {/* Badges sobre a imagem deitada */}
+                    <div className="absolute top-3 inset-x-3 flex items-center justify-between gap-2 pointer-events-none">
+                      {scene.tipo_label ? (
+                        <span
+                          className="text-[10px] uppercase tracking-[0.15em] font-bold px-3 py-1 rounded-full shadow-lg backdrop-blur-md pointer-events-auto"
+                          style={{ backgroundColor: cor, color: '#fff' }}
+                        >
+                          {scene.tipo_label}
+                        </span>
+                      ) : (
+                        <span />
+                      )}
+                      {fonteLabel && (
+                        <button
+                          type="button"
+                          onClick={abrirFonte}
+                          className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-black/80 transition shadow-lg cursor-pointer pointer-events-auto active:scale-95"
+                        >
+                          VIA {fonteLabel}
+                        </button>
+                      )}
                     </div>
-                  )}
-                  <p className="text-[17px] md:text-lg text-white/90 leading-relaxed font-body whitespace-pre-wrap drop-shadow-md">{scene.texto}</p>
 
-                  {/* Actions */}
-                  <div className="mt-10 flex flex-wrap items-center gap-4 pt-6 border-t border-white/20">
-                    <button onClick={toggleLike} className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/40 backdrop-blur hover:bg-black/60 transition border border-white/10 text-white group">
-                      <Heart className={`w-5 h-5 ${likeAtual.mine ? 'text-red-500' : 'text-white/70 group-hover:text-white'}`} fill={likeAtual.mine ? 'currentColor' : 'none'} />
-                      <span className="text-sm font-semibold">{likeAtual.count}</span>
-                    </button>
-                    <button onClick={() => setComentariosOpen(true)} className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-black/40 backdrop-blur hover:bg-black/60 transition border border-white/10 text-white group">
-                      <MessageCircle className="w-5 h-5 text-white/70 group-hover:text-white" />
-                      <span className="text-sm font-semibold">{commentsCount}</span>
-                    </button>
-                    {scene.kind === 'norma' && (
-                      <button onClick={abrirFonte} className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary hover:brightness-110 transition shadow-lg shadow-primary/20 text-primary-foreground font-semibold ml-auto">
-                        <span>Ver norma</span>
-                        <ExternalLink className="w-4 h-4" />
+                    {/* Crédito de imagem na foto */}
+                    {scene.imagem_credito?.autor && (
+                      <div className="absolute bottom-2 right-3 pointer-events-none">
+                        <span className="text-[10px] text-white/80 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/10">
+                          📷 {scene.imagem_credito.autor}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Fallback de badges caso não haja imagem */}
+                {!scene.imagem_url && (
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    {scene.tipo_label && (
+                      <span
+                        className="text-[10px] uppercase tracking-[0.15em] font-bold px-3 py-1 rounded-full shadow"
+                        style={{ backgroundColor: cor, color: '#fff' }}
+                      >
+                        {scene.tipo_label}
+                      </span>
+                    )}
+                    {fonteLabel && (
+                      <button
+                        type="button"
+                        onClick={abrirFonte}
+                        className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full bg-neutral-800 border border-white/15 text-white text-xs cursor-pointer"
+                      >
+                        VIA {fonteLabel}
                       </button>
                     )}
                   </div>
+                )}
+
+                {/* Título da Notícia */}
+                <h1 className="font-display text-lg sm:text-2xl font-bold text-white leading-snug mb-2">
+                  {scene.titulo}
+                </h1>
+
+                {/* Autor se houver */}
+                {scene.autor_nome && (
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-5 h-5 rounded-full bg-red-500/20 flex items-center justify-center border border-red-500/30">
+                      <User className="w-3 h-3 text-red-400" />
+                    </div>
+                    <span className="text-xs font-semibold text-red-400 tracking-wide uppercase">
+                      {scene.autor_nome}
+                    </span>
+                  </div>
+                )}
+
+                {/* Texto da Notícia */}
+                <p className="text-sm sm:text-base text-neutral-200 leading-relaxed font-body whitespace-pre-wrap">
+                  {scene.texto}
+                </p>
+
+                {/* Ações */}
+                <div className="mt-4 flex flex-wrap items-center gap-3 pt-3 border-t border-white/10">
+                  <button
+                    onClick={toggleLike}
+                    className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-neutral-900/90 hover:bg-neutral-800 transition border border-white/10 text-white cursor-pointer active:scale-95"
+                  >
+                    <Heart
+                      className={`w-4 h-4 ${likeAtual.mine ? 'text-red-500' : 'text-white/70'}`}
+                      fill={likeAtual.mine ? 'currentColor' : 'none'}
+                    />
+                    <span className="text-xs font-semibold">{likeAtual.count}</span>
+                  </button>
+
+                  <button
+                    onClick={() => setComentariosOpen(true)}
+                    className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-neutral-900/90 hover:bg-neutral-800 transition border border-white/10 text-white cursor-pointer active:scale-95"
+                  >
+                    <MessageCircle className="w-4 h-4 text-white/70" />
+                    <span className="text-xs font-semibold">{commentsCount}</span>
+                  </button>
+
+                  {scene.kind === 'norma' && (
+                    <button
+                      onClick={abrirFonte}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary hover:brightness-110 transition shadow-lg shadow-primary/30 text-primary-foreground font-semibold text-xs ml-auto cursor-pointer active:scale-95"
+                    >
+                      <span>Ver norma</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -446,24 +529,24 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
         )}
       </AnimatePresence>
 
-      {/* Bottom Controls */}
-      <div className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black via-black/95 to-transparent pt-16 pb-6 px-6 pointer-events-none">
+      {/* Bottom Controls flutuante sobre a imagem */}
+      <div className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent pt-12 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-6 pointer-events-none">
         <div className="flex items-center justify-center gap-6 md:gap-8 pointer-events-auto">
-          <button onClick={() => goTo(idx - 1)} disabled={idx === 0} className="w-12 h-12 rounded-full bg-white/10 backdrop-blur border border-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition">
+          <button onClick={() => goTo(idx - 1)} disabled={idx === 0} className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/15 flex items-center justify-center disabled:opacity-30 hover:bg-black/60 active:scale-95 transition cursor-pointer">
             <SkipBack className="w-5 h-5 text-white" />
           </button>
-          <button onClick={() => setPlaying((p) => !p)} className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-[0_0_24px_rgba(255,255,255,0.4)] hover:scale-105 active:opacity-70 transition-all">
-            {playing ? <Pause className="w-7 h-7 text-black" fill="black" /> : <Play className="w-7 h-7 text-black ml-1" fill="black" />}
+          <button onClick={() => setPlaying((p) => !p)} className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-[0_0_24px_rgba(255,255,255,0.4)] active:scale-95 transition-all cursor-pointer">
+            {playing ? <Pause className="w-7 h-7 text-black fill-black" /> : <Play className="w-7 h-7 text-black ml-1 fill-black" />}
           </button>
-          <button onClick={() => goTo(idx + 1)} disabled={idx === scenes.length - 1} className="w-12 h-12 rounded-full bg-white/10 backdrop-blur border border-white/10 flex items-center justify-center disabled:opacity-30 hover:bg-white/20 transition">
+          <button onClick={() => goTo(idx + 1)} disabled={idx === scenes.length - 1} className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/15 flex items-center justify-center disabled:opacity-30 hover:bg-black/60 active:scale-95 transition cursor-pointer">
             <SkipForward className="w-5 h-5 text-white" />
           </button>
         </div>
-        <p className="text-center text-white/50 text-xs mt-4 font-medium pointer-events-auto">
+        <p className="text-center text-white/70 text-xs mt-3 font-medium pointer-events-auto drop-shadow">
           {idx + 1} de {scenes.length} · {Math.round(progresso)}%
         </p>
-        {scene.imagem_credito?.autor && (
-          <p className="text-center text-white/40 text-[10px] mt-2 pointer-events-auto max-w-[280px] mx-auto truncate">
+        {isIntro && scene.imagem_credito?.autor && (
+          <p className="text-center text-white/50 text-[10px] mt-1.5 pointer-events-auto max-w-[280px] mx-auto truncate drop-shadow">
             📷 {scene.imagem_credito.autor}
             {scene.imagem_credito.licenca && ` · ${scene.imagem_credito.licenca}`}
             {' · Openverse'}

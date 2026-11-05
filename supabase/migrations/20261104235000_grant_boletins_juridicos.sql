@@ -14,3 +14,4 @@ BEGIN
             FOR SELECT USING (true);
     END IF;
 END $$;
+
