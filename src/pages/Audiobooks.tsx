@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -10,6 +10,7 @@ import {
   ChevronRight,
   X,
   Heart,
+  Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import ShapeGrid from "@/components/ui/ShapeGrid";
@@ -213,6 +214,88 @@ export default function AudiobooksPage() {
     [],
   );
 
+  const carouselScrollerRef = useRef<HTMLDivElement | null>(null);
+  const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
+  const tickingCarouselRef = useRef(false);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const isDraggingRef = useRef(false);
+
+  // Escuta a rolagem do carrossel com rAF para fluidez máxima a 120fps sem travar o scroll vertical
+  const handleCarouselScroll = useCallback(() => {
+    if (!tickingCarouselRef.current) {
+      tickingCarouselRef.current = true;
+      requestAnimationFrame(() => {
+        const el = carouselScrollerRef.current;
+        if (el) {
+          const center = el.scrollLeft + el.clientWidth / 2;
+          let best = 0;
+          let bestDist = Infinity;
+          for (let i = 0; i < el.children.length; i++) {
+            const child = el.children[i] as HTMLElement;
+            const mid = child.offsetLeft + child.clientWidth / 2;
+            const dist = Math.abs(mid - center);
+            if (dist < bestDist) {
+              bestDist = dist;
+              best = i;
+            }
+          }
+          setActiveCarouselIndex(best);
+        }
+        tickingCarouselRef.current = false;
+      });
+    }
+  }, []);
+
+  // Garante a detecção correta do card ativo inicial após a montagem do DOM
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      handleCarouselScroll();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [handleCarouselScroll]);
+
+  // Centraliza um card específico do carrossel suavemente
+  const scrollCarouselToIndex = useCallback((idx: number) => {
+    const el = carouselScrollerRef.current;
+    if (!el) return;
+    const child = el.children[idx] as HTMLElement | undefined;
+    if (!child) return;
+    const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
+    el.scrollTo({ left: target, behavior: "smooth" });
+    setActiveCarouselIndex(idx);
+  }, []);
+
+  // Detecção cirúrgica de arrasto (drag) para não abrir o card acidentalmente durante rolagem
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    isDraggingRef.current = false;
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!pointerStartRef.current) return;
+    const dx = Math.abs(e.clientX - pointerStartRef.current.x);
+    const dy = Math.abs(e.clientY - pointerStartRef.current.y);
+    if (dx > 8 || dy > 8) {
+      isDraggingRef.current = true;
+    }
+  };
+
+  const handlePointerUp = () => {
+    pointerStartRef.current = null;
+    setTimeout(() => {
+      isDraggingRef.current = false;
+    }, 60);
+  };
+
+  const handleCarouselCardClick = (livro: AudiobookLivro, idx: number) => {
+    if (isDraggingRef.current) return;
+    haptic.selection();
+    if (idx !== activeCarouselIndex) {
+      scrollCarouselToIndex(idx);
+    }
+    setLivroSelecionado(livro);
+  };
+
   const handleCardClick = (livro: AudiobookLivro) => {
     haptic.selection();
     setLivroSelecionado(livro);
@@ -262,39 +345,69 @@ export default function AudiobooksPage() {
             </div>
           </div>
 
-          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+          <div
+            ref={carouselScrollerRef}
+            onScroll={handleCarouselScroll}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            className="-mx-4 sm:-mx-6 px-[calc(50%-68px)] sm:px-[calc(50%-76px)] flex gap-3.5 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 pt-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation"
+          >
             {livrosRecomendados.map((livro, idx) => {
               const isDisponivel = livro.status === "disponivel";
               const isFav = favIds.has(livro.id);
+              const isActive = idx === activeCarouselIndex;
 
               return (
                 <div
                   key={`rec-${livro.id}`}
-                  onClick={() => handleCardClick(livro)}
-                  className="snap-start shrink-0 w-[126px] sm:w-[140px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
+                  onClick={() => handleCarouselCardClick(livro, idx)}
+                  className={`snap-center shrink-0 w-[136px] sm:w-[152px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-300 ease-out ${
+                    isActive
+                      ? "scale-[1.05] sm:scale-[1.07] opacity-100 z-10"
+                      : "scale-[0.93] sm:scale-[0.94] opacity-70 z-0 hover:opacity-90"
+                  }`}
                 >
-                  <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-purple-500/50 transition-all shadow-md group-hover:shadow-purple-950/40">
+                  <div
+                    className={`relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border transition-all duration-300 ${
+                      isActive
+                        ? "border-purple-400/80 shadow-2xl shadow-purple-950/60 ring-2 ring-purple-500/50"
+                        : "border-white/10 shadow-md group-hover:border-purple-500/40"
+                    }`}
+                  >
+                    {/* Efeito de Pulso Leve na capa centralizada ativa (padrão Layers/Leis em Alta) */}
+                    {isActive && (
+                      <>
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-600/35 via-fuchsia-500/25 to-purple-600/35 blur-md pointer-events-none animate-pulse" />
+                        <div className="absolute inset-0 rounded-2xl ring-2 ring-purple-400/80 pointer-events-none animate-[pulse_2.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
+                      </>
+                    )}
+
                     <img
                       src={livro.capaUrl}
                       alt={livro.titulo}
                       loading={idx < 4 ? "eager" : "lazy"}
                       decoding="async"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
-                    
-                    {/* Badge de Status no topo esquerdo */}
-                    <div className="absolute top-2 left-2">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none" />
+
+                    {/* Tag Minimalista com Círculo e Check (substitui a tag grande de Finalizado) */}
+                    <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
                       {isDisponivel ? (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
-                          <Play className="w-2 h-2 fill-white" />
-                          Finalizado
-                        </span>
+                        <div
+                          title="Audiobook Completo"
+                          className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-950/60 border border-emerald-300/40 backdrop-blur-sm"
+                        >
+                          <Check className="w-3.5 h-3.5 stroke-[2.8]" />
+                        </div>
                       ) : (
-                        <span className="px-2 py-0.5 rounded-full bg-black/80 border border-amber-500/30 text-amber-300 text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md backdrop-blur-md">
-                          <Clock className="w-2 h-2" />
-                          Terminando
-                        </span>
+                        <div
+                          title="Em Gravação"
+                          className="w-6 h-6 rounded-full bg-black/80 text-amber-300 flex items-center justify-center shadow-md border border-amber-500/30 backdrop-blur-sm"
+                        >
+                          <Clock className="w-3.5 h-3.5 stroke-[2.2]" />
+                        </div>
                       )}
                     </div>
 
@@ -312,7 +425,14 @@ export default function AudiobooksPage() {
                       />
                     </button>
                   </div>
-                  <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-purple-300 transition-colors line-clamp-2 mt-2 leading-snug">
+
+                  <p
+                    className={`font-sans font-bold text-xs sm:text-[13px] line-clamp-2 mt-2 leading-snug transition-colors ${
+                      isActive
+                        ? "text-purple-200"
+                        : "text-white group-hover:text-purple-300"
+                    }`}
+                  >
                     {livro.titulo}
                   </p>
                   <p className="text-[10.5px] text-white/50 truncate mt-0.5">
@@ -321,6 +441,23 @@ export default function AudiobooksPage() {
                 </div>
               );
             })}
+          </div>
+
+          {/* Indicador de Bolinhas Minimalista */}
+          <div className="flex items-center justify-center gap-1.5 pt-1">
+            {livrosRecomendados.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => scrollCarouselToIndex(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === activeCarouselIndex
+                    ? "w-5 bg-purple-500 shadow-sm shadow-purple-500/60"
+                    : "w-1.5 bg-white/20 hover:bg-white/40"
+                }`}
+                aria-label={`Ver recomendação ${i + 1}`}
+              />
+            ))}
           </div>
         </section>
 
@@ -474,12 +611,16 @@ export default function AudiobooksPage() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
 
-                      {/* Selo no topo da capinha */}
-                      <div className="absolute top-1 left-1">
+                      {/* Selo no topo da capinha: Círculo minimalista com Check */}
+                      <div className="absolute top-1.5 left-1.5 z-10 pointer-events-none">
                         {isDisponivel ? (
-                          <span className="w-2 h-2 rounded-full bg-emerald-400 block shadow-md animate-pulse" />
+                          <div className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md border border-emerald-300/40">
+                            <Check className="w-2.5 h-2.5 stroke-[3]" />
+                          </div>
                         ) : (
-                          <span className="w-2 h-2 rounded-full bg-amber-400/80 block shadow-md" />
+                          <div className="w-4 h-4 rounded-full bg-black/80 border border-amber-500/40 text-amber-300 flex items-center justify-center shadow-md">
+                            <Clock className="w-2.5 h-2.5 stroke-[2.2]" />
+                          </div>
                         )}
                       </div>
                     </div>
