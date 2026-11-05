@@ -639,15 +639,18 @@ export default function ResumoJuridicoReaderSheet({
 
       // Fallback para Supabase apenas se não encontrado no catálogo
       if (!ativo) return;
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(resumo.id || ''));
       if (!resumo.markdown) {
-        supabase
-          .from("resumos_juridicos")
-          .select("markdown, exemplos, termos")
-          .eq("id", resumo.id)
-          .maybeSingle()
-          .then(({ data }) => {
-            if (data && ativo) setBasicData(data);
-          });
+        if (isUuid) {
+          supabase
+            .from("resumos_juridicos")
+            .select("markdown, exemplos, termos")
+            .eq("id", resumo.id)
+            .maybeSingle()
+            .then(({ data }) => {
+              if (data && ativo) setBasicData(data);
+            });
+        }
       } else {
         setBasicData({
           markdown: resumo.markdown,
@@ -659,6 +662,8 @@ export default function ResumoJuridicoReaderSheet({
 
     // Carrega metodologias existentes no Supabase
     (async () => {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(resumo.id || ''));
+      if (!isUuid) return;
       const { data } = await supabase
         .from("resumo_metodologias")
         .select("metodo, conteudo")

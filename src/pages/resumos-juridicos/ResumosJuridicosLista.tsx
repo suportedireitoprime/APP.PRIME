@@ -55,20 +55,25 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  });
  setSelected(cached);
  // Revalida em background sem travar UI
- void (supabase as any)
- .from("resumos_juridicos")
- .select("id, area, tema, subtema, ordem_subtema, markdown, exemplos, termos")
- .eq("id", ref.id)
- .maybeSingle()
- .then(({ data }: any) => {
- if (data) {
- void setPersistedResumo(ref.id, data);
- setSelected(data as ResumoRow);
- }
- });
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(ref.id || ''));
+  if (isUuid) {
+    void (supabase as any)
+      .from("resumos_juridicos")
+      .select("id, area, tema, subtema, ordem_subtema, markdown, exemplos, termos")
+      .eq("id", ref.id)
+      .maybeSingle()
+      .then(({ data }: any) => {
+        if (data) {
+          void setPersistedResumo(ref.id, data);
+          setSelected(data as ResumoRow);
+        }
+      });
+  }
  return;
  }
 
+ const isUuidDirect = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(ref.id || ''));
+ if (isUuidDirect) {
  setLoadingId(ref.id);
  const { data } = await (supabase as any)
  .from("resumos_juridicos")
@@ -85,6 +90,7 @@ export default function ResumosJuridicosLista({ modo }: { modo: "favoritos" | "r
  subtema: data.subtema,
  });
  setSelected(data as ResumoRow);
+ }
  }
  };
 
