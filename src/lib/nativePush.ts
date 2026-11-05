@@ -374,4 +374,4 @@ export async function removeNativePushToken() {
   } catch (e) {
     console.warn('Push cleanup failed', e);
   }
-}
+}
