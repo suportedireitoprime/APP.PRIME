@@ -310,7 +310,7 @@ export default function SimuladosResolver() {
         onBack={() => setConfirmarSaida(true)}
       />
 
-      <main className="max-w-4xl mx-auto px-4 py-4">
+      <main className="w-full">
         <ResolverPadrao
           questoes={questoesFormatadas}
           segundos={segundos}

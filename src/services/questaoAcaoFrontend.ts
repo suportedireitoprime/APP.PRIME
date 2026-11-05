@@ -88,9 +88,9 @@ function hashChave(texto: string) {
   return `h:${h}`;
 }
 
-const FALLBACK_MODEL = "antigravity/gemini-3.8-flash-tiered";
-const MAX_RETRIES = 1; // 1 tentativa por modelo → máx ~24s total
-const TIMEOUT_MS = 12_000; // 12s por chamada
+const FALLBACK_MODEL = "antigravity/gemini-3.5-flash-lite";
+const FAST_FALLBACK_MODEL = "antigravity/gemini-3-flash";
+const TIMEOUT_MS = 38_000; // 38s por chamada (tempo ideal para modelos com reasoning no OmniRoute)
 
 /** Cria um AbortController com timeout manual (compatível com qualquer WebView) */
 function criarAbortComTimeout(ms: number) {
@@ -127,14 +127,19 @@ async function chamarApi(model: string, tipo: Tipo, questao: any) {
   } catch (err: any) {
     limpar();
     if (err?.name === 'AbortError') {
-      throw new Error("overloaded"); // timeout → trata como overloaded para fallback
+      throw new Error("overloaded: timeout excedido");
     }
     throw err;
   }
   limpar();
 
   const txt = await r.text();
-  if (!r.ok) throw new Error(`[${r.status}] ${txt.slice(0, 400)}`);
+  if (!r.ok) {
+    if (r.status === 429 || r.status === 500 || r.status === 503 || r.status === 529) {
+      throw new Error(`overloaded [HTTP ${r.status}]`);
+    }
+    throw new Error(`[${r.status}] ${txt.slice(0, 400)}`);
+  }
   const data = JSON.parse(txt);
   const raw = (data.choices?.[0]?.message?.content ?? "").trim();
   try {
@@ -149,27 +154,23 @@ async function chamarApi(model: string, tipo: Tipo, questao: any) {
 export async function gerarQuestaoAcaoFrontend(tipo: Tipo, questao: any) {
   if (!questao || !tipo) throw new Error("Parâmetros inválidos para gerarQuestaoAcaoFrontend");
   
-  const modelos = [MODEL, FALLBACK_MODEL];
+  const modelos = [MODEL, FALLBACK_MODEL, FAST_FALLBACK_MODEL];
+  let ultimoErro: any = null;
+
   for (const modelo of modelos) {
-    for (let tentativa = 0; tentativa < MAX_RETRIES; tentativa++) {
-      try {
-        return await chamarApi(modelo, tipo, questao);
-      } catch (e) {
-        const msg = String((e as Error)?.message ?? "");
-        const isOverloaded = msg.includes("overloaded") || msg.includes("503") || msg.includes("529") || msg.includes("rate") || msg.includes("AbortError");
-        if (isOverloaded && tentativa < MAX_RETRIES - 1) {
-          const delay = 1000 * (tentativa + 1);
-          console.warn(`[questao-acao-ia] ${modelo} tentativa ${tentativa + 1} falhou (overloaded), retry em ${delay}ms`);
-          await new Promise(r => setTimeout(r, delay));
-          continue;
-        }
-        if (isOverloaded) {
-          console.warn(`[questao-acao-ia] ${modelo} esgotou retries, tentando próximo modelo`);
-          break; // tenta o próximo modelo
-        }
-        throw e; // erro não-recuperável, lança imediatamente
+    try {
+      console.log(`[questao-acao-ia] Executando '${tipo}' via OmniRoute com modelo '${modelo}'...`);
+      return await chamarApi(modelo, tipo, questao);
+    } catch (e: any) {
+      ultimoErro = e;
+      const msg = String(e?.message ?? "");
+      const isOverloaded = msg.includes("overloaded") || msg.includes("503") || msg.includes("529") || msg.includes("429") || msg.includes("rate") || msg.includes("AbortError") || msg.includes("timeout");
+      console.warn(`[questao-acao-ia] Modelo ${modelo} falhou: ${msg}. Tentando próximo modelo do OmniRoute...`);
+      if (!isOverloaded && !msg.includes("500") && !msg.includes("Failed to fetch")) {
+        throw e;
       }
     }
   }
-  throw new Error("Todos os modelos estão indisponíveis no momento. Tente novamente em alguns segundos.");
+
+  throw new Error(`Não foi possível gerar '${tipo}' no momento. Tente novamente em alguns segundos.`);
 }

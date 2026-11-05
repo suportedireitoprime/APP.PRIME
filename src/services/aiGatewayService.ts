@@ -211,13 +211,13 @@ export const AI_FEATURES_REGISTRY: AiFeatureDefinition[] = [
 const STORAGE_KEY_ROUTING = 'omniroute_ai_feature_routing_v2';
 const OMNIROUTE_DEFAULT_BASE_URL = 'https://omniroute-production-fb57.up.railway.app/v1';
 
-let cachedOmniRouteKey: string | null = null;
+let cachedOmniRouteKey: string | null = 'sk-38e56915733a82fb-ae2ff9-2d6df645';
 
 export async function getOmniRouteApiKey(): Promise<string> {
   if (cachedOmniRouteKey) return cachedOmniRouteKey;
   try {
     const edgeCall = supabase.functions.invoke('get-omniroute-key');
-    const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout edge function')), 5000));
+    const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout edge function')), 2000));
     
     // @ts-ignore
     const { data, error } = await Promise.race([edgeCall, timeout]);
@@ -524,7 +524,7 @@ export async function executeAiTask(options: {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 12000);
+    const timeoutId = setTimeout(() => controller.abort(), 35000);
     
     const payload: any = {
         model: config.selectedModel,
@@ -606,7 +606,7 @@ export async function executeAiTask(options: {
     console.warn(`[OmniRoute] Falha no texto com ${config.selectedModel}. Tentando fallback direto com antigravity/gemini-3.8-flash-tiered...`);
     try {
       const controllerFallback = new AbortController();
-      const timeoutIdFallback = setTimeout(() => controllerFallback.abort(), 6000);
+      const timeoutIdFallback = setTimeout(() => controllerFallback.abort(), 25000);
 
       const res = await fetch(`${cleanUrl}/chat/completions`, {
         method: 'POST',

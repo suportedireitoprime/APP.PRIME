@@ -70,7 +70,12 @@ async function fetchAcaoInner(body: Record<string, any>) {
   if (questaoId && !questaoData) {
     console.log('[fetchAcao] Buscando questão no Supabase…');
     const { data } = await supabase.from("questoes").select("*").eq("id", questaoId).maybeSingle();
-    if (data) questaoData = data;
+    if (data) {
+      questaoData = data;
+    } else {
+      const { data: simData } = await supabase.from("simulado_questions").select("*").eq("id", questaoId).maybeSingle();
+      if (simData) questaoData = simData;
+    }
   }
 
   if (!questaoData) throw new Error("Questão não encontrada para geração de conteúdo");

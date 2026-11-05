@@ -21,8 +21,8 @@ export function QuestaoHeader({
   const isFilosofia = disciplina?.toLowerCase().includes('filosofia');
 
   return (
-    <div className="sticky top-0 z-50 flex flex-col">
-      <div className="relative flex items-center justify-between bg-[rgb(var(--tema-rgb))] px-4 pb-4 pt-safe-header text-white shadow-sm overflow-hidden">
+    <div className={onBack ? "sticky top-0 z-50 flex flex-col w-full" : "relative z-30 flex flex-col w-full"}>
+      <div className={`relative flex items-center justify-between bg-[rgb(var(--tema-rgb))] px-4 text-white shadow-sm overflow-hidden w-full ${onBack ? "pb-4 pt-safe-header" : "py-3 sm:py-3.5"}`}>
         
         {/* Arte da Disciplina (Filosofia) */}
         {isFilosofia && (
@@ -44,12 +44,10 @@ export function QuestaoHeader({
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
-        ) : (
-          <div className="h-10 w-10 shrink-0" />
-        )}
+        ) : null}
         <div className="relative z-10 flex-1 px-2 flex flex-col items-center justify-center min-w-0">
           <div className="flex items-center gap-2 max-w-full">
-            <p className="truncate text-[16px] font-bold leading-tight">{disciplina || 'Questão'}</p>
+            <p className="truncate text-[15px] sm:text-[16px] font-bold leading-tight tracking-wide">{disciplina || 'Questão'}</p>
             <AnimatePresence>
               {streak >= 3 && (
                 <motion.div
@@ -66,9 +64,13 @@ export function QuestaoHeader({
           </div>
           {tempoNode && <div className="mt-0.5">{tempoNode}</div>}
         </div>
-        <div className="relative z-10 flex shrink-0 items-center justify-end min-w-[40px]">
-          {encerrarNode || <div className="h-10 w-10 shrink-0" />}
-        </div>
+        {encerrarNode ? (
+          <div className="relative z-10 flex shrink-0 items-center justify-end min-w-[40px]">
+            {encerrarNode}
+          </div>
+        ) : onBack ? (
+          <div className="h-10 w-10 shrink-0" />
+        ) : null}
       </div>
 
       {/* Barra de Progresso Viva */}
