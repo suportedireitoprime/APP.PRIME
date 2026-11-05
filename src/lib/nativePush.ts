@@ -206,8 +206,8 @@ export async function ensureNativePushListeners() {
       const data = (notif?.data ?? {}) as Record<string, string>;
       const actionId = event.actionId; // Ex: 'read_now', 'dismiss'
       
-      const url = data.url;
-      const campaignId = data.campaign_id;
+      const url = data?.url || (notif as any)?.url || notif?.link || (notif as any)?.actionUrl;
+      const campaignId = data?.campaign_id || (notif as any)?.campaign_id;
 
       // Registra o clique pra métrica de "aberturas"
       if (campaignId) {
@@ -254,7 +254,7 @@ export async function ensureNativePushListeners() {
     await FirebaseMessaging.addListener('notificationReceived', async (event) => {
       const notif = event.notification;
       const data = (notif.data ?? {}) as Record<string, string>;
-      const campaignId = data.campaign_id;
+      const campaignId = data?.campaign_id || (notif as any)?.campaign_id;
 
       if (campaignId) {
         trackPush(campaignId, 'delivered', { foreground: true });
@@ -266,7 +266,7 @@ export async function ensureNativePushListeners() {
           title: notif.title ?? data.title ?? 'OAB na Risca',
           body: notif.body ?? data.body ?? '',
           imageUrl: data.image || (notif as any).image,
-          actionUrl: data.url,
+          actionUrl: data?.url || (notif as any)?.url || notif?.link || (notif as any)?.actionUrl,
         });
       } catch (e) {
         console.warn('Foreground push display failed', e);
@@ -279,7 +279,7 @@ export async function ensureNativePushListeners() {
       const { notifications } = await FirebaseMessaging.getDeliveredNotifications();
       for (const n of notifications ?? []) {
         const data = ((n as any).data ?? {}) as Record<string, string>;
-        const campaignId = data.campaign_id;
+        const campaignId = data?.campaign_id || (n as any)?.campaign_id;
         if (campaignId) {
           trackPush(campaignId, 'opened', { source: 'cold_start_recovery' });
         }

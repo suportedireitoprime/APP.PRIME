@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import type { BlogPost, BlogTema } from "@/data/blogPosts";
 import BlogPostSheet from "@/components/vademecum/blog/BlogPostSheet";
 import BlogHeroHeader from "@/components/vademecum/blog/BlogHeroHeader";
@@ -155,15 +155,16 @@ const Blog = () => {
     }
   }, [selectedPost, selectedFilter, mainTab]);
 
-  // Compartilhamento via query string (?post=...)
+  const { slug: routeSlug } = useParams<{ slug?: string }>();
+  // Compartilhamento via query string (?post=...) ou rota direta (/blog/:slug)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const id = params.get("post");
-    if (id) {
-      const found = allPosts.find((p) => p.id === id);
+    const target = params.get("post") || routeSlug;
+    if (target && allPosts.length) {
+      const found = allPosts.find((p) => p.id === target || (p as any).slug === target);
       if (found) setSelectedPost(found);
     }
-  }, [location.search, allPosts]);
+  }, [location.search, routeSlug, allPosts]);
 
   // Preload Above-the-fold e capas Em Alta
   useEffect(() => {

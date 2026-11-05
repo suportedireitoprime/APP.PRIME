@@ -898,6 +898,7 @@ function AnimatedRoutes() {
           <Route path="/ferramentas" element={<ProtectedRoute><PageTransition instant><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/documentos" element={<ProtectedRoute><PageTransition><Documentos /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition instant><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/dicionario" element={<Navigate to="/ferramentas/dicionario" replace />} />
           <Route path="/simulados/provas" element={<Navigate to="/simulados" replace />} />
           <Route path="/simulados/estatisticas" element={<ProtectedRoute><PageTransition><SimuladosEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados/resolver/:id" element={<ProtectedRoute><PageTransition><SimuladosResolver /></PageTransition></ProtectedRoute>} />
@@ -1021,6 +1022,7 @@ function AnimatedRoutes() {
           <Route path="/perfil" element={<ProtectedRoute><PageTransition instant><Perfil /></PageTransition></ProtectedRoute>} />
           <Route path="/sobre" element={<ProtectedRoute><PageTransition><SobreApp /></PageTransition></ProtectedRoute>} />
           <Route path="/blog" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
+          <Route path="/blog/:slug" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
           <Route path="/biblioteca" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
           <Route path="/biblioteca/caderno" element={<Navigate to="/pessoal/grifos" replace />} />

@@ -40,16 +40,16 @@ type TabMode = 'grade2h' | 'dashboard' | 'manual' | 'laboratorio';
 type TargetAudience = 'users_only' | 'premium' | 'free' | 'test_admin';
 
 const GRADE_2_HORAS = [
-  { hora: '06:00', titulo: 'Boletim Matinal', desc: 'Atualizações jurídicas e novidades para iniciar o dia.', emoji: '🌅', tag: 'Notícias' },
-  { hora: '08:00', titulo: 'Novas Leis & CF88', desc: 'Atos publicados no Diário Oficial e artigos da Constituição.', emoji: '📜', tag: 'Legislação' },
-  { hora: '10:00', titulo: 'Dicionário Jurídico', desc: 'Conceito e vocabulário técnico com exemplo prático.', emoji: '📖', tag: 'Vocabulário' },
-  { hora: '12:00', titulo: 'Sugestão de Leitura', desc: 'Livro estratégico da biblioteca para a pausa do almoço.', emoji: '📚', tag: 'Biblioteca' },
-  { hora: '14:00', titulo: 'Áudio-aula Explicativa', desc: 'Revisão jurídica em áudio citando o nome do estudante.', emoji: '🎧', tag: 'Áudio' },
-  { hora: '16:00', titulo: 'Pílula Jurídica', desc: 'Conceito clássico ou resumo doutrinário de 2 minutos.', emoji: '💊', tag: 'Pílula' },
-  { hora: '18:00', titulo: 'Resumo do Expediente', desc: 'Fechamento do dia com as principais decisões dos tribunais.', emoji: '🌆', tag: 'Tribunais' },
-  { hora: '20:00', titulo: 'Questão de Fixação', desc: 'Simulado prático de OAB e Concursos para a noite.', emoji: '🧠', tag: 'Questões' },
-  { hora: '22:00', titulo: 'Áudio de Revisão', desc: 'Revisão passiva antes de dormir para consolidar a matéria.', emoji: '🌙', tag: 'Revisão' },
-  { hora: '00:00', titulo: 'Videoaula Coruja', desc: 'Aula rápida com tema coringa para quem estuda na madrugada.', emoji: '🦉', tag: 'Vídeo' },
+  { hora: '06:00', titulo: 'Boletim Matinal', desc: 'Atualizações jurídicas e novidades para iniciar o dia.', emoji: '🌅', tag: 'Notícias', rota: '/radar-360' },
+  { hora: '08:00', titulo: 'Novas Leis & CF88', desc: 'Atos publicados no Diário Oficial e artigos da Constituição.', emoji: '📜', tag: 'Legislação', rota: '/vade-mecum' },
+  { hora: '10:00', titulo: 'Dicionário Jurídico', desc: 'Conceito e vocabulário técnico com exemplo prático.', emoji: '📖', tag: 'Vocabulário', rota: '/ferramentas/dicionario' },
+  { hora: '12:00', titulo: 'Sugestão de Leitura', desc: 'Livro estratégico da biblioteca para a pausa do almoço.', emoji: '📚', tag: 'Biblioteca', rota: '/biblioteca' },
+  { hora: '14:00', titulo: 'Áudio-aula Explicativa', desc: 'Revisão jurídica em áudio citando o nome do estudante.', emoji: '🎧', tag: 'Áudio', rota: '/audioaulas' },
+  { hora: '16:00', titulo: 'Pílula Jurídica', desc: 'Conceito clássico ou resumo doutrinário de 2 minutos.', emoji: '💊', tag: 'Pílula', rota: '/blog' },
+  { hora: '18:00', titulo: 'Resumo do Expediente', desc: 'Fechamento do dia com as principais decisões dos tribunais.', emoji: '🌆', tag: 'Tribunais', rota: '/radar-360' },
+  { hora: '20:00', titulo: 'Questão de Fixação', desc: 'Simulado prático de OAB e Concursos para a noite.', emoji: '🧠', tag: 'Questões', rota: '/questoes' },
+  { hora: '22:00', titulo: 'Áudio de Revisão', desc: 'Revisão passiva antes de dormir para consolidar a matéria.', emoji: '🌙', tag: 'Revisão', rota: '/audioaulas' },
+  { hora: '00:00', titulo: 'Videoaula Coruja', desc: 'Aula rápida com tema coringa para quem estuda na madrugada.', emoji: '🦉', tag: 'Vídeo', rota: '/aprender' },
 ];
 
 export default function AdminPush() {
@@ -102,13 +102,77 @@ export default function AdminPush() {
     return campaigns.filter(c => c.status === 'scheduled');
   }, [campaigns]);
 
-  // Próximo disparo programado
+  // Timer de 10s para contagem regressiva em tempo real
+  const [nowMs, setNowMs] = useState<number>(Date.now());
+  useEffect(() => {
+    const timer = setInterval(() => setNowMs(Date.now()), 10000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Helper de contagem regressiva humanizada
+  const getNextRunInfo = useCallback((nextRunAtIso: string | null | undefined) => {
+    if (!nextRunAtIso) return null;
+    const diffMs = new Date(nextRunAtIso).getTime() - nowMs;
+    if (diffMs <= 0) return { passed: true, diffMin: 0, label: "Disparando agora" };
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHours = Math.floor(diffMin / 60);
+    const remMin = diffMin % 60;
+    
+    if (diffHours > 0) {
+      return { passed: false, diffMin, label: `em ${diffHours}h ${remMin > 0 ? `${remMin}min` : ''}`.trim() };
+    }
+    return { passed: false, diffMin, label: `em ${diffMin} min` };
+  }, [nowMs]);
+
+  // Próximo disparo programado geral
   const nextScheduled = useMemo(() => {
-    const now = new Date().toISOString();
+    const nowIso = new Date(nowMs).toISOString();
     return scheduledCampaigns
-      .filter(c => c.next_run_at && c.next_run_at >= now)
+      .filter(c => c.next_run_at && c.next_run_at >= nowIso)
       .sort((a, b) => (a.next_run_at || '').localeCompare(b.next_run_at || ''))[0] || null;
-  }, [scheduledCampaigns]);
+  }, [scheduledCampaigns, nowMs]);
+
+  // Mapeamento dos slots da Grade 2 Horas com status em tempo real
+  const slotStatusMap = useMemo(() => {
+    const map = new Map<string, { 
+      nextRunIso: string; 
+      campaignTitle: string; 
+      countdownLabel: string; 
+      isNextImmediate: boolean;
+      destinationUrl?: string | null;
+    }>();
+    
+    const nowIso = new Date(nowMs).toISOString();
+    const futureCampaigns = scheduledCampaigns
+      .filter(c => c.next_run_at && c.next_run_at >= nowIso)
+      .sort((a, b) => (a.next_run_at || '').localeCompare(b.next_run_at || ''));
+      
+    const immediateNextId = futureCampaigns[0]?.id;
+
+    for (const c of futureCampaigns) {
+      if (!c.next_run_at) continue;
+      // Extrai hora exata no Fuso Oficial de Brasília (UTC-3)
+      const horaBrt = new Intl.DateTimeFormat('pt-BR', { 
+        timeZone: 'America/Sao_Paulo', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+      }).format(new Date(c.next_run_at));
+
+      if (!map.has(horaBrt)) {
+        const info = getNextRunInfo(c.next_run_at);
+        map.set(horaBrt, {
+          nextRunIso: c.next_run_at,
+          campaignTitle: c.title,
+          countdownLabel: info?.label || '',
+          isNextImmediate: c.id === immediateNextId,
+          destinationUrl: c.url,
+        });
+      }
+    }
+    return map;
+  }, [scheduledCampaigns, nowMs, getNextRunInfo]);
 
   // Disparo manual ou agendamento
   const handleCreatePush = async (e: React.FormEvent) => {
@@ -330,18 +394,22 @@ export default function AdminPush() {
           {/* PRÓXIMO DISPARO HIGHLIGHT */}
           {nextScheduled && (
             <div className="mt-4 pt-3.5 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
-              <div className="flex items-center gap-2 text-zinc-300">
-                <Clock className="w-4 h-4 text-red-400" />
+              <div className="flex items-center gap-2 text-zinc-300 flex-wrap">
+                <Clock className="w-4 h-4 text-red-400 shrink-0" />
                 <span>Próximo disparo:</span>
-                <span className="font-bold text-white font-mono">
-                  {new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(new Date(nextScheduled.next_run_at!))}
+                <span className="font-bold text-white font-mono text-sm bg-zinc-800/80 px-2 py-0.5 rounded border border-white/5">
+                  {new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }).format(new Date(nextScheduled.next_run_at!))}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  {getNextRunInfo(nextScheduled.next_run_at)?.label}
                 </span>
                 <span className="text-zinc-400 truncate max-w-[200px] sm:max-w-xs">
                   • {nextScheduled.title}
                 </span>
               </div>
               <Badge variant="outline" className="text-[10px] border-red-500/30 text-red-400 bg-red-500/10">
-                Automático via Cron
+                Horário de Brasília (UTC-3)
               </Badge>
             </div>
           )}
@@ -391,37 +459,91 @@ export default function AdminPush() {
         {/* ============================================================== */}
         {tab === 'grade2h' && (
           <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-bold tracking-widest uppercase text-zinc-400 flex items-center gap-2">
-                <Database className="w-4 h-4 text-red-500" /> Cronograma de Disparos das Pessoas (Diário)
-              </h3>
-              <span className="text-[11px] text-zinc-500 font-mono">10 disparos/dia</span>
+            {/* AUDITORIA DE FUSO E CONTAGEM REGRESSIVA EM TEMPO REAL */}
+            <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800 flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2">
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                <span className="text-xs text-zinc-300 font-medium">
+                  Fuso Horário Ativo: <strong className="text-white">Brasília (UTC-3)</strong>
+                </span>
+                <span className="text-[11px] text-zinc-500 font-mono ml-2">• 10 disparos/dia</span>
+              </div>
+              {nextScheduled && (
+                <div className="flex items-center gap-2 bg-red-950/40 border border-red-500/30 px-3 py-1 rounded-xl">
+                  <Clock className="w-3.5 h-3.5 text-red-400" />
+                  <span className="text-xs text-zinc-300">
+                    Próximo: <strong className="text-white font-mono">{new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }).format(new Date(nextScheduled.next_run_at!))}</strong>
+                  </span>
+                  <span className="text-xs font-bold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-md">
+                    {getNextRunInfo(nextScheduled.next_run_at)?.label}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {GRADE_2_HORAS.map((slot) => {
+                const status = slotStatusMap.get(slot.hora);
+                const isNext = status?.isNextImmediate;
+
                 return (
                   <div 
                     key={slot.hora}
-                    className="p-4 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700 transition-all flex items-start gap-3.5"
+                    className={`p-4 rounded-2xl transition-all flex flex-col justify-between gap-3 ${
+                      isNext
+                        ? 'bg-red-950/25 border-2 border-red-500/80 ring-2 ring-red-500/30 shadow-xl shadow-red-950/50'
+                        : 'bg-zinc-900/40 border border-zinc-800/80 hover:border-zinc-700'
+                    }`}
                   >
-                    <div className="w-11 h-11 rounded-xl bg-zinc-800/80 border border-white/5 flex flex-col items-center justify-center shrink-0">
-                      <span className="text-base leading-none">{slot.emoji}</span>
-                      <span className="text-[10px] font-mono font-bold text-red-400 mt-1">{slot.hora}</span>
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-sm font-bold text-white tracking-wide truncate">
-                          {slot.titulo}
-                        </span>
-                        <span className="text-[9.5px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 shrink-0">
-                          {slot.tag}
+                    <div className="flex items-start gap-3.5">
+                      <div className={`w-11 h-11 rounded-xl border flex flex-col items-center justify-center shrink-0 ${
+                        isNext ? 'bg-red-900/40 border-red-500/40' : 'bg-zinc-800/80 border-white/5'
+                      }`}>
+                        <span className="text-base leading-none">{slot.emoji}</span>
+                        <span className={`text-[10px] font-mono font-bold mt-1 ${isNext ? 'text-red-300' : 'text-red-400'}`}>
+                          {slot.hora}
                         </span>
                       </div>
-                      <p className="text-xs text-zinc-400 leading-relaxed line-clamp-2">
-                        {slot.desc}
-                      </p>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <span className="text-sm font-bold text-white tracking-wide truncate">
+                            {slot.titulo}
+                          </span>
+                          <span className="text-[9.5px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-400 shrink-0">
+                            {slot.tag}
+                          </span>
+                        </div>
+                        <p className="text-xs text-zinc-400 leading-relaxed line-clamp-2">
+                          {slot.desc}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* STATUS DE DISPARO E ROTA DE REDIRECIONAMENTO */}
+                    <div className="pt-2.5 border-t border-white/5 flex items-center justify-between gap-2 flex-wrap text-xs">
+                      {isNext ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                          Próximo às {slot.hora} ({status.countdownLabel})
+                        </span>
+                      ) : status ? (
+                        <span className="text-[10px] font-mono text-zinc-400 bg-zinc-800/80 px-2 py-0.5 rounded border border-white/5">
+                          Agendado ({status.countdownLabel})
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-zinc-500 flex items-center gap-1 font-medium">
+                          <CheckCircle2 className="w-3 h-3 text-zinc-600" /> Disparado hoje
+                        </span>
+                      )}
+
+                      <span className="text-[10.5px] text-zinc-400 flex items-center gap-1 font-mono shrink-0">
+                        <ExternalLink className="w-3 h-3 text-red-400" />
+                        <span className="text-zinc-500">Destino:</span>
+                        <code className="text-zinc-200 bg-zinc-800/80 px-1.5 py-0.5 rounded border border-white/5 text-[10px]">
+                          {slot.rota}
+                        </code>
+                      </span>
                     </div>
                   </div>
                 );

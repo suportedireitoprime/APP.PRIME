@@ -59,6 +59,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(6),
         audience: { all: true, target: 'all', include_admins: true },
+        url: "/radar-360",
         automation_key: "planner-matinal"
       });
 
@@ -69,6 +70,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(8),
         audience: { all: true, target: 'all', include_admins: true },
+        url: "/vade-mecum",
         automation_key: "planner-leis"
       });
 
@@ -82,7 +84,7 @@ Deno.serve(async (req) => {
         body: `{nome}, venha conferir o significado dessa palavra no nosso Dicionário Jurídico e aumente seu vocabulário.`,
         status: "scheduled",
         next_run_at: getDateWithHour(10),
-        url: `/dicionario`,
+        url: `/ferramentas/dicionario`,
         audience: { all: true, target: 'all', include_admins: true },
         automation_key: "planner-dicionario"
       });
@@ -135,6 +137,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(18),
         audience: { all: true, target: 'all', include_admins: true },
+        url: "/radar-360",
         automation_key: "planner-noturno"
       });
 
