@@ -192,11 +192,13 @@ export default function SimuladosResolver() {
     return list.map((q) => {
       const options = q.options || {};
 
-      const fullComentario = [
-        q.correct_comment ? `Gabarito Comentado:\n${q.correct_comment}` : '',
-        q.incorrect_comment ? `Análise das Demais Alternativas:\n${q.incorrect_comment}` : '',
-        q.base_legal ? `Base Legal: ${q.base_legal}` : '',
-      ].filter(Boolean).join('\n\n') || q.correct_comment || '';
+      const cleanCorrect = (q.correct_comment || '')
+        .replace(/^(\s*(\*\*|\*|#+\s*)?(Gabarito\s+(Oficial\s+)?Comentado|Coment[áa]rio\s+(do\s+Gabarito)?|Gabarito)[\s:]*(\*\*|\*)?[\s:\-–—]*)/i, '')
+        .trim();
+
+      const cleanIncorrect = (q.incorrect_comment || '')
+        .replace(/^(\s*(\*\*|\*|#+\s*)?(Análise\s+das\s+(?:Demais\s+)?Alternativas|Alternativas\s+Incorretas|Demais\s+Alternativas)[\s:]*(\*\*|\*)?[\s:\-–—]*)/i, '')
+        .trim();
 
       return {
         id: q.id,
@@ -213,8 +215,8 @@ export default function SimuladosResolver() {
         alt_d: options.D || '',
         alt_e: options.E || '',
         gabarito_oficial: q.gabarito || 'A',
-        gabarito_comentado: fullComentario,
-        comentario_incorretas: q.incorrect_comment || '',
+        gabarito_comentado: cleanCorrect,
+        comentario_incorretas: cleanIncorrect,
         base_legal: q.base_legal || '',
         dificuldade: q.dificuldade || '',
         status: q.status || '',

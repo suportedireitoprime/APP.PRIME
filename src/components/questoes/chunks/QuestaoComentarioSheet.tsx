@@ -91,10 +91,62 @@ function groupSentences(text: string): string {
   }).join('\n\n');
 }
 
+// Remove cabeçalhos redundantes como "Gabarito Comentado:", "Gabarito:", "Comentário:"
+function limparTextoComentario(texto: string | undefined): string {
+  if (!texto) return '';
+  return texto
+    .replace(/^(\s*(\*\*|\*|#+\s*)?(Gabarito\s+(Oficial\s+)?Comentado|Coment[áa]rio\s+(do\s+Gabarito)?|Gabarito)[\s:]*(\*\*|\*)?[\s:\-–—]*)/i, '')
+    .trim();
+}
+
+// Extrai e separa estritamente o comentário da alternativa correta e o das alternativas incorretas
+function extrairPartesComentario(source: any): { correta: string; erradas: string } {
+  if (!source || typeof source !== 'object') {
+    return { correta: '', erradas: '' };
+  }
+
+  let corretaRaw = source.gabarito_comentado || source.correct_comment || source.comentario || '';
+  let erradasRaw = source.comentario_incorretas || source.incorrect_comment || '';
+
+  // Se o texto da correta contiver a seção de outras alternativas concatenada
+  const separadores = [
+    /\n\s*(?:\*\*|\*|#+\s*)?(?:Análise\s+das\s+(?:Demais\s+)?Alternativas|Demais\s+Alternativas|Alternativas\s+Incorretas|Outras\s+Alternativas)[\s:]*(?:\*\*|\*)?[\s:\-–—]*/i,
+    /\n\s*(?:\*\*|\*|#+\s*)?(?:Das\s+Demais\s+Alternativas|Quanto\s+[àa]s\s+demais\s+alternativas)[\s:]*(?:\*\*|\*)?[\s:\-–—]*/i,
+  ];
+
+  for (const sep of separadores) {
+    if (sep.test(corretaRaw)) {
+      const parts = corretaRaw.split(sep);
+      corretaRaw = parts[0] || '';
+      if (!erradasRaw && parts[1]) {
+        erradasRaw = parts[1].trim();
+      }
+      break;
+    }
+  }
+
+  // Se não tem separador formal, mas tem quebra com "(B) Incorreta:" ou "(C) Incorreta:"
+  if (!erradasRaw && /\n\s*(?:\*\*)?\([B-E]\)\s*(?:Incorret[ao]|Fals[ao])/i.test(corretaRaw)) {
+    const idx = corretaRaw.search(/\n\s*(?:\*\*)?\([B-E]\)\s*(?:Incorret[ao]|Fals[ao])/i);
+    if (idx > 0) {
+      erradasRaw = corretaRaw.slice(idx).trim();
+      corretaRaw = corretaRaw.slice(0, idx).trim();
+    }
+  }
+
+  return {
+    correta: limparTextoComentario(corretaRaw),
+    erradas: erradasRaw
+      .replace(/^(\s*(\*\*|\*|#+\s*)?(Análise\s+das\s+(?:Demais\s+)?Alternativas|Alternativas\s+Incorretas|Demais\s+Alternativas)[\s:]*(\*\*|\*)?[\s:\-–—]*)/i, '')
+      .trim(),
+  };
+}
+
 // Helper to format plain text from spreadsheet into nice markdown
 function formatarComentario(texto: string | undefined): string {
   if (!texto) return '';
-  const formatado = texto
+  const limpo = limparTextoComentario(texto);
+  const formatado = limpo
     // Add newlines before (A) Incorreta, (A), (B) e (C) Incorretas, etc. and bold them
     .replace(/((?:\([A-E]\)(?:,\s*|\s+e\s+)*)+)\s*(Incorret[ao]s?|Corret[ao]s?)[\.:-]?/gi, '\n\n**$1 $2:** ')
     // Highlight Súmulas
@@ -109,13 +161,19 @@ function formatarComentario(texto: string | undefined): string {
 export function ComentarioInner({ source }: { source: Fonte }) {
   const [view, setView] = useState<'correta' | 'erradas'>('correta');
   const [fs, setFsState] = useState(17);
-  const isDbQuestion = typeof source === 'object' && source !== null && 'id' in source;
-  const isSimulado = !isDbQuestion;
-  const hasPrePopulatedComments = typeof source === 'object' && source !== null && !!(source as any).gabarito_comentado;
-  const isEnabled = !hasPrePopulatedComments;
 
-  const { data, isLoading, error, refetch } = useQuestaoAcao(source, 'comentario', isEnabled && view === 'correta');
-  const erradasQ = useQuestaoAcao(source, 'lei-erradas', isEnabled && view === 'erradas');
+  const partes = typeof source === 'object' && source !== null 
+    ? extrairPartesComentario(source) 
+    : { correta: '', erradas: '' };
+
+  const hasPreCorreta = !!partes.correta;
+  const hasPreErradas = !!partes.erradas;
+
+  const isEnabledCorreta = !hasPreCorreta;
+  const isEnabledErradas = !hasPreErradas;
+
+  const { data, isLoading, error, refetch } = useQuestaoAcao(source, 'comentario', isEnabledCorreta && view === 'correta');
+  const erradasQ = useQuestaoAcao(source, 'lei-erradas', isEnabledErradas && view === 'erradas');
   const erradas: any[] = erradasQ.data?.erradas ?? [];
 
   useEffect(() => {
@@ -163,9 +221,9 @@ export function ComentarioInner({ source }: { source: Fonte }) {
             />
           )}
           {error && !isLoading && <Erro msg={error} onRetry={() => refetch()} />}
-          {!isLoading && !error && (hasPrePopulatedComments || data) && (
+          {!isLoading && !error && (hasPreCorreta || data) && (
             <div className="space-y-3">
-              <Md texto={hasPrePopulatedComments ? formatarComentario((source as any).gabarito_comentado) : data.texto} className={mdClass} />
+              <Md texto={hasPreCorreta ? formatarComentario(partes.correta) : limparTextoComentario(data.texto)} className={mdClass} />
               {data?.fundamento && (
                 <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
                   <p className="mb-1 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
@@ -189,61 +247,63 @@ export function ComentarioInner({ source }: { source: Fonte }) {
 
       {view === 'erradas' && (
         <>
-          {erradasQ.isLoading && (
-            <Checklist
-              passos={[
-                'Separando as alternativas que não são o gabarito',
-                'Confrontando cada uma com a lei e a jurisprudência',
-                'Identificando o erro central de cada alternativa',
-                'Escrevendo as explicações',
-              ]}
-            />
-          )}
-          {erradasQ.error && !erradasQ.isLoading && <Erro msg={erradasQ.error} onRetry={() => erradasQ.refetch()} />}
-          {!erradasQ.isLoading && !erradasQ.error && erradas.length === 0 && !hasPrePopulatedComments && erradasQ.data && (
-            <p className="rounded-xl border border-border bg-background p-4 text-sm text-muted-foreground">
-              Não foi possível identificar alternativas erradas para explicar.
-            </p>
-          )}
-
-          {hasPrePopulatedComments && (source as any).comentario_incorretas && (
-            <div className="rounded-xl border border-border bg-background p-4">
-              <Md texto={formatarComentario((source as any).comentario_incorretas)} className={mdClass} />
+          {hasPreErradas ? (
+            <div className="rounded-xl border border-border bg-background/50 p-4 leading-relaxed">
+              <Md texto={formatarComentario(partes.erradas)} className={mdClass} />
             </div>
-          )}
+          ) : (
+            <>
+              {erradasQ.isLoading && (
+                <Checklist
+                  passos={[
+                    'Separando as alternativas que não são o gabarito',
+                    'Confrontando cada uma com a lei e a jurisprudência',
+                    'Identificando o erro central de cada alternativa',
+                    'Escrevendo as explicações',
+                  ]}
+                />
+              )}
+              {erradasQ.error && !erradasQ.isLoading && <Erro msg={erradasQ.error} onRetry={() => erradasQ.refetch()} />}
+              {!erradasQ.isLoading && !erradasQ.error && erradas.length === 0 && !hasPreErradas && erradasQ.data && (
+                <p className="rounded-xl border border-border bg-background p-4 text-sm text-muted-foreground">
+                  Não foi possível identificar alternativas erradas para explicar.
+                </p>
+              )}
 
-          {!hasPrePopulatedComments && erradas.length > 0 && (
-            <div className="space-y-2.5">
-              {erradas.map((e, i) => (
-                <motion.div
-                  key={`${e.letra}-${i}`}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25, delay: i * 0.04 }}
-                  className="overflow-hidden rounded-xl border border-destructive/25 bg-background/40"
-                >
-                  <div className="border-b border-destructive/20 bg-destructive/10 px-4 py-3">
-                    <div className="mb-1.5 flex items-center gap-2">
-                      <span className="grid h-7 w-7 place-items-center rounded-full border border-destructive/40 bg-destructive/20 text-xs font-bold text-destructive">
-                        {e.letra}
-                      </span>
-                      {e.dispositivo_chave && (
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
-                          {e.dispositivo_chave}
-                        </span>
-                      )}
-                    </div>
-                    {e.texto && <p className="text-[0.95em] italic leading-relaxed text-foreground/80">"{e.texto}"</p>}
-                  </div>
-                  <div className="bg-foreground/[0.03] px-4 py-3">
-                    <p className="mb-1.5 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      <AlertTriangle className="h-3 w-3" /> Por que está errada
-                    </p>
-                    <Md texto={e.motivo} className={cn(mdClass, 'leading-relaxed')} />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+              {erradas.length > 0 && (
+                <div className="space-y-2.5">
+                  {erradas.map((e, i) => (
+                    <motion.div
+                      key={`${e.letra}-${i}`}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.25, delay: i * 0.04 }}
+                      className="overflow-hidden rounded-xl border border-destructive/25 bg-background/40"
+                    >
+                      <div className="border-b border-destructive/20 bg-destructive/10 px-4 py-3">
+                        <div className="mb-1.5 flex items-center gap-2">
+                          <span className="grid h-7 w-7 place-items-center rounded-full border border-destructive/40 bg-destructive/20 text-xs font-bold text-destructive">
+                            {e.letra}
+                          </span>
+                          {e.dispositivo_chave && (
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
+                              {e.dispositivo_chave}
+                            </span>
+                          )}
+                        </div>
+                        {e.texto && <p className="text-[0.95em] italic leading-relaxed text-foreground/80">"{e.texto}"</p>}
+                      </div>
+                      <div className="bg-foreground/[0.03] px-4 py-3">
+                        <p className="mb-1.5 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                          <AlertTriangle className="h-3 w-3" /> Por que está errada
+                        </p>
+                        <Md texto={e.motivo} className={cn(mdClass, 'leading-relaxed')} />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </>
       )}

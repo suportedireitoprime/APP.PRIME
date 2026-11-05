@@ -16,7 +16,7 @@ Responda SEMPRE em português do Brasil, com precisão técnica e linguagem dire
 Responda APENAS com o JSON pedido, sem texto fora do JSON.`;
 
 const INSTRUCOES: Record<Tipo, string> = {
-  comentario: `Comente a questão. Use o comentário original (quando houver) como base, reescrevendo de forma didática e correta.
+  comentario: `Comente EXCLUSIVAMENTE a alternativa correta (gabarito). Não analise as alternativas incorretas aqui (elas serão exibidas na aba própria de outras alternativas). NUNCA comece com a frase "Gabarito Comentado:" ou "Comentário:", vá direto à explicação.
 O campo "texto" deve ser MARKDOWN rico e bem formatado, com:
 - **negrito** nos termos e conclusões decisivas;
 - uma citação em bloco (> ...) com o dispositivo legal/súmula transcrito ou parafraseado;
@@ -24,7 +24,7 @@ O campo "texto" deve ser MARKDOWN rico e bem formatado, com:
 - listas com "-" quando houver requisitos/exceções;
 - parágrafos curtos separados por linha em branco.
 Nunca use títulos de nível 1 e não use tabelas.
-JSON: { "texto": "markdown de 150-300 palavras conforme as regras acima", "fundamento": "artigo/súmula/jurisprudência principal ou string vazia", "dica": "dica de prova curta" }`,
+JSON: { "texto": "markdown de 120-250 palavras explicando apenas a alternativa correta conforme as regras acima", "fundamento": "artigo/súmula/jurisprudência principal ou string vazia", "dica": "dica de prova curta" }`,
   "lei-erradas": `Explique, uma a uma, TODAS as alternativas que NÃO são o gabarito — sem exceção e sem pular nenhuma.
 Regras obrigatórias:
 - Se a questão tem alternativas A a E, retorne 4 objetos (todas menos a correta); se tem A a D, retorne 3; se for Certo/Errado, retorne 1 (a assertiva oposta ao gabarito).
