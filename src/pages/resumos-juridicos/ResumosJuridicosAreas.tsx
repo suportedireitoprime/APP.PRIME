@@ -1,15 +1,19 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Loader2, Search, X } from "lucide-react";
+import { Loader2, Search, X, Flame, Heart } from "lucide-react";
+import { toast } from "sonner";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import ResumosHero from "@/components/resumos/ResumosHero";
+import ResumosContinuarCard from "@/components/resumos/ResumosContinuarCard";
 import { useResumosAreasData } from "@/components/resumos/hooks/useResumosAreasData";
 import { getAreaCover } from "@/lib/areasDireitoCovers";
 import { ResumosAreaChips } from "@/components/resumos/home/ResumosAreaChips";
 import { ResumosAreaCard } from "@/components/resumos/home/ResumosAreaCard";
 import { ResumosTemaCard } from "@/components/resumos/home/ResumosTemaCard";
+import { resumosLocal } from "@/lib/resumosLocal";
 import { haptic } from "@/lib/nativeHaptics";
 import { resetGlobalScroll } from "@/lib/scrollUtils";
+import constCover from "@/assets/biblioteca/areas/direito-constitucional.webp";
 
 export default function ResumosJuridicosAreas() {
   const navigate = useNavigate();
@@ -28,46 +32,245 @@ export default function ResumosJuridicosAreas() {
     totalCalculatedTemas,
   } = useResumosAreasData();
 
-  const [searchOpen, setSearchOpen] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [favAreas, setFavAreas] = useState<Set<string>>(() => {
+    return new Set(resumosLocal.favoritos().map((f) => f.area));
+  });
 
   useEffect(() => {
     resetGlobalScroll();
   }, []);
 
-  useEffect(() => {
-    if (searchOpen) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timer);
+  const toggleFavArea = useCallback((area: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    haptic.impact();
+    const isFav = resumosLocal.isFavorito(area);
+    if (isFav) {
+      resumosLocal.toggleFavorito({ id: area, area, tema: area, subtema: null });
+      setFavAreas((prev) => {
+        const next = new Set(prev);
+        next.delete(area);
+        return next;
+      });
+      toast.info(`"${area}" removido dos favoritos.`);
+    } else {
+      resumosLocal.toggleFavorito({ id: area, area, tema: area, subtema: null });
+      setFavAreas((prev) => {
+        const next = new Set(prev);
+        next.add(area);
+        return next;
+      });
+      toast.success(`"${area}" adicionado aos favoritos!`);
     }
-  }, [searchOpen]);
+  }, []);
+
+  // Matérias e áreas com maior demanda jurídica organizadas para a seção "Em Alta"
+  const areasEmAlta = useMemo(() => {
+    const prioridade = [
+      'Direito Constitucional',
+      'Direito Penal',
+      'Direito Processual Penal',
+      'Direito Civil',
+      'Direito Processual Civil',
+      'Direito Administrativo',
+      'Direito do Trabalho',
+      'Direito Processual do Trabalho',
+      'Direito Tributário',
+      'Direitos Humanos',
+      'Direito Empresarial',
+      'Direito Previdenciário',
+      'Direito Ambiental',
+      'Direito Eleitoral',
+    ];
+
+    if (!rows || rows.length === 0) return [];
+
+    const ordenadas = [...rows].sort((a, b) => {
+      const idxA = prioridade.indexOf(a.area);
+      const idxB = prioridade.indexOf(b.area);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return b.total - a.total;
+    });
+
+    return ordenadas.slice(0, 12);
+  }, [rows]);
 
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] text-white overflow-x-hidden relative flex flex-col">
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+    <div className="min-h-dvh bg-[#0D0D0D] text-white relative overflow-x-hidden pb-[calc(7rem+var(--sai-bottom,0px))]">
+      {/* Fundo Padrão ShapeGrid */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-40">
         <ShapeGrid />
       </div>
 
-      <div className="relative z-10 flex flex-col min-h-dvh">
-        <ResumosHero
-          totalResumos={totalCalculatedResumos}
-          totalAreas={totalCalculatedAreas}
-          totalTemas={totalCalculatedTemas}
-        />
+      {/* Painel Hero Estilo Audiobooks / Vade Mecum */}
+      <ResumosHero
+        totalResumos={totalCalculatedResumos}
+        totalAreas={totalCalculatedAreas}
+        totalTemas={totalCalculatedTemas}
+      />
 
-        <ResumosAreaChips rows={rows} activeTab={activeTab} onSelectTab={setActiveTab} />
+      {/* Conteúdo Principal com Margens Laterais e Layout Fluido */}
+      <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
+        {/* Banner Continuar Estudando Dinâmico */}
+        <ResumosContinuarCard />
 
-        <div className="flex-1 overflow-y-auto px-4 pb-[calc(5.5rem+var(--sai-bottom))]">
-          {loading ? (
-            <div className="flex items-center justify-center py-16 text-white/50">
-              <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando...
+        {/* ======================================================== */}
+        {/* SEÇÃO EM ALTA (NO LUGAR DE RECOMENDAÇÕES)                */}
+        {/* ======================================================== */}
+        {areasEmAlta.length > 0 && activeTab === "Todos" && !q && (
+          <section className="space-y-3">
+            <div className="flex items-center justify-between gap-2 px-1">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
+                  <span className="w-1 h-5 rounded-full bg-rose-500 shrink-0" />
+                  <span className="truncate">EM ALTA</span>
+                </h3>
+                <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate">
+                  Matérias e resumos fundamentais mais consultados para sua formação e concursos
+                </p>
+              </div>
             </div>
-          ) : activeTab === "Todos" ? (
-            filteredAreas.length === 0 ? (
+
+            <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+              {areasEmAlta.map((item, idx) => {
+                const coverData = getAreaCover(item.area);
+                const coverUrl = coverData?.cover || constCover;
+                const isFav = favAreas.has(item.area);
+
+                return (
+                  <div
+                    key={`em-alta-${item.area}`}
+                    onClick={() => {
+                      haptic.selection();
+                      const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
+                      navigate(`${basePath}/${encodeURIComponent(item.area)}`);
+                    }}
+                    className="snap-start shrink-0 w-[126px] sm:w-[140px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
+                  >
+                    <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
+                      <img
+                        src={coverUrl}
+                        alt={item.area}
+                        loading={idx < 4 ? "eager" : "lazy"}
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
+
+                      {/* Badge de Em Alta no topo esquerdo */}
+                      <div className="absolute top-2 left-2">
+                        <span className="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                          <Flame className="w-2.5 h-2.5 fill-white" />
+                          Em Alta
+                        </span>
+                      </div>
+
+                      {/* Botão de Favorito no topo direito */}
+                      <button
+                        type="button"
+                        onClick={(e) => toggleFavArea(item.area, e)}
+                        className="absolute top-2 right-2 p-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white/70 hover:text-rose-400 hover:scale-110 active:scale-90 transition-all z-10 cursor-pointer"
+                        aria-label="Favoritar"
+                      >
+                        <Heart
+                          className={`w-3.5 h-3.5 ${isFav ? "fill-rose-500 text-rose-500" : ""}`}
+                        />
+                      </button>
+                    </div>
+
+                    <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-rose-300 transition-colors line-clamp-2 mt-2 leading-snug">
+                      {item.area}
+                    </p>
+                    <p className="text-[10.5px] text-white/50 truncate mt-0.5">
+                      {item.total} resumos
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* ======================================================== */}
+        {/* SEÇÃO DO ACERVO NO FORMATO PADRÃO AUDIOBOOKS / BIBLIOTECA*/}
+        {/* ======================================================== */}
+        <section className="pt-2 space-y-4">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-rose-400 font-bold">
+              ACERVO DE RESUMOS
+            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="w-1 h-6 rounded-full bg-rose-500" />
+              <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
+                {activeTab === "Todos" ? "Todas as Matérias" : activeTab}
+              </h2>
+            </div>
+            <p className="text-sm text-white/60 mt-1 ml-3 truncate">
+              Toque em qualquer matéria para abrir os temas e resumos completos.
+            </p>
+          </div>
+
+          {/* Campo de Busca Rápida Idêntico a Audiobooks */}
+          <div className="relative">
+            <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar matéria, tema ou resumo…"
+              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
+            />
+            {q && (
+              <button
+                type="button"
+                onClick={() => setQ("")}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Abas e Chips de Filtragem de Matérias */}
+          <ResumosAreaChips rows={rows} activeTab={activeTab} onSelectTab={setActiveTab} />
+
+          {/* Conteúdo do Grid de Matérias ou Temas */}
+          <div className="pt-2">
+            {loading ? (
+              <div className="flex items-center justify-center py-16 text-white/50">
+                <Loader2 className="w-5 h-5 animate-spin mr-2" /> Carregando resumos...
+              </div>
+            ) : activeTab === "Todos" ? (
+              filteredAreas.length === 0 ? (
+                <div className="text-center py-16 text-white/50 text-sm space-y-3">
+                  <p>Nenhuma matéria encontrada para "{q}".</p>
+                  {q && (
+                    <button
+                      onClick={() => setQ("")}
+                      className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold hover:bg-white/20 transition"
+                    >
+                      Limpar filtro
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {filteredAreas.map((r) => (
+                    <ResumosAreaCard
+                      key={r.area}
+                      areaRow={r}
+                      onClick={(selectedArea) => {
+                        const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
+                        navigate(`${basePath}/${encodeURIComponent(selectedArea)}`);
+                      }}
+                    />
+                  ))}
+                </div>
+              )
+            ) : filteredTemas.length === 0 ? (
               <div className="text-center py-16 text-white/50 text-sm space-y-3">
-                <p>Nenhuma matéria encontrada para "{q}".</p>
+                <p>Nenhum resumo encontrado para "{q}".</p>
                 {q && (
                   <button
                     onClick={() => setQ("")}
@@ -79,100 +282,22 @@ export default function ResumosJuridicosAreas() {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {filteredAreas.map((r) => (
-                  <ResumosAreaCard
-                    key={r.area}
-                    areaRow={r}
-                    onClick={(selectedArea) => {
+                {filteredTemas.map((tema) => (
+                  <ResumosTemaCard
+                    key={tema}
+                    tema={tema}
+                    coverUrl={getAreaCover(activeTab)?.cover}
+                    onClick={() => {
                       const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
-                      navigate(`${basePath}/${encodeURIComponent(selectedArea)}`);
+                      navigate(`${basePath}/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`);
                     }}
                   />
                 ))}
               </div>
-            )
-          ) : filteredTemas.length === 0 ? (
-            <div className="text-center py-16 text-white/50 text-sm space-y-3">
-              <p>Nenhum resumo encontrado para "{q}".</p>
-              {q && (
-                <button
-                  onClick={() => setQ("")}
-                  className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold hover:bg-white/20 transition"
-                >
-                  Limpar filtro
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {filteredTemas.map((tema) => (
-                <ResumosTemaCard
-                  key={tema}
-                  tema={tema}
-                  coverUrl={getAreaCover(activeTab)?.cover}
-                  onClick={() => {
-                    const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
-                    navigate(`${basePath}/${encodeURIComponent(activeTab)}/${encodeURIComponent(tema)}`);
-                  }}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Floating Action Button (FAB) de Pesquisa no Canto Inferior Direito */}
-      <div className="fixed bottom-[calc(1.5rem+var(--sai-bottom))] right-4 sm:right-6 z-50 flex items-center justify-end">
-        {searchOpen ? (
-          <div className="flex items-center gap-2 bg-[#141414]/95 backdrop-blur-xl border border-white/15 p-1.5 pl-4 rounded-full shadow-2xl shadow-black/80 animate-in fade-in zoom-in-95 duration-200 max-w-[calc(100vw-2rem)] w-[320px] sm:w-[380px]">
-            <Search className="w-4 h-4 text-primary shrink-0" strokeWidth={2.2} />
-            <input
-              ref={inputRef}
-              type="text"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar tema ou matéria..."
-              className="flex-1 bg-transparent text-white font-body text-sm outline-none placeholder:text-white/40"
-            />
-            {q && (
-              <button
-                type="button"
-                onClick={() => setQ("")}
-                aria-label="Limpar pesquisa"
-                className="w-7 h-7 grid place-items-center rounded-full bg-white/10 text-white/70 hover:text-white hover:bg-white/20 transition"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
             )}
-            <button
-              type="button"
-              onClick={() => {
-                haptic.selection();
-                setSearchOpen(false);
-              }}
-              aria-label="Fechar busca"
-              className="w-10 h-10 shrink-0 grid place-items-center rounded-full bg-hero-panel text-white shadow-md active:scale-95 transition"
-            >
-              <X className="w-5 h-5" strokeWidth={2.4} />
-            </button>
           </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => {
-              haptic.selection();
-              setSearchOpen(true);
-            }}
-            aria-label="Abrir pesquisa de resumos"
-            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-hero-panel text-white shadow-2xl shadow-red-950/80 border border-white/20 flex items-center justify-center hover:scale-105 active:scale-95 transition-all duration-200 group cursor-pointer"
-          >
-            <Search className="w-6 h-6 sm:w-7 sm:h-7 group-hover:rotate-12 transition-transform duration-200" strokeWidth={2.4} />
-            {q && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-400 rounded-full border-2 border-[#0D0D0D]" />
-            )}
-          </button>
-        )}
-      </div>
+        </section>
+      </main>
     </div>
   );
 }
