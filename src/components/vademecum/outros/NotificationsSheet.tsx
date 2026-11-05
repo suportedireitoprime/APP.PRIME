@@ -90,24 +90,29 @@ export function useUnreadNotifCount() {
     fetchCount();
     const interval = setInterval(fetchCount, 45_000);
 
-    // Ouvinte em tempo real via Supabase Realtime
+    // Ouvinte em tempo real via Supabase Realtime com tratamento seguro de concorrência
     let channel: any = null;
     if (user?.id) {
-      channel = supabase
-        .channel(`user_notifications_badge_${user.id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'user_notifications',
-            filter: `user_id=eq.${user.id}`,
-          },
-          () => {
-            fetchCount();
-          }
-        )
-        .subscribe();
+      try {
+        const uniqueTopic = `user_notifications_badge_${user.id}_${Math.random().toString(36).slice(2, 8)}`;
+        channel = supabase
+          .channel(uniqueTopic)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'user_notifications',
+              filter: `user_id=eq.${user.id}`,
+            },
+            () => {
+              fetchCount();
+            }
+          )
+          .subscribe();
+      } catch (err) {
+        console.warn('[NotificationsSheet] Falha segura ao conectar realtime:', err);
+      }
     }
 
     const onVisible = () => document.visibilityState === 'visible' && fetchCount();
@@ -118,7 +123,11 @@ export function useUnreadNotifCount() {
 
     return () => {
       clearInterval(interval);
-      if (channel) supabase.removeChannel(channel);
+      if (channel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch {}
+      }
       document.removeEventListener('visibilitychange', onVisible);
       window.removeEventListener('notifications-changed', onNotificationsChanged);
     };

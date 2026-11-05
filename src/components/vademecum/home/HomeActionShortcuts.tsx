@@ -6,10 +6,10 @@ import { prefetchRoute, type PrefetchKey } from '@/lib/routePrefetch';
 import { haptic } from '@/lib/nativeHaptics';
 
 const SHORTCUT_ITEMS = [
-  { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       color: '#A855F7', badgeColor: null, badgeKey: null, prefetch: 'audioaulas' as PrefetchKey },
-  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       color: '#F43F5E', badgeColor: null, badgeKey: null, prefetch: 'audiobooks' as PrefetchKey },
-  { label: 'Blog',        icon: ScrollText,            to: '/blog',             color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'blog' as PrefetchKey },
-  { label: 'Boletins',    icon: Newspaper,             to: '/boletins',         color: '#38BDF8', badgeColor: '#EF4444', badgeKey: 'boletim' as const, prefetch: 'boletins' as PrefetchKey },
+  { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       color: '#A855F7', badgeColor: null, badgeKey: null, tag: null, prefetch: 'audioaulas' as PrefetchKey },
+  { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       color: '#F43F5E', badgeColor: null, badgeKey: null, tag: 'Novo', prefetch: 'audiobooks' as PrefetchKey },
+  { label: 'Blog',        icon: ScrollText,            to: '/blog',             color: '#FACC15', badgeColor: null, badgeKey: null, tag: null, prefetch: 'blog' as PrefetchKey },
+  { label: 'Boletins',    icon: Newspaper,             to: '/boletins',         color: '#38BDF8', badgeColor: '#EF4444', badgeKey: 'boletim' as const, tag: null, prefetch: 'boletins' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {
@@ -40,7 +40,7 @@ const HomeActionShortcuts = () => {
             style={{ '--shimmer-delay': `${index * 150}ms` } as React.CSSProperties}
             className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-[14px] hover:bg-white/5 active:bg-white/10 transition-all duration-200 active:scale-95 gap-1.5 text-center select-none cursor-pointer overflow-hidden"
           >
-            {badgeCount > 0 && item.badgeColor && (
+            {badgeCount > 0 && item.badgeColor ? (
               <span
                 className="absolute top-1 right-2 min-w-[17px] h-[16px] px-1 rounded-full text-white text-[9.5px] font-medium tracking-tight leading-none flex items-center justify-center border border-white/20 shadow-md drop-shadow z-10"
                 style={{ backgroundColor: item.badgeColor }}
@@ -49,7 +49,11 @@ const HomeActionShortcuts = () => {
                   {badgeCount > 99 ? '99+' : badgeCount}
                 </span>
               </span>
-            )}
+            ) : item.tag ? (
+              <span className="absolute top-1 right-1 sm:right-1.5 px-1.5 py-0.5 rounded-full bg-rose-500 text-white text-[8.5px] font-bold tracking-wider uppercase leading-none shadow-[0_2px_8px_rgba(244,63,94,0.4)] border border-white/20 z-10 select-none">
+                {item.tag}
+              </span>
+            ) : null}
 
             <Icon
               className="w-[22px] h-[22px] shrink-0 transition-transform duration-200 group-hover:scale-110"
