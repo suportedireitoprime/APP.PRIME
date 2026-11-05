@@ -9,7 +9,7 @@ import {
   BarChart3, ExternalLink, ChevronDown, ChevronUp, CheckCircle2, Sparkles,
   Filter, BookOpen, Layers, Award, X, Trophy, Target, TrendingUp,
   RotateCcw, Check, Flame, Bookmark, Clock, Gavel, Heart, BellRing, ArrowRight,
-  Shield, Compass
+  Shield, Compass, Briefcase, GraduationCap
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
@@ -91,6 +91,120 @@ const CARREIRAS_EM_ALTA = [
   },
 ];
 
+// Catálogo Completo de Cargos para a Seção "TODOS"
+const CARGOS_CATALOGO = [
+  {
+    id: 'oab',
+    nome: 'OAB (Exame de Ordem)',
+    orgao: 'Conselho Federal da OAB / FGV',
+    descricao: '47 Provas Oficiais • 3.820 Questões no App • 1ª Fase Unificada',
+    status: 'disponivel',
+    provasQtd: 47,
+    questoesQtd: 3820,
+    imagem: '/assets/eoab-woman-fixed.webp',
+    categoria: 'juridica',
+  },
+  {
+    id: 'juiz',
+    nome: 'Juiz de Direito (Magistratura Estadual)',
+    orgao: 'Tribunais de Justiça (TJSP, TJGO, TJPA, TJCE, TJTO)',
+    descricao: '6 Concursos Oficiais • 600 Questões no App • Vunesp / FGV',
+    status: 'disponivel',
+    provasQtd: 6,
+    questoesQtd: 600,
+    imagem: '/assets/praticar-juiz.webp',
+    categoria: 'magistratura',
+  },
+  {
+    id: 'delegado',
+    nome: 'Delegado de Polícia (Civil e Federal)',
+    orgao: 'Polícia Civil e Departamento de Polícia Federal',
+    descricao: 'Concursos para Delegado de Polícia Civil e Federal',
+    status: 'em_breve',
+    provasQtd: 0,
+    questoesQtd: 0,
+    imagem: pcDfLogo,
+    categoria: 'policial',
+  },
+  {
+    id: 'pf',
+    nome: 'Polícia Federal (PF)',
+    orgao: 'Departamento de Polícia Federal (Cebraspe)',
+    descricao: 'Agente, Escrivão, Papiloscopista e Perito Criminal Federal',
+    status: 'em_breve',
+    provasQtd: 0,
+    questoesQtd: 0,
+    imagem: pfLogo,
+    categoria: 'policial',
+  },
+  {
+    id: 'prf',
+    nome: 'Polícia Rodoviária Federal (PRF)',
+    orgao: 'Ministério da Justiça e Segurança Pública',
+    descricao: 'Concurso Nacional para Policial Rodoviário Federal',
+    status: 'em_breve',
+    provasQtd: 0,
+    questoesQtd: 0,
+    imagem: prfLogo,
+    categoria: 'policial',
+  },
+  {
+    id: 'juiz_trabalho',
+    nome: 'Juiz do Trabalho (TRT / CSJT)',
+    orgao: 'Tribunal Superior do Trabalho & Enamat',
+    descricao: 'Concurso Nacional Unificado da Magistratura do Trabalho',
+    status: 'em_breve',
+    provasQtd: 0,
+    questoesQtd: 0,
+    imagem: '/assets/praticar-juiz.webp',
+    categoria: 'magistratura',
+  },
+  {
+    id: 'promotor',
+    nome: 'Promotor de Justiça (Ministério Público)',
+    orgao: 'Ministérios Públicos Estaduais e MPDFT',
+    descricao: 'Provas anteriores para Promotor de Justiça Substituto',
+    status: 'em_breve',
+    provasQtd: 0,
+    questoesQtd: 0,
+    icone: Scale,
+    categoria: 'juridica',
+  },
+  {
+    id: 'defensoria',
+    nome: 'Defensor Público (DPE / DPU)',
+    orgao: 'Defensorias Públicas Estaduais e União',
+    descricao: 'Provas para Defensor Público Estadual e Federal',
+    status: 'em_breve',
+    provasQtd: 0,
+    questoesQtd: 0,
+    icone: Shield,
+    categoria: 'juridica',
+  },
+  {
+    id: 'procuradorias',
+    nome: 'Procuradorias (AGU, PGE, PGM)',
+    orgao: 'Advocacia-Geral da União e Procuradorias',
+    descricao: 'Carreiras da Advocacia Pública Federal, Estadual e Municipal',
+    status: 'em_breve',
+    provasQtd: 0,
+    questoesQtd: 0,
+    icone: Briefcase,
+    categoria: 'juridica',
+  },
+  {
+    id: 'analista_tribunais',
+    nome: 'Analista Judiciário (Tribunais)',
+    orgao: 'STF, STJ, TST, TSE, TRFs, TJs e TRTs',
+    descricao: 'Concursos oficiais para Analista Judiciário e Oficial de Justiça',
+    status: 'em_breve',
+    provasQtd: 0,
+    questoesQtd: 0,
+    icone: GraduationCap,
+    categoria: 'tribunais',
+  },
+];
+
 // Formata o título oficial legível do exame
 const getExamDisplayName = (sim: SimuladoItem) => {
   const isJuiz = (sim.exam?.name || '').toLowerCase().includes('juiz') || (sim.exam?.name || '').toLowerCase().includes('magistratura');
@@ -106,11 +220,9 @@ const getExamDisplayName = (sim: SimuladoItem) => {
   }
 
   const raw = (sim.prova_url || '').trim();
-  // Se já tiver formato como "46º Exame de Ordem Unificado (2026.1)"
   if (/^\d{1,2}[ºoªa]?\s+Exame/i.test(raw)) {
     return raw;
   }
-  // Se tiver formato como "OAB - 2026 - XLVI Exame de Ordem Unificado"
   const romanMatch = raw.match(/(X{0,3})(IX|IV|V?I{0,3})\s+Exame/i);
   if (romanMatch && romanMatch[0]) {
     return `OAB - ${sim.year} - ${romanMatch[0]} de Ordem Unificado`;
@@ -158,9 +270,16 @@ export default function Simulados() {
   const [isFiltroRapidoOpen, setIsFiltroRapidoOpen] = useState(false);
   const [selectedMateriasFilter, setSelectedMateriasFilter] = useState<string[]>([]);
 
-  // Estados de Filtro de Lista
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterChip, setFilterChip] = useState<string>('todos');
+  // Estado do Cargo Selecionado (null = exibe lista de cargos em "TODOS")
+  const [selectedCargo, setSelectedCargo] = useState<string | null>(null);
+
+  // Estados de Filtro de Cargos e Provas
+  const [cargoSearchTerm, setCargoSearchTerm] = useState('');
+  const [cargoCategoriaFilter, setCargoCategoriaFilter] = useState<string>('todos');
+
+  // Estados de Filtro interno de Provas (quando um cargo estiver selecionado)
+  const [examSearchTerm, setExamSearchTerm] = useState('');
+  const [examYearFilter, setExamYearFilter] = useState<string>('todos');
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [visibleCount, setVisibleCount] = useState<number>(30);
 
@@ -333,72 +452,81 @@ export default function Simulados() {
     return null;
   }, [historicoRecente, simuladosList]);
 
-  // Lista Filtrada para a Seção "TODOS OS SIMULADOS"
-  const filteredSimulados = useMemo(() => {
-    if (!simuladosList) return [];
+  // Lista Filtrada de Cargos para a Seção "TODOS"
+  const filteredCargos = useMemo(() => {
+    return CARGOS_CATALOGO.filter((c) => {
+      if (cargoSearchTerm.trim()) {
+        const term = cargoSearchTerm.toLowerCase();
+        const matchName = c.nome.toLowerCase().includes(term);
+        const matchOrgao = c.orgao.toLowerCase().includes(term);
+        const matchDesc = c.descricao.toLowerCase().includes(term);
+        if (!matchName && !matchOrgao && !matchDesc) return false;
+      }
+      if (cargoCategoriaFilter === 'disponiveis') return c.status === 'disponivel';
+      if (cargoCategoriaFilter === 'juridica') return c.categoria === 'juridica';
+      if (cargoCategoriaFilter === 'magistratura') return c.categoria === 'magistratura';
+      if (cargoCategoriaFilter === 'policial') return c.categoria === 'policial';
+      if (cargoCategoriaFilter === 'tribunais') return c.categoria === 'tribunais';
+      return true;
+    });
+  }, [cargoSearchTerm, cargoCategoriaFilter]);
 
-    return simuladosList.filter((sim) => {
-      // Filtro de Favoritos
+  // Provas do Cargo Selecionado (quando selectedCargo != null)
+  const currentCargoSimulados = useMemo(() => {
+    if (!selectedCargo || !simuladosList) return [];
+    const isJuiz = selectedCargo === 'juiz';
+
+    const list = simuladosList.filter((s) => {
+      const examName = (s.exam?.name || '').toLowerCase();
+      if (isJuiz) return examName.includes('juiz') || examName.includes('magistratura');
+      return examName.includes('oab') || examName.includes('ordem');
+    });
+
+    return list.filter((sim) => {
       if (onlyFavorites && !favSimulados.has(sim.id)) return false;
 
-      // Busca por texto
-      if (searchTerm.trim()) {
-        const term = searchTerm.toLowerCase();
+      if (examSearchTerm.trim()) {
+        const term = examSearchTerm.toLowerCase();
         const title = getExamDisplayName(sim).toLowerCase();
         const yearStr = (sim.year || '').toString();
-        const examName = (sim.exam?.name || '').toLowerCase();
-        const urlStr = (sim.prova_url || '').toLowerCase();
-        if (!title.includes(term) && !yearStr.includes(term) && !examName.includes(term) && !urlStr.includes(term)) {
-          return false;
-        }
+        if (!title.includes(term) && !yearStr.includes(term)) return false;
       }
 
-      // Filtro de Chips
-      if (filterChip === 'oab') {
-        return (sim.exam?.name || '').toLowerCase().includes('oab');
-      }
-      if (filterChip === 'juiz') {
-        return (sim.exam?.name || '').toLowerCase().includes('juiz');
-      }
-      if (filterChip === '2026') return sim.year === 2026;
-      if (filterChip === '2025') return sim.year === 2025;
-      if (filterChip === '2024') return sim.year === 2024;
-      if (filterChip === '2023') return sim.year === 2023;
-      if (filterChip === '2022') return sim.year === 2022;
-      if (filterChip === '2021') return sim.year === 2021;
-      if (filterChip === '2020') return sim.year === 2020;
-      if (filterChip === 'anteriores') return sim.year < 2020;
+      if (examYearFilter === '2026') return sim.year === 2026;
+      if (examYearFilter === '2025') return sim.year === 2025;
+      if (examYearFilter === '2024') return sim.year === 2024;
+      if (examYearFilter === '2023') return sim.year === 2023;
+      if (examYearFilter === '2022') return sim.year === 2022;
+      if (examYearFilter === '2021') return sim.year === 2021;
+      if (examYearFilter === '2020') return sim.year === 2020;
+      if (examYearFilter === 'anteriores') return sim.year < 2020;
 
       return true;
     });
-  }, [simuladosList, searchTerm, filterChip, onlyFavorites, favSimulados]);
+  }, [selectedCargo, simuladosList, examSearchTerm, examYearFilter, onlyFavorites, favSimulados]);
 
-  const paginatedList = useMemo(() => {
-    return filteredSimulados.slice(0, visibleCount);
-  }, [filteredSimulados, visibleCount]);
+  const paginatedExams = useMemo(() => {
+    return currentCargoSimulados.slice(0, visibleCount);
+  }, [currentCargoSimulados, visibleCount]);
 
-  // Alterna filtro de favoritos no Hero
-  const handleToggleFavoritosHero = () => {
+  // Info do cargo ativo
+  const activeCargoInfo = useMemo(() => {
+    if (!selectedCargo) return null;
+    return CARGOS_CATALOGO.find((c) => c.id === selectedCargo) || null;
+  }, [selectedCargo]);
+
+  // Clique em uma carreira
+  const handleCargoSelect = (cargo: typeof CARGOS_CATALOGO[0]) => {
     try { haptic.selection(); } catch {}
-    setOnlyFavorites((prev) => !prev);
-    if (!onlyFavorites) {
-      toast.info('Exibindo apenas simulados favoritos.');
-    } else {
-      toast.info('Exibindo todos os simulados.');
-    }
-  };
-
-  // Clique em uma carreira de "Em Alta"
-  const handleCarreiraClick = (carreira: typeof CARREIRAS_EM_ALTA[0]) => {
-    try { haptic.selection(); } catch {}
-    if (carreira.filterChip) {
-      setFilterChip(carreira.filterChip);
+    if (cargo.status === 'disponivel') {
+      setSelectedCargo(cargo.id);
+      setExamSearchTerm('');
+      setExamYearFilter('todos');
       setOnlyFavorites(false);
-      setSearchTerm('');
-      toast.success(`Exibindo simulados de ${carreira.nome}`);
+      toast.success(`Exibindo simulados de ${cargo.nome}`);
       listRef.current?.scrollIntoView({ behavior: 'smooth' });
     } else {
-      toast.info(`Simulados de ${carreira.nome} estão em preparação e chegarão em breve!`);
+      toast.info(`Simulados de ${cargo.nome} estão sendo indexados com questões oficiais e estarão disponíveis em breve!`);
     }
   };
 
@@ -540,7 +668,11 @@ export default function Simulados() {
             {/* Botão 1: Favoritos */}
             <button
               type="button"
-              onClick={handleToggleFavoritosHero}
+              onClick={() => {
+                try { haptic.selection(); } catch {}
+                if (!selectedCargo) setSelectedCargo('oab');
+                setOnlyFavorites((prev) => !prev);
+              }}
               className={`flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none ${
                 onlyFavorites ? 'bg-rose-500/20 border border-rose-500/40' : ''
               }`}
@@ -697,7 +829,10 @@ export default function Simulados() {
               return (
                 <div
                   key={`em-alta-carreira-${carreira.id}`}
-                  onClick={() => handleCarreiraClick(carreira)}
+                  onClick={() => {
+                    const matchedCargo = CARGOS_CATALOGO.find((c) => c.id === carreira.id);
+                    if (matchedCargo) handleCargoSelect(matchedCargo);
+                  }}
                   className="snap-start shrink-0 w-[130px] sm:w-[145px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
                 >
                   <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
@@ -741,220 +876,362 @@ export default function Simulados() {
           </div>
         </section>
 
-        {/* ── SEÇÃO: "TODOS OS SIMULADOS" EM LISTA COMPACTA ────────────────────── */}
+        {/* ── SEÇÃO: "TODOS" (LISTA COMPACTA DE TODOS OS CARGOS) ────────────────── */}
         <section ref={listRef} className="pt-2 space-y-4">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.22em] text-rose-400 font-bold">
-              ACERVO COMPLETO DE SIMULADOS
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="w-1 h-6 rounded-full bg-rose-500" />
-              <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
-                {onlyFavorites ? 'Simulados Favoritos' : 'Todos os Simulados & Provas'}
-              </h2>
-            </div>
-            <p className="text-sm text-white/60 mt-1 ml-3 truncate">
-              Toque em qualquer edição para iniciar com cronômetro ou conferir prova e gabarito oficial.
-            </p>
-          </div>
-
-          {/* Campo de Busca Rápida */}
-          <div className="relative">
-            <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar por número do exame, banca, ano ou cargo…"
-              className="w-full pl-11 pr-10 h-13 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
-            />
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => setSearchTerm('')}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-
-          {/* Chips de Filtragem de Simulados */}
-          <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-            {[
-              { id: 'todos', label: 'Todos' },
-              { id: 'oab', label: 'OAB (47)' },
-              { id: 'juiz', label: 'Juiz de Direito (6)' },
-              { id: '2026', label: '2026' },
-              { id: '2025', label: '2025' },
-              { id: '2024', label: '2024' },
-              { id: '2023', label: '2023' },
-              { id: '2022', label: '2022' },
-              { id: '2021', label: '2021' },
-              { id: '2020', label: '2020' },
-              { id: 'anteriores', label: 'Anteriores' },
-            ].map((chip) => {
-              const active = filterChip === chip.id && !onlyFavorites;
-              return (
+          
+          {/* Se um Cargo estiver selecionado: Exibe Barra de Navegação e as Provas do Cargo */}
+          {selectedCargo && activeCargoInfo ? (
+            <div className="space-y-4">
+              {/* Barra de Voltar para Todos os Cargos */}
+              <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-[#141416] border border-white/10">
                 <button
-                  key={chip.id}
                   onClick={() => {
                     try { haptic.selection(); } catch {}
-                    setFilterChip(chip.id);
-                    setOnlyFavorites(false);
+                    setSelectedCargo(null);
                   }}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    active
-                      ? 'bg-rose-600 text-white shadow-md shadow-rose-950/40'
-                      : 'bg-zinc-900/90 text-zinc-400 border border-white/10 hover:border-white/20 hover:text-white'
-                  }`}
+                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold flex items-center gap-1.5 transition active:scale-95 cursor-pointer"
                 >
-                  {chip.label}
+                  <ArrowLeft className="w-4 h-4" /> Ver Todos os Cargos
                 </button>
-              );
-            })}
-          </div>
 
-          {/* ── LISTA COMPACTA DE SIMULADOS ─────────────────────────────────────── */}
-          <div className="space-y-2 pt-1">
-            {isLoading ? (
-              <div className="flex items-center justify-center py-20 text-white/50">
-                <div className="w-6 h-6 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mr-3" />
-                Carregando acervo de simulados...
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-rose-300 truncate max-w-[200px]">
+                    {activeCargoInfo.nome}
+                  </span>
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-rose-600/20 text-rose-300 border border-rose-500/30">
+                    {currentCargoSimulados.length} Provas
+                  </span>
+                </div>
               </div>
-            ) : paginatedList.length === 0 ? (
-              <div className="text-center py-16 text-white/50 text-sm space-y-3 bg-[#141416]/50 rounded-2xl border border-white/5 p-8">
-                <Scale className="w-10 h-10 text-white/20 mx-auto" />
-                <p>Nenhum simulado encontrado para os filtros selecionados.</p>
-                {(searchTerm || filterChip !== 'todos' || onlyFavorites) && (
+
+              {/* Título da Carreira */}
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-rose-400 font-bold">
+                  PROVAS ANTERIORES & SIMULADOS
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="w-1 h-6 rounded-full bg-rose-500" />
+                  <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
+                    {activeCargoInfo.nome}
+                  </h2>
+                </div>
+                <p className="text-sm text-white/60 mt-1 ml-3 truncate">
+                  Selecione uma edição para resolver no app com cronômetro ou conferir o gabarito oficial.
+                </p>
+              </div>
+
+              {/* Busca de Provas dentro do Cargo */}
+              <div className="relative">
+                <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  value={examSearchTerm}
+                  onChange={(e) => setExamSearchTerm(e.target.value)}
+                  placeholder="Buscar prova por exame ou ano…"
+                  className="w-full pl-11 pr-10 h-13 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
+                />
+                {examSearchTerm && (
                   <button
-                    onClick={() => {
-                      setSearchTerm('');
-                      setFilterChip('todos');
-                      setOnlyFavorites(false);
-                    }}
-                    className="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-semibold hover:bg-white/20 transition cursor-pointer"
+                    type="button"
+                    onClick={() => setExamSearchTerm('')}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
                   >
-                    Limpar todos os filtros
+                    <X className="w-4 h-4" />
                   </button>
                 )}
               </div>
-            ) : (
-              paginatedList.map((sim) => {
-                const title = getExamDisplayName(sim);
-                const isFav = favSimulados.has(sim.id);
-                const isJuiz = (sim.exam?.name || '').toLowerCase().includes('juiz');
-                const questoesQtd = isJuiz ? 100 : 80;
 
-                return (
-                  <div
-                    key={sim.id}
-                    className="group relative rounded-2xl bg-[#141416] border border-white/10 hover:border-rose-500/40 p-3 sm:p-3.5 transition-all duration-150 shadow-sm flex items-center justify-between gap-3 hover:bg-white/[0.03]"
-                  >
-                    {/* Esquerda: Badge e Título */}
-                    <div
-                      className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
-                      onClick={() => handleStartSimulado(sim)}
+              {/* Chips de Anos */}
+              <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                {[
+                  { id: 'todos', label: 'Todas as Edições' },
+                  { id: '2026', label: '2026' },
+                  { id: '2025', label: '2025' },
+                  { id: '2024', label: '2024' },
+                  { id: '2023', label: '2023' },
+                  { id: '2022', label: '2022' },
+                  { id: '2021', label: '2021' },
+                  { id: '2020', label: '2020' },
+                  { id: 'anteriores', label: 'Anteriores' },
+                ].map((chip) => {
+                  const active = examYearFilter === chip.id && !onlyFavorites;
+                  return (
+                    <button
+                      key={chip.id}
+                      onClick={() => {
+                        try { haptic.selection(); } catch {}
+                        setExamYearFilter(chip.id);
+                        setOnlyFavorites(false);
+                      }}
+                      className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        active
+                          ? 'bg-rose-600 text-white shadow-md shadow-rose-950/40'
+                          : 'bg-zinc-900/90 text-zinc-400 border border-white/10 hover:border-white/20 hover:text-white'
+                      }`}
                     >
-                      {/* Badge quadrada de ano e órgão */}
-                      <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white/[0.04] border border-white/10 flex flex-col items-center justify-center shrink-0 group-hover:border-rose-500/40 transition-colors">
-                        <span className="text-[12px] sm:text-[13px] font-black text-white leading-none">
-                          {sim.year}
-                        </span>
-                        <span className="text-[8.5px] sm:text-[9px] font-extrabold text-rose-400 uppercase tracking-tighter mt-0.5">
-                          {isJuiz ? 'JUIZ' : 'OAB'}
-                        </span>
+                      {chip.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Lista Compacta de Provas */}
+              <div className="space-y-2 pt-1">
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-16 text-white/50">
+                    <div className="w-6 h-6 border-2 border-rose-500 border-t-transparent rounded-full animate-spin mr-3" />
+                    Carregando provas...
+                  </div>
+                ) : paginatedExams.length === 0 ? (
+                  <div className="text-center py-12 text-white/50 text-xs bg-[#141416]/50 rounded-2xl border border-white/5 p-6">
+                    Nenhuma prova encontrada para este filtro.
+                  </div>
+                ) : (
+                  paginatedExams.map((sim) => {
+                    const title = getExamDisplayName(sim);
+                    const isFav = favSimulados.has(sim.id);
+                    const isJuiz = selectedCargo === 'juiz';
+                    const questoesQtd = isJuiz ? 100 : 80;
+
+                    return (
+                      <div
+                        key={sim.id}
+                        className="group relative rounded-2xl bg-[#141416] border border-white/10 hover:border-rose-500/40 p-3 sm:p-3.5 transition-all duration-150 shadow-sm flex items-center justify-between gap-3 hover:bg-white/[0.03]"
+                      >
+                        {/* Esquerda: Badge e Título */}
+                        <div
+                          className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
+                          onClick={() => handleStartSimulado(sim)}
+                        >
+                          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white/[0.04] border border-white/10 flex flex-col items-center justify-center shrink-0 group-hover:border-rose-500/40 transition-colors">
+                            <span className="text-[12px] sm:text-[13px] font-black text-white leading-none">
+                              {sim.year}
+                            </span>
+                            <span className="text-[8.5px] sm:text-[9px] font-extrabold text-rose-400 uppercase tracking-tighter mt-0.5">
+                              {isJuiz ? 'JUIZ' : 'OAB'}
+                            </span>
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-display font-bold text-sm sm:text-[15px] text-white truncate group-hover:text-rose-200 transition-colors">
+                              {title}
+                            </h4>
+
+                            <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5 truncate">
+                              <span className="font-semibold text-zinc-300">
+                                {questoesQtd} Questões
+                              </span>
+                              <span>•</span>
+                              <span>{isJuiz ? 'Magistratura Estadual' : '1ª Fase Oficial (FGV)'}</span>
+                              <span className="hidden md:inline">•</span>
+                              <span className="hidden md:inline">5h00 Oficial</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Direita: Ações Compactas */}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {/* Raio-X */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              try { haptic.selection(); } catch {}
+                              setSelectedSimulado(sim);
+                            }}
+                            className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-amber-400 active:scale-95 flex items-center justify-center transition cursor-pointer"
+                            title="Ver Raio-X de Matérias"
+                          >
+                            <BarChart3 className="w-4 h-4 text-amber-400" />
+                          </button>
+
+                          {/* Gabarito */}
+                          {sim.gabarito_url && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                try { haptic.selection(); } catch {}
+                                setPreviewPdfUrl(sim.gabarito_url);
+                                setPreviewPdfTitle(`Gabarito Oficial - ${title}`);
+                              }}
+                              className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-emerald-400 active:scale-95 flex items-center justify-center transition cursor-pointer"
+                              title="Gabarito Oficial em PDF"
+                            >
+                              <FileText className="w-4 h-4 text-emerald-400" />
+                            </button>
+                          )}
+
+                          {/* Favoritar */}
+                          <button
+                            type="button"
+                            onClick={(e) => toggleFavSimulado(sim.id, e)}
+                            className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-rose-400 active:scale-95 flex items-center justify-center transition cursor-pointer"
+                            title="Favoritar Simulado"
+                          >
+                            <Heart className={`w-4 h-4 ${isFav ? 'fill-rose-500 text-rose-500' : ''}`} />
+                          </button>
+
+                          {/* Iniciar */}
+                          <button
+                            type="button"
+                            onClick={() => handleStartSimulado(sim)}
+                            className="h-9 px-3.5 sm:px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs uppercase tracking-wide flex items-center gap-1.5 shadow-md shadow-rose-950/40 active:scale-95 transition-all cursor-pointer"
+                          >
+                            <PlayCircle className="w-4 h-4 fill-white/20" />
+                            <span className="hidden sm:inline">Iniciar</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+
+                {/* Carregar Mais Provas */}
+                {currentCargoSimulados.length > visibleCount && (
+                  <div className="pt-3 text-center">
+                    <button
+                      onClick={() => {
+                        try { haptic.selection(); } catch {}
+                        setVisibleCount((prev) => prev + 24);
+                      }}
+                      className="px-6 py-2.5 rounded-2xl bg-zinc-900 border border-white/10 hover:border-white/20 text-white text-xs font-bold uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
+                    >
+                      Carregar Mais ({currentCargoSimulados.length - visibleCount} restantes)
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            /* SEÇÃO "TODOS": LISTA COMPACTA DE TODOS OS CARGOS */
+            <div className="space-y-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-rose-400 font-bold">
+                  CATÁLOGO OFICIAL DE CARREIRAS
+                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="w-1 h-6 rounded-full bg-rose-500" />
+                  <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
+                    Todos os Cargos & Carreiras
+                  </h2>
+                </div>
+                <p className="text-sm text-white/60 mt-1 ml-3 truncate">
+                  Toque em qualquer carreira para acessar os simulados e provas anteriores.
+                </p>
+              </div>
+
+              {/* Campo de Busca de Cargos */}
+              <div className="relative">
+                <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  value={cargoSearchTerm}
+                  onChange={(e) => setCargoSearchTerm(e.target.value)}
+                  placeholder="Buscar por cargo, carreira ou órgão (ex: OAB, Juiz, PF, Delegado)…"
+                  className="w-full pl-11 pr-10 h-13 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
+                />
+                {cargoSearchTerm && (
+                  <button
+                    type="button"
+                    onClick={() => setCargoSearchTerm('')}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
+              {/* Chips de Categorias de Cargos */}
+              <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                {[
+                  { id: 'todos', label: 'Todos os Cargos' },
+                  { id: 'disponiveis', label: 'Disponíveis (2)' },
+                  { id: 'juridica', label: 'Carreiras Jurídicas' },
+                  { id: 'policial', label: 'Carreiras Policiais' },
+                  { id: 'magistratura', label: 'Magistratura' },
+                  { id: 'tribunais', label: 'Tribunais' },
+                ].map((chip) => {
+                  const active = cargoCategoriaFilter === chip.id;
+                  return (
+                    <button
+                      key={chip.id}
+                      onClick={() => {
+                        try { haptic.selection(); } catch {}
+                        setCargoCategoriaFilter(chip.id);
+                      }}
+                      className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        active
+                          ? 'bg-rose-600 text-white shadow-md shadow-rose-950/40'
+                          : 'bg-zinc-900/90 text-zinc-400 border border-white/10 hover:border-white/20 hover:text-white'
+                      }`}
+                    >
+                      {chip.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* ── LISTA COMPACTA DE CARGOS ────────────────────────────────────────── */}
+              <div className="space-y-2 pt-1">
+                {filteredCargos.map((cargo) => {
+                  const isAvailable = cargo.status === 'disponivel';
+                  return (
+                    <div
+                      key={cargo.id}
+                      onClick={() => handleCargoSelect(cargo)}
+                      className="group relative rounded-2xl bg-[#141416] border border-white/10 hover:border-rose-500/40 p-3 sm:p-3.5 transition-all duration-150 shadow-sm flex items-center justify-between gap-3 hover:bg-white/[0.03] cursor-pointer active:scale-[0.99]"
+                    >
+                      {/* Lado Esquerdo: Ícone/Capa e Textos */}
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center shrink-0 group-hover:border-rose-500/40 transition-colors overflow-hidden p-1">
+                          {cargo.imagem ? (
+                            <img
+                              src={cargo.imagem}
+                              alt={cargo.nome}
+                              className="w-full h-full object-contain"
+                            />
+                          ) : cargo.icone ? (
+                            <cargo.icone className="w-5 h-5 text-rose-400" />
+                          ) : (
+                            <Scale className="w-5 h-5 text-rose-400" />
+                          )}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-display font-bold text-sm sm:text-[15px] text-white truncate group-hover:text-rose-200 transition-colors">
+                              {cargo.nome}
+                            </h4>
+                            {isAvailable && (
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 animate-pulse" />
+                            )}
+                          </div>
+
+                          <p className="text-[11px] text-zinc-400 mt-0.5 truncate">
+                            {cargo.descricao}
+                          </p>
+                        </div>
                       </div>
 
-                      {/* Textos: Título e Detalhes */}
-                      <div className="min-w-0 flex-1">
-                        <h4 className="font-display font-bold text-sm sm:text-[15px] text-white truncate group-hover:text-rose-200 transition-colors">
-                          {title}
-                        </h4>
+                      {/* Lado Direito: Badge e Seta */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={`text-xs font-bold px-2.5 py-1 rounded-lg ${
+                          isAvailable
+                            ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
+                            : 'bg-white/5 text-zinc-400 border border-white/5'
+                        }`}>
+                          {isAvailable ? `${cargo.provasQtd} Provas` : 'Em Breve'}
+                        </span>
 
-                        <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5 truncate">
-                          <span className="font-semibold text-zinc-300">
-                            {questoesQtd} Questões
-                          </span>
-                          <span>•</span>
-                          <span>{isJuiz ? 'Magistratura Estadual' : '1ª Fase Oficial (FGV)'}</span>
-                          <span className="hidden md:inline">•</span>
-                          <span className="hidden md:inline">5h00 Oficial</span>
+                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-all">
+                          <ChevronRight className="w-4 h-4" />
                         </div>
                       </div>
                     </div>
-
-                    {/* Direita: Ações Compactas */}
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      {/* Botão Raio-X */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          try { haptic.selection(); } catch {}
-                          setSelectedSimulado(sim);
-                        }}
-                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-amber-400 active:scale-95 flex items-center justify-center transition cursor-pointer"
-                        title="Ver Raio-X de Matérias"
-                      >
-                        <BarChart3 className="w-4 h-4 text-amber-400" />
-                      </button>
-
-                      {/* Botão Gabarito (se houver) */}
-                      {sim.gabarito_url && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            try { haptic.selection(); } catch {}
-                            setPreviewPdfUrl(sim.gabarito_url);
-                            setPreviewPdfTitle(`Gabarito Oficial - ${title}`);
-                          }}
-                          className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-emerald-400 active:scale-95 flex items-center justify-center transition cursor-pointer"
-                          title="Gabarito Oficial em PDF"
-                        >
-                          <FileText className="w-4 h-4 text-emerald-400" />
-                        </button>
-                      )}
-
-                      {/* Botão Favoritar */}
-                      <button
-                        type="button"
-                        onClick={(e) => toggleFavSimulado(sim.id, e)}
-                        className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-rose-400 active:scale-95 flex items-center justify-center transition cursor-pointer"
-                        title="Favoritar Simulado"
-                      >
-                        <Heart className={`w-4 h-4 ${isFav ? 'fill-rose-500 text-rose-500' : ''}`} />
-                      </button>
-
-                      {/* Botão Primário: Iniciar Simulado Compacto */}
-                      <button
-                        type="button"
-                        onClick={() => handleStartSimulado(sim)}
-                        className="h-9 px-3.5 sm:px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs uppercase tracking-wide flex items-center gap-1.5 shadow-md shadow-rose-950/40 active:scale-95 transition-all cursor-pointer"
-                      >
-                        <PlayCircle className="w-4 h-4 fill-white/20" />
-                        <span className="hidden sm:inline">Iniciar</span>
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-
-            {/* Botão Carregar Mais */}
-            {filteredSimulados.length > visibleCount && (
-              <div className="pt-4 text-center">
-                <button
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setVisibleCount((prev) => prev + 24);
-                  }}
-                  className="px-6 py-2.5 rounded-2xl bg-zinc-900 border border-white/10 hover:border-white/20 text-white text-xs font-bold uppercase tracking-wider transition active:scale-95 shadow-md cursor-pointer"
-                >
-                  Carregar Mais ({filteredSimulados.length - visibleCount} restantes)
-                </button>
+                  );
+                })}
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </section>
       </main>
 
