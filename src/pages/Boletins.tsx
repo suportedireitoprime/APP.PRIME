@@ -103,6 +103,33 @@ function getBoletimCover(b?: Boletim | null): string {
   return b.tipo === 'legislativo' ? radarLegislativoLocal : radarLeisLocal;
 }
 
+// Remove datas duplicadas do título para eliminar redundância com o cabeçalho da timeline
+function getCleanTitle(titulo?: string | null): string {
+  if (!titulo) return 'Boletim de Notícias';
+  return (
+    titulo
+      .replace(/\s*[-–—]\s*\d{1,2}\s+de\s+[a-zA-ZçÇãÃõÕéÉíÍóÓúÚ]+(\s+de\s+\d{4})?/gi, '')
+      .replace(/\s*[-–—]\s*\d{1,2}\/\d{1,2}(\/\d{2,4})?/g, '')
+      .trim() || 'Boletim de Notícias'
+  );
+}
+
+// Extrai a manchete principal da notícia do dia para o título não ser repetitivo
+function getMainHeadline(b?: Boletim | null): string | null {
+  if (!b || !Array.isArray(b.roteiro_json)) return null;
+  const scene = b.roteiro_json.find(
+    (s: any) => s.kind !== 'intro' && s.kind !== 'outro' && s.titulo && s.titulo.trim().length > 0
+  );
+  return scene?.titulo?.trim() || null;
+}
+
+// Conta o número real de notícias/manchetes (sem contar intro e encerramento)
+function getManchetesCount(b?: Boletim | null): number {
+  if (!b || !Array.isArray(b.roteiro_json)) return 10;
+  const count = b.roteiro_json.filter((s: any) => s.kind !== 'intro' && s.kind !== 'outro').length;
+  return count > 0 ? count : b.roteiro_json.length;
+}
+
 // Cache em memória para carregamento instantâneo a 0ms
 let boletinsMemoryCache: Boletim[] | null = null;
 
@@ -257,6 +284,9 @@ export default function Boletins() {
             {/* Card Destaque: Último Boletim Pronto com Capa da Notícia */}
             {latestBoletim && latestBoletim.status === 'pronto' && (() => {
               const latestCapaUrl = getBoletimCover(latestBoletim);
+              const cleanTitle = getCleanTitle(latestBoletim.titulo);
+              const headline = getMainHeadline(latestBoletim);
+              const totalManchetes = getManchetesCount(latestBoletim);
               const dateObj = latestBoletim.data_ref
                 ? new Date(`${latestBoletim.data_ref}T12:00:00`)
                 : new Date(latestBoletim.created_at);
@@ -269,7 +299,7 @@ export default function Boletins() {
                     <div className="relative w-full sm:w-44 aspect-[16/9] sm:h-28 rounded-2xl overflow-hidden bg-neutral-950 border border-white/10 shrink-0 shadow-lg">
                       <img
                         src={latestCapaUrl}
-                        alt={latestBoletim.titulo}
+                        alt={headline || cleanTitle}
                         className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                         loading="eager"
                       />
@@ -291,13 +321,11 @@ export default function Boletins() {
                         </span>
                       </div>
                       <h2 className="text-base sm:text-lg font-bold font-display text-white leading-snug mb-1">
-                        {latestBoletim.titulo}
+                        {headline || cleanTitle}
                       </h2>
-                      {latestBoletim.subtitulo && (
-                        <p className="text-xs text-zinc-400 line-clamp-2 font-body">
-                          {latestBoletim.subtitulo}
-                        </p>
-                      )}
+                      <p className="text-xs text-zinc-400 line-clamp-1 font-body">
+                        {cleanTitle} • {totalManchetes} notícias do dia
+                      </p>
                     </div>
 
                     <button
@@ -354,13 +382,15 @@ export default function Boletins() {
                       </span>
                     </div>
 
-                    {/* Card Direita com Capa real e sem a tag noticias */}
+                    {/* Card Direita com Capa real, SEM redundância e SEM abreviações */}
                     {hasBoletins ? (() => {
                       const primeiroBoletim = diaBoletins[0];
                       const pendentesCount = diaBoletins.filter((b) => !vistos.has(b.id)).length;
                       const isAllViewed = pendentesCount === 0;
                       const capaUrl = getBoletimCover(primeiroBoletim);
-                      const totalTopicos = primeiroBoletim.roteiro_json?.length || 10;
+                      const cleanTitle = getCleanTitle(primeiroBoletim.titulo);
+                      const headline = getMainHeadline(primeiroBoletim);
+                      const totalManchetes = getManchetesCount(primeiroBoletim);
 
                       const handleCardClick = () => {
                         haptic.selection();
@@ -385,7 +415,7 @@ export default function Boletins() {
                           <div className="relative w-24 h-20 sm:w-28 sm:h-22 shrink-0 rounded-xl overflow-hidden bg-neutral-950 border border-white/10 shadow-md">
                             <img
                               src={capaUrl}
-                              alt={primeiroBoletim.titulo}
+                              alt={headline || cleanTitle}
                               className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
                               loading="lazy"
                               decoding="async"
@@ -397,37 +427,27 @@ export default function Boletins() {
                             </div>
                           </div>
 
-                          {/* Informações Completas SEM Cortar Textos */}
+                          {/* Informações: Direto ao ponto, SEM redundância de data ou tópicos */}
                           <div className="flex-1 min-w-0 py-0.5">
-                            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                              <span className="text-[11px] font-medium text-zinc-400">
-                                {totalTopicos} tópicos
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <span className="text-[11px] font-semibold text-zinc-400">
+                                {cleanTitle} • {totalManchetes} notícias
                               </span>
                               {isAllViewed ? (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-full">
+                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-full shrink-0">
                                   <CheckCircle2 className="w-3 h-3 text-emerald-400" />
                                   Visto
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center text-[10px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-full">
+                                <span className="inline-flex items-center text-[10px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-full shrink-0">
                                   Pendente
                                 </span>
                               )}
                             </div>
 
                             <h3 className="font-display font-bold text-sm sm:text-base text-zinc-100 group-hover:text-white transition-colors line-clamp-2 leading-snug">
-                              {primeiroBoletim.titulo}
+                              {headline || cleanTitle}
                             </h3>
-
-                            {primeiroBoletim.subtitulo && (
-                              <p className="text-xs text-zinc-400 line-clamp-1 mt-1 font-body">
-                                {primeiroBoletim.subtitulo}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="w-8 h-8 rounded-full bg-zinc-800/80 flex items-center justify-center text-zinc-400 group-hover:bg-zinc-700 group-hover:text-white transition-colors shrink-0">
-                            <ChevronRight className="w-4 h-4" />
                           </div>
                         </div>
                       );
@@ -495,7 +515,9 @@ export default function Boletins() {
                   const isReady = item.status === 'pronto';
                   const coverSrc = getBoletimCover(item);
                   const isViewed = vistos.has(item.id);
-                  const totalTopicos = item.roteiro_json?.length || 10;
+                  const cleanTitle = getCleanTitle(item.titulo);
+                  const headline = getMainHeadline(item);
+                  const totalManchetes = getManchetesCount(item);
 
                   return (
                     <button
@@ -522,7 +544,7 @@ export default function Boletins() {
                       <div className="relative w-24 h-[72px] shrink-0 rounded-xl overflow-hidden bg-neutral-950 border border-white/10 shadow-md">
                         <img 
                           src={coverSrc} 
-                          alt={item.titulo}
+                          alt={headline || cleanTitle}
                           className="w-full h-full object-cover opacity-90"
                           decoding="async"
                         />
@@ -541,14 +563,13 @@ export default function Boletins() {
                       
                       <div className="flex-1 min-w-0 pr-6">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[11px] font-medium text-white/50">
-                            {totalTopicos} tópicos
+                          <span className="text-[11px] font-semibold text-zinc-400">
+                            {cleanTitle} • {totalManchetes} notícias
                           </span>
                         </div>
-                        <h3 className="text-zinc-100 font-semibold leading-tight text-sm line-clamp-2">{item.titulo}</h3>
-                        {item.subtitulo && (
-                          <p className="text-xs text-zinc-400 truncate mt-1">{item.subtitulo}</p>
-                        )}
+                        <h3 className="text-zinc-100 font-semibold leading-tight text-sm line-clamp-2">
+                          {headline || cleanTitle}
+                        </h3>
                       </div>
                     </button>
                   );
