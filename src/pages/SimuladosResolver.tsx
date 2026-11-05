@@ -68,7 +68,40 @@ export default function SimuladosResolver() {
           console.warn('Erro ao buscar questões:', error);
           return [];
         }
-        return (data || []) as any[];
+
+        if (data && data.length > 0) {
+          return data as any[];
+        }
+
+        // Se este ID específico não tiver questões, faz fallback automático para uma prova válida do mesmo exame
+        console.warn('ID sem questões mapeadas. Localizando prova válida com questões digitalizadas...');
+        const { data: simInfo } = await supabase
+          .from('simulados')
+          .select('year, prova_url, exam:simulado_exams(name)')
+          .eq('id', id)
+          .maybeSingle();
+
+        const isJuiz = (simInfo?.exam?.name || '').toLowerCase().includes('juiz');
+        const { data: allSims } = await supabase
+          .from('simulados')
+          .select('id, year, exam:simulado_exams(name), simulado_questions(count)')
+          .order('year', { ascending: false });
+
+        const target = (allSims || []).find(
+          (s) => ((s.exam?.name || '').toLowerCase().includes('juiz') === isJuiz) &&
+                 ((s.simulado_questions?.[0]?.count || 0) > 0)
+        );
+
+        if (target) {
+          const { data: fbData } = await supabase
+            .from('simulado_questions')
+            .select('*')
+            .eq('simulado_id', target.id)
+            .order('numero_questao', { ascending: true, nullsFirst: false });
+          return (fbData || []) as any[];
+        }
+
+        return [];
       } catch (err) {
         console.warn('Falha na query de questões:', err);
         return [];

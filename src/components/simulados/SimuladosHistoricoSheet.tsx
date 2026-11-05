@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
 import { PrimeBottomSheet } from '../vademecum/overlays/PrimeBottomSheet';
-import { X, Trophy, Clock, CheckCircle2, AlertCircle, PlayCircle, BarChart3 } from 'lucide-react';
+import { X, Clock, PlayCircle } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface Props {
@@ -42,7 +41,7 @@ export const SimuladosHistoricoSheet = ({
         <div className="flex items-center justify-between border-b border-zinc-800/80 px-5 pb-3 pt-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="h-4 w-1 rounded-full bg-rose-500" />
+              <span className="h-4 w-1 rounded-full bg-[#7c3aed]" />
               <h2 className="text-base sm:text-lg font-black text-white">
                 {titulos[tipo]}
               </h2>
@@ -75,8 +74,8 @@ export const SimuladosHistoricoSheet = ({
               <p className="text-base font-black text-emerald-300 mt-0.5">{totalAcertos}</p>
             </div>
             <div>
-              <span className="text-[10px] font-bold text-rose-400 uppercase">Aproveitamento</span>
-              <p className="text-base font-black text-rose-300 mt-0.5">{pctGeral}%</p>
+              <span className="text-[10px] font-bold text-violet-400 uppercase">Aproveitamento</span>
+              <p className="text-base font-black text-violet-300 mt-0.5">{pctGeral}%</p>
             </div>
           </div>
         </div>
@@ -124,7 +123,7 @@ export const SimuladosHistoricoSheet = ({
                         try { haptic.impact(); } catch {}
                         onContinuar(item.simulado_id);
                       }}
-                      className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1 cursor-pointer"
+                      className="px-3 py-1.5 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-bold text-xs flex items-center gap-1 cursor-pointer shadow-md shadow-[#7c3aed]/25"
                     >
                       <PlayCircle className="w-3.5 h-3.5" />
                       <span>Retomar</span>

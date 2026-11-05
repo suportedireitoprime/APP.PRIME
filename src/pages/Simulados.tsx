@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -10,7 +10,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import {
   RotateCcw, BarChart3, ChevronRight, NotebookPen,
   Filter, History, Timer, Scale, X, ExternalLink,
-  CheckCircle2, FileText, PlayCircle
+  PlayCircle
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import SimuladosHero from '@/components/simulados/SimuladosHero';
@@ -40,8 +40,8 @@ export default function Simulados() {
   const [previewPdfTitle, setPreviewPdfTitle] = useState('');
   const [selectedSimuladoRaioX, setSelectedSimuladoRaioX] = useState<any | null>(null);
 
-  // 1. Busca todos os simulados cadastrados
-  const { data: simuladosList = [], isLoading } = useQuery({
+  // 1. Busca todos os simulados cadastrados que possuem questões digitalizadas
+  const { data: simuladosList = [] } = useQuery({
     queryKey: ['simulados_lista_hub'],
     staleTime: 5 * 60 * 1000,
     gcTime: 15 * 60 * 1000,
@@ -55,7 +55,8 @@ export default function Simulados() {
           gabarito_url,
           edital_url,
           created_at,
-          exam:simulado_exams(name)
+          exam:simulado_exams(name),
+          simulado_questions(count)
         `)
         .order('year', { ascending: false });
 
@@ -63,7 +64,11 @@ export default function Simulados() {
         console.warn('Erro ao carregar simulados:', error);
         return [];
       }
-      return data || [];
+      // Filtra estritamente apenas os simulados que possuem questões disponíveis
+      const comQuestoes = (data || []).filter(
+        (s) => (s.simulado_questions?.[0]?.count || 0) > 0
+      );
+      return comQuestoes;
     },
   });
 
@@ -103,7 +108,6 @@ export default function Simulados() {
     let targetId = cfg.simuladoId;
 
     if (!targetId && simuladosList.length > 0) {
-      // Se não escolheu prova específica, pega a mais recente daquele cargo
       const doCargo = simuladosList.filter((s) => {
         const name = (s.exam?.name || '').toLowerCase();
         return cfg.cargoId === 'juiz' ? name.includes('juiz') : !name.includes('juiz');
@@ -141,7 +145,7 @@ export default function Simulados() {
           squareSize={40}
           direction="diagonal"
           borderColor="rgba(255, 255, 255, 0.05)"
-          hoverFillColor="rgba(255, 255, 255, 0.1)"
+          hoverFillColor="rgba(124, 58, 237, 0.15)"
           shape="square"
           hoverTrailAmount={5}
         />
@@ -149,12 +153,12 @@ export default function Simulados() {
 
       <div className="relative z-10 mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-12">
         <div className="space-y-6">
-          {/* ── Banner de Desempenho (Hero Idêntico a Questões) ───────────────── */}
+          {/* ── Banner de Desempenho (Hero Roxo Oficial #7c3aed) ───────────────── */}
           <div className="w-full">
             <SimuladosHero
-              pct={pctAcerto}
-              totalResolvidos={totalResolvidos}
+              totalSimuladosDisponiveis={simuladosList.length || 53}
               totalQuestoesBanco={totalQuestoesBanco}
+              totalResolvidos={totalResolvidos}
               onBack={() => navigate('/')}
               onOpenHistorico={() => setHistoricoSheetTipo('historico')}
               onOpenDesempenho={() => setHistoricoSheetTipo('desempenho')}
@@ -171,7 +175,7 @@ export default function Simulados() {
             animate="show"
             className="px-3.5 sm:px-6 lg:px-0 space-y-6"
           >
-            {/* ── Card Principal com Botão "Filtro Rápido" ───────────────── */}
+            {/* ── Card Principal com Botão "Filtro Rápido" (Roxo Oficial) ───────────────── */}
             <motion.div
               variants={{
                 hidden: { opacity: 0, y: 15 },
@@ -180,7 +184,7 @@ export default function Simulados() {
               className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl"
             >
               <div className="flex items-center gap-2">
-                <span className="h-5 w-1 rounded-full bg-primary" />
+                <span className="h-5 w-1 rounded-full bg-[#7c3aed]" />
                 <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl">
                   Praticar Simulados
                 </h2>
@@ -197,7 +201,7 @@ export default function Simulados() {
                   try { haptic.selection(); } catch {}
                   setFiltroAberto(true);
                 }}
-                className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-hero-panel hover:brightness-110 text-white text-base sm:text-lg font-black shadow-xl shadow-black/40 transition-all focus-visible:outline-none border border-[#E11D48]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)] cursor-pointer"
+                className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#7c3aed] to-[#6d28d9] hover:from-[#8b5cf6] hover:to-[#7c3aed] text-white text-base sm:text-lg font-black shadow-xl shadow-[#7c3aed]/25 transition-all focus-visible:outline-none border border-violet-400/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)] cursor-pointer"
               >
                 <Filter className="h-6 w-6 text-white drop-shadow-md" strokeWidth={2.5} />
                 <span className="tracking-wide text-white">Filtro Rápido</span>
@@ -228,10 +232,10 @@ export default function Simulados() {
                           setHistoricoSheetTipo(a.id as any);
                         }
                       }}
-                      className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-colors gap-2 text-center focus-visible:outline-none cursor-pointer"
+                      className="group flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-colors gap-2 text-center focus-visible:outline-none cursor-pointer"
                     >
                       <div className="relative w-10 h-10 flex items-center justify-center">
-                        <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-zinc-300 group-hover:scale-110" strokeWidth={2} />
+                        <Icon className="w-7 h-7 sm:w-8 sm:h-8 text-zinc-400 transition-all duration-300 group-hover:text-purple-300 group-hover:scale-110" strokeWidth={2} />
                         <Icon className="absolute inset-auto w-7 h-7 sm:w-8 sm:h-8 text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 icon-shine-mask" strokeWidth={2} />
                       </div>
                       <div>
@@ -253,7 +257,7 @@ export default function Simulados() {
               className="space-y-3 pt-2"
             >
               <div className="flex items-center gap-2">
-                <span className="h-4 w-1 rounded-full bg-primary" />
+                <span className="h-4 w-1 rounded-full bg-[#7c3aed]" />
                 <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                   Simulados Oficiais em Destaque
                 </p>
@@ -268,10 +272,10 @@ export default function Simulados() {
                     try { haptic.selection(); } catch {}
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
-                  <div className="flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                    <Timer className="h-8 w-8 text-rose-500" strokeWidth={1.8} />
+                  <div className="flex items-center justify-center text-[#7c3aed] group-hover:scale-110 transition-transform">
+                    <Timer className="h-8 w-8 text-[#7c3aed]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-sm font-bold text-foreground">OAB (Exame de Ordem)</span>
@@ -287,10 +291,10 @@ export default function Simulados() {
                     try { haptic.selection(); } catch {}
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
-                  <div className="flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                    <Scale className="h-8 w-8 text-amber-400" strokeWidth={1.8} />
+                  <div className="flex items-center justify-center text-[#7c3aed] group-hover:scale-110 transition-transform">
+                    <Scale className="h-8 w-8 text-[#8b5cf6]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-sm font-bold text-foreground">Juiz Substituto</span>
@@ -377,7 +381,7 @@ export default function Simulados() {
       <Sheet open={!!selectedSimuladoRaioX} onOpenChange={(open) => !open && setSelectedSimuladoRaioX(null)}>
         <SheetContent side="bottom" className="bg-[#141416] border-white/10 text-white rounded-t-3xl max-h-[80vh] overflow-y-auto">
           <SheetHeader className="text-left pb-4 border-b border-white/10">
-            <div className="flex items-center gap-2 text-rose-400 text-xs font-bold uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-violet-400 text-xs font-bold uppercase tracking-wider">
               <span>{selectedSimuladoRaioX?.year}</span>
               <span>•</span>
               <span>{selectedSimuladoRaioX?.exam?.name || 'Oficial'}</span>
@@ -394,43 +398,43 @@ export default function Simulados() {
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Ética Profissional</span>
-                <span className="font-bold text-rose-400">8 Qs</span>
+                <span className="font-bold text-violet-400">8 Qs</span>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Direito Constitucional</span>
-                <span className="font-bold text-rose-400">6 Qs</span>
+                <span className="font-bold text-violet-400">6 Qs</span>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Direito Civil</span>
-                <span className="font-bold text-rose-400">7 Qs</span>
+                <span className="font-bold text-violet-400">7 Qs</span>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Processo Civil</span>
-                <span className="font-bold text-rose-400">7 Qs</span>
+                <span className="font-bold text-violet-400">7 Qs</span>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Direito Penal</span>
-                <span className="font-bold text-rose-400">6 Qs</span>
+                <span className="font-bold text-violet-400">6 Qs</span>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Processo Penal</span>
-                <span className="font-bold text-rose-400">6 Qs</span>
+                <span className="font-bold text-violet-400">6 Qs</span>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Direito Administrativo</span>
-                <span className="font-bold text-rose-400">6 Qs</span>
+                <span className="font-bold text-violet-400">6 Qs</span>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Direito Tributário</span>
-                <span className="font-bold text-rose-400">5 Qs</span>
+                <span className="font-bold text-violet-400">5 Qs</span>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Direito do Trabalho</span>
-                <span className="font-bold text-rose-400">5 Qs</span>
+                <span className="font-bold text-violet-400">5 Qs</span>
               </div>
               <div className="p-3 rounded-xl bg-white/5 border border-white/5 flex justify-between">
                 <span className="text-zinc-300">Processo do Trabalho</span>
-                <span className="font-bold text-rose-400">5 Qs</span>
+                <span className="font-bold text-violet-400">5 Qs</span>
               </div>
             </div>
 
@@ -442,7 +446,7 @@ export default function Simulados() {
                   setSelectedSimuladoRaioX(null);
                   handleIniciarSimulado(s);
                 }}
-                className="w-full h-12 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs uppercase flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full h-12 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-black text-xs uppercase flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#7c3aed]/25"
               >
                 <PlayCircle className="w-4 h-4" /> Iniciar este Simulado
               </button>

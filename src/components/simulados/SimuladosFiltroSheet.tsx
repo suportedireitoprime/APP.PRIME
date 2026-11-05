@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { PrimeBottomSheet } from '../vademecum/overlays/PrimeBottomSheet';
-import { Filter, Check, ChevronRight, X, Clock, BookOpen, Layers, Sparkles } from 'lucide-react';
+import { Filter, X } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 import { StepRow, SelecaoSheet } from '../questoes/chunks';
@@ -86,7 +86,6 @@ export const SimuladosFiltroSheet = ({
 
   const handleConfirmar = () => {
     try { haptic.impact(); } catch {}
-    // Acha a prova alvo
     let provaAlvo = provasDoCargo[0];
     if (ano !== 'recente' && ano !== 'Mais Recente (Recomendado)') {
       const match = provasDoCargo.find((s) => s.year?.toString() === ano);
@@ -113,7 +112,7 @@ export const SimuladosFiltroSheet = ({
         <div className="flex items-center justify-between border-b border-zinc-800/80 px-5 pb-3 pt-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="h-4 w-1 rounded-full bg-rose-500" />
+              <span className="h-4 w-1 rounded-full bg-[#7c3aed]" />
               <h2 className="text-base sm:text-lg font-black text-white">
                 Filtro Rápido de Simulados
               </h2>
@@ -191,7 +190,7 @@ export const SimuladosFiltroSheet = ({
                 className={cn(
                   'h-8 rounded-lg px-3 text-xs font-bold transition-all cursor-pointer',
                   modo === 'oficial'
-                    ? 'bg-rose-600 text-white shadow-md'
+                    ? 'bg-[#7c3aed] text-white shadow-md shadow-[#7c3aed]/25'
                     : 'text-zinc-400 hover:text-white'
                 )}
               >
@@ -206,7 +205,7 @@ export const SimuladosFiltroSheet = ({
                 className={cn(
                   'h-8 rounded-lg px-3 text-xs font-bold transition-all cursor-pointer',
                   modo === 'estudo'
-                    ? 'bg-rose-600 text-white shadow-md'
+                    ? 'bg-[#7c3aed] text-white shadow-md shadow-[#7c3aed]/25'
                     : 'text-zinc-400 hover:text-white'
                 )}
               >
@@ -237,7 +236,7 @@ export const SimuladosFiltroSheet = ({
                   className={cn(
                     'h-8 rounded-lg px-2.5 text-xs font-bold transition-all cursor-pointer',
                     quantidade === q
-                      ? 'bg-rose-600 text-white shadow-md'
+                      ? 'bg-[#7c3aed] text-white shadow-md shadow-[#7c3aed]/25'
                       : 'text-zinc-400 hover:text-white'
                   )}
                 >
@@ -252,7 +251,7 @@ export const SimuladosFiltroSheet = ({
         <div className="border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 py-4 pb-safe-nav">
           <button
             onClick={handleConfirmar}
-            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-hero-panel hover:brightness-110 text-base font-black text-white shadow-xl shadow-black/40 active:scale-[0.98] transition-all cursor-pointer [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)] border border-rose-500/30"
+            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#7c3aed] to-[#6d28d9] hover:from-[#8b5cf6] hover:to-[#7c3aed] text-base font-black text-white shadow-xl shadow-[#7c3aed]/30 active:scale-[0.98] transition-all cursor-pointer [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)] border border-violet-400/30"
           >
             <Filter className="h-5 w-5 drop-shadow-md" fill="currentColor" />
             <span>Iniciar Simulado</span>

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { PrimeBottomSheet } from '../vademecum/overlays/PrimeBottomSheet';
-import { X, Search, FileText, PlayCircle, BarChart3, Scale } from 'lucide-react';
+import { X, Search, FileText, PlayCircle, BarChart3 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface Props {
@@ -44,10 +44,8 @@ export const SimuladosProvasSheet = ({
     const isJuiz = (sim.exam?.name || '').toLowerCase().includes('juiz');
     if (isJuiz) return `Concurso Juiz Substituto (${sim.year})`;
     const raw = (sim.prova_url || '').trim();
-    if (/^\d{1,2}[ºoªa]?\s+Exame/i.test(raw)) return raw;
-    const match = raw.match(/(\d{1,2})[ºoªa]?\s*exame/i);
-    if (match) return `${match[1]}º Exame de Ordem Unificado (${sim.year})`;
-    return `Exame de Ordem (${sim.year})`;
+    if (raw.startsWith('http')) return `Exame Oficial (${sim.year})`;
+    return raw || `Exame de Ordem (${sim.year})`;
   };
 
   return (
@@ -57,7 +55,7 @@ export const SimuladosProvasSheet = ({
         <div className="flex items-center justify-between border-b border-zinc-800/80 px-5 pb-3 pt-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="h-4 w-1 rounded-full bg-rose-500" />
+              <span className="h-4 w-1 rounded-full bg-[#7c3aed]" />
               <h2 className="text-base sm:text-lg font-black text-white">
                 Provas Oficiais Digitalizadas
               </h2>
@@ -88,7 +86,7 @@ export const SimuladosProvasSheet = ({
             }}
             className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               tabCargo === 'oab'
-                ? 'bg-rose-600 text-white shadow-md'
+                ? 'bg-[#7c3aed] text-white shadow-md shadow-[#7c3aed]/25'
                 : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
             }`}
           >
@@ -102,7 +100,7 @@ export const SimuladosProvasSheet = ({
             }}
             className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               tabCargo === 'juiz'
-                ? 'bg-rose-600 text-white shadow-md'
+                ? 'bg-[#7c3aed] text-white shadow-md shadow-[#7c3aed]/25'
                 : 'bg-zinc-900 text-zinc-400 border border-zinc-800'
             }`}
           >
@@ -119,7 +117,7 @@ export const SimuladosProvasSheet = ({
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar por número do exame ou ano..."
-              className="w-full h-10 pl-10 pr-4 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
+              className="w-full h-10 pl-10 pr-4 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#7c3aed]"
             />
           </div>
         </div>
@@ -140,7 +138,7 @@ export const SimuladosProvasSheet = ({
                   className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 hover:border-zinc-700 transition"
                 >
                   <div className="min-w-0 flex-1 pr-2">
-                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-rose-400 uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 text-[10px] font-bold text-violet-400 uppercase tracking-wider">
                       <span>{sim.year}</span>
                       <span>•</span>
                       <span>{isJuiz ? '100 Questões' : '80 Questões'}</span>
@@ -183,7 +181,7 @@ export const SimuladosProvasSheet = ({
                         try { haptic.impact(); } catch {}
                         onIniciar(sim);
                       }}
-                      className="h-8 px-3 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-[11px] uppercase flex items-center gap-1 transition cursor-pointer"
+                      className="h-8 px-3 rounded-lg bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-extrabold text-[11px] uppercase flex items-center gap-1 transition cursor-pointer shadow-md shadow-[#7c3aed]/25"
                     >
                       <PlayCircle className="w-3.5 h-3.5" />
                       <span>Iniciar</span>
