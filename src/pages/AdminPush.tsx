@@ -123,11 +123,11 @@ export default function AdminPush() {
       const isNow = !scheduledTime;
       const nextRun = scheduledTime ? new Date(scheduledTime).toISOString() : new Date().toISOString();
 
-      let audiencePayload: any = { all: true, target: 'users_only', include_admins: false };
+      let audiencePayload: any = { all: true, target: 'all', include_admins: true };
       if (targetAudience === 'premium') {
-        audiencePayload = { premium: 'premium', target: 'users_only', include_admins: false };
+        audiencePayload = { premium: 'premium', target: 'all', include_admins: true };
       } else if (targetAudience === 'free') {
-        audiencePayload = { premium: 'free', target: 'users_only', include_admins: false };
+        audiencePayload = { premium: 'free', target: 'all', include_admins: true };
       } else if (targetAudience === 'test_admin') {
         audiencePayload = { target: 'admins_only', include_admins: true };
       }
