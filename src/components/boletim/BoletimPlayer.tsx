@@ -385,7 +385,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
                 </div>
               </div>
             ) : (
-              /* Notícias / Normas: Imagem em formato deitado 16:9 no topo */
+              /* Notícias / Normas: Imagem em formato deitado 16:9 no topo com botões embutidos na capa */
               <div className="w-full max-w-xl mx-auto flex flex-col">
                 {scene.imagem_url && (
                   <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-white/15 bg-neutral-900 shadow-2xl mb-4 shrink-0">
@@ -398,9 +398,10 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
                       transition={{ duration: scene.duracao_s || 8, ease: 'linear' }}
                       className="w-full h-full object-cover object-center"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/35 pointer-events-none" />
+                    {/* Gradiente sutil para legibilidade dos badges no topo e botões na parte de baixo */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-black/50 pointer-events-none" />
 
-                    {/* Badges sobre a imagem deitada */}
+                    {/* Topo da capa: Badges */}
                     <div className="absolute top-3 inset-x-3 flex items-center justify-between gap-2 pointer-events-none">
                       {scene.tipo_label ? (
                         <span
@@ -412,48 +413,112 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
                       ) : (
                         <span />
                       )}
+                      <div className="flex items-center gap-1.5 pointer-events-auto">
+                        {scene.imagem_credito?.autor && (
+                          <span className="text-[9px] text-white/70 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/10 hidden sm:inline-block">
+                            📷 {scene.imagem_credito.autor}
+                          </span>
+                        )}
+                        {fonteLabel && (
+                          <button
+                            type="button"
+                            onClick={abrirFonte}
+                            className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-black/80 transition shadow-lg cursor-pointer active:scale-95"
+                          >
+                            VIA {fonteLabel}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Parte de baixo da capa: Curtir, Comentar e Ver norma */}
+                    <div className="absolute bottom-3 inset-x-3 flex items-center justify-between gap-2 pointer-events-none">
+                      <div className="flex items-center gap-2 pointer-events-auto">
+                        <button
+                          type="button"
+                          onClick={toggleLike}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md hover:bg-black/85 transition border border-white/20 text-white cursor-pointer active:scale-95 shadow-lg"
+                        >
+                          <Heart
+                            className={`w-3.5 h-3.5 ${likeAtual.mine ? 'text-red-500 fill-red-500' : 'text-white/80'}`}
+                          />
+                          <span className="text-xs font-semibold">{likeAtual.count}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setComentariosOpen(true)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md hover:bg-black/85 transition border border-white/20 text-white cursor-pointer active:scale-95 shadow-lg"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5 text-white/80" />
+                          <span className="text-xs font-semibold">{commentsCount}</span>
+                        </button>
+                      </div>
+
+                      {scene.kind === 'norma' && (
+                        <button
+                          type="button"
+                          onClick={abrirFonte}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary hover:brightness-110 transition shadow-lg shadow-primary/30 text-primary-foreground font-semibold text-xs cursor-pointer pointer-events-auto active:scale-95"
+                        >
+                          <span>Ver norma</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Fallback caso não haja imagem */}
+                {!scene.imagem_url && (
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      {scene.tipo_label && (
+                        <span
+                          className="text-[10px] uppercase tracking-[0.15em] font-bold px-3 py-1 rounded-full shadow"
+                          style={{ backgroundColor: cor, color: '#fff' }}
+                        >
+                          {scene.tipo_label}
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={toggleLike}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-800 text-white text-xs border border-white/10"
+                      >
+                        <Heart className={`w-3 h-3 ${likeAtual.mine ? 'text-red-500 fill-red-500' : 'text-white/70'}`} />
+                        <span>{likeAtual.count}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setComentariosOpen(true)}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-800 text-white text-xs border border-white/10"
+                      >
+                        <MessageCircle className="w-3 h-3 text-white/70" />
+                        <span>{commentsCount}</span>
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2">
                       {fonteLabel && (
                         <button
                           type="button"
                           onClick={abrirFonte}
-                          className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white hover:bg-black/80 transition shadow-lg cursor-pointer pointer-events-auto active:scale-95"
+                          className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full bg-neutral-800 border border-white/15 text-white text-xs cursor-pointer"
                         >
                           VIA {fonteLabel}
                         </button>
                       )}
+                      {scene.kind === 'norma' && (
+                        <button
+                          type="button"
+                          onClick={abrirFonte}
+                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-semibold cursor-pointer active:scale-95"
+                        >
+                          <span>Ver norma</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </button>
+                      )}
                     </div>
-
-                    {/* Crédito de imagem na foto */}
-                    {scene.imagem_credito?.autor && (
-                      <div className="absolute bottom-2 right-3 pointer-events-none">
-                        <span className="text-[10px] text-white/80 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/10">
-                          📷 {scene.imagem_credito.autor}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Fallback de badges caso não haja imagem */}
-                {!scene.imagem_url && (
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    {scene.tipo_label && (
-                      <span
-                        className="text-[10px] uppercase tracking-[0.15em] font-bold px-3 py-1 rounded-full shadow"
-                        style={{ backgroundColor: cor, color: '#fff' }}
-                      >
-                        {scene.tipo_label}
-                      </span>
-                    )}
-                    {fonteLabel && (
-                      <button
-                        type="button"
-                        onClick={abrirFonte}
-                        className="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-bold px-3 py-1 rounded-full bg-neutral-800 border border-white/15 text-white text-xs cursor-pointer"
-                      >
-                        VIA {fonteLabel}
-                      </button>
-                    )}
                   </div>
                 )}
 
@@ -478,38 +543,6 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
                 <p className="text-sm sm:text-base text-neutral-200 leading-relaxed font-body whitespace-pre-wrap">
                   {scene.texto}
                 </p>
-
-                {/* Ações */}
-                <div className="mt-4 flex flex-wrap items-center gap-3 pt-3 border-t border-white/10">
-                  <button
-                    onClick={toggleLike}
-                    className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-neutral-900/90 hover:bg-neutral-800 transition border border-white/10 text-white cursor-pointer active:scale-95"
-                  >
-                    <Heart
-                      className={`w-4 h-4 ${likeAtual.mine ? 'text-red-500' : 'text-white/70'}`}
-                      fill={likeAtual.mine ? 'currentColor' : 'none'}
-                    />
-                    <span className="text-xs font-semibold">{likeAtual.count}</span>
-                  </button>
-
-                  <button
-                    onClick={() => setComentariosOpen(true)}
-                    className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-neutral-900/90 hover:bg-neutral-800 transition border border-white/10 text-white cursor-pointer active:scale-95"
-                  >
-                    <MessageCircle className="w-4 h-4 text-white/70" />
-                    <span className="text-xs font-semibold">{commentsCount}</span>
-                  </button>
-
-                  {scene.kind === 'norma' && (
-                    <button
-                      onClick={abrirFonte}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-primary hover:brightness-110 transition shadow-lg shadow-primary/30 text-primary-foreground font-semibold text-xs ml-auto cursor-pointer active:scale-95"
-                    >
-                      <span>Ver norma</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
               </div>
             )}
           </motion.div>
