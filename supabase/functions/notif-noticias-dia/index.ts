@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
       .from("push_campaigns")
       .insert({
         title, body: pushBody, url: "/noticias",
-        audience: { all: true },
+        audience: { all: true, target: "users_only", include_admins: false },
         status: "sending",
         tipo: "noticias",
         automation_key: "noticias_dia",
@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
       body: {
         campaign_id: campaign?.id,
         title, body: pushBody, url: "/noticias",
-        audience: { all: true },
+        audience: { all: true, target: "users_only", include_admins: false },
         image: top[0]?.imagem_url ?? undefined,
       },
     });

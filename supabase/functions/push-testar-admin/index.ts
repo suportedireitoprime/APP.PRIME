@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
           title: `[TESTE] ${title}`,
           body: message,
           url,
-          audience: { emails: ADMIN_EMAILS },
+          audience: { target: "admins_only", include_admins: true, emails: ADMIN_EMAILS },
           personalize: true,
         },
       });

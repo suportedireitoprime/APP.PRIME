@@ -158,7 +158,7 @@ Deno.serve(async (req) => {
       : null;
 
     const clickUrl = auto?.default_url || "/radar-360";
-    const audienceCfg = auto?.audience ?? { all: true, platforms: ["android", "ios", "web"], premium: "all" };
+    const audienceCfg = auto?.audience ?? { all: true, platforms: ["android", "ios", "web"], premium: "all", target: "users_only", include_admins: false };
     const audienceWithRun = { ...audienceCfg, run_id: run_id ?? null };
 
     // cria campanha

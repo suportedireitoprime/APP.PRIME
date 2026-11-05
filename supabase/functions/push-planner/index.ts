@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
         body: "Bom dia, {nome}! Veja as atualizações jurídicas de hoje para começar o dia informado.",
         status: "scheduled",
         next_run_at: getDateWithHour(6),
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-matinal"
       });
 
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
         body: "As leis mudam rápido, {nome}. Tire 5 minutos agora para se atualizar com nossas explicações recentes.",
         status: "scheduled",
         next_run_at: getDateWithHour(8),
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-leis"
       });
 
@@ -74,7 +74,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(10),
         url: `/dicionario`,
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-dicionario"
       });
 
@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(12),
         url: `/biblioteca`,
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-livro"
       });
 
@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(14),
         url: audioItem.id ? `/audioaulas?play_id=${audioItem.id}` : `/audioaulas`,
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-audio"
       });
 
@@ -115,7 +115,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(16),
         url: blogItem.slug ? `/blog/${blogItem.slug}` : `/blog`,
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-blog"
       });
 
@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
         body: "Fechando o dia de estudos! {nome}, veja as decisões que movimentaram os tribunais hoje.",
         status: "scheduled",
         next_run_at: getDateWithHour(18),
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-noturno"
       });
 
@@ -136,7 +136,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(20),
         url: `/questoes`,
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-questao"
       });
 
@@ -147,7 +147,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(22),
         url: `/audioaulas`,
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-audio-noite"
       });
 
@@ -162,7 +162,7 @@ Deno.serve(async (req) => {
         status: "scheduled",
         next_run_at: getDateWithHour(0),
         url: `/aprender`,
-        audience: { all: true },
+        audience: { all: true, target: 'users_only', include_admins: false },
         automation_key: "planner-video-madrugada"
       });
     }

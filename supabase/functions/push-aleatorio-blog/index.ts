@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
         title,
         body,
         url,
-        audience: { all: true },
+        audience: { all: true, target: "users_only", include_admins: false },
         status: "sending",
         tipo: "blog",
         automation_key,
@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
         title,
         body,
         url,
-        audience: { all: true },
+        audience: { all: true, target: "users_only", include_admins: false },
         personalize: true,
       },
     });
