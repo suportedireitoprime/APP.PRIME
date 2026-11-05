@@ -124,7 +124,6 @@ const AdminMapeamentoLeis = lazy(() => import('./pages/AdminMapeamentoLeis.tsx')
 const AdminNarracaoLeis = lazy(() => import('./pages/AdminNarracaoLeis.tsx'));
 const AdminSimulados = lazy(() => import("./pages/AdminSimulados.tsx"));
 const Simulados = lazy(() => import("./pages/Simulados.tsx"));
-const SimuladosCargo = lazy(() => import("./pages/SimuladosCargo.tsx"));
 const SimuladosResolver = lazy(() => import("./pages/SimuladosResolver.tsx"));
 const SimuladosEstatisticas = lazy(() => import("./pages/SimuladosEstatisticas.tsx"));
 const FerramentasSimulados = Simulados;
@@ -899,7 +898,6 @@ function AnimatedRoutes() {
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition instant><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados/provas" element={<Navigate to="/simulados" replace />} />
           <Route path="/simulados/estatisticas" element={<ProtectedRoute><PageTransition><SimuladosEstatisticas /></PageTransition></ProtectedRoute>} />
-          <Route path="/simulados/cargo/:cargoId" element={<ProtectedRoute><PageTransition instant><SimuladosCargo /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados/resolver/:id" element={<ProtectedRoute><PageTransition><SimuladosResolver /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition instant><PilulasHome /></PageTransition></ProtectedRoute>} />
