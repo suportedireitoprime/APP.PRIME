@@ -62,15 +62,9 @@ const HomePraticarCarousel = () => {
   const isInteractingRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 10 cópias (40 itens) para um carrossel 100% contínuo e infinito sem nunca rebobinar
+  // 4 cópias (16 itens) para um carrossel 100% contínuo e infinito idêntico a Leis em Alta
   const loopedItems = useMemo(() => {
     return [
-      ...PRATICAR_ITEMS,
-      ...PRATICAR_ITEMS,
-      ...PRATICAR_ITEMS,
-      ...PRATICAR_ITEMS,
-      ...PRATICAR_ITEMS,
-      ...PRATICAR_ITEMS,
       ...PRATICAR_ITEMS,
       ...PRATICAR_ITEMS,
       ...PRATICAR_ITEMS,
@@ -78,8 +72,8 @@ const HomePraticarCarousel = () => {
     ];
   }, []);
 
-  // Começa no bloco 4 (Questões: 4*4 + 1 = 17) no centro da esteira infinita
-  const [activeIndex, setActiveIndex] = useState(PRATICAR_ITEMS.length * 4 + 1);
+  // Começa no segundo bloco (índice 4 = flashcards)
+  const [activeIndex, setActiveIndex] = useState(PRATICAR_ITEMS.length);
   const [isReady, setIsReady] = useState(false);
 
   const pauseAutoplay = useCallback(() => {
@@ -90,35 +84,29 @@ const HomePraticarCarousel = () => {
     }, 4000);
   }, []);
 
-  // Scroll suave com precisão de pixel pelo getBoundingClientRect()
+  // Scroll suave com cálculo imutável de offsetLeft (imune a zoom ou transform do CSS)
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
     const el = scrollerRef.current;
     if (!el) return;
     const child = el.children[idx] as HTMLElement | undefined;
     if (!child) return;
 
-    const elRect = el.getBoundingClientRect();
-    const childRect = child.getBoundingClientRect();
-    const delta = childRect.left + childRect.width / 2 - (elRect.left + elRect.width / 2);
-
-    if (Math.abs(delta) > 1) {
-      el.scrollBy({ left: delta, behavior });
-    }
+    const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
+    el.scrollTo({ left: target, behavior });
   }, []);
 
   // Inicialização no bloco central no mount
   useEffect(() => {
-    const initialIndex = PRATICAR_ITEMS.length * 4 + 1;
+    const initialIndex = PRATICAR_ITEMS.length;
     setActiveIndex(initialIndex);
     const timer = setTimeout(() => {
       scrollToIndex(initialIndex, 'instant' as ScrollBehavior);
       setIsReady(true);
-    }, 40);
+    }, 50);
     return () => clearTimeout(timer);
   }, [scrollToIndex]);
 
-  // Autoplay contínuo infinito: NUNCA rebobina para trás; ao atingir o bloco 7,
-  // faz teleporte silencioso de 0ms para o bloco 4 e continua avançando para frente!
+  // Autoplay contínuo infinito idêntico a Leis em Alta (teleporte silencioso de 0ms nas bordas)
   useEffect(() => {
     if (!isReady) return;
 
@@ -126,16 +114,13 @@ const HomePraticarCarousel = () => {
       if (isInteractingRef.current || document.hidden) return;
 
       const el = scrollerRef.current;
-      if (!el) return;
-
       setActiveIndex((prev) => {
         let current = prev;
+        const N = PRATICAR_ITEMS.length;
 
-        // Se estiver no bloco 7 ou superior (índice 28+), sincronamente reposiciona scrollLeft
-        // para o bloco 4 (índice 16) sem animação alguma (0ms). O usuário não percebe nada
-        // porque os cards são visualmente idênticos, e a rolagem continua sempre PARA FRENTE!
-        if (current >= 28) {
-          const equivalent = (current % PRATICAR_ITEMS.length) + 16;
+        // Teleporte silencioso de 0ms quando aproxima do fim do buffer
+        if (N > 0 && current >= loopedItems.length - N - 2 && el) {
+          const equivalent = (current % N) + N * 2;
           const childCurr = el.children[current] as HTMLElement | undefined;
           const childEq = el.children[equivalent] as HTMLElement | undefined;
           if (childCurr && childEq) {
@@ -151,7 +136,7 @@ const HomePraticarCarousel = () => {
         }
 
         const nextIndex = current + 1;
-        scrollToIndex(nextIndex, 'smooth');
+        scrollToIndex(nextIndex);
         return nextIndex;
       });
     }, AUTOPLAY_MS);
@@ -160,23 +145,22 @@ const HomePraticarCarousel = () => {
       clearInterval(interval);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [isReady, scrollToIndex]);
+  }, [isReady, scrollToIndex, loopedItems.length]);
 
-  // Detector de scroll com teleporte imperceptível de 0ms nas pontas
+  // Detector de scroll usando geometria de layout estável (offsetLeft + clientWidth)
+  // Elimina 100% de oscilações ou zoom loops em qualquer card (incluindo Flashcards)
   const handleScroll = useCallback(() => {
     const el = scrollerRef.current;
     if (!el) return;
 
-    const elRect = el.getBoundingClientRect();
-    const elCenter = elRect.left + elRect.width / 2;
+    const center = el.scrollLeft + el.clientWidth / 2;
     let best = 0;
     let bestDist = Infinity;
 
     for (let i = 0; i < el.children.length; i++) {
       const child = el.children[i] as HTMLElement;
-      const childRect = child.getBoundingClientRect();
-      const childCenter = childRect.left + childRect.width / 2;
-      const dist = Math.abs(childCenter - elCenter);
+      const mid = child.offsetLeft + child.clientWidth / 2;
+      const dist = Math.abs(mid - center);
       if (dist < bestDist) {
         bestDist = dist;
         best = i;
@@ -184,43 +168,28 @@ const HomePraticarCarousel = () => {
     }
 
     const N = PRATICAR_ITEMS.length;
-
-    // Se o usuário rolou manualmente para o bloco 7 ou além, teletransporta silenciosamente para o bloco 4
-    if (best >= 28) {
-      const equivalent = (best % N) + 16;
-      const childCurr = el.children[best] as HTMLElement | undefined;
-      const childEq = el.children[equivalent] as HTMLElement | undefined;
-      if (childCurr && childEq) {
-        const diff = childCurr.offsetLeft - childEq.offsetLeft;
-        el.style.scrollBehavior = 'auto';
-        el.style.scrollSnapType = 'none';
-        el.scrollLeft -= diff;
-        void el.offsetHeight;
-        el.style.scrollSnapType = '';
-        el.style.scrollBehavior = '';
-        setActiveIndex(equivalent);
-        return;
-      }
-    } else if (best < 8) {
-      // Se rolou para trás dos blocos 0 ou 1, teletransporta para o bloco 4
-      const equivalent = (best % N) + 16;
-      const childCurr = el.children[best] as HTMLElement | undefined;
-      const childEq = el.children[equivalent] as HTMLElement | undefined;
-      if (childCurr && childEq) {
-        const diff = childEq.offsetLeft - childCurr.offsetLeft;
-        el.style.scrollBehavior = 'auto';
-        el.style.scrollSnapType = 'none';
-        el.scrollLeft += diff;
-        void el.offsetHeight;
-        el.style.scrollSnapType = '';
-        el.style.scrollBehavior = '';
-        setActiveIndex(equivalent);
-        return;
+    if (N > 0) {
+      if (best <= 1) {
+        const jumpTo = best + N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: 'auto' });
+          setActiveIndex(jumpTo);
+          return;
+        }
+      } else if (best >= loopedItems.length - 2) {
+        const jumpTo = best - N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({ left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2, behavior: 'auto' });
+          setActiveIndex(jumpTo);
+          return;
+        }
       }
     }
 
     setActiveIndex(best);
-  }, []);
+  }, [loopedItems.length]);
 
   const handleCardClick = useCallback(
     (item: PraticarItem, index: number) => {
@@ -254,7 +223,7 @@ const HomePraticarCarousel = () => {
         onScroll={handleScroll}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="relative -mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
+        className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
         {loopedItems.map((item, i) => {
@@ -267,16 +236,16 @@ const HomePraticarCarousel = () => {
               key={`${item.id}-${i}`}
               type="button"
               onClick={() => handleCardClick(item, i)}
-              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-400 ease-out ${
+              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-300 ${
                 isActive
-                  ? 'scale-[1.02] opacity-100 z-10 shadow-xl'
-                  : 'scale-[0.94] opacity-75 z-0 shadow-sm'
+                  ? 'scale-100 opacity-100 z-10 shadow-xl'
+                  : 'scale-[0.95] opacity-75 z-0 shadow-sm'
               }`}
             >
               {/* Gradiente de fundo com marca d'água */}
               <div
                 className={`absolute inset-0 rounded-2xl overflow-hidden pointer-events-none transition-all duration-300 ${
-                  isActive ? 'shadow-lg ring-1 ring-white/15' : 'shadow-sm group-hover:opacity-100 opacity-95'
+                  isActive ? 'shadow-lg ring-1 ring-white/20' : 'shadow-sm group-hover:opacity-100 opacity-95'
                 }`}
                 style={{
                   background: `linear-gradient(135deg, ${baseColor} 0%, ${shade(baseColor, -0.3)} 100%)`,
@@ -289,13 +258,13 @@ const HomePraticarCarousel = () => {
                 <div className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-xl group-hover:bg-white/20 transition-all" />
               </div>
 
-              {/* Personagem 3D com Zoom Suave e Equilibrado ao centralizar */}
+              {/* Personagem 3D com posicionamento estável imune a loops de resize */}
               {item.image && (
                 <div
-                  className={`absolute right-0 w-auto h-[96px] sm:h-[100px] max-w-none pointer-events-none z-10 transform-gpu origin-bottom transition-all duration-500 ease-out ${
+                  className={`absolute right-0 w-auto h-[96px] sm:h-[100px] max-w-none pointer-events-none z-10 transform-gpu origin-bottom transition-all duration-300 ease-out ${
                     isActive
-                      ? 'scale-[1.08] sm:scale-[1.10] -top-3.5 sm:-top-4 drop-shadow-[0_8px_16px_rgba(0,0,0,0.65)] opacity-100'
-                      : 'scale-[0.86] -top-0.5 drop-shadow-[0_2px_6px_rgba(0,0,0,0.3)] opacity-60'
+                      ? 'scale-[1.05] sm:scale-[1.08] -top-3 sm:-top-3.5 drop-shadow-[0_8px_16px_rgba(0,0,0,0.65)] opacity-100'
+                      : 'scale-[0.90] -top-1 drop-shadow-[0_2px_6px_rgba(0,0,0,0.3)] opacity-60'
                   }`}
                 >
                   <img

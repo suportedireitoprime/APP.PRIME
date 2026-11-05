@@ -11,7 +11,7 @@ export const O_MUNDO_DE_SOFIA: AudiobookLivro = {
   "ano": 1991,
   "descricao": "Às vésperas de seu 15º aniversário, Sofia Amundsen começa a receber cartas misteriosas com perguntas existenciais que a levam a um curso fascinante sobre a história do pensamento ocidental, desde os pré-socráticos até a contemporaneidade.",
   "sinopse": "Uma das maiores obras da literatura mundial sobre filosofia e autoconhecimento. Combinando o suspense de um romance policial juvenil com o rigor acadêmico dos grandes pensadores da humanidade, Jostein Gaarder constrói uma jornada inesquecível pelas ideias de Sócrates, Platão, Aristóteles, Descartes, Kant, Hegel, Marx, Darwin e Freud.",
-  "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-mundo-de-sofia/capa-do-livro.jpg",
+  "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/o_mundo_de_sofia_manual.jpg",
   "totalCapitulos": 37,
   "duracaoTotalSegundos": 68605,
   "duracaoTotalFormatada": "19h 03min",

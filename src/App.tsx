@@ -101,6 +101,7 @@ import { scheduleAppWarmup } from "@/services/appWarmupService";
 import { scheduleBackgroundImageWarmup } from "@/services/imageBackgroundSync";
 import { populateFTS5FromBundle } from "@/services/fts5Populator";
 import { GlobalDelayedPrompts } from "@/components/GlobalDelayedPrompts";
+import AppSplashScreen from "@/components/ui/AppSplashScreen";
 
 
 const queryClient = new QueryClient({
@@ -229,6 +230,7 @@ const App = () => (
                     <HorusTakeoverNoticeDialog />
                   </Suspense>
                   <ForceUpdateWrapper />
+                  <AppSplashScreen />
                   
                   <Suspense fallback={<div className="min-h-screen bg-[#0D0F12]" />}>
                     <AnimatedRoutes />

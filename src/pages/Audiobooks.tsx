@@ -351,7 +351,7 @@ export default function AudiobooksPage() {
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            className="-mx-4 sm:-mx-6 px-[calc(50%-68px)] sm:px-[calc(50%-76px)] flex gap-3.5 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 pt-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation"
+            className="-mx-4 sm:-mx-6 px-[calc(50%-68px)] sm:px-[calc(50%-76px)] flex gap-3.5 sm:gap-4 overflow-x-auto snap-x snap-mandatory pb-3 pt-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation"
           >
             {livrosRecomendados.map((livro, idx) => {
               const isDisponivel = livro.status === "disponivel";
@@ -362,17 +362,17 @@ export default function AudiobooksPage() {
                 <div
                   key={`rec-${livro.id}`}
                   onClick={() => handleCarouselCardClick(livro, idx)}
-                  className={`snap-center shrink-0 w-[136px] sm:w-[152px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform transition-all duration-300 ease-out ${
+                  className={`snap-center shrink-0 w-[136px] sm:w-[152px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transition-all duration-300 ${
                     isActive
-                      ? "scale-[1.05] sm:scale-[1.07] opacity-100 z-10"
-                      : "scale-[0.93] sm:scale-[0.94] opacity-70 z-0 hover:opacity-90"
+                      ? "opacity-100 z-10"
+                      : "opacity-75 z-0 hover:opacity-90"
                   }`}
                 >
                   <div
-                    className={`relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border transition-all duration-300 ${
+                    className={`relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border transform-gpu transition-all duration-300 ${
                       isActive
-                        ? "border-purple-400/80 shadow-2xl shadow-purple-950/60 ring-2 ring-purple-500/50"
-                        : "border-white/10 shadow-md group-hover:border-purple-500/40"
+                        ? "scale-100 border-purple-400/80 shadow-2xl shadow-purple-950/60 ring-2 ring-purple-500/50"
+                        : "scale-[0.94] border-white/10 shadow-md group-hover:border-purple-500/40"
                     }`}
                   >
                     {/* Efeito de Pulso Leve na capa centralizada ativa (padrão Layers/Leis em Alta) */}
