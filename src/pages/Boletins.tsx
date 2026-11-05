@@ -53,10 +53,28 @@ const toYMD = (d: Date) => {
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
+// Cache em memória para carregamento instantâneo a 0ms
+let boletinsMemoryCache: Boletim[] | null = null;
+
+function getStoredBoletins(): Boletim[] | null {
+  try {
+    const raw = localStorage.getItem('boletins_cache_v2');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function setStoredBoletins(items: Boletim[]) {
+  try {
+    localStorage.setItem('boletins_cache_v2', JSON.stringify(items));
+  } catch {}
+}
+
 export default function Boletins() {
   const navigate = useNavigate();
-  const [items, setItems] = useState<Boletim[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<Boletim[]>(() => boletinsMemoryCache || getStoredBoletins() || []);
+  const [loading, setLoading] = useState<boolean>(() => !boletinsMemoryCache && !getStoredBoletins()?.length);
   
   const [diaSelecionado, setDiaSelecionado] = useState<string | null>(null);
   const [playerAtivo, setPlayerAtivo] = useState<Boletim | null>(null);
@@ -80,45 +98,48 @@ export default function Boletins() {
     });
   };
 
-  useEffect(() => {
-    let cancel = false;
-    async function load() {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('boletins_juridicos')
-          .select('*')
-          .order('data_ref', { ascending: false })
-          .order('created_at', { ascending: false })
-          .limit(50);
-          
-        if (!cancel) {
-          if (!error && data) {
-            setItems(data as any[]);
-          }
-        }
-      } catch (err) {
-        console.warn('[Boletins] Falha ao carregar:', err);
-      } finally {
-        if (!cancel) setLoading(false);
+  const load = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('boletins_juridicos')
+        .select('*')
+        .order('data_ref', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(20);
+        
+      if (!error && data && data.length > 0) {
+        const rows = data as Boletim[];
+        boletinsMemoryCache = rows;
+        setStoredBoletins(rows);
+        setItems(rows);
       }
+    } catch (err) {
+      console.warn('[Boletins] Falha ao carregar:', err);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     load();
-    return () => { cancel = true; };
   }, []);
 
   const todayYMD = toYMD(new Date());
 
-  // Agrupar boletins por dia
+  // Agrupar boletins por dia (chave estrita YYYY-MM-DD sem distorção de fuso)
   const boletinsPorDia = useMemo(() => {
     const map = new Map<string, Boletim[]>();
     for (const b of items) {
-      const date = b.data_ref ? new Date(b.data_ref + 'T12:00:00') : new Date(b.created_at);
-      const key = toYMD(date);
+      const key = b.data_ref ? b.data_ref.slice(0, 10) : toYMD(new Date(b.created_at));
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(b);
     }
     return map;
+  }, [items]);
+
+  // Boletim mais recente pronto para destaque no topo
+  const latestBoletim = useMemo(() => {
+    return items.find((b) => b.status === 'pronto') || items[0] || null;
   }, [items]);
 
   // Lista dos últimos 7 dias
@@ -178,11 +199,57 @@ export default function Boletins() {
 
       <div className="flex flex-col h-full w-full max-w-2xl mx-auto pt-2 pb-24 lg:pb-8 relative z-10">
         {loading ? (
-          <div className="py-20">
-            <LoadingState text="Carregando boletins diários..." />
+          <div className="px-6 py-8 space-y-4">
+            <LoadingState variant="list" rows={4} label="Carregando boletins diários..." />
           </div>
         ) : (
           <div className="px-6 py-4">
+            {/* Card Destaque: Último Boletim Pronto */}
+            {latestBoletim && latestBoletim.status === 'pronto' && (
+              <div className="mb-8 rounded-3xl p-5 border border-white/15 bg-gradient-to-br from-neutral-900 via-neutral-900/95 to-black shadow-2xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
+                <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[10px] uppercase tracking-widest font-bold px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30">
+                        Boletim em Destaque
+                      </span>
+                      <span className="text-[11px] text-white/50 font-medium">
+                        {latestBoletim.data_ref}
+                      </span>
+                    </div>
+                    <h2 className="text-lg sm:text-xl font-bold font-display text-white leading-tight mb-1">
+                      {latestBoletim.titulo}
+                    </h2>
+                    {latestBoletim.subtitulo && (
+                      <p className="text-xs text-white/70 line-clamp-2">
+                        {latestBoletim.subtitulo}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.impact();
+                      markAsVisto(latestBoletim.id);
+                      setPlayerAtivo(latestBoletim);
+                    }}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-primary hover:brightness-110 active:scale-95 text-white font-bold text-xs uppercase tracking-wider shadow-xl shadow-primary/30 transition cursor-pointer shrink-0"
+                  >
+                    <Play className="w-4 h-4 fill-white ml-0.5" />
+                    <span>Ouvir Agora</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-400">
+                Linha do Tempo
+              </h2>
+              <span className="text-[11px] text-zinc-600 font-medium">Últimos 7 dias</span>
+            </div>
+
             <div className="relative border-l-2 border-zinc-800/60 ml-4 space-y-8 pb-12">
               {timelineDays.map((dateObj) => {
                 const dateKey = toYMD(dateObj);
