@@ -6,3 +6,4 @@ export const Route = createFileRoute("/boletins")({
   head: () => ({ meta: [{ title: "Boletins — Direito Prime" }] }),
   component: () => null,
 });
+

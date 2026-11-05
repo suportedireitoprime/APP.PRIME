@@ -9,7 +9,7 @@ const SHORTCUT_ITEMS = [
   { label: 'Audioaulas',  icon: Headphones,            to: '/audioaulas',       color: '#A855F7', badgeColor: null, badgeKey: null, prefetch: 'audioaulas' as PrefetchKey },
   { label: 'Audiobooks',  icon: BookOpen,              to: '/audiobooks',       color: '#F43F5E', badgeColor: null, badgeKey: null, prefetch: 'audiobooks' as PrefetchKey },
   { label: 'Blog',        icon: ScrollText,            to: '/blog',             color: '#FACC15', badgeColor: null, badgeKey: null, prefetch: 'blog' as PrefetchKey },
-  { label: 'Boletins',    icon: Newspaper,             to: '/atualizacoes',     color: '#38BDF8', badgeColor: '#EF4444', badgeKey: 'boletim' as const, prefetch: 'atualizacoes' as PrefetchKey },
+  { label: 'Boletins',    icon: Newspaper,             to: '/boletins',         color: '#38BDF8', badgeColor: '#EF4444', badgeKey: 'boletim' as const, prefetch: 'boletins' as PrefetchKey },
 ];
 
 const HomeActionShortcuts = () => {

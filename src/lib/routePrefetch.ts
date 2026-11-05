@@ -57,6 +57,7 @@ export const routePrefetch = {
   audiobooks: () => import("@/pages/Audiobooks.tsx"),
   aulas: () => import("@/pages/AdminAulasInterativas.tsx"),
   atualizacoes: () => import("@/pages/Atualizacoes.tsx"),
+  boletins: () => import("@/pages/Boletins.tsx"),
 } as const;
 
 export type PrefetchKey = keyof typeof routePrefetch;
@@ -68,6 +69,7 @@ const MAIN_TAB_KEYS: PrefetchKey[] = [
   "flashcards",
   "aulas",
   "atualizacoes",
+  "boletins",
   "meExplique",
   "resumosJuridicos",
   "videoaulas",
