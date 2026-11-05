@@ -50,8 +50,58 @@ const toYMD = (d: Date) => {
   return `${y}-${m}-${day}`;
 };
 
-const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const MONTHS_FULL = [
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
+];
+
+const WEEKDAYS_FULL = [
+  'Domingo',
+  'Segunda-feira',
+  'Terça-feira',
+  'Quarta-feira',
+  'Quinta-feira',
+  'Sexta-feira',
+  'Sábado',
+];
+
+// Função que extrai a capa real da notícia (não a capa genérica do jornal de introdução)
+function getBoletimCover(b?: Boletim | null): string {
+  if (!b || !Array.isArray(b.roteiro_json) || b.roteiro_json.length === 0) {
+    return radarLeisLocal;
+  }
+  // 1ª prioridade: cena que NÃO é intro e tem imagem de notícia real (não é o slide 00 genérico de jornal)
+  const noticiaComImg = b.roteiro_json.find(
+    (s: any) => s.kind !== 'intro' && s.imagem_url && !s.imagem_url.includes('00-slide.jpg')
+  );
+  if (noticiaComImg?.imagem_url) {
+    return noticiaComImg.imagem_url;
+  }
+  // 2ª prioridade: qualquer cena com kind !== 'intro' com imagem
+  const qualquerNoticia = b.roteiro_json.find((s: any) => s.kind !== 'intro' && s.imagem_url);
+  if (qualquerNoticia?.imagem_url) {
+    return qualquerNoticia.imagem_url;
+  }
+  // 3ª prioridade: cena 1
+  if (b.roteiro_json[1]?.imagem_url) {
+    return b.roteiro_json[1].imagem_url;
+  }
+  // Fallback: cena 0
+  if (b.roteiro_json[0]?.imagem_url) {
+    return b.roteiro_json[0].imagem_url;
+  }
+  return b.tipo === 'legislativo' ? radarLegislativoLocal : radarLeisLocal;
+}
 
 // Cache em memória para carregamento instantâneo a 0ms
 let boletinsMemoryCache: Boletim[] | null = null;
@@ -204,137 +254,200 @@ export default function Boletins() {
           </div>
         ) : (
           <div className="px-6 py-4">
-            {/* Card Destaque: Último Boletim Pronto */}
-            {latestBoletim && latestBoletim.status === 'pronto' && (
-              <div className="mb-8 rounded-3xl p-5 border border-white/15 bg-gradient-to-br from-neutral-900 via-neutral-900/95 to-black shadow-2xl relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
-                <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-[10px] uppercase tracking-widest font-bold px-2.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30">
-                        Boletim em Destaque
-                      </span>
-                      <span className="text-[11px] text-white/50 font-medium">
-                        {latestBoletim.data_ref}
-                      </span>
+            {/* Card Destaque: Último Boletim Pronto com Capa da Notícia */}
+            {latestBoletim && latestBoletim.status === 'pronto' && (() => {
+              const latestCapaUrl = getBoletimCover(latestBoletim);
+              const dateObj = latestBoletim.data_ref
+                ? new Date(`${latestBoletim.data_ref}T12:00:00`)
+                : new Date(latestBoletim.created_at);
+              const dataFormatada = `${dateObj.getDate().toString().padStart(2, '0')} de ${MONTHS_FULL[dateObj.getMonth()]} de ${dateObj.getFullYear()}`;
+
+              return (
+                <div className="mb-8 rounded-3xl p-4 sm:p-5 border border-zinc-800 bg-zinc-900/90 shadow-2xl relative overflow-hidden group">
+                  <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    {/* Capa com a foto real da notícia do boletim */}
+                    <div className="relative w-full sm:w-44 aspect-[16/9] sm:h-28 rounded-2xl overflow-hidden bg-neutral-950 border border-white/10 shrink-0 shadow-lg">
+                      <img
+                        src={latestCapaUrl}
+                        alt={latestBoletim.titulo}
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                        loading="eager"
+                      />
+                      <div className="absolute inset-0 bg-black/25 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                          <Play className="w-4 h-4 fill-black ml-0.5 text-black" />
+                        </div>
+                      </div>
                     </div>
-                    <h2 className="text-lg sm:text-xl font-bold font-display text-white leading-tight mb-1">
-                      {latestBoletim.titulo}
-                    </h2>
-                    {latestBoletim.subtitulo && (
-                      <p className="text-xs text-white/70 line-clamp-2">
-                        {latestBoletim.subtitulo}
-                      </p>
-                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-zinc-300 px-2.5 py-0.5 rounded-full bg-zinc-800 border border-zinc-700/60">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          Mais recente
+                        </span>
+                        <span className="text-xs text-zinc-400 font-medium">
+                          {dataFormatada}
+                        </span>
+                      </div>
+                      <h2 className="text-base sm:text-lg font-bold font-display text-white leading-snug mb-1">
+                        {latestBoletim.titulo}
+                      </h2>
+                      {latestBoletim.subtitulo && (
+                        <p className="text-xs text-zinc-400 line-clamp-2 font-body">
+                          {latestBoletim.subtitulo}
+                        </p>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        haptic.impact();
+                        markAsVisto(latestBoletim.id);
+                        setPlayerAtivo(latestBoletim);
+                      }}
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-white hover:bg-zinc-200 active:scale-95 text-black font-bold text-xs uppercase tracking-wider shadow-xl transition cursor-pointer shrink-0 w-full sm:w-auto"
+                    >
+                      <Play className="w-4 h-4 fill-black ml-0.5 text-black" />
+                      <span>Ouvir agora</span>
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic.impact();
-                      markAsVisto(latestBoletim.id);
-                      setPlayerAtivo(latestBoletim);
-                    }}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-primary hover:brightness-110 active:scale-95 text-white font-bold text-xs uppercase tracking-wider shadow-xl shadow-primary/30 transition cursor-pointer shrink-0"
-                  >
-                    <Play className="w-4 h-4 fill-white ml-0.5" />
-                    <span>Ouvir Agora</span>
-                  </button>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xs uppercase tracking-[0.2em] font-bold text-zinc-400">
                 Linha do Tempo
               </h2>
-              <span className="text-[11px] text-zinc-600 font-medium">Últimos 7 dias</span>
+              <span className="text-[11px] text-zinc-500 font-medium">Últimos 7 dias</span>
             </div>
 
-            <div className="relative border-l-2 border-zinc-800/60 ml-4 space-y-8 pb-12">
+            <div className="relative border-l-2 border-zinc-800 ml-3 sm:ml-4 space-y-6 pb-12">
               {timelineDays.map((dateObj) => {
                 const dateKey = toYMD(dateObj);
                 const isToday = dateKey === todayYMD;
                 const diaBoletins = boletinsPorDia.get(dateKey) || [];
                 const hasBoletins = diaBoletins.length > 0;
                 
-                const monthName = MONTHS[dateObj.getMonth()];
+                const monthName = MONTHS_FULL[dateObj.getMonth()];
                 const dayNum = dateObj.getDate().toString().padStart(2, '0');
-                const weekName = WEEKDAYS[dateObj.getDay()];
+                const weekName = WEEKDAYS_FULL[dateObj.getDay()];
 
                 return (
-                  <div key={dateKey} className="relative pl-8 flex items-start">
+                  <div key={dateKey} className="relative pl-6 sm:pl-7">
                     {/* Marcador da Timeline */}
-                    <div className={`absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-4 border-background ${hasBoletins ? 'bg-primary' : 'bg-zinc-700'}`} />
+                    <div
+                      className={`absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-4 border-background transition-colors ${
+                        hasBoletins ? (isToday ? 'bg-white' : 'bg-zinc-400') : 'bg-zinc-700'
+                      }`}
+                    />
 
-                    {/* Data Esquerda */}
-                    <div className="flex flex-col items-center justify-center shrink-0 w-12 pt-0.5">
-                      <span className={`text-[10px] font-bold uppercase tracking-widest ${isToday ? 'text-primary' : 'text-zinc-500'}`}>
-                        {monthName}
+                    {/* Cabeçalho da Data: 100% por extenso sem abreviações */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-bold text-zinc-100 tracking-wide">
+                        {dayNum} de {monthName}
                       </span>
-                      <span className={`text-2xl font-black font-display leading-none ${isToday ? 'text-zinc-100' : 'text-zinc-300'}`}>
-                        {dayNum}
-                      </span>
-                      <span className="text-[10px] text-zinc-600 font-medium mt-0.5">
-                        {isToday ? 'Hoje' : weekName}
+                      <span className="text-xs text-zinc-400 font-medium">
+                        • {isToday ? 'Hoje' : weekName}
                       </span>
                     </div>
 
-                    {/* Card Direita */}
-                    <div className="flex-1 ml-4">
-                      {hasBoletins ? (() => {
-                        const pendentesCount = diaBoletins.filter(b => !vistos.has(b.id)).length;
-                        const isAllViewed = pendentesCount === 0;
-                        const tiposUnicos = Array.from(new Set(diaBoletins.map(b => b.tipo)));
+                    {/* Card Direita com Capa real e sem a tag noticias */}
+                    {hasBoletins ? (() => {
+                      const primeiroBoletim = diaBoletins[0];
+                      const pendentesCount = diaBoletins.filter((b) => !vistos.has(b.id)).length;
+                      const isAllViewed = pendentesCount === 0;
+                      const capaUrl = getBoletimCover(primeiroBoletim);
+                      const totalTopicos = primeiroBoletim.roteiro_json?.length || 10;
 
-                        return (
-                          <button
-                            onClick={() => { haptic.selection(); setDiaSelecionado(dateKey); }}
-                            className={`w-full text-left border rounded-2xl p-4 flex items-center justify-between transition-colors group cursor-pointer ${
-                              isAllViewed ? 'bg-zinc-900/50 border-zinc-800/50' : 'bg-zinc-900 border-zinc-800/80 hover:bg-zinc-800/80'
-                            }`}
-                          >
-                            <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <h3 className={`font-bold uppercase tracking-widest text-[13px] transition-colors ${isAllViewed ? 'text-zinc-400' : 'text-zinc-100 group-hover:text-primary'}`}>
-                                  {pendentesCount > 0 
-                                    ? `${pendentesCount} ${pendentesCount > 1 ? 'boletins' : 'boletim'} pendente${pendentesCount > 1 ? 's' : ''}` 
-                                    : `${diaBoletins.length} ${diaBoletins.length > 1 ? 'boletins' : 'boletim'} visto${diaBoletins.length > 1 ? 's' : ''}`}
-                                </h3>
-                                {isAllViewed && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-                              </div>
-                              <div className="flex flex-wrap gap-1.5">
-                                {tiposUnicos.map(tipo => {
-                                  const normTipo = normalizeTipo(tipo) as keyof typeof TIPO_STYLES;
-                                  const customStyle = TIPO_STYLES[normTipo] || { color: '#a1a1aa', backgroundColor: 'rgba(39, 39, 42, 1)' };
-                                  return (
-                                    <span key={tipo} style={customStyle} className="text-[9.5px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full border border-white/5">
-                                      {TIPO_LABELS[tipo] || tipo}
-                                    </span>
-                                  );
-                                })}
+                      const handleCardClick = () => {
+                        haptic.selection();
+                        if (diaBoletins.length === 1 && primeiroBoletim.status === 'pronto') {
+                          markAsVisto(primeiroBoletim.id);
+                          setPlayerAtivo(primeiroBoletim);
+                        } else {
+                          setDiaSelecionado(dateKey);
+                        }
+                      };
+
+                      return (
+                        <div
+                          onClick={handleCardClick}
+                          className={`w-full text-left border rounded-2xl p-3 sm:p-3.5 flex items-center gap-3.5 transition-all group cursor-pointer active:scale-[0.98] ${
+                            isAllViewed
+                              ? 'bg-zinc-900/50 border-zinc-800/60 hover:border-zinc-700 hover:bg-zinc-900/80'
+                              : 'bg-zinc-900 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 shadow-xl'
+                          }`}
+                        >
+                          {/* Capa com Foto Real da Notícia */}
+                          <div className="relative w-24 h-20 sm:w-28 sm:h-22 shrink-0 rounded-xl overflow-hidden bg-neutral-950 border border-white/10 shadow-md">
+                            <img
+                              src={capaUrl}
+                              alt={primeiroBoletim.titulo}
+                              className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                              <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                <Play className="w-3.5 h-3.5 fill-black ml-0.5 text-black" />
                               </div>
                             </div>
-                            <div className="w-9 h-9 rounded-full bg-zinc-800/80 flex items-center justify-center text-zinc-400 group-hover:bg-primary/20 group-hover:text-primary transition-colors">
-                              <ChevronRight className="w-5 h-5" />
-                            </div>
-                          </button>
-                        );
-                      })() : (
-                        <div className="w-full bg-zinc-900/30 border border-zinc-800/30 rounded-2xl p-4 flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-zinc-800/50 flex items-center justify-center text-zinc-600 shrink-0">
-                            {isToday ? <Clock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                           </div>
-                          <div>
-                            <h3 className="text-zinc-400 font-medium text-sm">
-                              {isToday ? 'Próximo boletim em breve' : 'Nenhum boletim gerado'}
+
+                          {/* Informações Completas SEM Cortar Textos */}
+                          <div className="flex-1 min-w-0 py-0.5">
+                            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                              <span className="text-[11px] font-medium text-zinc-400">
+                                {totalTopicos} tópicos
+                              </span>
+                              {isAllViewed ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-full">
+                                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                                  Visto
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center text-[10px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/25 px-2 py-0.5 rounded-full">
+                                  Pendente
+                                </span>
+                              )}
+                            </div>
+
+                            <h3 className="font-display font-bold text-sm sm:text-base text-zinc-100 group-hover:text-white transition-colors line-clamp-2 leading-snug">
+                              {primeiroBoletim.titulo}
                             </h3>
-                            <p className="text-xs text-zinc-600 mt-0.5">
-                              {isToday ? 'A inteligência artificial está processando as novidades do dia.' : 'Não há registros para este dia.'}
-                            </p>
+
+                            {primeiroBoletim.subtitulo && (
+                              <p className="text-xs text-zinc-400 line-clamp-1 mt-1 font-body">
+                                {primeiroBoletim.subtitulo}
+                              </p>
+                            )}
+                          </div>
+
+                          <div className="w-8 h-8 rounded-full bg-zinc-800/80 flex items-center justify-center text-zinc-400 group-hover:bg-zinc-700 group-hover:text-white transition-colors shrink-0">
+                            <ChevronRight className="w-4 h-4" />
                           </div>
                         </div>
-                      )}
-                    </div>
+                      );
+                    })() : (
+                      <div className="w-full bg-zinc-900/30 border border-zinc-800/40 rounded-2xl p-3.5 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-zinc-800/50 flex items-center justify-center text-zinc-500 shrink-0">
+                          {isToday ? <Clock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+                        </div>
+                        <div>
+                          <h3 className="text-zinc-400 font-medium text-xs sm:text-sm">
+                            {isToday ? 'Próximo boletim em breve' : 'Nenhum boletim gerado'}
+                          </h3>
+                          <p className="text-[11px] text-zinc-600 mt-0.5">
+                            {isToday
+                              ? 'A inteligência artificial está processando as novidades do dia.'
+                              : 'Não há registros para esta data.'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -380,8 +493,9 @@ export default function Boletins() {
               <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3 pb-[calc(1.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
                 {(boletinsPorDia.get(diaSelecionado) || []).map((item) => {
                   const isReady = item.status === 'pronto';
-                  const coverSrc = item.tipo === 'legislativo' ? radarLegislativoLocal : radarLeisLocal;
+                  const coverSrc = getBoletimCover(item);
                   const isViewed = vistos.has(item.id);
+                  const totalTopicos = item.roteiro_json?.length || 10;
 
                   return (
                     <button
@@ -405,7 +519,7 @@ export default function Boletins() {
                           <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                         </div>
                       )}
-                      <div className="relative w-24 h-[72px] shrink-0 rounded-xl overflow-hidden bg-zinc-800 shadow-md">
+                      <div className="relative w-24 h-[72px] shrink-0 rounded-xl overflow-hidden bg-neutral-950 border border-white/10 shadow-md">
                         <img 
                           src={coverSrc} 
                           alt={item.titulo}
@@ -414,8 +528,8 @@ export default function Boletins() {
                         />
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                           {isReady ? (
-                            <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shadow-xl">
-                              <Play className="w-4 h-4 text-white fill-current ml-0.5" />
+                            <div className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center shadow-xl">
+                              <Play className="w-4 h-4 text-black fill-current ml-0.5" />
                             </div>
                           ) : (
                             <div className="px-2 py-1 bg-black/80 rounded-md text-[9px] font-bold text-white uppercase backdrop-blur-sm">
@@ -426,16 +540,10 @@ export default function Boletins() {
                       </div>
                       
                       <div className="flex-1 min-w-0 pr-6">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          {(() => {
-                            const normTipo = normalizeTipo(item.tipo) as keyof typeof TIPO_STYLES;
-                            const customStyle = TIPO_STYLES[normTipo] || { color: '#a1a1aa', backgroundColor: 'rgba(39, 39, 42, 1)' };
-                            return (
-                              <span style={customStyle} className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full">
-                                {TIPO_LABELS[item.tipo] || item.tipo}
-                              </span>
-                            );
-                          })()}
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[11px] font-medium text-white/50">
+                            {totalTopicos} tópicos
+                          </span>
                         </div>
                         <h3 className="text-zinc-100 font-semibold leading-tight text-sm line-clamp-2">{item.titulo}</h3>
                         {item.subtitulo && (
