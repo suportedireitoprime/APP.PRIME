@@ -21,6 +21,8 @@ export default function SimuladosResolver() {
   const navigate = useNavigate();
   const location = useLocation();
   const initialSimulado = location.state?.simulado;
+  const filtroMaterias = location.state?.filtroMaterias as string[] | undefined;
+
   const [rodando, setRodando] = useState(true);
   const [segundos, setSegundos] = useState(0);
   const [confirmarSaida, setConfirmarSaida] = useState(false);
@@ -28,62 +30,7 @@ export default function SimuladosResolver() {
 
   const { user } = useAuth();
 
-  const { mutateAsync: registerHistory } = useMutation({
-    mutationFn: async () => {
-      if (!user || !id) return null;
-      
-      const { data: existing } = await supabase
-        .from('user_simulados_historico')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('simulado_id', id)
-        .eq('status', 'em_andamento')
-        .order('started_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-        
-      if (existing) {
-        return existing.id;
-      }
-      
-      const { data: newHistory, error } = await supabase
-        .from('user_simulados_historico')
-        .insert({
-          user_id: user.id,
-          simulado_id: id,
-          status: 'em_andamento',
-        })
-        .select('id')
-        .single();
-        
-      if (error) throw error;
-      return newHistory.id;
-    },
-    onSuccess: (hid) => {
-      if (hid) setHistoricoId(hid);
-    }
-  });
-
-  const { mutate: finishHistory } = useMutation({
-    mutationFn: async (hId: string) => {
-      if (!user) return;
-      await supabase
-        .from('user_simulados_historico')
-        .update({
-          status: 'finalizado',
-          completed_at: new Date().toISOString(),
-          total_questoes: questoesData?.length || 0,
-        })
-        .eq('id', hId);
-    }
-  });
-
-  useEffect(() => {
-    if (user && id && questoesData && !historicoId) {
-      registerHistory();
-    }
-  }, [user, id, questoesData, historicoId, registerHistory]);
-
+  // 1. Queries declaradas no topo para evitar TDZ (Temporal Dead Zone)
   const { data: simulado, isLoading: loadingSimulado } = useQuery({
     queryKey: ['simulados', id],
     initialData: initialSimulado,
@@ -101,7 +48,7 @@ export default function SimuladosResolver() {
       if (error) throw error;
       return data as any;
     },
-    enabled: !!id
+    enabled: !!id,
   });
 
   const { data: questoesData, isLoading: loadingQuestoes } = useQuery({
@@ -116,19 +63,76 @@ export default function SimuladosResolver() {
           .select('*')
           .eq('simulado_id', id)
           .order('numero_questao', { ascending: true, nullsFirst: false });
-        
+
         if (error) {
           console.warn('Erro ao buscar questões:', error);
           return [];
         }
-        return data as any[];
+        return (data || []) as any[];
       } catch (err) {
         console.warn('Falha na query de questões:', err);
         return [];
       }
     },
-    enabled: !!id
+    enabled: !!id,
   });
+
+  // 2. Mutations
+  const { mutateAsync: registerHistory } = useMutation({
+    mutationFn: async () => {
+      if (!user || !id) return null;
+
+      const { data: existing } = await supabase
+        .from('user_simulados_historico')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('simulado_id', id)
+        .eq('status', 'em_andamento')
+        .order('started_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (existing) {
+        return existing.id;
+      }
+
+      const { data: newHistory, error } = await supabase
+        .from('user_simulados_historico')
+        .insert({
+          user_id: user.id,
+          simulado_id: id,
+          status: 'em_andamento',
+        })
+        .select('id')
+        .single();
+
+      if (error) throw error;
+      return newHistory.id;
+    },
+    onSuccess: (hid) => {
+      if (hid) setHistoricoId(hid);
+    },
+  });
+
+  const { mutate: finishHistory } = useMutation({
+    mutationFn: async (hId: string) => {
+      if (!user) return;
+      await supabase
+        .from('user_simulados_historico')
+        .update({
+          status: 'finalizado',
+          completed_at: new Date().toISOString(),
+          total_questoes: questoesData?.length || 0,
+        })
+        .eq('id', hId);
+    },
+  });
+
+  useEffect(() => {
+    if (user && id && questoesData && !historicoId) {
+      registerHistory();
+    }
+  }, [user, id, questoesData, historicoId, registerHistory]);
 
   useEffect(() => {
     if (!rodando) return;
@@ -138,15 +142,23 @@ export default function SimuladosResolver() {
 
   // Converter para o formato padrão do ResolverPadrao
   const questoesFormatadas = React.useMemo(() => {
-    if (!questoesData) return [];
+    if (!questoesData || questoesData.length === 0) return [];
+
+    let list = questoesData;
+    if (filtroMaterias && filtroMaterias.length > 0) {
+      list = list.filter((q) =>
+        filtroMaterias.some((m) => (q.disciplina || '').toLowerCase().includes(m.toLowerCase()))
+      );
+    }
+
     const examName = simulado?.exam?.name || '';
     const isOAB = examName.toLowerCase().includes('oab') || (simulado?.prova_url || '').toLowerCase().includes('oab');
     const defaultBanca = isOAB ? ((simulado?.year || 2024) >= 2010 ? 'FGV' : 'CESPE/OAB') : 'VUNESP';
     const defaultOrgao = isOAB ? 'OAB' : 'Tribunal de Justiça';
 
-    return questoesData.map(q => {
+    return list.map((q) => {
       const options = q.options || {};
-      
+
       const fullComentario = [
         q.correct_comment ? `Gabarito Comentado:\n${q.correct_comment}` : '',
         q.incorrect_comment ? `Análise das Demais Alternativas:\n${q.incorrect_comment}` : '',
@@ -179,7 +191,7 @@ export default function SimuladosResolver() {
         modalidade: (options.C && options.C !== '') ? 'multipla_escolha' : 'certo_errado',
       } as unknown as Questao;
     });
-  }, [questoesData, simulado, id]);
+  }, [questoesData, simulado, id, filtroMaterias]);
 
   const finalizar = () => {
     setRodando(false);
@@ -191,7 +203,7 @@ export default function SimuladosResolver() {
   const handleRegistrar = async (questaoId: string, alternativa: string, acertou: boolean) => {
     if (!historicoId || !user) return;
     try {
-      const q = questoesData?.find(item => item.id === questaoId);
+      const q = questoesData?.find((item) => item.id === questaoId);
       await supabase.from('user_simulados_respostas').insert({
         historico_id: historicoId,
         questao_id: questaoId,
@@ -220,37 +232,37 @@ export default function SimuladosResolver() {
     }
   };
 
-  const formatarTempo = (totalSegundos: number) => {
-    const horas = Math.floor(totalSegundos / 3600);
-    const minutos = Math.floor((totalSegundos % 3600) / 60);
-    const seg = totalSegundos % 60;
-    if (horas > 0) {
-      return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`;
-    }
-    return `${minutos.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`;
+  const getTituloExame = () => {
+    if (!simulado) return 'Simulado Oficial';
+    const isJuiz = (simulado.exam?.name || '').toLowerCase().includes('juiz');
+    if (isJuiz) return `Simulado - Juiz de Direito (${simulado.year})`;
+    const raw = (simulado.prova_url || '').trim();
+    if (/^\d{1,2}[ºoªa]?\s+Exame/i.test(raw)) return raw;
+    const match = raw.match(/(\d{1,2})[ºoªa]?\s*exame/i);
+    if (match) return `${match[1]}º Exame de Ordem (${simulado.year})`;
+    return `Simulado OAB (${simulado.year})`;
   };
 
   if (loadingSimulado || loadingQuestoes) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
-        <h2 className="text-xl font-bold text-foreground">Carregando Simulado...</h2>
-        <p className="text-sm text-muted-foreground mt-1">Sincronizando questões oficiais...</p>
+      <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center text-white">
+        <Loader2 className="w-8 h-8 text-rose-500 animate-spin mb-4" />
+        <p className="font-bold text-sm tracking-wide">Carregando caderno oficial do simulado...</p>
       </div>
     );
   }
 
-  if (!questoesFormatadas || questoesFormatadas.length === 0) {
+  if (!simulado || questoesFormatadas.length === 0) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
-        <AlertTriangle className="w-12 h-12 text-amber-500 mb-4" />
-        <h2 className="text-xl font-bold text-foreground">Nenhuma questão encontrada</h2>
-        <p className="text-sm text-muted-foreground mt-2 max-w-md">
-          Este simulado ainda não possui questões digitalizadas cadastradas no sistema.
+      <div className="min-h-screen bg-[#0D0D0D] flex flex-col items-center justify-center text-white p-6 text-center">
+        <AlertTriangle className="w-12 h-12 text-rose-500 mb-4" />
+        <h2 className="text-xl font-bold mb-2">Caderno em Processamento</h2>
+        <p className="text-zinc-400 text-sm max-w-md mb-6">
+          As questões desta edição estão sendo sincronizadas na base de dados.
         </p>
         <button
           onClick={() => navigate('/simulados')}
-          className="mt-6 px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl text-sm hover:opacity-90 transition-opacity"
+          className="px-6 py-2.5 rounded-xl bg-rose-600 text-white font-bold text-sm"
         >
           Voltar para Simulados
         </button>
@@ -258,48 +270,43 @@ export default function SimuladosResolver() {
     );
   }
 
-  const cleanTitle = (simulado?.prova_url || '').replace(/^https?:\/\/.*$/, '').trim() || simulado?.exam?.name || 'Simulado Oficial';
-
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <div className="sticky top-0 z-40 bg-zinc-950/90 backdrop-blur-md border-b border-border">
-        <PageHeader
-          title={cleanTitle}
-          subtitle={`Tempo decorrido: ${formatarTempo(segundos)} • ${questoesFormatadas.length} Questões`}
-          onBack={() => setConfirmarSaida(true)}
-        />
-      </div>
+    <div className="min-h-screen bg-[#0D0D0D] text-white">
+      <PageHeader
+        title={getTituloExame()}
+        onBack={() => setConfirmarSaida(true)}
+      />
 
-      <div className="flex-1 w-full max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-4xl mx-auto px-4 py-4">
         <ResolverPadrao
           questoes={questoesFormatadas}
-          origem="simulado"
-          onFinish={finalizar}
+          segundos={segundos}
+          onFinalizar={finalizar}
           onRegistrarResposta={handleRegistrar}
         />
-      </div>
+      </main>
 
       <Dialog open={confirmarSaida} onOpenChange={setConfirmarSaida}>
-        <DialogContent className="max-w-md bg-card border-border">
+        <DialogContent className="bg-[#141416] border-white/10 text-white">
           <DialogHeader>
-            <DialogTitle className="text-foreground">Deseja realmente sair?</DialogTitle>
-            <DialogDescription className="text-muted-foreground">
-              Seu tempo de simulado será pausado e o progresso das respostas registradas continuará salvo em seu histórico.
+            <DialogTitle>Deseja pausar o simulado?</DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Seu progresso e respostas marcadas até aqui foram salvos. Você pode retomar a qualquer momento.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex gap-3 justify-end mt-4">
+          <div className="flex justify-end gap-3 mt-4">
             <button
               onClick={() => setConfirmarSaida(false)}
-              className="px-4 py-2 rounded-xl text-sm font-semibold border border-border text-foreground hover:bg-muted"
+              className="px-4 py-2 rounded-xl bg-white/10 text-white font-semibold text-sm hover:bg-white/20 transition"
             >
-              Continuar Simulado
+              Continuar Fazendo
             </button>
             <button
               onClick={() => {
                 finalizar();
                 navigate('/simulados');
               }}
-              className="px-4 py-2 rounded-xl text-sm font-semibold bg-rose-600 text-white hover:bg-rose-700"
+              className="px-4 py-2 rounded-xl bg-rose-600 text-white font-semibold text-sm hover:bg-rose-500 transition"
             >
               Sair do Simulado
             </button>
@@ -309,4 +316,3 @@ export default function SimuladosResolver() {
     </div>
   );
 }
-
