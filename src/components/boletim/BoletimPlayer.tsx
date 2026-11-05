@@ -1,11 +1,28 @@
 // @ts-nocheck
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, SkipForward, SkipBack, X, Clock, Heart, MessageCircle, ExternalLink, Send, Loader2, User } from 'lucide-react';
+import {
+  Play,
+  Pause,
+  SkipForward,
+  SkipBack,
+  X,
+  Clock,
+  Heart,
+  MessageCircle,
+  ExternalLink,
+  Send,
+  Loader2,
+  User,
+  Share2,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
 import brasaoImg from '@/assets/brasao-republica.webp';
 import swooshAsset from '@/assets/swoosh.mp3.asset.json';
 import swooshBundled from '@/assets/swoosh.mp3';
-import {pickAsset, srcOf } from '@/lib/assetUrl';
+import { pickAsset, srcOf } from '@/lib/assetUrl';
+import { haptic } from '@/lib/nativeHaptics';
 
 const swooshSrc = pickAsset(swooshBundled, srcOf(swooshAsset));
 
@@ -68,9 +85,11 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
   const [novoComentario, setNovoComentario] = useState('');
   const [enviandoComentario, setEnviandoComentario] = useState(false);
   const [countComentarios, setCountComentarios] = useState<Record<number, number>>({});
-  const [transitionKey, setTransitionKey] = useState(0);
-  const [showTransition, setShowTransition] = useState(false);
-
+  
+  // Transições direcionais & progresso contínuo
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [audioProgress, setAudioProgress] = useState(0);
+  const [bgMuted, setBgMuted] = useState(false);
 
   // GA4: abrir_boletim + play_narracao (uma vez por mount)
   useEffect(() => {
@@ -78,37 +97,36 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
       appEvents.abrirBoletim({ boletim_id: boletimId });
       appEvents.playNarracao({ kind: 'boletim', id: boletimId });
     }).catch(() => {});
-     
   }, [boletimId]);
 
   const scene = scenes[idx];
   const next = scenes[idx + 1];
 
+  // Atualização de cena & áudio narrativo
   useEffect(() => {
     if (!audioRef.current || !scene) return;
-    let cleanup: (() => void) | undefined;
-    // Overlay + swoosh em toda transição (exceto a primeira cena/intro)
+    // Efeito sonoro sutil de transição (exceto capa)
     if (idx > 0 && scene.kind !== 'intro') {
       try {
         const s = new Audio(swooshSrc);
-        s.volume = 0.6;
+        s.volume = 0.22;
         s.play().catch(() => {});
       } catch {}
-      setTransitionKey((k) => k + 1);
-      setShowTransition(true);
-      const t = setTimeout(() => setShowTransition(false), 900);
-      cleanup = () => clearTimeout(t);
     }
+    setAudioProgress(0);
     audioRef.current.src = scene.audio_url;
     audioRef.current.load();
     if (playing) {
       audioRef.current.play().catch(() => setPlaying(false));
     }
-    return cleanup;
   }, [idx]);
 
-
-
+  const handleTimeUpdate = () => {
+    const a = audioRef.current;
+    if (a && a.duration && !isNaN(a.duration) && a.duration > 0) {
+      setAudioProgress((a.currentTime / a.duration) * 100);
+    }
+  };
 
   useEffect(() => {
     if (!audioRef.current) return;
@@ -116,15 +134,15 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
     else audioRef.current.pause();
   }, [playing]);
 
-  // Trilha de fundo
+  // Trilha de fundo com controle de mudo
   useEffect(() => {
     const bg = bgAudioRef.current;
     if (!bg) return;
-    bg.volume = 0.18;
+    bg.volume = bgMuted ? 0 : 0.16;
     bg.loop = true;
-    if (playing) bg.play().catch(() => {});
-    else bg.pause();
-  }, [playing]);
+    if (playing && !bgMuted) bg.play().catch(() => {});
+    else if (!playing) bg.pause();
+  }, [playing, bgMuted]);
 
 
   // Sessão do usuário
@@ -200,11 +218,91 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
 
   const goTo = (n: number) => {
     const clamped = Math.max(0, Math.min(scenes.length - 1, n));
+    if (clamped === idx) return;
+    setDirection(clamped > idx ? 1 : -1);
+    setAudioProgress(0);
     setIdx(clamped);
+    haptic.selection();
   };
+
+  // Navegação por teclado no desktop
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (comentariosOpen) return;
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (idx + 1 < scenes.length) goTo(idx + 1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (idx > 0) goTo(idx - 1);
+      } else if (e.key === ' ') {
+        e.preventDefault();
+        setPlaying((p) => !p);
+      } else if (e.key === 'Escape') {
+        onClose?.();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [idx, scenes.length, comentariosOpen, onClose]);
+
+  // Compartilhamento nativo ou cópia de link
+  const compartilhar = async () => {
+    haptic.selection();
+    const texto = `${scene.titulo}\n\nVia Boletim Jurídico no Estudos Jurídicos.`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: scene.titulo,
+          text: texto,
+          url: scene.url_fonte || window.location.href,
+        });
+        toast.success('Compartilhado com sucesso!');
+      } catch {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(`${scene.titulo}\n${scene.url_fonte || window.location.href}`);
+        toast.success('Link copiado para a área de transferência!');
+      } catch {
+        toast.error('Não foi possível compartilhar');
+      }
+    }
+  };
+
+  // Variantes de transição fluida direcional com física spring
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? 36 : -36,
+      opacity: 0,
+      scale: 0.985,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        x: { type: 'spring', stiffness: 380, damping: 32 },
+        opacity: { duration: 0.22 },
+        scale: { duration: 0.22 },
+      },
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? -36 : 36,
+      opacity: 0,
+      scale: 0.985,
+      transition: {
+        x: { type: 'spring', stiffness: 380, damping: 32 },
+        opacity: { duration: 0.18 },
+      },
+    }),
+  };
+
   const onEnded = () => {
-    if (idx + 1 < scenes.length) setIdx(idx + 1);
-    else {
+    if (idx + 1 < scenes.length) {
+      setDirection(1);
+      setAudioProgress(0);
+      setIdx(idx + 1);
+    } else {
       setPlaying(false);
       import('@/lib/appEvents').then(({ appEvents }) =>
         appEvents.completeNarracao({ kind: 'boletim', id: boletimId })
@@ -325,36 +423,83 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
         </div>
       )}
 
-      {/* Top bar */}
-      <div className="relative z-20 flex items-center gap-3 px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 bg-gradient-to-b from-black/90 via-black/40 to-transparent">
-        <div className="flex-1 flex gap-1">
+      {/* Top bar com segmentos interativos de progresso e controles */}
+      <div className="relative z-20 flex items-center gap-2.5 px-4 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 bg-gradient-to-b from-black/90 via-black/40 to-transparent">
+        <div className="flex-1 flex gap-1 items-center">
           {scenes.map((_, i) => (
-            <div key={i} className="flex-1 h-1 rounded-full bg-white/25 overflow-hidden">
-              <div
-                className="h-full bg-white transition-all duration-200"
-                style={{ width: i < idx ? '100%' : i === idx ? '50%' : '0%' }}
-              />
-            </div>
+            <button
+              key={i}
+              type="button"
+              onClick={() => goTo(i)}
+              className="flex-1 h-3 -my-1 py-1 flex items-center group cursor-pointer"
+              title={`Ir para notícia ${i + 1}`}
+            >
+              <div className="w-full h-1 rounded-full bg-white/20 group-hover:bg-white/35 transition overflow-hidden">
+                <div
+                  className={`h-full bg-white rounded-full ${
+                    i === idx ? 'transition-[width] duration-150 ease-linear' : 'transition-all duration-200'
+                  }`}
+                  style={{
+                    width:
+                      i < idx
+                        ? '100%'
+                        : i === idx
+                        ? `${Math.min(100, Math.max(3, audioProgress))}%`
+                        : '0%',
+                  }}
+                />
+              </div>
+            </button>
           ))}
         </div>
-        <button
-          onClick={onClose}
-          className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/15 flex items-center justify-center hover:bg-black/70 active:scale-95 transition cursor-pointer"
+
+        {/* Som ambiente da trilha */}
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.9 }}
+          onClick={() => {
+            haptic.selection();
+            setBgMuted((m) => !m);
+          }}
+          className="w-9 h-9 rounded-full bg-black/50 backdrop-blur-md border border-white/15 flex items-center justify-center hover:bg-black/70 transition cursor-pointer text-white/80 hover:text-white"
+          title={bgMuted ? 'Ativar música de fundo' : 'Silenciar música de fundo'}
         >
-          <X className="w-5 h-5 text-white" />
-        </button>
+          {bgMuted ? <VolumeX className="w-4 h-4 text-white/50" /> : <Volume2 className="w-4 h-4 text-white" />}
+        </motion.button>
+
+        {/* Fechar */}
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.9 }}
+          onClick={onClose}
+          className="w-9 h-9 rounded-full bg-black/50 backdrop-blur-md border border-white/15 flex items-center justify-center hover:bg-black/70 transition cursor-pointer"
+          title="Fechar"
+        >
+          <X className="w-4 h-4 text-white" />
+        </motion.button>
       </div>
 
-      {/* Main content area */}
+      {/* Main content area com suporte a gestos de swipe e transições direcionais */}
       <div className="relative z-10 flex-1 min-h-0 overflow-y-auto no-scrollbar flex flex-col">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={idx}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3 }}
-            className={`flex flex-col px-4 sm:px-6 pt-2 pb-36 ${
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -45 && idx < scenes.length - 1) {
+                goTo(idx + 1);
+              } else if (info.offset.x > 45 && idx > 0) {
+                goTo(idx - 1);
+              }
+            }}
+            className={`flex flex-col px-4 sm:px-6 pt-2 pb-36 touch-pan-y cursor-grab active:cursor-grabbing select-none ${
               isIntro ? 'justify-center min-h-full my-auto' : 'justify-start my-auto'
             }`}
           >
@@ -431,39 +576,61 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
                       </div>
                     </div>
 
-                    {/* Parte de baixo da capa: Curtir, Comentar e Ver norma */}
+                    {/* Parte de baixo da capa: Curtir, Comentar, Compartilhar e Ver norma */}
                     <div className="absolute bottom-3 inset-x-3 flex items-center justify-between gap-2 pointer-events-none">
-                      <div className="flex items-center gap-2 pointer-events-auto">
-                        <button
+                      <div className="flex items-center gap-1.5 pointer-events-auto">
+                        <motion.button
                           type="button"
+                          whileTap={{ scale: 0.88 }}
                           onClick={toggleLike}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md hover:bg-black/85 transition border border-white/20 text-white cursor-pointer active:scale-95 shadow-lg"
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full backdrop-blur-md transition border text-white cursor-pointer shadow-lg ${
+                            likeAtual.mine
+                              ? 'bg-red-500/30 border-red-500/50 text-red-200'
+                              : 'bg-black/65 hover:bg-black/85 border-white/20'
+                          }`}
                         >
                           <Heart
-                            className={`w-3.5 h-3.5 ${likeAtual.mine ? 'text-red-500 fill-red-500' : 'text-white/80'}`}
+                            className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                              likeAtual.mine ? 'text-red-500 fill-red-500 scale-110' : 'text-white/80'
+                            }`}
                           />
                           <span className="text-xs font-semibold">{likeAtual.count}</span>
-                        </button>
+                        </motion.button>
 
-                        <button
+                        <motion.button
                           type="button"
-                          onClick={() => setComentariosOpen(true)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md hover:bg-black/85 transition border border-white/20 text-white cursor-pointer active:scale-95 shadow-lg"
+                          whileTap={{ scale: 0.88 }}
+                          onClick={() => {
+                            haptic.selection();
+                            setComentariosOpen(true);
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md hover:bg-black/85 transition border border-white/20 text-white cursor-pointer shadow-lg"
                         >
                           <MessageCircle className="w-3.5 h-3.5 text-white/80" />
                           <span className="text-xs font-semibold">{commentsCount}</span>
-                        </button>
+                        </motion.button>
+
+                        <motion.button
+                          type="button"
+                          whileTap={{ scale: 0.88 }}
+                          onClick={compartilhar}
+                          className="flex items-center justify-center w-8 h-8 rounded-full bg-black/65 backdrop-blur-md hover:bg-black/85 transition border border-white/20 text-white/85 cursor-pointer shadow-lg"
+                          title="Compartilhar notícia"
+                        >
+                          <Share2 className="w-3.5 h-3.5" />
+                        </motion.button>
                       </div>
 
                       {scene.kind === 'norma' && (
-                        <button
+                        <motion.button
                           type="button"
+                          whileTap={{ scale: 0.94 }}
                           onClick={abrirFonte}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary hover:brightness-110 transition shadow-lg shadow-primary/30 text-primary-foreground font-semibold text-xs cursor-pointer pointer-events-auto active:scale-95"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary hover:brightness-110 transition shadow-lg shadow-primary/30 text-primary-foreground font-semibold text-xs cursor-pointer pointer-events-auto"
                         >
                           <span>Ver norma</span>
                           <ExternalLink className="w-3 h-3" />
-                        </button>
+                        </motion.button>
                       )}
                     </div>
                   </div>
@@ -491,11 +658,22 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
                       </button>
                       <button
                         type="button"
-                        onClick={() => setComentariosOpen(true)}
+                        onClick={() => {
+                          haptic.selection();
+                          setComentariosOpen(true);
+                        }}
                         className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-neutral-800 text-white text-xs border border-white/10"
                       >
                         <MessageCircle className="w-3 h-3 text-white/70" />
                         <span>{commentsCount}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={compartilhar}
+                        className="flex items-center justify-center w-7 h-7 rounded-full bg-neutral-800 text-white/80 border border-white/10"
+                        title="Compartilhar"
+                      >
+                        <Share2 className="w-3 h-3" />
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
@@ -549,31 +727,35 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
         </AnimatePresence>
       </div>
 
-      {/* Transition Overlay */}
-      <AnimatePresence>
-        {showTransition && (
-          <motion.div key={`trans-${transitionKey}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }} className="absolute inset-0 z-50 pointer-events-none flex items-center justify-center overflow-hidden">
-            <motion.div initial={{ x: '-100%' }} animate={{ x: '100%' }} transition={{ duration: 0.85, ease: [0.7, 0, 0.3, 1] }} className="absolute inset-0" style={{ background: `linear-gradient(90deg, transparent 0%, ${cor} 40%, ${cor} 60%, transparent 100%)` }} />
-            <motion.div initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: [0, 1, 1, 0] }} transition={{ duration: 0.9, times: [0, 0.3, 0.7, 1] }} className="relative flex flex-col items-center gap-3">
-              <img src={brasaoImg} alt="" className="w-16 h-16 object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)]" />
-              <span className="text-white text-xs uppercase tracking-[0.4em] font-bold">Próxima norma</span>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Bottom Controls flutuante sobre a imagem */}
-      <div className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent pt-12 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-6 pointer-events-none">
+      {/* Bottom Controls */}
+      <div className="absolute inset-x-0 bottom-0 z-40 bg-gradient-to-t from-black via-black/85 to-transparent pt-12 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-6 pointer-events-none">
         <div className="flex items-center justify-center gap-6 md:gap-8 pointer-events-auto">
-          <button onClick={() => goTo(idx - 1)} disabled={idx === 0} className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/15 flex items-center justify-center disabled:opacity-30 hover:bg-black/60 active:scale-95 transition cursor-pointer">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => goTo(idx - 1)}
+            disabled={idx === 0}
+            className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-md border border-white/15 flex items-center justify-center disabled:opacity-30 hover:bg-black/70 transition cursor-pointer"
+          >
             <SkipBack className="w-5 h-5 text-white" />
-          </button>
-          <button onClick={() => setPlaying((p) => !p)} className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-[0_0_24px_rgba(255,255,255,0.4)] active:scale-95 transition-all cursor-pointer">
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.92 }}
+            onClick={() => {
+              haptic.selection();
+              setPlaying((p) => !p);
+            }}
+            className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-[0_0_24px_rgba(255,255,255,0.4)] transition-all cursor-pointer"
+          >
             {playing ? <Pause className="w-7 h-7 text-black fill-black" /> : <Play className="w-7 h-7 text-black ml-1 fill-black" />}
-          </button>
-          <button onClick={() => goTo(idx + 1)} disabled={idx === scenes.length - 1} className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/15 flex items-center justify-center disabled:opacity-30 hover:bg-black/60 active:scale-95 transition cursor-pointer">
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            onClick={() => goTo(idx + 1)}
+            disabled={idx === scenes.length - 1}
+            className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-md border border-white/15 flex items-center justify-center disabled:opacity-30 hover:bg-black/70 transition cursor-pointer"
+          >
             <SkipForward className="w-5 h-5 text-white" />
-          </button>
+          </motion.button>
         </div>
         <p className="text-center text-white/70 text-xs mt-3 font-medium pointer-events-auto drop-shadow">
           {idx + 1} de {scenes.length} · {Math.round(progresso)}%
@@ -662,7 +844,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
         )}
       </AnimatePresence>
 
-      <audio ref={audioRef} onEnded={onEnded} preload="auto" playsInline />
+      <audio ref={audioRef} onEnded={onEnded} onTimeUpdate={handleTimeUpdate} preload="auto" playsInline />
       <audio ref={bgAudioRef} src="/news-bg.mp3" preload="auto" loop playsInline />
     </div>
   );
