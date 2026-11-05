@@ -1,3 +1,5 @@
+import { O_MUNDO_DE_SOFIA } from './audiobooks/oMundoDeSofia';
+export { O_MUNDO_DE_SOFIA };
 // Catálogo Oficial do Audiobook: O Caso dos Exploradores de Cavernas
 // Armazenado e servido a 0ms via Cloudflare R2 Global CDN
 
@@ -159754,5 +159756,6 @@ export const AUDIOBOOKS_CATALOGO: AudiobookLivro[] = [
   O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
   DOS_DELITOS_E_DAS_PENAS,
   CINQUENTA_DISCURSOS_QUE_MARCARAM_O_MUNDO_MODERNO,
+  O_MUNDO_DE_SOFIA,
   ...AUDIOBOOKS_EM_BREVE
 ];
