@@ -58,14 +58,11 @@ export const TrialCountdownBar = memo(function TrialCountdownBar() {
     return `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
   }, [remainingMs]);
 
-  if (isPaidSubscriber || isHiddenRoute) {
-    return null;
-  }
-
-  // Verifica se a rota atual possui barra inferior (BottomNav)
+  // Verifica se a rota atual possui barra inferior (BottomNav) — Hook SEMPRE no topo para evitar erro #310
   const [hasBottomNav, setHasBottomNav] = useState(() => location.pathname === '/' || location.pathname === '/biblioteca');
 
   useEffect(() => {
+    if (isPaidSubscriber || isHiddenRoute) return;
     const checkNav = () => {
       const navEl = document.querySelector('nav.fixed.bottom-0, [data-bottom-nav]');
       const isVisible = !!navEl && window.getComputedStyle(navEl).display !== 'none' && !navEl.classList.contains('opacity-0');
@@ -74,12 +71,17 @@ export const TrialCountdownBar = memo(function TrialCountdownBar() {
     checkNav();
     const t = setTimeout(checkNav, 150);
     return () => clearTimeout(t);
-  }, [location.pathname]);
+  }, [location.pathname, isPaidSubscriber, isHiddenRoute]);
 
   const handleClick = () => {
     haptic.selection();
     navigate('/assinatura');
   };
+
+  // Retorno condicional posicionado APÓS todos os hooks do componente
+  if (isPaidSubscriber || isHiddenRoute) {
+    return null;
+  }
 
   return (
     <>

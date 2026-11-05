@@ -743,6 +743,18 @@ function LegacyGlobalTrialGateDisabled() {
   return null;
 }
 
+function HomeGate() {
+  const { user, loading: authLoading } = useAuth();
+  if (authLoading) {
+    // Sem tela preta com spinner: retorna null para que a tela nativa de splash ou fundo cubra isso.
+    return null;
+  }
+  if (!user) return <Landing />;
+  // O PersistentHome já renderiza a Home para usuários logados.
+  // Retornamos null aqui para evitar duplicação do Index no DOM.
+  return null;
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
   const { user, loading: authLoading, signOut } = useAuth();
@@ -822,16 +834,6 @@ function AnimatedRoutes() {
   // mesmo enquanto a autenticação ainda está resolvendo.
 
 
-  const HomeGate = () => {
-    if (authLoading) {
-      // Sem tela preta com spinner: retorna null para que a tela nativa de splash ou fundo cubra isso.
-      return null;
-    }
-    if (!user) return <Landing />;
-    // O PersistentHome já renderiza a Home para usuários logados.
-    // Retornamos null aqui para evitar duplicação do Index no DOM.
-    return null;
-  };
 
 
   return (
