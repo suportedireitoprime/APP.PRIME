@@ -713,6 +713,7 @@ export default function AudiobooksPage() {
                         src={livro.capaUrl}
                         alt={`Capa do livro: ${livro.titulo}`}
                         loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
 
@@ -740,32 +741,14 @@ export default function AudiobooksPage() {
                         {livro.autor} {livro.ano && `• ${livro.ano}`}
                       </p>
 
-                      <div className="mt-2 flex items-center gap-1.5 flex-wrap">
-                        {/* Tag de Coleção */}
-                        <span className="text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/5 text-white/70 font-bold border border-white/10">
-                          {livro.tags?.[0] || "CLÁSSICO"}
-                        </span>
-
-                        {/* Status: Finalizado vs Terminando */}
-                        {isDisponivel ? (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                            <Headphones className="w-2.5 h-2.5" />
-                            {livro.totalCapitulos || livro.capitulos?.length || 8} Capítulos Gravados
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                            <Clock className="w-2.5 h-2.5 text-amber-300" />
-                            Terminando
-                          </span>
-                        )}
-
-                        {isNotificado && !isDisponivel && (
+                      {isNotificado && !isDisponivel && (
+                        <div className="mt-1.5 flex items-center">
                           <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-[#7C3AED]/15 text-[#C4B5FD] border border-[#7C3AED]/30">
                             <Bell className="w-2.5 h-2.5 fill-current" />
                             Aviso Ativo
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Botões de Ação à Direita: Favorito e Abrir */}
