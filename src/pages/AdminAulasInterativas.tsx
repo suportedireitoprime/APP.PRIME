@@ -1786,15 +1786,20 @@ export default function AdminAulasInterativas() {
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="fixed inset-x-0 bottom-0 z-50 h-[96vh] sm:h-[95vh] max-w-4xl mx-auto rounded-t-[28px] sm:rounded-t-[32px] border-t border-x flex flex-col shadow-[0_-24px_70px_rgba(0,0,0,0.95)] overflow-hidden"
+                className="fixed inset-x-0 bottom-0 z-50 h-[95dvh] sm:h-[94dvh] max-h-[calc(100dvh-var(--sai-top,env(safe-area-inset-top,0px))-8px)] max-w-4xl mx-auto rounded-t-[28px] sm:rounded-t-[32px] border-t border-x flex flex-col shadow-[0_-24px_70px_rgba(0,0,0,0.95)] overflow-hidden"
                 style={{
                   background: `linear-gradient(180deg, ${disciplinaAtual.corFundoCard || '#181920'} 0%, #0d0e12 100%)`,
                   borderColor: `${disciplinaAtual.corDestaque}35`,
-                  paddingBottom: 'calc(1rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))'
+                  paddingBottom: 'calc(2.5rem + var(--sai-bottom, env(safe-area-inset-bottom, 24px)))'
                 }}
               >
                 {/* Drag Handle Topo */}
-                <div className="pt-2.5 pb-1 flex justify-center shrink-0">
+                <div 
+                  className="pt-2 pb-1 flex justify-center shrink-0"
+                  style={{
+                    paddingTop: 'calc(0.5rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+                  }}
+                >
                   <div className="w-12 h-1.5 rounded-full bg-white/20" />
                 </div>
 
@@ -1829,7 +1834,7 @@ export default function AdminAulasInterativas() {
                     </h3>
                   </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2.5 shrink-0">
                     <div className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 flex items-center gap-1">
                       <span className="text-[11px] font-bold" style={{ color: pctMat === 100 ? '#10b981' : disciplinaAtual.corDestaque }}>
                         {pctMat}%
@@ -1843,10 +1848,10 @@ export default function AdminAulasInterativas() {
                         setMateriaSelecionadaId(null);
                         setBuscaTermoAulas('');
                       }}
-                      className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95"
+                      className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 border border-white/20 flex items-center justify-center text-zinc-100 hover:text-white transition shadow-lg shrink-0 touch-manipulation cursor-pointer"
                       aria-label="Fechar lista de aulas"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
                     </button>
                   </div>
                 </div>
@@ -1877,7 +1882,7 @@ export default function AdminAulasInterativas() {
                 )}
 
                 {/* LISTA VERTICAL DE AULAS TIPO 1, 2, 3... COM CAPA DO LADO E STATUS DE CONCLUSÃO */}
-                <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-3 space-y-2.5 overscroll-contain">
+                <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 pt-3 pb-32 sm:pb-28 space-y-2.5 overscroll-contain">
                   {aulasFiltradas.map((aula, idx) => {
                     const prog = calcularProgressoCiclo(aula);
                     const numeroExibicao = idx + 1;
@@ -2021,29 +2026,35 @@ export default function AdminAulasInterativas() {
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="fixed inset-x-0 bottom-0 z-[70] h-[97vh] sm:h-[96vh] max-w-4xl mx-auto rounded-t-[28px] sm:rounded-t-[32px] border-t border-x flex flex-col shadow-[0_-28px_80px_rgba(0,0,0,0.98)] overflow-hidden"
+                className="fixed inset-x-0 bottom-0 z-[70] h-[95dvh] sm:h-[94dvh] max-h-[calc(100dvh-var(--sai-top,env(safe-area-inset-top,0px))-8px)] max-w-4xl mx-auto rounded-t-[28px] sm:rounded-t-[32px] border-t border-x flex flex-col shadow-[0_-28px_80px_rgba(0,0,0,0.98)] overflow-hidden"
                 style={{
                   background: `linear-gradient(180deg, ${disciplinaAtual.corFundoCard || '#181920'} 0%, #0d0e12 100%)`,
                   borderColor: `${disciplinaAtual.corDestaque}35`,
-                  paddingBottom: 'calc(1.25rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))'
+                  paddingBottom: 'calc(2.5rem + var(--sai-bottom, env(safe-area-inset-bottom, 24px)))'
                 }}
               >
-                {/* Top Bar: Apenas UM botão no topo — o botão de FECHAR (X) */}
-                <div className="pt-2.5 pb-2 px-4 sm:px-6 shrink-0 flex items-center justify-between border-b border-white/10 bg-transparent">
-                  <div className="w-9 h-9 opacity-0 pointer-events-none" />
-                  <div className="w-12 h-1.5 rounded-full bg-white/20 -mr-2" />
+                {/* Top Bar: Botão de FECHAR responsivo e espaçado da status/navigation bar */}
+                <div 
+                  className="px-4 sm:px-6 shrink-0 flex items-center justify-between border-b border-white/10 bg-transparent transition-all"
+                  style={{
+                    paddingTop: 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+                    paddingBottom: '0.65rem'
+                  }}
+                >
+                  <div className="w-11 h-11 sm:w-12 sm:h-12 opacity-0 pointer-events-none shrink-0" />
+                  <div className="w-12 h-1.5 rounded-full bg-white/20 -mr-2 shrink-0" />
                   <button
                     type="button"
                     onClick={() => setAulaSheetDetalhe(null)}
-                    className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white transition active:scale-95"
+                    className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-zinc-100 hover:text-white transition active:scale-90 shadow-md shadow-black/40 touch-manipulation shrink-0 cursor-pointer"
                     aria-label="Fechar"
                   >
-                    <X className="w-4.5 h-4.5" />
+                    <X className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
                   </button>
                 </div>
 
                 {/* Conteúdo com Scroll: Capa à Esquerda com Bola Gigante de Porcentagem + Lado Direito com Título e Descrição */}
-                <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 py-4 space-y-4 sm:space-y-5 overscroll-contain">
+                <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 pt-3 pb-32 sm:pb-28 space-y-4 sm:space-y-5 overscroll-contain">
                   {/* LAYOUT DIVIDIDO: LADO ESQUERDO (CAPA COM BOLA GIGANTE) VS LADO DIREITO (TÍTULO E DESCRIÇÃO) */}
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-4 sm:gap-6">
                     {/* LADO ESQUERDO: CAPA COM BOLA GIGANTE NO MEIO MOSTRANDO A PORCENTAGEM */}

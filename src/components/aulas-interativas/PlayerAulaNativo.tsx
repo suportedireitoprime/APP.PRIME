@@ -645,7 +645,7 @@ export function PlayerAulaNativo({
     return (
       <div 
         className="fixed inset-0 z-[100] flex flex-col items-center justify-center text-white space-y-4"
-        style={{ backgroundColor: tema.bg }}
+        style={{ backgroundColor: tema.bg, paddingBottom: 'calc(2rem + var(--sai-bottom, env(safe-area-inset-bottom, 24px)))' }}
       >
         <div 
           className="w-12 h-12 rounded-full border-4 border-white/20 border-t-white animate-spin" 
@@ -1067,8 +1067,8 @@ export function PlayerAulaNativo({
           background: tema.headerBg,
           borderColor: tema.headerBorder,
           paddingTop: isQuestao || isFlashcard 
-            ? 'calc(0.65rem + var(--sai-top, env(safe-area-inset-top, 0px)))' 
-            : 'calc(1rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+            ? 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))' 
+            : 'calc(1.15rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
           paddingBottom: isQuestao || isFlashcard ? '0.55rem' : '0.85rem'
         }}
       >
@@ -1076,7 +1076,7 @@ export function PlayerAulaNativo({
           <button
             type="button"
             onClick={onVoltar}
-            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center shrink-0 transition active:scale-95 shadow-md shadow-black/40 bg-white/5 hover:bg-white/10 text-white"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full border flex items-center justify-center shrink-0 transition active:scale-90 shadow-md shadow-black/40 bg-white/10 hover:bg-white/20 text-white touch-manipulation cursor-pointer"
             style={{ borderColor: tema.headerBorder }}
             aria-label="Voltar"
           >
@@ -1645,7 +1645,7 @@ export function PlayerAulaNativo({
         className="fixed bottom-0 inset-x-0 z-40 backdrop-blur-xl border-t border-white/10 px-3.5 sm:px-6 py-3.5 sm:py-4 shadow-2xl"
         style={{
           backgroundColor: tema.footerBg,
-          paddingBottom: 'calc(0.95rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))'
+          paddingBottom: 'calc(1.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 24px)))'
         }}
       >
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-2.5 sm:gap-4">
@@ -1747,7 +1747,7 @@ export function PlayerAulaNativo({
                 <button
                   type="button"
                   onClick={() => setDrawerAberto(false)}
-                  className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/15 flex items-center justify-center text-zinc-300 transition active:scale-95"
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-zinc-100 transition active:scale-90 touch-manipulation cursor-pointer shrink-0"
                   aria-label="Fechar sumário"
                 >
                   <X className="w-5 h-5" />

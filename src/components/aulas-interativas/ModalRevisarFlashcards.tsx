@@ -124,14 +124,15 @@ export function ModalRevisarFlashcards({
         className="flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 border-b border-[rgba(226,62,87,0.35)] shrink-0 z-30 shadow-lg"
         style={{
           background: 'linear-gradient(180deg, #280611 0%, #16040a 100%)',
-          paddingTop: 'calc(0.6rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+          paddingTop: 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))',
+          paddingBottom: '0.75rem'
         }}
       >
         <div className="flex items-center gap-3 min-w-0">
           <button
             type="button"
             onClick={onFechar}
-            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[rgba(46,15,24,0.85)] border border-[rgba(226,62,87,0.45)] flex items-center justify-center shrink-0 text-[#ff8296] hover:bg-[rgba(66,20,34,1)] hover:text-white transition active:scale-95 shadow-md"
+            className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[rgba(46,15,24,0.85)] border border-[rgba(226,62,87,0.45)] flex items-center justify-center shrink-0 text-[#ff8296] hover:bg-[rgba(66,20,34,1)] hover:text-white transition active:scale-90 shadow-md touch-manipulation cursor-pointer"
             aria-label="Voltar"
           >
             <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
@@ -298,7 +299,7 @@ export function ModalRevisarFlashcards({
         className="px-4 sm:px-8 py-3.5 border-t border-[rgba(226,62,87,0.25)] shrink-0 z-30"
         style={{
           background: 'linear-gradient(180deg, #1b050d 0%, #100307 100%)',
-          paddingBottom: 'calc(0.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 0px)))'
+          paddingBottom: 'calc(1.75rem + var(--sai-bottom, env(safe-area-inset-bottom, 24px)))'
         }}
       >
         <div className="max-w-xl mx-auto">
