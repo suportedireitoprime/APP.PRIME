@@ -451,6 +451,25 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
+    "path": "/chat-juridico",
+    "group": "IA & Chat Jurídico",
+    "label": "Chat Jurídico IA",
+    "description": "Chat interativo com IA especializada em Direito e Legislação",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "ChatJuridico",
+    "exampleUrl": "/chat-juridico",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
+  },
+  {
     "path": "/compartilhado",
     "group": "Compartilhado",
     "label": "Compartilhado",

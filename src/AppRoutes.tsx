@@ -138,6 +138,7 @@ const RadarEstatisticas = lazy(() => import("./pages/RadarEstatisticas.tsx"));
 const VisualJuridico = lazy(() => import("./pages/VisualJuridico.tsx"));
 
 const MeExplique = lazy(routePrefetch.meExplique);
+const ChatJuridico = lazy(() => import("./pages/ChatJuridico.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const RadarProposicoes = lazy(() => import("./pages/RadarProposicoes.tsx"));
 const RadarProposicoesDia = lazy(() => import("./pages/RadarProposicoesDia.tsx"));
@@ -938,6 +939,7 @@ function AnimatedRoutes() {
           <Route path="/audioaulas/:area" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
 
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
+          <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />
           <Route path="/audiobooks" element={<ProtectedRoute><PageTransition><Audiobooks /></PageTransition></ProtectedRoute>} />
 
 

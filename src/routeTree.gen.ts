@@ -25,6 +25,7 @@ import { Route as AudiobooksRouteImport } from './routes/audiobooks'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BibliotecasRouteImport } from './routes/bibliotecas'
 import { Route as BoletinsRouteImport } from './routes/boletins'
+import { Route as ChatJuridicoRouteImport } from './routes/chat-juridico'
 import { Route as CompartilhadoRouteImport } from './routes/compartilhado'
 import { Route as EstudosRouteImport } from './routes/estudos'
 import { Route as JurisprudenciaRouteImport } from './routes/jurisprudencia'
@@ -223,6 +224,11 @@ const BibliotecasRoute = BibliotecasRouteImport.update({
 const BoletinsRoute = BoletinsRouteImport.update({
   id: '/boletins',
   path: '/boletins',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatJuridicoRoute = ChatJuridicoRouteImport.update({
+  id: '/chat-juridico',
+  path: '/chat-juridico',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompartilhadoRoute = CompartilhadoRouteImport.update({
@@ -857,6 +863,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/boletins': typeof BoletinsRoute
+  '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
   '/estudos': typeof EstudosRoute
   '/jurisprudencia': typeof JurisprudenciaRouteWithChildren
@@ -994,6 +1001,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/boletins': typeof BoletinsRoute
+  '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
   '/estudos': typeof EstudosRoute
   '/jurisprudencia': typeof JurisprudenciaRouteWithChildren
@@ -1132,6 +1140,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
   '/boletins': typeof BoletinsRoute
+  '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
   '/estudos': typeof EstudosRoute
   '/jurisprudencia': typeof JurisprudenciaRouteWithChildren
@@ -1271,6 +1280,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/bibliotecas'
     | '/boletins'
+    | '/chat-juridico'
     | '/compartilhado'
     | '/estudos'
     | '/jurisprudencia'
@@ -1408,6 +1418,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/bibliotecas'
     | '/boletins'
+    | '/chat-juridico'
     | '/compartilhado'
     | '/estudos'
     | '/jurisprudencia'
@@ -1545,6 +1556,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/bibliotecas'
     | '/boletins'
+    | '/chat-juridico'
     | '/compartilhado'
     | '/estudos'
     | '/jurisprudencia'
@@ -1683,6 +1695,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BibliotecasRoute: typeof BibliotecasRouteWithChildren
   BoletinsRoute: typeof BoletinsRoute
+  ChatJuridicoRoute: typeof ChatJuridicoRoute
   CompartilhadoRoute: typeof CompartilhadoRoute
   EstudosRoute: typeof EstudosRoute
   JurisprudenciaRoute: typeof JurisprudenciaRouteWithChildren
@@ -1842,6 +1855,13 @@ declare module '@tanstack/react-router' {
       path: '/boletins'
       fullPath: '/boletins'
       preLoaderRoute: typeof BoletinsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat-juridico': {
+      id: '/chat-juridico'
+      path: '/chat-juridico'
+      fullPath: '/chat-juridico'
+      preLoaderRoute: typeof ChatJuridicoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compartilhado': {
@@ -3096,6 +3116,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BibliotecasRoute: BibliotecasRouteWithChildren,
   BoletinsRoute: BoletinsRoute,
+  ChatJuridicoRoute: ChatJuridicoRoute,
   CompartilhadoRoute: CompartilhadoRoute,
   EstudosRoute: EstudosRoute,
   JurisprudenciaRoute: JurisprudenciaRouteWithChildren,
