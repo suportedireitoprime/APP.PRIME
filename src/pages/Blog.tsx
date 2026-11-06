@@ -1,40 +1,105 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import type { BlogPost, BlogTema } from "@/data/blogPosts";
+import { ChevronLeft, Search, X, Clock, Star, Bookmark } from "lucide-react";
+import { toast } from "sonner";
+import type { BlogPost } from "@/data/blogPosts";
 import BlogPostSheet from "@/components/vademecum/blog/BlogPostSheet";
-import BlogHeroHeader from "@/components/vademecum/blog/BlogHeroHeader";
 import { useBlogPostsCache } from "@/hooks/useBlogPostsCache";
 import { useFeatureLimit } from "@/hooks/useFeatureLimit";
 import PremiumGate from "@/components/PremiumGate";
-import BlogCategoriasView from "@/components/vademecum/blog/BlogCategoriasView";
-import { useIsDesktop } from "@/hooks/use-desktop";
-import { KeepAlive } from "@/components/ui/KeepAlive";
 import { recordActivity } from "@/lib/continuity";
 import { useGoBack } from "@/hooks/useGoBack";
 import { blogThumb } from "@/lib/blogImg";
 import ShapeGrid from "@/components/ui/ShapeGrid";
-
-// Componentes da página do Blog
-import BlogEmAltaCarousel from "@/components/vademecum/blog/BlogEmAltaCarousel";
-import BlogCategoriasListSection from "@/components/vademecum/blog/BlogCategoriasListSection";
-import BlogCategoriaSheet from "@/components/vademecum/blog/BlogCategoriaSheet";
-import BlogFavoritesFab from "@/components/vademecum/blog/BlogFavoritesFab";
-import BlogFavoritesSheet from "@/components/vademecum/blog/BlogFavoritesSheet";
-
-// Tracking e métricas
 import { blogTracking } from "@/lib/blogTracking";
 import { useBlogDynamicTrending } from "@/hooks/useBlogDynamicTrending";
 import { useBlogTrending } from "@/hooks/useBlogTrending";
-import { useBlogPostsFilter } from "@/hooks/useBlogPostsFilter";
+import { haptic } from "@/lib/nativeHaptics";
 
-// Chunks modulares (cabeçalho de navegação e abas secundárias)
-import {
-  type BlogFilter,
-  BlogInfoHeader,
-  BlogBioTabContainer,
-} from "@/components/vademecum/blog/chunks";
+// Capas de alta resolução que mudam dinamicamente conforme o menu de alternância
+import bibliotecaCoverImg from "@/assets/biblioteca-cover.webp";
+import filosofiaImg from "@/assets/capa-filosofia.webp";
+import stfImg from "@/assets/blog/stf.webp";
+import constitucionalImg from "@/assets/lei-cover-cf88.webp";
+import penalImg from "@/assets/capa-lei-penal-especial.webp";
+import civilImg from "@/assets/blog/inquilinato.webp";
+import carreirasImg from "@/assets/covers/vademecum-judge.webp";
+import emAltaImg from "@/assets/covers/hero-advogados-tribunal.webp";
+import salvosImg from "@/assets/covers/resumos-philosophers-hero.webp";
 
-export type { BlogFilter };
+interface CategoryItem {
+  id: string;
+  label: string;
+  title: string;
+  subtitle: string;
+  coverImg: string;
+}
+
+const CATEGORIES: CategoryItem[] = [
+  {
+    id: "todos",
+    label: "Todos",
+    title: "Siga sua curiosidade.",
+    subtitle: "Descubra artigos, teses e reflexões jurídicas que valem o seu tempo.",
+    coverImg: bibliotecaCoverImg,
+  },
+  {
+    id: "em-alta",
+    label: "Em Alta",
+    title: "O que o mundo jurídico debate agora.",
+    subtitle: "Os temas mais consultados, comentados e lidos pela comunidade jurídica.",
+    coverImg: emAltaImg,
+  },
+  {
+    id: "filosofia",
+    label: "Filosofia",
+    title: "Pense além da letra fria da lei.",
+    subtitle: "Grandes pensadores, dilemas éticos e as origens da teoria da justiça.",
+    coverImg: filosofiaImg,
+  },
+  {
+    id: "constitucional",
+    label: "Constitucional",
+    title: "O guardião dos direitos fundamentais.",
+    subtitle: "Controle de constitucionalidade, garantias individuais e o pacto republicano.",
+    coverImg: constitucionalImg,
+  },
+  {
+    id: "penal",
+    label: "Direito Penal",
+    title: "Garantismo e dogmática penal.",
+    subtitle: "Teoria do crime, execução da pena e limites do poder punitivo estatal.",
+    coverImg: penalImg,
+  },
+  {
+    id: "stf",
+    label: "STF & Tribunais",
+    title: "Precedentes que moldam o país.",
+    subtitle: "Grandes julgamentos, repercussão geral e as teses da Suprema Corte.",
+    coverImg: stfImg,
+  },
+  {
+    id: "civil",
+    label: "Civil & Contratos",
+    title: "Relações privadas em evolução.",
+    subtitle: "Contratos modernos, responsabilidade civil, direito imobiliário e famílias.",
+    coverImg: civilImg,
+  },
+  {
+    id: "carreiras",
+    label: "Carreiras",
+    title: "Estratégia e prática jurídica.",
+    subtitle: "Técnicas de estudo para concursos de ponta, advocacia e rotina forense.",
+    coverImg: carreirasImg,
+  },
+  {
+    id: "salvos",
+    label: "Salvos",
+    title: "Sua estante de leituras.",
+    subtitle: "Artigos que você marcou para ler com atenção ou consultar mais tarde.",
+    coverImg: salvosImg,
+  },
+];
 
 function readFavoritesFromStorage(): string[] {
   try {
@@ -52,69 +117,22 @@ function readFavoritesFromStorage(): string[] {
 const Blog = () => {
   const goBack = useGoBack();
   const location = useLocation();
-  const isDesktop = useIsDesktop();
 
-  const [selectedFilter, setSelectedFilter] = useState<BlogFilter>("todos");
+  const [activeCategory, setActiveCategory] = useState<string>("todos");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
-  const [infoOpen, setInfoOpen] = useState(false);
   const [gateOpen, setGateOpen] = useState(false);
-
-  // Sub-abas extras caso acionadas externamente (biografia, categorias em grade)
-  const [mainTab] = useState<string>("artigos");
-  const [selectedBioCategory, setSelectedBioCategory] = useState<string | null>(null);
-  const [selectedBioPerson, setSelectedBioPerson] = useState<string | null>(null);
-
-  // Categoria selecionada para visualização de artigos em sheet dedicado
-  const [selectedCategorySheet, setSelectedCategorySheet] = useState<BlogTema | string | null>(null);
-
-  // Favoritos (Aberto via FAB ou evento)
-  const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState<string[]>(() => readFavoritesFromStorage());
 
   const { canUse, register, used, config } = useFeatureLimit("blog_read");
-  const { posts: dbPosts, loaded: blogLoaded } = useBlogPostsCache();
+  const { posts: allPosts } = useBlogPostsCache();
+  const { trendingIds } = useBlogTrending("todos");
+  const { registerPostClick } = useBlogDynamicTrending(allPosts);
 
-  // Custom hooks gerenciam o cache de trending e filtragem de postagens
-  const { trendingIds } = useBlogTrending(selectedFilter);
-
-  const { allPosts, posts, visiblePosts } = useBlogPostsFilter(
-    dbPosts,
-    selectedFilter,
-    "blogger",
-    trendingIds,
-    blogLoaded,
-  );
-
-  // Métrica dinâmica para os artigos em alta
-  const { topTrendingPosts, registerPostClick, getPostViewCount } = useBlogDynamicTrending(allPosts);
-
-  // Categorias disponíveis com contagem de artigos
-  const { categoriasDisponiveis } = useMemo(() => {
-    const counts: Record<string, number> = {};
-    allPosts.forEach((p) => {
-      if (p.tema) {
-        counts[p.tema] = (counts[p.tema] || 0) + 1;
-      }
-    });
-    const sorted = Object.keys(counts).sort((a, b) => a.localeCompare(b, "pt-BR"));
-    return { categoriasDisponiveis: sorted };
-  }, [allPosts]);
-
-  // Posts filtrados da categoria aberta no sheet
-  const categorySheetPosts = useMemo(() => {
-    if (!selectedCategorySheet) return [];
-    if (selectedCategorySheet === "Leis" || selectedCategorySheet === "Conceitos Fundamentais") {
-      return allPosts.filter((p) => p.tema === "Leis" || p.tema === "Conceitos Fundamentais");
-    }
-    return allPosts.filter((p) => p.tema === selectedCategorySheet);
-  }, [allPosts, selectedCategorySheet]);
-
-  // Posts favoritados
-  const favoritePosts = useMemo(() => {
-    if (!favoriteIds.length || !allPosts.length) return [];
-    const favSet = new Set(favoriteIds);
-    return allPosts.filter((p) => favSet.has(p.id));
-  }, [allPosts, favoriteIds]);
+  // Categoria ativa atual
+  const currentCategory = useMemo(() => {
+    return CATEGORIES.find((c) => c.id === activeCategory) || CATEGORIES[0];
+  }, [activeCategory]);
 
   // Listener para sincronizar os favoritos em tempo real
   useEffect(() => {
@@ -129,31 +147,98 @@ const Blog = () => {
     };
   }, []);
 
-  const handleRemoveFavorite = useCallback((postId: string) => {
-    try {
-      const current = readFavoritesFromStorage().filter((id) => id !== postId);
-      localStorage.setItem("blog:favorites", JSON.stringify(current));
-      setFavoriteIds(current);
-      window.dispatchEvent(new Event("blog:favorites-updated"));
-    } catch {
-      /* ignore */
+  const handleToggleFavorite = useCallback((postId: string) => {
+    haptic.selection();
+    const current = readFavoritesFromStorage();
+    let updated: string[];
+    if (current.includes(postId)) {
+      updated = current.filter((id) => id !== postId);
+      toast.success("Artigo removido dos salvos");
+    } else {
+      updated = [...current, postId];
+      toast.success("Artigo salvo na sua estante!");
     }
+    try {
+      localStorage.setItem("blog:favorites", JSON.stringify(updated));
+    } catch {}
+    setFavoriteIds(updated);
+    window.dispatchEvent(new Event("blog:favorites-updated"));
   }, []);
 
-  // SEO
+  // Filtragem dos posts
+  const filteredPosts = useMemo(() => {
+    let result = allPosts;
+
+    // Filtro por categoria da pílula
+    if (activeCategory === "em-alta") {
+      if (trendingIds && trendingIds.length) {
+        result = result.filter((p) => trendingIds.includes(p.id));
+      }
+    } else if (activeCategory === "filosofia") {
+      result = result.filter(
+        (p) =>
+          p.tema?.toLowerCase().includes("filosofia") ||
+          p.tema === "Clássicos"
+      );
+    } else if (activeCategory === "constitucional") {
+      result = result.filter(
+        (p) =>
+          p.tema?.toLowerCase().includes("constitucional") ||
+          p.tema?.toLowerCase().includes("leis")
+      );
+    } else if (activeCategory === "penal") {
+      result = result.filter(
+        (p) =>
+          p.tema?.toLowerCase().includes("penal") ||
+          p.tema?.toLowerCase().includes("inquisicao")
+      );
+    } else if (activeCategory === "stf") {
+      result = result.filter(
+        (p) =>
+          p.tema?.toLowerCase().includes("stf") ||
+          p.tema?.toLowerCase().includes("jurisprudência")
+      );
+    } else if (activeCategory === "civil") {
+      result = result.filter(
+        (p) =>
+          p.tema?.toLowerCase().includes("civil") ||
+          p.tema?.toLowerCase().includes("trabalho") ||
+          p.tema?.toLowerCase().includes("tributário")
+      );
+    } else if (activeCategory === "carreiras") {
+      result = result.filter(
+        (p) =>
+          p.tema?.toLowerCase().includes("carreira") ||
+          p.tema?.toLowerCase().includes("iniciante") ||
+          p.tema?.toLowerCase().includes("curiosidade")
+      );
+    } else if (activeCategory === "salvos") {
+      result = result.filter((p) => favoriteIds.includes(p.id));
+    }
+
+    // Filtro de busca textual
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (p) =>
+          p.titulo?.toLowerCase().includes(q) ||
+          p.resumo?.toLowerCase().includes(q) ||
+          p.autor?.toLowerCase().includes(q) ||
+          p.tema?.toLowerCase().includes(q)
+      );
+    }
+
+    return result;
+  }, [allPosts, activeCategory, searchQuery, trendingIds, favoriteIds]);
+
+  // SEO & título da aba
   useEffect(() => {
     if (selectedPost) {
       document.title = `${selectedPost.titulo} | Blogger Jurídico`;
-    } else if (mainTab === "biografia") {
-      document.title = "Biografias do Direito | Blogger Jurídico";
-    } else if (selectedFilter === "trending") {
-      document.title = "Blogger Jurídico - Em Alta | Vade Mecum PRIME";
-    } else if (selectedFilter !== "todos") {
-      document.title = `Blogger Jurídico - ${selectedFilter} | Vade Mecum PRIME`;
     } else {
-      document.title = "Blogger Jurídico | Vade Mecum PRIME";
+      document.title = `${currentCategory.title} | Blogger Jurídico`;
     }
-  }, [selectedPost, selectedFilter, mainTab]);
+  }, [selectedPost, currentCategory]);
 
   const { slug: routeSlug } = useParams<{ slug?: string }>();
   // Compartilhamento via query string (?post=...) ou rota direta (/blog/:slug)
@@ -165,19 +250,6 @@ const Blog = () => {
       if (found) setSelectedPost(found);
     }
   }, [location.search, routeSlug, allPosts]);
-
-  // Preload Above-the-fold e capas Em Alta
-  useEffect(() => {
-    const toPreload = [
-      ...visiblePosts.slice(0, 3).map((p) => p.imagem_url),
-      ...topTrendingPosts.slice(0, 4).map((p) => p.imagem_url),
-    ].filter(Boolean);
-
-    toPreload.forEach((url) => {
-      const img = new Image();
-      img.src = blogThumb(url, 320);
-    });
-  }, [visiblePosts, topTrendingPosts]);
 
   const handleOpenPost = useCallback(
     (post: BlogPost) => {
@@ -191,117 +263,192 @@ const Blog = () => {
       register(post.id);
       recordActivity({ path: `/blog?post=${post.id}`, label: post.titulo, kind: "blog" });
     },
-    [canUse, register, registerPostClick],
+    [canUse, register, registerPostClick]
   );
 
-  const handleOpenCategory = useCallback((tema: BlogTema | string) => {
-    if (tema === "todos") {
-      setSelectedFilter("todos");
-      setSelectedCategorySheet(null);
-      return;
-    }
-    setSelectedFilter(tema as BlogFilter);
-    setSelectedCategorySheet(tema);
-  }, []);
-
-  const handleCloseCategorySheet = useCallback(() => {
-    setSelectedCategorySheet(null);
-    setSelectedFilter("todos");
-  }, []);
-
   return (
-    <div className="min-h-dvh bg-[#0D0D0D] text-white relative overflow-x-hidden pb-[calc(7rem+var(--sai-bottom,0px))]">
-      {/* Fundo ShapeGrid Dinâmico padrão do app */}
+    <div className="min-h-dvh bg-[#0D0D0D] text-white relative overflow-x-hidden pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
+      {/* Fundo ShapeGrid Padrão Oficial do App */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <ShapeGrid
           speed={0.5}
           squareSize={40}
           direction="diagonal"
-          borderColor="rgba(226, 62, 87, 0.06)"
+          borderColor="rgba(124, 58, 237, 0.05)"
         />
       </div>
 
-      <div className="relative z-10">
-        {/* Cabeçalho de Navegação Superior Original do Blog */}
-        <BlogInfoHeader
-          infoOpen={infoOpen}
-          onToggleInfo={() => setInfoOpen((v) => !v)}
-          onBack={() => goBack()}
-        />
+      <div className="relative z-10 max-w-2xl mx-auto px-4 sm:px-6">
+        {/* Top Header estilo App 12min */}
+        <div className="flex items-center gap-2 mb-3">
+          <button
+            onClick={() => goBack()}
+            aria-label="Voltar"
+            className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-white hover:bg-white/10 active:scale-90 transition-all cursor-pointer"
+          >
+            <ChevronLeft className="w-7 h-7" strokeWidth={2.4} />
+          </button>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-sans tracking-tight">
+            Todos os artigos
+          </h1>
+        </div>
 
-        {/* Painel Hero Original do Blog (com ilustrações jurídicas clássicas e tipografia autoral) */}
-        <BlogHeroHeader
-          selectedTema={
-            selectedFilter === "trending" || selectedFilter === "todos" ? null : selectedFilter
-          }
-        />
-
-        {/* Conteúdo Principal com Margens Elegantes */}
-        <main className="max-w-4xl mx-auto px-4 sm:px-6 space-y-7 mt-5">
-          {/* Seção Em Alta: Somente "EM ALTA", sem TOP 20, botão sem ícones, capas com degradê e títulos dentro */}
-          <BlogEmAltaCarousel
-            posts={topTrendingPosts}
-            onSelectPost={handleOpenPost}
-            getViewCount={getPostViewCount}
-            onRegisterClick={registerPostClick}
+        {/* Barra de Pesquisa Arredondada */}
+        <div className="relative mb-3.5">
+          <Search className="w-4 h-4 text-zinc-400 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Buscar livros, ideias ou autores..."
+            className="w-full rounded-2xl bg-[#171520] sm:bg-zinc-900/90 border border-white/10 pl-11 pr-10 py-3 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/25 transition-all font-sans"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 rounded-full text-zinc-400 hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
 
-          {/* Seção Todas as Categorias: Margens refinadas, sem tag de blog jurídico, sem verde artificial */}
-          <BlogCategoriasListSection
-            posts={allPosts}
-            selectedCategory={selectedCategorySheet}
-            onSelectCategory={handleOpenCategory}
-            temas={categoriasDisponiveis}
-          />
-        </main>
+        {/* Menu de Alternância (Pílulas Horizontais no Topo) */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 mb-5">
+          {CATEGORIES.map((cat) => {
+            const isActive = activeCategory === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  haptic.selection();
+                  setActiveCategory(cat.id);
+                }}
+                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer ${
+                  isActive
+                    ? "bg-[#7C3AED] text-white shadow-lg shadow-purple-600/30"
+                    : "bg-[#1E1B2E] text-zinc-300 hover:text-white border border-white/10 hover:bg-zinc-800"
+                }`}
+              >
+                {cat.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Capa que muda conforme o menu de alternância */}
+        <div className="mb-7">
+          <div className="w-full aspect-[16/9] max-h-[220px] sm:max-h-[300px] rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 bg-zinc-900 group">
+            <img
+              key={currentCategory.id}
+              src={currentCategory.coverImg}
+              alt={currentCategory.title}
+              className="w-full h-full object-cover transform-gpu transition-opacity duration-300"
+              loading="eager"
+              fetchPriority="high"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+          </div>
+
+          {/* Tipografia Moderna e Dinâmica sob a Capa */}
+          <div className="mt-4 px-0.5">
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-sans">
+              {currentCategory.title}
+            </h2>
+            <p className="text-sm sm:text-base text-zinc-400 font-normal leading-relaxed mt-1.5 font-sans">
+              {currentCategory.subtitle}
+            </p>
+          </div>
+        </div>
+
+        {/* Título da Seção */}
+        <div className="flex items-center justify-between mb-2 px-0.5">
+          <h3 className="text-lg sm:text-xl font-bold text-white font-sans tracking-tight">
+            {activeCategory === "todos"
+              ? "Selecionados para você"
+              : `Artigos em ${currentCategory.label}`}
+          </h3>
+          <span className="text-xs sm:text-sm font-semibold text-purple-400 font-sans">
+            {filteredPosts.length} artigos
+          </span>
+        </div>
+
+        {/* Lista de Artigos: Apenas uma linha fina dividindo cada item */}
+        <div className="divide-y divide-white/[0.08]">
+          {filteredPosts.length === 0 ? (
+            <div className="py-12 text-center text-zinc-400 text-sm font-sans">
+              Nenhum artigo encontrado nesta categoria.
+            </div>
+          ) : (
+            filteredPosts.map((post) => {
+              const isSaved = favoriteIds.includes(post.id);
+              return (
+                <div
+                  key={post.id}
+                  onClick={() => handleOpenPost(post)}
+                  className="flex items-center gap-3.5 sm:gap-4 py-3.5 sm:py-4 cursor-pointer group hover:bg-white/[0.03] px-2 rounded-2xl transition-all active:scale-[0.99]"
+                >
+                  {/* Capa em miniatura (proporção 3:4 com cantos arredondados) */}
+                  <div className="relative w-[56px] h-[74px] sm:w-[64px] sm:h-[84px] shrink-0 rounded-xl overflow-hidden bg-zinc-900 border border-white/10 shadow-md">
+                    <img
+                      src={blogThumb(post.imagem_url, 160)}
+                      alt={post.titulo}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = bibliotecaCoverImg;
+                      }}
+                    />
+                  </div>
+
+                  {/* Detalhes do Artigo */}
+                  <div className="flex-1 min-w-0 pr-1">
+                    <h4 className="font-bold text-sm sm:text-base text-white leading-snug line-clamp-2 group-hover:text-purple-300 transition-colors font-sans">
+                      {post.titulo}
+                    </h4>
+                    <p className="text-xs text-zinc-400 font-medium mt-1 truncate font-sans">
+                      {post.autor || post.tema}
+                    </p>
+                    <div className="flex items-center gap-2.5 mt-1.5 text-xs text-zinc-400 font-sans">
+                      <span className="flex items-center gap-1 text-zinc-400">
+                        <Clock className="w-3.5 h-3.5 text-zinc-500" />
+                        <span>{post.tempo_leitura_min || 8} min</span>
+                      </span>
+                      <span className="text-zinc-600">•</span>
+                      <span className="flex items-center gap-1 font-semibold text-zinc-300">
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        <span>4.8</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Ícone de Salvar / Estante */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleFavorite(post.id);
+                    }}
+                    aria-label="Salvar artigo"
+                    className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 hover:bg-white/10 active:scale-90 text-zinc-400 hover:text-white transition-all cursor-pointer"
+                  >
+                    <Bookmark
+                      className={`w-5 h-5 transition-transform ${
+                        isSaved ? "fill-purple-500 text-purple-500 scale-110" : "text-zinc-400"
+                      }`}
+                      strokeWidth={1.8}
+                    />
+                  </button>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
-      {/* Botão Flutuante de Favoritos (FAB) */}
-      <BlogFavoritesFab
-        count={favoriteIds.length}
-        onClick={() => setFavoritesOpen(true)}
-      />
+      {/* Leitor Completo do Artigo */}
+      <BlogPostSheet post={selectedPost} onClose={() => setSelectedPost(null)} />
 
-      {/* Sheet de Favoritos (Abre de baixo para cima) */}
-      <BlogFavoritesSheet
-        open={favoritesOpen}
-        onClose={() => setFavoritesOpen(false)}
-        favoritePosts={favoritePosts}
-        onSelectPost={handleOpenPost}
-        onRemoveFavorite={handleRemoveFavorite}
-      />
-
-      {/* Sheet de Artigos da Categoria Selecionada */}
-      <BlogCategoriaSheet
-        open={Boolean(selectedCategorySheet)}
-        onClose={handleCloseCategorySheet}
-        categoria={selectedCategorySheet}
-        posts={categorySheetPosts}
-        onSelectPost={handleOpenPost}
-        canUse={canUse}
-        isDesktop={isDesktop}
-      />
-
-      {/* Aba de Biografia se acionada */}
-      <KeepAlive active={mainTab === "biografia"}>
-        <BlogBioTabContainer
-          selectedBioPerson={selectedBioPerson}
-          setSelectedBioPerson={setSelectedBioPerson}
-          selectedBioCategory={selectedBioCategory}
-          setSelectedBioCategory={setSelectedBioCategory}
-        />
-      </KeepAlive>
-
-      {/* Aba de Categorias se acionada */}
-      <KeepAlive active={mainTab === "categorias"}>
-        <BlogCategoriasView
-          posts={posts}
-          onSelectCategoria={handleOpenCategory}
-        />
-      </KeepAlive>
-
-      {!isDesktop && <BlogPostSheet post={selectedPost} onClose={() => setSelectedPost(null)} />}
-
+      {/* Portão Premium se atingir limite */}
       <PremiumGate
         open={gateOpen}
         onClose={() => setGateOpen(false)}
