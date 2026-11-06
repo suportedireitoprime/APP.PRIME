@@ -54,35 +54,36 @@ const PRATICAR_ITEMS: PraticarItem[] = [
   },
 ];
 
-const AUTOPLAY_MS = 4000;
+// Função utilitária para embaralhar array (Fisher-Yates) no acesso
+function shuffleArray<T>(items: readonly T[]): T[] {
+  const array = [...items];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 const HomePraticarCarousel = () => {
   const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const isInteractingRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // 4 cópias (16 itens) para um carrossel 100% contínuo e infinito idêntico a Leis em Alta
+  // Ordem aleatória sorteada ao acessar a tela (sem passar sozinho)
+  const randomizedItems = useMemo(() => shuffleArray(PRATICAR_ITEMS), []);
+
+  // 4 cópias para permitir navegação infinita manual suave em ambas as direções
   const loopedItems = useMemo(() => {
     return [
-      ...PRATICAR_ITEMS,
-      ...PRATICAR_ITEMS,
-      ...PRATICAR_ITEMS,
-      ...PRATICAR_ITEMS,
+      ...randomizedItems,
+      ...randomizedItems,
+      ...randomizedItems,
+      ...randomizedItems,
     ];
-  }, []);
+  }, [randomizedItems]);
 
-  // Começa no segundo bloco (índice 4 = flashcards)
-  const [activeIndex, setActiveIndex] = useState(PRATICAR_ITEMS.length);
+  // Começa no segundo bloco (índice inicial do bloco aleatório)
+  const [activeIndex, setActiveIndex] = useState(randomizedItems.length);
   const [isReady, setIsReady] = useState(false);
-
-  const pauseAutoplay = useCallback(() => {
-    isInteractingRef.current = true;
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      isInteractingRef.current = false;
-    }, 4000);
-  }, []);
 
   // Scroll suave com cálculo imutável de offsetLeft (imune a zoom ou transform do CSS)
   const scrollToIndex = useCallback((idx: number, behavior: ScrollBehavior = 'smooth') => {
@@ -97,55 +98,14 @@ const HomePraticarCarousel = () => {
 
   // Inicialização no bloco central no mount
   useEffect(() => {
-    const initialIndex = PRATICAR_ITEMS.length;
+    const initialIndex = randomizedItems.length;
     setActiveIndex(initialIndex);
     const timer = setTimeout(() => {
       scrollToIndex(initialIndex, 'instant' as ScrollBehavior);
       setIsReady(true);
     }, 50);
     return () => clearTimeout(timer);
-  }, [scrollToIndex]);
-
-  // Autoplay contínuo infinito idêntico a Leis em Alta (teleporte silencioso de 0ms nas bordas)
-  useEffect(() => {
-    if (!isReady) return;
-
-    const interval = setInterval(() => {
-      if (isInteractingRef.current || document.hidden) return;
-
-      const el = scrollerRef.current;
-      setActiveIndex((prev) => {
-        let current = prev;
-        const N = PRATICAR_ITEMS.length;
-
-        // Teleporte silencioso de 0ms quando aproxima do fim do buffer
-        if (N > 0 && current >= loopedItems.length - N - 2 && el) {
-          const equivalent = (current % N) + N * 2;
-          const childCurr = el.children[current] as HTMLElement | undefined;
-          const childEq = el.children[equivalent] as HTMLElement | undefined;
-          if (childCurr && childEq) {
-            const diff = childCurr.offsetLeft - childEq.offsetLeft;
-            el.style.scrollBehavior = 'auto';
-            el.style.scrollSnapType = 'none';
-            el.scrollLeft -= diff;
-            void el.offsetHeight;
-            el.style.scrollSnapType = '';
-            el.style.scrollBehavior = '';
-            current = equivalent;
-          }
-        }
-
-        const nextIndex = current + 1;
-        scrollToIndex(nextIndex);
-        return nextIndex;
-      });
-    }, AUTOPLAY_MS);
-
-    return () => {
-      clearInterval(interval);
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [isReady, scrollToIndex, loopedItems.length]);
+  }, [scrollToIndex, randomizedItems.length]);
 
   // Detector de scroll usando geometria de layout estável (offsetLeft + clientWidth)
   // Elimina 100% de oscilações ou zoom loops em qualquer card (incluindo Flashcards)
@@ -167,7 +127,7 @@ const HomePraticarCarousel = () => {
       }
     }
 
-    const N = PRATICAR_ITEMS.length;
+    const N = randomizedItems.length;
     if (N > 0) {
       if (best <= 1) {
         const jumpTo = best + N * 2;
@@ -189,17 +149,16 @@ const HomePraticarCarousel = () => {
     }
 
     setActiveIndex(best);
-  }, [loopedItems.length]);
+  }, [randomizedItems.length, loopedItems.length]);
 
   const handleCardClick = useCallback(
     (item: PraticarItem, index: number) => {
-      pauseAutoplay();
       haptic.selection();
       setActiveIndex(index);
       scrollToIndex(index);
       navigate(item.path);
     },
-    [navigate, pauseAutoplay, scrollToIndex]
+    [navigate, scrollToIndex]
   );
 
   return (
@@ -217,12 +176,10 @@ const HomePraticarCarousel = () => {
         </div>
       </div>
 
-      {/* Faixa Carrossel Horizontal Infinito com Autoplay (idêntica a Leis em Alta) */}
+      {/* Faixa Carrossel Horizontal Manual (a pessoa que passa, sem passar só) */}
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
-        onPointerDown={pauseAutoplay}
-        onTouchStart={pauseAutoplay}
         className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
@@ -308,19 +265,18 @@ const HomePraticarCarousel = () => {
         })}
       </div>
 
-      {/* Indicador de pontos (respeita o item real no loop) */}
+      {/* Indicador de pontos (respeita a ordem aleatória sorteada) */}
       <div className="flex justify-center items-center gap-1.5 pt-1">
-        {PRATICAR_ITEMS.map((item, idx) => {
-          const isCurrentActive = idx === activeIndex % PRATICAR_ITEMS.length;
+        {randomizedItems.map((item, idx) => {
+          const isCurrentActive = idx === activeIndex % randomizedItems.length;
           return (
             <button
               key={item.id}
               type="button"
               onClick={() => {
-                pauseAutoplay();
                 haptic.selection();
-                const currentBlock = Math.floor(activeIndex / PRATICAR_ITEMS.length);
-                const targetIndex = currentBlock * PRATICAR_ITEMS.length + idx;
+                const currentBlock = Math.floor(activeIndex / randomizedItems.length);
+                const targetIndex = currentBlock * randomizedItems.length + idx;
                 setActiveIndex(targetIndex);
                 scrollToIndex(targetIndex);
               }}

@@ -110,7 +110,15 @@ const getIconForLei = (tipo: string, id: string) => {
   return FileText;
 };
 
-const AUTOPLAY_MS = 5000;
+// Função utilitária para embaralhar array (Fisher-Yates) no acesso
+function shuffleArray<T>(items: readonly T[]): T[] {
+  const array = [...items];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 interface HomeEmAltaCarouselProps {
   onSelectItem?: (item: EmAltaItem) => void;
@@ -122,8 +130,6 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isReady, setIsReady] = useState(false);
-  const isInteractingRef = useRef(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { config } = useEmAltaConfig();
   const [isRecentesOpen, setIsRecentesOpen] = useState(false);
@@ -150,11 +156,19 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
     }).filter(Boolean) as EmAltaItem[];
   }, [config]);
 
+  const displayIdsKey = useMemo(() => displayItems.map((i) => i.id).join(','), [displayItems]);
+
+  // Sorteia a ordem aleatória das leis ao acessar a tela (sem passar sozinho)
+  const randomizedItems = useMemo(() => {
+    return shuffleArray(displayItems);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayIdsKey]);
+
   const loopedItems = useMemo(() => {
-    if (displayItems.length === 0) return [];
-    // 4 copies to allow smooth scrolling back and forth without hitting the edge quickly
-    return [...displayItems, ...displayItems, ...displayItems, ...displayItems];
-  }, [displayItems]);
+    if (randomizedItems.length === 0) return [];
+    // 4 cópias para permitir navegação infinita manual suave em ambas as direções
+    return [...randomizedItems, ...randomizedItems, ...randomizedItems, ...randomizedItems];
+  }, [randomizedItems]);
 
   const handleOpenItem = useCallback(
     (item: EmAltaItem) => {
@@ -187,19 +201,15 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
   }, []);
 
   useEffect(() => {
-    if (displayItems.length > 0 && !isReady) {
-      // Sorteia um índice aleatório dentro do segundo bloco (para permitir scroll infinito p/ ambos os lados)
-      const randomOffset = Math.floor(Math.random() * displayItems.length);
-      const initialIndex = displayItems.length + randomOffset;
-      
+    if (randomizedItems.length > 0 && !isReady) {
+      const initialIndex = randomizedItems.length;
       setActiveIndex(initialIndex);
-      // Timeout necessário para aguardar o DOM calcular as larguras
       setTimeout(() => {
-        scrollToIndex(initialIndex, 'instant' as ScrollBehavior); // Força 'instant' p/ evitar qualquer animação de roleta
+        scrollToIndex(initialIndex, 'instant' as ScrollBehavior);
         setIsReady(true);
       }, 50);
     }
-  }, [displayItems.length, isReady, scrollToIndex]);
+  }, [randomizedItems.length, isReady, scrollToIndex]);
 
   const handleScroll = useCallback(() => {
     const el = scrollerRef.current;
@@ -214,7 +224,7 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
       if (dist < bestDist) { bestDist = dist; best = i; }
     }
 
-    const N = displayItems.length;
+    const N = randomizedItems.length;
     if (N > 0) {
       if (best <= 1) {
         const jumpTo = best + N * 2;
@@ -236,54 +246,7 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
     }
 
     setActiveIndex(best);
-  }, [displayItems.length, loopedItems.length]);
-
-  const pauseAutoplay = useCallback(() => {
-    isInteractingRef.current = true;
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      isInteractingRef.current = false;
-    }, 4000);
-  }, []);
-
-  useEffect(() => {
-    if (displayItems.length <= 1 || !isReady) return;
-
-    const interval = setInterval(() => {
-      if (isInteractingRef.current || document.hidden) return;
-
-      const el = scrollerRef.current;
-      setActiveIndex((prev) => {
-        let current = prev;
-        const N = displayItems.length;
-
-        // Teleporte silencioso de 0ms quando aproxima do fim do buffer, para nunca rebobinar
-        if (N > 0 && current >= loopedItems.length - N - 2 && el) {
-          const equivalent = (current % N) + N * 2;
-          const childCurr = el.children[current] as HTMLElement | undefined;
-          const childEq = el.children[equivalent] as HTMLElement | undefined;
-          if (childCurr && childEq) {
-            const diff = childCurr.offsetLeft - childEq.offsetLeft;
-            el.style.scrollBehavior = 'auto';
-            el.style.scrollSnapType = 'none';
-            el.scrollLeft -= diff;
-            void el.offsetHeight;
-            el.style.scrollSnapType = '';
-            el.style.scrollBehavior = '';
-            current = equivalent;
-          }
-        }
-
-        const nextIndex = current + 1;
-        scrollToIndex(nextIndex);
-        return nextIndex;
-      });
-    }, AUTOPLAY_MS);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [displayItems.length, scrollToIndex, isReady, loopedItems.length]);
+  }, [randomizedItems.length, loopedItems.length]);
 
   return (
     <section className="space-y-3">
@@ -310,12 +273,10 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
         </button>
       </div>
 
-      {/* Faixa Carrossel Horizontal: cards quadrados em vermelho com SVG branco (sem capas) */}
+      {/* Faixa Carrossel Horizontal Manual (a pessoa que passa, sem passar só) */}
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
-        onPointerDown={pauseAutoplay}
-        onTouchStart={pauseAutoplay}
         className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-74px)] sm:px-[calc(50vw-81px)] flex gap-2.5 sm:gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
         style={{ visibility: isReady ? 'visible' : 'hidden' }}
       >
@@ -347,7 +308,6 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
               key={`${item.id}-${i}`}
               type="button"
               onClick={() => {
-                pauseAutoplay();
                 setActiveIndex(i);
                 handleOpenItem(item);
               }}
@@ -411,7 +371,7 @@ const HomeEmAltaCarousel = ({ onSelectItem, onOpenLei }: HomeEmAltaCarouselProps
       </div>
 
       {/* Indicador de Paginação */}
-      <CarouselDots total={displayItems.length} activeIndex={displayItems.length > 0 ? activeIndex % displayItems.length : 0} />
+      <CarouselDots total={randomizedItems.length} activeIndex={randomizedItems.length > 0 ? activeIndex % randomizedItems.length : 0} />
 
       <HomeRecentesSheet 
         isOpen={isRecentesOpen}
