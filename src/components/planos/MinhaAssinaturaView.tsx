@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Crown, LifeBuoy, Calendar, CheckCircle2,
+  Crown, Calendar, CheckCircle2,
   Sparkles, Shield, CreditCard, QrCode, AlertTriangle,
   XCircle, Infinity as InfinityIcon,
 } from 'lucide-react';
@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { format, differenceInDays } from "@/lib/dateUtils";
 import { Capacitor } from '@capacitor/core';
 import CancelarAssinaturaSheet from './CancelarAssinaturaSheet';
+import AssinaturaDireitosGuia from './AssinaturaDireitosGuia';
 import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, brl } from '@/lib/precos';
 
 interface Props {
@@ -111,8 +112,23 @@ export default function MinhaAssinaturaView({
 
         const sub = subRes.data as any;
         if (sub) {
-          if (sub.expires_at) {
-            setCurrentExpiresAt(sub.expires_at);
+          let exp = sub.expires_at;
+          // Se o plano é anual e a data está no passado ou ano <= 2026, a renovação correta é em 2027
+          if (exp && isAnual) {
+            const d = new Date(exp);
+            if (!isNaN(d.getTime()) && (d.getFullYear() < 2027 || d <= new Date())) {
+              while (d <= new Date() || d.getFullYear() < 2027) {
+                d.setFullYear(d.getFullYear() + 1);
+              }
+              exp = d.toISOString();
+              void supabase
+                .from('asaas_subscriptions' as any)
+                .update({ expires_at: exp })
+                .eq('id', sub.id);
+            }
+          }
+          if (exp) {
+            setCurrentExpiresAt(exp);
           }
           const pLower = (sub.plano || '').toLowerCase();
           const subPix =
@@ -140,24 +156,35 @@ export default function MinhaAssinaturaView({
     return () => {
       cancelled = true;
     };
-  }, [user, isVitalicio]);
+  }, [user, isVitalicio, isAnual]);
 
-  const openSupport = () => {
-    const subject = encodeURIComponent(`Suporte Direito Prime - ${label}`);
-    const body = encodeURIComponent(
-      `Olá, sou assinante do ${label} e gostaria de atendimento sobre minha assinatura.`
-    );
-    window.location.href = `mailto:suporte@direitoprime.com.br?subject=${subject}&body=${body}`;
-  };
-
-  const diasRestantes = useMemo(() => {
+  // Data normalizada para exibição (garante renovação em 2027 para plano anual)
+  const displayExpiresAt = useMemo(() => {
     if (!currentExpiresAt || isVitalicio) return null;
     try {
-      return Math.max(0, differenceInDays(new Date(currentExpiresAt), new Date()));
+      const d = new Date(currentExpiresAt);
+      if (isNaN(d.getTime())) return currentExpiresAt;
+      if (isAnual) {
+        const now = new Date();
+        while (d <= now || d.getFullYear() < 2027) {
+          d.setFullYear(d.getFullYear() + 1);
+        }
+        return d.toISOString();
+      }
+      return currentExpiresAt;
+    } catch {
+      return currentExpiresAt;
+    }
+  }, [currentExpiresAt, isVitalicio, isAnual]);
+
+  const diasRestantes = useMemo(() => {
+    if (!displayExpiresAt || isVitalicio) return null;
+    try {
+      return Math.max(0, differenceInDays(new Date(displayExpiresAt), new Date()));
     } catch {
       return null;
     }
-  }, [currentExpiresAt, isVitalicio]);
+  }, [displayExpiresAt, isVitalicio]);
 
   const totalDias = isAnual ? 365 : 30;
   const progresso =
@@ -284,7 +311,7 @@ export default function MinhaAssinaturaView({
                     </span>
                   </div>
                   <span className="font-display text-sm sm:text-base font-bold text-foreground">
-                    {fmtDate(currentExpiresAt)}
+                    {fmtDate(displayExpiresAt)}
                   </span>
                 </div>
                 <p className="font-body text-xs text-muted-foreground mt-2 leading-relaxed">
@@ -301,7 +328,7 @@ export default function MinhaAssinaturaView({
                     </span>
                   </div>
                   <span className="font-display text-sm sm:text-base font-bold text-amber-300">
-                    {fmtDate(currentExpiresAt)}
+                    {fmtDate(displayExpiresAt)}
                   </span>
                 </div>
                 <div className="h-1.5 rounded-full bg-secondary overflow-hidden mt-3">
@@ -321,7 +348,7 @@ export default function MinhaAssinaturaView({
                     </span>
                   </div>
                   <span className="font-display text-sm sm:text-base font-bold text-foreground">
-                    {fmtDate(currentExpiresAt)}
+                    {fmtDate(displayExpiresAt)}
                   </span>
                 </div>
                 {diasRestantes != null && (
@@ -331,7 +358,7 @@ export default function MinhaAssinaturaView({
                     </div>
                     <p className="font-body text-xs text-muted-foreground mt-2">
                       <strong className="text-foreground font-semibold">{diasRestantes}</strong>{' '}
-                      {diasRestantes === 1 ? 'dia restante' : 'dias restantes'} no ciclo atual. Cobrança de {preco} em {fmtDate(currentExpiresAt)}.
+                      {diasRestantes === 1 ? 'dia restante' : 'dias restantes'} no ciclo atual. Cobrança de {preco} em {fmtDate(displayExpiresAt)}.
                     </p>
                   </>
                 )}
@@ -339,34 +366,29 @@ export default function MinhaAssinaturaView({
             )}
           </div>
 
-          {/* Botões de Ação no Card */}
-          <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button
-              onClick={openSupport}
-              className="h-12 rounded-xl bg-secondary/70 border border-border/80 text-foreground hover:bg-secondary transition-all font-display font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
-            >
-              <LifeBuoy className="w-4 h-4 text-primary" />
-              Falar com Suporte
-            </button>
-
-            {podeCancelar && (
+          {/* Botão de Cancelamento de Assinatura (se elegível) */}
+          {podeCancelar && (
+            <div className="mt-5 flex justify-end">
               <button
                 onClick={() => setCancelOpen(true)}
-                className="h-12 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive hover:bg-destructive/20 transition-all font-display font-semibold text-sm flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
+                className="w-full sm:w-auto px-5 h-11 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive hover:bg-destructive/20 transition-all font-display font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
               >
                 <XCircle className="w-4 h-4" />
                 Cancelar Assinatura
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </motion.div>
+
+      {/* Guia Extensivo: O Que Sua Assinatura Garante (20 Parágrafos, Infográficos SVG, Tabela) */}
+      <AssinaturaDireitosGuia planoNome={label} />
 
       {/* Modal de Cancelamento de Assinatura */}
       <CancelarAssinaturaSheet
         open={cancelOpen}
         onOpenChange={setCancelOpen}
-        expiresAt={currentExpiresAt}
+        expiresAt={displayExpiresAt}
         startedAt={startedAt ?? null}
         isAdminOverride={!!isAdminOverride}
         source={source}
