@@ -59,32 +59,23 @@ const PlanosAtivos = () => {
         {loading ? (
           <div className="h-40 rounded-2xl bg-card/50 border border-border/60 animate-pulse" />
         ) : (
-          <MinhaAssinaturaView plano={plano} expiresAt={expiresAt} startedAt={startedAt} source={source} status={status} isAdminOverride={isAdminOverride} />
+          <MinhaAssinaturaView
+            plano={plano}
+            expiresAt={expiresAt}
+            startedAt={startedAt}
+            source={source}
+            status={status}
+            isAdminOverride={isAdminOverride}
+          />
         )}
 
-        <section className="space-y-3">
-          <h3 className="font-display text-lg font-bold text-foreground text-center" style={{ letterSpacing: '0.03em' }}>
-            Dúvidas frequentes
-          </h3>
-          {[
-            { q: 'Como cancelo minha assinatura?', a: 'No botão "Gerenciar assinatura" você acessa sua assinatura ativa e pode cancelar a qualquer momento. Você mantém acesso Premium até o fim do período pago.' },
-            { q: 'Vou perder minhas anotações se cancelar?', a: 'Não. Anotações, grifos e histórico ficam salvos permanentemente na sua conta.' },
-            { q: 'Quando a próxima cobrança acontece?', a: 'Na data de renovação exibida acima. Você pode verificar e alterar o método de pagamento diretamente na loja onde assinou.' },
-          ].map((f, i) => (
-            <details key={i} className="group rounded-2xl bg-card/50 border border-border/60 p-4 open:border-primary/40 transition-colors">
-              <summary className="cursor-pointer font-body text-sm font-semibold text-foreground list-none flex items-center justify-between">
-                {f.q}
-                <span className="text-primary group-open:rotate-45 transition-transform text-xl leading-none">+</span>
-              </summary>
-              <p className="font-body text-sm text-muted-foreground mt-3 leading-relaxed">{f.a}</p>
-            </details>
-          ))}
-        </section>
-
-        <section className="text-center py-4">
+        <section className="text-center py-2">
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
-            <Shield className="w-4 h-4" />
-            <span className="font-body text-xs">Sua assinatura é gerenciada com segurança pela {source === 'apple' ? 'App Store' : source === 'asaas' ? 'Asaas Pagamentos' : 'Google Play'}</span>
+            <Shield className="w-4 h-4 text-primary" />
+            <span className="font-body text-xs">
+              Sua assinatura é gerenciada com segurança pela{' '}
+              {source === 'apple' ? 'App Store' : source === 'asaas' ? 'Asaas Pagamentos' : 'Google Play'}
+            </span>
           </div>
         </section>
       </div>
