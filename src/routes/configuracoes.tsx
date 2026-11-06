@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-// Rendered by the Direito Prime app mounted in __root; this file only registers the URL.
+// Redireciona permanentemente para o Perfil (a rota de configurações foi extinta)
 export const Route = createFileRoute("/configuracoes")({
-  ssr: false,
-  head: () => ({ meta: [{ title: "Configuracoes — Direito Prime" }] }),
+  beforeLoad: () => {
+    throw redirect({ to: "/perfil" });
+  },
   component: () => null,
 });

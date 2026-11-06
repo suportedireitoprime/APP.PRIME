@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import {pickAsset, srcOf } from '@/lib/assetUrl';
-import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, Settings, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart, Menu, Camera } from 'lucide-react';
+import { Scale, BookOpen, FileText, Newspaper, Landmark, Shield, ScrollText, Gavel, PanelLeftClose, Radar, RefreshCw, Bell, Info, LogOut, BookMarked, HeartPulse, Lock, User as UserIcon, Clapperboard, Mail, Wrench, FileSignature, BookOpenText, Mic, CloudDownload, BellRing, CreditCard, LifeBuoy, MessageSquare, MicVocal, CalendarDays, Library, HardDrive, Route as RouteIcon, FileUp, Heart, Menu, Camera } from 'lucide-react';
 import { abrirAtalhoBiblioteca } from '@/components/biblioteca/BibliotecaBottomNav';
 import { tipoToSlug } from '@/lib/legislacaoSlugs';
 import { getLeisPorTipo } from '@/data/leisCatalog';
@@ -59,12 +59,9 @@ const FERRAMENTAS_ITEMS = [
 ];
 
 const CONTA_ITEMS = [
+  { id: 'perfil', label: 'Meu Perfil', icon: UserIcon, route: '/perfil', color: '#64748B' },
   { id: 'assinatura', label: 'Assinatura', icon: CreditCard, route: '/assinatura', color: '#10B981' },
   { id: 'suporte', label: 'Suporte', icon: LifeBuoy, route: '/suporte', color: '#EC4899' },
-];
-
-const CONFIG_ITEMS = [
-  { id: 'perfil', label: 'Perfil', icon: Settings, route: '/perfil', color: '#64748B' },
   { id: 'sobre', label: 'Sobre o App', icon: Info, route: '/sobre', color: '#06B6D4' },
   { id: 'sair', label: 'Sair', icon: LogOut, color: 'hsl(348 78% 38%)' },
 ];
@@ -399,9 +396,6 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
 
         {/* Minha conta */}
         {renderSection('Minha conta', CONTA_ITEMS)}
-
-        {/* Configurações */}
-        {renderSection('Configurações', CONFIG_ITEMS)}
       </div>
 
       {/* Footer */}

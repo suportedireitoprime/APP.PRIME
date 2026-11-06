@@ -30,7 +30,6 @@ const LABEL_MAP: Record<string, string> = {
   artigos: 'Artigos',
   anotacoes: 'Anotações',
   perfil: 'Perfil',
-  configuracoes: 'Configurações',
   assinatura: 'Assinatura',
   admin: 'Admin',
   offline: 'Offline',

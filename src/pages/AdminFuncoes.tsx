@@ -81,7 +81,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-leitura-nativa": () => import("./AdminLeituraNativa"),
   "/admin-audioaulas": () => import("./AdminAudioaulas"),
   "/explicacao-lei": () => import("./ExplicacaoLei"),
-  "/configuracoes": () => import("./Configuracoes"),
 };
 const prefetched = new Set<string>();
 const prefetching = new Map<string, Promise<unknown>>();
@@ -426,21 +425,6 @@ const CATEGORIES: Category[] = [
         icon: BookOpen,
         desc: "Mapeamento de códigos, estatutos e status de extração",
         route: "/admin-mapeamento-leis",
-      },
-    ],
-  },
-  {
-    id: "configuracoes",
-    title: "Configurações",
-    desc: "Paleta, tema e preferências",
-    icon: Wrench,
-    items: [
-      {
-        id: "paleta-cores",
-        label: "Paleta de Cores",
-        icon: Palette,
-        desc: "Configurações visuais",
-        route: "/configuracoes",
       },
     ],
   },

@@ -152,7 +152,6 @@ const VisualJuridico = lazy(() => import("./pages/VisualJuridico.tsx"));
 const MeExplique = lazy(routePrefetch.meExplique);
 const ChatJuridico = lazy(() => import("./pages/ChatJuridico.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-const Configuracoes = lazy(() => import("./pages/Configuracoes.tsx"));
 const RadarProposicoes = lazy(() => import("./pages/RadarProposicoes.tsx"));
 const RadarProposicoesDia = lazy(() => import("./pages/RadarProposicoesDia.tsx"));
 const LegislacaoEstadual = lazy(() => import("./pages/LegislacaoEstadual.tsx"));
@@ -883,7 +882,7 @@ function AnimatedRoutes() {
           <Route path="/boletim" element={<Navigate to="/boletins" replace />} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
           <Route path="/anotacoes" element={<Navigate to="/pessoal/anotacoes" replace />} />
-          <Route path="/configuracoes" element={<ProtectedRoute><PageTransition><Configuracoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/configuracoes" element={<Navigate to="/perfil" replace />} />
           <Route path="/lembretes" element={<ProtectedRoute><PageTransition><CentralLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/local" element={<ProtectedRoute><PageTransition><LembretesLocal /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/seguranca" element={<ProtectedRoute><PageTransition><Seguranca /></PageTransition></ProtectedRoute>} />

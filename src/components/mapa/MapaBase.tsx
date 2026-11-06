@@ -4,7 +4,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Loader2, MapPin, Navigation2, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useTheme } from '@/hooks/useTheme';
 import { useWatchedLocation, type WatchedPosition } from '@/hooks/useWatchedLocation';
 import { loadGoogleMaps, isGoogleMapsConfigured } from '@/lib/googleMapsLoader';
 import { MAPA_ESTILO_CLARO, MAPA_ESTILO_ESCURO } from '@/lib/mapaEstilos';
@@ -59,8 +58,7 @@ export function MapaBase({
   const userMarkerRef = useRef<any>(null);
   const seguindoRef = useRef(autoCentralizar);
 
-  const { currentTheme } = useTheme();
-  const escuro = currentTheme !== 'marfim-grafite';
+  const escuro = true;
 
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);

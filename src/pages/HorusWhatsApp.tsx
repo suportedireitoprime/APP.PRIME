@@ -85,7 +85,6 @@ export default function HorusWhatsApp() {
             Horus no WhatsApp
           </span>
         }
-        onBack={() => navigate('/configuracoes')}
       />
 
       <div className="px-4 lg:px-8 py-6 max-w-lg lg:max-w-4xl mx-auto space-y-6">

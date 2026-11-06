@@ -63,7 +63,6 @@ export const STATIC_ROUTES: Record<string, string> = {
   '/noticias': 'Notícias',
   '/novidades': 'Novidades',
   '/anotacoes': 'Anotações',
-  '/configuracoes': 'Configurações',
   '/perfil': 'Perfil',
   '/narracao': 'Narração',
   '/explicacao-lei': 'Explicação de Lei',

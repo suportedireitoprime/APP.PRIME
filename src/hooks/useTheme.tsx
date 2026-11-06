@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, ReactNode } from 'react';
 import { secureStorage } from '@/lib/secureStorage';
 
 export interface ThemePalette {
@@ -8,7 +8,15 @@ export interface ThemePalette {
   colors: Record<string, string>;
 }
 
-function p(bg: string, fg: string, card: string, cardFg: string, primary: string, primaryFg: string, primaryLight: string, secondary: string, secondaryFg: string, muted: string, mutedFg: string, accent: string, accentFg: string, border: string, ring: string, copper: string, copperLight: string, copperDark: string): Record<string, string> {
+function p(
+  bg: string, fg: string, card: string, cardFg: string,
+  primary: string, primaryFg: string, primaryLight: string,
+  secondary: string, secondaryFg: string,
+  muted: string, mutedFg: string,
+  accent: string, accentFg: string,
+  border: string, ring: string,
+  copper: string, copperLight: string, copperDark: string
+): Record<string, string> {
   return {
     '--background': bg, '--foreground': fg,
     '--card': card, '--card-foreground': cardFg,
@@ -28,44 +36,34 @@ function p(bg: string, fg: string, card: string, cardFg: string, primary: string
   };
 }
 
-// Paleta escura padrão — Rubro & Antracite (Direito Prime)
-const DARK_PALETTE: ThemePalette = {
+// Paleta oficial única e imutável — Rubro & Antracite (Direito Prime)
+export const RUBRO_ANTRACITE_PALETTE: ThemePalette = {
   id: 'limao-antracite',
   name: 'Rubro & Antracite',
   description: 'Vermelho intenso com cinza antracite profundo',
-  colors: p('0 0% 5%','0 0% 98%','0 0% 12%','0 0% 98%','348 80% 50%','0 0% 100%','348 80% 60%','0 0% 18%','0 0% 96%','0 0% 14%','0 0% 62%','0 76% 52%','0 0% 100%','0 0% 20%','348 80% 50%','348 80% 50%','348 80% 60%','0 78% 42%'),
-};
-
-// Paleta clara — Marfim & Grafite (papel quente, WCAG AA)
-const LIGHT_PALETTE: ThemePalette = {
-  id: 'marfim-grafite',
-  name: 'Marfim & Grafite',
-  description: 'Papel marfim com grafite elegante e vermelho vibrante',
   colors: p(
-    '0 15% 96%',    // background — off-white marfim
-    '220 15% 15%',  // foreground — grafite
-    '0 0% 100%',    // card — branco puro (elevação)
-    '220 15% 15%',  // card-foreground
-    '348 80% 50%',    // primary — vermelho AA em fundo claro
-    '0 0% 100%',    // primary-foreground — branco
-    '348 80% 60%',    // primary-light
-    '0 12% 92%',    // secondary
-    '220 15% 20%',  // secondary-foreground
-    '0 12% 92%',    // muted
-    '220 8% 42%',   // muted-foreground
-    '0 76% 52%',    // accent
-    '0 0% 100%',    // accent-foreground
-    '0 8% 86%',     // border
-    '348 80% 50%',    // ring
-    '0 78% 42%',    // copper
-    '348 80% 60%',    // copper-light
-    '0 78% 32%',    // copper-dark
+    '0 0% 5%',
+    '0 0% 98%',
+    '0 0% 12%',
+    '0 0% 98%',
+    '348 80% 50%',
+    '0 0% 100%',
+    '348 80% 60%',
+    '0 0% 18%',
+    '0 0% 96%',
+    '0 0% 14%',
+    '0 0% 62%',
+    '0 76% 52%',
+    '0 0% 100%',
+    '0 0% 20%',
+    '348 80% 50%',
+    '348 80% 50%',
+    '348 80% 60%',
+    '0 78% 42%'
   ),
 };
 
-
-
-const PALETTES: ThemePalette[] = [DARK_PALETTE, LIGHT_PALETTE];
+const PALETTES: ThemePalette[] = [RUBRO_ANTRACITE_PALETTE];
 const STORAGE_KEY = 'vademecum-theme';
 
 interface ThemeContextType {
@@ -75,56 +73,41 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  currentTheme: DARK_PALETTE.id,
+  currentTheme: RUBRO_ANTRACITE_PALETTE.id,
   setTheme: () => {},
   palettes: PALETTES,
 });
 
 function applyTheme(palette: ThemePalette) {
+  if (typeof document === 'undefined') return;
   const root = document.documentElement;
   Object.entries(palette.colors).forEach(([prop, value]) => {
     root.style.setProperty(prop, value);
   });
-  // toggle .light class for any tailwind/css that keys off it
-  if (palette.id === LIGHT_PALETTE.id) {
-    root.classList.add('light');
-    root.classList.remove('dark');
-  } else {
-    root.classList.add('dark');
-    root.classList.remove('light');
-  }
+  root.classList.add('dark');
+  root.classList.remove('light');
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [currentTheme, setCurrentTheme] = useState<string>(DARK_PALETTE.id);
-
   useEffect(() => {
-    secureStorage.getItem(STORAGE_KEY).then((saved) => {
-      if (saved && PALETTES.find((p) => p.id === saved)) {
-        setCurrentTheme(saved);
-      }
-    });
+    applyTheme(RUBRO_ANTRACITE_PALETTE);
+    try {
+      secureStorage.setItem(STORAGE_KEY, RUBRO_ANTRACITE_PALETTE.id);
+    } catch {}
   }, []);
 
-  useEffect(() => {
-    const palette = PALETTES.find((p) => p.id === currentTheme) || DARK_PALETTE;
-    applyTheme(palette);
-    try {
-      secureStorage.setItem(STORAGE_KEY, palette.id);
-    } catch {}
-  }, [currentTheme]);
-
-  const setTheme = (id: string) => {
-    if (PALETTES.find((p) => p.id === id)) setCurrentTheme(id);
-  };
-
   return (
-    <ThemeContext.Provider value={{ currentTheme, setTheme, palettes: PALETTES }}>
+    <ThemeContext.Provider
+      value={{
+        currentTheme: RUBRO_ANTRACITE_PALETTE.id,
+        setTheme: () => {},
+        palettes: PALETTES,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );
 }
-
 
 export function useTheme() {
   return useContext(ThemeContext);

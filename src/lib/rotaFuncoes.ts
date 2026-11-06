@@ -30,7 +30,7 @@ const RULES: { test: RegExp; label: string; grupo: string }[] = [
   { test: /^\/ferramentas/, label: 'Ferramentas', grupo: 'Navegação' },
   { test: /^\/funcoes/, label: 'Funções', grupo: 'Navegação' },
   { test: /^\/planos|^\/assinatura/, label: 'Planos e Assinatura', grupo: 'Assinatura' },
-  { test: /^\/perfil|^\/configuracoes|^\/ajustes/, label: 'Perfil e Ajustes', grupo: 'Conta' },
+  { test: /^\/perfil|^\/ajustes/, label: 'Perfil e Ajustes', grupo: 'Conta' },
   { test: /^\/suporte/, label: 'Suporte', grupo: 'Conta' },
   { test: /^\/locais/, label: 'Locais Jurídicos', grupo: 'Conteúdo' },
   { test: /^\/admin/, label: 'Área Admin', grupo: 'Admin' },
