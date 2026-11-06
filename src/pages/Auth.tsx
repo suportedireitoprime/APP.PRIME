@@ -5,6 +5,7 @@ import { Loader2, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { supabase } from '@/integrations/supabase/client';
+import { isAdminEmail } from '@/lib/adminEmails';
 import { AuthAjudaSheet } from '@/components/auth/AuthAjudaSheet';
 import { AuthDrawer, type AuthMode } from '@/components/auth/AuthDrawer';
 import { AuthDesktopHero } from '@/components/auth/AuthDesktopHero';
@@ -45,9 +46,10 @@ const Auth = () => {
 
         async function checkDbOnboarding() {
           try {
-            if (user?.email === 'juridicosapp@gmail.com') {
+            if (isAdminEmail(user?.email)) {
               try { localStorage.setItem(cacheKey, '1'); } catch {}
               import('idb-keyval').then(({ set }) => set(cacheKey, '1')).catch(() => {});
+              void supabase.from('profiles').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', user!.id);
               startTransition(() => navigate('/', { replace: true }));
               return;
             }

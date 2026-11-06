@@ -352,18 +352,19 @@ const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 function ProtectedRoute({ children, requireOnboarding = true }: { children: React.ReactNode; requireOnboarding?: boolean }) {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const isAdmin = isAdminEmail(user?.email);
 
-  // Leitura síncrona do cache — não bloqueia o paint.
+  // Leitura síncrona do cache — não bloqueia o paint. Admins nunca precisam de onboarding.
   const cacheKey = user ? `onboarding_completed:${user.id}` : null;
-  const cachedDone = cacheKey && typeof window !== 'undefined'
+  const cachedDone = ((cacheKey && typeof window !== 'undefined'
     ? localStorage.getItem(cacheKey) === '1'
-    : false;
+    : false) || isAdmin);
 
   // Otimista pós-cadastro: se acabou de criar conta nesta sessão, já assume
   // que precisa passar pela triagem — evita query desnecessária de 1.2s+
   // enquanto o Supabase ainda não criou o perfil.
   const justSignedUp =
-    typeof window !== 'undefined' && window.sessionStorage.getItem('just_signed_up') === '1';
+    !isAdmin && typeof window !== 'undefined' && window.sessionStorage.getItem('just_signed_up') === '1';
 
   const [needsOnboarding, setNeedsOnboarding] = useState(justSignedUp);
   // Se justSignedUp, já sabemos que precisa de triagem — não travar a tela
@@ -380,9 +381,15 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
       return;
     }
 
-    if (cachedDone) {
+    if (isAdmin || cachedDone) {
       setInitialCheckDone(true);
       setNeedsOnboarding(false);
+      if (cacheKey) {
+        try { localStorage.setItem(cacheKey, '1'); } catch {}
+      }
+      if (isAdmin && user.id) {
+        void supabase.from('profiles').update({ onboarding_completed_at: new Date().toISOString() }).eq('id', user.id);
+      }
       try { window.sessionStorage.removeItem('just_signed_up'); } catch {}
       return;
     }

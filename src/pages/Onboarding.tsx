@@ -8,6 +8,7 @@ import CadastroOnboardingOverlay from '@/components/onboarding/CadastroOnboardin
 import type { CadastroResult } from '@/components/onboarding/TriagemModerna';
 import NotificacoesPermissaoStep from '@/components/onboarding/NotificacoesPermissaoStep';
 import { AnimatePresence, motion } from 'framer-motion';
+import { isAdminEmail } from '@/lib/adminEmails';
 
 const Onboarding = () => {
   useHideSplashScreen(100);
@@ -24,6 +25,13 @@ const Onboarding = () => {
   useEffect(() => {
     let isMounted = true;
     if (user) {
+      // Contas de Administrador nunca passam por triagem
+      if (isAdminEmail(user.email)) {
+        try { localStorage.setItem(`onboarding_completed:${user.id}`, '1'); } catch {}
+        navigate('/', { replace: true });
+        return;
+      }
+
       // Se acabou de se cadastrar no fluxo de onboarding, permite concluir sem desvio prematuro
       if (typeof window !== 'undefined' && window.sessionStorage.getItem('just_signed_up') === '1') {
         return;
