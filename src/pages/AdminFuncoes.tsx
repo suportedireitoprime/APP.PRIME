@@ -51,6 +51,7 @@ import {
   Bird,
   FileSpreadsheet,
   Gauge,
+  Route as RouteIcon,
 } from "lucide-react";
 
 import { toast } from "sonner";
@@ -80,6 +81,7 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-biblioteca-editar": () => import("./BibliotecaEditar"),
   "/admin-leitura-nativa": () => import("./AdminLeituraNativa"),
   "/admin-audioaulas": () => import("./AdminAudioaulas"),
+  "/admin-rotas": () => import("./AdminRotas"),
   "/explicacao-lei": () => import("./ExplicacaoLei"),
 };
 const prefetched = new Set<string>();
@@ -213,6 +215,13 @@ const CATEGORIES: Category[] = [
         route: "/admin-push",
       },
     ],
+  },
+  {
+    id: "rotas",
+    title: "Rotas do Aplicativo",
+    desc: "Catálogo completo de rotas e sub-rotas em ordem alfabética",
+    icon: RouteIcon,
+    route: "/admin-rotas",
   },
   {
     id: "horus-exclusivo",

@@ -30,6 +30,7 @@ import { Route as AdminNarracaoLeisRouteImport } from './routes/admin-narracao-l
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminQuestoesRouteImport } from './routes/admin-questoes'
+import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
 import { Route as AdminSimuladosRouteImport } from './routes/admin-simulados'
 import { Route as AdminUsuariosRouteImport } from './routes/admin-usuarios'
 import { Route as AdminVadeMecumHistoricoRouteImport } from './routes/admin-vade-mecum-historico'
@@ -310,6 +311,11 @@ const AdminPushRoute = AdminPushRouteImport.update({
 const AdminQuestoesRoute = AdminQuestoesRouteImport.update({
   id: '/admin-questoes',
   path: '/admin-questoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRotasRoute = AdminRotasRouteImport.update({
+  id: '/admin-rotas',
+  path: '/admin-rotas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSimuladosRoute = AdminSimuladosRouteImport.update({
@@ -1239,6 +1245,7 @@ export interface FileRoutesByFullPath {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-questoes': typeof AdminQuestoesRoute
+  '/admin-rotas': typeof AdminRotasRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
@@ -1438,6 +1445,7 @@ export interface FileRoutesByTo {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-questoes': typeof AdminQuestoesRoute
+  '/admin-rotas': typeof AdminRotasRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
@@ -1638,6 +1646,7 @@ export interface FileRoutesById {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-questoes': typeof AdminQuestoesRoute
+  '/admin-rotas': typeof AdminRotasRoute
   '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
@@ -1839,6 +1848,7 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-questoes'
+    | '/admin-rotas'
     | '/admin-simulados'
     | '/admin-usuarios'
     | '/admin-vade-mecum-historico'
@@ -2038,6 +2048,7 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-questoes'
+    | '/admin-rotas'
     | '/admin-simulados'
     | '/admin-usuarios'
     | '/admin-vade-mecum-historico'
@@ -2237,6 +2248,7 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-questoes'
+    | '/admin-rotas'
     | '/admin-simulados'
     | '/admin-usuarios'
     | '/admin-vade-mecum-historico'
@@ -2437,6 +2449,7 @@ export interface RootRouteChildren {
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
   AdminQuestoesRoute: typeof AdminQuestoesRoute
+  AdminRotasRoute: typeof AdminRotasRoute
   AdminSimuladosRoute: typeof AdminSimuladosRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminVadeMecumHistoricoRoute: typeof AdminVadeMecumHistoricoRoute
@@ -2666,6 +2679,13 @@ declare module '@tanstack/react-router' {
       path: '/admin-questoes'
       fullPath: '/admin-questoes'
       preLoaderRoute: typeof AdminQuestoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin-rotas': {
+      id: '/admin-rotas'
+      path: '/admin-rotas'
+      fullPath: '/admin-rotas'
+      preLoaderRoute: typeof AdminRotasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-simulados': {
@@ -4465,6 +4485,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
   AdminQuestoesRoute: AdminQuestoesRoute,
+  AdminRotasRoute: AdminRotasRoute,
   AdminSimuladosRoute: AdminSimuladosRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminVadeMecumHistoricoRoute: AdminVadeMecumHistoricoRoute,

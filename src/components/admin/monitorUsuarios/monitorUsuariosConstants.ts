@@ -75,6 +75,7 @@ export const STATIC_ROUTES: Record<string, string> = {
   '/compartilhado': 'Compartilhado',
   '/legislacao-estadual': 'Legislação Estadual',
   '/admin-funcoes': 'Admin · Funções',
+  '/admin-rotas': 'Admin · Rotas',
   '/admin-monitor': 'Admin · Monitor',
   '/admin-monitor-usuarios': 'Admin · Usuários',
 };

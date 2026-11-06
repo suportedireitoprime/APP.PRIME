@@ -116,6 +116,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
 const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
 const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
+const AdminRotas = lazy(() => import("./pages/AdminRotas.tsx"));
 
 const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
 const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
@@ -1051,6 +1052,8 @@ function AnimatedRoutes() {
           <Route path="/minha-cota" element={<Navigate to="/assinatura" replace />} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-push" element={<ProtectedRoute><PageTransition><AdminPush /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-rotas" element={<ProtectedRoute><PageTransition><AdminRotas /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin/rotas" element={<Navigate to="/admin-rotas" replace />} />
 
 
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
