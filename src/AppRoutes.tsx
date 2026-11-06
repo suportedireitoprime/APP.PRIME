@@ -344,7 +344,6 @@ const CentralLembretes = lazy(() => import("./pages/CentralLembretes.tsx"));
 const LembretesLocal = lazy(() => import("./pages/LembretesLocal.tsx"));
 const Suporte = lazy(() => import("./pages/Suporte.tsx"));
 const SuportePublico = lazy(() => import("./pages/SuportePublico.tsx"));
-const MinhaCota = lazy(() => import("./pages/MinhaCota.tsx"));
 const AssistenteApp = lazy(() => import("./pages/AssistenteApp.tsx"));
 const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 
@@ -737,9 +736,8 @@ function GlobalTrialGate() {
 }
 
 function LegacyGlobalTrialGateDisabled() {
-  // Conforme diretriz do usuário: quem não for assinante ou tiver os 3 dias encerrados
-  // tem acesso ao aplicativo, com travas e cotas gratuitas mensais (ex: 10 por mês)
-  // aplicadas pontualmente dentro de cada recurso, sem modal de bloqueio global de tela.
+  // Conforme diretriz do usuário: 3 dias de degustação gratuita completa;
+  // após expirado o período de teste, o acesso aos recursos premium requer assinatura.
   return null;
 }
 
@@ -1047,7 +1045,7 @@ function AnimatedRoutes() {
           <Route path="/admin-monitor-apis" element={<ProtectedRoute><PageTransition><AdminMonitorApis /></PageTransition></ProtectedRoute>} />
           <Route path="/assinatura" element={<ProtectedRoute><PageTransition instant><Assinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
-          <Route path="/minha-cota" element={<ProtectedRoute><PageTransition><MinhaCota /></PageTransition></ProtectedRoute>} />
+          <Route path="/minha-cota" element={<Navigate to="/assinatura" replace />} />
           <Route path="/planos/ativos" element={<ProtectedRoute><PageTransition><PlanosAtivos /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-push" element={<ProtectedRoute><PageTransition><AdminPush /></PageTransition></ProtectedRoute>} />
 

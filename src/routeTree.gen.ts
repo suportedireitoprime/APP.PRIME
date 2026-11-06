@@ -68,7 +68,6 @@ import { Route as MapasMentaisRouteImport } from './routes/mapas-mentais'
 import { Route as MeExpliqueRouteImport } from './routes/me-explique'
 import { Route as MeuEspacoRouteImport } from './routes/meu-espaco'
 import { Route as MeusLembretesRouteImport } from './routes/meus-lembretes'
-import { Route as MinhaCotaRouteImport } from './routes/minha-cota'
 import { Route as ModoOfflineRouteImport } from './routes/modo-offline'
 import { Route as NoticiasRouteImport } from './routes/noticias'
 import { Route as NotificacoesRouteImport } from './routes/notificacoes'
@@ -501,11 +500,6 @@ const MeuEspacoRoute = MeuEspacoRouteImport.update({
 const MeusLembretesRoute = MeusLembretesRouteImport.update({
   id: '/meus-lembretes',
   path: '/meus-lembretes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MinhaCotaRoute = MinhaCotaRouteImport.update({
-  id: '/minha-cota',
-  path: '/minha-cota',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ModoOfflineRoute = ModoOfflineRouteImport.update({
@@ -1283,7 +1277,6 @@ export interface FileRoutesByFullPath {
   '/me-explique': typeof MeExpliqueRoute
   '/meu-espaco': typeof MeuEspacoRoute
   '/meus-lembretes': typeof MeusLembretesRoute
-  '/minha-cota': typeof MinhaCotaRoute
   '/modo-offline': typeof ModoOfflineRouteWithChildren
   '/noticias': typeof NoticiasRoute
   '/notificacoes': typeof NotificacoesRoute
@@ -1483,7 +1476,6 @@ export interface FileRoutesByTo {
   '/me-explique': typeof MeExpliqueRoute
   '/meu-espaco': typeof MeuEspacoRoute
   '/meus-lembretes': typeof MeusLembretesRoute
-  '/minha-cota': typeof MinhaCotaRoute
   '/modo-offline': typeof ModoOfflineRouteWithChildren
   '/noticias': typeof NoticiasRoute
   '/notificacoes': typeof NotificacoesRoute
@@ -1684,7 +1676,6 @@ export interface FileRoutesById {
   '/me-explique': typeof MeExpliqueRoute
   '/meu-espaco': typeof MeuEspacoRoute
   '/meus-lembretes': typeof MeusLembretesRoute
-  '/minha-cota': typeof MinhaCotaRoute
   '/modo-offline': typeof ModoOfflineRouteWithChildren
   '/noticias': typeof NoticiasRoute
   '/notificacoes': typeof NotificacoesRoute
@@ -1886,7 +1877,6 @@ export interface FileRouteTypes {
     | '/me-explique'
     | '/meu-espaco'
     | '/meus-lembretes'
-    | '/minha-cota'
     | '/modo-offline'
     | '/noticias'
     | '/notificacoes'
@@ -2086,7 +2076,6 @@ export interface FileRouteTypes {
     | '/me-explique'
     | '/meu-espaco'
     | '/meus-lembretes'
-    | '/minha-cota'
     | '/modo-offline'
     | '/noticias'
     | '/notificacoes'
@@ -2286,7 +2275,6 @@ export interface FileRouteTypes {
     | '/me-explique'
     | '/meu-espaco'
     | '/meus-lembretes'
-    | '/minha-cota'
     | '/modo-offline'
     | '/noticias'
     | '/notificacoes'
@@ -2487,7 +2475,6 @@ export interface RootRouteChildren {
   MeExpliqueRoute: typeof MeExpliqueRoute
   MeuEspacoRoute: typeof MeuEspacoRoute
   MeusLembretesRoute: typeof MeusLembretesRoute
-  MinhaCotaRoute: typeof MinhaCotaRoute
   ModoOfflineRoute: typeof ModoOfflineRouteWithChildren
   NoticiasRoute: typeof NoticiasRoute
   NotificacoesRoute: typeof NotificacoesRoute
@@ -2945,13 +2932,6 @@ declare module '@tanstack/react-router' {
       path: '/meus-lembretes'
       fullPath: '/meus-lembretes'
       preLoaderRoute: typeof MeusLembretesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/minha-cota': {
-      id: '/minha-cota'
-      path: '/minha-cota'
-      fullPath: '/minha-cota'
-      preLoaderRoute: typeof MinhaCotaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/modo-offline': {
@@ -4523,7 +4503,6 @@ const rootRouteChildren: RootRouteChildren = {
   MeExpliqueRoute: MeExpliqueRoute,
   MeuEspacoRoute: MeuEspacoRoute,
   MeusLembretesRoute: MeusLembretesRoute,
-  MinhaCotaRoute: MinhaCotaRoute,
   ModoOfflineRoute: ModoOfflineRouteWithChildren,
   NoticiasRoute: NoticiasRoute,
   NotificacoesRoute: NotificacoesRoute,

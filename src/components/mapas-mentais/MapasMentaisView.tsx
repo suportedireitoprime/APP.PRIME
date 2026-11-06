@@ -39,29 +39,6 @@ export interface MapasMentaisViewProps {
   onRotaChange?: (segmentos: string[]) => void;
 }
 
-function getMapasAcessadosMes(): string[] {
-  try {
-    const d = new Date();
-    const chaveMes = `mapas_mentais_vistos_${d.getFullYear()}_${d.getMonth() + 1}`;
-    const raw = localStorage.getItem(chaveMes);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-function registrarMapaAcessado(itemKey: string): void {
-  try {
-    const d = new Date();
-    const chaveMes = `mapas_mentais_vistos_${d.getFullYear()}_${d.getMonth() + 1}`;
-    const vistos = getMapasAcessadosMes();
-    if (!vistos.includes(itemKey)) {
-      vistos.push(itemKey);
-      localStorage.setItem(chaveMes, JSON.stringify(vistos));
-    }
-  } catch {}
-}
-
 export default function MapasMentaisView({
   onClose,
   tipoInicial = 'mapa_mental',
@@ -360,13 +337,10 @@ export default function MapasMentaisView({
     const chave = chaveDe(alvo, temaPai ? `${temaPai} ${valor}` : valor, kind);
     const isAdmin = isAdminEmail(user?.email);
 
-    // Regra de Cota Mensal: Não assinante tem direito a até 10 mapas mentais por mês. Atingida a cota, abre o PremiumGate.
+    // Acesso aos mapas mentais para não assinantes sem degustação ativa abre o PremiumGate
     if (!isPremium && !isAdmin) {
-      const vistos = getMapasAcessadosMes();
-      if (!vistos.includes(chave) && vistos.length >= 10) {
-        setGateOpen(true);
-        return;
-      }
+      setGateOpen(true);
+      return;
     }
 
     const rotulo = valor
@@ -393,9 +367,6 @@ export default function MapasMentaisView({
     const cache = visuaisEmCache();
     const prontoEmCache = cache?.find((r) => r.item_key === chave && r.tipo === tipoEscolhido);
     if (prontoEmCache) {
-      if (!isPremium && !isAdmin) {
-        registrarMapaAcessado(chave);
-      }
       marcarRecente(chave);
       setAberto(prontoEmCache);
       return;
@@ -428,9 +399,6 @@ export default function MapasMentaisView({
       registrarVisual(registro);
       setProntos((prev) => ({ ...prev, [registro.item_key]: registro }));
       marcarRecente(registro.item_key);
-      if (!isPremium && !isAdmin) {
-        registrarMapaAcessado(registro.item_key);
-      }
       setAberto(registro);
       toast.success('Visual gerado com sucesso!');
     } catch (err: unknown) {

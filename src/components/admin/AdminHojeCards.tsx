@@ -1540,10 +1540,10 @@ export function AdminHojeCards() {
                           <div className="flex items-center gap-1.5 mt-1">
                             <span
                               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-purple-500/15 border border-purple-500/30 text-[9.5px] font-semibold text-purple-300 hover:bg-purple-500/25 transition-colors"
-                              title="Clique para ver o dossiê e o status detalhado das cotas"
+                              title="Clique para ver o dossiê e o status detalhado de uso"
                             >
                               <Target className="w-2.5 h-2.5 text-purple-400" />
-                              Cotas de Uso
+                              Uso de Recursos
                             </span>
                           </div>
                         )}

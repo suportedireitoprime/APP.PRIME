@@ -6,7 +6,6 @@ import {
   Network, Bell, Download, StickyNote, Highlighter, FileText, Layers,
   HelpCircle, Map, Radar, Newspaper, Library, GraduationCap, Bot, ChevronLeft,
   Gavel, Check, ShieldCheck, NotebookPen, Heart, Play, Pause, Headphones,
-  BarChart3,
   type LucideIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -360,7 +359,7 @@ const PremiumGateInner = ({
     return false;
   }, [user]);
 
-  // Sem teste grátis: o card sempre mostra a mensagem de cota + assinatura.
+  // Quando o gate é invocado, o acesso ao recurso requer assinatura ou degustação ativa.
   const isTrialExpired = true; void calculatedTrialExpired;
 
   // Player de demonstração de narração
@@ -544,18 +543,18 @@ const PremiumGateInner = ({
                     />
                   </div>
 
-                  {/* Badge informativa de cota */}
+                  {/* Badge informativa */}
                   <div className="relative z-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 border border-primary/40 text-primary-foreground text-[11px] font-black uppercase tracking-wider mb-2">
                     <Headphones className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Cota Mensal Atingida · 10 de 10 Áudios</span>
+                    <span>Recurso Exclusivo para Assinantes</span>
                   </div>
 
                   {/* Título e Explicação clara */}
                   <h2 className="relative z-10 text-xl sm:text-2xl font-serif italic font-bold text-white tracking-tight leading-snug">
-                    Você atingiu sua cota de 10 áudio-aulas
+                    Áudio-Aulas com Especialistas
                   </h2>
                   <p className="relative z-10 text-xs sm:text-[13px] text-zinc-300/90 mt-2 max-w-sm mx-auto leading-relaxed font-sans">
-                    Seu plano gratuito deste mês foi totalmente aproveitado. Para continuar ouvindo agora sem restrições e liberar todo o acervo de áudio e leis, assine o Prime.
+                    Aproveite seus 3 dias de degustação gratuita ou assine o Prime para liberar todo o acervo completo de áudio-aulas, narrações e livros sem restrições.
                   </p>
                 </div>
               ) : (
@@ -612,19 +611,6 @@ const PremiumGateInner = ({
                   >
                     <Crown className="w-4 h-4 fill-current" />
                     <span>DESBLOQUEAR TODO O CONTEÚDO</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      onClose();
-                      navigate('/minha-cota');
-                    }}
-                    className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] active:scale-[0.98] border border-white/10 text-zinc-200 font-sans font-bold text-xs tracking-wide flex items-center justify-center gap-2 transition-all cursor-pointer"
-                  >
-                    <BarChart3 className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>VER MINHA COTA</span>
                   </button>
                 </div>
 

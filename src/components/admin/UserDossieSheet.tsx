@@ -488,7 +488,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 font-body text-[14px] font-semibold text-foreground">
                     <Target className="w-5 h-5 text-purple-400" />
-                    <span>Cotas de Uso</span>
+                    <span>Consumo de Recursos</span>
                     <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium">
                       {d.perfil?.is_premium ? 'Assinante (Ilimitado)' : 'Plano Gratuito'}
                     </span>
@@ -558,7 +558,7 @@ export function UserDossieSheet({ userId, nome, email, provider, avatarUrl, onCl
                   >
                     <div className="text-[10px] font-semibold uppercase tracking-wider opacity-80">Total</div>
                     <div className="text-lg font-bold font-display text-foreground leading-tight">{d.cotasResumo.total}</div>
-                    <div className="text-[9.5px] opacity-70">Funções com cota</div>
+                    <div className="text-[9.5px] opacity-70">Funções rastreadas</div>
                   </button>
                 </div>
 

@@ -290,7 +290,7 @@ export async function buscarTestesCache(voz: string, texto: string): Promise<Rec
 
 /**
  * Gera e salva a prévia de áudio no Supabase Storage e na tabela narracao_testes_cache.
- * Se já existir em cache, reaproveita sem gastar cota.
+ * Se já existir em cache, reaproveita o áudio instantaneamente.
  */
 export async function gerarESalvarPreviaAudio(
   texto: string,

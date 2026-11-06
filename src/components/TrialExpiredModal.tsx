@@ -95,7 +95,7 @@ const COPIES = [
   },
   {
     title: "FIM DOS 3 DIAS GRATUITOS",
-    message: "{name}, sua cota grátis deste mês acabou. Mantenha seu ritmo acelerado e garanta acesso irrestrito a todas as leis comentadas, resumos esquematizados e simulados exclusivos.",
+    message: "{name}, seus 3 dias de degustação gratuita acabaram. Mantenha seu ritmo acelerado e garanta acesso irrestrito a todas as leis comentadas, resumos esquematizados e simulados exclusivos.",
   },
   {
     title: "OS SEUS 3 DIAS TERMINARAM",

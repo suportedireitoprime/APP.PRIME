@@ -124,7 +124,7 @@ const Onboarding = () => {
 
   const finalizar = useCallback(() => {
     setOnboardingFinished(true);
-    toast.success('Seja bem-vindo(a)! Sua cota grátis mensal já está ativa.');
+    toast.success('Seja bem-vindo(a)! Seus 3 dias de degustação gratuita já estão ativos.');
     startTransition(() => { navigate('/', { replace: true }); });
   }, [navigate]);
 
