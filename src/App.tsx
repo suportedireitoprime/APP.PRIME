@@ -96,6 +96,7 @@ const ReminderInAppBanner = lazy(() => import("@/components/ReminderInAppBanner"
 const InAppPushPopup = lazy(() => import("@/components/ui/InAppPushPopup"));
 const HorusTakeoverNoticeDialog = lazy(() => import("@/components/horus/HorusTakeoverNoticeDialog"));
 const ForceUpdateScreen = lazy(() => import("@/components/ForceUpdateScreen"));
+const RouteInspectorBar = lazy(() => import("@/components/admin/rotas/RouteInspectorBar"));
 import { useAppUpdateStore } from "@/lib/appUpdateStore";
 import { scheduleAppWarmup } from "@/services/appWarmupService";
 import { scheduleBackgroundImageWarmup } from "@/services/imageBackgroundSync";
@@ -237,6 +238,9 @@ const App = () => (
                   </Suspense>
                   <LazyMediaPlayers />
                   <BackToTop />
+                  <Suspense fallback={null}>
+                    <RouteInspectorBar />
+                  </Suspense>
                 </TooltipProvider>
               </UniversalMediaPlayerProvider>
             </RecordingProvider>

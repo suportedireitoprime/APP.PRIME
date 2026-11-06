@@ -17,10 +17,12 @@ import {
   MessageSquareQuote,
   CornerDownRight,
   Filter,
+  Play,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppHeader } from '@/components/layout/AppHeader';
 import { APP_ROUTES_CATALOG, AppRouteItem } from '@/data/appRoutesCatalog';
+import { useRouteInspector } from '@/hooks/useRouteInspector';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
 
@@ -28,6 +30,7 @@ type ViewMode = 'todas' | 'agrupadas' | 'ativas' | 'redirects' | 'admin' | 'publ
 
 const AdminRotas = () => {
   const navigate = useNavigate();
+  const { startInspector } = useRouteInspector();
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('agrupadas');
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
@@ -143,13 +146,14 @@ const AdminRotas = () => {
   const handleOpenRoute = useCallback(
     (route: AppRouteItem) => {
       haptic.selection();
+      startInspector(route.path);
       if (route.exampleUrl) {
         navigate(route.exampleUrl);
       } else {
         navigate(route.path);
       }
     },
-    [navigate]
+    [navigate, startInspector]
   );
 
   return (
@@ -180,17 +184,32 @@ const AdminRotas = () => {
               </p>
             </div>
 
-            {/* Badges de Contagem Rápida */}
-            <div className="flex flex-wrap gap-2 text-xs font-mono">
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                {stats.ativas} Ativas
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30">
-                {stats.redirects} Redirecionadas
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-primary/15 text-primary border border-primary/30">
-                {stats.admin} Admin
-              </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => {
+                  haptic.selection();
+                  const first = filteredRoutes[0] || APP_ROUTES_CATALOG[0];
+                  startInspector(first.path);
+                  navigate(first.exampleUrl || first.path);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-body font-bold shadow-sm transition-all active:scale-95"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Navegar com Menu Flutuante</span>
+              </button>
+
+              {/* Badges de Contagem Rápida */}
+              <div className="flex flex-wrap gap-2 text-xs font-mono">
+                <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  {stats.ativas} Ativas
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                  {stats.redirects} Redirecionadas
+                </span>
+                <span className="px-2.5 py-1 rounded-lg bg-primary/15 text-primary border border-primary/30">
+                  {stats.admin} Admin
+                </span>
+              </div>
             </div>
           </div>
         </div>
