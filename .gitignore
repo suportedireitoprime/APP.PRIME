@@ -34,3 +34,7 @@ supabase/.temp/
 
 tmp/
 
+
+all_sheets_index.json
+import_progress.json
+importar_flashcards.log
