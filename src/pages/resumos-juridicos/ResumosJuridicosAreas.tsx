@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Loader2, Search, X, Heart } from "lucide-react";
 import { toast } from "sonner";
@@ -96,21 +96,6 @@ export default function ResumosJuridicosAreas() {
     return ordenadas.slice(0, 12);
   }, [rows]);
 
-  // 4 cópias para permitir rolagem contínua infinita sem margem morta na esquerda (padrão Audiobooks e Leis em Alta)
-  const loopedAreas = useMemo(() => {
-    if (areasEmAlta.length === 0) return [];
-    return [
-      ...areasEmAlta,
-      ...areasEmAlta,
-      ...areasEmAlta,
-      ...areasEmAlta,
-    ];
-  }, [areasEmAlta]);
-
-  const carouselScrollerRef = useRef<HTMLDivElement | null>(null);
-  const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
-  const [isReady, setIsReady] = useState(false);
-
   // Pré-carrega capas das áreas em memória para exibição instantânea a 0ms
   useEffect(() => {
     areasEmAlta.forEach((item) => {
@@ -122,81 +107,6 @@ export default function ResumosJuridicosAreas() {
       }
     });
   }, [areasEmAlta]);
-
-  // Centraliza o card específico do carrossel suavemente ou instantaneamente
-  const scrollCarouselToIndex = useCallback(
-    (idx: number, behavior: ScrollBehavior = "smooth") => {
-      const el = carouselScrollerRef.current;
-      if (!el) return;
-      const child = el.children[idx] as HTMLElement | undefined;
-      if (!child) return;
-      const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
-      el.scrollTo({ left: target, behavior });
-      setActiveCarouselIndex(idx);
-    },
-    [],
-  );
-
-  // Inicializa o carrossel centralizado no segundo bloco (sem margem morta na esquerda, padrão Leis em Alta)
-  useEffect(() => {
-    if (areasEmAlta.length > 0 && !isReady) {
-      const initialIndex = areasEmAlta.length;
-      setActiveCarouselIndex(initialIndex);
-      const timer = setTimeout(() => {
-        scrollCarouselToIndex(initialIndex, "instant" as ScrollBehavior);
-        setIsReady(true);
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [areasEmAlta.length, isReady, scrollCarouselToIndex]);
-
-  // Escuta a rolagem e realiza o teleporte silencioso de 0ms nas bordas para loop infinito contínuo
-  const handleCarouselScroll = useCallback(() => {
-    const el = carouselScrollerRef.current;
-    if (!el) return;
-
-    const center = el.scrollLeft + el.clientWidth / 2;
-    let best = 0;
-    let bestDist = Infinity;
-    for (let i = 0; i < el.children.length; i++) {
-      const child = el.children[i] as HTMLElement;
-      const mid = child.offsetLeft + child.clientWidth / 2;
-      const dist = Math.abs(mid - center);
-      if (dist < bestDist) {
-        bestDist = dist;
-        best = i;
-      }
-    }
-
-    const N = areasEmAlta.length;
-    if (N > 0) {
-      if (best <= 1) {
-        const jumpTo = best + N * 2;
-        const child = el.children[jumpTo] as HTMLElement;
-        if (child) {
-          el.scrollTo({
-            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
-            behavior: "auto",
-          });
-          setActiveCarouselIndex(jumpTo);
-          return;
-        }
-      } else if (best >= loopedAreas.length - 2) {
-        const jumpTo = best - N * 2;
-        const child = el.children[jumpTo] as HTMLElement;
-        if (child) {
-          el.scrollTo({
-            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
-            behavior: "auto",
-          });
-          setActiveCarouselIndex(jumpTo);
-          return;
-        }
-      }
-    }
-
-    setActiveCarouselIndex(best);
-  }, [areasEmAlta.length, loopedAreas.length]);
 
   return (
     <div className="min-h-dvh bg-[#0D0D0D] text-white relative overflow-x-hidden pb-[calc(7rem+var(--sai-bottom,0px))]">
@@ -218,7 +128,7 @@ export default function ResumosJuridicosAreas() {
         <ResumosContinuarCard />
 
         {/* ======================================================== */}
-        {/* SEÇÃO EM ALTA (NO LUGAR DE RECOMENDAÇÕES)                */}
+        {/* SEÇÃO EM ALTA                                            */}
         {/* ======================================================== */}
         {areasEmAlta.length > 0 && activeTab === "Todos" && !q && (
           <section className="space-y-3">
@@ -228,64 +138,38 @@ export default function ResumosJuridicosAreas() {
                   <span className="w-1 h-5 rounded-full bg-rose-500 shrink-0" />
                   <span className="truncate">EM ALTA</span>
                 </h3>
-                <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate">
+                <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
                   Matérias e resumos fundamentais para sua formação e concursos
                 </p>
               </div>
             </div>
 
-            {/* Carrossel Centralizado e Infinito sem margem morta na esquerda */}
-            <div
-              ref={carouselScrollerRef}
-              onScroll={handleCarouselScroll}
-              style={{
-                paddingLeft: "calc(50% - 68px)",
-                paddingRight: "calc(50% - 68px)",
-              }}
-              className="flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-3 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none"
-            >
-              {loopedAreas.map((item, idx) => {
+            {/* Carrossel Fluido sem margem morta na esquerda */}
+            <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
+              {areasEmAlta.map((item, idx) => {
                 const coverData = getAreaCover(item.area);
                 const coverUrl = coverData?.cover || constCover;
                 const isFav = favAreas.has(item.area);
-                const isActive = activeCarouselIndex === idx;
 
                 return (
                   <div
-                    key={`em-alta-${item.area}-${idx}`}
+                    key={`em-alta-${item.area}`}
                     onClick={() => {
                       haptic.selection();
                       const basePath = location.pathname.startsWith('/mapas-mentais') ? '/mapas-mentais' : '/resumos-juridicos';
                       navigate(`${basePath}/${encodeURIComponent(item.area)}`);
                     }}
-                    className={`snap-center shrink-0 w-[136px] sm:w-[148px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transition-all duration-300 ${
-                      isActive
-                        ? "opacity-100 z-10"
-                        : "opacity-75 z-0 hover:opacity-90"
-                    }`}
+                    className="snap-start shrink-0 w-[128px] sm:w-[142px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
                   >
-                    <div
-                      className={`relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border transform-gpu transition-all duration-300 ${
-                        isActive
-                          ? "scale-100 border-rose-500/80 shadow-2xl shadow-rose-950/50 ring-2 ring-rose-500/50"
-                          : "scale-[0.94] border-white/10 shadow-md group-hover:border-rose-500/40"
-                      }`}
-                    >
-                      {isActive && (
-                        <>
-                          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-rose-500/35 via-rose-600/25 to-rose-500/35 blur-md pointer-events-none animate-pulse" />
-                          <div className="absolute inset-0 rounded-2xl ring-2 ring-rose-500/80 pointer-events-none animate-[pulse_2.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
-                        </>
-                      )}
-
+                    <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
                       <img
                         src={coverUrl}
                         alt={item.area}
-                        loading={idx < 6 ? "eager" : "lazy"}
+                        loading={idx < 4 ? "eager" : "lazy"}
                         decoding="async"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
 
                       {/* Botão de Favorito no topo direito */}
                       <button
@@ -300,45 +184,13 @@ export default function ResumosJuridicosAreas() {
                       </button>
                     </div>
 
-                    <p
-                      className={`font-sans font-bold text-xs sm:text-[13px] line-clamp-2 mt-2 leading-snug transition-colors ${
-                        isActive
-                          ? "text-rose-200"
-                          : "text-white group-hover:text-rose-300"
-                      }`}
-                    >
+                    <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-rose-300 transition-colors line-clamp-2 mt-2 leading-snug">
                       {item.area}
                     </p>
                     <p className="text-[10.5px] text-white/50 truncate mt-0.5">
                       {item.total} {item.total === 1 ? "resumo disponível" : "resumos disponíveis"}
                     </p>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Indicador de Bolinhas Minimalista */}
-            <div className="flex items-center justify-center gap-1.5 pt-1">
-              {areasEmAlta.map((_, i) => {
-                const N = areasEmAlta.length;
-                const currentNorm = ((activeCarouselIndex % N) + N) % N;
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => {
-                      haptic.selection();
-                      const N = areasEmAlta.length;
-                      const targetIdx = N + i;
-                      scrollCarouselToIndex(targetIdx);
-                    }}
-                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                      currentNorm === i
-                        ? "w-5 bg-rose-500 shadow-sm shadow-rose-500/50"
-                        : "w-1.5 bg-white/20 hover:bg-white/40"
-                    }`}
-                    aria-label={`Ir para item ${i + 1}`}
-                  />
                 );
               })}
             </div>

@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, BellRing, BookOpen, Layers, Library, Heart, History, BarChart3, Sparkles, X, ChevronRight, Scale, Landmark, FileText, CheckCircle2 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
-import NotificationsSheet, { useUnreadNotifCount } from '@/components/vademecum/outros/NotificationsSheet';
 import resumosHeroImg from '@/assets/covers/resumos-philosophers-hero.webp';
 
 interface Props {
@@ -19,10 +18,8 @@ const ResumosHero = ({
 }: Props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [notifOpen, setNotifOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
   const [outrosOpen, setOutrosOpen] = useState(false);
-  const unreadCount = useUnreadNotifCount();
   const isMapas = location.pathname.startsWith('/mapas-mentais') || location.pathname.startsWith('/visuais') || location.pathname.startsWith('/mapas');
 
   return (
@@ -109,21 +106,7 @@ const ResumosHero = ({
             </h1>
           </div>
 
-          <button 
-            onClick={() => { 
-              haptic.selection(); 
-              setNotifOpen(true);
-            }} 
-            aria-label={`Notificações e novidades${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ''}`}
-            className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 grid place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-all hover:bg-black/60 active:scale-95 relative cursor-pointer shadow-lg"
-          >
-            <BellRing className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold leading-none flex items-center justify-center border border-neutral-900 shadow">
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </span>
-            )}
-          </button>
+          <div className="w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 pointer-events-none" aria-hidden="true" />
         </header>
 
         {/* Conteúdo Central do Painel */}
@@ -353,12 +336,6 @@ const ResumosHero = ({
         </>
       )}
 
-      {notifOpen && (
-        <NotificationsSheet 
-          open={notifOpen} 
-          onClose={() => setNotifOpen(false)} 
-        />
-      )}
     </>
   );
 };
