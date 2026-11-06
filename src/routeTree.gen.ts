@@ -24,10 +24,13 @@ import { Route as AudioaulasRouteImport } from './routes/audioaulas'
 import { Route as AudiobooksRouteImport } from './routes/audiobooks'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BibliotecasRouteImport } from './routes/bibliotecas'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BoletinsRouteImport } from './routes/boletins'
 import { Route as ChatJuridicoRouteImport } from './routes/chat-juridico'
 import { Route as CompartilhadoRouteImport } from './routes/compartilhado'
 import { Route as EstudosRouteImport } from './routes/estudos'
+import { Route as FerramentasRouteImport } from './routes/ferramentas'
+import { Route as FlashcardsRouteImport } from './routes/flashcards'
 import { Route as JurisprudenciaRouteImport } from './routes/jurisprudencia'
 import { Route as LandingRouteImport } from './routes/landing'
 import { Route as LegislacaoEstadualRouteImport } from './routes/legislacao-estadual'
@@ -63,11 +66,19 @@ import { Route as BibliotecasColecaoIdRouteImport } from './routes/bibliotecas.$
 import { Route as BibliotecasTrilhasRouteImport } from './routes/bibliotecas.trilhas'
 import { Route as DesktopLinkTokenRouteImport } from './routes/desktop-link.$token'
 import { Route as FerramentasDicionarioRouteImport } from './routes/ferramentas.dicionario'
+import { Route as FerramentasPlanoEstudosRouteImport } from './routes/ferramentas.plano-estudos'
+import { Route as FlashcardsCargosRouteImport } from './routes/flashcards.cargos'
 import { Route as FlashcardsDecksRouteImport } from './routes/flashcards.decks'
 import { Route as FlashcardsDesafiosRouteImport } from './routes/flashcards.desafios'
+import { Route as FlashcardsEstudarRouteImport } from './routes/flashcards.estudar'
+import { Route as FlashcardsEstudoRouteImport } from './routes/flashcards.estudo'
 import { Route as FlashcardsHistoricoRouteImport } from './routes/flashcards.historico'
 import { Route as FlashcardsJurisprudenciaRouteImport } from './routes/flashcards.jurisprudencia'
+import { Route as FlashcardsLeisRouteImport } from './routes/flashcards.leis'
+import { Route as FlashcardsMateriasRouteImport } from './routes/flashcards.materias'
 import { Route as FlashcardsProgressoRouteImport } from './routes/flashcards.progresso'
+import { Route as FlashcardsRevisarRouteImport } from './routes/flashcards.revisar'
+import { Route as FlashcardsTrilhasRouteImport } from './routes/flashcards.trilhas'
 import { Route as GraficosAvaliacaoRouteImport } from './routes/graficos.avaliacao'
 import { Route as IrSplatRouteImport } from './routes/ir.$'
 import { Route as JurisprudenciaInformativosStfRouteImport } from './routes/jurisprudencia.informativos-stf'
@@ -130,6 +141,8 @@ import { Route as VideoaulasFavoritosRouteImport } from './routes/videoaulas.fav
 import { Route as VideoaulasLeiSecaRouteImport } from './routes/videoaulas.lei-seca'
 import { Route as BibliotecasColecaoIdAreaSlugRouteImport } from './routes/bibliotecas.$colecaoId.$areaSlug'
 import { Route as FlashcardsAreaSlugRouteImport } from './routes/flashcards.area.$slug'
+import { Route as FlashcardsCargosIdRouteImport } from './routes/flashcards.cargos.$id'
+import { Route as FlashcardsDesafiosSlugRouteImport } from './routes/flashcards.desafios.$slug'
 import { Route as JurisprudenciaSlugLeiNumeroArtigoRouteImport } from './routes/jurisprudencia.$slugLei.$numeroArtigo'
 import { Route as JurisprudenciaProntasTribunalRouteImport } from './routes/jurisprudencia.prontas.$tribunal'
 import { Route as LegislacaoTipoLeiSlugRouteImport } from './routes/legislacao.$tipo.$leiSlug'
@@ -221,6 +234,11 @@ const BibliotecasRoute = BibliotecasRouteImport.update({
   path: '/bibliotecas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BoletinsRoute = BoletinsRouteImport.update({
   id: '/boletins',
   path: '/boletins',
@@ -239,6 +257,16 @@ const CompartilhadoRoute = CompartilhadoRouteImport.update({
 const EstudosRoute = EstudosRouteImport.update({
   id: '/estudos',
   path: '/estudos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FerramentasRoute = FerramentasRouteImport.update({
+  id: '/ferramentas',
+  path: '/ferramentas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FlashcardsRoute = FlashcardsRouteImport.update({
+  id: '/flashcards',
+  path: '/flashcards',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JurisprudenciaRoute = JurisprudenciaRouteImport.update({
@@ -416,6 +444,16 @@ const FerramentasDicionarioRoute = FerramentasDicionarioRouteImport.update({
   path: '/dicionario',
   getParentRoute: () => FerramentasRoute,
 } as any)
+const FerramentasPlanoEstudosRoute = FerramentasPlanoEstudosRouteImport.update({
+  id: '/plano-estudos',
+  path: '/plano-estudos',
+  getParentRoute: () => FerramentasRoute,
+} as any)
+const FlashcardsCargosRoute = FlashcardsCargosRouteImport.update({
+  id: '/cargos',
+  path: '/cargos',
+  getParentRoute: () => FlashcardsRoute,
+} as any)
 const FlashcardsDecksRoute = FlashcardsDecksRouteImport.update({
   id: '/decks',
   path: '/decks',
@@ -424,6 +462,16 @@ const FlashcardsDecksRoute = FlashcardsDecksRouteImport.update({
 const FlashcardsDesafiosRoute = FlashcardsDesafiosRouteImport.update({
   id: '/desafios',
   path: '/desafios',
+  getParentRoute: () => FlashcardsRoute,
+} as any)
+const FlashcardsEstudarRoute = FlashcardsEstudarRouteImport.update({
+  id: '/estudar',
+  path: '/estudar',
+  getParentRoute: () => FlashcardsRoute,
+} as any)
+const FlashcardsEstudoRoute = FlashcardsEstudoRouteImport.update({
+  id: '/estudo',
+  path: '/estudo',
   getParentRoute: () => FlashcardsRoute,
 } as any)
 const FlashcardsHistoricoRoute = FlashcardsHistoricoRouteImport.update({
@@ -437,9 +485,29 @@ const FlashcardsJurisprudenciaRoute =
     path: '/jurisprudencia',
     getParentRoute: () => FlashcardsRoute,
   } as any)
+const FlashcardsLeisRoute = FlashcardsLeisRouteImport.update({
+  id: '/leis',
+  path: '/leis',
+  getParentRoute: () => FlashcardsRoute,
+} as any)
+const FlashcardsMateriasRoute = FlashcardsMateriasRouteImport.update({
+  id: '/materias',
+  path: '/materias',
+  getParentRoute: () => FlashcardsRoute,
+} as any)
 const FlashcardsProgressoRoute = FlashcardsProgressoRouteImport.update({
   id: '/progresso',
   path: '/progresso',
+  getParentRoute: () => FlashcardsRoute,
+} as any)
+const FlashcardsRevisarRoute = FlashcardsRevisarRouteImport.update({
+  id: '/revisar',
+  path: '/revisar',
+  getParentRoute: () => FlashcardsRoute,
+} as any)
+const FlashcardsTrilhasRoute = FlashcardsTrilhasRouteImport.update({
+  id: '/trilhas',
+  path: '/trilhas',
   getParentRoute: () => FlashcardsRoute,
 } as any)
 const GraficosAvaliacaoRoute = GraficosAvaliacaoRouteImport.update({
@@ -763,6 +831,16 @@ const FlashcardsAreaSlugRoute = FlashcardsAreaSlugRouteImport.update({
   path: '/area/$slug',
   getParentRoute: () => FlashcardsRoute,
 } as any)
+const FlashcardsCargosIdRoute = FlashcardsCargosIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => FlashcardsCargosRoute,
+} as any)
+const FlashcardsDesafiosSlugRoute = FlashcardsDesafiosSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => FlashcardsDesafiosRoute,
+} as any)
 const JurisprudenciaSlugLeiNumeroArtigoRoute =
   JurisprudenciaSlugLeiNumeroArtigoRouteImport.update({
     id: '/$slugLei/$numeroArtigo',
@@ -862,10 +940,13 @@ export interface FileRoutesByFullPath {
   '/audiobooks': typeof AudiobooksRoute
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
+  '/blog': typeof BlogRoute
   '/boletins': typeof BoletinsRoute
   '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
   '/estudos': typeof EstudosRoute
+  '/ferramentas': typeof FerramentasRouteWithChildren
+  '/flashcards': typeof FlashcardsRouteWithChildren
   '/jurisprudencia': typeof JurisprudenciaRouteWithChildren
   '/landing': typeof LandingRoute
   '/legislacao-estadual': typeof LegislacaoEstadualRouteWithChildren
@@ -901,11 +982,19 @@ export interface FileRoutesByFullPath {
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
   '/ferramentas/dicionario': typeof FerramentasDicionarioRoute
+  '/ferramentas/plano-estudos': typeof FerramentasPlanoEstudosRoute
+  '/flashcards/cargos': typeof FlashcardsCargosRouteWithChildren
   '/flashcards/decks': typeof FlashcardsDecksRoute
-  '/flashcards/desafios': typeof FlashcardsDesafiosRoute
+  '/flashcards/desafios': typeof FlashcardsDesafiosRouteWithChildren
+  '/flashcards/estudar': typeof FlashcardsEstudarRoute
+  '/flashcards/estudo': typeof FlashcardsEstudoRoute
   '/flashcards/historico': typeof FlashcardsHistoricoRoute
   '/flashcards/jurisprudencia': typeof FlashcardsJurisprudenciaRoute
+  '/flashcards/leis': typeof FlashcardsLeisRoute
+  '/flashcards/materias': typeof FlashcardsMateriasRoute
   '/flashcards/progresso': typeof FlashcardsProgressoRoute
+  '/flashcards/revisar': typeof FlashcardsRevisarRoute
+  '/flashcards/trilhas': typeof FlashcardsTrilhasRoute
   '/graficos/avaliacao': typeof GraficosAvaliacaoRoute
   '/ir/$': typeof IrSplatRoute
   '/jurisprudencia/informativos-stf': typeof JurisprudenciaInformativosStfRoute
@@ -968,6 +1057,8 @@ export interface FileRoutesByFullPath {
   '/videoaulas/lei-seca': typeof VideoaulasLeiSecaRouteWithChildren
   '/bibliotecas/$colecaoId/$areaSlug': typeof BibliotecasColecaoIdAreaSlugRoute
   '/flashcards/area/$slug': typeof FlashcardsAreaSlugRoute
+  '/flashcards/cargos/$id': typeof FlashcardsCargosIdRoute
+  '/flashcards/desafios/$slug': typeof FlashcardsDesafiosSlugRoute
   '/jurisprudencia/$slugLei/$numeroArtigo': typeof JurisprudenciaSlugLeiNumeroArtigoRoute
   '/jurisprudencia/prontas/$tribunal': typeof JurisprudenciaProntasTribunalRouteWithChildren
   '/legislacao/$tipo/$leiSlug': typeof LegislacaoTipoLeiSlugRouteWithChildren
@@ -1000,10 +1091,13 @@ export interface FileRoutesByTo {
   '/audiobooks': typeof AudiobooksRoute
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
+  '/blog': typeof BlogRoute
   '/boletins': typeof BoletinsRoute
   '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
   '/estudos': typeof EstudosRoute
+  '/ferramentas': typeof FerramentasRouteWithChildren
+  '/flashcards': typeof FlashcardsRouteWithChildren
   '/jurisprudencia': typeof JurisprudenciaRouteWithChildren
   '/landing': typeof LandingRoute
   '/legislacao-estadual': typeof LegislacaoEstadualRouteWithChildren
@@ -1039,11 +1133,19 @@ export interface FileRoutesByTo {
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
   '/ferramentas/dicionario': typeof FerramentasDicionarioRoute
+  '/ferramentas/plano-estudos': typeof FerramentasPlanoEstudosRoute
+  '/flashcards/cargos': typeof FlashcardsCargosRouteWithChildren
   '/flashcards/decks': typeof FlashcardsDecksRoute
-  '/flashcards/desafios': typeof FlashcardsDesafiosRoute
+  '/flashcards/desafios': typeof FlashcardsDesafiosRouteWithChildren
+  '/flashcards/estudar': typeof FlashcardsEstudarRoute
+  '/flashcards/estudo': typeof FlashcardsEstudoRoute
   '/flashcards/historico': typeof FlashcardsHistoricoRoute
   '/flashcards/jurisprudencia': typeof FlashcardsJurisprudenciaRoute
+  '/flashcards/leis': typeof FlashcardsLeisRoute
+  '/flashcards/materias': typeof FlashcardsMateriasRoute
   '/flashcards/progresso': typeof FlashcardsProgressoRoute
+  '/flashcards/revisar': typeof FlashcardsRevisarRoute
+  '/flashcards/trilhas': typeof FlashcardsTrilhasRoute
   '/graficos/avaliacao': typeof GraficosAvaliacaoRoute
   '/ir/$': typeof IrSplatRoute
   '/jurisprudencia/informativos-stf': typeof JurisprudenciaInformativosStfRoute
@@ -1106,6 +1208,8 @@ export interface FileRoutesByTo {
   '/videoaulas/lei-seca': typeof VideoaulasLeiSecaRouteWithChildren
   '/bibliotecas/$colecaoId/$areaSlug': typeof BibliotecasColecaoIdAreaSlugRoute
   '/flashcards/area/$slug': typeof FlashcardsAreaSlugRoute
+  '/flashcards/cargos/$id': typeof FlashcardsCargosIdRoute
+  '/flashcards/desafios/$slug': typeof FlashcardsDesafiosSlugRoute
   '/jurisprudencia/$slugLei/$numeroArtigo': typeof JurisprudenciaSlugLeiNumeroArtigoRoute
   '/jurisprudencia/prontas/$tribunal': typeof JurisprudenciaProntasTribunalRouteWithChildren
   '/legislacao/$tipo/$leiSlug': typeof LegislacaoTipoLeiSlugRouteWithChildren
@@ -1139,10 +1243,13 @@ export interface FileRoutesById {
   '/audiobooks': typeof AudiobooksRoute
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
+  '/blog': typeof BlogRoute
   '/boletins': typeof BoletinsRoute
   '/chat-juridico': typeof ChatJuridicoRoute
   '/compartilhado': typeof CompartilhadoRoute
   '/estudos': typeof EstudosRoute
+  '/ferramentas': typeof FerramentasRouteWithChildren
+  '/flashcards': typeof FlashcardsRouteWithChildren
   '/jurisprudencia': typeof JurisprudenciaRouteWithChildren
   '/landing': typeof LandingRoute
   '/legislacao-estadual': typeof LegislacaoEstadualRouteWithChildren
@@ -1178,11 +1285,19 @@ export interface FileRoutesById {
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
   '/ferramentas/dicionario': typeof FerramentasDicionarioRoute
+  '/ferramentas/plano-estudos': typeof FerramentasPlanoEstudosRoute
+  '/flashcards/cargos': typeof FlashcardsCargosRouteWithChildren
   '/flashcards/decks': typeof FlashcardsDecksRoute
-  '/flashcards/desafios': typeof FlashcardsDesafiosRoute
+  '/flashcards/desafios': typeof FlashcardsDesafiosRouteWithChildren
+  '/flashcards/estudar': typeof FlashcardsEstudarRoute
+  '/flashcards/estudo': typeof FlashcardsEstudoRoute
   '/flashcards/historico': typeof FlashcardsHistoricoRoute
   '/flashcards/jurisprudencia': typeof FlashcardsJurisprudenciaRoute
+  '/flashcards/leis': typeof FlashcardsLeisRoute
+  '/flashcards/materias': typeof FlashcardsMateriasRoute
   '/flashcards/progresso': typeof FlashcardsProgressoRoute
+  '/flashcards/revisar': typeof FlashcardsRevisarRoute
+  '/flashcards/trilhas': typeof FlashcardsTrilhasRoute
   '/graficos/avaliacao': typeof GraficosAvaliacaoRoute
   '/ir/$': typeof IrSplatRoute
   '/jurisprudencia/informativos-stf': typeof JurisprudenciaInformativosStfRoute
@@ -1245,6 +1360,8 @@ export interface FileRoutesById {
   '/videoaulas/lei-seca': typeof VideoaulasLeiSecaRouteWithChildren
   '/bibliotecas/$colecaoId/$areaSlug': typeof BibliotecasColecaoIdAreaSlugRoute
   '/flashcards/area/$slug': typeof FlashcardsAreaSlugRoute
+  '/flashcards/cargos/$id': typeof FlashcardsCargosIdRoute
+  '/flashcards/desafios/$slug': typeof FlashcardsDesafiosSlugRoute
   '/jurisprudencia/$slugLei/$numeroArtigo': typeof JurisprudenciaSlugLeiNumeroArtigoRoute
   '/jurisprudencia/prontas/$tribunal': typeof JurisprudenciaProntasTribunalRouteWithChildren
   '/legislacao/$tipo/$leiSlug': typeof LegislacaoTipoLeiSlugRouteWithChildren
@@ -1279,10 +1396,13 @@ export interface FileRouteTypes {
     | '/audiobooks'
     | '/auth'
     | '/bibliotecas'
+    | '/blog'
     | '/boletins'
     | '/chat-juridico'
     | '/compartilhado'
     | '/estudos'
+    | '/ferramentas'
+    | '/flashcards'
     | '/jurisprudencia'
     | '/landing'
     | '/legislacao-estadual'
@@ -1318,11 +1438,19 @@ export interface FileRouteTypes {
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
     | '/ferramentas/dicionario'
+    | '/ferramentas/plano-estudos'
+    | '/flashcards/cargos'
     | '/flashcards/decks'
     | '/flashcards/desafios'
+    | '/flashcards/estudar'
+    | '/flashcards/estudo'
     | '/flashcards/historico'
     | '/flashcards/jurisprudencia'
+    | '/flashcards/leis'
+    | '/flashcards/materias'
     | '/flashcards/progresso'
+    | '/flashcards/revisar'
+    | '/flashcards/trilhas'
     | '/graficos/avaliacao'
     | '/ir/$'
     | '/jurisprudencia/informativos-stf'
@@ -1385,6 +1513,8 @@ export interface FileRouteTypes {
     | '/videoaulas/lei-seca'
     | '/bibliotecas/$colecaoId/$areaSlug'
     | '/flashcards/area/$slug'
+    | '/flashcards/cargos/$id'
+    | '/flashcards/desafios/$slug'
     | '/jurisprudencia/$slugLei/$numeroArtigo'
     | '/jurisprudencia/prontas/$tribunal'
     | '/legislacao/$tipo/$leiSlug'
@@ -1417,10 +1547,13 @@ export interface FileRouteTypes {
     | '/audiobooks'
     | '/auth'
     | '/bibliotecas'
+    | '/blog'
     | '/boletins'
     | '/chat-juridico'
     | '/compartilhado'
     | '/estudos'
+    | '/ferramentas'
+    | '/flashcards'
     | '/jurisprudencia'
     | '/landing'
     | '/legislacao-estadual'
@@ -1456,11 +1589,19 @@ export interface FileRouteTypes {
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
     | '/ferramentas/dicionario'
+    | '/ferramentas/plano-estudos'
+    | '/flashcards/cargos'
     | '/flashcards/decks'
     | '/flashcards/desafios'
+    | '/flashcards/estudar'
+    | '/flashcards/estudo'
     | '/flashcards/historico'
     | '/flashcards/jurisprudencia'
+    | '/flashcards/leis'
+    | '/flashcards/materias'
     | '/flashcards/progresso'
+    | '/flashcards/revisar'
+    | '/flashcards/trilhas'
     | '/graficos/avaliacao'
     | '/ir/$'
     | '/jurisprudencia/informativos-stf'
@@ -1523,6 +1664,8 @@ export interface FileRouteTypes {
     | '/videoaulas/lei-seca'
     | '/bibliotecas/$colecaoId/$areaSlug'
     | '/flashcards/area/$slug'
+    | '/flashcards/cargos/$id'
+    | '/flashcards/desafios/$slug'
     | '/jurisprudencia/$slugLei/$numeroArtigo'
     | '/jurisprudencia/prontas/$tribunal'
     | '/legislacao/$tipo/$leiSlug'
@@ -1555,10 +1698,13 @@ export interface FileRouteTypes {
     | '/audiobooks'
     | '/auth'
     | '/bibliotecas'
+    | '/blog'
     | '/boletins'
     | '/chat-juridico'
     | '/compartilhado'
     | '/estudos'
+    | '/ferramentas'
+    | '/flashcards'
     | '/jurisprudencia'
     | '/landing'
     | '/legislacao-estadual'
@@ -1594,11 +1740,19 @@ export interface FileRouteTypes {
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
     | '/ferramentas/dicionario'
+    | '/ferramentas/plano-estudos'
+    | '/flashcards/cargos'
     | '/flashcards/decks'
     | '/flashcards/desafios'
+    | '/flashcards/estudar'
+    | '/flashcards/estudo'
     | '/flashcards/historico'
     | '/flashcards/jurisprudencia'
+    | '/flashcards/leis'
+    | '/flashcards/materias'
     | '/flashcards/progresso'
+    | '/flashcards/revisar'
+    | '/flashcards/trilhas'
     | '/graficos/avaliacao'
     | '/ir/$'
     | '/jurisprudencia/informativos-stf'
@@ -1661,6 +1815,8 @@ export interface FileRouteTypes {
     | '/videoaulas/lei-seca'
     | '/bibliotecas/$colecaoId/$areaSlug'
     | '/flashcards/area/$slug'
+    | '/flashcards/cargos/$id'
+    | '/flashcards/desafios/$slug'
     | '/jurisprudencia/$slugLei/$numeroArtigo'
     | '/jurisprudencia/prontas/$tribunal'
     | '/legislacao/$tipo/$leiSlug'
@@ -1694,10 +1850,13 @@ export interface RootRouteChildren {
   AudiobooksRoute: typeof AudiobooksRoute
   AuthRoute: typeof AuthRoute
   BibliotecasRoute: typeof BibliotecasRouteWithChildren
+  BlogRoute: typeof BlogRoute
   BoletinsRoute: typeof BoletinsRoute
   ChatJuridicoRoute: typeof ChatJuridicoRoute
   CompartilhadoRoute: typeof CompartilhadoRoute
   EstudosRoute: typeof EstudosRoute
+  FerramentasRoute: typeof FerramentasRouteWithChildren
+  FlashcardsRoute: typeof FlashcardsRouteWithChildren
   JurisprudenciaRoute: typeof JurisprudenciaRouteWithChildren
   LandingRoute: typeof LandingRoute
   LegislacaoEstadualRoute: typeof LegislacaoEstadualRouteWithChildren
@@ -1850,6 +2009,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BibliotecasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/boletins': {
       id: '/boletins'
       path: '/boletins'
@@ -1876,6 +2042,20 @@ declare module '@tanstack/react-router' {
       path: '/estudos'
       fullPath: '/estudos'
       preLoaderRoute: typeof EstudosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ferramentas': {
+      id: '/ferramentas'
+      path: '/ferramentas'
+      fullPath: '/ferramentas'
+      preLoaderRoute: typeof FerramentasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flashcards': {
+      id: '/flashcards'
+      path: '/flashcards'
+      fullPath: '/flashcards'
+      preLoaderRoute: typeof FlashcardsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/jurisprudencia': {
@@ -2123,6 +2303,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FerramentasDicionarioRouteImport
       parentRoute: typeof FerramentasRoute
     }
+    '/ferramentas/plano-estudos': {
+      id: '/ferramentas/plano-estudos'
+      path: '/plano-estudos'
+      fullPath: '/ferramentas/plano-estudos'
+      preLoaderRoute: typeof FerramentasPlanoEstudosRouteImport
+      parentRoute: typeof FerramentasRoute
+    }
+    '/flashcards/cargos': {
+      id: '/flashcards/cargos'
+      path: '/cargos'
+      fullPath: '/flashcards/cargos'
+      preLoaderRoute: typeof FlashcardsCargosRouteImport
+      parentRoute: typeof FlashcardsRoute
+    }
     '/flashcards/decks': {
       id: '/flashcards/decks'
       path: '/decks'
@@ -2135,6 +2329,20 @@ declare module '@tanstack/react-router' {
       path: '/desafios'
       fullPath: '/flashcards/desafios'
       preLoaderRoute: typeof FlashcardsDesafiosRouteImport
+      parentRoute: typeof FlashcardsRoute
+    }
+    '/flashcards/estudar': {
+      id: '/flashcards/estudar'
+      path: '/estudar'
+      fullPath: '/flashcards/estudar'
+      preLoaderRoute: typeof FlashcardsEstudarRouteImport
+      parentRoute: typeof FlashcardsRoute
+    }
+    '/flashcards/estudo': {
+      id: '/flashcards/estudo'
+      path: '/estudo'
+      fullPath: '/flashcards/estudo'
+      preLoaderRoute: typeof FlashcardsEstudoRouteImport
       parentRoute: typeof FlashcardsRoute
     }
     '/flashcards/historico': {
@@ -2151,11 +2359,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FlashcardsJurisprudenciaRouteImport
       parentRoute: typeof FlashcardsRoute
     }
+    '/flashcards/leis': {
+      id: '/flashcards/leis'
+      path: '/leis'
+      fullPath: '/flashcards/leis'
+      preLoaderRoute: typeof FlashcardsLeisRouteImport
+      parentRoute: typeof FlashcardsRoute
+    }
+    '/flashcards/materias': {
+      id: '/flashcards/materias'
+      path: '/materias'
+      fullPath: '/flashcards/materias'
+      preLoaderRoute: typeof FlashcardsMateriasRouteImport
+      parentRoute: typeof FlashcardsRoute
+    }
     '/flashcards/progresso': {
       id: '/flashcards/progresso'
       path: '/progresso'
       fullPath: '/flashcards/progresso'
       preLoaderRoute: typeof FlashcardsProgressoRouteImport
+      parentRoute: typeof FlashcardsRoute
+    }
+    '/flashcards/revisar': {
+      id: '/flashcards/revisar'
+      path: '/revisar'
+      fullPath: '/flashcards/revisar'
+      preLoaderRoute: typeof FlashcardsRevisarRouteImport
+      parentRoute: typeof FlashcardsRoute
+    }
+    '/flashcards/trilhas': {
+      id: '/flashcards/trilhas'
+      path: '/trilhas'
+      fullPath: '/flashcards/trilhas'
+      preLoaderRoute: typeof FlashcardsTrilhasRouteImport
       parentRoute: typeof FlashcardsRoute
     }
     '/graficos/avaliacao': {
@@ -2592,6 +2828,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FlashcardsAreaSlugRouteImport
       parentRoute: typeof FlashcardsRoute
     }
+    '/flashcards/cargos/$id': {
+      id: '/flashcards/cargos/$id'
+      path: '/$id'
+      fullPath: '/flashcards/cargos/$id'
+      preLoaderRoute: typeof FlashcardsCargosIdRouteImport
+      parentRoute: typeof FlashcardsCargosRoute
+    }
+    '/flashcards/desafios/$slug': {
+      id: '/flashcards/desafios/$slug'
+      path: '/$slug'
+      fullPath: '/flashcards/desafios/$slug'
+      preLoaderRoute: typeof FlashcardsDesafiosSlugRouteImport
+      parentRoute: typeof FlashcardsDesafiosRoute
+    }
     '/jurisprudencia/$slugLei/$numeroArtigo': {
       id: '/jurisprudencia/$slugLei/$numeroArtigo'
       path: '/$slugLei/$numeroArtigo'
@@ -2735,6 +2985,78 @@ const BibliotecasRouteChildren: BibliotecasRouteChildren = {
 
 const BibliotecasRouteWithChildren = BibliotecasRoute._addFileChildren(
   BibliotecasRouteChildren,
+)
+
+interface FerramentasRouteChildren {
+  FerramentasDicionarioRoute: typeof FerramentasDicionarioRoute
+  FerramentasPlanoEstudosRoute: typeof FerramentasPlanoEstudosRoute
+}
+
+const FerramentasRouteChildren: FerramentasRouteChildren = {
+  FerramentasDicionarioRoute: FerramentasDicionarioRoute,
+  FerramentasPlanoEstudosRoute: FerramentasPlanoEstudosRoute,
+}
+
+const FerramentasRouteWithChildren = FerramentasRoute._addFileChildren(
+  FerramentasRouteChildren,
+)
+
+interface FlashcardsCargosRouteChildren {
+  FlashcardsCargosIdRoute: typeof FlashcardsCargosIdRoute
+}
+
+const FlashcardsCargosRouteChildren: FlashcardsCargosRouteChildren = {
+  FlashcardsCargosIdRoute: FlashcardsCargosIdRoute,
+}
+
+const FlashcardsCargosRouteWithChildren =
+  FlashcardsCargosRoute._addFileChildren(FlashcardsCargosRouteChildren)
+
+interface FlashcardsDesafiosRouteChildren {
+  FlashcardsDesafiosSlugRoute: typeof FlashcardsDesafiosSlugRoute
+}
+
+const FlashcardsDesafiosRouteChildren: FlashcardsDesafiosRouteChildren = {
+  FlashcardsDesafiosSlugRoute: FlashcardsDesafiosSlugRoute,
+}
+
+const FlashcardsDesafiosRouteWithChildren =
+  FlashcardsDesafiosRoute._addFileChildren(FlashcardsDesafiosRouteChildren)
+
+interface FlashcardsRouteChildren {
+  FlashcardsCargosRoute: typeof FlashcardsCargosRouteWithChildren
+  FlashcardsDecksRoute: typeof FlashcardsDecksRoute
+  FlashcardsDesafiosRoute: typeof FlashcardsDesafiosRouteWithChildren
+  FlashcardsEstudarRoute: typeof FlashcardsEstudarRoute
+  FlashcardsEstudoRoute: typeof FlashcardsEstudoRoute
+  FlashcardsHistoricoRoute: typeof FlashcardsHistoricoRoute
+  FlashcardsJurisprudenciaRoute: typeof FlashcardsJurisprudenciaRoute
+  FlashcardsLeisRoute: typeof FlashcardsLeisRoute
+  FlashcardsMateriasRoute: typeof FlashcardsMateriasRoute
+  FlashcardsProgressoRoute: typeof FlashcardsProgressoRoute
+  FlashcardsRevisarRoute: typeof FlashcardsRevisarRoute
+  FlashcardsTrilhasRoute: typeof FlashcardsTrilhasRoute
+  FlashcardsAreaSlugRoute: typeof FlashcardsAreaSlugRoute
+}
+
+const FlashcardsRouteChildren: FlashcardsRouteChildren = {
+  FlashcardsCargosRoute: FlashcardsCargosRouteWithChildren,
+  FlashcardsDecksRoute: FlashcardsDecksRoute,
+  FlashcardsDesafiosRoute: FlashcardsDesafiosRouteWithChildren,
+  FlashcardsEstudarRoute: FlashcardsEstudarRoute,
+  FlashcardsEstudoRoute: FlashcardsEstudoRoute,
+  FlashcardsHistoricoRoute: FlashcardsHistoricoRoute,
+  FlashcardsJurisprudenciaRoute: FlashcardsJurisprudenciaRoute,
+  FlashcardsLeisRoute: FlashcardsLeisRoute,
+  FlashcardsMateriasRoute: FlashcardsMateriasRoute,
+  FlashcardsProgressoRoute: FlashcardsProgressoRoute,
+  FlashcardsRevisarRoute: FlashcardsRevisarRoute,
+  FlashcardsTrilhasRoute: FlashcardsTrilhasRoute,
+  FlashcardsAreaSlugRoute: FlashcardsAreaSlugRoute,
+}
+
+const FlashcardsRouteWithChildren = FlashcardsRoute._addFileChildren(
+  FlashcardsRouteChildren,
 )
 
 interface JurisprudenciaProntasTribunalRouteChildren {
@@ -3115,10 +3437,13 @@ const rootRouteChildren: RootRouteChildren = {
   AudiobooksRoute: AudiobooksRoute,
   AuthRoute: AuthRoute,
   BibliotecasRoute: BibliotecasRouteWithChildren,
+  BlogRoute: BlogRoute,
   BoletinsRoute: BoletinsRoute,
   ChatJuridicoRoute: ChatJuridicoRoute,
   CompartilhadoRoute: CompartilhadoRoute,
   EstudosRoute: EstudosRoute,
+  FerramentasRoute: FerramentasRouteWithChildren,
+  FlashcardsRoute: FlashcardsRouteWithChildren,
   JurisprudenciaRoute: JurisprudenciaRouteWithChildren,
   LandingRoute: LandingRoute,
   LegislacaoEstadualRoute: LegislacaoEstadualRouteWithChildren,

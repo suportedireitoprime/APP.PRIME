@@ -432,6 +432,44 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
+    "path": "/blog",
+    "group": "Notícias & Informativos",
+    "label": "Blog",
+    "description": "Página correspondente ao componente Blog",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "Blog",
+    "exampleUrl": "/blog",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
+  },
+  {
+    "path": "/blog/:slug",
+    "group": "Notícias & Informativos",
+    "label": "BLOG (:slug)",
+    "description": "Página correspondente ao componente Blog",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "Blog",
+    "exampleUrl": "/blog/direito-penal",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
+  },
+  {
     "path": "/boletins",
     "group": "Notícias & Informativos",
     "label": "Boletins",
@@ -527,6 +565,25 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
+    "path": "/ferramentas",
+    "group": "Ferramentas",
+    "label": "Ferramentas",
+    "description": "Página correspondente ao componente Ferramentas",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "Ferramentas",
+    "exampleUrl": "/ferramentas",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
+  },
+  {
     "path": "/ferramentas/dicionario",
     "group": "Ferramentas",
     "label": "Ferramentas Dicionario",
@@ -545,6 +602,44 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
+    "path": "/ferramentas/plano-estudos",
+    "group": "Ferramentas",
+    "label": "Ferramentas Plano Estudos",
+    "description": "Página correspondente ao componente PlanoEstudos",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "PlanoEstudos",
+    "exampleUrl": "/ferramentas/plano-estudos",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
+  },
+  {
+    "path": "/flashcards",
+    "group": "Flashcards",
+    "label": "Flashcards",
+    "description": "Revisão ativa com Flashcards divididos por área e concurso",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "FlashcardsRouteWrapper",
+    "exampleUrl": "/flashcards",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
+  },
+  {
     "path": "/flashcards/area/:slug",
     "group": "Flashcards",
     "label": "FLASHCARDS (:slug)",
@@ -555,6 +650,44 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsArea",
     "exampleUrl": "/flashcards/area/direito-penal",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
+  },
+  {
+    "path": "/flashcards/cargos",
+    "group": "Flashcards",
+    "label": "Flashcards Cargos",
+    "description": "Página correspondente ao componente FlashcardsCargos",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "FlashcardsCargos",
+    "exampleUrl": "/flashcards/cargos",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
+  },
+  {
+    "path": "/flashcards/cargos/:id",
+    "group": "Flashcards",
+    "label": "FLASHCARDS (:id)",
+    "description": "Página correspondente ao componente FlashcardsCargosDetalhes",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "FlashcardsCargosDetalhes",
+    "exampleUrl": "/flashcards/cargos/1",
     "weightScore": 3,
     "weightLevel": "media",
     "weightEstimate": "~1.2 MB",
@@ -602,6 +735,44 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
+    "path": "/flashcards/desafios/:slug",
+    "group": "Flashcards",
+    "label": "FLASHCARDS (:slug)",
+    "description": "Página correspondente ao componente FlashcardsDesafiosTimeline",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "FlashcardsDesafiosTimeline",
+    "exampleUrl": "/flashcards/desafios/direito-penal",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
+  },
+  {
+    "path": "/flashcards/estudo",
+    "group": "Flashcards",
+    "label": "Flashcards Estudo",
+    "description": "Página correspondente ao componente FlashcardsEstudo",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "FlashcardsEstudo",
+    "exampleUrl": "/flashcards/estudo",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
+  },
+  {
     "path": "/flashcards/historico",
     "group": "Flashcards",
     "label": "Flashcards Historico",
@@ -640,6 +811,44 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
+    "path": "/flashcards/leis",
+    "group": "Flashcards",
+    "label": "Flashcards Leis",
+    "description": "Página correspondente ao componente FlashcardsLeis",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "FlashcardsLeis",
+    "exampleUrl": "/flashcards/leis",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
+  },
+  {
+    "path": "/flashcards/materias",
+    "group": "Flashcards",
+    "label": "Flashcards Materias",
+    "description": "Página correspondente ao componente FlashcardsMaterias",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "FlashcardsMaterias",
+    "exampleUrl": "/flashcards/materias",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
+  },
+  {
     "path": "/flashcards/progresso",
     "group": "Flashcards",
     "label": "Flashcards Progresso",
@@ -650,6 +859,44 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsProgresso",
     "exampleUrl": "/flashcards/progresso",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
+  },
+  {
+    "path": "/flashcards/revisar",
+    "group": "Flashcards",
+    "label": "Flashcards Revisar",
+    "description": "Página correspondente ao componente FlashcardsRevisar",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "FlashcardsRevisar",
+    "exampleUrl": "/flashcards/revisar",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
+  },
+  {
+    "path": "/flashcards/trilhas",
+    "group": "Flashcards",
+    "label": "Flashcards Trilhas",
+    "description": "Página correspondente ao componente FlashcardsTrilhas",
+    "isRedirect": false,
+    "redirectTarget": null,
+    "isProtected": true,
+    "isAdmin": false,
+    "component": "FlashcardsTrilhas",
+    "exampleUrl": "/flashcards/trilhas",
     "weightScore": 3,
     "weightLevel": "media",
     "weightEstimate": "~1.2 MB",

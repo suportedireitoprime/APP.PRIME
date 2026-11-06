@@ -104,6 +104,7 @@ const VadeMecumSumulas = lazy(() => import("./pages/VadeMecumSumulas.tsx"));
 const VadeMecumFavoritos = lazy(() => import("./pages/VadeMecumFavoritos.tsx"));
 const VadeMecumRecentes = lazy(() => import("./pages/VadeMecumRecentes.tsx"));
 const CategoriaLegislacao = lazy(() => import("./pages/CategoriaLegislacao.tsx"));
+const Ferramentas = lazy(() => import("./pages/Ferramentas.tsx"));
 const MeuEspaco = lazy(() => import("./pages/MeuEspaco.tsx"));
 
 // Lazy loaded
@@ -145,6 +146,7 @@ const RadarProposicoesDia = lazy(() => import("./pages/RadarProposicoesDia.tsx")
 const LegislacaoEstadual = lazy(() => import("./pages/LegislacaoEstadual.tsx"));
 const EstadoDetalhe = lazy(() => import("./pages/EstadoDetalhe.tsx"));
 const LeiEstadualView = lazy(() => import("./pages/LeiEstadualView.tsx"));
+const PlanoEstudos = lazy(() => import("./pages/ferramentas/PlanoEstudos.tsx"));
 
 const DicionarioJuridicoPage = lazy(routePrefetch.dicionario);
 const Compartilhado = lazy(() => import("./pages/Compartilhado.tsx"));
@@ -157,11 +159,21 @@ const EstudosHub = lazy(() => import("./pages/EstudosHub.tsx"));
 
 const QuestoesArea = lazy(() => import("./pages/QuestoesArea.tsx"));
 const FlashcardsArea = lazy(() => import("./pages/FlashcardsArea.tsx"));
+const Flashcards = lazy(() => import("./pages/Flashcards.tsx"));
+const FlashcardsCargos = lazy(() => import("./pages/FlashcardsCargos.tsx"));
+const FlashcardsCargosDetalhes = lazy(() => import("./pages/FlashcardsCargosDetalhes.tsx"));
+const FlashcardsEstudo = lazy(() => import("./pages/FlashcardsEstudo.tsx"));
+const FlashcardsRevisar = lazy(() => import("./pages/FlashcardsRevisar.tsx"));
 const FlashcardsDecks = lazy(() => import("./pages/FlashcardsDecks.tsx"));
 const FlashcardsDesafios = lazy(() => import("./pages/FlashcardsDesafios.tsx"));
+const FlashcardsDesafiosTimeline = lazy(() => import("./pages/FlashcardsDesafiosTimeline.tsx"));
+const FlashcardsTrilhas = lazy(() => import("./pages/FlashcardsTrilhas.tsx"));
 const FlashcardsProgresso = lazy(() => import("./pages/FlashcardsProgresso.tsx"));
 const FlashcardsHistorico = lazy(() => import("./pages/flashcards/FlashcardsHistorico.tsx"));
+const FlashcardsMaterias = lazy(() => import("./pages/flashcards/FlashcardsMaterias.tsx"));
+const FlashcardsLeis = lazy(() => import("./pages/flashcards/FlashcardsLeis.tsx"));
 const FlashcardsJurisprudencia = lazy(() => import("./pages/flashcards/FlashcardsJurisprudencia.tsx"));
+const FlashcardsRouteWrapper = lazy(() => import("@/components/flashcards/FlashcardsRouteWrapper"));
 const VideoaulasLeiSeca = lazy(() => import('./pages/VideoaulasLeiSeca'));
 const VideoaulasLeiSecaArtigos = lazy(() => import('./pages/VideoaulasLeiSecaArtigos'));
 const Videoaulas = lazy(routePrefetch.videoaulas);
@@ -259,6 +271,7 @@ const LeiSecaLembretes = lazy(routePrefetch.leiSecaLembretes);
 
 const Perfil = lazy(() => import("./pages/Perfil.tsx"));
 const SobreApp = lazy(() => import("./pages/SobreApp.tsx"));
+const Blog = lazy(routePrefetch.blog);
 const DesktopLinkConfirm = lazy(() => import("./pages/DesktopLinkConfirm.tsx"));
 // Biblioteca — lazy para não inflar o bundle de boot
 const Bibliotecas = lazy(() => import("./pages/Bibliotecas.tsx"));
@@ -830,7 +843,10 @@ function AnimatedRoutes() {
           <Route path="/legislacao-estadual/:uf" element={<ProtectedRoute><PageTransition><EstadoDetalhe /></PageTransition></ProtectedRoute>} />
           <Route path="/legislacao-estadual/:uf/lei/:slug" element={<ProtectedRoute><PageTransition><LeiEstadualView /></PageTransition></ProtectedRoute>} />
 
+          <Route path="/ferramentas" element={<ProtectedRoute><PageTransition instant><Ferramentas /></PageTransition></ProtectedRoute>} />
           <Route path="/ferramentas/dicionario" element={<ProtectedRoute><PageTransition instant><DicionarioJuridicoPage /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/plano-estudos" element={<ProtectedRoute><PageTransition><PlanoEstudos /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/radar-concursos" element={<Navigate to="/radar-concursos" replace />} />
           <Route path="/simulados/estatisticas" element={<ProtectedRoute><PageTransition><SimuladosEstatisticas /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas" element={<ProtectedRoute><PageTransition instant><PilulasHome /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/lista" element={<ProtectedRoute><PageTransition instant><PilulasLista /></PageTransition></ProtectedRoute>} />
@@ -850,11 +866,20 @@ function AnimatedRoutes() {
           
           <Route path="/questoes/area/:slug" element={<ProtectedRoute><PageTransition instant><QuestoesArea /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/area/:slug" element={<ProtectedRoute><PageTransition instant><FlashcardsArea /></PageTransition></ProtectedRoute>} />
-
+          <Route path="/flashcards" element={<ProtectedRoute><FlashcardsRouteWrapper><PageTransition instant><Flashcards /></PageTransition></FlashcardsRouteWrapper></ProtectedRoute>} />
+          <Route path="/flashcards/estudo" element={<ProtectedRoute><PageTransition instant><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/estudar" element={<Navigate to="/flashcards/estudo" replace />} />
+          <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition instant><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/cargos" element={<ProtectedRoute><PageTransition instant><FlashcardsCargos /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/cargos/:id" element={<ProtectedRoute><PageTransition instant><FlashcardsCargosDetalhes /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/revisar" element={<ProtectedRoute><PageTransition instant><FlashcardsRevisar /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/desafios/:slug" element={<ProtectedRoute><PageTransition instant><FlashcardsDesafiosTimeline /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/progresso" element={<ProtectedRoute><PageTransition instant><FlashcardsProgresso /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/historico" element={<ProtectedRoute><PageTransition instant><FlashcardsHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/desafios" element={<ProtectedRoute><PageTransition instant><FlashcardsDesafios /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/decks" element={<ProtectedRoute><PageTransition instant><FlashcardsDecks /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/materias" element={<ProtectedRoute><PageTransition instant><FlashcardsMaterias /></PageTransition></ProtectedRoute>} />
+          <Route path="/flashcards/leis" element={<ProtectedRoute><PageTransition instant><FlashcardsLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/jurisprudencia" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsJurisprudencia /></Suspense>} />
           
           {/* Videoaulas: Rota Principal e Sub-rotas Funcionais */}
@@ -918,6 +943,8 @@ function AnimatedRoutes() {
 
           <Route path="/perfil" element={<ProtectedRoute><PageTransition instant><Perfil /></PageTransition></ProtectedRoute>} />
           <Route path="/sobre" element={<ProtectedRoute><PageTransition><SobreApp /></PageTransition></ProtectedRoute>} />
+          <Route path="/blog" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
+          <Route path="/blog/:slug" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
           
           {/* Biblioteca Digital: Rota Principal e Sub-rotas */}
           <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />

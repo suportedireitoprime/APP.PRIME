@@ -6,3 +6,4 @@ export const Route = createFileRoute("/chat-juridico")({
   head: () => ({ meta: [{ title: "Chat Jurídico — Direito Prime" }] }),
   component: () => null,
 });
+
