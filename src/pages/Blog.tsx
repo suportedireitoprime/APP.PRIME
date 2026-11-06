@@ -9,7 +9,8 @@ import { useFeatureLimit } from "@/hooks/useFeatureLimit";
 import PremiumGate from "@/components/PremiumGate";
 import { recordActivity } from "@/lib/continuity";
 import { useGoBack } from "@/hooks/useGoBack";
-import { blogThumb } from "@/lib/blogImg";
+import { blogThumb, blogHero } from "@/lib/blogImg";
+import { prefetchImage, prefetchImages } from "@/lib/cdnImg";
 import ShapeGrid from "@/components/ui/ShapeGrid";
 import { blogTracking } from "@/lib/blogTracking";
 import { useBlogDynamicTrending } from "@/hooks/useBlogDynamicTrending";
@@ -133,6 +134,25 @@ const Blog = () => {
   const currentCategory = useMemo(() => {
     return CATEGORIES.find((c) => c.id === activeCategory) || CATEGORIES[0];
   }, [activeCategory]);
+
+  // Pré-carregamento instantâneo (0ms) de todas as capas de categorias na memória
+  useEffect(() => {
+    CATEGORIES.forEach((cat) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = cat.coverImg;
+    });
+  }, []);
+
+  // Pré-aquecimento em background das capas dos artigos em lote para carregamento instantâneo
+  useEffect(() => {
+    if (!allPosts || allPosts.length === 0) return;
+    const urls = allPosts
+      .slice(0, 30)
+      .map((p) => blogThumb(p.imagem_url, 160))
+      .filter(Boolean);
+    prefetchImages(urls);
+  }, [allPosts]);
 
   // Listener para sincronizar os favoritos em tempo real
   useEffect(() => {
@@ -340,12 +360,12 @@ const Blog = () => {
         <div className="mb-7">
           <div className="w-full aspect-[16/9] max-h-[220px] sm:max-h-[300px] rounded-3xl overflow-hidden shadow-2xl relative border border-white/10 bg-zinc-900 group">
             <img
-              key={currentCategory.id}
               src={currentCategory.coverImg}
               alt={currentCategory.title}
-              className="w-full h-full object-cover transform-gpu transition-opacity duration-300"
+              className="w-full h-full object-cover transform-gpu"
               loading="eager"
               fetchPriority="high"
+              decoding="async"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
           </div>
@@ -380,12 +400,18 @@ const Blog = () => {
               Nenhum artigo encontrado nesta categoria.
             </div>
           ) : (
-            filteredPosts.map((post) => {
+            filteredPosts.map((post, idx) => {
               const isSaved = favoriteIds.includes(post.id);
               return (
                 <div
                   key={post.id}
                   onClick={() => handleOpenPost(post)}
+                  onPointerEnter={() => {
+                    if (post.imagem_url) prefetchImage(blogHero(post.imagem_url));
+                  }}
+                  onTouchStart={() => {
+                    if (post.imagem_url) prefetchImage(blogHero(post.imagem_url));
+                  }}
                   className="flex items-center gap-3.5 sm:gap-4 py-3.5 sm:py-4 cursor-pointer group hover:bg-white/[0.03] px-2 rounded-2xl transition-all active:scale-[0.99]"
                 >
                   {/* Capa em miniatura (proporção 3:4 com cantos arredondados) */}
@@ -393,7 +419,9 @@ const Blog = () => {
                     <img
                       src={blogThumb(post.imagem_url, 160)}
                       alt={post.titulo}
-                      loading="lazy"
+                      loading={idx < 10 ? "eager" : "lazy"}
+                      fetchPriority={idx < 6 ? "high" : "auto"}
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         (e.currentTarget as HTMLImageElement).src = bibliotecaCoverImg;

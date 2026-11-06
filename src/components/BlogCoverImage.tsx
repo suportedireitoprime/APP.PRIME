@@ -22,6 +22,27 @@ function BlogCoverImageComponent({ postId, remoteUrl, className = '', ...rest }:
   const [src, setSrc] = useState<string>(initialSrc);
   const [loaded, setLoaded] = useState<boolean>(() => preloadedUrls.has(initialSrc));
   const retryCountRef = useRef(0);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  // Verificação imediata: se a imagem já estiver no cache do navegador (complete)
+  useEffect(() => {
+    if (imgRef.current && (imgRef.current.complete || preloadedUrls.has(src))) {
+      setLoaded(true);
+      preloadedUrls.add(src);
+    }
+  }, [src]);
+
+  // Pré-carrega no cache de imagem HTTP
+  useEffect(() => {
+    if (remoteUrl && !preloadedUrls.has(remoteUrl)) {
+      const img = new Image();
+      img.decoding = 'async';
+      img.src = remoteUrl;
+      img.onload = () => {
+        preloadedUrls.add(remoteUrl);
+      };
+    }
+  }, [remoteUrl]);
 
   useEffect(() => {
     let cancelled = false;
@@ -59,9 +80,13 @@ function BlogCoverImageComponent({ postId, remoteUrl, className = '', ...rest }:
         <div className="absolute inset-0 bg-gradient-to-tr from-zinc-950 via-zinc-900 to-zinc-800 animate-pulse pointer-events-none" />
       )}
       <img
+        ref={imgRef}
         src={src}
-        className={`w-full h-full object-cover transition-opacity duration-300 ${
-          loaded ? 'opacity-100' : 'opacity-0'
+        loading="eager"
+        decoding="async"
+        fetchPriority="high"
+        className={`w-full h-full object-cover transition-opacity duration-200 ${
+          loaded ? 'opacity-100' : 'opacity-90'
         } ${className}`}
         onLoad={() => {
           setLoaded(true);
