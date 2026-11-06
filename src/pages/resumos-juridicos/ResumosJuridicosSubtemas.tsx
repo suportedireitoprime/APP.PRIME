@@ -62,6 +62,11 @@ export default function ResumosJuridicosSubtemas() {
       setMetodosGerados([]);
       return;
     }
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(modalResumo.id || ''));
+    if (!isUuid) {
+      setMetodosGerados([]);
+      return;
+    }
     let ativo = true;
     supabase
       .from('resumo_metodologias')
@@ -174,28 +179,6 @@ export default function ResumosJuridicosSubtemas() {
 
     return () => { cancelled = true; };
   }, [cacheKey, decodedArea, decodedTema]);
-
-  useEffect(() => {
-    if (!modalResumo) {
-      setMetodosGerados([]);
-      return;
-    }
-    let cancelled = false;
-    (async () => {
-      try {
-        const { data } = await (supabase as any)
-          .from("resumo_metodologias")
-          .select("metodo")
-          .eq("resumo_id", modalResumo.id);
-        if (!cancelled && data) {
-          setMetodosGerados(data.map((d: any) => d.metodo));
-        }
-      } catch {}
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [modalResumo]);
 
   const subtemasOrdenados = useMemo(() => {
     let result = rows;

@@ -268,7 +268,7 @@ export default function NovidadesRadarOverlay() {
           .from('boletins_juridicos')
           .select('id,data_ref,roteiro_json,youtube_url')
           .eq('id', first.id)
-          .single();
+          .maybeSingle();
         if (error || !data) throw error || new Error('Boletim não encontrado');
         markSeen();
         // Stop keyboard sound

@@ -75,13 +75,26 @@ export function usePilulaData(
 
           if (isLawCode) {
             const meta = LAW_CODES_META[type!];
-            const { data, error } = await supabase
-              .from('vade_mecum_artigos')
-              .select('id, numero, texto, audio_pilula_url, audio_transcricao, audio_grafo')
-              .eq('id', id)
-              .maybeSingle();
-
-            if (error) throw error;
+            const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id || ''));
+            let data: any = null;
+            if (isUuid) {
+              const res = await supabase
+                .from('vade_mecum_artigos')
+                .select('id, numero, texto, audio_pilula_url, audio_transcricao, audio_grafo')
+                .eq('id', id)
+                .maybeSingle();
+              data = res.data;
+            } else {
+              const cleanNum = String(id || '').replace(/\D+/g, '');
+              if (cleanNum) {
+                const res = await supabase
+                  .from('vade_mecum_artigos')
+                  .select('id, numero, texto, audio_pilula_url, audio_transcricao, audio_grafo')
+                  .eq('numero', cleanNum)
+                  .maybeSingle();
+                data = res.data;
+              }
+            }
 
             if (data) {
               normalizado = {
@@ -113,28 +126,31 @@ export function usePilulaData(
               }
             }
 
-            // Fallback: se não estiver em clássicos, verifica em vade_mecum_artigos
+            // Fallback: se não estiver em clássicos, verifica em vade_mecum_artigos apenas se id for UUID
             if (!normalizado) {
-              const { data: artData } = await supabase
-                .from('vade_mecum_artigos')
-                .select('id, numero, texto, audio_pilula_url, audio_transcricao, audio_grafo')
-                .eq('id', id)
-                .maybeSingle();
+              const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id || ''));
+              if (isUuid) {
+                const { data: artData } = await supabase
+                  .from('vade_mecum_artigos')
+                  .select('id, numero, texto, audio_pilula_url, audio_transcricao, audio_grafo')
+                  .eq('id', id)
+                  .maybeSingle();
 
-              if (artData) {
-                normalizado = {
-                  id: artData.id,
-                  titulo: `Artigo ${artData.numero}`,
-                  autor: 'Vade Mecum',
-                  capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_square.jpg'),
-                  audioResumoUrl: artData.audio_pilula_url,
-                  analiseDetalhada: artData.texto,
-                  sobre: artData.texto,
-                  numero: artData.numero,
-                  audio_grafo: artData.audio_grafo,
-                  transcricaoAudio: artData.audio_transcricao,
-                  isCP: false,
-                };
+                if (artData) {
+                  normalizado = {
+                    id: artData.id,
+                    titulo: `Artigo ${artData.numero}`,
+                    autor: 'Vade Mecum',
+                    capa: directImg('https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas_fixas/cp_artigos_square.jpg'),
+                    audioResumoUrl: artData.audio_pilula_url,
+                    analiseDetalhada: artData.texto,
+                    sobre: artData.texto,
+                    numero: artData.numero,
+                    audio_grafo: artData.audio_grafo,
+                    transcricaoAudio: artData.audio_transcricao,
+                    isCP: false,
+                  };
+                }
               }
             }
           }
