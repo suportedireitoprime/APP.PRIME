@@ -440,6 +440,7 @@ const DesktopSidebar = memo(({ activeTab, onTabChange }: DesktopSidebarProps) =>
             <AlertDialogAction onClick={(e) => {
               e.preventDefault();
               setLogoutPrompt(false);
+              navigate('/auth', { replace: true });
               setTimeout(() => signOut(), 50);
             }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
             Sim, sair

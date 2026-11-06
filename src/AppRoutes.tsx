@@ -474,9 +474,6 @@ function ProtectedRoute({ children, requireOnboarding = true }: { children: Reac
 
 
   if (!user) {
-    if (location.pathname === '/') {
-      return <Navigate to="/landing" replace />;
-    }
     return <Navigate to="/auth" replace state={{ from: location.pathname }} />;
   }
 
@@ -754,7 +751,7 @@ function HomeGate() {
     // Sem tela preta com spinner: retorna null para que a tela nativa de splash ou fundo cubra isso.
     return null;
   }
-  if (!user) return <Landing />;
+  if (!user) return <Navigate to="/auth" replace />;
   // O PersistentHome já renderiza a Home para usuários logados.
   // Retornamos null aqui para evitar duplicação do Index no DOM.
   return null;

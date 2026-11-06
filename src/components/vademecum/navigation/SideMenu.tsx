@@ -101,6 +101,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     if (id === 'sair') {
       resetBodyScrollLock();
       onClose();
+      navigate('/auth', { replace: true });
       setTimeout(() => {
         signOut().catch(() => {});
       }, 50);
