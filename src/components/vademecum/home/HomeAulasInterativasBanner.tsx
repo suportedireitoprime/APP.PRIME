@@ -105,8 +105,8 @@ const HomeAulasInterativasBanner = () => {
 
       {/* Seta indicativa à direita ampliada */}
       <ArrowRight
-        className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 z-10 text-red-400 group-hover:translate-x-1 transition-transform"
-        strokeWidth={2.4}
+        className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 z-10 text-red-400 group-hover:translate-x-1.5 transition-transform"
+        strokeWidth={2.6}
       />
 
       {/* Decoração de fundo — SVG translúcido no lado direito com glow vermelho */}
