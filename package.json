@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "blog:logs": "node scripts/monitor.cjs",
     "blog:adapt": "node scripts/adapt-articles-openrouter.cjs",
-    "blog:omniroute": "node scripts/adapt-articles-omniroute.cjs"
+    "blog:omniroute": "node scripts/adapt-articles-omniroute.cjs",
+    "optimize-images": "node scripts/optimize-images.cjs"
   },
   "overrides": {
     "rolldown": "1.2.1"
