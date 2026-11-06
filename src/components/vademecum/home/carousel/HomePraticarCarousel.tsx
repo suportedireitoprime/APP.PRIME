@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Layers, FileQuestion, Timer, Pencil, LucideIcon } from 'lucide-react';
 import { shade } from '@/lib/leiTheme';
 import { haptic } from '@/lib/nativeHaptics';
-import praticarLicoesImg from '@/assets/praticar-licoes.png';
+import praticarLicoesImg from '@/assets/praticar-licoes.webp';
 
 export interface PraticarItem {
   id: string;
@@ -49,7 +49,7 @@ const PRATICAR_ITEMS: PraticarItem[] = [
     subtitle: 'Artigo por artigo',
     icon: Pencil,
     color: '#ea580c', // orange vibrante
-    image: praticarLicoesImg || '/assets/praticar-licoes.png',
+    image: praticarLicoesImg || '/assets/praticar-licoes.webp',
     path: '/lei-seca',
   },
 ];
@@ -228,8 +228,8 @@ const HomePraticarCarousel = () => {
                     src={item.image}
                     onError={(e) => {
                       const target = e.currentTarget;
-                      if (item.id === 'licoes' && !target.src.endsWith('/assets/praticar-licoes.png')) {
-                        target.src = '/assets/praticar-licoes.png';
+                      if (item.id === 'licoes' && !target.src.endsWith('/assets/praticar-licoes.webp')) {
+                        target.src = '/assets/praticar-licoes.webp';
                       }
                     }}
                     alt={`Ilustração ${item.title}`}

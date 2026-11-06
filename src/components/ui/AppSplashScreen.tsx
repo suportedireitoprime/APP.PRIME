@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import logoThemis from '@/assets/logo-coruja.png';
-import splashHeroSkyColumns from '@/assets/splash-hero-sky-columns.jpg';
+import splashHeroSkyColumns from '@/assets/splash-hero-sky-columns.webp';
 
 export default function AppSplashScreen() {
   const [isVisible, setIsVisible] = useState(true);

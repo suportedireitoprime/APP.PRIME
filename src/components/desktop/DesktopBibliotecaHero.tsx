@@ -2,7 +2,7 @@ import { Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTotalLivrosCount } from '@/hooks/useTotalLivrosCount';
 
-import bibliotecaCoverImg from '@/assets/biblioteca-cover.jpg';
+import bibliotecaCoverImg from '@/assets/biblioteca-cover.webp';
 
 interface Props {
   typingHint?: string;

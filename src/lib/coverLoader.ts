@@ -28,7 +28,7 @@ import ec from '@/assets/lei-cover-ec.webp';
 import ed from '@/assets/lei-cover-ed.webp';
 import eoab from '@/assets/lei-cover-eoab.webp';
 import ctn from '@/assets/lei-cover-ctn.webp';
-import ctb from '@/assets/lei-cover-ctb.png';
+import ctb from '@/assets/lei-cover-ctb.webp';
 
 const isNative =
   typeof window !== 'undefined' && Capacitor.isNativePlatform();
