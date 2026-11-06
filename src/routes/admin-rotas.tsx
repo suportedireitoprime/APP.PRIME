@@ -6,3 +6,4 @@ export const Route = createFileRoute("/admin-rotas")({
   head: () => ({ meta: [{ title: "Rotas do Aplicativo — Direito Prime" }] }),
   component: () => null,
 });
+

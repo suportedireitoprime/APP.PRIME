@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Loader2, Search, Send, Ban, Phone, AlertTriangle, Wrench } from 'lucide-react';
 import { toast } from 'sonner';
-import {  formatDistanceToNow  } from "@/lib/dateUtils";
+import { formatDistanceToNow, ptBR } from "@/lib/dateUtils";
 
 
 type User = { id: string; phone_e164: string; blocked: boolean; last_seen_at: string | null };

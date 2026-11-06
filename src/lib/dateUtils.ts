@@ -1,3 +1,7 @@
+import { ptBR as dateFnsPtBR } from 'date-fns/locale';
+
+export const ptBR = dateFnsPtBR;
+
 export const formatDate = (date: Date | number | string, pattern = 'dd/MM/yyyy') => {
   const d = new Date(date);
   const day = d.getDate().toString().padStart(2, '0');

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import { CalendarDays } from 'lucide-react';
-import {  format  } from "@/lib/dateUtils";
+import { format, ptBR } from "@/lib/dateUtils";
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
