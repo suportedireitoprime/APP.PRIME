@@ -49,7 +49,7 @@ export const AudiobooksContinuarOuvindoCard: React.FC<AudiobooksContinuarOuvindo
           alt={livro.titulo}
           className="w-full h-full object-cover"
         />
-        <span className="absolute bottom-0 inset-x-0 bg-purple-600 text-[8px] font-black uppercase text-center text-white py-0.5 tracking-wider">
+        <span className="absolute bottom-0 inset-x-0 bg-[#7C3AED] text-[8px] font-black uppercase text-center text-white py-0.5 tracking-wider">
           ÁUDIO
         </span>
       </div>
@@ -57,13 +57,13 @@ export const AudiobooksContinuarOuvindoCard: React.FC<AudiobooksContinuarOuvindo
       {/* Textos informativos centrais */}
       <div className="flex-1 min-w-0 z-10">
         <div className="flex items-center gap-1.5 mb-0.5">
-          <Play className="w-2.5 h-2.5 fill-purple-400 text-purple-400" />
-          <p className="text-[10px] font-bold uppercase tracking-wider text-purple-300">
+          <Play className="w-2.5 h-2.5 fill-[#A78BFA] text-[#A78BFA]" />
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#C4B5FD]">
             CONTINUAR OUVINDO
           </p>
         </div>
 
-        <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
+        <p className="font-sans text-[15px] sm:text-[16px] font-bold tracking-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
           {livro.titulo}
         </p>
 
@@ -75,7 +75,7 @@ export const AudiobooksContinuarOuvindoCard: React.FC<AudiobooksContinuarOuvindo
 
       {/* Seta indicativa à direita */}
       <ArrowRight
-        className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 z-10 text-purple-400 group-hover:translate-x-1 transition-transform"
+        className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 z-10 text-[#A78BFA] group-hover:translate-x-1 transition-transform"
         strokeWidth={2.4}
       />
 

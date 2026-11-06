@@ -227,6 +227,15 @@ export default function AudiobooksPage() {
 
   const carouselScrollerRef = useRef<HTMLDivElement | null>(null);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
+  // Pré-carrega capas dos livros em memória para exibição instantânea a 0ms
+  useEffect(() => {
+    AUDIOBOOKS_CATALOGO.slice(0, 16).forEach((livro) => {
+      if (livro.capaUrl) {
+        const img = new Image();
+        img.src = livro.capaUrl;
+      }
+    });
+  }, []);
   const [isReady, setIsReady] = useState(false);
   const isInteractingRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -712,8 +721,9 @@ export default function AudiobooksPage() {
                       <img
                         src={livro.capaUrl}
                         alt={`Capa do livro: ${livro.titulo}`}
-                        loading="lazy"
+                        loading={index < 6 ? "eager" : "lazy"}
                         decoding="async"
+                        fetchPriority={index < 4 ? "high" : "auto"}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
 
@@ -733,7 +743,7 @@ export default function AudiobooksPage() {
 
                     {/* Informações Centrais da Obra — Título e Descrição de 1 Linha */}
                     <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
-                      <p className="font-sans text-[14.5px] sm:text-[15.5px] font-bold text-white line-clamp-1 truncate leading-snug group-hover:text-[#C4B5FD] transition-colors">
+                      <p className="font-sans text-[14.5px] sm:text-[15.5px] font-bold text-white leading-snug group-hover:text-[#C4B5FD] transition-colors">
                         {livro.titulo}
                       </p>
 

@@ -91,7 +91,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
             <Headphones className="w-3.5 h-3.5 text-white" />
             Direito Prime Audiobooks
           </span>
-          <h1 className="font-display font-bold text-base sm:text-lg text-white drop-shadow-md">
+          <h1 className="font-sans font-bold text-base sm:text-lg text-white drop-shadow-md">
             Audiobooks Clássicos
           </h1>
         </div>

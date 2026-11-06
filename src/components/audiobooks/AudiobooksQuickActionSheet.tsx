@@ -114,7 +114,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          className="relative z-10 w-full h-[92dvh] max-h-[92dvh] bg-[#0A0A0D] border-t border-purple-500/25 rounded-t-[32px] flex flex-col shadow-2xl overflow-hidden max-w-3xl mx-auto"
+          className="relative z-10 w-full h-[92dvh] max-h-[92dvh] bg-[#0A0A0D] border-t border-[#7C3AED]/30 rounded-t-[32px] flex flex-col shadow-2xl overflow-hidden max-w-3xl mx-auto"
         >
           {/* Header Superior com Botão Voltar Padrão 48x48 */}
           <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-white/10 shrink-0 bg-[#0A0A0D]/95 backdrop-blur-md">
@@ -131,7 +131,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
             </button>
 
             <div className="text-center flex-1 px-3 min-w-0">
-              <h2 className="font-display font-bold text-base sm:text-lg text-white truncate">
+              <h2 className="font-sans font-bold text-base sm:text-lg text-white truncate">
                 {titles[tabAtiva].title}
               </h2>
               <p className="text-[11px] sm:text-[12px] text-white/55 truncate">
@@ -143,21 +143,21 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
           </div>
 
           {/* Abas Rápidas no Topo do Sheet (Favoritos | Recentes | Estatísticas | Outros) */}
-          <div className="flex items-center gap-1.5 px-4 sm:px-6 py-2.5 border-b border-white/5 bg-zinc-950/70 overflow-x-auto [scrollbar-width:none] shrink-0">
+          <div className="grid grid-cols-4 gap-1 sm:gap-2 px-3 sm:px-6 py-2 border-b border-white/10 bg-zinc-950/80 shrink-0">
             <button
               type="button"
               onClick={() => {
                 haptic.selection();
                 setTabAtiva('favoritos');
               }}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer select-none text-center ${
                 tabAtiva === 'favoritos'
-                  ? 'bg-rose-500/20 border border-rose-500/40 text-rose-300 shadow-sm'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/35 border border-[#8B5CF6]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
               }`}
             >
-              <Heart className={`w-3.5 h-3.5 ${tabAtiva === 'favoritos' ? 'fill-rose-400 text-rose-400' : ''}`} />
-              Favoritos ({favoritos.length})
+              <Heart className={`w-3.5 h-3.5 ${tabAtiva === 'favoritos' ? 'fill-white text-white' : 'text-rose-400'}`} />
+              <span className="truncate">Favoritos ({favoritos.length})</span>
             </button>
 
             <button
@@ -166,14 +166,14 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                 haptic.selection();
                 setTabAtiva('recentes');
               }}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer select-none text-center ${
                 tabAtiva === 'recentes'
-                  ? 'bg-blue-500/20 border border-blue-500/40 text-blue-300 shadow-sm'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/35 border border-[#8B5CF6]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
               }`}
             >
-              <History className="w-3.5 h-3.5 text-blue-400" />
-              Recentes
+              <History className={`w-3.5 h-3.5 ${tabAtiva === 'recentes' ? 'text-white' : 'text-[#60A5FA]'}`} />
+              <span className="truncate">Recentes</span>
             </button>
 
             <button
@@ -182,14 +182,14 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                 haptic.selection();
                 setTabAtiva('estatisticas');
               }}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer select-none text-center ${
                 tabAtiva === 'estatisticas'
-                  ? 'bg-amber-500/20 border border-amber-500/40 text-amber-300 shadow-sm'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/35 border border-[#8B5CF6]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
               }`}
             >
-              <BarChart3 className="w-3.5 h-3.5 text-amber-400" />
-              Estatísticas
+              <BarChart3 className={`w-3.5 h-3.5 ${tabAtiva === 'estatisticas' ? 'text-white' : 'text-[#FBBF24]'}`} />
+              <span className="truncate">Estatísticas</span>
             </button>
 
             <button
@@ -198,14 +198,14 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                 haptic.selection();
                 setTabAtiva('outros');
               }}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer select-none text-center ${
                 tabAtiva === 'outros'
-                  ? 'bg-purple-500/20 border border-purple-500/40 text-purple-300 shadow-sm'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/35 border border-[#8B5CF6]'
+                  : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-              Outros
+              <Sparkles className={`w-3.5 h-3.5 ${tabAtiva === 'outros' ? 'text-white' : 'text-[#C4B5FD]'}`} />
+              <span className="truncate">Outros</span>
             </button>
           </div>
 
@@ -219,7 +219,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                     <div className="w-14 h-14 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mb-3">
                       <Heart className="w-6 h-6 text-rose-400" />
                     </div>
-                    <h3 className="font-display font-bold text-white text-base">
+                    <h3 className="font-sans font-bold text-white text-base">
                       Nenhum audiobook favoritado
                     </h3>
                     <p className="text-xs text-white/50 max-w-xs mt-1.5">
@@ -233,7 +233,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                         setFavoritos(audiobooksTracking.getFavoritos());
                         toast.success('Obra adicionada aos favoritos!');
                       }}
-                      className="mt-4 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+                      className="mt-4 px-4 py-2 rounded-xl bg-[#7C3AED] hover:bg-[#6D28D9] text-white text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
                     >
                       Favoritar &quot;Exploradores de Cavernas&quot;
                     </button>
@@ -250,15 +250,17 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                             onClose();
                             onSelectLivro(livroCompleto);
                           }}
-                          className="p-3 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-purple-500/40 transition-all flex items-center gap-3 cursor-pointer group shadow-sm"
+                          className="p-3 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-[#7C3AED]/50 transition-all flex items-center gap-3 cursor-pointer group shadow-sm"
                         >
                           <img
                             src={fav.capaUrl}
                             alt={fav.titulo}
+                            loading="eager"
+                            decoding="async"
                             className="w-14 h-18 rounded-xl object-cover shrink-0 border border-white/15"
                           />
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-serif italic font-bold text-sm text-white group-hover:text-purple-300 transition-colors line-clamp-1">
+                            <h4 className="font-sans font-bold text-sm text-white group-hover:text-[#C4B5FD] transition-colors leading-snug">
                               {fav.titulo}
                             </h4>
                             <p className="text-[11px] text-white/50 truncate mt-0.5">
@@ -300,12 +302,14 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                         onClose();
                         onPlayLivro(livro, item.capituloIndex);
                       }}
-                      className="p-3.5 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-blue-500/40 transition-all flex items-center gap-3.5 cursor-pointer group shadow-md"
+                      className="p-3.5 rounded-2xl bg-zinc-950/80 border border-white/10 hover:border-[#7C3AED]/50 transition-all flex items-center gap-3.5 cursor-pointer group shadow-md"
                     >
                       <div className="relative w-14 h-18 rounded-xl overflow-hidden shrink-0 border border-white/15">
                         <img
                           src={item.capaUrl}
                           alt={item.titulo}
+                          loading="eager"
+                          decoding="async"
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -314,19 +318,19 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">
+                          <span className="w-2 h-2 rounded-full bg-[#A78BFA] animate-pulse" />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#A78BFA]">
                             Parou no Capítulo {item.capituloIndex + 1}
                           </span>
                         </div>
-                        <h4 className="font-serif italic font-bold text-sm sm:text-base text-white group-hover:text-blue-300 transition-colors truncate">
+                        <h4 className="font-sans font-bold text-sm sm:text-base text-white group-hover:text-[#C4B5FD] transition-colors leading-snug">
                           {item.titulo}
                         </h4>
                         <p className="text-[11.5px] text-white/60 truncate mt-0.5">
                           {item.capituloTitulo}
                         </p>
                         <div className="mt-2 w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                          <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-full w-[45%]" />
+                          <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] h-full w-[45%]" />
                         </div>
                       </div>
                       <ChevronRight className="w-5 h-5 text-white/30 group-hover:text-white transition-colors shrink-0" />
@@ -342,8 +346,8 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                 {/* Cards de Métricas */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-purple-500/20 text-center">
-                    <Clock className="w-5 h-5 text-purple-400 mx-auto mb-1.5" />
-                    <p className="font-display font-bold text-xl sm:text-2xl text-white">
+                    <Clock className="w-5 h-5 text-[#A78BFA] mx-auto mb-1.5" />
+                    <p className="font-sans font-bold text-xl sm:text-2xl text-white">
                       {stats.tempoMinutos} <span className="text-xs font-normal text-white/60">min</span>
                     </p>
                     <p className="text-[10.5px] text-white/50 uppercase tracking-wider mt-0.5">
@@ -353,7 +357,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
 
                   <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-emerald-500/20 text-center">
                     <CheckCircle2 className="w-5 h-5 text-emerald-400 mx-auto mb-1.5" />
-                    <p className="font-display font-bold text-xl sm:text-2xl text-white">
+                    <p className="font-sans font-bold text-xl sm:text-2xl text-white">
                       {stats.capitulosConcluidos}/{stats.totalCapitulosDisponiveis}
                     </p>
                     <p className="text-[10.5px] text-white/50 uppercase tracking-wider mt-0.5">
@@ -363,7 +367,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
 
                   <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-amber-500/20 text-center">
                     <Flame className="w-5 h-5 text-amber-400 mx-auto mb-1.5" />
-                    <p className="font-display font-bold text-xl sm:text-2xl text-white">
+                    <p className="font-sans font-bold text-xl sm:text-2xl text-white">
                       {stats.diasConsecutivos} <span className="text-xs font-normal text-white/60">dias</span>
                     </p>
                     <p className="text-[10.5px] text-white/50 uppercase tracking-wider mt-0.5">
@@ -373,7 +377,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
 
                   <div className="p-3.5 rounded-2xl bg-zinc-950/80 border border-blue-500/20 text-center">
                     <BookOpen className="w-5 h-5 text-blue-400 mx-auto mb-1.5" />
-                    <p className="font-display font-bold text-xl sm:text-2xl text-white">
+                    <p className="font-sans font-bold text-xl sm:text-2xl text-white">
                       {stats.obrasIniciadas}
                     </p>
                     <p className="text-[10.5px] text-white/50 uppercase tracking-wider mt-0.5">
@@ -383,12 +387,12 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                 </div>
 
                 {/* Selo de Evolução */}
-                <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-900/40 via-purple-950/30 to-black/80 border border-purple-500/30 flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center shrink-0">
-                    <Award className="w-6 h-6 text-purple-300" />
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-[#7C3AED]/25 via-purple-950/40 to-black/80 border border-[#7C3AED]/40 flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#7C3AED]/25 border border-[#8B5CF6]/50 flex items-center justify-center shrink-0">
+                    <Award className="w-6 h-6 text-[#DDD6FE]" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-display font-bold text-white text-sm">
+                    <h4 className="font-sans font-bold text-white text-sm">
                       Nível de Ouvinte: Fundamentos do Direito
                     </h4>
                     <p className="text-xs text-white/60 leading-snug mt-0.5">
@@ -403,7 +407,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
             {tabAtiva === 'outros' && (
               <div className="space-y-3">
                 <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/10 space-y-3">
-                  <h4 className="font-display font-bold text-white text-sm flex items-center gap-2">
+                  <h4 className="font-sans font-bold text-white text-sm flex items-center gap-2">
                     <Volume2 className="w-4 h-4 text-purple-400" />
                     Qualidade de Estúdio &amp; Narração
                   </h4>
@@ -419,7 +423,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                       34 novas obras clássicas estão sendo gravadas em estúdio.
                     </p>
                   </div>
-                  <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30">
+                  <span className="px-2.5 py-1 rounded-full bg-[#7C3AED]/20 text-[#DDD6FE] text-[10px] font-bold border border-[#7C3AED]/40">
                     35 Livros
                   </span>
                 </div>
