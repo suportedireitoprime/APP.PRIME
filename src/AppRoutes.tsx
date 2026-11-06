@@ -119,9 +119,6 @@ const AdminRotas = lazy(() => import("./pages/AdminRotas.tsx"));
 const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
 const Simulados = lazy(() => import("./pages/Simulados.tsx"));
 const SimuladosEstatisticas = lazy(() => import("./pages/SimuladosEstatisticas.tsx"));
-const FerramentasSimulados = Simulados;
-const FerramentasSimuladosResolver = SimuladosResolver;
-const FerramentasSimuladosEstatisticas = SimuladosEstatisticas;
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
