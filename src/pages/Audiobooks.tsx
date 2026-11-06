@@ -214,59 +214,152 @@ export default function AudiobooksPage() {
     [],
   );
 
+  // 4 cópias para permitir rolagem contínua infinita sem margem morta na esquerda (idêntico a Leis em Alta)
+  const loopedItems = useMemo(() => {
+    if (livrosRecomendados.length === 0) return [];
+    return [
+      ...livrosRecomendados,
+      ...livrosRecomendados,
+      ...livrosRecomendados,
+      ...livrosRecomendados,
+    ];
+  }, [livrosRecomendados]);
+
   const carouselScrollerRef = useRef<HTMLDivElement | null>(null);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
-  const tickingCarouselRef = useRef(false);
+  const [isReady, setIsReady] = useState(false);
+  const isInteractingRef = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const isDraggingRef = useRef(false);
 
-  // Escuta a rolagem do carrossel com rAF para fluidez máxima a 120fps sem travar o scroll vertical
-  const handleCarouselScroll = useCallback(() => {
-    if (!tickingCarouselRef.current) {
-      tickingCarouselRef.current = true;
-      requestAnimationFrame(() => {
-        const el = carouselScrollerRef.current;
-        if (el) {
-          const center = el.scrollLeft + el.clientWidth / 2;
-          let best = 0;
-          let bestDist = Infinity;
-          for (let i = 0; i < el.children.length; i++) {
-            const child = el.children[i] as HTMLElement;
-            const mid = child.offsetLeft + child.clientWidth / 2;
-            const dist = Math.abs(mid - center);
-            if (dist < bestDist) {
-              bestDist = dist;
-              best = i;
-            }
-          }
-          setActiveCarouselIndex(best);
-        }
-        tickingCarouselRef.current = false;
-      });
-    }
+  const pauseAutoplay = useCallback(() => {
+    isInteractingRef.current = true;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      isInteractingRef.current = false;
+    }, 4000);
   }, []);
 
-  // Garante a detecção correta do card ativo inicial após a montagem do DOM
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      handleCarouselScroll();
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [handleCarouselScroll]);
+  // Centraliza um card específico do carrossel suavemente ou instantaneamente
+  const scrollCarouselToIndex = useCallback(
+    (idx: number, behavior: ScrollBehavior = "smooth") => {
+      const el = carouselScrollerRef.current;
+      if (!el) return;
+      const child = el.children[idx] as HTMLElement | undefined;
+      if (!child) return;
+      const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
+      el.scrollTo({ left: target, behavior });
+      setActiveCarouselIndex(idx);
+    },
+    [],
+  );
 
-  // Centraliza um card específico do carrossel suavemente
-  const scrollCarouselToIndex = useCallback((idx: number) => {
+  // Inicializa o carrossel centralizado no segundo bloco (sem margem morta na esquerda, padrão Leis em Alta)
+  useEffect(() => {
+    if (livrosRecomendados.length > 0 && !isReady) {
+      const initialIndex = livrosRecomendados.length;
+      setActiveCarouselIndex(initialIndex);
+      const timer = setTimeout(() => {
+        scrollCarouselToIndex(initialIndex, "instant" as ScrollBehavior);
+        setIsReady(true);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [livrosRecomendados.length, isReady, scrollCarouselToIndex]);
+
+  // Escuta a rolagem e realiza o teleporte silencioso de 0ms nas bordas para loop infinito contínuo
+  const handleCarouselScroll = useCallback(() => {
     const el = carouselScrollerRef.current;
     if (!el) return;
-    const child = el.children[idx] as HTMLElement | undefined;
-    if (!child) return;
-    const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
-    el.scrollTo({ left: target, behavior: "smooth" });
-    setActiveCarouselIndex(idx);
-  }, []);
+
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let best = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < el.children.length; i++) {
+      const child = el.children[i] as HTMLElement;
+      const mid = child.offsetLeft + child.clientWidth / 2;
+      const dist = Math.abs(mid - center);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    }
+
+    const N = livrosRecomendados.length;
+    if (N > 0) {
+      if (best <= 1) {
+        const jumpTo = best + N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({
+            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
+            behavior: "auto",
+          });
+          setActiveCarouselIndex(jumpTo);
+          return;
+        }
+      } else if (best >= loopedItems.length - 2) {
+        const jumpTo = best - N * 2;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({
+            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
+            behavior: "auto",
+          });
+          setActiveCarouselIndex(jumpTo);
+          return;
+        }
+      }
+    }
+
+    setActiveCarouselIndex(best);
+  }, [livrosRecomendados.length, loopedItems.length]);
+
+  // Autoplay contínuo suave (idêntico a Leis em Alta)
+  useEffect(() => {
+    if (livrosRecomendados.length <= 1 || !isReady) return;
+
+    const interval = setInterval(() => {
+      if (isInteractingRef.current || document.hidden) return;
+
+      const el = carouselScrollerRef.current;
+      setActiveCarouselIndex((prev) => {
+        let current = prev;
+        const N = livrosRecomendados.length;
+
+        // Teleporte silencioso nas proximidades da borda
+        if (N > 0 && current >= loopedItems.length - N - 2 && el) {
+          const equivalent = (current % N) + N * 2;
+          const childCurr = el.children[current] as HTMLElement | undefined;
+          const childEq = el.children[equivalent] as HTMLElement | undefined;
+          if (childCurr && childEq) {
+            const diff = childCurr.offsetLeft - childEq.offsetLeft;
+            el.style.scrollBehavior = "auto";
+            el.style.scrollSnapType = "none";
+            el.scrollLeft -= diff;
+            void el.offsetHeight;
+            el.style.scrollSnapType = "";
+            el.style.scrollBehavior = "";
+            current = equivalent;
+          }
+        }
+
+        const nextIndex = current + 1;
+        scrollCarouselToIndex(nextIndex);
+        return nextIndex;
+      });
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [livrosRecomendados.length, isReady, scrollCarouselToIndex, loopedItems.length]);
 
   // Detecção cirúrgica de arrasto (drag) para não abrir o card acidentalmente durante rolagem
   const handlePointerDown = (e: React.PointerEvent) => {
+    pauseAutoplay();
     pointerStartRef.current = { x: e.clientX, y: e.clientY };
     isDraggingRef.current = false;
   };
@@ -289,6 +382,7 @@ export default function AudiobooksPage() {
 
   const handleCarouselCardClick = (livro: AudiobookLivro, idx: number) => {
     if (isDraggingRef.current) return;
+    pauseAutoplay();
     haptic.selection();
     if (idx !== activeCarouselIndex) {
       scrollCarouselToIndex(idx);
@@ -351,16 +445,18 @@ export default function AudiobooksPage() {
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
-            className="-mx-4 sm:-mx-6 px-[calc(50%-68px)] sm:px-[calc(50%-76px)] flex gap-3.5 sm:gap-4 overflow-x-auto snap-x snap-mandatory pb-3 pt-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation"
+            onTouchStart={pauseAutoplay}
+            className="-mx-4 sm:-mx-6 md:-mx-8 lg:-mx-12 px-[calc(50vw-68px)] sm:px-[calc(50vw-76px)] flex gap-3.5 sm:gap-4 overflow-x-auto snap-x snap-mandatory pb-3 pt-3 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation"
+            style={{ visibility: isReady ? "visible" : "hidden" }}
           >
-            {livrosRecomendados.map((livro, idx) => {
+            {loopedItems.map((livro, idx) => {
               const isDisponivel = livro.status === "disponivel";
               const isFav = favIds.has(livro.id);
               const isActive = idx === activeCarouselIndex;
 
               return (
                 <div
-                  key={`rec-${livro.id}`}
+                  key={`rec-${livro.id}-${idx}`}
                   onClick={() => handleCarouselCardClick(livro, idx)}
                   className={`snap-center shrink-0 w-[136px] sm:w-[152px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transition-all duration-300 ${
                     isActive
@@ -445,19 +541,28 @@ export default function AudiobooksPage() {
 
           {/* Indicador de Bolinhas Minimalista */}
           <div className="flex items-center justify-center gap-1.5 pt-1">
-            {livrosRecomendados.map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => scrollCarouselToIndex(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === activeCarouselIndex
-                    ? "w-5 bg-purple-500 shadow-sm shadow-purple-500/60"
-                    : "w-1.5 bg-white/20 hover:bg-white/40"
-                }`}
-                aria-label={`Ver recomendação ${i + 1}`}
-              />
-            ))}
+            {livrosRecomendados.map((_, i) => {
+              const N = livrosRecomendados.length;
+              const currentNorm = ((activeCarouselIndex % N) + N) % N;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => {
+                    pauseAutoplay();
+                    const currentBlock = Math.floor(activeCarouselIndex / N);
+                    const targetIdx = currentBlock * N + i;
+                    scrollCarouselToIndex(targetIdx);
+                  }}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === currentNorm
+                      ? "w-5 bg-purple-500 shadow-sm shadow-purple-500/60"
+                      : "w-1.5 bg-white/20 hover:bg-white/40"
+                  }`}
+                  aria-label={`Ver recomendação ${i + 1}`}
+                />
+              );
+            })}
           </div>
         </section>
 
