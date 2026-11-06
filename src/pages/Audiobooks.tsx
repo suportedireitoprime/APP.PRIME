@@ -430,11 +430,11 @@ export default function AudiobooksPage() {
           <div className="flex items-center justify-between gap-2 px-1">
             <div className="min-w-0 flex-1">
               <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
-                <span className="w-1 h-5 rounded-full bg-purple-500 shrink-0" />
-                <span className="truncate">RECOMENDAÇÕES</span>
+                <span className="w-1 h-5 rounded-full bg-[#7C3AED] shrink-0" />
+                <span>RECOMENDAÇÕES</span>
               </h3>
-              <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3 truncate">
-                Obras fundamentais e mais recomendadas para a sua formação
+              <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
+                Obras clássicas recomendadas para você
               </p>
             </div>
           </div>
@@ -467,15 +467,15 @@ export default function AudiobooksPage() {
                   <div
                     className={`relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border transform-gpu transition-all duration-300 ${
                       isActive
-                        ? "scale-100 border-purple-400/80 shadow-2xl shadow-purple-950/60 ring-2 ring-purple-500/50"
-                        : "scale-[0.94] border-white/10 shadow-md group-hover:border-purple-500/40"
+                        ? "scale-100 border-[#8B5CF6]/80 shadow-2xl shadow-[#7C3AED]/30 ring-2 ring-[#7C3AED]/50"
+                        : "scale-[0.94] border-white/10 shadow-md group-hover:border-[#7C3AED]/40"
                     }`}
                   >
                     {/* Efeito de Pulso Leve na capa centralizada ativa (padrão Layers/Leis em Alta) */}
                     {isActive && (
                       <>
-                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-600/35 via-fuchsia-500/25 to-purple-600/35 blur-md pointer-events-none animate-pulse" />
-                        <div className="absolute inset-0 rounded-2xl ring-2 ring-purple-400/80 pointer-events-none animate-[pulse_2.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
+                        <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#7C3AED]/35 via-[#A855F7]/25 to-[#7C3AED]/35 blur-md pointer-events-none animate-pulse" />
+                        <div className="absolute inset-0 rounded-2xl ring-2 ring-[#8B5CF6]/80 pointer-events-none animate-[pulse_2.5s_cubic-bezier(0.4,0,0.6,1)_infinite]" />
                       </>
                     )}
 
@@ -525,8 +525,8 @@ export default function AudiobooksPage() {
                   <p
                     className={`font-sans font-bold text-xs sm:text-[13px] line-clamp-2 mt-2 leading-snug transition-colors ${
                       isActive
-                        ? "text-purple-200"
-                        : "text-white group-hover:text-purple-300"
+                        ? "text-[#DDD6FE]"
+                        : "text-white group-hover:text-[#C4B5FD]"
                     }`}
                   >
                     {livro.titulo}
@@ -556,7 +556,7 @@ export default function AudiobooksPage() {
                   }}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
                     i === currentNorm
-                      ? "w-5 bg-purple-500 shadow-sm shadow-purple-500/60"
+                      ? "w-5 bg-[#7C3AED] shadow-sm shadow-[#7C3AED]/60"
                       : "w-1.5 bg-white/20 hover:bg-white/40"
                   }`}
                   aria-label={`Ver recomendação ${i + 1}`}
@@ -572,17 +572,17 @@ export default function AudiobooksPage() {
         <section className="pt-2">
           {/* Header da Seção Idêntico à Biblioteca — Apenas Lista */}
           <div className="mb-4">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-purple-400 font-bold">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-[#A78BFA] font-bold">
               ACERVO DE AUDIOBOOKS
             </p>
             <div className="flex items-center gap-2 mt-1">
-              <span className="w-1 h-6 rounded-full bg-purple-500" />
+              <span className="w-1 h-6 rounded-full bg-[#7C3AED]" />
               <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
                 Todos os Livros
               </h2>
             </div>
-            <p className="text-sm text-white/60 mt-1 ml-3 truncate">
-              Toque em qualquer livro para abrir o painel de detalhes, sinopse e capítulos.
+            <p className="text-xs sm:text-sm text-white/60 mt-1 ml-3">
+              Toque em qualquer obra para ouvir
             </p>
           </div>
 
@@ -594,7 +594,7 @@ export default function AudiobooksPage() {
               value={termoBusca}
               onChange={(e) => setTermoBusca(e.target.value)}
               placeholder="Buscar livro, autor ou tema…"
-              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-purple-500/60 transition-colors shadow-sm"
+              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-[#7C3AED]/60 transition-colors shadow-sm"
             />
             {termoBusca && (
               <button
@@ -618,7 +618,7 @@ export default function AudiobooksPage() {
               }}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
                 filtroStatus === "todos"
-                  ? "bg-purple-600 border-purple-500 text-white shadow-md"
+                  ? "bg-[#7C3AED] border-[#8B5CF6] text-white shadow-md shadow-[#7C3AED]/35"
                   : "bg-white/5 border-white/10 text-white/70 hover:text-white"
               }`}
             >
@@ -634,11 +634,11 @@ export default function AudiobooksPage() {
               }}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
                 filtroStatus === "terminando"
-                  ? "bg-amber-600 border-amber-600 text-white shadow-md"
+                  ? "bg-[#7C3AED] border-[#8B5CF6] text-white shadow-md shadow-[#7C3AED]/35"
                   : "bg-white/5 border-white/10 text-white/70 hover:text-white"
               }`}
             >
-              <Clock className="w-3 h-3 text-amber-300" />
+              <Clock className={`w-3 h-3 ${filtroStatus === "terminando" ? "text-white" : "text-amber-300"}`} />
               Terminando ({terminandoCount})
             </button>
 
@@ -651,11 +651,11 @@ export default function AudiobooksPage() {
               }}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border ${
                 filtroStatus === "finalizados"
-                  ? "bg-emerald-600 border-emerald-600 text-white shadow-md"
+                  ? "bg-[#7C3AED] border-[#8B5CF6] text-white shadow-md shadow-[#7C3AED]/35"
                   : "bg-white/5 border-white/10 text-white/70 hover:text-white"
               }`}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className={`w-1.5 h-1.5 rounded-full ${filtroStatus === "finalizados" ? "bg-white" : "bg-emerald-400"}`} />
               Finalizados ({finalizadosCount})
             </button>
           </div>
@@ -673,7 +673,7 @@ export default function AudiobooksPage() {
                   <button
                     type="button"
                     onClick={() => setFiltroStatus("todos")}
-                    className="mt-3 px-4 py-1.5 rounded-full bg-purple-600 text-white text-xs font-bold hover:bg-purple-500"
+                    className="mt-3 px-4 py-1.5 rounded-full bg-[#7C3AED] text-white text-xs font-bold hover:bg-[#7C3AED]"
                   >
                     Ver Todos os Livros
                   </button>
@@ -705,7 +705,7 @@ export default function AudiobooksPage() {
                     whileTap={{ scale: 0.985 }}
                     onClick={() => handleCardClick(livro)}
                     aria-label={`Abrir audiobook ${livro.titulo}${livro.autor ? ` de ${livro.autor}` : ""}`}
-                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416] hover:bg-[#1A1A1E] border border-white/10 hover:border-purple-500/40 transition-colors text-left w-full relative overflow-hidden shadow-sm cursor-pointer select-none"
+                    className="group flex items-stretch gap-3.5 p-3 rounded-2xl bg-[#141416] hover:bg-[#1A1A1E] border border-white/10 hover:border-[#7C3AED]/40 transition-colors text-left w-full relative overflow-hidden shadow-sm cursor-pointer select-none"
                   >
                     {/* Capa Retangular à Esquerda */}
                     <div className="w-[72px] sm:w-[80px] h-[100px] sm:h-[110px] shrink-0 rounded-xl overflow-hidden bg-zinc-950 border border-white/10 shadow-md relative">
@@ -732,7 +732,7 @@ export default function AudiobooksPage() {
 
                     {/* Informações Centrais da Obra — Título e Descrição de 1 Linha */}
                     <div className="flex-1 min-w-0 flex flex-col justify-center py-0.5">
-                      <p className="font-sans text-[14.5px] sm:text-[15.5px] font-bold text-white line-clamp-1 truncate leading-snug group-hover:text-purple-300 transition-colors">
+                      <p className="font-sans text-[14.5px] sm:text-[15.5px] font-bold text-white line-clamp-1 truncate leading-snug group-hover:text-[#C4B5FD] transition-colors">
                         {livro.titulo}
                       </p>
 
@@ -760,7 +760,7 @@ export default function AudiobooksPage() {
                         )}
 
                         {isNotificado && !isDisponivel && (
-                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/30">
+                          <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-[#7C3AED]/15 text-[#C4B5FD] border border-[#7C3AED]/30">
                             <Bell className="w-2.5 h-2.5 fill-current" />
                             Aviso Ativo
                           </span>
@@ -784,7 +784,7 @@ export default function AudiobooksPage() {
                       </button>
 
                       {isDisponivel ? (
-                        <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full bg-purple-600 hover:bg-purple-500 transition-colors shadow-md shadow-purple-600/20 flex items-center gap-1">
+                        <span className="text-[11px] uppercase tracking-wide font-bold text-white px-3 py-1.5 rounded-full bg-[#7C3AED] hover:bg-[#7C3AED] transition-colors shadow-md shadow-purple-600/20 flex items-center gap-1">
                           <Play className="w-3 h-3 fill-white" />
                           Ouvir
                         </span>
