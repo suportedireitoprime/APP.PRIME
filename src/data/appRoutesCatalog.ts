@@ -216,25 +216,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/assistente",
-    "group": "IA & Assistente Horus",
-    "label": "Assistente",
-    "description": "Interface do Assistente Horus com comandos rápidos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "AssistenteApp",
-    "exampleUrl": "/assistente",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
     "path": "/assistente-horus",
     "group": "IA & Assistente Horus",
     "label": "Assistente Horus",

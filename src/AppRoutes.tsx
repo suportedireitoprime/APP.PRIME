@@ -291,7 +291,6 @@ const CentralLembretes = lazy(() => import("./pages/CentralLembretes.tsx"));
 const LembretesLocal = lazy(() => import("./pages/LembretesLocal.tsx"));
 const Suporte = lazy(() => import("./pages/Suporte.tsx"));
 const SuportePublico = lazy(() => import("./pages/SuportePublico.tsx"));
-const AssistenteApp = lazy(() => import("./pages/AssistenteApp.tsx"));
 const AssistenteHorus = lazy(() => import("./pages/AssistenteHorus.tsx"));
 
 
@@ -946,7 +945,6 @@ function AnimatedRoutes() {
           <Route path="/modo-offline/leis-e-narracoes" element={<ProtectedRoute><PageTransition><ModoOfflineLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/livros" element={<ProtectedRoute><PageTransition><ModoOfflineLivros /></PageTransition></ProtectedRoute>} />
           <Route path="/modo-offline/audioaulas" element={<ProtectedRoute><PageTransition><ModoOfflineAudioaulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/assistente" element={<ProtectedRoute><PageTransition instant><AssistenteApp /></PageTransition></ProtectedRoute>} />
           <Route path="/assistente-horus" element={<ProtectedRoute><PageTransition instant><AssistenteHorus /></PageTransition></ProtectedRoute>} />
 
           <Route path="/pessoal/grifos" element={<ProtectedRoute><PageTransition><PessoalGrifos /></PageTransition></ProtectedRoute>} />

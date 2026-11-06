@@ -18,7 +18,6 @@ import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
 import { Route as AssinaturaRouteImport } from './routes/assinatura'
-import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as AssistenteHorusRouteImport } from './routes/assistente-horus'
 import { Route as AtualizacoesRouteImport } from './routes/atualizacoes'
 import { Route as AudioaulasRouteImport } from './routes/audioaulas'
@@ -189,11 +188,6 @@ const AdminRotasRoute = AdminRotasRouteImport.update({
 const AssinaturaRoute = AssinaturaRouteImport.update({
   id: '/assinatura',
   path: '/assinatura',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AssistenteRoute = AssistenteRouteImport.update({
-  id: '/assistente',
-  path: '/assistente',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AssistenteHorusRoute = AssistenteHorusRouteImport.update({
@@ -856,7 +850,6 @@ export interface FileRoutesByFullPath {
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
   '/assinatura': typeof AssinaturaRoute
-  '/assistente': typeof AssistenteRoute
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atualizacoes': typeof AtualizacoesRoute
   '/audioaulas': typeof AudioaulasRouteWithChildren
@@ -994,7 +987,6 @@ export interface FileRoutesByTo {
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
   '/assinatura': typeof AssinaturaRoute
-  '/assistente': typeof AssistenteRoute
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atualizacoes': typeof AtualizacoesRoute
   '/audioaulas': typeof AudioaulasRouteWithChildren
@@ -1133,7 +1125,6 @@ export interface FileRoutesById {
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
   '/assinatura': typeof AssinaturaRoute
-  '/assistente': typeof AssistenteRoute
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atualizacoes': typeof AtualizacoesRoute
   '/audioaulas': typeof AudioaulasRouteWithChildren
@@ -1273,7 +1264,6 @@ export interface FileRouteTypes {
     | '/admin-push'
     | '/admin-rotas'
     | '/assinatura'
-    | '/assistente'
     | '/assistente-horus'
     | '/atualizacoes'
     | '/audioaulas'
@@ -1411,7 +1401,6 @@ export interface FileRouteTypes {
     | '/admin-push'
     | '/admin-rotas'
     | '/assinatura'
-    | '/assistente'
     | '/assistente-horus'
     | '/atualizacoes'
     | '/audioaulas'
@@ -1549,7 +1538,6 @@ export interface FileRouteTypes {
     | '/admin-push'
     | '/admin-rotas'
     | '/assinatura'
-    | '/assistente'
     | '/assistente-horus'
     | '/atualizacoes'
     | '/audioaulas'
@@ -1688,7 +1676,6 @@ export interface RootRouteChildren {
   AdminPushRoute: typeof AdminPushRoute
   AdminRotasRoute: typeof AdminRotasRoute
   AssinaturaRoute: typeof AssinaturaRoute
-  AssistenteRoute: typeof AssistenteRoute
   AssistenteHorusRoute: typeof AssistenteHorusRoute
   AtualizacoesRoute: typeof AtualizacoesRoute
   AudioaulasRoute: typeof AudioaulasRouteWithChildren
@@ -1806,13 +1793,6 @@ declare module '@tanstack/react-router' {
       path: '/assinatura'
       fullPath: '/assinatura'
       preLoaderRoute: typeof AssinaturaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/assistente': {
-      id: '/assistente'
-      path: '/assistente'
-      fullPath: '/assistente'
-      preLoaderRoute: typeof AssistenteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assistente-horus': {
@@ -3109,7 +3089,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminPushRoute: AdminPushRoute,
   AdminRotasRoute: AdminRotasRoute,
   AssinaturaRoute: AssinaturaRoute,
-  AssistenteRoute: AssistenteRoute,
   AssistenteHorusRoute: AssistenteHorusRoute,
   AtualizacoesRoute: AtualizacoesRoute,
   AudioaulasRoute: AudioaulasRouteWithChildren,
