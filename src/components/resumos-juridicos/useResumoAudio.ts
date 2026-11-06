@@ -10,6 +10,7 @@ interface UseResumoAudioParams {
 
 export function useResumoAudio({ audioUrl, titulo, subtitulo }: UseResumoAudioParams) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playPromiseRef = useRef<Promise<void> | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -99,12 +100,39 @@ export function useResumoAudio({ audioUrl, titulo, subtitulo }: UseResumoAudioPa
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (isPlaying) {
-      audio.pause();
+    if (!audio.paused) {
+      if (playPromiseRef.current) {
+        playPromiseRef.current
+          .then(() => {
+            audio.pause();
+            setIsPlaying(false);
+          })
+          .catch(() => {
+            audio.pause();
+            setIsPlaying(false);
+          });
+      } else {
+        audio.pause();
+        setIsPlaying(false);
+      }
     } else {
-      audio.play().catch(() => setIsPlaying(false));
+      setIsLoading(true);
+      playPromiseRef.current = audio.play();
+      playPromiseRef.current
+        .then(() => {
+          setIsPlaying(true);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.warn("Audio play error:", err);
+          setIsPlaying(false);
+          setIsLoading(false);
+        })
+        .finally(() => {
+          playPromiseRef.current = null;
+        });
     }
-  }, [isPlaying]);
+  }, []);
 
   const skipSeconds = useCallback((sec: number) => {
     haptic.selection();

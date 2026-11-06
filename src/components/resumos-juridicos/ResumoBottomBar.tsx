@@ -70,9 +70,13 @@ export const ResumoBottomBar = memo(function ResumoBottomBar({
     }
   };
 
+  const lastPressRef = React.useRef(0);
   const handleAudioPress = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (!audioUrl) return;
+    const now = Date.now();
+    if (now - lastPressRef.current < 300) return;
+    lastPressRef.current = now;
     haptic.selection();
     onToggleAudio();
   };
@@ -182,7 +186,6 @@ export const ResumoBottomBar = memo(function ResumoBottomBar({
         {/* Slot 3: FAB Central - Narrar */}
         <button
           type="button"
-          onPointerDown={handleAudioPress}
           onClick={handleAudioPress}
           disabled={!audioUrl || audioLoading}
           className={`relative z-[80] flex flex-col items-center justify-end gap-1 py-2 touch-manipulation select-none ${

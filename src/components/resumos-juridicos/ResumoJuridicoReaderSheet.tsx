@@ -40,7 +40,6 @@ import {
 } from "./metodologias";
 import { cn } from "@/lib/utils";
 import { haptic } from "@/lib/nativeHaptics";
-import { ResumoAudioPlayer } from "./ResumoAudioPlayer";
 import { ResumoBottomBar } from "./ResumoBottomBar";
 import { useResumoAudio } from "./useResumoAudio";
 import { useResumoParagraphHighlighter } from "./useResumoParagraphHighlighter";
@@ -987,17 +986,6 @@ export default function ResumoJuridicoReaderSheet({
               </div>
 
               <div className="space-y-4 px-4 pt-4 md:px-6 md:pt-6 max-w-4xl mx-auto w-full">
-                {audioUrl && (
-                  <div className="mb-3">
-                    <ResumoAudioPlayer
-                      audioUrl={audioUrl}
-                      titulo={currentTitle}
-                      subtitulo={resumo.area}
-                      controller={audioCtrl}
-                    />
-                  </div>
-                )}
-
                 {metodo === "conceitos" && abas.length > 1 && (
                   <div className="flex w-full mt-2 border-b border-border">
                     {abas.map((t) => {

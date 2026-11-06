@@ -16,23 +16,33 @@ export const ResumosTemaCard: React.FC<ResumosTemaCardProps> = ({ tema, onClick,
         haptic.selection();
         onClick();
       }}
-      className="w-full flex items-center gap-3.5 px-3 py-3 min-h-[80px] text-left hover:bg-secondary/20 active:scale-[0.98] transition-all rounded-2xl bg-card border border-border hover:border-[#ef4444]/40 shadow-sm group overflow-hidden relative"
+      className="w-full flex items-center gap-3.5 p-3 sm:p-4 min-h-[88px] text-left hover:bg-white/[0.04] active:scale-[0.985] transition-all rounded-2xl bg-[#141416]/90 border border-white/10 hover:border-rose-500/40 shadow-md group overflow-hidden relative cursor-pointer"
     >
-      <div className="w-14 h-[72px] rounded-lg bg-white/5 border border-white/10 shrink-0 overflow-hidden shadow-md">
+      <div className="w-[58px] h-[78px] sm:w-[64px] sm:h-[84px] shrink-0 rounded-xl overflow-hidden bg-black/40 border border-white/10 shadow-lg relative flex items-center justify-center">
         <img
           src={coverUrl || CAPA_PADRAO_RESUMOS}
-          alt="Capa"
-          className="w-full h-full object-cover"
+          alt={tema}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           loading="lazy"
+          decoding="async"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
       </div>
-      <div className="flex-1 min-w-0">
-        <div className="font-body text-[15px] font-bold text-white line-clamp-2 leading-snug">
+
+      <div className="flex-1 min-w-0 pr-1">
+        <h4 className="font-sans font-bold text-base sm:text-[17px] text-white group-hover:text-rose-300 transition-colors leading-snug">
           {tema}
-        </div>
-        <div className="font-body text-[12px] text-[#ef4444] font-bold mt-1.5">LER RESUMO</div>
+        </h4>
+        <p className="font-sans text-xs sm:text-[13px] text-white/50 leading-tight mt-1.5 flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+          <span>Tema completo com resumo doutrinário</span>
+        </p>
       </div>
-      <ChevronRight className="w-5 h-5 text-muted-foreground/40 group-hover:text-primary transition-colors shrink-0" />
+
+      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-white/80 group-hover:bg-rose-600 group-hover:border-rose-500 group-hover:text-white transition-all duration-200 shrink-0 text-xs font-bold tracking-wider uppercase">
+        <span>Acessar</span>
+        <ChevronRight className="w-3.5 h-3.5" />
+      </div>
     </button>
   );
 };

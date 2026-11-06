@@ -84,19 +84,19 @@ export const ResumosContinuarCard: React.FC<ResumosContinuarCardProps> = ({ onOp
           </p>
         </div>
 
-        <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white truncate drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug">
+        <p className="font-serif italic text-[15px] sm:text-[16px] font-semibold tracking-tight text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] leading-snug line-clamp-1">
           {titulo}
         </p>
 
-        <p className="text-[11px] font-semibold truncate flex items-center gap-1.5 text-rose-200/80 mt-0.5">
+        <p className="text-[11px] sm:text-[11.5px] font-semibold truncate flex items-center gap-1.5 text-rose-200/90 mt-0.5">
           <span className="w-1.5 h-1.5 rounded-full animate-pulse bg-emerald-400 shrink-0" />
-          <span>{subtitulo}</span>
+          <span className="truncate">{subtitulo}</span>
         </p>
       </div>
 
       {/* Seta indicativa à direita */}
       <ArrowRight
-        className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 z-10 text-rose-400 group-hover:translate-x-1 transition-transform"
+        className="w-7 h-7 sm:w-8 sm:h-8 shrink-0 z-10 text-rose-400 group-hover:translate-x-1 transition-transform"
         strokeWidth={2.4}
       />
 
