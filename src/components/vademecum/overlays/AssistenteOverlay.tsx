@@ -345,11 +345,28 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0';
 
       const endpoint = `${SUPABASE_URL.replace(/\/+$/, '')}/functions/v1/assistente-juridica`;
-      const payloadMessages = newMessages.map((m) => ({
-        role: m.role,
-        content: m.content,
-        ...(m.attachment ? { attachment: { mime: m.attachment.mime, data: m.attachment.data } } : {}),
-      }));
+
+      const SYSTEM_INSTRUCTIONS_JURIDICO = `Você é o Tutor Jurídico de Elite do Direito Prime.
+DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
+1. TÍTULOS DESTACADOS: Estruture sempre a resposta com títulos claros de seções em Markdown:
+   - ## 🎯 CONCEITO ESSENCIAL
+   - ### 📜 O QUE DIZ A LEI (cite o texto literal entre aspas ou citação em bloco)
+   - ### 💡 EM PORTUGUÊS CLARO (explicação didática, dinâmica e sem juridiquês inútil)
+   - ### 📊 QUADRO COMPARATIVO (SEMPRE que houver 2 ou mais hipóteses, espécies, prazos, requisitos ou teorias, monte uma tabela Markdown com colunas: Requisito | Regra | Exceção/Aplicação)
+   - ### 🔄 FLUXOGRAMA PASSO A PASSO (SEMPRE esquematize a sequência lógica ou rito processual com setas: [Passo 1] ➔ [Passo 2] ➔ [Passo 3 (Decisão)])
+   - ### ⚠️ PEGADINHA DE PROVA & ATENÇÃO (detalhes cruciais cobrados em provas da OAB e concursos)
+2. TABELAS: Monte tabelas Markdown completas (| Item | Regra | Exceção |) sempre que organizar dados.
+3. FLUXOGRAMAS: Use blocos com setas (--> ou ->) para descrever a linha do tempo ou rito dos atos.
+4. FOCO EM RETENÇÃO: Seja didático, dinâmico, direto ao ponto e focado na melhor retenção visual.`;
+
+      const payloadMessages = [
+        { role: 'system', content: SYSTEM_INSTRUCTIONS_JURIDICO },
+        ...newMessages.map((m) => ({
+          role: m.role,
+          content: m.content,
+          ...(m.attachment ? { attachment: { mime: m.attachment.mime, data: m.attachment.data } } : {}),
+        })),
+      ];
 
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
@@ -371,6 +388,9 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
           signal: abortCtrlRef.current.signal,
           body: JSON.stringify({
             messages: payloadMessages,
+            systemPrompt: SYSTEM_INSTRUCTIONS_JURIDICO,
+            systemInstruction: SYSTEM_INSTRUCTIONS_JURIDICO,
+            instructions: SYSTEM_INSTRUCTIONS_JURIDICO,
             webSearch,
             stream: true,
           }),
@@ -396,6 +416,9 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
         const { data, error: invokeErr } = await supabase.functions.invoke('assistente-juridica', {
           body: {
             messages: payloadMessages,
+            systemPrompt: SYSTEM_INSTRUCTIONS_JURIDICO,
+            systemInstruction: SYSTEM_INSTRUCTIONS_JURIDICO,
+            instructions: SYSTEM_INSTRUCTIONS_JURIDICO,
             webSearch,
             stream: false,
           },
