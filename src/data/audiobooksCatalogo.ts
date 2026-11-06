@@ -1,5 +1,40 @@
 import { O_MUNDO_DE_SOFIA } from './audiobooks/oMundoDeSofia';
-export { O_MUNDO_DE_SOFIA };
+import { LIVRO_1984 } from './audiobooks/livro1984';
+import { COMO_AS_DEMOCRACIAS_MORREM } from './audiobooks/comoAsDemocraciasMorrem';
+import { CRIME_E_CASTIGO } from './audiobooks/crimeECastigo';
+import { DIREITO_PENAL_DO_EQUILIBRIO } from './audiobooks/direitoPenalDoEquilibrio';
+import { ELES_OS_JUIZES_VISTOS_POR_NOS_OS_ADVOGADOS } from './audiobooks/elesOsJuizes';
+import { ETICA_A_NICOMACO } from './audiobooks/eticaANicomaco';
+import { INTRODUCAO_AO_ESTUDO_DO_DIREITO } from './audiobooks/introducaoAoEstudoDoDireito';
+import { JUSTICA_O_QUE_E_FAZER_A_COISA_CERTA } from './audiobooks/justicaFazerACoisaCerta';
+import { O_CONTRATO_SOCIAL } from './audiobooks/oContratoSocial';
+import { O_LEVIATA } from './audiobooks/oLeviata';
+import { O_MONGE_E_O_EXECUTIVO } from './audiobooks/oMongeEOExecutivo';
+import { O_MUNDO_ASSOMBRADO_PELOS_DEMONIOS } from './audiobooks/oMundoAssombradoPelosDemonios';
+import { O_PROCESSO } from './audiobooks/oProcesso';
+import { O_ULTIMO_DIA_DE_UM_CONDENADO } from './audiobooks/oUltimoDiaDeUmCondenado';
+import { SOBRE_A_LIBERDADE } from './audiobooks/sobreALiberdade';
+import { VIGIAR_E_PUNIR } from './audiobooks/vigiarEPunir';
+
+export {
+  O_MUNDO_DE_SOFIA,
+  LIVRO_1984,
+  COMO_AS_DEMOCRACIAS_MORREM,
+  CRIME_E_CASTIGO,
+  DIREITO_PENAL_DO_EQUILIBRIO,
+  ELES_OS_JUIZES_VISTOS_POR_NOS_OS_ADVOGADOS,
+  ETICA_A_NICOMACO,
+  INTRODUCAO_AO_ESTUDO_DO_DIREITO,
+  JUSTICA_O_QUE_E_FAZER_A_COISA_CERTA,
+  O_CONTRATO_SOCIAL,
+  O_LEVIATA,
+  O_MONGE_E_O_EXECUTIVO,
+  O_MUNDO_ASSOMBRADO_PELOS_DEMONIOS,
+  O_PROCESSO,
+  O_ULTIMO_DIA_DE_UM_CONDENADO,
+  SOBRE_A_LIBERDADE,
+  VIGIAR_E_PUNIR
+};
 // Catálogo Oficial do Audiobook: O Caso dos Exploradores de Cavernas
 // Armazenado e servido a 0ms via Cloudflare R2 Global CDN
 
@@ -159752,10 +159787,44 @@ export const CINQUENTA_DISCURSOS_QUE_MARCARAM_O_MUNDO_MODERNO: AudiobookLivro = 
   ]
 };
 
-export const AUDIOBOOKS_CATALOGO: AudiobookLivro[] = [
+const LIVROS_DISPONIVEIS_NOVOS: AudiobookLivro[] = [
   O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
   DOS_DELITOS_E_DAS_PENAS,
   CINQUENTA_DISCURSOS_QUE_MARCARAM_O_MUNDO_MODERNO,
   O_MUNDO_DE_SOFIA,
-  ...AUDIOBOOKS_EM_BREVE
+  LIVRO_1984,
+  COMO_AS_DEMOCRACIAS_MORREM,
+  CRIME_E_CASTIGO,
+  DIREITO_PENAL_DO_EQUILIBRIO,
+  ELES_OS_JUIZES_VISTOS_POR_NOS_OS_ADVOGADOS,
+  ETICA_A_NICOMACO,
+  INTRODUCAO_AO_ESTUDO_DO_DIREITO,
+  JUSTICA_O_QUE_E_FAZER_A_COISA_CERTA,
+  O_CONTRATO_SOCIAL,
+  O_LEVIATA,
+  O_MONGE_E_O_EXECUTIVO,
+  O_MUNDO_ASSOMBRADO_PELOS_DEMONIOS,
+  O_PROCESSO,
+  O_ULTIMO_DIA_DE_UM_CONDENADO,
+  SOBRE_A_LIBERDADE,
+  VIGIAR_E_PUNIR,
+];
+
+const slugsJaDisponiveis = new Set(LIVROS_DISPONIVEIS_NOVOS.map(l => l.id.toLowerCase()));
+const tableIdsJaDisponiveis = new Set(LIVROS_DISPONIVEIS_NOVOS.map(l => l.tableId).filter(Boolean));
+const titulosNormalizados = new Set(LIVROS_DISPONIVEIS_NOVOS.map(l => l.titulo.trim().toLowerCase()));
+
+const emBreveSemDuplicatas = AUDIOBOOKS_EM_BREVE.filter(l => {
+  if (slugsJaDisponiveis.has(l.id.toLowerCase())) return false;
+  if (l.tableId && tableIdsJaDisponiveis.has(l.tableId)) return false;
+  const t = l.titulo.trim().toLowerCase();
+  for (const ja of titulosNormalizados) {
+    if (t.includes(ja) || ja.includes(t)) return false;
+  }
+  return true;
+});
+
+export const AUDIOBOOKS_CATALOGO: AudiobookLivro[] = [
+  ...LIVROS_DISPONIVEIS_NOVOS,
+  ...emBreveSemDuplicatas
 ];

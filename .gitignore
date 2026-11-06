@@ -31,3 +31,6 @@ scripts/all_drive_audios.json
 scripts/blog_staged_posts.json
 supabase/.temp/
 
+
+tmp/
+
