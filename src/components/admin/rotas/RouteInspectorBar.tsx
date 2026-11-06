@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronLeft,
@@ -34,7 +34,7 @@ export function RouteInspectorBar() {
     totalRoutes,
     currentRouteItem,
     isMinimized,
-    setCurrentRoutePath,
+    setRouteByIndex,
     closeInspector,
     toggleMinimize,
   } = useRouteInspector();
@@ -43,18 +43,108 @@ export function RouteInspectorBar() {
   const [pickerSearch, setPickerSearch] = useState('');
   const [copied, setCopied] = useState(false);
   const pickerRef = useRef<HTMLDivElement | null>(null);
+  const isNavigatingViaInspector = useRef(false);
 
-  // Sincroniza a rota atual quando a URL do navegador muda
+  // Navega para um índice específico de rota com proteção de redirect
+  const handleGoTo = useCallback(
+    (index: number) => {
+      haptic.selection();
+      const safeIndex = ((index % totalRoutes) + totalRoutes) % totalRoutes;
+      const target = INSPECTOR_ROUTES[safeIndex];
+      if (!target) return;
+
+      isNavigatingViaInspector.current = true;
+      setRouteByIndex(safeIndex);
+      setPickerOpen(false);
+
+      const targetUrl = target.exampleUrl || target.path;
+      try {
+        navigate(targetUrl);
+      } catch (e) {
+        console.warn('Erro ao navegar para rota:', targetUrl, e);
+      }
+
+      // Mantém a trava ativa durante a troca de tela para evitar que redirects mudem o índice
+      setTimeout(() => {
+        isNavigatingViaInspector.current = false;
+      }, 1500);
+    },
+    [totalRoutes, setRouteByIndex, navigate]
+  );
+
+  const handlePrev = useCallback(() => {
+    const prevIndex = ((currentIndex - 1 % totalRoutes) + totalRoutes) % totalRoutes;
+    handleGoTo(prevIndex);
+  }, [currentIndex, totalRoutes, handleGoTo]);
+
+  const handleNext = useCallback(() => {
+    const nextIndex = (currentIndex + 1) % totalRoutes;
+    handleGoTo(nextIndex);
+  }, [currentIndex, totalRoutes, handleGoTo]);
+
+  // Sincroniza a rota atual quando a URL do navegador muda espontaneamente (sem sobrescrever navegação em lote)
   useEffect(() => {
     if (!isActive) return;
+    if (isNavigatingViaInspector.current) return;
+
     const pathname = location.pathname;
+
+    // Se a rota atual no inspetor for um redirect conhecido para essa URL, mantém a rota original do catálogo
+    if (
+      currentRouteItem?.isRedirect &&
+      (pathname === currentRouteItem.redirectTarget || pathname === currentRouteItem.exampleUrl)
+    ) {
+      return;
+    }
+
+    // Se foi redirecionado para /auth ou / por proteção de rota, não puxa o inspetor de volta para /auth
+    if (
+      (pathname === '/auth' || pathname === '/') &&
+      currentRouteItem?.isProtected &&
+      currentRouteItem.path !== pathname
+    ) {
+      return;
+    }
+
+    // Se navegou via link comum dentro do app
     const match = INSPECTOR_ROUTES.find(
       (r) => r.path === pathname || (r.exampleUrl && r.exampleUrl === pathname)
     );
     if (match && match.path !== currentPath) {
-      setCurrentRoutePath(match.path);
+      const matchIndex = INSPECTOR_ROUTES.findIndex((r) => r.path === match.path);
+      if (matchIndex >= 0) {
+        setRouteByIndex(matchIndex);
+      }
     }
-  }, [location.pathname, isActive, currentPath, setCurrentRoutePath]);
+  }, [location.pathname, isActive, currentPath, currentRouteItem, setRouteByIndex]);
+
+  // Suporte a atalhos do teclado: Setas Direita/Esquerda para alternar rapidamente entre todas as rotas
+  useEffect(() => {
+    if (!isActive) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      if (e.key === 'ArrowRight' || e.key === ']') {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === 'ArrowLeft' || e.key === '[') {
+        e.preventDefault();
+        handlePrev();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isActive, handleNext, handlePrev]);
 
   // Filtro de rotas do picker rápido
   const filteredPickerRoutes = useMemo(() => {
@@ -67,23 +157,6 @@ export function RouteInspectorBar() {
         r.description.toLowerCase().includes(q)
     );
   }, [pickerSearch]);
-
-  const handleGoTo = (index: number) => {
-    haptic.selection();
-    if (index < 0 || index >= INSPECTOR_ROUTES.length) return;
-    const target = INSPECTOR_ROUTES[index];
-    setCurrentRoutePath(target.path);
-    setPickerOpen(false);
-    navigate(target.exampleUrl || target.path);
-  };
-
-  const handlePrev = () => {
-    if (currentIndex > 0) handleGoTo(currentIndex - 1);
-  };
-
-  const handleNext = () => {
-    if (currentIndex < totalRoutes - 1) handleGoTo(currentIndex + 1);
-  };
 
   const handleCopyCurrent = async () => {
     haptic.selection();
@@ -117,6 +190,14 @@ export function RouteInspectorBar() {
     navigate('/admin-rotas');
   };
 
+  const handleReloadCurrent = () => {
+    haptic.selection();
+    if (!currentRouteItem) return;
+    const targetUrl = currentRouteItem.exampleUrl || currentRouteItem.path;
+    navigate(targetUrl);
+    toast.info(`Navegando para: ${targetUrl}`);
+  };
+
   if (!isActive) return null;
 
   return (
@@ -135,23 +216,25 @@ export function RouteInspectorBar() {
               onClick={toggleMinimize}
               className="flex items-center gap-2 text-xs font-mono font-bold hover:text-primary transition-colors"
             >
-              <RouteIcon className="w-3.5 h-3.5 text-primary animate-pulse" />
-              <span className="text-muted-foreground text-[11px]">
+              <RouteIcon className="w-3.5 h-3.5 text-primary animate-pulse shrink-0" />
+              <span className="text-muted-foreground text-[11px] shrink-0">
                 [{currentIndex + 1}/{totalRoutes}]
               </span>
-              <span className="text-red-400 max-w-[130px] truncate">{currentPath}</span>
+              <span className="text-red-400 max-w-[140px] truncate">{currentPath}</span>
               {currentRouteItem && (
-                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded border font-bold shrink-0 ${
-                  currentRouteItem.weightLevel === 'muito_pesada'
-                    ? 'bg-red-500/20 text-red-300 border-red-500/40'
-                    : currentRouteItem.weightLevel === 'pesada'
-                    ? 'bg-orange-500/20 text-orange-300 border-orange-500/40'
-                    : currentRouteItem.weightLevel === 'media'
-                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                    : currentRouteItem.weightLevel === 'leve'
-                    ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                    : 'bg-zinc-800 text-zinc-400 border-zinc-700'
-                }`}>
+                <span
+                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded border font-bold shrink-0 ${
+                    currentRouteItem.weightLevel === 'muito_pesada'
+                      ? 'bg-red-500/20 text-red-300 border-red-500/40'
+                      : currentRouteItem.weightLevel === 'pesada'
+                      ? 'bg-orange-500/20 text-orange-300 border-orange-500/40'
+                      : currentRouteItem.weightLevel === 'media'
+                      ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                      : currentRouteItem.weightLevel === 'leve'
+                      ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                      : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                  }`}
+                >
                   {currentRouteItem.weightEstimate}
                 </span>
               )}
@@ -160,24 +243,22 @@ export function RouteInspectorBar() {
             <div className="flex items-center gap-1 border-l border-white/10 pl-2">
               <button
                 onClick={handlePrev}
-                disabled={currentIndex === 0}
-                className="p-1 rounded-full hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none"
-                title="Rota anterior"
+                className="p-1 rounded-full hover:bg-white/10 active:scale-90 transition-transform"
+                title="Rota anterior (Seta Esquerda)"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={handleNext}
-                disabled={currentIndex === totalRoutes - 1}
-                className="p-1 rounded-full hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none"
-                title="Próxima rota"
+                className="p-1 rounded-full hover:bg-white/10 active:scale-90 transition-transform text-primary hover:text-primary"
+                title="Próxima rota (Seta Direita)"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
               <button
                 onClick={toggleMinimize}
                 className="p-1 rounded-full hover:bg-white/10 text-muted-foreground hover:text-white"
-                title="Expandir barra"
+                title="Expandir menu flutuante"
               >
                 <Maximize2 className="w-3.5 h-3.5" />
               </button>
@@ -195,8 +276,8 @@ export function RouteInspectorBar() {
             {/* Top Header do Inspetor */}
             <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-2">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                <span className="text-xs font-display font-bold uppercase tracking-wider text-muted-foreground">
+                <span className="w-2 h-2 rounded-full bg-primary shrink-0 animate-ping" />
+                <span className="text-xs font-display font-bold uppercase tracking-wider text-muted-foreground truncate">
                   Menu de Alternância de Rotas
                 </span>
                 <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 font-bold shrink-0">
@@ -222,7 +303,7 @@ export function RouteInspectorBar() {
                 </button>
                 <button
                   onClick={closeInspector}
-                  title="Encerrar inspeção de rotas"
+                  title="Encerrar menu flutuante"
                   className="p-1.5 rounded-lg hover:bg-red-500/20 text-muted-foreground hover:text-red-400 transition-colors"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -230,13 +311,13 @@ export function RouteInspectorBar() {
               </div>
             </div>
 
-            {/* Controle de Navegação Principal: [◀] [ Rota Atual / Seletor ] [▶] */}
+            {/* Controle de Navegação Principal: [◀ Anterior] [ Rota Atual / Seletor ] [Próxima ▶] */}
             <div className="flex items-center gap-2">
-              {/* Botão Anterior */}
+              {/* Botão Anterior (com looping contínuo) */}
               <button
                 onClick={handlePrev}
-                disabled={currentIndex === 0}
-                className="flex items-center gap-1 px-3 py-2 rounded-xl bg-secondary/80 hover:bg-secondary border border-border text-xs font-body font-semibold transition-all disabled:opacity-30 disabled:pointer-events-none active:scale-95 shrink-0"
+                className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-secondary/80 hover:bg-secondary border border-border text-xs font-body font-semibold transition-all active:scale-95 shrink-0 hover:border-white/20"
+                title="Ir para a rota anterior (← Teclado)"
               >
                 <ChevronLeft className="w-4 h-4" />
                 <span className="hidden sm:inline">Anterior</span>
@@ -246,6 +327,7 @@ export function RouteInspectorBar() {
               <button
                 onClick={() => setPickerOpen(!pickerOpen)}
                 className="flex-1 min-w-0 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-card border border-primary/40 hover:border-primary transition-all text-left group"
+                title="Clique para pesquisar e pular direto para qualquer rota"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 flex-wrap">
@@ -271,8 +353,8 @@ export function RouteInspectorBar() {
                       </span>
                     )}
                     {currentRouteItem?.isRedirect && (
-                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold shrink-0">
-                        Redirect
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
+                        Redirect → {currentRouteItem.redirectTarget}
                       </span>
                     )}
                   </div>
@@ -283,11 +365,11 @@ export function RouteInspectorBar() {
                 <Search className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary shrink-0 transition-colors" />
               </button>
 
-              {/* Botão Próxima */}
+              {/* Botão Próxima (com looping contínuo) */}
               <button
                 onClick={handleNext}
-                disabled={currentIndex === totalRoutes - 1}
-                className="flex items-center gap-1 px-3 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-body font-semibold transition-all disabled:opacity-30 disabled:pointer-events-none active:scale-95 shrink-0 shadow-sm"
+                className="flex items-center gap-1 px-3 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-body font-bold transition-all active:scale-95 shrink-0 shadow-md hover:shadow-primary/20"
+                title="Ir para a próxima rota (→ Teclado)"
               >
                 <span className="hidden sm:inline">Próxima</span>
                 <ChevronRight className="w-4 h-4" />
@@ -318,9 +400,18 @@ export function RouteInspectorBar() {
                   <MessageSquareQuote className="w-3.5 h-3.5" />
                   <span>Perguntar à IA</span>
                 </button>
+
+                <button
+                  onClick={handleReloadCurrent}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-primary hover:text-primary/90 transition-colors"
+                  title="Abrir novamente esta rota no navegador"
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  <span className="hidden sm:inline">Abrir Rota</span>
+                </button>
               </div>
 
-              <div className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground">
+              <div className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground shrink-0">
                 {currentRouteItem?.isProtected ? (
                   <span className="flex items-center gap-1">
                     <Lock className="w-3 h-3" /> Protegida
@@ -374,6 +465,9 @@ export function RouteInspectorBar() {
                         >
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-1.5">
+                              <span className="text-[10px] font-mono text-muted-foreground">
+                                #{idx + 1}
+                              </span>
                               <p className="font-mono text-xs truncate">{r.path}</p>
                               <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-white/5 border border-white/10 text-muted-foreground shrink-0">
                                 {r.weightEstimate}
