@@ -12,7 +12,7 @@ export const INTRODUCAO_AO_ESTUDO_DO_DIREITO: AudiobookLivro = {
   "ano": 1988,
   "descricao": "Um dos manuais fundamentais do pensamento jurídico nacional, combinando teoria zetética e dogmática para dissecar as normas, a validade e a interpretação jurídica de forma inovadora.",
   "sinopse": "Tercio Sampaio articula a linguagem do direito, a teoria da norma e o problema da decisão jurídica com rigor conceitual e clareza didática inigualáveis na academia brasileira.",
-  "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/introducao_ao_estudo_do_direito_manual.jpg",
+  "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/introducao_ao_estudo_do_direito.jpg",
   "totalCapitulos": 10,
   "duracaoTotalSegundos": 82368,
   "duracaoTotalFormatada": "22h 52min",

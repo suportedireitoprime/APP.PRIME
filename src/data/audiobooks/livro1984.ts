@@ -12,7 +12,7 @@ export const LIVRO_1984: AudiobookLivro = {
   "ano": 1949,
   "descricao": "Winston Smith vive sob a vigilância constante do Grande Irmão em um regime totalitário onde o pensamento independente é o pior dos crimes. Uma reflexão profunda sobre controle estatal, manipulação da verdade e liberdade.",
   "sinopse": "Publicado em 1949, 1984 é uma das obras mais influentes do século XX. O romance descreve uma sociedade totalitária governada pelo Partido e personificada pelo Grande Irmão, onde o Ministério da Verdade reescreve a história e a Novilíngua restringe o próprio ato de pensar.",
-  "capaUrl": "https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/1984/capa-do-livro.jpg",
+  "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/1984_manual.jpg",
   "totalCapitulos": 26,
   "duracaoTotalSegundos": 43791,
   "duracaoTotalFormatada": "12h 09min",

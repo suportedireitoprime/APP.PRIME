@@ -12,7 +12,7 @@ export const VIGIAR_E_PUNIR: AudiobookLivro = {
   "ano": 1975,
   "descricao": "Estudo revolucionário sobre a evolução dos sistemas penais, da passagem dos suplícios públicos à disciplina minuciosa do corpo e ao panoptismo das prisões modernas.",
   "sinopse": "Foucault demonstra como a penalidade moderna deixou de atingir a carne para disciplinar a alma, criando micropoderes e mecanismos de vigilância que moldaram escolas, quartéis, fábricas e tribunais.",
-  "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/vigiar_e_punir_manual.jpg",
+  "capaUrl": "https://dnjrgpldcwcpoywamorr.supabase.co/storage/v1/object/public/biblioteca-obras/capas/vigiar_e_punir_nascimento_da_prisao_manual.jpg",
   "totalCapitulos": 13,
   "duracaoTotalSegundos": 62765,
   "duracaoTotalFormatada": "17h 26min",

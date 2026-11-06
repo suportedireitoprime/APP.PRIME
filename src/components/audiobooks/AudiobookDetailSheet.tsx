@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Headphones,
   BookOpen,
-  Share2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
@@ -42,15 +41,73 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
   const [tabAtiva, setTabAtiva] = useState<'capitulos' | 'sobre' | 'ficha'>('capitulos');
   const [fav, setFav] = useState(false);
 
+  // Imagem de cena dos capítulos no R2 (prioriza a ilustração real de cena do R2 em vez de repetir a capa)
+  const imagemCenario = React.useMemo(() => {
+    if (!livro) return '';
+
+    // 1. Procura nas imagens estruturadas dos capítulos alguma que não seja a capa do livro
+    if (livro.capitulos && livro.capitulos.length > 0) {
+      for (const cap of livro.capitulos) {
+        if (cap.imagens && cap.imagens.length > 0) {
+          const imgReal = cap.imagens.find(
+            (img) =>
+              img.url &&
+              !img.url.includes('capa-do-livro') &&
+              !img.url.endsWith('capa.jpg') &&
+              !img.url.endsWith('capa.png')
+          );
+          if (imgReal?.url) return imgReal.url;
+        }
+      }
+    }
+
+    // 2. Mapeamento direto de cenários no R2 por slug
+    const CENARIOS_R2: Record<string, string> = {
+      'o-caso-dos-exploradores-de-cavernas':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-caso-dos-exploradores-de-cavernas/capitulo-01/imagem-01-caverna.webp',
+      'como-as-democracias-morrem':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/como-as-democracias-morrem/imagens-de-cena/capitulo-02.png',
+      'direito-penal-do-equilibrio':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/direito-penal-do-equilibrio/imagens-de-cena/capitulo-01.png',
+      'eles-os-juizes-vistos-por-nos-os-advogados':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/eles-os-juizes-vistos-por-nos-os-advogados/imagens-de-cena/capitulo-01.png',
+      'etica-a-nicomaco':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/etica-a-nicomaco/imagens-de-cena/capitulo-01.png',
+      'introducao-ao-estudo-do-direito':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/introducao-ao-estudo-do-direito/imagens-de-cena/capitulo-01.png',
+      'justica-o-que-e-fazer-a-coisa-certa':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/justica-o-que-e-fazer-a-coisa-certa/imagens-de-cena/capitulo-01.png',
+      'o-contrato-social':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-contrato-social/imagens-de-cena/capitulo-01.png',
+      'o-leviata':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-leviata/imagens-de-cena/capitulo-01.png',
+      'o-monge-e-o-executivo':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-monge-e-o-executivo/imagens-de-cena/capitulo-01.png',
+      'o-mundo-assombrado-pelos-demonios':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-mundo-assombrado-pelos-demonios/imagens-de-cena/capitulo-01.png',
+      'o-processo':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/o-processo/imagens-de-cena/capitulo-01.png',
+      'sobre-a-liberdade':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/sobre-a-liberdade/imagens-de-cena/capitulo-00.png',
+      'vigiar-e-punir':
+        'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/vigiar-e-punir/imagens-de-cena/capitulo-01.png',
+    };
+
+    if (livro.id && CENARIOS_R2[livro.id]) {
+      return CENARIOS_R2[livro.id];
+    }
+
+    if (livro.id) {
+      return `https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/${livro.id}/imagens-de-cena/capitulo-01.png`;
+    }
+
+    return livro.capaUrl;
+  }, [livro]);
+
   if (!livro) return null;
 
   const isDisponivel = livro.status === 'disponivel';
   const capitulos = livro.capitulos || [];
-
-  // Imagem oficial do cenário dos capítulos (da pasta criada para os capítulos)
-  const imagemCenario =
-    livro.capitulos?.[0]?.imagens?.[0]?.url ||
-    livro.capaUrl;
 
   const handleToggleFav = () => {
     haptic.selection();
@@ -59,23 +116,6 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
       if (next) toast.success(`"${livro.titulo}" salvo nos seus favoritos!`);
       return next;
     });
-  };
-
-  const handleShare = async () => {
-    haptic.selection();
-    const shareData = {
-      title: `${livro.titulo} · Audiobook`,
-      text: `Ouça o audiobook de "${livro.titulo}" de ${livro.autor} no Direito Prime!`,
-      url: window.location.href,
-    };
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        await navigator.clipboard.writeText(`${shareData.title} - ${shareData.text}`);
-        toast.success('Link copiado para a área de transferência!');
-      }
-    } catch {}
   };
 
   return (
@@ -107,15 +147,6 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
       <div className="absolute top-3 right-4 z-30 flex items-center gap-2">
         <button
           type="button"
-          onClick={handleShare}
-          aria-label="Compartilhar"
-          className="w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center transition-transform active:scale-95 shadow-lg cursor-pointer"
-        >
-          <Share2 className="w-4 h-4 text-white" />
-        </button>
-
-        <button
-          type="button"
           onClick={handleToggleFav}
           aria-label="Favoritar"
           className="w-10 h-10 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center transition-transform active:scale-95 shadow-lg cursor-pointer"
@@ -138,6 +169,12 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
           <img
             src={imagemCenario}
             alt="Cenário dos Capítulos"
+            onError={(e) => {
+              const target = e.currentTarget as HTMLImageElement;
+              if (target.src !== livro.capaUrl) {
+                target.src = livro.capaUrl;
+              }
+            }}
             className="absolute inset-0 w-full h-full object-cover opacity-65 scale-105"
           />
           {/* Gradientes cinematográficos de atmosfera e fusão */}
@@ -168,12 +205,6 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
         {/* ======================================================== */}
         <div className="px-5 max-w-2xl mx-auto pt-2 space-y-4">
           <div className="text-center">
-            {/* Tag Categoria */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-300 text-[11px] font-bold uppercase tracking-wider mb-2">
-              <Sparkles className="w-3 h-3" />
-              {livro.tags?.[0] || 'FILOSOFIA DO DIREITO'}
-            </div>
-
             <h2 className="font-serif italic text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
               {livro.titulo}
             </h2>
