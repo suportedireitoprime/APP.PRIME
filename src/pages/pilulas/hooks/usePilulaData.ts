@@ -79,7 +79,7 @@ export function usePilulaData(
               .from('vade_mecum_artigos')
               .select('id, numero, texto, audio_pilula_url, audio_transcricao, audio_grafo')
               .eq('id', id)
-              .single();
+              .maybeSingle();
 
             if (error) throw error;
 

@@ -19,7 +19,7 @@ export function usePilulasWarmup() {
               .from('vade_mecum_leis')
               .select('id')
               .eq('slug', slug)
-              .single();
+              .maybeSingle();
               
             if (leiError || !leiData) return [];
             
@@ -44,7 +44,7 @@ export function usePilulasWarmup() {
               .from('pilulas_decks')
               .select('id')
               .eq('slug', slug)
-              .single();
+              .maybeSingle();
               
             if (deck && !deckErr) {
               const { data: cards, error: cardsErr } = await supabase

@@ -362,7 +362,7 @@ export default function BoletimPlayer({ boletimId, scenes, youtubeUrl, dataRef, 
     const texto = novoComentario.trim();
     if (!texto) return;
     setEnviandoComentario(true);
-    const { data: prof } = await supabase.from('profiles').select('display_name').eq('id', userId).single();
+    const { data: prof } = await supabase.from('profiles').select('display_name').eq('id', userId).maybeSingle();
     const { data, error } = await supabase
       .from('boletim_comentarios')
       .insert({

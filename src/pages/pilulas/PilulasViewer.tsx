@@ -32,7 +32,7 @@ export default function PilulasViewer() {
         .from('pilulas_decks')
         .select('id')
         .eq('slug', deckId)
-        .single();
+        .maybeSingle();
         
       if (deck && !deckErr) {
         const { data: cards, error: cardsErr } = await supabase

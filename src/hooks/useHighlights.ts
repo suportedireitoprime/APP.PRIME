@@ -53,7 +53,7 @@ export function useHighlights(artigoId: string | null) {
         .from('user_preferences')
         .select('highlights')
         .eq('user_id', session.user.id)
-        .single()
+        .maybeSingle()
         .then(({ data }) => {
           const allHighlights = (data?.highlights as Record<string, any>) || {};
           allHighlights[artigoId] = h;

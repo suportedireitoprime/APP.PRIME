@@ -56,7 +56,7 @@ export async function fetchDeputadoDetalhe(id: number) {
       .from('radar_deputados')
       .select('dados_json')
       .eq('camara_id', id)
-      .single();
+      .maybeSingle();
 
     if (error || !data?.dados_json?.detalhe) return null;
 
@@ -79,7 +79,7 @@ export async function fetchDeputadoDespesas(id: number) {
       .from('radar_deputados')
       .select('dados_json')
       .eq('camara_id', id)
-      .single();
+      .maybeSingle();
 
     if (error || !data?.dados_json?.despesas) return [];
 
