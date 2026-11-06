@@ -16,6 +16,8 @@ import {
   Lock,
   Globe,
   ArrowRight,
+  Flame,
+  Zap,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouteInspector, INSPECTOR_ROUTES } from '@/hooks/useRouteInspector';
@@ -137,7 +139,22 @@ export function RouteInspectorBar() {
               <span className="text-muted-foreground text-[11px]">
                 [{currentIndex + 1}/{totalRoutes}]
               </span>
-              <span className="text-red-400 max-w-[150px] truncate">{currentPath}</span>
+              <span className="text-red-400 max-w-[130px] truncate">{currentPath}</span>
+              {currentRouteItem && (
+                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded border font-bold shrink-0 ${
+                  currentRouteItem.weightLevel === 'muito_pesada'
+                    ? 'bg-red-500/20 text-red-300 border-red-500/40'
+                    : currentRouteItem.weightLevel === 'pesada'
+                    ? 'bg-orange-500/20 text-orange-300 border-orange-500/40'
+                    : currentRouteItem.weightLevel === 'media'
+                    ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                    : currentRouteItem.weightLevel === 'leve'
+                    ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                    : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                }`}>
+                  {currentRouteItem.weightEstimate}
+                </span>
+              )}
             </button>
 
             <div className="flex items-center gap-1 border-l border-white/10 pl-2">
@@ -231,10 +248,28 @@ export function RouteInspectorBar() {
                 className="flex-1 min-w-0 flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-card border border-primary/40 hover:border-primary transition-all text-left group"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="font-mono text-xs sm:text-[13px] font-bold text-red-400 truncate">
                       {currentPath}
                     </span>
+                    {currentRouteItem && (
+                      <span
+                        title={`Peso estimado: ${currentRouteItem.weightEstimate}`}
+                        className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-bold border shrink-0 ${
+                          currentRouteItem.weightLevel === 'muito_pesada'
+                            ? 'bg-red-500/20 text-red-300 border-red-500/40'
+                            : currentRouteItem.weightLevel === 'pesada'
+                            ? 'bg-orange-500/20 text-orange-300 border-orange-500/40'
+                            : currentRouteItem.weightLevel === 'media'
+                            ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                            : currentRouteItem.weightLevel === 'leve'
+                            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                            : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                        }`}
+                      >
+                        {currentRouteItem.weightEstimate}
+                      </span>
+                    )}
                     {currentRouteItem?.isRedirect && (
                       <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold shrink-0">
                         Redirect
@@ -338,7 +373,12 @@ export function RouteInspectorBar() {
                           }`}
                         >
                           <div className="min-w-0 flex-1">
-                            <p className="font-mono text-xs truncate">{r.path}</p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="font-mono text-xs truncate">{r.path}</p>
+                              <span className="text-[9px] font-mono px-1 py-0.2 rounded bg-white/5 border border-white/10 text-muted-foreground shrink-0">
+                                {r.weightEstimate}
+                              </span>
+                            </div>
                             <p className="text-[10px] text-muted-foreground truncate">{r.label}</p>
                           </div>
                           {isSelected && <Check className="w-3.5 h-3.5 text-primary shrink-0" />}

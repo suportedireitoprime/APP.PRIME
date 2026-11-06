@@ -1,5 +1,8 @@
 // Catálogo Oficial de Todas as Rotas do Aplicativo Direito Prime
 // Gerado automaticamente com 100% das rotas de src/AppRoutes.tsx em ordem alfabética
+// Inclui métricas e estimativas reais de peso de bundle, dependências e consumo de memória
+
+export type RouteWeightLevel = 'muito_pesada' | 'pesada' | 'media' | 'leve' | 'zero';
 
 export interface AppRouteItem {
   path: string;
@@ -12,6 +15,10 @@ export interface AppRouteItem {
   isAdmin: boolean;
   component: string;
   exampleUrl: string;
+  weightScore: number; // 0 = zero (redirect), 1 = leve, 2 = médio-leve, 3 = médio, 4 = pesado, 5 = muito pesado
+  weightLevel: RouteWeightLevel;
+  weightEstimate: string;
+  weightReasons: string[];
 }
 
 export const APP_ROUTES_CATALOG: AppRouteItem[] = [
@@ -25,7 +32,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "NotFound",
-    "exampleUrl": "*"
+    "exampleUrl": "*",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/",
@@ -37,7 +51,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "HomeGate",
-    "exampleUrl": "/"
+    "exampleUrl": "/",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/admin-assinantes",
@@ -49,7 +70,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminAssinantes",
-    "exampleUrl": "/admin-assinantes"
+    "exampleUrl": "/admin-assinantes",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-audioaulas",
@@ -61,7 +89,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminAudioaulas",
-    "exampleUrl": "/admin-audioaulas"
+    "exampleUrl": "/admin-audioaulas",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.2 MB",
+    "weightReasons": [
+      "Streaming de áudio R2",
+      "Catálogo de 58 mil linhas",
+      "Sincronizador SRT"
+    ]
   },
   {
     "path": "/admin-aulas-interativas",
@@ -73,7 +109,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminAulasInterativas",
-    "exampleUrl": "/admin-aulas-interativas"
+    "exampleUrl": "/admin-aulas-interativas",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.2 MB",
+    "weightReasons": [
+      "Streaming de áudio R2",
+      "Catálogo de 58 mil linhas",
+      "Sincronizador SRT"
+    ]
   },
   {
     "path": "/admin-biblioteca-editar",
@@ -85,7 +129,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "BibliotecaEditar",
-    "exampleUrl": "/admin-biblioteca-editar"
+    "exampleUrl": "/admin-biblioteca-editar",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.8 MB",
+    "weightReasons": [
+      "Motor PDF.js",
+      "Canvas de alta resolução",
+      "Leitor nativo"
+    ]
   },
   {
     "path": "/admin-biblioteca-leis",
@@ -97,7 +149,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": true,
     "component": "Componente",
-    "exampleUrl": "/admin-biblioteca-leis"
+    "exampleUrl": "/admin-biblioteca-leis",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/admin-biblioteca-leis/*",
@@ -109,7 +168,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": true,
     "component": "Componente",
-    "exampleUrl": "/admin-biblioteca-leis"
+    "exampleUrl": "/admin-biblioteca-leis",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/admin-blog-edicao",
@@ -121,7 +187,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminBlogEdicao",
-    "exampleUrl": "/admin-blog-edicao"
+    "exampleUrl": "/admin-blog-edicao",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-design-imagens",
@@ -133,7 +206,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": true,
     "component": "Componente",
-    "exampleUrl": "/admin-design-imagens"
+    "exampleUrl": "/admin-design-imagens",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/admin-erros-questoes",
@@ -145,7 +225,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminErrosQuestoes",
-    "exampleUrl": "/admin-erros-questoes"
+    "exampleUrl": "/admin-erros-questoes",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/admin-flashcards-editar",
@@ -157,7 +245,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminFlashcardsEditar",
-    "exampleUrl": "/admin-flashcards-editar"
+    "exampleUrl": "/admin-flashcards-editar",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/admin-funcoes",
@@ -169,7 +264,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminFuncoes",
-    "exampleUrl": "/admin-funcoes"
+    "exampleUrl": "/admin-funcoes",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-funcoes-assinantes",
@@ -181,7 +283,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminFuncoesAssinantes",
-    "exampleUrl": "/admin-funcoes-assinantes"
+    "exampleUrl": "/admin-funcoes-assinantes",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-horus",
@@ -193,7 +302,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminHorus",
-    "exampleUrl": "/admin-horus"
+    "exampleUrl": "/admin-horus",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-instagram-posts",
@@ -205,7 +321,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": true,
     "component": "Componente",
-    "exampleUrl": "/admin-instagram-posts"
+    "exampleUrl": "/admin-instagram-posts",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/admin-leitura-nativa",
@@ -217,7 +340,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminLeituraNativa",
-    "exampleUrl": "/admin-leitura-nativa"
+    "exampleUrl": "/admin-leitura-nativa",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.8 MB",
+    "weightReasons": [
+      "Motor PDF.js",
+      "Canvas de alta resolução",
+      "Leitor nativo"
+    ]
   },
   {
     "path": "/admin-mapeamento-leis",
@@ -229,7 +360,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminMapeamentoLeis",
-    "exampleUrl": "/admin-mapeamento-leis"
+    "exampleUrl": "/admin-mapeamento-leis",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/admin-monitor",
@@ -241,7 +379,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminMonitor",
-    "exampleUrl": "/admin-monitor"
+    "exampleUrl": "/admin-monitor",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-monitor-apis",
@@ -253,7 +398,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminMonitorApis",
-    "exampleUrl": "/admin-monitor-apis"
+    "exampleUrl": "/admin-monitor-apis",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-monitor-usuarios",
@@ -265,7 +417,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminMonitorUsuarios",
-    "exampleUrl": "/admin-monitor-usuarios"
+    "exampleUrl": "/admin-monitor-usuarios",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-narracao",
@@ -277,7 +436,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": true,
     "component": "Componente",
-    "exampleUrl": "/admin-narracao"
+    "exampleUrl": "/admin-narracao",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/admin-narracao-leis",
@@ -289,7 +455,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminNarracaoLeis",
-    "exampleUrl": "/admin-narracao-leis"
+    "exampleUrl": "/admin-narracao-leis",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~2.1 MB",
+    "weightReasons": [
+      "Componente 130KB",
+      "Player de áudio dinâmico",
+      "Integração Gemini AI"
+    ]
   },
   {
     "path": "/admin-narracao/biblioteca",
@@ -301,7 +475,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminNarracaoBiblioteca",
-    "exampleUrl": "/admin-narracao/biblioteca"
+    "exampleUrl": "/admin-narracao/biblioteca",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.8 MB",
+    "weightReasons": [
+      "Motor PDF.js",
+      "Canvas de alta resolução",
+      "Leitor nativo"
+    ]
   },
   {
     "path": "/admin-narracao/blog",
@@ -313,7 +495,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminNarracaoBlog",
-    "exampleUrl": "/admin-narracao/blog"
+    "exampleUrl": "/admin-narracao/blog",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~2.1 MB",
+    "weightReasons": [
+      "Componente 130KB",
+      "Player de áudio dinâmico",
+      "Integração Gemini AI"
+    ]
   },
   {
     "path": "/admin-omniroute",
@@ -325,7 +515,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminOmniRouteTeste",
-    "exampleUrl": "/admin-omniroute"
+    "exampleUrl": "/admin-omniroute",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~2.1 MB",
+    "weightReasons": [
+      "Componente 130KB",
+      "Player de áudio dinâmico",
+      "Integração Gemini AI"
+    ]
   },
   {
     "path": "/admin-push",
@@ -337,7 +535,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminPush",
-    "exampleUrl": "/admin-push"
+    "exampleUrl": "/admin-push",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-questoes",
@@ -349,7 +554,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminQuestoes",
-    "exampleUrl": "/admin-questoes"
+    "exampleUrl": "/admin-questoes",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/admin-simulados",
@@ -361,7 +574,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminSimulados",
-    "exampleUrl": "/admin-simulados"
+    "exampleUrl": "/admin-simulados",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/admin-usuarios",
@@ -373,7 +594,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminUsuarios",
-    "exampleUrl": "/admin-usuarios"
+    "exampleUrl": "/admin-usuarios",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin-vade-mecum-historico",
@@ -385,7 +613,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminVadeMecumHistorico",
-    "exampleUrl": "/admin-vade-mecum-historico"
+    "exampleUrl": "/admin-vade-mecum-historico",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin/assinantes",
@@ -397,7 +632,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": true,
     "component": "AdminAssinantes",
-    "exampleUrl": "/admin/assinantes"
+    "exampleUrl": "/admin/assinantes",
+    "weightScore": 2,
+    "weightLevel": "media",
+    "weightEstimate": "~500 KB",
+    "weightReasons": [
+      "Painel administrativo",
+      "Tabelas e queries Supabase"
+    ]
   },
   {
     "path": "/admin/monitor/usuarios",
@@ -409,7 +651,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": true,
     "component": "Componente",
-    "exampleUrl": "/admin/monitor/usuarios"
+    "exampleUrl": "/admin/monitor/usuarios",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/admin/pilulas",
@@ -421,7 +670,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": true,
     "component": "AdminPilulas",
-    "exampleUrl": "/admin/pilulas"
+    "exampleUrl": "/admin/pilulas",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/admin/usuarios",
@@ -433,7 +690,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": true,
     "component": "Componente",
-    "exampleUrl": "/admin/usuarios"
+    "exampleUrl": "/admin/usuarios",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/ajustes/excluir-conta",
@@ -445,7 +709,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ExcluirConta",
-    "exampleUrl": "/ajustes/excluir-conta"
+    "exampleUrl": "/ajustes/excluir-conta",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/ajustes/horus",
@@ -457,7 +728,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "HorusWhatsApp",
-    "exampleUrl": "/ajustes/horus"
+    "exampleUrl": "/ajustes/horus",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/ajustes/seguranca",
@@ -469,7 +747,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Seguranca",
-    "exampleUrl": "/ajustes/seguranca"
+    "exampleUrl": "/ajustes/seguranca",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/anotacoes",
@@ -481,7 +766,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/anotacoes"
+    "exampleUrl": "/anotacoes",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/aprender",
@@ -493,7 +785,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/aprender"
+    "exampleUrl": "/aprender",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/aprender/*",
@@ -505,7 +804,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/aprender"
+    "exampleUrl": "/aprender",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/assinatura",
@@ -517,7 +823,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Assinatura",
-    "exampleUrl": "/assinatura"
+    "exampleUrl": "/assinatura",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/assistente",
@@ -529,7 +842,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "AssistenteApp",
-    "exampleUrl": "/assistente"
+    "exampleUrl": "/assistente",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/assistente-horus",
@@ -541,7 +861,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "AssistenteHorus",
-    "exampleUrl": "/assistente-horus"
+    "exampleUrl": "/assistente-horus",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/atualizacoes",
@@ -553,7 +880,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Atualizacoes",
-    "exampleUrl": "/atualizacoes"
+    "exampleUrl": "/atualizacoes",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/audio-leis",
@@ -565,7 +899,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/audio-leis"
+    "exampleUrl": "/audio-leis",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/audioaulas",
@@ -577,7 +918,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Audioaulas",
-    "exampleUrl": "/audioaulas"
+    "exampleUrl": "/audioaulas",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.2 MB",
+    "weightReasons": [
+      "Streaming de áudio R2",
+      "Catálogo de 58 mil linhas",
+      "Sincronizador SRT"
+    ]
   },
   {
     "path": "/audioaulas/:area",
@@ -589,7 +938,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Audioaulas",
-    "exampleUrl": "/audioaulas/direito-penal"
+    "exampleUrl": "/audioaulas/direito-penal",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.2 MB",
+    "weightReasons": [
+      "Streaming de áudio R2",
+      "Catálogo de 58 mil linhas",
+      "Sincronizador SRT"
+    ]
   },
   {
     "path": "/audiobooks",
@@ -601,7 +958,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Audiobooks",
-    "exampleUrl": "/audiobooks"
+    "exampleUrl": "/audiobooks",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.2 MB",
+    "weightReasons": [
+      "Streaming de áudio R2",
+      "Catálogo de 58 mil linhas",
+      "Sincronizador SRT"
+    ]
   },
   {
     "path": "/audioleis",
@@ -613,7 +978,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/audioleis"
+    "exampleUrl": "/audioleis",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/aulas",
@@ -625,7 +997,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "AdminAulasInterativas",
-    "exampleUrl": "/aulas"
+    "exampleUrl": "/aulas",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/auth",
@@ -637,7 +1016,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Auth",
-    "exampleUrl": "/auth"
+    "exampleUrl": "/auth",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/biblioteca",
@@ -649,7 +1035,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Bibliotecas",
-    "exampleUrl": "/biblioteca"
+    "exampleUrl": "/biblioteca",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.8 MB",
+    "weightReasons": [
+      "Motor PDF.js",
+      "Canvas de alta resolução",
+      "Leitor nativo"
+    ]
   },
   {
     "path": "/biblioteca-offline",
@@ -661,7 +1055,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/biblioteca-offline"
+    "exampleUrl": "/biblioteca-offline",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/biblioteca/caderno",
@@ -673,7 +1074,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/biblioteca/caderno"
+    "exampleUrl": "/biblioteca/caderno",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/bibliotecas",
@@ -685,7 +1093,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Bibliotecas",
-    "exampleUrl": "/bibliotecas"
+    "exampleUrl": "/bibliotecas",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.8 MB",
+    "weightReasons": [
+      "Motor PDF.js",
+      "Canvas de alta resolução",
+      "Leitor nativo"
+    ]
   },
   {
     "path": "/bibliotecas/:colecaoId",
@@ -697,7 +1113,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "BibliotecaCategoria",
-    "exampleUrl": "/bibliotecas/classicos"
+    "exampleUrl": "/bibliotecas/classicos",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.8 MB",
+    "weightReasons": [
+      "Motor PDF.js",
+      "Canvas de alta resolução",
+      "Leitor nativo"
+    ]
   },
   {
     "path": "/bibliotecas/:colecaoId/:areaSlug",
@@ -709,7 +1133,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "BibliotecaCategoria",
-    "exampleUrl": "/bibliotecas/classicos/direito-penalSlug"
+    "exampleUrl": "/bibliotecas/classicos/direito-penalSlug",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.8 MB",
+    "weightReasons": [
+      "Motor PDF.js",
+      "Canvas de alta resolução",
+      "Leitor nativo"
+    ]
   },
   {
     "path": "/bibliotecas/trilhas",
@@ -721,7 +1153,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "BibliotecaTrilhas",
-    "exampleUrl": "/bibliotecas/trilhas"
+    "exampleUrl": "/bibliotecas/trilhas",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.8 MB",
+    "weightReasons": [
+      "Motor PDF.js",
+      "Canvas de alta resolução",
+      "Leitor nativo"
+    ]
   },
   {
     "path": "/blog",
@@ -733,7 +1173,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Blog",
-    "exampleUrl": "/blog"
+    "exampleUrl": "/blog",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/blog/:slug",
@@ -745,7 +1192,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Blog",
-    "exampleUrl": "/blog/direito-penal"
+    "exampleUrl": "/blog/direito-penal",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/boletim",
@@ -757,7 +1211,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/boletim"
+    "exampleUrl": "/boletim",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/boletins",
@@ -769,7 +1230,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Boletins",
-    "exampleUrl": "/boletins"
+    "exampleUrl": "/boletins",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/chat-juridico",
@@ -781,7 +1249,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ChatJuridico",
-    "exampleUrl": "/chat-juridico"
+    "exampleUrl": "/chat-juridico",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/compartilhado",
@@ -793,7 +1268,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Compartilhado",
-    "exampleUrl": "/compartilhado"
+    "exampleUrl": "/compartilhado",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/concursos",
@@ -805,7 +1287,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Concursos",
-    "exampleUrl": "/concursos"
+    "exampleUrl": "/concursos",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~950 KB",
+    "weightReasons": [
+      "Gráficos e estatísticas",
+      "Múltiplos filtros dinâmicos"
+    ]
   },
   {
     "path": "/concursos/radar",
@@ -817,7 +1306,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/concursos/radar"
+    "exampleUrl": "/concursos/radar",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/configuracoes",
@@ -829,7 +1325,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/configuracoes"
+    "exampleUrl": "/configuracoes",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/desktop",
@@ -841,7 +1344,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "DesktopPromo",
-    "exampleUrl": "/desktop"
+    "exampleUrl": "/desktop",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/desktop-link/:token",
@@ -853,7 +1363,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "DesktopLinkConfirm",
-    "exampleUrl": "/desktop-link/desktop-auth-test"
+    "exampleUrl": "/desktop-link/desktop-auth-test",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/dicionario",
@@ -865,7 +1382,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/dicionario"
+    "exampleUrl": "/dicionario",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/documentos",
@@ -877,7 +1401,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Documentos",
-    "exampleUrl": "/documentos"
+    "exampleUrl": "/documentos",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/estudos",
@@ -889,7 +1420,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "EstudosRouter",
-    "exampleUrl": "/estudos"
+    "exampleUrl": "/estudos",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/excluir-conta",
@@ -901,7 +1439,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "ExcluirContaPublico",
-    "exampleUrl": "/excluir-conta"
+    "exampleUrl": "/excluir-conta",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/explicacao-lei",
@@ -913,7 +1458,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ExplicacaoLei",
-    "exampleUrl": "/explicacao-lei"
+    "exampleUrl": "/explicacao-lei",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/ferramentas",
@@ -925,7 +1477,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Ferramentas",
-    "exampleUrl": "/ferramentas"
+    "exampleUrl": "/ferramentas",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/ferramentas/dicionario",
@@ -937,7 +1496,13 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "DicionarioJuridicoPage",
-    "exampleUrl": "/ferramentas/dicionario"
+    "exampleUrl": "/ferramentas/dicionario",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~200 KB",
+    "weightReasons": [
+      "Conteúdo textual formatado"
+    ]
   },
   {
     "path": "/ferramentas/plano-estudos",
@@ -949,7 +1514,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PlanoEstudos",
-    "exampleUrl": "/ferramentas/plano-estudos"
+    "exampleUrl": "/ferramentas/plano-estudos",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/ferramentas/radar-concursos",
@@ -961,7 +1533,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/ferramentas/radar-concursos"
+    "exampleUrl": "/ferramentas/radar-concursos",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/flashcards",
@@ -973,7 +1552,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsRouteWrapper",
-    "exampleUrl": "/flashcards"
+    "exampleUrl": "/flashcards",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/area/:slug",
@@ -985,7 +1571,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsArea",
-    "exampleUrl": "/flashcards/area/direito-penal"
+    "exampleUrl": "/flashcards/area/direito-penal",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/cargos",
@@ -997,7 +1590,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsCargos",
-    "exampleUrl": "/flashcards/cargos"
+    "exampleUrl": "/flashcards/cargos",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/cargos/:id",
@@ -1009,7 +1609,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsCargosDetalhes",
-    "exampleUrl": "/flashcards/cargos/1"
+    "exampleUrl": "/flashcards/cargos/1",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/decks",
@@ -1021,7 +1628,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsDecks",
-    "exampleUrl": "/flashcards/decks"
+    "exampleUrl": "/flashcards/decks",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/desafios",
@@ -1033,7 +1647,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsDesafios",
-    "exampleUrl": "/flashcards/desafios"
+    "exampleUrl": "/flashcards/desafios",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/desafios/:slug",
@@ -1045,7 +1666,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsDesafiosTimeline",
-    "exampleUrl": "/flashcards/desafios/direito-penal"
+    "exampleUrl": "/flashcards/desafios/direito-penal",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/estudar",
@@ -1057,7 +1685,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/flashcards/estudar"
+    "exampleUrl": "/flashcards/estudar",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/flashcards/estudo",
@@ -1069,7 +1704,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsEstudo",
-    "exampleUrl": "/flashcards/estudo"
+    "exampleUrl": "/flashcards/estudo",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/historico",
@@ -1081,7 +1723,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsHistorico",
-    "exampleUrl": "/flashcards/historico"
+    "exampleUrl": "/flashcards/historico",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/jurisprudencia",
@@ -1093,7 +1742,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Suspense",
-    "exampleUrl": "/flashcards/jurisprudencia"
+    "exampleUrl": "/flashcards/jurisprudencia",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/leis",
@@ -1105,7 +1761,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsLeis",
-    "exampleUrl": "/flashcards/leis"
+    "exampleUrl": "/flashcards/leis",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/materias",
@@ -1117,7 +1780,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsMaterias",
-    "exampleUrl": "/flashcards/materias"
+    "exampleUrl": "/flashcards/materias",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/progresso",
@@ -1129,7 +1799,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsProgresso",
-    "exampleUrl": "/flashcards/progresso"
+    "exampleUrl": "/flashcards/progresso",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/revisar",
@@ -1141,7 +1818,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsRevisar",
-    "exampleUrl": "/flashcards/revisar"
+    "exampleUrl": "/flashcards/revisar",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/flashcards/trilhas",
@@ -1153,7 +1837,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "FlashcardsTrilhas",
-    "exampleUrl": "/flashcards/trilhas"
+    "exampleUrl": "/flashcards/trilhas",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~1.2 MB",
+    "weightReasons": [
+      "Efeito 3D Flip",
+      "Sistema de repetição espaçada"
+    ]
   },
   {
     "path": "/graficos/avaliacao",
@@ -1165,7 +1856,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "AvaliacaoInteligente",
-    "exampleUrl": "/graficos/avaliacao"
+    "exampleUrl": "/graficos/avaliacao",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/ir/*",
@@ -1177,7 +1875,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "SmartLink",
-    "exampleUrl": "/ir"
+    "exampleUrl": "/ir",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia",
@@ -1189,7 +1894,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Jurisprudencia",
-    "exampleUrl": "/jurisprudencia"
+    "exampleUrl": "/jurisprudencia",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/:slugLei/:numeroArtigo",
@@ -1201,7 +1913,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "JurisprudenciaArtigo",
-    "exampleUrl": "/jurisprudencia/direito-penalLei/:numeroArtigo"
+    "exampleUrl": "/jurisprudencia/direito-penalLei/:numeroArtigo",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/informativos-stf",
@@ -1213,7 +1932,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "InformativosSTF",
-    "exampleUrl": "/jurisprudencia/informativos-stf"
+    "exampleUrl": "/jurisprudencia/informativos-stf",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/informativos-stj",
@@ -1225,7 +1951,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "InformativosSTJ",
-    "exampleUrl": "/jurisprudencia/informativos-stj"
+    "exampleUrl": "/jurisprudencia/informativos-stj",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/prontas/:tribunal",
@@ -1237,7 +1970,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PesquisasProntasLista",
-    "exampleUrl": "/jurisprudencia/prontas/:tribunal"
+    "exampleUrl": "/jurisprudencia/prontas/:tribunal",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/prontas/:tribunal/:slug",
@@ -1249,7 +1989,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PesquisasProntasTema",
-    "exampleUrl": "/jurisprudencia/prontas/:tribunal/direito-penal"
+    "exampleUrl": "/jurisprudencia/prontas/:tribunal/direito-penal",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/sumulas-stf",
@@ -1261,7 +2008,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "SumulasSTF",
-    "exampleUrl": "/jurisprudencia/sumulas-stf"
+    "exampleUrl": "/jurisprudencia/sumulas-stf",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/sumulas-stj",
@@ -1273,7 +2027,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "SumulasSTJ",
-    "exampleUrl": "/jurisprudencia/sumulas-stj"
+    "exampleUrl": "/jurisprudencia/sumulas-stj",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/sumulas-vinculantes",
@@ -1285,7 +2046,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "SumulasVinculantes",
-    "exampleUrl": "/jurisprudencia/sumulas-vinculantes"
+    "exampleUrl": "/jurisprudencia/sumulas-vinculantes",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/teses-stf",
@@ -1297,7 +2065,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "TesesSTF",
-    "exampleUrl": "/jurisprudencia/teses-stf"
+    "exampleUrl": "/jurisprudencia/teses-stf",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/jurisprudencia/teses-stj",
@@ -1309,7 +2084,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "TesesSTJ",
-    "exampleUrl": "/jurisprudencia/teses-stj"
+    "exampleUrl": "/jurisprudencia/teses-stj",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/landing",
@@ -1321,7 +2103,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Landing",
-    "exampleUrl": "/landing"
+    "exampleUrl": "/landing",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/legislacao-estadual",
@@ -1333,7 +2122,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "LegislacaoEstadual",
-    "exampleUrl": "/legislacao-estadual"
+    "exampleUrl": "/legislacao-estadual",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/legislacao-estadual/:uf",
@@ -1345,7 +2141,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "EstadoDetalhe",
-    "exampleUrl": "/legislacao-estadual/sp"
+    "exampleUrl": "/legislacao-estadual/sp",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/legislacao-estadual/:uf/lei/:slug",
@@ -1357,7 +2160,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "LeiEstadualView",
-    "exampleUrl": "/legislacao-estadual/sp/lei/direito-penal"
+    "exampleUrl": "/legislacao-estadual/sp/lei/direito-penal",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/legislacao/:tipo",
@@ -1369,7 +2179,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "CategoriaLegislacao",
-    "exampleUrl": "/legislacao/codigo"
+    "exampleUrl": "/legislacao/codigo",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/legislacao/:tipo/:leiSlug",
@@ -1381,7 +2198,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "CategoriaLegislacao",
-    "exampleUrl": "/legislacao/codigo/cp"
+    "exampleUrl": "/legislacao/codigo/cp",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/legislacao/:tipo/:leiSlug/:artigoNumero",
@@ -1393,7 +2217,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "CategoriaLegislacao",
-    "exampleUrl": "/legislacao/codigo/cp/121"
+    "exampleUrl": "/legislacao/codigo/cp/121",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/lei-seca",
@@ -1405,7 +2236,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ErrorBoundary",
-    "exampleUrl": "/lei-seca"
+    "exampleUrl": "/lei-seca",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/lei-seca/:slug",
@@ -1417,7 +2255,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ErrorBoundary",
-    "exampleUrl": "/lei-seca/direito-penal"
+    "exampleUrl": "/lei-seca/direito-penal",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/lei-seca/:slug/:parte",
@@ -1429,7 +2274,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ErrorBoundary",
-    "exampleUrl": "/lei-seca/direito-penal/:parte"
+    "exampleUrl": "/lei-seca/direito-penal/:parte",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/lei-seca/:slug/:parte/licao/:id",
@@ -1441,7 +2293,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ErrorBoundary",
-    "exampleUrl": "/lei-seca/direito-penal/:parte/licao/1"
+    "exampleUrl": "/lei-seca/direito-penal/:parte/licao/1",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/lei-seca/favoritos",
@@ -1453,7 +2312,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ErrorBoundary",
-    "exampleUrl": "/lei-seca/favoritos"
+    "exampleUrl": "/lei-seca/favoritos",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/lei-seca/lembretes",
@@ -1465,7 +2331,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ErrorBoundary",
-    "exampleUrl": "/lei-seca/lembretes"
+    "exampleUrl": "/lei-seca/lembretes",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/lei-seca/recentes",
@@ -1477,7 +2350,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ErrorBoundary",
-    "exampleUrl": "/lei-seca/recentes"
+    "exampleUrl": "/lei-seca/recentes",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/lembretes",
@@ -1489,7 +2369,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "CentralLembretes",
-    "exampleUrl": "/lembretes"
+    "exampleUrl": "/lembretes",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~250 KB",
+    "weightReasons": [
+      "Cards de usuário",
+      "Atalhos leves"
+    ]
   },
   {
     "path": "/lembretes/local",
@@ -1501,7 +2388,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "LembretesLocal",
-    "exampleUrl": "/lembretes/local"
+    "exampleUrl": "/lembretes/local",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~250 KB",
+    "weightReasons": [
+      "Cards de usuário",
+      "Atalhos leves"
+    ]
   },
   {
     "path": "/mapas",
@@ -1513,7 +2407,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/mapas"
+    "exampleUrl": "/mapas",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/mapas-mentais",
@@ -1525,7 +2426,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VisualJuridico",
-    "exampleUrl": "/mapas-mentais"
+    "exampleUrl": "/mapas-mentais",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/mapas-mentais/*",
@@ -1537,7 +2446,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VisualJuridico",
-    "exampleUrl": "/mapas-mentais"
+    "exampleUrl": "/mapas-mentais",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/me-explique",
@@ -1549,7 +2466,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "MeExplique",
-    "exampleUrl": "/me-explique"
+    "exampleUrl": "/me-explique",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/meu-espaco",
@@ -1561,7 +2485,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "MeuEspaco",
-    "exampleUrl": "/meu-espaco"
+    "exampleUrl": "/meu-espaco",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~250 KB",
+    "weightReasons": [
+      "Cards de usuário",
+      "Atalhos leves"
+    ]
   },
   {
     "path": "/meus-downloads",
@@ -1573,7 +2504,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/meus-downloads"
+    "exampleUrl": "/meus-downloads",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/meus-lembretes",
@@ -1585,7 +2523,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/meus-lembretes"
+    "exampleUrl": "/meus-lembretes",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/meus-resumos",
@@ -1597,7 +2542,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/meus-resumos"
+    "exampleUrl": "/meus-resumos",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/minha-cota",
@@ -1609,7 +2561,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/minha-cota"
+    "exampleUrl": "/minha-cota",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/minhas-leituras",
@@ -1621,7 +2580,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/minhas-leituras"
+    "exampleUrl": "/minhas-leituras",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/minhas-videoaulas",
@@ -1633,7 +2599,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/minhas-videoaulas"
+    "exampleUrl": "/minhas-videoaulas",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/modo-offline",
@@ -1645,7 +2618,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ModoOffline",
-    "exampleUrl": "/modo-offline"
+    "exampleUrl": "/modo-offline",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/modo-offline/audioaulas",
@@ -1657,7 +2637,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ModoOfflineAudioaulas",
-    "exampleUrl": "/modo-offline/audioaulas"
+    "exampleUrl": "/modo-offline/audioaulas",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.2 MB",
+    "weightReasons": [
+      "Streaming de áudio R2",
+      "Catálogo de 58 mil linhas",
+      "Sincronizador SRT"
+    ]
   },
   {
     "path": "/modo-offline/leis-e-narracoes",
@@ -1669,7 +2657,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ModoOfflineLeis",
-    "exampleUrl": "/modo-offline/leis-e-narracoes"
+    "exampleUrl": "/modo-offline/leis-e-narracoes",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/modo-offline/livros",
@@ -1681,7 +2676,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ModoOfflineLivros",
-    "exampleUrl": "/modo-offline/livros"
+    "exampleUrl": "/modo-offline/livros",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/normas/:slug",
@@ -1693,7 +2695,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "OutrasNormasLista",
-    "exampleUrl": "/normas/direito-penal"
+    "exampleUrl": "/normas/direito-penal",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/noticias",
@@ -1705,7 +2714,13 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Noticias",
-    "exampleUrl": "/noticias"
+    "exampleUrl": "/noticias",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~200 KB",
+    "weightReasons": [
+      "Conteúdo textual formatado"
+    ]
   },
   {
     "path": "/notificacoes",
@@ -1717,7 +2732,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/notificacoes"
+    "exampleUrl": "/notificacoes",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/novidades",
@@ -1729,7 +2751,13 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Novidades",
-    "exampleUrl": "/novidades"
+    "exampleUrl": "/novidades",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~200 KB",
+    "weightReasons": [
+      "Conteúdo textual formatado"
+    ]
   },
   {
     "path": "/onboarding",
@@ -1741,7 +2769,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Onboarding",
-    "exampleUrl": "/onboarding"
+    "exampleUrl": "/onboarding",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/perfil",
@@ -1753,7 +2788,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Perfil",
-    "exampleUrl": "/perfil"
+    "exampleUrl": "/perfil",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~250 KB",
+    "weightReasons": [
+      "Cards de usuário",
+      "Atalhos leves"
+    ]
   },
   {
     "path": "/pessoal/anotacoes",
@@ -1765,7 +2807,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PessoalAnotacoes",
-    "exampleUrl": "/pessoal/anotacoes"
+    "exampleUrl": "/pessoal/anotacoes",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~250 KB",
+    "weightReasons": [
+      "Cards de usuário",
+      "Atalhos leves"
+    ]
   },
   {
     "path": "/pessoal/artigos",
@@ -1777,7 +2826,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PessoalArtigos",
-    "exampleUrl": "/pessoal/artigos"
+    "exampleUrl": "/pessoal/artigos",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~250 KB",
+    "weightReasons": [
+      "Cards de usuário",
+      "Atalhos leves"
+    ]
   },
   {
     "path": "/pessoal/grifos",
@@ -1789,7 +2845,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PessoalGrifos",
-    "exampleUrl": "/pessoal/grifos"
+    "exampleUrl": "/pessoal/grifos",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~250 KB",
+    "weightReasons": [
+      "Cards de usuário",
+      "Atalhos leves"
+    ]
   },
   {
     "path": "/pessoal/jurisprudencias",
@@ -1801,7 +2864,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PessoalJurisprudencias",
-    "exampleUrl": "/pessoal/jurisprudencias"
+    "exampleUrl": "/pessoal/jurisprudencias",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~250 KB",
+    "weightReasons": [
+      "Cards de usuário",
+      "Atalhos leves"
+    ]
   },
   {
     "path": "/pessoal/leis",
@@ -1813,7 +2883,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PessoalLeis",
-    "exampleUrl": "/pessoal/leis"
+    "exampleUrl": "/pessoal/leis",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/pessoal/livros",
@@ -1825,7 +2902,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PessoalLivros",
-    "exampleUrl": "/pessoal/livros"
+    "exampleUrl": "/pessoal/livros",
+    "weightScore": 2,
+    "weightLevel": "leve",
+    "weightEstimate": "~250 KB",
+    "weightReasons": [
+      "Cards de usuário",
+      "Atalhos leves"
+    ]
   },
   {
     "path": "/pilulas",
@@ -1837,7 +2921,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PilulasHome",
-    "exampleUrl": "/pilulas"
+    "exampleUrl": "/pilulas",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/pilulas/:id",
@@ -1849,7 +2941,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PilulasPlayer",
-    "exampleUrl": "/pilulas/1"
+    "exampleUrl": "/pilulas/1",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/pilulas/cc",
@@ -1861,7 +2961,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PilulasLeiSeca",
-    "exampleUrl": "/pilulas/cc"
+    "exampleUrl": "/pilulas/cc",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/pilulas/cf",
@@ -1873,7 +2981,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PilulasLeiSeca",
-    "exampleUrl": "/pilulas/cf"
+    "exampleUrl": "/pilulas/cf",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/pilulas/classicos",
@@ -1885,7 +3001,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Pilulas",
-    "exampleUrl": "/pilulas/classicos"
+    "exampleUrl": "/pilulas/classicos",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/pilulas/clt",
@@ -1897,7 +3021,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PilulasLeiSeca",
-    "exampleUrl": "/pilulas/clt"
+    "exampleUrl": "/pilulas/clt",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/pilulas/cp",
@@ -1909,7 +3041,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PilulasLeiSeca",
-    "exampleUrl": "/pilulas/cp"
+    "exampleUrl": "/pilulas/cp",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/pilulas/cpp",
@@ -1921,7 +3061,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PilulasLeiSeca",
-    "exampleUrl": "/pilulas/cpp"
+    "exampleUrl": "/pilulas/cpp",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/pilulas/deck/:deckId",
@@ -1933,7 +3081,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PilulasViewer",
-    "exampleUrl": "/pilulas/deck/:deckId"
+    "exampleUrl": "/pilulas/deck/:deckId",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/pilulas/lista",
@@ -1945,7 +3101,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PilulasLista",
-    "exampleUrl": "/pilulas/lista"
+    "exampleUrl": "/pilulas/lista",
+    "weightScore": 5,
+    "weightLevel": "muito_pesada",
+    "weightEstimate": "~3.5 MB",
+    "weightReasons": [
+      "Engine Vanilla Three.js",
+      "Shaders e geometrias 3D",
+      "Render loop"
+    ]
   },
   {
     "path": "/planos/ativos",
@@ -1957,7 +3121,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "PlanosAtivos",
-    "exampleUrl": "/planos/ativos"
+    "exampleUrl": "/planos/ativos",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/privacidade",
@@ -1969,7 +3140,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Privacidade",
-    "exampleUrl": "/privacidade"
+    "exampleUrl": "/privacidade",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/questoes",
@@ -1981,7 +3159,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Questoes",
-    "exampleUrl": "/questoes"
+    "exampleUrl": "/questoes",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/area/:slug",
@@ -1993,7 +3179,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesArea",
-    "exampleUrl": "/questoes/area/direito-penal"
+    "exampleUrl": "/questoes/area/direito-penal",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/areas",
@@ -2005,7 +3199,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesAreas",
-    "exampleUrl": "/questoes/areas"
+    "exampleUrl": "/questoes/areas",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/cadernos",
@@ -2017,7 +3219,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesCadernos",
-    "exampleUrl": "/questoes/cadernos"
+    "exampleUrl": "/questoes/cadernos",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/desafios",
@@ -2029,7 +3239,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesDesafios",
-    "exampleUrl": "/questoes/desafios"
+    "exampleUrl": "/questoes/desafios",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/desafios/conquistas",
@@ -2041,7 +3259,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesConquistas",
-    "exampleUrl": "/questoes/desafios/conquistas"
+    "exampleUrl": "/questoes/desafios/conquistas",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/desempenho",
@@ -2053,7 +3279,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesDesempenho",
-    "exampleUrl": "/questoes/desempenho"
+    "exampleUrl": "/questoes/desempenho",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/historico",
@@ -2065,7 +3299,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesHistorico",
-    "exampleUrl": "/questoes/historico"
+    "exampleUrl": "/questoes/historico",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/lembretes",
@@ -2077,7 +3319,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesLembretes",
-    "exampleUrl": "/questoes/lembretes"
+    "exampleUrl": "/questoes/lembretes",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/praticar",
@@ -2089,7 +3339,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesPraticar",
-    "exampleUrl": "/questoes/praticar"
+    "exampleUrl": "/questoes/praticar",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/revisar",
@@ -2101,7 +3359,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesRevisar",
-    "exampleUrl": "/questoes/revisar"
+    "exampleUrl": "/questoes/revisar",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/simulado",
@@ -2113,7 +3379,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesSimulado",
-    "exampleUrl": "/questoes/simulado"
+    "exampleUrl": "/questoes/simulado",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/simulado/:cargoId",
@@ -2125,7 +3399,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesSimuladoCargoConfig",
-    "exampleUrl": "/questoes/simulado/:cargoId"
+    "exampleUrl": "/questoes/simulado/:cargoId",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/questoes/trilhas",
@@ -2137,7 +3419,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "QuestoesTrilhas",
-    "exampleUrl": "/questoes/trilhas"
+    "exampleUrl": "/questoes/trilhas",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/radar-360",
@@ -2149,7 +3439,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Radar360",
-    "exampleUrl": "/radar-360"
+    "exampleUrl": "/radar-360",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~950 KB",
+    "weightReasons": [
+      "Gráficos e estatísticas",
+      "Múltiplos filtros dinâmicos"
+    ]
   },
   {
     "path": "/radar-concursos",
@@ -2161,7 +3458,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "RadarConcursos",
-    "exampleUrl": "/radar-concursos"
+    "exampleUrl": "/radar-concursos",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~950 KB",
+    "weightReasons": [
+      "Gráficos e estatísticas",
+      "Múltiplos filtros dinâmicos"
+    ]
   },
   {
     "path": "/radar-concursos/estatisticas",
@@ -2173,7 +3477,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "RadarEstatisticas",
-    "exampleUrl": "/radar-concursos/estatisticas"
+    "exampleUrl": "/radar-concursos/estatisticas",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~950 KB",
+    "weightReasons": [
+      "Gráficos e estatísticas",
+      "Múltiplos filtros dinâmicos"
+    ]
   },
   {
     "path": "/radar/categorias",
@@ -2185,7 +3496,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/radar/categorias"
+    "exampleUrl": "/radar/categorias",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/radar/em-alta",
@@ -2197,7 +3515,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/radar/em-alta"
+    "exampleUrl": "/radar/em-alta",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/radar/proposicoes",
@@ -2209,7 +3534,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "RadarProposicoes",
-    "exampleUrl": "/radar/proposicoes"
+    "exampleUrl": "/radar/proposicoes",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~950 KB",
+    "weightReasons": [
+      "Gráficos e estatísticas",
+      "Múltiplos filtros dinâmicos"
+    ]
   },
   {
     "path": "/radar/proposicoes/:date",
@@ -2221,7 +3553,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "RadarProposicoesDia",
-    "exampleUrl": "/radar/proposicoes/2026-11-05"
+    "exampleUrl": "/radar/proposicoes/2026-11-05",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~950 KB",
+    "weightReasons": [
+      "Gráficos e estatísticas",
+      "Múltiplos filtros dinâmicos"
+    ]
   },
   {
     "path": "/radares",
@@ -2233,7 +3572,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Radares",
-    "exampleUrl": "/radares"
+    "exampleUrl": "/radares",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~950 KB",
+    "weightReasons": [
+      "Gráficos e estatísticas",
+      "Múltiplos filtros dinâmicos"
+    ]
   },
   {
     "path": "/reset-password",
@@ -2245,7 +3591,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "ResetPassword",
-    "exampleUrl": "/reset-password"
+    "exampleUrl": "/reset-password",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/resumos",
@@ -2257,7 +3610,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/resumos"
+    "exampleUrl": "/resumos",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/resumos-juridicos",
@@ -2269,7 +3629,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ResumosJuridicosRouteWrapper",
-    "exampleUrl": "/resumos-juridicos"
+    "exampleUrl": "/resumos-juridicos",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~850 KB",
+    "weightReasons": [
+      "Estrutura doutrinária em árvore",
+      "Artigos esquematizados"
+    ]
   },
   {
     "path": "/resumos-juridicos/:area",
@@ -2281,7 +3648,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ResumosJuridicosRouteWrapper",
-    "exampleUrl": "/resumos-juridicos/direito-penal"
+    "exampleUrl": "/resumos-juridicos/direito-penal",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~850 KB",
+    "weightReasons": [
+      "Estrutura doutrinária em árvore",
+      "Artigos esquematizados"
+    ]
   },
   {
     "path": "/resumos-juridicos/:area/:tema",
@@ -2293,7 +3667,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ResumosJuridicosRouteWrapper",
-    "exampleUrl": "/resumos-juridicos/direito-penal/teoria-do-crime"
+    "exampleUrl": "/resumos-juridicos/direito-penal/teoria-do-crime",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~850 KB",
+    "weightReasons": [
+      "Estrutura doutrinária em árvore",
+      "Artigos esquematizados"
+    ]
   },
   {
     "path": "/resumos-juridicos/favoritos",
@@ -2305,7 +3686,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ResumosJuridicosLista",
-    "exampleUrl": "/resumos-juridicos/favoritos"
+    "exampleUrl": "/resumos-juridicos/favoritos",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~850 KB",
+    "weightReasons": [
+      "Estrutura doutrinária em árvore",
+      "Artigos esquematizados"
+    ]
   },
   {
     "path": "/resumos-juridicos/jurisprudencia",
@@ -2317,7 +3705,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ResumosJurisprudencia",
-    "exampleUrl": "/resumos-juridicos/jurisprudencia"
+    "exampleUrl": "/resumos-juridicos/jurisprudencia",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~850 KB",
+    "weightReasons": [
+      "Estrutura doutrinária em árvore",
+      "Artigos esquematizados"
+    ]
   },
   {
     "path": "/resumos-juridicos/jurisprudencia/:categoria",
@@ -2329,7 +3724,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ResumosJuridicosJurisprudencia",
-    "exampleUrl": "/resumos-juridicos/jurisprudencia/:categoria"
+    "exampleUrl": "/resumos-juridicos/jurisprudencia/:categoria",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~850 KB",
+    "weightReasons": [
+      "Estrutura doutrinária em árvore",
+      "Artigos esquematizados"
+    ]
   },
   {
     "path": "/resumos-juridicos/leis",
@@ -2341,7 +3743,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ResumosLeis",
-    "exampleUrl": "/resumos-juridicos/leis"
+    "exampleUrl": "/resumos-juridicos/leis",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~850 KB",
+    "weightReasons": [
+      "Estrutura doutrinária em árvore",
+      "Artigos esquematizados"
+    ]
   },
   {
     "path": "/resumos-juridicos/materias",
@@ -2353,7 +3762,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ResumosMaterias",
-    "exampleUrl": "/resumos-juridicos/materias"
+    "exampleUrl": "/resumos-juridicos/materias",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~850 KB",
+    "weightReasons": [
+      "Estrutura doutrinária em árvore",
+      "Artigos esquematizados"
+    ]
   },
   {
     "path": "/resumos-juridicos/recentes",
@@ -2365,7 +3781,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "ResumosJuridicosLista",
-    "exampleUrl": "/resumos-juridicos/recentes"
+    "exampleUrl": "/resumos-juridicos/recentes",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~850 KB",
+    "weightReasons": [
+      "Estrutura doutrinária em árvore",
+      "Artigos esquematizados"
+    ]
   },
   {
     "path": "/simulados",
@@ -2377,7 +3800,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Simulados",
-    "exampleUrl": "/simulados"
+    "exampleUrl": "/simulados",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/simulados/estatisticas",
@@ -2389,7 +3820,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "SimuladosEstatisticas",
-    "exampleUrl": "/simulados/estatisticas"
+    "exampleUrl": "/simulados/estatisticas",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/simulados/provas",
@@ -2401,7 +3840,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/simulados/provas"
+    "exampleUrl": "/simulados/provas",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/simulados/resolver/:id",
@@ -2413,7 +3859,15 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "SimuladosResolver",
-    "exampleUrl": "/simulados/resolver/1"
+    "exampleUrl": "/simulados/resolver/1",
+    "weightScore": 4,
+    "weightLevel": "pesada",
+    "weightEstimate": "~1.8 MB",
+    "weightReasons": [
+      "Banco extenso de questões",
+      "Formatador KaTeX/LaTeX",
+      "Motor de simulado cronometrado"
+    ]
   },
   {
     "path": "/sobre",
@@ -2425,7 +3879,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "SobreApp",
-    "exampleUrl": "/sobre"
+    "exampleUrl": "/sobre",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/suporte",
@@ -2437,7 +3898,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "Suporte",
-    "exampleUrl": "/suporte"
+    "exampleUrl": "/suporte",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/suporte-publico",
@@ -2449,7 +3917,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "SuportePublico",
-    "exampleUrl": "/suporte-publico"
+    "exampleUrl": "/suporte-publico",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/termos",
@@ -2461,7 +3936,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Termos",
-    "exampleUrl": "/termos"
+    "exampleUrl": "/termos",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/vade-mecum",
@@ -2473,7 +3955,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VadeMecum",
-    "exampleUrl": "/vade-mecum"
+    "exampleUrl": "/vade-mecum",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/vade-mecum/areas",
@@ -2485,7 +3974,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/vade-mecum/areas"
+    "exampleUrl": "/vade-mecum/areas",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/vade-mecum/categorias",
@@ -2497,7 +3993,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/vade-mecum/categorias"
+    "exampleUrl": "/vade-mecum/categorias",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/vade-mecum/codigos",
@@ -2509,7 +4012,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VadeMecumCodigos",
-    "exampleUrl": "/vade-mecum/codigos"
+    "exampleUrl": "/vade-mecum/codigos",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/vade-mecum/especiais",
@@ -2521,7 +4031,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VadeMecumEspeciais",
-    "exampleUrl": "/vade-mecum/especiais"
+    "exampleUrl": "/vade-mecum/especiais",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/vade-mecum/estatutos",
@@ -2533,7 +4050,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VadeMecumEstatutos",
-    "exampleUrl": "/vade-mecum/estatutos"
+    "exampleUrl": "/vade-mecum/estatutos",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/vade-mecum/favoritos",
@@ -2545,7 +4069,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/vade-mecum/favoritos"
+    "exampleUrl": "/vade-mecum/favoritos",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/vade-mecum/recentes",
@@ -2557,7 +4088,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VadeMecumRecentes",
-    "exampleUrl": "/vade-mecum/recentes"
+    "exampleUrl": "/vade-mecum/recentes",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/vade-mecum/sumulas",
@@ -2569,7 +4107,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VadeMecumSumulas",
-    "exampleUrl": "/vade-mecum/sumulas"
+    "exampleUrl": "/vade-mecum/sumulas",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/videoaulas",
@@ -2581,7 +4126,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/videoaulas"
+    "exampleUrl": "/videoaulas",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/videoaulas/:catalogo",
@@ -2593,7 +4145,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VideoaulasCatalogo",
-    "exampleUrl": "/videoaulas/:catalogo"
+    "exampleUrl": "/videoaulas/:catalogo",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/videoaulas/:catalogo/:area",
@@ -2605,7 +4164,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VideoaulasArea",
-    "exampleUrl": "/videoaulas/:catalogo/direito-penal"
+    "exampleUrl": "/videoaulas/:catalogo/direito-penal",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/videoaulas/:catalogo/:area/:videoId",
@@ -2617,7 +4183,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VideoaulaView",
-    "exampleUrl": "/videoaulas/:catalogo/direito-penal/:videoId"
+    "exampleUrl": "/videoaulas/:catalogo/direito-penal/:videoId",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/videoaulas/canal/:id",
@@ -2629,7 +4202,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VideoaulasCanalDetail",
-    "exampleUrl": "/videoaulas/canal/1"
+    "exampleUrl": "/videoaulas/canal/1",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/videoaulas/concurso/:id",
@@ -2641,7 +4221,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/videoaulas/concurso/1"
+    "exampleUrl": "/videoaulas/concurso/1",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/videoaulas/estatutos",
@@ -2653,7 +4240,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/videoaulas/estatutos"
+    "exampleUrl": "/videoaulas/estatutos",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/videoaulas/favoritos",
@@ -2665,7 +4259,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VideoaulasLista",
-    "exampleUrl": "/videoaulas/favoritos"
+    "exampleUrl": "/videoaulas/favoritos",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/videoaulas/jurisprudencia",
@@ -2677,7 +4278,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/videoaulas/jurisprudencia"
+    "exampleUrl": "/videoaulas/jurisprudencia",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/videoaulas/lei-seca",
@@ -2689,7 +4297,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VideoaulasLeiSeca",
-    "exampleUrl": "/videoaulas/lei-seca"
+    "exampleUrl": "/videoaulas/lei-seca",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/videoaulas/lei-seca/categoria/:categoriaId",
@@ -2701,7 +4316,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VideoaulasLeiSecaCategoria",
-    "exampleUrl": "/videoaulas/lei-seca/categoria/:categoriaId"
+    "exampleUrl": "/videoaulas/lei-seca/categoria/:categoriaId",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/videoaulas/lei-seca/lei/:leiId",
@@ -2713,7 +4335,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VideoaulasLeiSecaArtigos",
-    "exampleUrl": "/videoaulas/lei-seca/lei/:leiId"
+    "exampleUrl": "/videoaulas/lei-seca/lei/:leiId",
+    "weightScore": 3,
+    "weightLevel": "media",
+    "weightEstimate": "~650 KB",
+    "weightReasons": [
+      "Catálogo oficial de leis",
+      "Virtualizador de artigos"
+    ]
   },
   {
     "path": "/videoaulas/painel",
@@ -2725,7 +4354,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": true,
     "isAdmin": false,
     "component": "VideoaulasRouteWrapper",
-    "exampleUrl": "/videoaulas/painel"
+    "exampleUrl": "/videoaulas/painel",
+    "weightScore": 1,
+    "weightLevel": "leve",
+    "weightEstimate": "~120 KB",
+    "weightReasons": [
+      "Página padrão leve",
+      "Carga instantânea 0ms"
+    ]
   },
   {
     "path": "/visuais",
@@ -2737,7 +4373,14 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/visuais"
+    "exampleUrl": "/visuais",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   },
   {
     "path": "/visuais/*",
@@ -2749,6 +4392,13 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isProtected": false,
     "isAdmin": false,
     "component": "Componente",
-    "exampleUrl": "/visuais"
+    "exampleUrl": "/visuais",
+    "weightScore": 0,
+    "weightLevel": "zero",
+    "weightEstimate": "0 KB",
+    "weightReasons": [
+      "Redirecionamento instantâneo",
+      "Zero impacto de bundle"
+    ]
   }
 ];

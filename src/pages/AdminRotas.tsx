@@ -18,21 +18,74 @@ import {
   CornerDownRight,
   Filter,
   Play,
+  Flame,
+  Gauge,
+  Activity,
+  Zap,
+  ArrowDownUp,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AppHeader } from '@/components/layout/AppHeader';
-import { APP_ROUTES_CATALOG, AppRouteItem } from '@/data/appRoutesCatalog';
+import { APP_ROUTES_CATALOG, AppRouteItem, RouteWeightLevel } from '@/data/appRoutesCatalog';
 import { useRouteInspector } from '@/hooks/useRouteInspector';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
 
-type ViewMode = 'todas' | 'agrupadas' | 'ativas' | 'redirects' | 'admin' | 'publicas';
+type ViewMode = 'agrupadas' | 'todas' | 'pesadas' | 'ativas' | 'redirects' | 'admin' | 'publicas';
+type SortBy = 'alfabetica' | 'peso';
+
+function getWeightBadge(level: RouteWeightLevel, estimate: string) {
+  switch (level) {
+    case 'muito_pesada':
+      return {
+        label: 'Muito Pesada',
+        estimate,
+        badgeClass: 'bg-red-500/20 text-red-300 border-red-500/40',
+        dotClass: 'bg-red-500 animate-pulse',
+        icon: Flame,
+      };
+    case 'pesada':
+      return {
+        label: 'Pesada',
+        estimate,
+        badgeClass: 'bg-orange-500/20 text-orange-300 border-orange-500/40',
+        dotClass: 'bg-orange-500',
+        icon: Gauge,
+      };
+    case 'media':
+      return {
+        label: 'Média',
+        estimate,
+        badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+        dotClass: 'bg-amber-500',
+        icon: Activity,
+      };
+    case 'leve':
+      return {
+        label: 'Leve',
+        estimate,
+        badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+        dotClass: 'bg-emerald-500',
+        icon: Zap,
+      };
+    case 'zero':
+    default:
+      return {
+        label: 'Zero',
+        estimate: '0 KB',
+        badgeClass: 'bg-zinc-800 text-zinc-400 border-zinc-700',
+        dotClass: 'bg-zinc-600',
+        icon: CornerDownRight,
+      };
+  }
+}
 
 const AdminRotas = () => {
   const navigate = useNavigate();
   const { startInspector } = useRouteInspector();
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('agrupadas');
+  const [sortBy, setSortBy] = useState<SortBy>('alfabetica');
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
@@ -41,7 +94,9 @@ const AdminRotas = () => {
     let list = APP_ROUTES_CATALOG.filter((r) => r.path !== '*');
 
     // Filtros de modo
-    if (viewMode === 'ativas') {
+    if (viewMode === 'pesadas') {
+      list = list.filter((r) => (r.weightScore ?? 1) >= 4);
+    } else if (viewMode === 'ativas') {
       list = list.filter((r) => !r.isRedirect);
     } else if (viewMode === 'redirects') {
       list = list.filter((r) => r.isRedirect);
@@ -60,12 +115,23 @@ const AdminRotas = () => {
           r.label.toLowerCase().includes(q) ||
           r.description.toLowerCase().includes(q) ||
           r.group.toLowerCase().includes(q) ||
+          r.weightEstimate.toLowerCase().includes(q) ||
           (r.redirectTarget && r.redirectTarget.toLowerCase().includes(q))
       );
     }
 
-    return list;
-  }, [search, viewMode]);
+    // Ordenação da lista linear
+    const effectiveSort = viewMode === 'pesadas' ? 'peso' : sortBy;
+    const sorted = [...list].sort((a, b) => {
+      if (effectiveSort === 'peso') {
+        const diff = (b.weightScore ?? 1) - (a.weightScore ?? 1);
+        if (diff !== 0) return diff;
+      }
+      return a.path.localeCompare(b.path);
+    });
+
+    return sorted;
+  }, [search, viewMode, sortBy]);
 
   // Agrupamento por Rota Principal e suas subrotas
   const groupedRoutes = useMemo(() => {
@@ -75,13 +141,36 @@ const AdminRotas = () => {
       groups[r.group].push(r);
     }
 
-    // Ordena as chaves dos grupos em ordem alfabética (A-Z)
-    const sortedKeys = Object.keys(groups).sort((a, b) => a.localeCompare(b));
-    return sortedKeys.map((key) => ({
-      group: key,
-      routes: groups[key].sort((a, b) => a.path.localeCompare(b.path)),
-    }));
-  }, [filteredRoutes]);
+    const effectiveSort = viewMode === 'pesadas' ? 'peso' : sortBy;
+
+    // Converte em array e calcula o peso máximo por grupo
+    const groupEntries = Object.entries(groups).map(([group, routes]) => {
+      const maxScore = Math.max(...routes.map((r) => r.weightScore ?? 1), 0);
+      const sortedRoutes = [...routes].sort((a, b) => {
+        if (effectiveSort === 'peso') {
+          const diff = (b.weightScore ?? 1) - (a.weightScore ?? 1);
+          if (diff !== 0) return diff;
+        }
+        return a.path.localeCompare(b.path);
+      });
+      return {
+        group,
+        routes: sortedRoutes,
+        maxScore,
+      };
+    });
+
+    // Ordenação dos grupos
+    groupEntries.sort((a, b) => {
+      if (effectiveSort === 'peso') {
+        const diff = b.maxScore - a.maxScore;
+        if (diff !== 0) return diff;
+      }
+      return a.group.localeCompare(b.group);
+    });
+
+    return groupEntries;
+  }, [filteredRoutes, viewMode, sortBy]);
 
   // Métricas rápidas
   const stats = useMemo(() => {
@@ -89,7 +178,11 @@ const AdminRotas = () => {
     const redirects = APP_ROUTES_CATALOG.filter((r) => r.isRedirect).length;
     const ativas = total - redirects;
     const admin = APP_ROUTES_CATALOG.filter((r) => r.isAdmin).length;
-    return { total, ativas, redirects, admin };
+    const muitoPesadas = APP_ROUTES_CATALOG.filter((r) => r.weightLevel === 'muito_pesada').length;
+    const pesadas = APP_ROUTES_CATALOG.filter((r) => r.weightLevel === 'pesada').length;
+    const medias = APP_ROUTES_CATALOG.filter((r) => r.weightLevel === 'media').length;
+    const leves = APP_ROUTES_CATALOG.filter((r) => r.weightLevel === 'leve').length;
+    return { total, ativas, redirects, admin, muitoPesadas, pesadas, medias, leves };
   }, []);
 
   const toggleGroup = useCallback((group: string, currentIsOpen: boolean) => {
@@ -173,10 +266,10 @@ const AdminRotas = () => {
             <div>
               <h2 className="font-display text-base font-bold text-foreground flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-400" />
-                Catálogo Geral de Rotas & Sub-rotas (A-Z)
+                Catálogo Geral de Rotas & Sub-rotas
               </h2>
               <p className="font-body text-xs text-muted-foreground mt-0.5">
-                Inspecione todas as páginas do sistema, teste rotas ao vivo no app ou copie para perguntar à IA.
+                Inspecione todas as páginas do sistema com métricas de peso de carregamento, teste ao vivo ou pergunte à IA.
               </p>
             </div>
 
@@ -194,16 +287,34 @@ const AdminRotas = () => {
                 <span>Navegar com Menu Flutuante</span>
               </button>
 
-              {/* Badges de Contagem Rápida */}
-              <div className="flex flex-wrap gap-2 text-xs font-mono">
-                <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                  {stats.ativas} Ativas
+              {/* Badges de Contagem e Peso */}
+              <div className="flex flex-wrap gap-1.5 text-xs font-mono">
+                <span
+                  title="Funções que utilizam Three.js, PDF.js ou streams de áudio pesado"
+                  className="px-2 py-0.5 rounded-lg bg-red-500/15 text-red-300 border border-red-500/30 flex items-center gap-1"
+                >
+                  <Flame className="w-3 h-3 text-red-400" />
+                  {stats.muitoPesadas} Muito Pesadas
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-400 border border-amber-500/30">
-                  {stats.redirects} Redirecionadas
+                <span
+                  title="Funções com motores de simulados, ranking e questões"
+                  className="px-2 py-0.5 rounded-lg bg-orange-500/15 text-orange-300 border border-orange-500/30 flex items-center gap-1"
+                >
+                  <Gauge className="w-3 h-3 text-orange-400" />
+                  {stats.pesadas} Pesadas
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-primary/15 text-primary border border-primary/30">
-                  {stats.admin} Admin
+                <span
+                  title="Funções com gráficos radar e tabelas de leis"
+                  className="px-2 py-0.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1"
+                >
+                  {stats.medias} Médias
+                </span>
+                <span
+                  title="Funções ultraleves e instantâneas"
+                  className="px-2 py-0.5 rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1"
+                >
+                  <Zap className="w-3 h-3 text-emerald-400" />
+                  {stats.leves} Leves
                 </span>
               </div>
             </div>
@@ -217,7 +328,7 @@ const AdminRotas = () => {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por caminho (/questoes), nome, grupo ou descrição..."
+            placeholder="Buscar por caminho (/questoes), nome, grupo ou peso (~3.8 MB)..."
             className="w-full h-11 pl-10 pr-10 rounded-xl border border-border bg-card text-foreground font-body text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
           />
           {search && (
@@ -235,7 +346,8 @@ const AdminRotas = () => {
           <div className="flex flex-wrap gap-1.5">
             {[
               { id: 'agrupadas', label: 'Pastas & Sub-rotas', icon: Folder },
-              { id: 'todas', label: 'Todas A-Z', icon: RouteIcon },
+              { id: 'pesadas', label: '🔥 Mais Pesadas +', icon: Flame },
+              { id: 'todas', label: 'Todas as Rotas', icon: RouteIcon },
               { id: 'ativas', label: 'Páginas Ativas', icon: ShieldCheck },
               { id: 'redirects', label: 'Redirecionamentos', icon: ArrowRight },
               { id: 'admin', label: 'Área Admin', icon: Lock },
@@ -259,23 +371,42 @@ const AdminRotas = () => {
             ))}
           </div>
 
-          {viewMode === 'agrupadas' && (
-            <div className="flex items-center gap-2 text-xs">
-              <button
-                onClick={expandAll}
-                className="text-primary hover:underline font-semibold"
-              >
-                Expandir Todas
-              </button>
-              <span className="text-muted-foreground/40">|</span>
-              <button
-                onClick={collapseAll}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                Recolher Todas
-              </button>
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            {/* Alternador de Ordenação (A-Z vs Peso) */}
+            <button
+              onClick={() => {
+                haptic.selection();
+                setSortBy((prev) => (prev === 'alfabetica' ? 'peso' : 'alfabetica'));
+              }}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-body font-semibold transition-all border ${
+                sortBy === 'peso' || viewMode === 'pesadas'
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm'
+                  : 'bg-card border-border text-muted-foreground hover:text-foreground hover:bg-secondary'
+              }`}
+              title="Alternar entre ordem alfabética (A-Z) e ordenação pelas funções mais pesadas do app"
+            >
+              <ArrowDownUp className="w-3.5 h-3.5" />
+              <span>{sortBy === 'peso' || viewMode === 'pesadas' ? '🔥 Mais Pesadas 1º' : 'Ordem A-Z'}</span>
+            </button>
+
+            {viewMode === 'agrupadas' && (
+              <div className="flex items-center gap-2 text-xs pl-1">
+                <button
+                  onClick={expandAll}
+                  className="text-primary hover:underline font-semibold"
+                >
+                  Expandir
+                </button>
+                <span className="text-muted-foreground/40">|</span>
+                <button
+                  onClick={collapseAll}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  Recolher
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Lista de Rotas */}
@@ -290,8 +421,11 @@ const AdminRotas = () => {
         ) : viewMode === 'agrupadas' ? (
           /* Visualização Agrupada por Rota Principal com suas subrotas */
           <div className="space-y-4">
-            {groupedRoutes.map(({ group, routes }) => {
+            {groupedRoutes.map(({ group, routes, maxScore }) => {
               const isOpen = search.trim().length > 0 ? (expandedGroups[group] ?? true) : (expandedGroups[group] ?? false);
+              const maxItem = routes.find((r) => r.weightScore === maxScore) || routes[0];
+              const wBadge = getWeightBadge(maxItem.weightLevel, maxItem.weightEstimate);
+
               return (
                 <div
                   key={group}
@@ -307,17 +441,36 @@ const AdminRotas = () => {
                         {isOpen ? <FolderOpen className="w-4 h-4" /> : <Folder className="w-4 h-4" />}
                       </div>
                       <div className="min-w-0">
-                        <h3 className="font-display text-sm font-bold text-foreground truncate">
-                          {group}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-display text-sm font-bold text-foreground truncate">
+                            {group}
+                          </h3>
+                          {maxScore >= 4 && (
+                            <span className="hidden sm:inline-flex items-center gap-1 text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-red-500/20 text-red-300 border border-red-500/30">
+                              <Flame className="w-2.5 h-2.5" /> Alta Carga
+                            </span>
+                          )}
+                        </div>
                         <p className="font-body text-xs text-muted-foreground truncate">
                           {routes.length} {routes.length === 1 ? 'rota' : 'rotas e sub-rotas'}
                         </p>
                       </div>
                     </div>
-                    <span className="text-xs font-mono font-medium text-muted-foreground px-2 py-0.5 rounded bg-muted/60">
-                      {isOpen ? 'Recolher' : 'Ver rotas'}
-                    </span>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Tag de Peso da Pasta */}
+                      <span
+                        className={`inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border ${wBadge.badgeClass}`}
+                        title={`Maior peso nesta pasta: ${maxItem.weightEstimate}`}
+                      >
+                        <span className={`w-1.5 h-1.5 rounded-full ${wBadge.dotClass}`} />
+                        <span>{maxItem.weightEstimate}</span>
+                      </span>
+
+                      <span className="text-xs font-mono font-medium text-muted-foreground px-2 py-0.5 rounded bg-muted/60">
+                        {isOpen ? 'Recolher' : 'Ver rotas'}
+                      </span>
+                    </div>
                   </button>
 
                   {/* Lista de Sub-rotas */}
@@ -348,7 +501,7 @@ const AdminRotas = () => {
             })}
           </div>
         ) : (
-          /* Visualização em Lista Linear A-Z */
+          /* Visualização em Lista Linear */
           <div className="rounded-2xl border border-border bg-card overflow-hidden divide-y divide-border/50 shadow-sm">
             {filteredRoutes.map((route) => (
               <RouteCard
@@ -377,6 +530,8 @@ interface RouteCardProps {
 
 function RouteCard({ route, copiedPath, onCopy, onAskAI, onOpen }: RouteCardProps) {
   const isCopied = copiedPath === route.path;
+  const w = getWeightBadge(route.weightLevel, route.weightEstimate);
+  const WeightIcon = w.icon;
 
   return (
     <div className="p-3 sm:p-4 hover:bg-secondary/30 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -386,6 +541,18 @@ function RouteCard({ route, copiedPath, onCopy, onAskAI, onOpen }: RouteCardProp
           {/* Caminho Mono */}
           <span className="font-mono text-xs sm:text-[13px] font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-md select-all">
             {route.path}
+          </span>
+
+          {/* TAG DE PESO DA FUNÇÃO */}
+          <span
+            title={`Estimativa de carga de bundle e memória: ${route.weightEstimate}${
+              route.weightReasons?.length ? ` (${route.weightReasons.join(', ')})` : ''
+            }`}
+            className={`inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md border shadow-sm ${w.badgeClass}`}
+          >
+            <WeightIcon className="w-3 h-3 shrink-0" />
+            <span>{w.estimate}</span>
+            <span className="opacity-80 hidden xs:inline">· {w.label}</span>
           </span>
 
           {/* Badges de Estado */}
@@ -431,6 +598,19 @@ function RouteCard({ route, copiedPath, onCopy, onAskAI, onOpen }: RouteCardProp
           <p className="font-body text-xs text-muted-foreground leading-relaxed pl-4">
             {route.description}
           </p>
+          {route.weightReasons && route.weightReasons.length > 0 && !route.isRedirect && (
+            <div className="flex flex-wrap items-center gap-1 pl-4 pt-0.5">
+              <span className="text-[10px] text-muted-foreground/60 font-mono">Carga:</span>
+              {route.weightReasons.map((reason, idx) => (
+                <span
+                  key={idx}
+                  className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-secondary/70 text-muted-foreground border border-border/40"
+                >
+                  {reason}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
