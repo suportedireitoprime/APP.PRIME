@@ -466,26 +466,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/admin-narracao/biblioteca",
-    "group": "Administração",
-    "label": "Admin Narracao Biblioteca",
-    "description": "Página correspondente ao componente AdminNarracaoBiblioteca",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminNarracaoBiblioteca",
-    "exampleUrl": "/admin-narracao/biblioteca",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.8 MB",
-    "weightReasons": [
-      "Motor PDF.js",
-      "Canvas de alta resolução",
-      "Leitor nativo"
-    ]
-  },
-  {
     "path": "/admin-narracao/blog",
     "group": "Administração",
     "label": "Admin Narracao Blog",

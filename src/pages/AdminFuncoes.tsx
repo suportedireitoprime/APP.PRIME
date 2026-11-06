@@ -358,16 +358,9 @@ const CATEGORIES: Category[] = [
   {
     id: "narracao-conteudo",
     title: "Narração de Conteúdo",
-    desc: "Narrar livros da biblioteca e artigos do blog com vozes do Gemini",
+    desc: "Narrar artigos do blog com vozes do Gemini",
     icon: Mic,
     items: [
-      {
-        id: "admin-narracao-biblioteca",
-        label: "Narração Biblioteca",
-        icon: BookOpen,
-        desc: "Escolha o livro, a voz e narre página por página ou em fila",
-        route: "/admin-narracao/biblioteca",
-      },
       {
         id: "admin-narracao-blog",
         label: "Narração Blog e Artigos",

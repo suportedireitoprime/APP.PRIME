@@ -92,7 +92,6 @@ import { Route as TermosRouteImport } from './routes/termos'
 import { Route as VadeMecumRouteImport } from './routes/vade-mecum'
 import { Route as VideoaulasRouteImport } from './routes/videoaulas'
 import { Route as VisuaisRouteImport } from './routes/visuais'
-import { Route as AdminNarracaoBibliotecaRouteImport } from './routes/admin-narracao.biblioteca'
 import { Route as AdminNarracaoBlogRouteImport } from './routes/admin-narracao.blog'
 import { Route as AdminPilulasRouteImport } from './routes/admin.pilulas'
 import { Route as AjustesExcluirContaRouteImport } from './routes/ajustes.excluir-conta'
@@ -621,11 +620,6 @@ const VideoaulasRoute = VideoaulasRouteImport.update({
 const VisuaisRoute = VisuaisRouteImport.update({
   id: '/visuais',
   path: '/visuais',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminNarracaoBibliotecaRoute = AdminNarracaoBibliotecaRouteImport.update({
-  id: '/admin-narracao/biblioteca',
-  path: '/admin-narracao/biblioteca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminNarracaoBlogRoute = AdminNarracaoBlogRouteImport.update({
@@ -1307,7 +1301,6 @@ export interface FileRoutesByFullPath {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/visuais': typeof VisuaisRouteWithChildren
-  '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
@@ -1507,7 +1500,6 @@ export interface FileRoutesByTo {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/visuais': typeof VisuaisRouteWithChildren
-  '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
@@ -1708,7 +1700,6 @@ export interface FileRoutesById {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/visuais': typeof VisuaisRouteWithChildren
-  '/admin-narracao/biblioteca': typeof AdminNarracaoBibliotecaRoute
   '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
@@ -1910,7 +1901,6 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/visuais'
-    | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
@@ -2110,7 +2100,6 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/visuais'
-    | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
@@ -2310,7 +2299,6 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/visuais'
-    | '/admin-narracao/biblioteca'
     | '/admin-narracao/blog'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
@@ -2511,7 +2499,6 @@ export interface RootRouteChildren {
   VadeMecumRoute: typeof VadeMecumRouteWithChildren
   VideoaulasRoute: typeof VideoaulasRouteWithChildren
   VisuaisRoute: typeof VisuaisRouteWithChildren
-  AdminNarracaoBibliotecaRoute: typeof AdminNarracaoBibliotecaRoute
   AdminNarracaoBlogRoute: typeof AdminNarracaoBlogRoute
   AdminPilulasRoute: typeof AdminPilulasRoute
   AjustesExcluirContaRoute: typeof AjustesExcluirContaRoute
@@ -3113,13 +3100,6 @@ declare module '@tanstack/react-router' {
       path: '/visuais'
       fullPath: '/visuais'
       preLoaderRoute: typeof VisuaisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-narracao/biblioteca': {
-      id: '/admin-narracao/biblioteca'
-      path: '/admin-narracao/biblioteca'
-      fullPath: '/admin-narracao/biblioteca'
-      preLoaderRoute: typeof AdminNarracaoBibliotecaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-narracao/blog': {
@@ -4547,7 +4527,6 @@ const rootRouteChildren: RootRouteChildren = {
   VadeMecumRoute: VadeMecumRouteWithChildren,
   VideoaulasRoute: VideoaulasRouteWithChildren,
   VisuaisRoute: VisuaisRouteWithChildren,
-  AdminNarracaoBibliotecaRoute: AdminNarracaoBibliotecaRoute,
   AdminNarracaoBlogRoute: AdminNarracaoBlogRoute,
   AdminPilulasRoute: AdminPilulasRoute,
   AjustesExcluirContaRoute: AjustesExcluirContaRoute,
