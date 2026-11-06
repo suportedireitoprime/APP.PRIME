@@ -11,25 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
-import { Route as AdminAssinantesRouteImport } from './routes/admin-assinantes'
-import { Route as AdminAudioaulasRouteImport } from './routes/admin-audioaulas'
 import { Route as AdminAulasInterativasRouteImport } from './routes/admin-aulas-interativas'
-import { Route as AdminBlogEdicaoRouteImport } from './routes/admin-blog-edicao'
-import { Route as AdminErrosQuestoesRouteImport } from './routes/admin-erros-questoes'
-import { Route as AdminFlashcardsEditarRouteImport } from './routes/admin-flashcards-editar'
 import { Route as AdminFuncoesRouteImport } from './routes/admin-funcoes'
-import { Route as AdminFuncoesAssinantesRouteImport } from './routes/admin-funcoes-assinantes'
 import { Route as AdminHorusRouteImport } from './routes/admin-horus'
-import { Route as AdminLeituraNativaRouteImport } from './routes/admin-leitura-nativa'
-import { Route as AdminMapeamentoLeisRouteImport } from './routes/admin-mapeamento-leis'
-import { Route as AdminMonitorRouteImport } from './routes/admin-monitor'
-import { Route as AdminMonitorApisRouteImport } from './routes/admin-monitor-apis'
-import { Route as AdminNarracaoLeisRouteImport } from './routes/admin-narracao-leis'
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
-import { Route as AdminUsuariosRouteImport } from './routes/admin-usuarios'
-import { Route as AdminVadeMecumHistoricoRouteImport } from './routes/admin-vade-mecum-historico'
 import { Route as AnotacoesRouteImport } from './routes/anotacoes'
 import { Route as AssinaturaRouteImport } from './routes/assinatura'
 import { Route as AssistenteRouteImport } from './routes/assistente'
@@ -90,8 +77,6 @@ import { Route as VideoaulasRouteImport } from './routes/videoaulas'
 import { Route as VisuaisRouteImport } from './routes/visuais'
 import { Route as AdminPilulasRouteImport } from './routes/admin.pilulas'
 import { Route as AjustesExcluirContaRouteImport } from './routes/ajustes.excluir-conta'
-import { Route as AjustesHorusRouteImport } from './routes/ajustes.horus'
-import { Route as AjustesSegurancaRouteImport } from './routes/ajustes.seguranca'
 import { Route as AudioaulasAreaRouteImport } from './routes/audioaulas.$area'
 import { Route as BibliotecasColecaoIdRouteImport } from './routes/bibliotecas.$colecaoId'
 import { Route as BibliotecasTrilhasRouteImport } from './routes/bibliotecas.trilhas'
@@ -212,34 +197,9 @@ const SplatRoute = SplatRouteImport.update({
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAssinantesRoute = AdminAssinantesRouteImport.update({
-  id: '/admin-assinantes',
-  path: '/admin-assinantes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminAudioaulasRoute = AdminAudioaulasRouteImport.update({
-  id: '/admin-audioaulas',
-  path: '/admin-audioaulas',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminAulasInterativasRoute = AdminAulasInterativasRouteImport.update({
   id: '/admin-aulas-interativas',
   path: '/admin-aulas-interativas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminBlogEdicaoRoute = AdminBlogEdicaoRouteImport.update({
-  id: '/admin-blog-edicao',
-  path: '/admin-blog-edicao',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminErrosQuestoesRoute = AdminErrosQuestoesRouteImport.update({
-  id: '/admin-erros-questoes',
-  path: '/admin-erros-questoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminFlashcardsEditarRoute = AdminFlashcardsEditarRouteImport.update({
-  id: '/admin-flashcards-editar',
-  path: '/admin-flashcards-editar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminFuncoesRoute = AdminFuncoesRouteImport.update({
@@ -247,39 +207,9 @@ const AdminFuncoesRoute = AdminFuncoesRouteImport.update({
   path: '/admin-funcoes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminFuncoesAssinantesRoute = AdminFuncoesAssinantesRouteImport.update({
-  id: '/admin-funcoes-assinantes',
-  path: '/admin-funcoes-assinantes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminHorusRoute = AdminHorusRouteImport.update({
   id: '/admin-horus',
   path: '/admin-horus',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLeituraNativaRoute = AdminLeituraNativaRouteImport.update({
-  id: '/admin-leitura-nativa',
-  path: '/admin-leitura-nativa',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMapeamentoLeisRoute = AdminMapeamentoLeisRouteImport.update({
-  id: '/admin-mapeamento-leis',
-  path: '/admin-mapeamento-leis',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMonitorRoute = AdminMonitorRouteImport.update({
-  id: '/admin-monitor',
-  path: '/admin-monitor',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMonitorApisRoute = AdminMonitorApisRouteImport.update({
-  id: '/admin-monitor-apis',
-  path: '/admin-monitor-apis',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminNarracaoLeisRoute = AdminNarracaoLeisRouteImport.update({
-  id: '/admin-narracao-leis',
-  path: '/admin-narracao-leis',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminOmnirouteRoute = AdminOmnirouteRouteImport.update({
@@ -295,16 +225,6 @@ const AdminPushRoute = AdminPushRouteImport.update({
 const AdminRotasRoute = AdminRotasRouteImport.update({
   id: '/admin-rotas',
   path: '/admin-rotas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
-  id: '/admin-usuarios',
-  path: '/admin-usuarios',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminVadeMecumHistoricoRoute = AdminVadeMecumHistoricoRouteImport.update({
-  id: '/admin-vade-mecum-historico',
-  path: '/admin-vade-mecum-historico',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnotacoesRoute = AnotacoesRouteImport.update({
@@ -605,16 +525,6 @@ const AdminPilulasRoute = AdminPilulasRouteImport.update({
 const AjustesExcluirContaRoute = AjustesExcluirContaRouteImport.update({
   id: '/ajustes/excluir-conta',
   path: '/ajustes/excluir-conta',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AjustesHorusRoute = AjustesHorusRouteImport.update({
-  id: '/ajustes/horus',
-  path: '/ajustes/horus',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AjustesSegurancaRoute = AjustesSegurancaRouteImport.update({
-  id: '/ajustes/seguranca',
-  path: '/ajustes/seguranca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AudioaulasAreaRoute = AudioaulasAreaRouteImport.update({
@@ -1190,25 +1100,12 @@ const LeiSecaSlugParteLicaoIdRoute = LeiSecaSlugParteLicaoIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/admin-assinantes': typeof AdminAssinantesRoute
-  '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
-  '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
-  '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
-  '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
-  '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
   '/admin-horus': typeof AdminHorusRoute
-  '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
-  '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
-  '/admin-monitor': typeof AdminMonitorRoute
-  '/admin-monitor-apis': typeof AdminMonitorApisRoute
-  '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
-  '/admin-usuarios': typeof AdminUsuariosRoute
-  '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
   '/anotacoes': typeof AnotacoesRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente': typeof AssistenteRoute
@@ -1269,8 +1166,6 @@ export interface FileRoutesByFullPath {
   '/visuais': typeof VisuaisRouteWithChildren
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
-  '/ajustes/horus': typeof AjustesHorusRoute
-  '/ajustes/seguranca': typeof AjustesSegurancaRoute
   '/audioaulas/$area': typeof AudioaulasAreaRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
@@ -1384,25 +1279,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/admin-assinantes': typeof AdminAssinantesRoute
-  '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
-  '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
-  '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
-  '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
-  '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
   '/admin-horus': typeof AdminHorusRoute
-  '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
-  '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
-  '/admin-monitor': typeof AdminMonitorRoute
-  '/admin-monitor-apis': typeof AdminMonitorApisRoute
-  '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
-  '/admin-usuarios': typeof AdminUsuariosRoute
-  '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
   '/anotacoes': typeof AnotacoesRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente': typeof AssistenteRoute
@@ -1463,8 +1345,6 @@ export interface FileRoutesByTo {
   '/visuais': typeof VisuaisRouteWithChildren
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
-  '/ajustes/horus': typeof AjustesHorusRoute
-  '/ajustes/seguranca': typeof AjustesSegurancaRoute
   '/audioaulas/$area': typeof AudioaulasAreaRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
@@ -1579,25 +1459,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/admin-assinantes': typeof AdminAssinantesRoute
-  '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
-  '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
-  '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
-  '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
   '/admin-funcoes': typeof AdminFuncoesRoute
-  '/admin-funcoes-assinantes': typeof AdminFuncoesAssinantesRoute
   '/admin-horus': typeof AdminHorusRoute
-  '/admin-leitura-nativa': typeof AdminLeituraNativaRoute
-  '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
-  '/admin-monitor': typeof AdminMonitorRoute
-  '/admin-monitor-apis': typeof AdminMonitorApisRoute
-  '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
-  '/admin-usuarios': typeof AdminUsuariosRoute
-  '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
   '/anotacoes': typeof AnotacoesRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente': typeof AssistenteRoute
@@ -1658,8 +1525,6 @@ export interface FileRoutesById {
   '/visuais': typeof VisuaisRouteWithChildren
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
-  '/ajustes/horus': typeof AjustesHorusRoute
-  '/ajustes/seguranca': typeof AjustesSegurancaRoute
   '/audioaulas/$area': typeof AudioaulasAreaRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
@@ -1775,25 +1640,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$'
-    | '/admin-assinantes'
-    | '/admin-audioaulas'
     | '/admin-aulas-interativas'
-    | '/admin-blog-edicao'
-    | '/admin-erros-questoes'
-    | '/admin-flashcards-editar'
     | '/admin-funcoes'
-    | '/admin-funcoes-assinantes'
     | '/admin-horus'
-    | '/admin-leitura-nativa'
-    | '/admin-mapeamento-leis'
-    | '/admin-monitor'
-    | '/admin-monitor-apis'
-    | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
-    | '/admin-usuarios'
-    | '/admin-vade-mecum-historico'
     | '/anotacoes'
     | '/assinatura'
     | '/assistente'
@@ -1854,8 +1706,6 @@ export interface FileRouteTypes {
     | '/visuais'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
-    | '/ajustes/horus'
-    | '/ajustes/seguranca'
     | '/audioaulas/$area'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
@@ -1969,25 +1819,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$'
-    | '/admin-assinantes'
-    | '/admin-audioaulas'
     | '/admin-aulas-interativas'
-    | '/admin-blog-edicao'
-    | '/admin-erros-questoes'
-    | '/admin-flashcards-editar'
     | '/admin-funcoes'
-    | '/admin-funcoes-assinantes'
     | '/admin-horus'
-    | '/admin-leitura-nativa'
-    | '/admin-mapeamento-leis'
-    | '/admin-monitor'
-    | '/admin-monitor-apis'
-    | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
-    | '/admin-usuarios'
-    | '/admin-vade-mecum-historico'
     | '/anotacoes'
     | '/assinatura'
     | '/assistente'
@@ -2048,8 +1885,6 @@ export interface FileRouteTypes {
     | '/visuais'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
-    | '/ajustes/horus'
-    | '/ajustes/seguranca'
     | '/audioaulas/$area'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
@@ -2163,25 +1998,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$'
-    | '/admin-assinantes'
-    | '/admin-audioaulas'
     | '/admin-aulas-interativas'
-    | '/admin-blog-edicao'
-    | '/admin-erros-questoes'
-    | '/admin-flashcards-editar'
     | '/admin-funcoes'
-    | '/admin-funcoes-assinantes'
     | '/admin-horus'
-    | '/admin-leitura-nativa'
-    | '/admin-mapeamento-leis'
-    | '/admin-monitor'
-    | '/admin-monitor-apis'
-    | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
-    | '/admin-usuarios'
-    | '/admin-vade-mecum-historico'
     | '/anotacoes'
     | '/assinatura'
     | '/assistente'
@@ -2242,8 +2064,6 @@ export interface FileRouteTypes {
     | '/visuais'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
-    | '/ajustes/horus'
-    | '/ajustes/seguranca'
     | '/audioaulas/$area'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
@@ -2358,25 +2178,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
-  AdminAssinantesRoute: typeof AdminAssinantesRoute
-  AdminAudioaulasRoute: typeof AdminAudioaulasRoute
   AdminAulasInterativasRoute: typeof AdminAulasInterativasRoute
-  AdminBlogEdicaoRoute: typeof AdminBlogEdicaoRoute
-  AdminErrosQuestoesRoute: typeof AdminErrosQuestoesRoute
-  AdminFlashcardsEditarRoute: typeof AdminFlashcardsEditarRoute
   AdminFuncoesRoute: typeof AdminFuncoesRoute
-  AdminFuncoesAssinantesRoute: typeof AdminFuncoesAssinantesRoute
   AdminHorusRoute: typeof AdminHorusRoute
-  AdminLeituraNativaRoute: typeof AdminLeituraNativaRoute
-  AdminMapeamentoLeisRoute: typeof AdminMapeamentoLeisRoute
-  AdminMonitorRoute: typeof AdminMonitorRoute
-  AdminMonitorApisRoute: typeof AdminMonitorApisRoute
-  AdminNarracaoLeisRoute: typeof AdminNarracaoLeisRoute
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
   AdminRotasRoute: typeof AdminRotasRoute
-  AdminUsuariosRoute: typeof AdminUsuariosRoute
-  AdminVadeMecumHistoricoRoute: typeof AdminVadeMecumHistoricoRoute
   AnotacoesRoute: typeof AnotacoesRoute
   AssinaturaRoute: typeof AssinaturaRoute
   AssistenteRoute: typeof AssistenteRoute
@@ -2437,8 +2244,6 @@ export interface RootRouteChildren {
   VisuaisRoute: typeof VisuaisRouteWithChildren
   AdminPilulasRoute: typeof AdminPilulasRoute
   AjustesExcluirContaRoute: typeof AjustesExcluirContaRoute
-  AjustesHorusRoute: typeof AjustesHorusRoute
-  AjustesSegurancaRoute: typeof AjustesSegurancaRoute
   DesktopLinkTokenRoute: typeof DesktopLinkTokenRoute
   GraficosAvaliacaoRoute: typeof GraficosAvaliacaoRoute
   IrSplatRoute: typeof IrSplatRoute
@@ -2470,46 +2275,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-assinantes': {
-      id: '/admin-assinantes'
-      path: '/admin-assinantes'
-      fullPath: '/admin-assinantes'
-      preLoaderRoute: typeof AdminAssinantesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-audioaulas': {
-      id: '/admin-audioaulas'
-      path: '/admin-audioaulas'
-      fullPath: '/admin-audioaulas'
-      preLoaderRoute: typeof AdminAudioaulasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-aulas-interativas': {
       id: '/admin-aulas-interativas'
       path: '/admin-aulas-interativas'
       fullPath: '/admin-aulas-interativas'
       preLoaderRoute: typeof AdminAulasInterativasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-blog-edicao': {
-      id: '/admin-blog-edicao'
-      path: '/admin-blog-edicao'
-      fullPath: '/admin-blog-edicao'
-      preLoaderRoute: typeof AdminBlogEdicaoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-erros-questoes': {
-      id: '/admin-erros-questoes'
-      path: '/admin-erros-questoes'
-      fullPath: '/admin-erros-questoes'
-      preLoaderRoute: typeof AdminErrosQuestoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-flashcards-editar': {
-      id: '/admin-flashcards-editar'
-      path: '/admin-flashcards-editar'
-      fullPath: '/admin-flashcards-editar'
-      preLoaderRoute: typeof AdminFlashcardsEditarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-funcoes': {
@@ -2519,53 +2289,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFuncoesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-funcoes-assinantes': {
-      id: '/admin-funcoes-assinantes'
-      path: '/admin-funcoes-assinantes'
-      fullPath: '/admin-funcoes-assinantes'
-      preLoaderRoute: typeof AdminFuncoesAssinantesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-horus': {
       id: '/admin-horus'
       path: '/admin-horus'
       fullPath: '/admin-horus'
       preLoaderRoute: typeof AdminHorusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-leitura-nativa': {
-      id: '/admin-leitura-nativa'
-      path: '/admin-leitura-nativa'
-      fullPath: '/admin-leitura-nativa'
-      preLoaderRoute: typeof AdminLeituraNativaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-mapeamento-leis': {
-      id: '/admin-mapeamento-leis'
-      path: '/admin-mapeamento-leis'
-      fullPath: '/admin-mapeamento-leis'
-      preLoaderRoute: typeof AdminMapeamentoLeisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-monitor': {
-      id: '/admin-monitor'
-      path: '/admin-monitor'
-      fullPath: '/admin-monitor'
-      preLoaderRoute: typeof AdminMonitorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-monitor-apis': {
-      id: '/admin-monitor-apis'
-      path: '/admin-monitor-apis'
-      fullPath: '/admin-monitor-apis'
-      preLoaderRoute: typeof AdminMonitorApisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-narracao-leis': {
-      id: '/admin-narracao-leis'
-      path: '/admin-narracao-leis'
-      fullPath: '/admin-narracao-leis'
-      preLoaderRoute: typeof AdminNarracaoLeisRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-omniroute': {
@@ -2587,20 +2315,6 @@ declare module '@tanstack/react-router' {
       path: '/admin-rotas'
       fullPath: '/admin-rotas'
       preLoaderRoute: typeof AdminRotasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-usuarios': {
-      id: '/admin-usuarios'
-      path: '/admin-usuarios'
-      fullPath: '/admin-usuarios'
-      preLoaderRoute: typeof AdminUsuariosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-vade-mecum-historico': {
-      id: '/admin-vade-mecum-historico'
-      path: '/admin-vade-mecum-historico'
-      fullPath: '/admin-vade-mecum-historico'
-      preLoaderRoute: typeof AdminVadeMecumHistoricoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/anotacoes': {
@@ -3021,20 +2735,6 @@ declare module '@tanstack/react-router' {
       path: '/ajustes/excluir-conta'
       fullPath: '/ajustes/excluir-conta'
       preLoaderRoute: typeof AjustesExcluirContaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ajustes/horus': {
-      id: '/ajustes/horus'
-      path: '/ajustes/horus'
-      fullPath: '/ajustes/horus'
-      preLoaderRoute: typeof AjustesHorusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ajustes/seguranca': {
-      id: '/ajustes/seguranca'
-      path: '/ajustes/seguranca'
-      fullPath: '/ajustes/seguranca'
-      preLoaderRoute: typeof AjustesSegurancaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/audioaulas/$area': {
@@ -4346,25 +4046,12 @@ const RadarProposicoesRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
-  AdminAssinantesRoute: AdminAssinantesRoute,
-  AdminAudioaulasRoute: AdminAudioaulasRoute,
   AdminAulasInterativasRoute: AdminAulasInterativasRoute,
-  AdminBlogEdicaoRoute: AdminBlogEdicaoRoute,
-  AdminErrosQuestoesRoute: AdminErrosQuestoesRoute,
-  AdminFlashcardsEditarRoute: AdminFlashcardsEditarRoute,
   AdminFuncoesRoute: AdminFuncoesRoute,
-  AdminFuncoesAssinantesRoute: AdminFuncoesAssinantesRoute,
   AdminHorusRoute: AdminHorusRoute,
-  AdminLeituraNativaRoute: AdminLeituraNativaRoute,
-  AdminMapeamentoLeisRoute: AdminMapeamentoLeisRoute,
-  AdminMonitorRoute: AdminMonitorRoute,
-  AdminMonitorApisRoute: AdminMonitorApisRoute,
-  AdminNarracaoLeisRoute: AdminNarracaoLeisRoute,
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
   AdminRotasRoute: AdminRotasRoute,
-  AdminUsuariosRoute: AdminUsuariosRoute,
-  AdminVadeMecumHistoricoRoute: AdminVadeMecumHistoricoRoute,
   AnotacoesRoute: AnotacoesRoute,
   AssinaturaRoute: AssinaturaRoute,
   AssistenteRoute: AssistenteRoute,
@@ -4425,8 +4112,6 @@ const rootRouteChildren: RootRouteChildren = {
   VisuaisRoute: VisuaisRouteWithChildren,
   AdminPilulasRoute: AdminPilulasRoute,
   AjustesExcluirContaRoute: AjustesExcluirContaRoute,
-  AjustesHorusRoute: AjustesHorusRoute,
-  AjustesSegurancaRoute: AjustesSegurancaRoute,
   DesktopLinkTokenRoute: DesktopLinkTokenRoute,
   GraficosAvaliacaoRoute: GraficosAvaliacaoRoute,
   IrSplatRoute: IrSplatRoute,

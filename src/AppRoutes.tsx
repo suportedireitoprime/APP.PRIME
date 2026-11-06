@@ -119,10 +119,6 @@ const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
 const AdminRotas = lazy(() => import("./pages/AdminRotas.tsx"));
 
 const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
-const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
-const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistorico.tsx'));
-const AdminMapeamentoLeis = lazy(() => import('./pages/AdminMapeamentoLeis.tsx'));
-const AdminNarracaoLeis = lazy(() => import('./pages/AdminNarracaoLeis.tsx'));
 const Simulados = lazy(() => import("./pages/Simulados.tsx"));
 const SimuladosResolver = lazy(() => import("./pages/SimuladosResolver.tsx"));
 const SimuladosEstatisticas = lazy(() => import("./pages/SimuladosEstatisticas.tsx"));
@@ -288,7 +284,6 @@ const VideoaulasRouteWrapper = lazy(() => import("@/components/videoaulas/Videoa
 const LeiSecaPlayer = lazy(routePrefetch.leiSecaPlayer);
 const LeiSecaLembretes = lazy(routePrefetch.leiSecaLembretes);
 
-const AdminMonitor = lazy(() => import("./pages/AdminMonitor.tsx"));
 const Perfil = lazy(() => import("./pages/Perfil.tsx"));
 const SobreApp = lazy(() => import("./pages/SobreApp.tsx"));
 const Blog = lazy(routePrefetch.blog);
@@ -298,19 +293,9 @@ const Bibliotecas = lazy(() => import("./pages/Bibliotecas.tsx"));
 const BibliotecaCategoria = lazy(() => import("./pages/BibliotecaCategoria.tsx"));
 const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 
-const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
 const AdminAulasInterativas = lazy(() => import("./pages/AdminAulasInterativas.tsx"));
-const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
-const AdminUsuarios = lazy(() => import("./pages/AdminUsuarios.tsx"));
-const AdminMonitorApis = lazy(() => import("./pages/AdminMonitorApis.tsx"));
-
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
-const HorusWhatsApp = lazy(() => import("./pages/HorusWhatsApp.tsx"));
-const AdminBlogEdicao = lazy(() => import("./pages/AdminBlogEdicao.tsx"));
 const AdminOmniRouteTeste = lazy(() => import("./pages/AdminOmniRouteTeste.tsx"));
-const AdminFlashcardsEditar = lazy(() => import("./pages/AdminFlashcardsEditar.tsx"));
-const AdminLeituraNativa = lazy(() => import("./pages/AdminLeituraNativa.tsx"));
-const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
 const Audiobooks = lazyWithRetry(routePrefetch.audiobooks);
 const Assinatura = lazy(() => import("./pages/Assinatura.tsx"));
@@ -331,7 +316,6 @@ const PilulasPlayer = lazy(() => import("./pages/pilulas/PilulasPlayer.tsx"));
 
 const Privacidade = lazy(() => import("./pages/Privacidade.tsx"));
 const Termos = lazy(() => import("./pages/Termos.tsx"));
-const Seguranca = lazy(() => import("./pages/Seguranca.tsx"));
 const ExcluirConta = lazy(() => import("./pages/ExcluirConta.tsx"));
 const ExcluirContaPublico = lazy(() => import("./pages/ExcluirContaPublico.tsx"));
 const CentralLembretes = lazy(() => import("./pages/CentralLembretes.tsx"));
@@ -850,7 +834,6 @@ function AnimatedRoutes() {
             <Route path="/landing" element={<PageTransition><Landing /></PageTransition>} />
 
             <Route path="/ir/*" element={<SmartLink />} />
-            <Route path="/admin/usuarios" element={<Navigate to="/admin-usuarios" replace />} />
             <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
             <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />
             <Route path="/excluir-conta" element={<PageTransition><ExcluirContaPublico /></PageTransition>} />
@@ -878,7 +861,6 @@ function AnimatedRoutes() {
           <Route path="/configuracoes" element={<Navigate to="/perfil" replace />} />
           <Route path="/lembretes" element={<ProtectedRoute><PageTransition><CentralLembretes /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes/local" element={<ProtectedRoute><PageTransition><LembretesLocal /></PageTransition></ProtectedRoute>} />
-          <Route path="/ajustes/seguranca" element={<ProtectedRoute><PageTransition><Seguranca /></PageTransition></ProtectedRoute>} />
           <Route path="/ajustes/excluir-conta" element={<ProtectedRoute><PageTransition><ExcluirConta /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/proposicoes" element={<ProtectedRoute><PageTransition><RadarProposicoes /></PageTransition></ProtectedRoute>} />
           <Route path="/radar/proposicoes/:date" element={<ProtectedRoute><PageTransition><RadarProposicoesDia /></PageTransition></ProtectedRoute>} />
@@ -1006,7 +988,6 @@ function AnimatedRoutes() {
           <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition instant><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/pilulas" element={<ProtectedRoute><PageTransition><AdminPilulas /></PageTransition></ProtectedRoute>} />
 
-          <Route path="/admin-monitor" element={<ProtectedRoute><PageTransition><AdminMonitor /></PageTransition></ProtectedRoute>} />
           <Route path="/perfil" element={<ProtectedRoute><PageTransition instant><Perfil /></PageTransition></ProtectedRoute>} />
           <Route path="/sobre" element={<ProtectedRoute><PageTransition><SobreApp /></PageTransition></ProtectedRoute>} />
           <Route path="/blog" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
@@ -1022,16 +1003,7 @@ function AnimatedRoutes() {
           <Route path="/biblioteca-offline" element={<Navigate to="/modo-offline/livros" replace />} />
 
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-instagram-posts" element={<Navigate to="/admin-funcoes" replace />} />
           <Route path="/admin-aulas-interativas" element={<ProtectedRoute><PageTransition><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-funcoes-assinantes" element={<ProtectedRoute><PageTransition><AdminFuncoesAssinantes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-vade-mecum-historico" element={<ProtectedRoute><PageTransition><AdminVadeMecumHistorico /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-mapeamento-leis" element={<ProtectedRoute><PageTransition><AdminMapeamentoLeis /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-narracao-leis" element={<ProtectedRoute><PageTransition><AdminNarracaoLeis /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-narracao" element={<Navigate to="/admin-narracao-leis" replace />} />
-          <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-usuarios" element={<ProtectedRoute><PageTransition><AdminUsuarios /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-monitor-apis" element={<ProtectedRoute><PageTransition><AdminMonitorApis /></PageTransition></ProtectedRoute>} />
           <Route path="/assinatura" element={<ProtectedRoute><PageTransition instant><Assinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
           <Route path="/minha-cota" element={<Navigate to="/assinatura" replace />} />
@@ -1040,17 +1012,8 @@ function AnimatedRoutes() {
           <Route path="/admin-rotas" element={<ProtectedRoute><PageTransition><AdminRotas /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/rotas" element={<Navigate to="/admin-rotas" replace />} />
 
-
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-erros-questoes" element={<ProtectedRoute><PageTransition><AdminErrosQuestoes /></PageTransition></ProtectedRoute>} />
-
-          <Route path="/ajustes/horus" element={<ProtectedRoute><PageTransition><HorusWhatsApp /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-blog-edicao" element={<ProtectedRoute><PageTransition><AdminBlogEdicao /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-flashcards-editar" element={<ProtectedRoute><PageTransition><AdminFlashcardsEditar /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-design-imagens" element={<Navigate to="/admin-blog-edicao" replace />} />
-          <Route path="/admin-leitura-nativa" element={<ProtectedRoute><PageTransition><AdminLeituraNativa /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-audioaulas" element={<ProtectedRoute><PageTransition><AdminAudioaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/audioaulas" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/audioaulas/:area" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/meus-downloads" element={<Navigate to="/modo-offline" replace />} />
@@ -1064,8 +1027,6 @@ function AnimatedRoutes() {
           <Route path="/audiobooks" element={<ProtectedRoute><PageTransition><Audiobooks /></PageTransition></ProtectedRoute>} />
           <Route path="/audioleis" element={<Navigate to="/audiobooks" replace />} />
           <Route path="/audio-leis" element={<Navigate to="/audiobooks" replace />} />
-          <Route path="/admin-biblioteca-leis" element={<Navigate to="/admin-mapeamento-leis" replace />} />
-          <Route path="/admin-biblioteca-leis/*" element={<Navigate to="/admin-mapeamento-leis" replace />} />
 
 
           <Route path="/desktop" element={<PageTransition><DesktopPromo /></PageTransition>} />

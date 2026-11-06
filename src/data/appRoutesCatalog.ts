@@ -60,46 +60,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Carga instantânea 0ms"
     ]
   },
-  {
-    "path": "/admin-assinantes",
-    "group": "Administração",
-    "label": "Admin Assinantes",
-    "description": "Painel de assinantes ativos, histórico de pagamentos e fontes",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminAssinantes",
-    "exampleUrl": "/admin-assinantes",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~500 KB",
-    "weightReasons": [
-      "Painel administrativo",
-      "Tabelas e queries Supabase"
-    ]
-  },
-  {
-    "path": "/admin-audioaulas",
-    "group": "Administração",
-    "label": "Admin Audioaulas",
-    "description": "Página correspondente ao componente AdminAudioaulas",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminAudioaulas",
-    "exampleUrl": "/admin-audioaulas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.2 MB",
-    "weightReasons": [
-      "Streaming de áudio R2",
-      "Catálogo de 58 mil linhas",
-      "Sincronizador SRT"
-    ]
-  },
-  {
+      {
     "path": "/admin-aulas-interativas",
     "group": "Administração",
     "label": "Admin Aulas Interativas",
@@ -119,122 +80,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Sincronizador SRT"
     ]
   },
-  {
-    "path": "/admin-biblioteca-leis",
-    "group": "Administração",
-    "label": "Admin Biblioteca Leis",
-    "description": "Redirecionamento automático legado para a rota /admin-mapeamento-leis",
-    "isRedirect": true,
-    "redirectTarget": "/admin-mapeamento-leis",
-    "isProtected": false,
-    "isAdmin": true,
-    "component": "Componente",
-    "exampleUrl": "/admin-biblioteca-leis",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/admin-biblioteca-leis/*",
-    "group": "Administração",
-    "label": "Admin Biblioteca Leis",
-    "description": "Redirecionamento automático legado para a rota /admin-mapeamento-leis",
-    "isRedirect": true,
-    "redirectTarget": "/admin-mapeamento-leis",
-    "isProtected": false,
-    "isAdmin": true,
-    "component": "Componente",
-    "exampleUrl": "/admin-biblioteca-leis",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/admin-blog-edicao",
-    "group": "Administração",
-    "label": "Admin Blog Edicao",
-    "description": "Página correspondente ao componente AdminBlogEdicao",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminBlogEdicao",
-    "exampleUrl": "/admin-blog-edicao",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~500 KB",
-    "weightReasons": [
-      "Painel administrativo",
-      "Tabelas e queries Supabase"
-    ]
-  },
-  {
-    "path": "/admin-design-imagens",
-    "group": "Administração",
-    "label": "Admin Design Imagens",
-    "description": "Redirecionamento automático legado para a rota /admin-blog-edicao",
-    "isRedirect": true,
-    "redirectTarget": "/admin-blog-edicao",
-    "isProtected": false,
-    "isAdmin": true,
-    "component": "Componente",
-    "exampleUrl": "/admin-design-imagens",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/admin-erros-questoes",
-    "group": "Administração",
-    "label": "Admin Erros Questoes",
-    "description": "Relatórios de erros apontados por alunos em questões de concurso",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminErrosQuestoes",
-    "exampleUrl": "/admin-erros-questoes",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
-    "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
-    ]
-  },
-  {
-    "path": "/admin-flashcards-editar",
-    "group": "Administração",
-    "label": "Admin Flashcards Editar",
-    "description": "Página correspondente ao componente AdminFlashcardsEditar",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminFlashcardsEditar",
-    "exampleUrl": "/admin-flashcards-editar",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
+              {
     "path": "/admin-funcoes",
     "group": "Administração",
     "label": "Admin Funcoes",
@@ -253,26 +99,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Tabelas e queries Supabase"
     ]
   },
-  {
-    "path": "/admin-funcoes-assinantes",
-    "group": "Administração",
-    "label": "Admin Funcoes Assinantes",
-    "description": "Página correspondente ao componente AdminFuncoesAssinantes",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminFuncoesAssinantes",
-    "exampleUrl": "/admin-funcoes-assinantes",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~500 KB",
-    "weightReasons": [
-      "Painel administrativo",
-      "Tabelas e queries Supabase"
-    ]
-  },
-  {
+    {
     "path": "/admin-horus",
     "group": "Administração",
     "label": "Admin Horus",
@@ -291,142 +118,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Tabelas e queries Supabase"
     ]
   },
-  {
-    "path": "/admin-instagram-posts",
-    "group": "Administração",
-    "label": "Admin Instagram Posts",
-    "description": "Redirecionamento automático legado para a rota /admin-funcoes",
-    "isRedirect": true,
-    "redirectTarget": "/admin-funcoes",
-    "isProtected": false,
-    "isAdmin": true,
-    "component": "Componente",
-    "exampleUrl": "/admin-instagram-posts",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/admin-leitura-nativa",
-    "group": "Administração",
-    "label": "Admin Leitura Nativa",
-    "description": "Página correspondente ao componente AdminLeituraNativa",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminLeituraNativa",
-    "exampleUrl": "/admin-leitura-nativa",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.8 MB",
-    "weightReasons": [
-      "Motor PDF.js",
-      "Canvas de alta resolução",
-      "Leitor nativo"
-    ]
-  },
-  {
-    "path": "/admin-mapeamento-leis",
-    "group": "Administração",
-    "label": "Admin Mapeamento Leis",
-    "description": "Catálogo de leis, status de extração e integridade textual",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminMapeamentoLeis",
-    "exampleUrl": "/admin-mapeamento-leis",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
-    "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
-    ]
-  },
-  {
-    "path": "/admin-monitor",
-    "group": "Administração",
-    "label": "Admin Monitor",
-    "description": "Monitoramento de saúde do servidor, banco de dados e latência",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminMonitor",
-    "exampleUrl": "/admin-monitor",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~500 KB",
-    "weightReasons": [
-      "Painel administrativo",
-      "Tabelas e queries Supabase"
-    ]
-  },
-  {
-    "path": "/admin-monitor-apis",
-    "group": "Administração",
-    "label": "Admin Monitor Apis",
-    "description": "Monitoramento de consumo e custos de APIs de inteligência artificial",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminMonitorApis",
-    "exampleUrl": "/admin-monitor-apis",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~500 KB",
-    "weightReasons": [
-      "Painel administrativo",
-      "Tabelas e queries Supabase"
-    ]
-  },
-  {
-    "path": "/admin-narracao",
-    "group": "Administração",
-    "label": "Admin Narracao",
-    "description": "Redirecionamento automático legado para a rota /admin-narracao-leis",
-    "isRedirect": true,
-    "redirectTarget": "/admin-narracao-leis",
-    "isProtected": false,
-    "isAdmin": true,
-    "component": "Componente",
-    "exampleUrl": "/admin-narracao",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/admin-narracao-leis",
-    "group": "Administração",
-    "label": "Admin Narracao Leis",
-    "description": "Painel de geração de narrações em áudio para artigos de lei",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminNarracaoLeis",
-    "exampleUrl": "/admin-narracao-leis",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~2.1 MB",
-    "weightReasons": [
-      "Componente 130KB",
-      "Player de áudio dinâmico",
-      "Integração Gemini AI"
-    ]
-  },
-  {
+                {
     "path": "/admin-omniroute",
     "group": "Administração",
     "label": "Admin Omniroute",
@@ -465,45 +157,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Tabelas e queries Supabase"
     ]
   },
-  {
-    "path": "/admin-usuarios",
-    "group": "Administração",
-    "label": "Admin Usuarios",
-    "description": "Gestão de usuários cadastrados e controle de acessos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminUsuarios",
-    "exampleUrl": "/admin-usuarios",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~500 KB",
-    "weightReasons": [
-      "Painel administrativo",
-      "Tabelas e queries Supabase"
-    ]
-  },
-  {
-    "path": "/admin-vade-mecum-historico",
-    "group": "Administração",
-    "label": "Admin Vade Mecum Historico",
-    "description": "Página correspondente ao componente AdminVadeMecumHistorico",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminVadeMecumHistorico",
-    "exampleUrl": "/admin-vade-mecum-historico",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~500 KB",
-    "weightReasons": [
-      "Painel administrativo",
-      "Tabelas e queries Supabase"
-    ]
-  },
-  {
+      {
     "path": "/admin/pilulas",
     "group": "Administração",
     "label": "Admin Pilulas",
@@ -523,26 +177,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Render loop"
     ]
   },
-  {
-    "path": "/admin/usuarios",
-    "group": "Administração",
-    "label": "Admin Usuarios",
-    "description": "Redirecionamento automático legado para a rota /admin-usuarios",
-    "isRedirect": true,
-    "redirectTarget": "/admin-usuarios",
-    "isProtected": false,
-    "isAdmin": true,
-    "component": "Componente",
-    "exampleUrl": "/admin/usuarios",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
+    {
     "path": "/ajustes/excluir-conta",
     "group": "Ajustes",
     "label": "Ajustes Excluir Conta",
@@ -561,45 +196,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Carga instantânea 0ms"
     ]
   },
-  {
-    "path": "/ajustes/horus",
-    "group": "Ajustes",
-    "label": "Ajustes Horus",
-    "description": "Página correspondente ao componente HorusWhatsApp",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "HorusWhatsApp",
-    "exampleUrl": "/ajustes/horus",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/ajustes/seguranca",
-    "group": "Ajustes",
-    "label": "Ajustes Seguranca",
-    "description": "Página correspondente ao componente Seguranca",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "Seguranca",
-    "exampleUrl": "/ajustes/seguranca",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
+      {
     "path": "/anotacoes",
     "group": "Espaço do Aluno & Perfil",
     "label": "Anotacoes",

@@ -39,7 +39,6 @@ export const ROUTE_NAMES: Record<string, string> = {
   "/noticias": "Noticias",
   "/novidades": "Novidades",
   "/anotacoes": "Anotacoes",
-  "/ajustes/seguranca": "Seguranca",
   "/ajustes/lembretes": "Lembretes",
   "/meus-lembretes": "Meus Lembretes",
   "/lembretes/local": "Lembretes Local",

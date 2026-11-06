@@ -61,23 +61,10 @@ import { AdminHojeCards } from "@/components/admin/AdminHojeCards";
 // Prefetch map
 const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-aulas-interativas": () => import("./AdminAulasInterativas"),
-  "/admin-monitor": () => import("./AdminMonitor"),
-  "/admin-monitor-apis": () => import("./AdminMonitorApis"),
   "/admin-push": () => import("./AdminPush"),
   "/admin-horus": () => import("./AdminHorus"),
-
-  "/admin-blog-edicao": () => import("./AdminBlogEdicao"),
   "/admin-omniroute": () => import("./AdminOmniRouteTeste"),
   "/admin/pilulas": () => import("./AdminPilulas"),
-
-  "/admin-funcoes-assinantes": () => import("./AdminFuncoesAssinantes"),
-  "/admin-assinantes": () => import("./AdminAssinantes"),
-  "/admin-usuarios": () => import("./AdminUsuarios"),
-  "/admin-erros-questoes": () => import("./AdminErrosQuestoes"),
-  "/admin-mapeamento-leis": () => import("./AdminMapeamentoLeis"),
-  "/admin-narracao-leis": () => import("./AdminNarracaoLeis"),
-  "/admin-leitura-nativa": () => import("./AdminLeituraNativa"),
-  "/admin-audioaulas": () => import("./AdminAudioaulas"),
   "/admin-rotas": () => import("./AdminRotas"),
   "/explicacao-lei": () => import("./ExplicacaoLei"),
 };
@@ -154,35 +141,6 @@ type Category = {
 
 const CATEGORIES: Category[] = [
   {
-    id: "assinaturas-financeiro",
-    title: "Assinaturas & Financeiro",
-    desc: "Lista de assinantes, limites free e paywall",
-    icon: Crown,
-    items: [
-      {
-        id: "admin-assinantes",
-        label: "Assinantes App",
-        icon: Users,
-        desc: "Lista de todos os assinantes via banco local",
-        route: "/admin-assinantes",
-      },
-      {
-        id: "admin-usuarios",
-        label: "Usuários Cadastrados",
-        icon: UserCheck,
-        desc: "Lista de todos os usuários cadastrados e status",
-        route: "/admin-usuarios",
-      },
-      {
-        id: "admin-funcoes-assinantes",
-        label: "Funções Assinantes",
-        icon: Crown,
-        desc: "Limite de uso free por função",
-        route: "/admin-funcoes-assinantes",
-      },
-    ],
-  },
-  {
     id: "aulas-interativas-cat",
     title: "Aulas Interativas",
     desc: "Catálogo de aulas com áudio narrado e conteúdos interativos",
@@ -233,27 +191,12 @@ const CATEGORIES: Category[] = [
     desc: "IA, biblioteca e estudos",
     icon: Newspaper,
     items: [
-      // Conteúdo & IA
       {
         id: "omniroute-admin",
         label: "OmniRoute (Gateway de IA)",
         icon: Sparkles,
         desc: "Central unificada de modelos e chaves de IA do aplicativo",
         route: "/admin-omniroute",
-      },
-      {
-        id: "flashcards-edicao",
-        label: "Flashcards Editar",
-        icon: Layers,
-        desc: "IA, bibliotecas, revisão e stats",
-        route: "/admin-flashcards-editar",
-      },
-      {
-        id: "blog-edicao",
-        label: "Blog Editar",
-        icon: Newspaper,
-        desc: "Geração automática de artigos + push",
-        route: "/admin-blog-edicao",
       },
       {
         id: "admin-pilulas",
@@ -269,66 +212,6 @@ const CATEGORIES: Category[] = [
         desc: "Batch de explicações",
         route: "/explicacao-lei",
       },
-
-      // Biblioteca
-      {
-        id: "leitura-nativa",
-        label: "Leitura Nativa",
-        icon: FileText,
-        desc: "Extração instantânea de PDFs em segundo plano com divisão de capítulos",
-        route: "/admin-leitura-nativa",
-      },
-      {
-        id: "audioaulas",
-        label: "Audioaulas",
-        icon: PlayCircle,
-        desc: "Gestão, auditoria e consulta do acervo real de 2.221 audioaulas",
-        route: "/admin-audioaulas",
-      },
-    ],
-  },
-  {
-    id: "bases-juridicas",
-    title: "Bases Jurídicas",
-    desc: "Vade Mecum, Planalto e catalogação de leis",
-    icon: Scale,
-    items: [
-      {
-        id: "admin-mapeamento-leis",
-        label: "Mapeamento de Leis",
-        icon: Building2,
-        desc: "Catálogo de códigos, estatutos e status de extração",
-        route: "/admin-mapeamento-leis",
-      },
-      {
-        id: "admin-vade-mecum-historico",
-        label: "Histórico de Atualizações",
-        icon: Scale,
-        desc: "Resenha diária do Planalto, impactos e antes/depois",
-        route: "/admin-vade-mecum-historico",
-      },
-      {
-        id: "admin-narracao-leis",
-        label: "Narração de Leis",
-        icon: Headphones,
-        desc: "Estúdio de narração fatiada, teste de vozes e automação cron",
-        route: "/admin-narracao-leis",
-      },
-    ],
-  },
-  {
-    id: "questoes",
-    title: "Questões & Simulados",
-    desc: "Visualizar e gerenciar reportes de alunos",
-    icon: ListChecks,
-    items: [
-      {
-        id: "admin-erros-questoes",
-        label: "Reportes de Erro",
-        icon: ShieldAlert,
-        desc: "Visualizar e resolver erros em questões reportados por alunos",
-        route: "/admin-erros-questoes",
-      },
     ],
   },
   {
@@ -343,44 +226,6 @@ const CATEGORIES: Category[] = [
         icon: CloudDownload,
         desc: "Baixe leis e livros para usar sem internet",
         route: "/modo-offline",
-      },
-    ],
-  },
-
-  {
-    id: "monitoramento",
-    title: "Monitoramento & Saúde",
-    desc: "Saúde do sistema, métricas e APIs",
-    icon: Monitor,
-    items: [
-      {
-        id: "admin-monitor",
-        label: "Monitoramento",
-        icon: Activity,
-        desc: "Status e saúde do sistema",
-        route: "/admin-monitor",
-      },
-      {
-        id: "monitor-apis",
-        label: "APIs",
-        icon: Activity,
-        desc: "Funções que usam IA (custo, manual/auto)",
-        route: "/admin-monitor-apis",
-      },
-    ],
-  },
-  {
-    id: "radares-admin",
-    title: "Radares",
-    desc: "Radar de Leis, cron e histórico",
-    icon: Rss,
-    items: [
-      {
-        id: "admin-mapeamento-leis",
-        label: "Catálogo de Leis",
-        icon: BookOpen,
-        desc: "Mapeamento de códigos, estatutos e status de extração",
-        route: "/admin-mapeamento-leis",
       },
     ],
   },
