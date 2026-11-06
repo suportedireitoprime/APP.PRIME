@@ -34,11 +34,7 @@ const AdminRotas = () => {
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('agrupadas');
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-    'Legislação & Leis': true,
-    'Questões & Simulados': true,
-    'Aulas & Áudios': true,
-  });
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   // Filtra rotas com base na busca e na aba ativa
   const filteredRoutes = useMemo(() => {
@@ -96,11 +92,11 @@ const AdminRotas = () => {
     return { total, ativas, redirects, admin };
   }, []);
 
-  const toggleGroup = useCallback((group: string) => {
+  const toggleGroup = useCallback((group: string, currentIsOpen: boolean) => {
     haptic.selection();
     setExpandedGroups((prev) => ({
       ...prev,
-      [group]: !prev[group],
+      [group]: !currentIsOpen,
     }));
   }, []);
 
@@ -295,7 +291,7 @@ const AdminRotas = () => {
           /* Visualização Agrupada por Rota Principal com suas subrotas */
           <div className="space-y-4">
             {groupedRoutes.map(({ group, routes }) => {
-              const isOpen = expandedGroups[group] ?? true;
+              const isOpen = search.trim().length > 0 ? (expandedGroups[group] ?? true) : (expandedGroups[group] ?? false);
               return (
                 <div
                   key={group}
@@ -303,7 +299,7 @@ const AdminRotas = () => {
                 >
                   {/* Cabeçalho da Rota Principal / Pasta */}
                   <button
-                    onClick={() => toggleGroup(group)}
+                    onClick={() => toggleGroup(group, isOpen)}
                     className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left hover:bg-secondary/50 transition-colors"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
