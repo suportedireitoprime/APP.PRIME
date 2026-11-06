@@ -228,53 +228,53 @@ export default function MinhaAssinaturaView({
         {/* Glow de fundo */}
         <div className="absolute -top-24 -right-24 w-52 h-52 bg-primary/20 rounded-full blur-[80px] pointer-events-none" />
 
-        <div className="relative p-5 sm:p-7">
+        <div className="relative p-4 sm:p-6">
           {/* Badges de Status */}
           <div className="flex flex-wrap items-center gap-2">
             {isCancelled ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 font-body text-[11px] font-bold uppercase tracking-wider shadow-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30 font-sans text-[11px] font-bold uppercase tracking-wider shadow-sm">
                 <XCircle className="w-3.5 h-3.5" /> Renovação cancelada
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-body text-[11px] font-bold uppercase tracking-wider shadow-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-sans text-[11px] font-bold uppercase tracking-wider shadow-sm">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Assinatura Ativa
               </span>
             )}
 
             {isVitalicio ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-body text-[11px] font-bold uppercase tracking-wider shadow-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-sans text-[11px] font-bold uppercase tracking-wider shadow-sm">
                 <InfinityIcon className="w-3.5 h-3.5" /> Acesso Permanente
               </span>
             ) : isPix ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 text-primary border border-primary/30 font-body text-[11px] font-bold uppercase tracking-wider shadow-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 text-primary border border-primary/30 font-sans text-[11px] font-bold uppercase tracking-wider shadow-sm">
                 <QrCode className="w-3.5 h-3.5" /> Pagamento Pix
               </span>
             ) : hasCardRecurrence || isStore ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-foreground/90 border border-border/80 font-body text-[11px] font-bold uppercase tracking-wider shadow-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-foreground/90 border border-border/80 font-sans text-[11px] font-bold uppercase tracking-wider shadow-sm">
                 <CreditCard className="w-3.5 h-3.5 text-primary" /> Cartão de Crédito
               </span>
             ) : null}
 
             {isAdminOverride && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 font-body text-[11px] font-bold uppercase tracking-wider shadow-sm">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 font-sans text-[11px] font-bold uppercase tracking-wider shadow-sm">
                 <Sparkles className="w-3.5 h-3.5" /> Modo Admin
               </span>
             )}
           </div>
 
           {/* Nome do Plano e Preço */}
-          <div className="mt-5 sm:mt-6 flex items-center gap-4">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary/25 to-primary/5 border border-primary/30 flex items-center justify-center shrink-0 shadow-inner">
-              <Crown className="w-7 h-7 sm:w-8 sm:h-8 text-primary" />
+          <div className="mt-4 sm:mt-5 flex items-center gap-3.5">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-primary/25 to-primary/5 border border-primary/30 flex items-center justify-center shrink-0 shadow-inner">
+              <Crown className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="font-display text-2xl sm:text-3xl leading-none font-bold tracking-tight text-foreground uppercase">
+              <h2 className="font-sans text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
                 {label}
               </h2>
-              <p className="font-body text-sm sm:text-base font-semibold text-foreground/90 mt-1.5">
+              <p className="font-sans text-sm sm:text-base font-semibold text-zinc-200 mt-0.5">
                 {preco}
                 {equivalente && (
-                  <span className="block sm:inline sm:ml-2 font-normal text-xs sm:text-sm text-muted-foreground">
+                  <span className="block sm:inline sm:ml-2 font-normal text-xs sm:text-sm text-zinc-400">
                     {equivalente}
                   </span>
                 )}
@@ -283,7 +283,7 @@ export default function MinhaAssinaturaView({
           </div>
 
           {/* Bloco de Renovação / Vigência */}
-          <div className="mt-6 rounded-2xl bg-card/70 border border-border/60 p-4 sm:p-5">
+          <div className="mt-4 sm:mt-5 rounded-2xl bg-card/70 border border-border/60 p-3.5 sm:p-4">
             {isVitalicio ? (
               <div>
                 <div className="flex items-center justify-between gap-2">

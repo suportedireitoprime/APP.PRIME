@@ -31,7 +31,7 @@ const PlanosAtivos = () => {
       </header>
 
 
-      <div className="max-w-3xl lg:max-w-5xl mx-auto px-4 lg:px-8 pt-8 space-y-8">
+      <div className="max-w-3xl lg:max-w-5xl mx-auto px-2.5 sm:px-6 lg:px-8 pt-4 sm:pt-6 space-y-6 sm:space-y-8">
         {showDevToggle && (
           <div className="rounded-2xl border border-border/60 bg-card/50 p-3 space-y-2">
             <p className="font-body text-[11px] uppercase tracking-wider text-muted-foreground text-center">

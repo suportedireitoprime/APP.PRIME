@@ -24,7 +24,7 @@ export default function AssinaturaDireitosGuia({ planoNome = 'Plano Anual' }: Pr
       recurso: 'Inteligência Artificial Jurídica (Tutor 24/7)',
       descricao: 'Respostas doutrinárias, correlações e explicação de artigos',
       gratuito: 'Limite diário de 3 perguntas simples',
-      premium: 'Acesso Ilimitado 24/7 sem filtros ou cotas',
+      premium: 'Acesso ilimitado 24/7 sem filtros ou cotas',
       destaque: true,
     },
     {
@@ -203,46 +203,159 @@ export default function AssinaturaDireitosGuia({ planoNome = 'Plano Anual' }: Pr
   ];
 
   return (
-    <section className="mt-10 space-y-10">
+    <section className="mt-6 sm:mt-8 space-y-6 sm:space-y-8 w-full max-w-full">
       {/* Header do Guia com Badge Premium */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-bold tracking-widest uppercase">
+      <div className="text-center space-y-2 px-1">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-[11px] font-semibold tracking-wider uppercase font-sans">
           <Sparkles className="w-3.5 h-3.5" />
           Guia Exclusivo do Assinante
         </div>
-        <h3 className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold uppercase tracking-wide text-foreground">
-          O Que Sua Assinatura Garante
+        <h3 className="font-sans text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white">
+          Tudo o que sua assinatura garante
         </h3>
-        <p className="font-body text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Conheça cada um dos direitos, recursos e garantias inclusos no seu <span className="text-foreground font-semibold">{planoNome}</span>. Um ecossistema de alto rendimento projetado para a sua aprovação.
+        <p className="font-sans text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
+          Benefícios, ferramentas e direitos assegurados na vigência do seu <span className="text-white font-semibold">{planoNome}</span>.
         </p>
       </div>
 
-      {/* INFOGRÁFICO SVG 1: O Ecossistema Direito Prime (SVG Gráfico Ilustrado) */}
-      <div className="rounded-3xl border border-border/70 bg-card/50 p-5 sm:p-7 shadow-xl backdrop-blur-md overflow-hidden relative">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b border-border/50 pb-4">
+      {/* COMPARATIVO: MODO GRATUITO VS ASSINANTE PREMIUM */}
+      <div className="rounded-2xl border border-border/70 bg-card/60 p-3 sm:p-6 shadow-xl backdrop-blur-md overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 border-b border-border/50 pb-3">
           <div>
-            <span className="font-body text-[11px] font-bold uppercase tracking-wider text-primary">
+            <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-primary">
+              Comparativo Oficial de Recursos
+            </span>
+            <h4 className="font-sans text-base sm:text-xl font-bold text-white tracking-tight">
+              Conta Gratuita vs Assinante Premium
+            </h4>
+          </div>
+          <span className="self-start sm:self-auto inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[11px] font-bold font-sans">
+            <CheckCircle2 className="w-3.5 h-3.5" /> Você é Premium
+          </span>
+        </div>
+
+        {/* LAYOUT MOBILE: CARDS SEM NENHUM CORTE LATERAL (sm:hidden) */}
+        <div className="sm:hidden space-y-2.5">
+          {itensTabela.map((item, idx) => (
+            <div
+              key={idx}
+              className={`p-3 rounded-xl border transition-all ${
+                item.destaque
+                  ? 'border-primary/30 bg-primary/[0.04]'
+                  : 'border-border/50 bg-secondary/20'
+              }`}
+            >
+              <div className="mb-1.5">
+                <h5 className="font-sans text-sm font-bold text-white leading-snug">
+                  {item.recurso}
+                </h5>
+                <p className="font-sans text-[11px] text-zinc-400 leading-normal mt-0.5">
+                  {item.descricao}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-1.5 pt-1.5 border-t border-border/30">
+                {/* Gratuito */}
+                <div className="flex items-start gap-2 bg-black/30 p-2 rounded-lg border border-border/30 text-xs">
+                  <XCircle className="w-3.5 h-3.5 text-rose-500 shrink-0 mt-0.5" />
+                  <div className="leading-tight">
+                    <span className="text-[10px] uppercase font-bold text-rose-400/80 block mb-0.5 font-sans">
+                      Gratuito:
+                    </span>
+                    <span className="text-zinc-400 font-sans">{item.gratuito}</span>
+                  </div>
+                </div>
+
+                {/* Premium */}
+                <div className="flex items-start gap-2 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/25 text-xs">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                  <div className="leading-tight">
+                    <span className="text-[10px] uppercase font-bold text-emerald-400 block mb-0.5 font-sans">
+                      Seu Plano Premium:
+                    </span>
+                    <span className="text-emerald-200 font-semibold font-sans">{item.premium}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* LAYOUT DESKTOP / TABLET: TABELA AMPLA (hidden sm:block) */}
+        <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-border/80 bg-secondary/30">
+                <th className="py-3 px-3.5 font-sans text-xs font-bold uppercase tracking-wider text-zinc-400 w-[42%]">
+                  Recurso & Benefício
+                </th>
+                <th className="py-3 px-3.5 font-sans text-xs font-bold uppercase tracking-wider text-zinc-400 w-[28%]">
+                  Modo Gratuito
+                </th>
+                <th className="py-3 px-3.5 font-sans text-xs font-bold uppercase tracking-wider text-emerald-400 w-[30%]">
+                  Assinante Premium
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/40 text-xs sm:text-sm">
+              {itensTabela.map((item, idx) => (
+                <tr
+                  key={idx}
+                  className={`transition-colors hover:bg-secondary/20 ${
+                    item.destaque ? 'bg-primary/[0.03]' : ''
+                  }`}
+                >
+                  <td className="py-3 px-3.5">
+                    <p className="font-sans font-bold text-white text-sm">
+                      {item.recurso}
+                    </p>
+                    <p className="font-sans text-xs text-zinc-400 mt-0.5">
+                      {item.descricao}
+                    </p>
+                  </td>
+                  <td className="py-3 px-3.5 text-zinc-400 font-sans">
+                    <div className="flex items-start gap-1.5">
+                      <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                      <span>{item.gratuito}</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-3.5 font-sans font-semibold text-emerald-400">
+                    <div className="flex items-start gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                      <span>{item.premium}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* INFOGRÁFICO SVG 1: O Ecossistema Direito Prime */}
+      <div className="rounded-2xl border border-border/70 bg-card/60 p-3 sm:p-6 shadow-xl backdrop-blur-md overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-4 border-b border-border/50 pb-3">
+          <div>
+            <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-primary">
               Infográfico 01 · Arquitetura Integrada
             </span>
-            <h4 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-foreground">
+            <h4 className="font-sans text-base sm:text-xl font-bold text-white tracking-tight">
               O Ecossistema Completo Direito Prime
             </h4>
           </div>
-          <span className="text-xs text-muted-foreground font-body">
+          <span className="text-xs text-zinc-400 font-sans">
             4 Pilares de Alta Performance
           </span>
         </div>
 
         {/* SVG Diagrama do Ecossistema */}
-        <div className="w-full flex items-center justify-center py-4 overflow-x-auto">
+        <div className="w-full flex items-center justify-center py-2 overflow-x-auto">
           <svg
             viewBox="0 0 760 380"
             className="w-full max-w-[760px] h-auto drop-shadow-2xl"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* Definições de Gradientes e Efeitos */}
             <defs>
               <linearGradient id="primeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stopColor="#DC2626" />
@@ -270,30 +383,30 @@ export default function AssinaturaDireitosGuia({ planoNome = 'Plano Anual' }: Pr
               </filter>
             </defs>
 
-            {/* Linhas de Conexão Radiantes com feixes de luz */}
+            {/* Linhas de Conexão Radiantes */}
             <line x1="380" y1="190" x2="150" y2="90" stroke="#DC2626" strokeWidth="2" strokeDasharray="4 4" strokeOpacity="0.6" />
             <line x1="380" y1="190" x2="610" y2="90" stroke="#DC2626" strokeWidth="2" strokeDasharray="4 4" strokeOpacity="0.6" />
             <line x1="380" y1="190" x2="150" y2="290" stroke="#DC2626" strokeWidth="2" strokeDasharray="4 4" strokeOpacity="0.6" />
             <line x1="380" y1="190" x2="610" y2="290" stroke="#DC2626" strokeWidth="2" strokeDasharray="4 4" strokeOpacity="0.6" />
 
-            {/* Anéis Centrais Orbitais */}
+            {/* Círculos Orbitais */}
             <circle cx="380" cy="190" r="85" stroke="#DC2626" strokeWidth="1" strokeOpacity="0.2" />
             <circle cx="380" cy="190" r="115" stroke="#FFFFFF" strokeWidth="1" strokeDasharray="6 6" strokeOpacity="0.1" />
 
-            {/* NÓ CENTRAL: DIREITO PRIME CORE */}
-            <circle cx="380" cy="190" r="54" fill="url(#primeGrad)" filter="url(#glowFilter)" stroke="#FFFFFF" strokeWidth="2" strokeOpacity="0.4" />
-            <text x="380" y="184" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="900" fontFamily="sans-serif" letterSpacing="1">DIREITO</text>
-            <text x="380" y="202" textAnchor="middle" fill="#FEE2E2" fontSize="12" fontWeight="800" fontFamily="sans-serif" letterSpacing="2">PRIME</text>
-            <text x="380" y="218" textAnchor="middle" fill="#FECACA" fontSize="8" fontWeight="600" fontFamily="sans-serif" letterSpacing="1">PREMIUM</text>
+            {/* NÓ CENTRAL: DIREITO PRIME */}
+            <circle cx="380" cy="190" r="54" fill="url(#primeGrad)" filter="url(#glowFilter)" stroke="#FFFFFF" strokeWidth="2" strokeOpacity="0.5" />
+            <text x="380" y="184" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800" fontFamily="system-ui, sans-serif" letterSpacing="0.5">DIREITO</text>
+            <text x="380" y="202" textAnchor="middle" fill="#FEE2E2" fontSize="12" fontWeight="700" fontFamily="system-ui, sans-serif" letterSpacing="1">PRIME</text>
+            <text x="380" y="218" textAnchor="middle" fill="#FECACA" fontSize="9" fontWeight="600" fontFamily="system-ui, sans-serif" letterSpacing="0.5">PREMIUM</text>
 
             {/* NÓ 1 (Superior Esquerdo): LEGISLAÇÃO & VADE MECUM */}
             <g transform="translate(40, 30)">
               <rect width="220" height="90" rx="16" fill="url(#nodeGrad1)" stroke="#3B82F6" strokeWidth="1.2" strokeOpacity="0.5" />
               <circle cx="30" cy="45" r="16" fill="#1E3A8A" fillOpacity="0.6" />
               <path d="M24 45L28 49L36 41" stroke="#60A5FA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <text x="56" y="38" fill="#FFFFFF" fontSize="12" fontWeight="700" fontFamily="sans-serif">VADE MECUM VIVO</text>
-              <text x="56" y="54" fill="#93C5FD" fontSize="9.5" fontWeight="500" fontFamily="sans-serif">2.000+ Leis, Códigos & Súmulas</text>
-              <text x="56" y="68" fill="#60A5FA" fontSize="8.5" fontWeight="400" fontFamily="sans-serif">Atualizações em tempo real</text>
+              <text x="56" y="38" fill="#FFFFFF" fontSize="12" fontWeight="700" fontFamily="system-ui, sans-serif">Vade Mecum Vivo</text>
+              <text x="56" y="54" fill="#93C5FD" fontSize="10" fontWeight="500" fontFamily="system-ui, sans-serif">2.000+ Leis, Códigos & Súmulas</text>
+              <text x="56" y="68" fill="#60A5FA" fontSize="9" fontWeight="400" fontFamily="system-ui, sans-serif">Atualizações em tempo real</text>
             </g>
 
             {/* NÓ 2 (Superior Direito): INTELIGÊNCIA ARTIFICIAL */}
@@ -301,9 +414,9 @@ export default function AssinaturaDireitosGuia({ planoNome = 'Plano Anual' }: Pr
               <rect width="220" height="90" rx="16" fill="url(#nodeGrad4)" stroke="#8B5CF6" strokeWidth="1.2" strokeOpacity="0.5" />
               <circle cx="30" cy="45" r="16" fill="#4C1D95" fillOpacity="0.6" />
               <path d="M24 45L28 49L36 41" stroke="#A78BFA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <text x="56" y="38" fill="#FFFFFF" fontSize="12" fontWeight="700" fontFamily="sans-serif">IA JURÍDICA ILIMITADA</text>
-              <text x="56" y="54" fill="#C4B5FD" fontSize="9.5" fontWeight="500" fontFamily="sans-serif">Tutor Forense 24h sem cotas</text>
-              <text x="56" y="68" fill="#A78BFA" fontSize="8.5" fontWeight="400" fontFamily="sans-serif">Explicações e Doutrina instantânea</text>
+              <text x="56" y="38" fill="#FFFFFF" fontSize="12" fontWeight="700" fontFamily="system-ui, sans-serif">IA Jurídica Ilimitada</text>
+              <text x="56" y="54" fill="#C4B5FD" fontSize="10" fontWeight="500" fontFamily="system-ui, sans-serif">Tutor 24h sem limite diário</text>
+              <text x="56" y="68" fill="#A78BFA" fontSize="9" fontWeight="400" fontFamily="system-ui, sans-serif">Doutrina e jurisprudência</text>
             </g>
 
             {/* NÓ 3 (Inferior Esquerdo): FIXAÇÃO & QUESTÕES */}
@@ -311,9 +424,9 @@ export default function AssinaturaDireitosGuia({ planoNome = 'Plano Anual' }: Pr
               <rect width="220" height="90" rx="16" fill="url(#nodeGrad2)" stroke="#10B981" strokeWidth="1.2" strokeOpacity="0.5" />
               <circle cx="30" cy="45" r="16" fill="#064E3B" fillOpacity="0.6" />
               <path d="M24 45L28 49L36 41" stroke="#34D399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <text x="56" y="38" fill="#FFFFFF" fontSize="12" fontWeight="700" fontFamily="sans-serif">FIXAÇÃO & QUESTÕES</text>
-              <text x="56" y="54" fill="#A7F3D0" fontSize="9.5" fontWeight="500" fontFamily="sans-serif">Flashcards SRS + Questões OAB</text>
-              <text x="56" y="68" fill="#34D399" fontSize="8.5" fontWeight="400" fontFamily="sans-serif">Comentadas e com repetição</text>
+              <text x="56" y="38" fill="#FFFFFF" fontSize="12" fontWeight="700" fontFamily="system-ui, sans-serif">Fixação & Questões</text>
+              <text x="56" y="54" fill="#A7F3D0" fontSize="10" fontWeight="500" fontFamily="system-ui, sans-serif">Flashcards SRS + Questões OAB</text>
+              <text x="56" y="68" fill="#34D399" fontSize="9" fontWeight="400" fontFamily="system-ui, sans-serif">Gabaritos comentados</text>
             </g>
 
             {/* NÓ 4 (Inferior Direito): MULTIPLATAFORMA & ÁUDIO */}
@@ -321,181 +434,113 @@ export default function AssinaturaDireitosGuia({ planoNome = 'Plano Anual' }: Pr
               <rect width="220" height="90" rx="16" fill="url(#nodeGrad3)" stroke="#F59E0B" strokeWidth="1.2" strokeOpacity="0.5" />
               <circle cx="30" cy="45" r="16" fill="#78350F" fillOpacity="0.6" />
               <path d="M24 45L28 49L36 41" stroke="#FBBF24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              <text x="56" y="38" fill="#FFFFFF" fontSize="12" fontWeight="700" fontFamily="sans-serif">ÁUDIO & OFFLINE TOTAL</text>
-              <text x="56" y="54" fill="#FDE68A" fontSize="9.5" fontWeight="500" fontFamily="sans-serif">Ouça em 2º plano sem internet</text>
-              <text x="56" y="68" fill="#FBBF24" fontSize="8.5" fontWeight="400" fontFamily="sans-serif">iOS, Android, Web e Desktop</text>
+              <text x="56" y="38" fill="#FFFFFF" fontSize="12" fontWeight="700" fontFamily="system-ui, sans-serif">Áudio & Offline Total</text>
+              <text x="56" y="54" fill="#FDE68A" fontSize="10" fontWeight="500" fontFamily="system-ui, sans-serif">Em 2º plano e sem internet</text>
+              <text x="56" y="68" fill="#FBBF24" fontSize="9" fontWeight="400" fontFamily="system-ui, sans-serif">iOS, Android, Web e PC</text>
             </g>
           </svg>
         </div>
       </div>
 
-      {/* INFOGRÁFICO SVG 2: Ciclo de Alta Performance nos Estudos */}
-      <div className="rounded-3xl border border-border/70 bg-card/50 p-5 sm:p-7 shadow-xl backdrop-blur-md overflow-hidden relative">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b border-border/50 pb-4">
+      {/* INFOGRÁFICO SVG 2: Ciclo de Aprendizagem Acelerada */}
+      <div className="rounded-2xl border border-border/70 bg-card/60 p-3 sm:p-6 shadow-xl backdrop-blur-md overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-4 border-b border-border/50 pb-3">
           <div>
-            <span className="font-body text-[11px] font-bold uppercase tracking-wider text-emerald-400">
+            <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-emerald-400">
               Infográfico 02 · Metodologia Científica
             </span>
-            <h4 className="font-display text-lg sm:text-xl font-bold uppercase tracking-wide text-foreground">
+            <h4 className="font-sans text-base sm:text-xl font-bold text-white tracking-tight">
               O Ciclo de Aprendizagem Acelerada
             </h4>
           </div>
-          <span className="text-xs text-muted-foreground font-body">
-            Do Primeiro Contato à Aprovação
+          <span className="text-xs text-zinc-400 font-sans">
+            5 Fases do Primeiro Contato à Aprovação
           </span>
         </div>
 
-        {/* SVG Pipeline de Aprendizagem */}
-        <div className="w-full flex items-center justify-center py-4 overflow-x-auto">
+        {/* SVG Pipeline */}
+        <div className="w-full flex items-center justify-center py-2 overflow-x-auto">
           <svg
             viewBox="0 0 740 180"
             className="w-full max-w-[740px] h-auto drop-shadow-xl"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* Linha mestra conectora */}
             <line x1="80" y1="80" x2="660" y2="80" stroke="#374151" strokeWidth="4" strokeLinecap="round" />
             <line x1="80" y1="80" x2="660" y2="80" stroke="#DC2626" strokeWidth="2" strokeDasharray="8 8" />
 
-            {/* PASSO 1: LEITURA ATIVA */}
+            {/* PASSO 1 */}
             <g transform="translate(80, 80)">
-              <circle cx="0" cy="0" r="26" fill="#1F2937" stroke="#DC2626" strokeWidth="2.5" />
-              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="800" fontFamily="sans-serif">1</text>
-              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="sans-serif">LEITURA DA LEI</text>
-              <text x="0" y="58" textAnchor="middle" fill="#9CA3AF" fontSize="8.5" fontFamily="sans-serif">Grifos policromáticos</text>
+              <circle cx="0" cy="0" r="26" fill="#18181B" stroke="#DC2626" strokeWidth="2.5" />
+              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800" fontFamily="system-ui, sans-serif">1</text>
+              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="system-ui, sans-serif">Leitura da Lei</text>
+              <text x="0" y="58" textAnchor="middle" fill="#A1A1AA" fontSize="9" fontFamily="system-ui, sans-serif">Grifos policromáticos</text>
             </g>
 
-            {/* PASSO 2: IA & DOUTRINA */}
+            {/* PASSO 2 */}
             <g transform="translate(225, 80)">
-              <circle cx="0" cy="0" r="26" fill="#1F2937" stroke="#8B5CF6" strokeWidth="2.5" />
-              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="800" fontFamily="sans-serif">2</text>
-              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="sans-serif">TUTOR IA</text>
-              <text x="0" y="58" textAnchor="middle" fill="#9CA3AF" fontSize="8.5" fontFamily="sans-serif">Dúvidas doutrinárias</text>
+              <circle cx="0" cy="0" r="26" fill="#18181B" stroke="#8B5CF6" strokeWidth="2.5" />
+              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800" fontFamily="system-ui, sans-serif">2</text>
+              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="system-ui, sans-serif">Tutor IA</text>
+              <text x="0" y="58" textAnchor="middle" fill="#A1A1AA" fontSize="9" fontFamily="system-ui, sans-serif">Dúvidas doutrinárias</text>
             </g>
 
-            {/* PASSO 3: AULAS 3 ATOS */}
+            {/* PASSO 3 */}
             <g transform="translate(370, 80)">
-              <circle cx="0" cy="0" r="26" fill="#1F2937" stroke="#3B82F6" strokeWidth="2.5" />
-              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="800" fontFamily="sans-serif">3</text>
-              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="sans-serif">AULAS 3 ATOS</text>
-              <text x="0" y="58" textAnchor="middle" fill="#9CA3AF" fontSize="8.5" fontFamily="sans-serif">Aprofundamento</text>
+              <circle cx="0" cy="0" r="26" fill="#18181B" stroke="#3B82F6" strokeWidth="2.5" />
+              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800" fontFamily="system-ui, sans-serif">3</text>
+              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="system-ui, sans-serif">Aulas 3 Atos</text>
+              <text x="0" y="58" textAnchor="middle" fill="#A1A1AA" fontSize="9" fontFamily="system-ui, sans-serif">Aprofundamento</text>
             </g>
 
-            {/* PASSO 4: SRS FLASHCARDS */}
+            {/* PASSO 4 */}
             <g transform="translate(515, 80)">
-              <circle cx="0" cy="0" r="26" fill="#1F2937" stroke="#F59E0B" strokeWidth="2.5" />
-              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="800" fontFamily="sans-serif">4</text>
-              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="sans-serif">REPETIÇÃO SRS</text>
-              <text x="0" y="58" textAnchor="middle" fill="#9CA3AF" fontSize="8.5" fontFamily="sans-serif">Memória de longo prazo</text>
+              <circle cx="0" cy="0" r="26" fill="#18181B" stroke="#F59E0B" strokeWidth="2.5" />
+              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800" fontFamily="system-ui, sans-serif">4</text>
+              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="system-ui, sans-serif">Repetição SRS</text>
+              <text x="0" y="58" textAnchor="middle" fill="#A1A1AA" fontSize="9" fontFamily="system-ui, sans-serif">Memória de longo prazo</text>
             </g>
 
-            {/* PASSO 5: QUESTÕES & SIMULADOS */}
+            {/* PASSO 5 */}
             <g transform="translate(660, 80)">
-              <circle cx="0" cy="0" r="26" fill="#1F2937" stroke="#10B981" strokeWidth="2.5" />
-              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="800" fontFamily="sans-serif">5</text>
-              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="sans-serif">QUESTÕES OAB</text>
-              <text x="0" y="58" textAnchor="middle" fill="#9CA3AF" fontSize="8.5" fontFamily="sans-serif">Domínio e Aprovação</text>
+              <circle cx="0" cy="0" r="26" fill="#18181B" stroke="#10B981" strokeWidth="2.5" />
+              <text x="0" y="5" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800" fontFamily="system-ui, sans-serif">5</text>
+              <text x="0" y="44" textAnchor="middle" fill="#FFFFFF" fontSize="11" fontWeight="700" fontFamily="system-ui, sans-serif">Questões OAB</text>
+              <text x="0" y="58" textAnchor="middle" fill="#A1A1AA" fontSize="9" fontFamily="system-ui, sans-serif">Domínio e Aprovação</text>
             </g>
           </svg>
         </div>
       </div>
 
-      {/* TABELA COMPARATIVA COMPLETA: GRATUITO VS PREMIUM */}
-      <div className="rounded-3xl border border-border/70 bg-card/50 p-4 sm:p-7 shadow-xl backdrop-blur-md overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 border-b border-border/50 pb-4">
-          <div>
-            <span className="font-body text-[11px] font-bold uppercase tracking-wider text-primary">
-              Comparativo Oficial de Recursos
-            </span>
-            <h4 className="font-display text-lg sm:text-2xl font-bold uppercase tracking-wide text-foreground">
-              Conta Gratuita vs Assinante Premium
-            </h4>
-          </div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-semibold">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Você é Premium
-          </span>
-        </div>
-
-        {/* Tabela Responsiva */}
-        <div className="overflow-x-auto -mx-4 sm:mx-0">
-          <table className="w-full text-left border-collapse min-w-[620px]">
-            <thead>
-              <tr className="border-b border-border/80 bg-secondary/30">
-                <th className="py-3 px-4 font-display text-xs font-bold uppercase tracking-wider text-muted-foreground w-[40%]">
-                  Recurso & Benefício
-                </th>
-                <th className="py-3 px-4 font-display text-xs font-bold uppercase tracking-wider text-muted-foreground w-[30%]">
-                  Modo Gratuito
-                </th>
-                <th className="py-3 px-4 font-display text-xs font-bold uppercase tracking-wider text-primary w-[30%]">
-                  Assinante Premium
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/40 text-xs sm:text-sm">
-              {itensTabela.map((item, idx) => (
-                <tr
-                  key={idx}
-                  className={`transition-colors hover:bg-secondary/20 ${
-                    item.destaque ? 'bg-primary/[0.02]' : ''
-                  }`}
-                >
-                  <td className="py-3.5 px-4">
-                    <p className="font-display font-bold text-foreground text-sm">
-                      {item.recurso}
-                    </p>
-                    <p className="font-body text-[11px] sm:text-xs text-muted-foreground mt-0.5">
-                      {item.descricao}
-                    </p>
-                  </td>
-                  <td className="py-3.5 px-4 text-muted-foreground/80 font-body">
-                    <div className="flex items-start gap-1.5">
-                      <XCircle className="w-4 h-4 text-rose-500/70 shrink-0 mt-0.5" />
-                      <span>{item.gratuito}</span>
-                    </div>
-                  </td>
-                  <td className="py-3.5 px-4 font-body font-semibold text-emerald-400">
-                    <div className="flex items-start gap-1.5">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                      <span>{item.premium}</span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* 20 PARÁGRAFOS EXPLICATIVOS DETALHADOS */}
-      <div className="rounded-3xl border border-border/70 bg-card/40 p-5 sm:p-8 shadow-xl backdrop-blur-md space-y-6">
-        <div className="border-b border-border/50 pb-4">
-          <span className="font-body text-[11px] font-bold uppercase tracking-wider text-primary">
+      {/* 20 PARÁGRAFOS EXPLICATIVOS COM TIPOGRAFIA REFINADA */}
+      <div className="rounded-2xl border border-border/70 bg-card/60 p-3.5 sm:p-6 shadow-xl backdrop-blur-md space-y-4">
+        <div className="border-b border-border/50 pb-3">
+          <span className="font-sans text-[11px] font-bold uppercase tracking-wider text-primary">
             Detalhamento Contratual Completo
           </span>
-          <h4 className="font-display text-xl sm:text-2xl font-bold uppercase tracking-wide text-foreground mt-1">
+          <h4 className="font-sans text-base sm:text-2xl font-bold text-white tracking-tight mt-0.5">
             Os 20 Direitos Assegurados na Sua Assinatura
           </h4>
-          <p className="font-body text-xs sm:text-sm text-muted-foreground mt-1">
-            Cada cláusula e funcionalidade abaixo está plenamente ativa e garantida para a sua conta.
+          <p className="font-sans text-xs sm:text-sm text-zinc-400 mt-0.5">
+            Cada benefício e funcionalidade abaixo está plenamente ativo e garantido para a sua conta.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {paragrafos.map((p, idx) => (
             <div
               key={idx}
-              className="rounded-2xl border border-border/60 bg-secondary/20 p-4 sm:p-5 hover:border-primary/40 hover:bg-secondary/30 transition-all space-y-2"
+              className="rounded-xl border border-border/50 bg-secondary/15 p-3.5 sm:p-4 hover:border-primary/40 hover:bg-secondary/25 transition-all space-y-1.5"
             >
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded-md bg-primary/20 text-primary font-display font-bold text-xs tracking-wider">
+                <span className="px-2 py-0.5 rounded-md bg-primary/15 text-primary border border-primary/25 font-mono font-bold text-xs">
                   {p.num}
                 </span>
-                <h5 className="font-display font-bold text-sm sm:text-base text-foreground uppercase tracking-tight">
+                <h5 className="font-sans font-bold text-sm sm:text-base text-white tracking-tight">
                   {p.titulo}
                 </h5>
               </div>
-              <p className="font-body text-xs sm:text-sm text-muted-foreground leading-relaxed text-justify">
+              <p className="font-sans text-xs sm:text-sm text-zinc-300 leading-relaxed text-justify">
                 {p.texto}
               </p>
             </div>
@@ -503,22 +548,22 @@ export default function AssinaturaDireitosGuia({ planoNome = 'Plano Anual' }: Pr
         </div>
       </div>
 
-      {/* Selo de Garantia e Infraestrutura Asaas */}
-      <div className="rounded-2xl border border-border/60 bg-card/30 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+      {/* Rodapé com Selo de Garantia e Infraestrutura Asaas */}
+      <div className="rounded-xl border border-border/60 bg-card/40 p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
             <ShieldCheck className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="font-display text-sm font-bold text-foreground">
+            <p className="font-sans text-xs sm:text-sm font-bold text-white">
               Ambiente Criptografado & Auditado
             </p>
-            <p className="font-body text-xs text-muted-foreground">
+            <p className="font-sans text-[11px] text-zinc-400">
               Transações financeiras processadas via Asaas Pagamentos e protegidas por SSL 256-bit.
             </p>
           </div>
         </div>
-        <span className="font-display text-xs font-semibold text-foreground/80 px-3 py-1 rounded-lg bg-secondary border border-border/60">
+        <span className="font-sans text-[11px] font-semibold text-zinc-300 px-3 py-1 rounded-md bg-secondary/70 border border-border/60">
           Direito Prime Premium
         </span>
       </div>
