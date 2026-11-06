@@ -20,17 +20,10 @@ export function isDevSimulatorEligible(email?: string | null): boolean {
  * - 'free': Não Assinante (Degustação expirada e paywalls ativos)
  */
 export function getDevSimulationMode(): DevSimulationMode {
-  if (typeof localStorage === 'undefined') return 'premium';
-  try {
-    const saved = localStorage.getItem(DEV_SIMULATION_STORAGE_KEY);
-    if (saved === 'free' || saved === 'expired' || saved === 'new_user') {
-      return 'free';
-    }
-    if (saved === 'premium') {
-      return 'premium';
-    }
-  } catch {
-    // fallback seguro
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.removeItem(DEV_SIMULATION_STORAGE_KEY);
+    } catch {}
   }
   return 'premium';
 }
@@ -58,17 +51,14 @@ export function setDevSimulationMode(mode: DevSimulationMode): void {
  * é temporariamente suspenso para que os bloqueios, contadores e telas reais possam ser validados.
  */
 export function shouldBypassAsAdmin(email?: string | null): boolean {
-  if (!isAdminEmail(email)) return false;
-  const mode = getDevSimulationMode();
-  return mode === 'premium';
+  return isAdminEmail(email);
 }
 
 /**
  * Retorna se a conta admin está simulando ativamente o modo Não Assinante (Free).
  */
 export function isSimulatingExpired(email?: string | null): boolean {
-  if (!isAdminEmail(email)) return false;
-  return getDevSimulationMode() === 'free';
+  return false;
 }
 
 /**

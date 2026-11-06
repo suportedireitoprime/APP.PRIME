@@ -11,8 +11,6 @@ import { useProfileSummary } from '@/hooks/useProfileSummary';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useNavigate } from 'react-router-dom';
 import { isAdminEmail } from '@/lib/adminEmails';
-import { isDevSimulatorEligible } from '@/lib/devSimulation';
-import DevSubscriptionSwitcher from '@/components/menu/DevSubscriptionSwitcher';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { useEscapeKey } from '@/hooks/useEscapeKey';
 import OpiniaoSheet from '@/components/menu/OpiniaoSheet';
@@ -97,7 +95,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
     .map((n: string) => n[0]?.toUpperCase())
     .join('') || 'U');
   const isAdmin = isAdminEmail(userEmail);
-  const isDevEligible = isDevSimulatorEligible(userEmail);
 
   const handleItemClick = async (id: string) => {
     haptic.selection();
@@ -268,17 +265,6 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
               onClick={() => handleItemClick('admin-funcoes')}
             />
           </GroupCard>
-        )}
-
-        {/* Ferramenta de Desenvolvedor - Simulador de Perfis de Usuário */}
-        {isDevEligible && (
-          <div className="space-y-1.5 pt-1">
-            <p className="px-3 text-[11px] font-body font-semibold text-zinc-400 uppercase tracking-wider flex items-center justify-between">
-              <span>Conta de Desenvolvedor</span>
-              <span className="text-[10px] text-zinc-500 font-mono font-bold">Simulador</span>
-            </p>
-            <DevSubscriptionSwitcher />
-          </div>
         )}
 
         {/* Card de Sessão: Sair */}

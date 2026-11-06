@@ -206,13 +206,6 @@ export function TrialExpiredModal({ open = true, onClose }: TrialExpiredModalPro
         <div
           className="relative z-10 space-y-4 rounded-3xl border border-white/10 bg-[#121417]/95 backdrop-blur-2xl p-6 sm:p-7 shadow-2xl shadow-black/60 text-center"
         >
-          {isDev && (
-            <div className="text-center pb-1">
-              <span className="text-[10.5px] font-mono font-bold text-violet-300 bg-violet-500/20 border border-violet-500/40 px-3 py-1 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5 shadow-sm">
-                <span>🛠️ Simulador Dev: 3 Dias Encerrados</span>
-              </span>
-            </div>
-          )}
           {/* Decks com as capas do Aprender passando no automático */}
           <div className="relative flex flex-col items-center justify-center pt-2 pb-1">
             <div className="relative flex items-center justify-center w-full max-w-[320px] h-[165px] sm:h-[175px]">
