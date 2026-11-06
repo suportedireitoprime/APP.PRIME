@@ -27,14 +27,14 @@ interface SideMenuProps {
 const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
   const [opiniaoOpen, setOpiniaoOpen] = useState(false);
   const [avaliarOpen, setAvaliarOpen] = useState(false);
-  const [appVersion, setAppVersion] = useState<string>('v1.0.0 (Build 1)');
+  const [appVersion, setAppVersion] = useState<string>('v1.0.0');
   useEscapeKey(open, onClose);
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const { isPremium, isTrial, expiresAt } = useSubscription();
   useBodyScrollLock(open);
 
-  // Obter versão e compilação da build nativa (Android, iOS ou Web)
+  // Obter versão da build nativa (Android, iOS ou Web) sem número de build
   useEffect(() => {
     let cancel = false;
     const obterVersao = async () => {
@@ -42,12 +42,11 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
         if (Capacitor.isNativePlatform()) {
           const { App: CapacitorApp } = await import('@capacitor/app');
           const info = await CapacitorApp.getInfo();
-          if (!cancel && info) {
-            const buildNum = info.build ? ` (Build ${info.build})` : '';
-            setAppVersion(`v${info.version}${buildNum}`);
+          if (!cancel && info?.version) {
+            setAppVersion(`v${info.version}`);
           }
         } else {
-          setAppVersion('v1.0.0 (Build 1)');
+          setAppVersion('v1.0.0');
         }
       } catch (err) {
         if (!cancel) setAppVersion('v1.0.0');
