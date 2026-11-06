@@ -60,7 +60,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Carga instantânea 0ms"
     ]
   },
-      {
+  {
     "path": "/admin-aulas-interativas",
     "group": "Administração",
     "label": "Admin Aulas Interativas",
@@ -80,7 +80,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Sincronizador SRT"
     ]
   },
-              {
+  {
     "path": "/admin-funcoes",
     "group": "Administração",
     "label": "Admin Funcoes",
@@ -99,7 +99,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Tabelas e queries Supabase"
     ]
   },
-    {
+  {
     "path": "/admin-horus",
     "group": "Administração",
     "label": "Admin Horus",
@@ -118,7 +118,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Tabelas e queries Supabase"
     ]
   },
-                {
+  {
     "path": "/admin-omniroute",
     "group": "Administração",
     "label": "Admin Omniroute",
@@ -157,7 +157,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Tabelas e queries Supabase"
     ]
   },
-      {
+  {
     "path": "/admin/pilulas",
     "group": "Administração",
     "label": "Admin Pilulas",
@@ -177,7 +177,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Render loop"
     ]
   },
-    {
+  {
     "path": "/ajustes/excluir-conta",
     "group": "Ajustes",
     "label": "Ajustes Excluir Conta",
@@ -196,7 +196,7 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
       "Carga instantânea 0ms"
     ]
   },
-      {
+  {
     "path": "/anotacoes",
     "group": "Espaço do Aluno & Perfil",
     "label": "Anotacoes",
@@ -603,44 +603,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/blog",
-    "group": "Notícias & Informativos",
-    "label": "Blog",
-    "description": "Página correspondente ao componente Blog",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "Blog",
-    "exampleUrl": "/blog",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/blog/:slug",
-    "group": "Notícias & Informativos",
-    "label": "BLOG (:slug)",
-    "description": "Página correspondente ao componente Blog",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "Blog",
-    "exampleUrl": "/blog/direito-penal",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
     "path": "/boletim",
     "group": "Boletim",
     "label": "Boletim",
@@ -679,25 +641,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/chat-juridico",
-    "group": "IA & Assistente Horus",
-    "label": "Chat Juridico",
-    "description": "Chat Jurídico interativo para tirar dúvidas de artigos e jurisprudência",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "ChatJuridico",
-    "exampleUrl": "/chat-juridico",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
     "path": "/compartilhado",
     "group": "Compartilhado",
     "label": "Compartilhado",
@@ -714,44 +657,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "weightReasons": [
       "Página padrão leve",
       "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/concursos",
-    "group": "Concursos",
-    "label": "Concursos",
-    "description": "Painel geral de concursos públicos jurídicos e editais abertos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "Concursos",
-    "exampleUrl": "/concursos",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~950 KB",
-    "weightReasons": [
-      "Gráficos e estatísticas",
-      "Múltiplos filtros dinâmicos"
-    ]
-  },
-  {
-    "path": "/concursos/radar",
-    "group": "Concursos",
-    "label": "Concursos Radar",
-    "description": "Redirecionamento automático legado para a rota /radar-concursos",
-    "isRedirect": true,
-    "redirectTarget": "/radar-concursos",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/concursos/radar",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
     ]
   },
   {
@@ -774,25 +679,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/desktop",
-    "group": "Desktop",
-    "label": "Desktop",
-    "description": "Apresentação e download da versão Desktop do aplicativo",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "DesktopPromo",
-    "exampleUrl": "/desktop",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
     "path": "/desktop-link/:token",
     "group": "Desktop-link",
     "label": "DESKTOP-LINK (:token)",
@@ -803,44 +689,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "DesktopLinkConfirm",
     "exampleUrl": "/desktop-link/desktop-auth-test",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/dicionario",
-    "group": "Dicionário Jurídico",
-    "label": "Dicionario",
-    "description": "Redirecionamento automático legado para a rota /ferramentas/dicionario",
-    "isRedirect": true,
-    "redirectTarget": "/ferramentas/dicionario",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/dicionario",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/documentos",
-    "group": "Documentos",
-    "label": "Documentos",
-    "description": "Página correspondente ao componente Documentos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "Documentos",
-    "exampleUrl": "/documentos",
     "weightScore": 1,
     "weightLevel": "leve",
     "weightEstimate": "~120 KB",
@@ -869,63 +717,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/excluir-conta",
-    "group": "Conta & Acesso Público",
-    "label": "Excluir Conta",
-    "description": "Página de solicitação e confirmação de exclusão permanente de conta",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "ExcluirContaPublico",
-    "exampleUrl": "/excluir-conta",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/explicacao-lei",
-    "group": "Explicacao-lei",
-    "label": "Explicacao Lei",
-    "description": "Página correspondente ao componente ExplicacaoLei",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "ExplicacaoLei",
-    "exampleUrl": "/explicacao-lei",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
-    "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
-    ]
-  },
-  {
-    "path": "/ferramentas",
-    "group": "Ferramentas",
-    "label": "Ferramentas",
-    "description": "Página correspondente ao componente Ferramentas",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "Ferramentas",
-    "exampleUrl": "/ferramentas",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
     "path": "/ferramentas/dicionario",
     "group": "Ferramentas",
     "label": "Ferramentas Dicionario",
@@ -944,63 +735,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/ferramentas/plano-estudos",
-    "group": "Ferramentas",
-    "label": "Ferramentas Plano Estudos",
-    "description": "Página correspondente ao componente PlanoEstudos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "PlanoEstudos",
-    "exampleUrl": "/ferramentas/plano-estudos",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/ferramentas/radar-concursos",
-    "group": "Ferramentas",
-    "label": "Ferramentas Radar Concursos",
-    "description": "Redirecionamento automático legado para a rota /radar-concursos",
-    "isRedirect": true,
-    "redirectTarget": "/radar-concursos",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/ferramentas/radar-concursos",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/flashcards",
-    "group": "Flashcards",
-    "label": "Flashcards",
-    "description": "Revisão ativa com Flashcards divididos por área e concurso",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "FlashcardsRouteWrapper",
-    "exampleUrl": "/flashcards",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
     "path": "/flashcards/area/:slug",
     "group": "Flashcards",
     "label": "FLASHCARDS (:slug)",
@@ -1011,44 +745,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsArea",
     "exampleUrl": "/flashcards/area/direito-penal",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
-    "path": "/flashcards/cargos",
-    "group": "Flashcards",
-    "label": "Flashcards Cargos",
-    "description": "Página correspondente ao componente FlashcardsCargos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "FlashcardsCargos",
-    "exampleUrl": "/flashcards/cargos",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
-    "path": "/flashcards/cargos/:id",
-    "group": "Flashcards",
-    "label": "FLASHCARDS (:id)",
-    "description": "Página correspondente ao componente FlashcardsCargosDetalhes",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "FlashcardsCargosDetalhes",
-    "exampleUrl": "/flashcards/cargos/1",
     "weightScore": 3,
     "weightLevel": "media",
     "weightEstimate": "~1.2 MB",
@@ -1096,63 +792,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/flashcards/desafios/:slug",
-    "group": "Flashcards",
-    "label": "FLASHCARDS (:slug)",
-    "description": "Página correspondente ao componente FlashcardsDesafiosTimeline",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "FlashcardsDesafiosTimeline",
-    "exampleUrl": "/flashcards/desafios/direito-penal",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
-    "path": "/flashcards/estudar",
-    "group": "Flashcards",
-    "label": "Flashcards Estudar",
-    "description": "Redirecionamento automático legado para a rota /flashcards/estudo",
-    "isRedirect": true,
-    "redirectTarget": "/flashcards/estudo",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/flashcards/estudar",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/flashcards/estudo",
-    "group": "Flashcards",
-    "label": "Flashcards Estudo",
-    "description": "Página correspondente ao componente FlashcardsEstudo",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "FlashcardsEstudo",
-    "exampleUrl": "/flashcards/estudo",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
     "path": "/flashcards/historico",
     "group": "Flashcards",
     "label": "Flashcards Historico",
@@ -1191,44 +830,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/flashcards/leis",
-    "group": "Flashcards",
-    "label": "Flashcards Leis",
-    "description": "Página correspondente ao componente FlashcardsLeis",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "FlashcardsLeis",
-    "exampleUrl": "/flashcards/leis",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
-    "path": "/flashcards/materias",
-    "group": "Flashcards",
-    "label": "Flashcards Materias",
-    "description": "Página correspondente ao componente FlashcardsMaterias",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "FlashcardsMaterias",
-    "exampleUrl": "/flashcards/materias",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
     "path": "/flashcards/progresso",
     "group": "Flashcards",
     "label": "Flashcards Progresso",
@@ -1239,44 +840,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "FlashcardsProgresso",
     "exampleUrl": "/flashcards/progresso",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
-    "path": "/flashcards/revisar",
-    "group": "Flashcards",
-    "label": "Flashcards Revisar",
-    "description": "Página correspondente ao componente FlashcardsRevisar",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "FlashcardsRevisar",
-    "exampleUrl": "/flashcards/revisar",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~1.2 MB",
-    "weightReasons": [
-      "Efeito 3D Flip",
-      "Sistema de repetição espaçada"
-    ]
-  },
-  {
-    "path": "/flashcards/trilhas",
-    "group": "Flashcards",
-    "label": "Flashcards Trilhas",
-    "description": "Página correspondente ao componente FlashcardsTrilhas",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "FlashcardsTrilhas",
-    "exampleUrl": "/flashcards/trilhas",
     "weightScore": 3,
     "weightLevel": "media",
     "weightEstimate": "~1.2 MB",
@@ -3097,25 +2660,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/resumos-juridicos/:area/:tema",
-    "group": "Resumos Jurídicos",
-    "label": "RESUMOS-JURIDICOS (:tema)",
-    "description": "Subtemas e doutrina condensada do tema selecionado",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "ResumosJuridicosRouteWrapper",
-    "exampleUrl": "/resumos-juridicos/direito-penal/teoria-do-crime",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~850 KB",
-    "weightReasons": [
-      "Estrutura doutrinária em árvore",
-      "Artigos esquematizados"
-    ]
-  },
-  {
     "path": "/resumos-juridicos/favoritos",
     "group": "Resumos Jurídicos",
     "label": "Resumos Juridicos Favoritos",
@@ -3126,63 +2670,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "ResumosJuridicosLista",
     "exampleUrl": "/resumos-juridicos/favoritos",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~850 KB",
-    "weightReasons": [
-      "Estrutura doutrinária em árvore",
-      "Artigos esquematizados"
-    ]
-  },
-  {
-    "path": "/resumos-juridicos/jurisprudencia",
-    "group": "Resumos Jurídicos",
-    "label": "Resumos Juridicos Jurisprudencia",
-    "description": "Página correspondente ao componente ResumosJurisprudencia",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "ResumosJurisprudencia",
-    "exampleUrl": "/resumos-juridicos/jurisprudencia",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~850 KB",
-    "weightReasons": [
-      "Estrutura doutrinária em árvore",
-      "Artigos esquematizados"
-    ]
-  },
-  {
-    "path": "/resumos-juridicos/jurisprudencia/:categoria",
-    "group": "Resumos Jurídicos",
-    "label": "RESUMOS-JURIDICOS (:categoria)",
-    "description": "Página correspondente ao componente ResumosJuridicosJurisprudencia",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "ResumosJuridicosJurisprudencia",
-    "exampleUrl": "/resumos-juridicos/jurisprudencia/stf",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~850 KB",
-    "weightReasons": [
-      "Estrutura doutrinária em árvore",
-      "Artigos esquematizados"
-    ]
-  },
-  {
-    "path": "/resumos-juridicos/leis",
-    "group": "Resumos Jurídicos",
-    "label": "Resumos Juridicos Leis",
-    "description": "Página correspondente ao componente ResumosLeis",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "ResumosLeis",
-    "exampleUrl": "/resumos-juridicos/leis",
     "weightScore": 3,
     "weightLevel": "media",
     "weightEstimate": "~850 KB",
@@ -3260,45 +2747,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "SimuladosEstatisticas",
     "exampleUrl": "/simulados/estatisticas",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
-    "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
-    ]
-  },
-  {
-    "path": "/simulados/provas",
-    "group": "Questões & Simulados",
-    "label": "Simulados Provas",
-    "description": "Redirecionamento automático legado para a rota /simulados",
-    "isRedirect": true,
-    "redirectTarget": "/simulados",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/simulados/provas",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/simulados/resolver/:id",
-    "group": "Questões & Simulados",
-    "label": "SIMULADOS (:id)",
-    "description": "Página correspondente ao componente SimuladosResolver",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "SimuladosResolver",
-    "exampleUrl": "/simulados/resolver/1",
     "weightScore": 4,
     "weightLevel": "pesada",
     "weightEstimate": "~1.8 MB",
@@ -3480,44 +2928,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/vade-mecum/estatutos",
-    "group": "Vade-mecum",
-    "label": "Vade Mecum Estatutos",
-    "description": "Página correspondente ao componente VadeMecumEstatutos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "VadeMecumEstatutos",
-    "exampleUrl": "/vade-mecum/estatutos",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/vade-mecum/favoritos",
-    "group": "Vade-mecum",
-    "label": "Vade Mecum Favoritos",
-    "description": "Redirecionamento automático legado para a rota /vade-mecum",
-    "isRedirect": true,
-    "redirectTarget": "/vade-mecum",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/vade-mecum/favoritos",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
     "path": "/vade-mecum/recentes",
     "group": "Vade-mecum",
     "label": "Vade Mecum Recentes",
@@ -3613,44 +3023,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/videoaulas/:catalogo/:area/:videoId",
-    "group": "Videoaulas",
-    "label": "Videoaulas — Player de Aula",
-    "description": "Reprodução da videoaula com transcrição e notas",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "VideoaulaView",
-    "exampleUrl": "/videoaulas/areas/direito-penal/1",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/videoaulas/canal/:id",
-    "group": "Videoaulas",
-    "label": "Videoaulas — Canais Oficiais",
-    "description": "Aulas de canais institucionais (STF, STJ, Senado)",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "VideoaulasCanalDetail",
-    "exampleUrl": "/videoaulas/canal/1",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
     "path": "/videoaulas/favoritos",
     "group": "Videoaulas",
     "label": "Videoaulas — Favoritas",
@@ -3689,25 +3061,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/videoaulas/lei-seca/categoria/:categoriaId",
-    "group": "Videoaulas",
-    "label": "Videoaulas — Categoria de Lei",
-    "description": "Lista de leis da categoria selecionada",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "VideoaulasLeiSecaCategoria",
-    "exampleUrl": "/videoaulas/lei-seca/categoria/codigos",
-    "weightScore": 3,
-    "weightLevel": "media",
-    "weightEstimate": "~650 KB",
-    "weightReasons": [
-      "Catálogo oficial de leis",
-      "Virtualizador de artigos"
-    ]
-  },
-  {
     "path": "/videoaulas/lei-seca/lei/:leiId",
     "group": "Videoaulas",
     "label": "Videoaulas — Artigos da Lei",
@@ -3724,63 +3077,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "weightReasons": [
       "Catálogo oficial de leis",
       "Virtualizador de artigos"
-    ]
-  },
-  {
-    "path": "/videoaulas/painel",
-    "group": "Videoaulas",
-    "label": "Videoaulas Painel",
-    "description": "Redirecionamento automático legado para a rota /videoaulas",
-    "isRedirect": true,
-    "redirectTarget": "/videoaulas",
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "VideoaulasRouteWrapper",
-    "exampleUrl": "/videoaulas/painel",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/visuais",
-    "group": "Visuais",
-    "label": "Visuais",
-    "description": "Redirecionamento automático legado para a rota /mapas-mentais",
-    "isRedirect": true,
-    "redirectTarget": "/mapas-mentais",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/visuais",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/visuais/*",
-    "group": "Visuais",
-    "label": "Visuais",
-    "description": "Redirecionamento automático legado para a rota /mapas-mentais",
-    "isRedirect": true,
-    "redirectTarget": "/mapas-mentais",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/visuais",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
     ]
   }
 ];
