@@ -935,19 +935,15 @@ function AnimatedRoutes() {
           <Route path="/flashcards/materias" element={<ProtectedRoute><PageTransition instant><FlashcardsMaterias /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/leis" element={<ProtectedRoute><PageTransition instant><FlashcardsLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/jurisprudencia" element={<Suspense fallback={<div className="min-h-dvh bg-background" />}><FlashcardsJurisprudencia /></Suspense>} />
-          <Route path="/videoaulas" element={<Navigate to="/videoaulas/painel" replace />} />
-          <Route path="/videoaulas/painel" element={<ProtectedRoute><VideoaulasRouteWrapper><PageTransition instant><Videoaulas /></PageTransition></VideoaulasRouteWrapper></ProtectedRoute>} />
-          <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition instant><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
           
+          {/* Videoaulas: Rota Principal e Sub-rotas Funcionais */}
+          <Route path="/videoaulas" element={<ProtectedRoute><VideoaulasRouteWrapper><PageTransition instant><Videoaulas /></PageTransition></VideoaulasRouteWrapper></ProtectedRoute>} />
+          <Route path="/videoaulas/painel" element={<Navigate to="/videoaulas" replace />} />
+          <Route path="/videoaulas/favoritos" element={<ProtectedRoute><PageTransition instant><VideoaulasLista modo="favoritos" /></PageTransition></ProtectedRoute>} />
+          <Route path="/videoaulas/canal/:id" element={<ProtectedRoute><PageTransition instant><VideoaulasCanalDetail /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/lei-seca" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSeca /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/lei-seca/categoria/:categoriaId" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSecaCategoria /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/lei-seca/lei/:leiId" element={<ProtectedRoute><PageTransition instant><VideoaulasLeiSecaArtigos /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/jurisprudencia" element={<Navigate to="/jurisprudencia" replace />} />
-          <Route path="/videoaulas/estatutos" element={<Navigate to="/videoaulas/lei-seca/categoria/estatutos" replace />} />
-          
-          <Route path="/videoaulas/canal/:id" element={<ProtectedRoute><PageTransition instant><VideoaulasCanalDetail /></PageTransition></ProtectedRoute>} />
-          <Route path="/videoaulas/concurso/:id" element={<Navigate to="/videoaulas" replace />} />
-          
           <Route path="/videoaulas/:catalogo" element={<ProtectedRoute><PageTransition instant><VideoaulasCatalogo /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/:catalogo/:area" element={<ProtectedRoute><PageTransition instant><VideoaulasArea /></PageTransition></ProtectedRoute>} />
           <Route path="/videoaulas/:catalogo/:area/:videoId" element={<ProtectedRoute><VideoaulaView /></ProtectedRoute>} />
@@ -1015,8 +1011,10 @@ function AnimatedRoutes() {
           <Route path="/sobre" element={<ProtectedRoute><PageTransition><SobreApp /></PageTransition></ProtectedRoute>} />
           <Route path="/blog" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
           <Route path="/blog/:slug" element={<ProtectedRoute><PageTransition instant><Blog /></PageTransition></ProtectedRoute>} />
-          <Route path="/biblioteca" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
+          
+          {/* Biblioteca Digital: Rota Principal e Sub-rotas */}
           <Route path="/bibliotecas" element={<ProtectedRoute><PageTransition instant><Bibliotecas /></PageTransition></ProtectedRoute>} />
+          <Route path="/biblioteca" element={<Navigate to="/bibliotecas" replace />} />
           <Route path="/biblioteca/caderno" element={<Navigate to="/pessoal/grifos" replace />} />
           <Route path="/bibliotecas/trilhas" element={<ProtectedRoute><PageTransition instant><BibliotecaTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/bibliotecas/:colecaoId" element={<ProtectedRoute><PageTransition instant><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
@@ -1058,7 +1056,7 @@ function AnimatedRoutes() {
           <Route path="/meus-downloads" element={<Navigate to="/modo-offline" replace />} />
           <Route path="/minhas-leituras" element={<Navigate to="/pessoal/livros" replace />} />
           <Route path="/meus-resumos" element={<Navigate to="/resumos-juridicos" replace />} />
-          <Route path="/minhas-videoaulas" element={<Navigate to="/videoaulas/painel" replace />} />
+          <Route path="/minhas-videoaulas" element={<Navigate to="/videoaulas" replace />} />
 
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />
