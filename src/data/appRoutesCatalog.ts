@@ -120,26 +120,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/admin-biblioteca-editar",
-    "group": "Administração",
-    "label": "Admin Biblioteca Editar",
-    "description": "Página correspondente ao componente BibliotecaEditar",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "BibliotecaEditar",
-    "exampleUrl": "/admin-biblioteca-editar",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.8 MB",
-    "weightReasons": [
-      "Motor PDF.js",
-      "Canvas de alta resolução",
-      "Leitor nativo"
-    ]
-  },
-  {
     "path": "/admin-biblioteca-leis",
     "group": "Administração",
     "label": "Admin Biblioteca Leis",
@@ -408,25 +388,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/admin-monitor-usuarios",
-    "group": "Administração",
-    "label": "Admin Monitor Usuarios",
-    "description": "Monitor em tempo real de usuários online navegando no app",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminMonitorUsuarios",
-    "exampleUrl": "/admin-monitor-usuarios",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~500 KB",
-    "weightReasons": [
-      "Painel administrativo",
-      "Tabelas e queries Supabase"
-    ]
-  },
-  {
     "path": "/admin-narracao",
     "group": "Administração",
     "label": "Admin Narracao",
@@ -456,26 +417,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": true,
     "component": "AdminNarracaoLeis",
     "exampleUrl": "/admin-narracao-leis",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~2.1 MB",
-    "weightReasons": [
-      "Componente 130KB",
-      "Player de áudio dinâmico",
-      "Integração Gemini AI"
-    ]
-  },
-  {
-    "path": "/admin-narracao/blog",
-    "group": "Administração",
-    "label": "Admin Narracao Blog",
-    "description": "Página correspondente ao componente AdminNarracaoBlog",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminNarracaoBlog",
-    "exampleUrl": "/admin-narracao/blog",
     "weightScore": 4,
     "weightLevel": "pesada",
     "weightEstimate": "~2.1 MB",
@@ -525,46 +466,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/admin-questoes",
-    "group": "Administração",
-    "label": "Admin Questoes",
-    "description": "Página correspondente ao componente AdminQuestoes",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminQuestoes",
-    "exampleUrl": "/admin-questoes",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
-    "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
-    ]
-  },
-  {
-    "path": "/admin-simulados",
-    "group": "Administração",
-    "label": "Admin Simulados",
-    "description": "Configurador e gerador de simulados oficiais para concursos",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminSimulados",
-    "exampleUrl": "/admin-simulados",
-    "weightScore": 4,
-    "weightLevel": "pesada",
-    "weightEstimate": "~1.8 MB",
-    "weightReasons": [
-      "Banco extenso de questões",
-      "Formatador KaTeX/LaTeX",
-      "Motor de simulado cronometrado"
-    ]
-  },
-  {
     "path": "/admin-usuarios",
     "group": "Administração",
     "label": "Admin Usuarios",
@@ -600,44 +501,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "weightReasons": [
       "Painel administrativo",
       "Tabelas e queries Supabase"
-    ]
-  },
-  {
-    "path": "/admin/assinantes",
-    "group": "Administração",
-    "label": "Admin Assinantes",
-    "description": "Página correspondente ao componente AdminAssinantes",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": false,
-    "isAdmin": true,
-    "component": "AdminAssinantes",
-    "exampleUrl": "/admin/assinantes",
-    "weightScore": 2,
-    "weightLevel": "media",
-    "weightEstimate": "~500 KB",
-    "weightReasons": [
-      "Painel administrativo",
-      "Tabelas e queries Supabase"
-    ]
-  },
-  {
-    "path": "/admin/monitor/usuarios",
-    "group": "Administração",
-    "label": "Admin Monitor Usuarios",
-    "description": "Redirecionamento automático legado para a rota /admin-monitor-usuarios",
-    "isRedirect": true,
-    "redirectTarget": "/admin-monitor-usuarios",
-    "isProtected": false,
-    "isAdmin": true,
-    "component": "Componente",
-    "exampleUrl": "/admin/monitor/usuarios",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
     ]
   },
   {

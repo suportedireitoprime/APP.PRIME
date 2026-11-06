@@ -123,7 +123,6 @@ const AdminErrosQuestoes = lazy(() => import("./pages/AdminErrosQuestoes.tsx"));
 const AdminVadeMecumHistorico = lazy(() => import('./pages/AdminVadeMecumHistorico.tsx'));
 const AdminMapeamentoLeis = lazy(() => import('./pages/AdminMapeamentoLeis.tsx'));
 const AdminNarracaoLeis = lazy(() => import('./pages/AdminNarracaoLeis.tsx'));
-const AdminSimulados = lazy(() => import("./pages/AdminSimulados.tsx"));
 const Simulados = lazy(() => import("./pages/Simulados.tsx"));
 const SimuladosResolver = lazy(() => import("./pages/SimuladosResolver.tsx"));
 const SimuladosEstatisticas = lazy(() => import("./pages/SimuladosEstatisticas.tsx"));
@@ -208,7 +207,6 @@ const InformativosSTF = lazy(() => import("./pages/InformativosTribunal.tsx").th
 const TesesSTJ = lazy(() => import("./pages/TesesTribunal.tsx").then(m => ({ default: m.TesesSTJ })));
 const TesesSTF = lazy(() => import("./pages/TesesTribunal.tsx").then(m => ({ default: m.TesesSTF })));
 const PesquisasProntasTema = lazy(() => import("./pages/PesquisasProntasTema.tsx"));
-const AdminQuestoes = lazy(() => import("./pages/AdminQuestoes.tsx"));
 const Questoes = lazy(() => import("./pages/Questoes.tsx"));
 const QuestoesAreas = lazy(() => import("./pages/QuestoesAreas.tsx"));
 const QuestoesPraticar = lazy(() => import("./pages/QuestoesPraticar.tsx"));
@@ -302,10 +300,8 @@ const BibliotecaTrilhas = lazy(() => import("./pages/BibliotecaTrilhas.tsx"));
 
 const AdminFuncoesAssinantes = lazy(() => import("./pages/AdminFuncoesAssinantes.tsx"));
 const AdminAulasInterativas = lazy(() => import("./pages/AdminAulasInterativas.tsx"));
-const AdminNarracaoBlog = lazy(() => import("./pages/AdminNarracaoBlog.tsx"));
 const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
 const AdminUsuarios = lazy(() => import("./pages/AdminUsuarios.tsx"));
-const AdminMonitorUsuarios = lazy(() => import("./pages/AdminMonitorUsuarios.tsx"));
 const AdminMonitorApis = lazy(() => import("./pages/AdminMonitorApis.tsx"));
 
 const AdminHorus = lazy(() => import('./pages/AdminHorus'));
@@ -313,7 +309,6 @@ const HorusWhatsApp = lazy(() => import("./pages/HorusWhatsApp.tsx"));
 const AdminBlogEdicao = lazy(() => import("./pages/AdminBlogEdicao.tsx"));
 const AdminOmniRouteTeste = lazy(() => import("./pages/AdminOmniRouteTeste.tsx"));
 const AdminFlashcardsEditar = lazy(() => import("./pages/AdminFlashcardsEditar.tsx"));
-const BibliotecaEditar = lazy(() => import("./pages/BibliotecaEditar.tsx"));
 const AdminLeituraNativa = lazy(() => import("./pages/AdminLeituraNativa.tsx"));
 const AdminAudioaulas = lazy(() => import("./pages/AdminAudioaulas.tsx"));
 const Audioaulas = lazyWithRetry(routePrefetch.audioaulas);
@@ -855,9 +850,7 @@ function AnimatedRoutes() {
             <Route path="/landing" element={<PageTransition><Landing /></PageTransition>} />
 
             <Route path="/ir/*" element={<SmartLink />} />
-              <Route path="/admin/assinantes" element={<AdminAssinantes />} />
-              <Route path="/admin/usuarios" element={<Navigate to="/admin-usuarios" replace />} />
-              <Route path="/admin/monitor/usuarios" element={<Navigate to="/admin-monitor-usuarios" replace />} />
+            <Route path="/admin/usuarios" element={<Navigate to="/admin-usuarios" replace />} />
             <Route path="/privacidade" element={<PageTransition><Privacidade /></PageTransition>} />
             <Route path="/termos" element={<PageTransition><Termos /></PageTransition>} />
             <Route path="/excluir-conta" element={<PageTransition><ExcluirContaPublico /></PageTransition>} />
@@ -1015,8 +1008,6 @@ function AnimatedRoutes() {
 
           <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition instant><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition instant><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-questoes" element={<ProtectedRoute><PageTransition><AdminQuestoes /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-simulados" element={<ProtectedRoute><PageTransition><AdminSimulados /></PageTransition></ProtectedRoute>} />
           <Route path="/admin/pilulas" element={<ProtectedRoute><PageTransition><AdminPilulas /></PageTransition></ProtectedRoute>} />
 
           <Route path="/admin-monitor" element={<ProtectedRoute><PageTransition><AdminMonitor /></PageTransition></ProtectedRoute>} />
@@ -1040,10 +1031,8 @@ function AnimatedRoutes() {
           <Route path="/admin-mapeamento-leis" element={<ProtectedRoute><PageTransition><AdminMapeamentoLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao-leis" element={<ProtectedRoute><PageTransition><AdminNarracaoLeis /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-narracao" element={<Navigate to="/admin-narracao-leis" replace />} />
-          <Route path="/admin-narracao/blog" element={<ProtectedRoute><PageTransition><AdminNarracaoBlog /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-usuarios" element={<ProtectedRoute><PageTransition><AdminUsuarios /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin-monitor-usuarios" element={<ProtectedRoute><PageTransition><AdminMonitorUsuarios /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-monitor-apis" element={<ProtectedRoute><PageTransition><AdminMonitorApis /></PageTransition></ProtectedRoute>} />
           <Route path="/assinatura" element={<ProtectedRoute><PageTransition instant><Assinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />
@@ -1062,7 +1051,6 @@ function AnimatedRoutes() {
           <Route path="/admin-omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-flashcards-editar" element={<ProtectedRoute><PageTransition><AdminFlashcardsEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-design-imagens" element={<Navigate to="/admin-blog-edicao" replace />} />
-          <Route path="/admin-biblioteca-editar" element={<ProtectedRoute><PageTransition><BibliotecaEditar /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-leitura-nativa" element={<ProtectedRoute><PageTransition><AdminLeituraNativa /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-audioaulas" element={<ProtectedRoute><PageTransition><AdminAudioaulas /></PageTransition></ProtectedRoute>} />
           <Route path="/audioaulas" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />

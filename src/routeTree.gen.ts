@@ -14,7 +14,6 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminAssinantesRouteImport } from './routes/admin-assinantes'
 import { Route as AdminAudioaulasRouteImport } from './routes/admin-audioaulas'
 import { Route as AdminAulasInterativasRouteImport } from './routes/admin-aulas-interativas'
-import { Route as AdminBibliotecaEditarRouteImport } from './routes/admin-biblioteca-editar'
 import { Route as AdminBlogEdicaoRouteImport } from './routes/admin-blog-edicao'
 import { Route as AdminErrosQuestoesRouteImport } from './routes/admin-erros-questoes'
 import { Route as AdminFlashcardsEditarRouteImport } from './routes/admin-flashcards-editar'
@@ -25,13 +24,10 @@ import { Route as AdminLeituraNativaRouteImport } from './routes/admin-leitura-n
 import { Route as AdminMapeamentoLeisRouteImport } from './routes/admin-mapeamento-leis'
 import { Route as AdminMonitorRouteImport } from './routes/admin-monitor'
 import { Route as AdminMonitorApisRouteImport } from './routes/admin-monitor-apis'
-import { Route as AdminMonitorUsuariosRouteImport } from './routes/admin-monitor-usuarios'
 import { Route as AdminNarracaoLeisRouteImport } from './routes/admin-narracao-leis'
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
-import { Route as AdminQuestoesRouteImport } from './routes/admin-questoes'
 import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
-import { Route as AdminSimuladosRouteImport } from './routes/admin-simulados'
 import { Route as AdminUsuariosRouteImport } from './routes/admin-usuarios'
 import { Route as AdminVadeMecumHistoricoRouteImport } from './routes/admin-vade-mecum-historico'
 import { Route as AnotacoesRouteImport } from './routes/anotacoes'
@@ -92,7 +88,6 @@ import { Route as TermosRouteImport } from './routes/termos'
 import { Route as VadeMecumRouteImport } from './routes/vade-mecum'
 import { Route as VideoaulasRouteImport } from './routes/videoaulas'
 import { Route as VisuaisRouteImport } from './routes/visuais'
-import { Route as AdminNarracaoBlogRouteImport } from './routes/admin-narracao.blog'
 import { Route as AdminPilulasRouteImport } from './routes/admin.pilulas'
 import { Route as AjustesExcluirContaRouteImport } from './routes/ajustes.excluir-conta'
 import { Route as AjustesHorusRouteImport } from './routes/ajustes.horus'
@@ -232,11 +227,6 @@ const AdminAulasInterativasRoute = AdminAulasInterativasRouteImport.update({
   path: '/admin-aulas-interativas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminBibliotecaEditarRoute = AdminBibliotecaEditarRouteImport.update({
-  id: '/admin-biblioteca-editar',
-  path: '/admin-biblioteca-editar',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminBlogEdicaoRoute = AdminBlogEdicaoRouteImport.update({
   id: '/admin-blog-edicao',
   path: '/admin-blog-edicao',
@@ -287,11 +277,6 @@ const AdminMonitorApisRoute = AdminMonitorApisRouteImport.update({
   path: '/admin-monitor-apis',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminMonitorUsuariosRoute = AdminMonitorUsuariosRouteImport.update({
-  id: '/admin-monitor-usuarios',
-  path: '/admin-monitor-usuarios',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminNarracaoLeisRoute = AdminNarracaoLeisRouteImport.update({
   id: '/admin-narracao-leis',
   path: '/admin-narracao-leis',
@@ -307,19 +292,9 @@ const AdminPushRoute = AdminPushRouteImport.update({
   path: '/admin-push',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminQuestoesRoute = AdminQuestoesRouteImport.update({
-  id: '/admin-questoes',
-  path: '/admin-questoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminRotasRoute = AdminRotasRouteImport.update({
   id: '/admin-rotas',
   path: '/admin-rotas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSimuladosRoute = AdminSimuladosRouteImport.update({
-  id: '/admin-simulados',
-  path: '/admin-simulados',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsuariosRoute = AdminUsuariosRouteImport.update({
@@ -620,11 +595,6 @@ const VideoaulasRoute = VideoaulasRouteImport.update({
 const VisuaisRoute = VisuaisRouteImport.update({
   id: '/visuais',
   path: '/visuais',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminNarracaoBlogRoute = AdminNarracaoBlogRouteImport.update({
-  id: '/admin-narracao/blog',
-  path: '/admin-narracao/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminPilulasRoute = AdminPilulasRouteImport.update({
@@ -1223,7 +1193,6 @@ export interface FileRoutesByFullPath {
   '/admin-assinantes': typeof AdminAssinantesRoute
   '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
-  '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
@@ -1234,13 +1203,10 @@ export interface FileRoutesByFullPath {
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
-  '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
   '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
-  '/admin-questoes': typeof AdminQuestoesRoute
   '/admin-rotas': typeof AdminRotasRoute
-  '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
   '/anotacoes': typeof AnotacoesRoute
@@ -1301,7 +1267,6 @@ export interface FileRoutesByFullPath {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/visuais': typeof VisuaisRouteWithChildren
-  '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
   '/ajustes/horus': typeof AjustesHorusRoute
@@ -1422,7 +1387,6 @@ export interface FileRoutesByTo {
   '/admin-assinantes': typeof AdminAssinantesRoute
   '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
-  '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
@@ -1433,13 +1397,10 @@ export interface FileRoutesByTo {
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
-  '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
   '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
-  '/admin-questoes': typeof AdminQuestoesRoute
   '/admin-rotas': typeof AdminRotasRoute
-  '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
   '/anotacoes': typeof AnotacoesRoute
@@ -1500,7 +1461,6 @@ export interface FileRoutesByTo {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/visuais': typeof VisuaisRouteWithChildren
-  '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
   '/ajustes/horus': typeof AjustesHorusRoute
@@ -1622,7 +1582,6 @@ export interface FileRoutesById {
   '/admin-assinantes': typeof AdminAssinantesRoute
   '/admin-audioaulas': typeof AdminAudioaulasRoute
   '/admin-aulas-interativas': typeof AdminAulasInterativasRoute
-  '/admin-biblioteca-editar': typeof AdminBibliotecaEditarRoute
   '/admin-blog-edicao': typeof AdminBlogEdicaoRoute
   '/admin-erros-questoes': typeof AdminErrosQuestoesRoute
   '/admin-flashcards-editar': typeof AdminFlashcardsEditarRoute
@@ -1633,13 +1592,10 @@ export interface FileRoutesById {
   '/admin-mapeamento-leis': typeof AdminMapeamentoLeisRoute
   '/admin-monitor': typeof AdminMonitorRoute
   '/admin-monitor-apis': typeof AdminMonitorApisRoute
-  '/admin-monitor-usuarios': typeof AdminMonitorUsuariosRoute
   '/admin-narracao-leis': typeof AdminNarracaoLeisRoute
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
-  '/admin-questoes': typeof AdminQuestoesRoute
   '/admin-rotas': typeof AdminRotasRoute
-  '/admin-simulados': typeof AdminSimuladosRoute
   '/admin-usuarios': typeof AdminUsuariosRoute
   '/admin-vade-mecum-historico': typeof AdminVadeMecumHistoricoRoute
   '/anotacoes': typeof AnotacoesRoute
@@ -1700,7 +1656,6 @@ export interface FileRoutesById {
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
   '/visuais': typeof VisuaisRouteWithChildren
-  '/admin-narracao/blog': typeof AdminNarracaoBlogRoute
   '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
   '/ajustes/horus': typeof AjustesHorusRoute
@@ -1823,7 +1778,6 @@ export interface FileRouteTypes {
     | '/admin-assinantes'
     | '/admin-audioaulas'
     | '/admin-aulas-interativas'
-    | '/admin-biblioteca-editar'
     | '/admin-blog-edicao'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
@@ -1834,13 +1788,10 @@ export interface FileRouteTypes {
     | '/admin-mapeamento-leis'
     | '/admin-monitor'
     | '/admin-monitor-apis'
-    | '/admin-monitor-usuarios'
     | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
-    | '/admin-questoes'
     | '/admin-rotas'
-    | '/admin-simulados'
     | '/admin-usuarios'
     | '/admin-vade-mecum-historico'
     | '/anotacoes'
@@ -1901,7 +1852,6 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/visuais'
-    | '/admin-narracao/blog'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
     | '/ajustes/horus'
@@ -2022,7 +1972,6 @@ export interface FileRouteTypes {
     | '/admin-assinantes'
     | '/admin-audioaulas'
     | '/admin-aulas-interativas'
-    | '/admin-biblioteca-editar'
     | '/admin-blog-edicao'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
@@ -2033,13 +1982,10 @@ export interface FileRouteTypes {
     | '/admin-mapeamento-leis'
     | '/admin-monitor'
     | '/admin-monitor-apis'
-    | '/admin-monitor-usuarios'
     | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
-    | '/admin-questoes'
     | '/admin-rotas'
-    | '/admin-simulados'
     | '/admin-usuarios'
     | '/admin-vade-mecum-historico'
     | '/anotacoes'
@@ -2100,7 +2046,6 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/visuais'
-    | '/admin-narracao/blog'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
     | '/ajustes/horus'
@@ -2221,7 +2166,6 @@ export interface FileRouteTypes {
     | '/admin-assinantes'
     | '/admin-audioaulas'
     | '/admin-aulas-interativas'
-    | '/admin-biblioteca-editar'
     | '/admin-blog-edicao'
     | '/admin-erros-questoes'
     | '/admin-flashcards-editar'
@@ -2232,13 +2176,10 @@ export interface FileRouteTypes {
     | '/admin-mapeamento-leis'
     | '/admin-monitor'
     | '/admin-monitor-apis'
-    | '/admin-monitor-usuarios'
     | '/admin-narracao-leis'
     | '/admin-omniroute'
     | '/admin-push'
-    | '/admin-questoes'
     | '/admin-rotas'
-    | '/admin-simulados'
     | '/admin-usuarios'
     | '/admin-vade-mecum-historico'
     | '/anotacoes'
@@ -2299,7 +2240,6 @@ export interface FileRouteTypes {
     | '/vade-mecum'
     | '/videoaulas'
     | '/visuais'
-    | '/admin-narracao/blog'
     | '/admin/pilulas'
     | '/ajustes/excluir-conta'
     | '/ajustes/horus'
@@ -2421,7 +2361,6 @@ export interface RootRouteChildren {
   AdminAssinantesRoute: typeof AdminAssinantesRoute
   AdminAudioaulasRoute: typeof AdminAudioaulasRoute
   AdminAulasInterativasRoute: typeof AdminAulasInterativasRoute
-  AdminBibliotecaEditarRoute: typeof AdminBibliotecaEditarRoute
   AdminBlogEdicaoRoute: typeof AdminBlogEdicaoRoute
   AdminErrosQuestoesRoute: typeof AdminErrosQuestoesRoute
   AdminFlashcardsEditarRoute: typeof AdminFlashcardsEditarRoute
@@ -2432,13 +2371,10 @@ export interface RootRouteChildren {
   AdminMapeamentoLeisRoute: typeof AdminMapeamentoLeisRoute
   AdminMonitorRoute: typeof AdminMonitorRoute
   AdminMonitorApisRoute: typeof AdminMonitorApisRoute
-  AdminMonitorUsuariosRoute: typeof AdminMonitorUsuariosRoute
   AdminNarracaoLeisRoute: typeof AdminNarracaoLeisRoute
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
-  AdminQuestoesRoute: typeof AdminQuestoesRoute
   AdminRotasRoute: typeof AdminRotasRoute
-  AdminSimuladosRoute: typeof AdminSimuladosRoute
   AdminUsuariosRoute: typeof AdminUsuariosRoute
   AdminVadeMecumHistoricoRoute: typeof AdminVadeMecumHistoricoRoute
   AnotacoesRoute: typeof AnotacoesRoute
@@ -2499,7 +2435,6 @@ export interface RootRouteChildren {
   VadeMecumRoute: typeof VadeMecumRouteWithChildren
   VideoaulasRoute: typeof VideoaulasRouteWithChildren
   VisuaisRoute: typeof VisuaisRouteWithChildren
-  AdminNarracaoBlogRoute: typeof AdminNarracaoBlogRoute
   AdminPilulasRoute: typeof AdminPilulasRoute
   AjustesExcluirContaRoute: typeof AjustesExcluirContaRoute
   AjustesHorusRoute: typeof AjustesHorusRoute
@@ -2554,13 +2489,6 @@ declare module '@tanstack/react-router' {
       path: '/admin-aulas-interativas'
       fullPath: '/admin-aulas-interativas'
       preLoaderRoute: typeof AdminAulasInterativasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-biblioteca-editar': {
-      id: '/admin-biblioteca-editar'
-      path: '/admin-biblioteca-editar'
-      fullPath: '/admin-biblioteca-editar'
-      preLoaderRoute: typeof AdminBibliotecaEditarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-blog-edicao': {
@@ -2633,13 +2561,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMonitorApisRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-monitor-usuarios': {
-      id: '/admin-monitor-usuarios'
-      path: '/admin-monitor-usuarios'
-      fullPath: '/admin-monitor-usuarios'
-      preLoaderRoute: typeof AdminMonitorUsuariosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-narracao-leis': {
       id: '/admin-narracao-leis'
       path: '/admin-narracao-leis'
@@ -2661,25 +2582,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPushRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin-questoes': {
-      id: '/admin-questoes'
-      path: '/admin-questoes'
-      fullPath: '/admin-questoes'
-      preLoaderRoute: typeof AdminQuestoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin-rotas': {
       id: '/admin-rotas'
       path: '/admin-rotas'
       fullPath: '/admin-rotas'
       preLoaderRoute: typeof AdminRotasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-simulados': {
-      id: '/admin-simulados'
-      path: '/admin-simulados'
-      fullPath: '/admin-simulados'
-      preLoaderRoute: typeof AdminSimuladosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin-usuarios': {
@@ -3100,13 +3007,6 @@ declare module '@tanstack/react-router' {
       path: '/visuais'
       fullPath: '/visuais'
       preLoaderRoute: typeof VisuaisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin-narracao/blog': {
-      id: '/admin-narracao/blog'
-      path: '/admin-narracao/blog'
-      fullPath: '/admin-narracao/blog'
-      preLoaderRoute: typeof AdminNarracaoBlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/pilulas': {
@@ -4449,7 +4349,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAssinantesRoute: AdminAssinantesRoute,
   AdminAudioaulasRoute: AdminAudioaulasRoute,
   AdminAulasInterativasRoute: AdminAulasInterativasRoute,
-  AdminBibliotecaEditarRoute: AdminBibliotecaEditarRoute,
   AdminBlogEdicaoRoute: AdminBlogEdicaoRoute,
   AdminErrosQuestoesRoute: AdminErrosQuestoesRoute,
   AdminFlashcardsEditarRoute: AdminFlashcardsEditarRoute,
@@ -4460,13 +4359,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminMapeamentoLeisRoute: AdminMapeamentoLeisRoute,
   AdminMonitorRoute: AdminMonitorRoute,
   AdminMonitorApisRoute: AdminMonitorApisRoute,
-  AdminMonitorUsuariosRoute: AdminMonitorUsuariosRoute,
   AdminNarracaoLeisRoute: AdminNarracaoLeisRoute,
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
-  AdminQuestoesRoute: AdminQuestoesRoute,
   AdminRotasRoute: AdminRotasRoute,
-  AdminSimuladosRoute: AdminSimuladosRoute,
   AdminUsuariosRoute: AdminUsuariosRoute,
   AdminVadeMecumHistoricoRoute: AdminVadeMecumHistoricoRoute,
   AnotacoesRoute: AnotacoesRoute,
@@ -4527,7 +4423,6 @@ const rootRouteChildren: RootRouteChildren = {
   VadeMecumRoute: VadeMecumRouteWithChildren,
   VideoaulasRoute: VideoaulasRouteWithChildren,
   VisuaisRoute: VisuaisRouteWithChildren,
-  AdminNarracaoBlogRoute: AdminNarracaoBlogRoute,
   AdminPilulasRoute: AdminPilulasRoute,
   AjustesExcluirContaRoute: AjustesExcluirContaRoute,
   AjustesHorusRoute: AjustesHorusRoute,

@@ -62,7 +62,6 @@ import { AdminHojeCards } from "@/components/admin/AdminHojeCards";
 const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-aulas-interativas": () => import("./AdminAulasInterativas"),
   "/admin-monitor": () => import("./AdminMonitor"),
-  "/admin-monitor-usuarios": () => import("./AdminMonitorUsuarios"),
   "/admin-monitor-apis": () => import("./AdminMonitorApis"),
   "/admin-push": () => import("./AdminPush"),
   "/admin-horus": () => import("./AdminHorus"),
@@ -75,10 +74,8 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-assinantes": () => import("./AdminAssinantes"),
   "/admin-usuarios": () => import("./AdminUsuarios"),
   "/admin-erros-questoes": () => import("./AdminErrosQuestoes"),
-  "/admin-simulados": () => import("./AdminSimulados"),
   "/admin-mapeamento-leis": () => import("./AdminMapeamentoLeis"),
   "/admin-narracao-leis": () => import("./AdminNarracaoLeis"),
-  "/admin-biblioteca-editar": () => import("./BibliotecaEditar"),
   "/admin-leitura-nativa": () => import("./AdminLeituraNativa"),
   "/admin-audioaulas": () => import("./AdminAudioaulas"),
   "/admin-rotas": () => import("./AdminRotas"),
@@ -275,13 +272,6 @@ const CATEGORIES: Category[] = [
 
       // Biblioteca
       {
-        id: "biblioteca-editar",
-        label: "Biblioteca Editar",
-        icon: BookOpen,
-        desc: "Sinopse, capa horizontal e análise técnica com IA",
-        route: "/admin-biblioteca-editar",
-      },
-      {
         id: "leitura-nativa",
         label: "Leitura Nativa",
         icon: FileText,
@@ -329,44 +319,15 @@ const CATEGORIES: Category[] = [
   {
     id: "questoes",
     title: "Questões & Simulados",
-    desc: "Importar questões e simulados, gerenciar cargos, e reportes",
+    desc: "Visualizar e gerenciar reportes de alunos",
     icon: ListChecks,
     items: [
-      {
-        id: "admin-questoes",
-        label: "Questões — Editar",
-        icon: ListChecks,
-        desc: "Buscar mais questões, novos cargos e importar do Google Sheets",
-        route: "/admin-questoes",
-      },
       {
         id: "admin-erros-questoes",
         label: "Reportes de Erro",
         icon: ShieldAlert,
         desc: "Visualizar e resolver erros em questões reportados por alunos",
         route: "/admin-erros-questoes",
-      },
-      {
-        id: "admin-simulados",
-        label: "Simulados — Editar",
-        icon: FileSpreadsheet,
-        desc: "Importar simulados, gabaritos e provas do Google Sheets",
-        route: "/admin-simulados",
-      },
-    ],
-  },
-  {
-    id: "narracao-conteudo",
-    title: "Narração de Conteúdo",
-    desc: "Narrar artigos do blog com vozes do Gemini",
-    icon: Mic,
-    items: [
-      {
-        id: "admin-narracao-blog",
-        label: "Narração Blog e Artigos",
-        icon: Newspaper,
-        desc: "Prévia de voz e narração dos artigos do Blogger",
-        route: "/admin-narracao/blog",
       },
     ],
   },
@@ -389,7 +350,7 @@ const CATEGORIES: Category[] = [
   {
     id: "monitoramento",
     title: "Monitoramento & Saúde",
-    desc: "Saúde do sistema, usuários, métricas e APIs",
+    desc: "Saúde do sistema, métricas e APIs",
     icon: Monitor,
     items: [
       {
@@ -398,13 +359,6 @@ const CATEGORIES: Category[] = [
         icon: Activity,
         desc: "Status e saúde do sistema",
         route: "/admin-monitor",
-      },
-      {
-        id: "monitor-usuarios",
-        label: "Usuários Online",
-        icon: Users,
-        desc: "Monitoramento em tempo real",
-        route: "/admin-monitor-usuarios",
       },
       {
         id: "monitor-apis",
