@@ -17,35 +17,27 @@ import { Route as AdminHorusRouteImport } from './routes/admin-horus'
 import { Route as AdminOmnirouteRouteImport } from './routes/admin-omniroute'
 import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
-import { Route as AnotacoesRouteImport } from './routes/anotacoes'
 import { Route as AssinaturaRouteImport } from './routes/assinatura'
 import { Route as AssistenteRouteImport } from './routes/assistente'
 import { Route as AssistenteHorusRouteImport } from './routes/assistente-horus'
 import { Route as AtualizacoesRouteImport } from './routes/atualizacoes'
 import { Route as AudioaulasRouteImport } from './routes/audioaulas'
 import { Route as AudiobooksRouteImport } from './routes/audiobooks'
-import { Route as AudioleisRouteImport } from './routes/audioleis'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as BibliotecaRouteImport } from './routes/biblioteca'
 import { Route as BibliotecasRouteImport } from './routes/bibliotecas'
-import { Route as BoletimRouteImport } from './routes/boletim'
 import { Route as BoletinsRouteImport } from './routes/boletins'
 import { Route as CompartilhadoRouteImport } from './routes/compartilhado'
-import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as EstudosRouteImport } from './routes/estudos'
 import { Route as JurisprudenciaRouteImport } from './routes/jurisprudencia'
 import { Route as LandingRouteImport } from './routes/landing'
 import { Route as LegislacaoEstadualRouteImport } from './routes/legislacao-estadual'
 import { Route as LeiSecaRouteImport } from './routes/lei-seca'
 import { Route as LembretesRouteImport } from './routes/lembretes'
-import { Route as MapasRouteImport } from './routes/mapas'
 import { Route as MapasMentaisRouteImport } from './routes/mapas-mentais'
 import { Route as MeExpliqueRouteImport } from './routes/me-explique'
 import { Route as MeuEspacoRouteImport } from './routes/meu-espaco'
-import { Route as MeusLembretesRouteImport } from './routes/meus-lembretes'
 import { Route as ModoOfflineRouteImport } from './routes/modo-offline'
 import { Route as NoticiasRouteImport } from './routes/noticias'
-import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as NovidadesRouteImport } from './routes/novidades'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PerfilRouteImport } from './routes/perfil'
@@ -56,7 +48,6 @@ import { Route as Radar360RouteImport } from './routes/radar-360'
 import { Route as RadarConcursosRouteImport } from './routes/radar-concursos'
 import { Route as RadaresRouteImport } from './routes/radares'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ResumosRouteImport } from './routes/resumos'
 import { Route as ResumosJuridicosRouteImport } from './routes/resumos-juridicos'
 import { Route as SimuladosRouteImport } from './routes/simulados'
 import { Route as SobreRouteImport } from './routes/sobre'
@@ -195,11 +186,6 @@ const AdminRotasRoute = AdminRotasRouteImport.update({
   path: '/admin-rotas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AnotacoesRoute = AnotacoesRouteImport.update({
-  id: '/anotacoes',
-  path: '/anotacoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AssinaturaRoute = AssinaturaRouteImport.update({
   id: '/assinatura',
   path: '/assinatura',
@@ -230,29 +216,14 @@ const AudiobooksRoute = AudiobooksRouteImport.update({
   path: '/audiobooks',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AudioleisRoute = AudioleisRouteImport.update({
-  id: '/audioleis',
-  path: '/audioleis',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BibliotecaRoute = BibliotecaRouteImport.update({
-  id: '/biblioteca',
-  path: '/biblioteca',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BibliotecasRoute = BibliotecasRouteImport.update({
   id: '/bibliotecas',
   path: '/bibliotecas',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BoletimRoute = BoletimRouteImport.update({
-  id: '/boletim',
-  path: '/boletim',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BoletinsRoute = BoletinsRouteImport.update({
@@ -263,11 +234,6 @@ const BoletinsRoute = BoletinsRouteImport.update({
 const CompartilhadoRoute = CompartilhadoRouteImport.update({
   id: '/compartilhado',
   path: '/compartilhado',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
-  id: '/configuracoes',
-  path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EstudosRoute = EstudosRouteImport.update({
@@ -300,11 +266,6 @@ const LembretesRoute = LembretesRouteImport.update({
   path: '/lembretes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MapasRoute = MapasRouteImport.update({
-  id: '/mapas',
-  path: '/mapas',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MapasMentaisRoute = MapasMentaisRouteImport.update({
   id: '/mapas-mentais',
   path: '/mapas-mentais',
@@ -320,11 +281,6 @@ const MeuEspacoRoute = MeuEspacoRouteImport.update({
   path: '/meu-espaco',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MeusLembretesRoute = MeusLembretesRouteImport.update({
-  id: '/meus-lembretes',
-  path: '/meus-lembretes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ModoOfflineRoute = ModoOfflineRouteImport.update({
   id: '/modo-offline',
   path: '/modo-offline',
@@ -333,11 +289,6 @@ const ModoOfflineRoute = ModoOfflineRouteImport.update({
 const NoticiasRoute = NoticiasRouteImport.update({
   id: '/noticias',
   path: '/noticias',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificacoesRoute = NotificacoesRouteImport.update({
-  id: '/notificacoes',
-  path: '/notificacoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NovidadesRoute = NovidadesRouteImport.update({
@@ -388,11 +339,6 @@ const RadaresRoute = RadaresRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResumosRoute = ResumosRouteImport.update({
-  id: '/resumos',
-  path: '/resumos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResumosJuridicosRoute = ResumosJuridicosRouteImport.update({
@@ -909,35 +855,27 @@ export interface FileRoutesByFullPath {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
-  '/anotacoes': typeof AnotacoesRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente': typeof AssistenteRoute
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atualizacoes': typeof AtualizacoesRoute
   '/audioaulas': typeof AudioaulasRouteWithChildren
   '/audiobooks': typeof AudiobooksRoute
-  '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
-  '/biblioteca': typeof BibliotecaRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
-  '/boletim': typeof BoletimRoute
   '/boletins': typeof BoletinsRoute
   '/compartilhado': typeof CompartilhadoRoute
-  '/configuracoes': typeof ConfiguracoesRoute
   '/estudos': typeof EstudosRoute
   '/jurisprudencia': typeof JurisprudenciaRouteWithChildren
   '/landing': typeof LandingRoute
   '/legislacao-estadual': typeof LegislacaoEstadualRouteWithChildren
   '/lei-seca': typeof LeiSecaRouteWithChildren
   '/lembretes': typeof LembretesRouteWithChildren
-  '/mapas': typeof MapasRoute
   '/mapas-mentais': typeof MapasMentaisRouteWithChildren
   '/me-explique': typeof MeExpliqueRoute
   '/meu-espaco': typeof MeuEspacoRoute
-  '/meus-lembretes': typeof MeusLembretesRoute
   '/modo-offline': typeof ModoOfflineRouteWithChildren
   '/noticias': typeof NoticiasRoute
-  '/notificacoes': typeof NotificacoesRoute
   '/novidades': typeof NovidadesRoute
   '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
@@ -948,7 +886,6 @@ export interface FileRoutesByFullPath {
   '/radar-concursos': typeof RadarConcursosRouteWithChildren
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/resumos': typeof ResumosRoute
   '/resumos-juridicos': typeof ResumosJuridicosRouteWithChildren
   '/simulados': typeof SimuladosRouteWithChildren
   '/sobre': typeof SobreRoute
@@ -1056,35 +993,27 @@ export interface FileRoutesByTo {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
-  '/anotacoes': typeof AnotacoesRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente': typeof AssistenteRoute
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atualizacoes': typeof AtualizacoesRoute
   '/audioaulas': typeof AudioaulasRouteWithChildren
   '/audiobooks': typeof AudiobooksRoute
-  '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
-  '/biblioteca': typeof BibliotecaRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
-  '/boletim': typeof BoletimRoute
   '/boletins': typeof BoletinsRoute
   '/compartilhado': typeof CompartilhadoRoute
-  '/configuracoes': typeof ConfiguracoesRoute
   '/estudos': typeof EstudosRoute
   '/jurisprudencia': typeof JurisprudenciaRouteWithChildren
   '/landing': typeof LandingRoute
   '/legislacao-estadual': typeof LegislacaoEstadualRouteWithChildren
   '/lei-seca': typeof LeiSecaRouteWithChildren
   '/lembretes': typeof LembretesRouteWithChildren
-  '/mapas': typeof MapasRoute
   '/mapas-mentais': typeof MapasMentaisRouteWithChildren
   '/me-explique': typeof MeExpliqueRoute
   '/meu-espaco': typeof MeuEspacoRoute
-  '/meus-lembretes': typeof MeusLembretesRoute
   '/modo-offline': typeof ModoOfflineRouteWithChildren
   '/noticias': typeof NoticiasRoute
-  '/notificacoes': typeof NotificacoesRoute
   '/novidades': typeof NovidadesRoute
   '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
@@ -1095,7 +1024,6 @@ export interface FileRoutesByTo {
   '/radar-concursos': typeof RadarConcursosRouteWithChildren
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/resumos': typeof ResumosRoute
   '/resumos-juridicos': typeof ResumosJuridicosRouteWithChildren
   '/simulados': typeof SimuladosRouteWithChildren
   '/sobre': typeof SobreRoute
@@ -1204,35 +1132,27 @@ export interface FileRoutesById {
   '/admin-omniroute': typeof AdminOmnirouteRoute
   '/admin-push': typeof AdminPushRoute
   '/admin-rotas': typeof AdminRotasRoute
-  '/anotacoes': typeof AnotacoesRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente': typeof AssistenteRoute
   '/assistente-horus': typeof AssistenteHorusRoute
   '/atualizacoes': typeof AtualizacoesRoute
   '/audioaulas': typeof AudioaulasRouteWithChildren
   '/audiobooks': typeof AudiobooksRoute
-  '/audioleis': typeof AudioleisRoute
   '/auth': typeof AuthRoute
-  '/biblioteca': typeof BibliotecaRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
-  '/boletim': typeof BoletimRoute
   '/boletins': typeof BoletinsRoute
   '/compartilhado': typeof CompartilhadoRoute
-  '/configuracoes': typeof ConfiguracoesRoute
   '/estudos': typeof EstudosRoute
   '/jurisprudencia': typeof JurisprudenciaRouteWithChildren
   '/landing': typeof LandingRoute
   '/legislacao-estadual': typeof LegislacaoEstadualRouteWithChildren
   '/lei-seca': typeof LeiSecaRouteWithChildren
   '/lembretes': typeof LembretesRouteWithChildren
-  '/mapas': typeof MapasRoute
   '/mapas-mentais': typeof MapasMentaisRouteWithChildren
   '/me-explique': typeof MeExpliqueRoute
   '/meu-espaco': typeof MeuEspacoRoute
-  '/meus-lembretes': typeof MeusLembretesRoute
   '/modo-offline': typeof ModoOfflineRouteWithChildren
   '/noticias': typeof NoticiasRoute
-  '/notificacoes': typeof NotificacoesRoute
   '/novidades': typeof NovidadesRoute
   '/onboarding': typeof OnboardingRoute
   '/perfil': typeof PerfilRoute
@@ -1243,7 +1163,6 @@ export interface FileRoutesById {
   '/radar-concursos': typeof RadarConcursosRouteWithChildren
   '/radares': typeof RadaresRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/resumos': typeof ResumosRoute
   '/resumos-juridicos': typeof ResumosJuridicosRouteWithChildren
   '/simulados': typeof SimuladosRouteWithChildren
   '/sobre': typeof SobreRoute
@@ -1353,35 +1272,27 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
-    | '/anotacoes'
     | '/assinatura'
     | '/assistente'
     | '/assistente-horus'
     | '/atualizacoes'
     | '/audioaulas'
     | '/audiobooks'
-    | '/audioleis'
     | '/auth'
-    | '/biblioteca'
     | '/bibliotecas'
-    | '/boletim'
     | '/boletins'
     | '/compartilhado'
-    | '/configuracoes'
     | '/estudos'
     | '/jurisprudencia'
     | '/landing'
     | '/legislacao-estadual'
     | '/lei-seca'
     | '/lembretes'
-    | '/mapas'
     | '/mapas-mentais'
     | '/me-explique'
     | '/meu-espaco'
-    | '/meus-lembretes'
     | '/modo-offline'
     | '/noticias'
-    | '/notificacoes'
     | '/novidades'
     | '/onboarding'
     | '/perfil'
@@ -1392,7 +1303,6 @@ export interface FileRouteTypes {
     | '/radar-concursos'
     | '/radares'
     | '/reset-password'
-    | '/resumos'
     | '/resumos-juridicos'
     | '/simulados'
     | '/sobre'
@@ -1500,35 +1410,27 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
-    | '/anotacoes'
     | '/assinatura'
     | '/assistente'
     | '/assistente-horus'
     | '/atualizacoes'
     | '/audioaulas'
     | '/audiobooks'
-    | '/audioleis'
     | '/auth'
-    | '/biblioteca'
     | '/bibliotecas'
-    | '/boletim'
     | '/boletins'
     | '/compartilhado'
-    | '/configuracoes'
     | '/estudos'
     | '/jurisprudencia'
     | '/landing'
     | '/legislacao-estadual'
     | '/lei-seca'
     | '/lembretes'
-    | '/mapas'
     | '/mapas-mentais'
     | '/me-explique'
     | '/meu-espaco'
-    | '/meus-lembretes'
     | '/modo-offline'
     | '/noticias'
-    | '/notificacoes'
     | '/novidades'
     | '/onboarding'
     | '/perfil'
@@ -1539,7 +1441,6 @@ export interface FileRouteTypes {
     | '/radar-concursos'
     | '/radares'
     | '/reset-password'
-    | '/resumos'
     | '/resumos-juridicos'
     | '/simulados'
     | '/sobre'
@@ -1647,35 +1548,27 @@ export interface FileRouteTypes {
     | '/admin-omniroute'
     | '/admin-push'
     | '/admin-rotas'
-    | '/anotacoes'
     | '/assinatura'
     | '/assistente'
     | '/assistente-horus'
     | '/atualizacoes'
     | '/audioaulas'
     | '/audiobooks'
-    | '/audioleis'
     | '/auth'
-    | '/biblioteca'
     | '/bibliotecas'
-    | '/boletim'
     | '/boletins'
     | '/compartilhado'
-    | '/configuracoes'
     | '/estudos'
     | '/jurisprudencia'
     | '/landing'
     | '/legislacao-estadual'
     | '/lei-seca'
     | '/lembretes'
-    | '/mapas'
     | '/mapas-mentais'
     | '/me-explique'
     | '/meu-espaco'
-    | '/meus-lembretes'
     | '/modo-offline'
     | '/noticias'
-    | '/notificacoes'
     | '/novidades'
     | '/onboarding'
     | '/perfil'
@@ -1686,7 +1579,6 @@ export interface FileRouteTypes {
     | '/radar-concursos'
     | '/radares'
     | '/reset-password'
-    | '/resumos'
     | '/resumos-juridicos'
     | '/simulados'
     | '/sobre'
@@ -1795,35 +1687,27 @@ export interface RootRouteChildren {
   AdminOmnirouteRoute: typeof AdminOmnirouteRoute
   AdminPushRoute: typeof AdminPushRoute
   AdminRotasRoute: typeof AdminRotasRoute
-  AnotacoesRoute: typeof AnotacoesRoute
   AssinaturaRoute: typeof AssinaturaRoute
   AssistenteRoute: typeof AssistenteRoute
   AssistenteHorusRoute: typeof AssistenteHorusRoute
   AtualizacoesRoute: typeof AtualizacoesRoute
   AudioaulasRoute: typeof AudioaulasRouteWithChildren
   AudiobooksRoute: typeof AudiobooksRoute
-  AudioleisRoute: typeof AudioleisRoute
   AuthRoute: typeof AuthRoute
-  BibliotecaRoute: typeof BibliotecaRoute
   BibliotecasRoute: typeof BibliotecasRouteWithChildren
-  BoletimRoute: typeof BoletimRoute
   BoletinsRoute: typeof BoletinsRoute
   CompartilhadoRoute: typeof CompartilhadoRoute
-  ConfiguracoesRoute: typeof ConfiguracoesRoute
   EstudosRoute: typeof EstudosRoute
   JurisprudenciaRoute: typeof JurisprudenciaRouteWithChildren
   LandingRoute: typeof LandingRoute
   LegislacaoEstadualRoute: typeof LegislacaoEstadualRouteWithChildren
   LeiSecaRoute: typeof LeiSecaRouteWithChildren
   LembretesRoute: typeof LembretesRouteWithChildren
-  MapasRoute: typeof MapasRoute
   MapasMentaisRoute: typeof MapasMentaisRouteWithChildren
   MeExpliqueRoute: typeof MeExpliqueRoute
   MeuEspacoRoute: typeof MeuEspacoRoute
-  MeusLembretesRoute: typeof MeusLembretesRoute
   ModoOfflineRoute: typeof ModoOfflineRouteWithChildren
   NoticiasRoute: typeof NoticiasRoute
-  NotificacoesRoute: typeof NotificacoesRoute
   NovidadesRoute: typeof NovidadesRoute
   OnboardingRoute: typeof OnboardingRoute
   PerfilRoute: typeof PerfilRoute
@@ -1834,7 +1718,6 @@ export interface RootRouteChildren {
   RadarConcursosRoute: typeof RadarConcursosRouteWithChildren
   RadaresRoute: typeof RadaresRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ResumosRoute: typeof ResumosRoute
   ResumosJuridicosRoute: typeof ResumosJuridicosRouteWithChildren
   SimuladosRoute: typeof SimuladosRouteWithChildren
   SobreRoute: typeof SobreRoute
@@ -1918,13 +1801,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRotasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/anotacoes': {
-      id: '/anotacoes'
-      path: '/anotacoes'
-      fullPath: '/anotacoes'
-      preLoaderRoute: typeof AnotacoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/assinatura': {
       id: '/assinatura'
       path: '/assinatura'
@@ -1967,13 +1843,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AudiobooksRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/audioleis': {
-      id: '/audioleis'
-      path: '/audioleis'
-      fullPath: '/audioleis'
-      preLoaderRoute: typeof AudioleisRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -1981,25 +1850,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/biblioteca': {
-      id: '/biblioteca'
-      path: '/biblioteca'
-      fullPath: '/biblioteca'
-      preLoaderRoute: typeof BibliotecaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/bibliotecas': {
       id: '/bibliotecas'
       path: '/bibliotecas'
       fullPath: '/bibliotecas'
       preLoaderRoute: typeof BibliotecasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/boletim': {
-      id: '/boletim'
-      path: '/boletim'
-      fullPath: '/boletim'
-      preLoaderRoute: typeof BoletimRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/boletins': {
@@ -2014,13 +1869,6 @@ declare module '@tanstack/react-router' {
       path: '/compartilhado'
       fullPath: '/compartilhado'
       preLoaderRoute: typeof CompartilhadoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/configuracoes': {
-      id: '/configuracoes'
-      path: '/configuracoes'
-      fullPath: '/configuracoes'
-      preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/estudos': {
@@ -2065,13 +1913,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LembretesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mapas': {
-      id: '/mapas'
-      path: '/mapas'
-      fullPath: '/mapas'
-      preLoaderRoute: typeof MapasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/mapas-mentais': {
       id: '/mapas-mentais'
       path: '/mapas-mentais'
@@ -2093,13 +1934,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeuEspacoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/meus-lembretes': {
-      id: '/meus-lembretes'
-      path: '/meus-lembretes'
-      fullPath: '/meus-lembretes'
-      preLoaderRoute: typeof MeusLembretesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/modo-offline': {
       id: '/modo-offline'
       path: '/modo-offline'
@@ -2112,13 +1946,6 @@ declare module '@tanstack/react-router' {
       path: '/noticias'
       fullPath: '/noticias'
       preLoaderRoute: typeof NoticiasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notificacoes': {
-      id: '/notificacoes'
-      path: '/notificacoes'
-      fullPath: '/notificacoes'
-      preLoaderRoute: typeof NotificacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/novidades': {
@@ -2189,13 +2016,6 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resumos': {
-      id: '/resumos'
-      path: '/resumos'
-      fullPath: '/resumos'
-      preLoaderRoute: typeof ResumosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/resumos-juridicos': {
@@ -3288,35 +3108,27 @@ const rootRouteChildren: RootRouteChildren = {
   AdminOmnirouteRoute: AdminOmnirouteRoute,
   AdminPushRoute: AdminPushRoute,
   AdminRotasRoute: AdminRotasRoute,
-  AnotacoesRoute: AnotacoesRoute,
   AssinaturaRoute: AssinaturaRoute,
   AssistenteRoute: AssistenteRoute,
   AssistenteHorusRoute: AssistenteHorusRoute,
   AtualizacoesRoute: AtualizacoesRoute,
   AudioaulasRoute: AudioaulasRouteWithChildren,
   AudiobooksRoute: AudiobooksRoute,
-  AudioleisRoute: AudioleisRoute,
   AuthRoute: AuthRoute,
-  BibliotecaRoute: BibliotecaRoute,
   BibliotecasRoute: BibliotecasRouteWithChildren,
-  BoletimRoute: BoletimRoute,
   BoletinsRoute: BoletinsRoute,
   CompartilhadoRoute: CompartilhadoRoute,
-  ConfiguracoesRoute: ConfiguracoesRoute,
   EstudosRoute: EstudosRoute,
   JurisprudenciaRoute: JurisprudenciaRouteWithChildren,
   LandingRoute: LandingRoute,
   LegislacaoEstadualRoute: LegislacaoEstadualRouteWithChildren,
   LeiSecaRoute: LeiSecaRouteWithChildren,
   LembretesRoute: LembretesRouteWithChildren,
-  MapasRoute: MapasRoute,
   MapasMentaisRoute: MapasMentaisRouteWithChildren,
   MeExpliqueRoute: MeExpliqueRoute,
   MeuEspacoRoute: MeuEspacoRoute,
-  MeusLembretesRoute: MeusLembretesRoute,
   ModoOfflineRoute: ModoOfflineRouteWithChildren,
   NoticiasRoute: NoticiasRoute,
-  NotificacoesRoute: NotificacoesRoute,
   NovidadesRoute: NovidadesRoute,
   OnboardingRoute: OnboardingRoute,
   PerfilRoute: PerfilRoute,
@@ -3327,7 +3139,6 @@ const rootRouteChildren: RootRouteChildren = {
   RadarConcursosRoute: RadarConcursosRouteWithChildren,
   RadaresRoute: RadaresRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ResumosRoute: ResumosRoute,
   ResumosJuridicosRoute: ResumosJuridicosRouteWithChildren,
   SimuladosRoute: SimuladosRouteWithChildren,
   SobreRoute: SobreRoute,

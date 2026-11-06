@@ -197,63 +197,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/anotacoes",
-    "group": "Espaço do Aluno & Perfil",
-    "label": "Anotacoes",
-    "description": "Redirecionamento automático legado para a rota /pessoal/anotacoes",
-    "isRedirect": true,
-    "redirectTarget": "/pessoal/anotacoes",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/anotacoes",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/aprender",
-    "group": "Aulas Interativas",
-    "label": "Aprender",
-    "description": "Redirecionamento automático legado para a rota /aulas",
-    "isRedirect": true,
-    "redirectTarget": "/aulas",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/aprender",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/aprender/*",
-    "group": "Aulas Interativas",
-    "label": "Aprender",
-    "description": "Redirecionamento automático legado para a rota /aulas",
-    "isRedirect": true,
-    "redirectTarget": "/aulas",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/aprender",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
     "path": "/assinatura",
     "group": "Assinatura & Planos",
     "label": "Assinatura",
@@ -330,25 +273,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/audio-leis",
-    "group": "Audiobooks",
-    "label": "Audio Leis",
-    "description": "Redirecionamento automático legado para a rota /audiobooks",
-    "isRedirect": true,
-    "redirectTarget": "/audiobooks",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/audio-leis",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
     "path": "/audioaulas",
     "group": "Audioaulas",
     "label": "Audioaulas (Catálogo Principal)",
@@ -409,25 +333,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/audioleis",
-    "group": "Audiobooks",
-    "label": "Audioleis",
-    "description": "Redirecionamento automático legado para a rota /audiobooks",
-    "isRedirect": true,
-    "redirectTarget": "/audiobooks",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/audioleis",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
     "path": "/aulas",
     "group": "Aulas Interativas",
     "label": "Aulas Interativas (Catálogo)",
@@ -463,63 +368,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "weightReasons": [
       "Página padrão leve",
       "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/biblioteca",
-    "group": "Biblioteca Digital",
-    "label": "Biblioteca (Redirecionamento)",
-    "description": "Redirecionamento automático legado para a estante principal /bibliotecas",
-    "isRedirect": true,
-    "redirectTarget": "/bibliotecas",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/biblioteca",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/biblioteca-offline",
-    "group": "Biblioteca Digital",
-    "label": "Biblioteca Offline",
-    "description": "Redirecionamento automático legado para a rota /modo-offline/livros",
-    "isRedirect": true,
-    "redirectTarget": "/modo-offline/livros",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/biblioteca-offline",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/biblioteca/caderno",
-    "group": "Biblioteca Digital",
-    "label": "Biblioteca Caderno",
-    "description": "Redirecionamento automático legado para a rota /pessoal/grifos",
-    "isRedirect": true,
-    "redirectTarget": "/pessoal/grifos",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/biblioteca/caderno",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
     ]
   },
   {
@@ -603,25 +451,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/boletim",
-    "group": "Boletim",
-    "label": "Boletim",
-    "description": "Redirecionamento automático legado para a rota /boletins",
-    "isRedirect": true,
-    "redirectTarget": "/boletins",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/boletim",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
     "path": "/boletins",
     "group": "Notícias & Informativos",
     "label": "Boletins",
@@ -657,25 +486,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "weightReasons": [
       "Página padrão leve",
       "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/configuracoes",
-    "group": "Configuracoes",
-    "label": "Configuracoes",
-    "description": "Redirecionamento automático legado para a rota /perfil",
-    "isRedirect": true,
-    "redirectTarget": "/perfil",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/configuracoes",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
     ]
   },
   {
@@ -1400,25 +1210,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/mapas",
-    "group": "Mapas",
-    "label": "Mapas",
-    "description": "Redirecionamento automático legado para a rota /mapas-mentais",
-    "isRedirect": true,
-    "redirectTarget": "/mapas-mentais",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/mapas",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
     "path": "/mapas-mentais",
     "group": "Mapas-mentais",
     "label": "Mapas Mentais",
@@ -1494,120 +1285,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "weightReasons": [
       "Cards de usuário",
       "Atalhos leves"
-    ]
-  },
-  {
-    "path": "/meus-downloads",
-    "group": "Meus-downloads",
-    "label": "Meus Downloads",
-    "description": "Redirecionamento automático legado para a rota /modo-offline",
-    "isRedirect": true,
-    "redirectTarget": "/modo-offline",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/meus-downloads",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/meus-lembretes",
-    "group": "Espaço do Aluno & Perfil",
-    "label": "Meus Lembretes",
-    "description": "Redirecionamento automático legado para a rota /?notificacoes=1",
-    "isRedirect": true,
-    "redirectTarget": "/?notificacoes=1",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/meus-lembretes",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/meus-resumos",
-    "group": "Meus-resumos",
-    "label": "Meus Resumos",
-    "description": "Redirecionamento automático legado para a rota /resumos-juridicos",
-    "isRedirect": true,
-    "redirectTarget": "/resumos-juridicos",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/meus-resumos",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/minha-cota",
-    "group": "Minha-cota",
-    "label": "Minha Cota",
-    "description": "Redirecionamento automático legado para a rota /assinatura",
-    "isRedirect": true,
-    "redirectTarget": "/assinatura",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/minha-cota",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/minhas-leituras",
-    "group": "Minhas-leituras",
-    "label": "Minhas Leituras",
-    "description": "Redirecionamento automático legado para a rota /pessoal/livros",
-    "isRedirect": true,
-    "redirectTarget": "/pessoal/livros",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/minhas-leituras",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/minhas-videoaulas",
-    "group": "Videoaulas",
-    "label": "Minhas Videoaulas",
-    "description": "Redirecionamento automático legado para a rota /videoaulas",
-    "isRedirect": true,
-    "redirectTarget": "/videoaulas",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/minhas-videoaulas",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
     ]
   },
   {
@@ -1722,25 +1399,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "weightEstimate": "~200 KB",
     "weightReasons": [
       "Conteúdo textual formatado"
-    ]
-  },
-  {
-    "path": "/notificacoes",
-    "group": "Notificacoes",
-    "label": "Notificacoes",
-    "description": "Redirecionamento automático legado para a rota /?notificacoes=1",
-    "isRedirect": true,
-    "redirectTarget": "/?notificacoes=1",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/notificacoes",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
     ]
   },
   {
@@ -2489,44 +2147,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/radar/categorias",
-    "group": "Radares",
-    "label": "Radar Categorias",
-    "description": "Redirecionamento automático legado para a rota /radar-360",
-    "isRedirect": true,
-    "redirectTarget": "/radar-360",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/radar/categorias",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/radar/em-alta",
-    "group": "Radares",
-    "label": "Radar Em Alta",
-    "description": "Redirecionamento automático legado para a rota /radar-360",
-    "isRedirect": true,
-    "redirectTarget": "/radar-360",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/radar/em-alta",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
     "path": "/radar/proposicoes",
     "group": "Radares",
     "label": "Radar Proposicoes",
@@ -2600,25 +2220,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "weightReasons": [
       "Página padrão leve",
       "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/resumos",
-    "group": "Resumos Jurídicos",
-    "label": "Resumos",
-    "description": "Redirecionamento automático legado para a rota /resumos-juridicos",
-    "isRedirect": true,
-    "redirectTarget": "/resumos-juridicos",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/resumos",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
     ]
   },
   {
@@ -2849,44 +2450,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "weightReasons": [
       "Página padrão leve",
       "Carga instantânea 0ms"
-    ]
-  },
-  {
-    "path": "/vade-mecum/areas",
-    "group": "Vade-mecum",
-    "label": "Vade Mecum Areas",
-    "description": "Redirecionamento automático legado para a rota /vade-mecum",
-    "isRedirect": true,
-    "redirectTarget": "/vade-mecum",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/vade-mecum/areas",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
-    ]
-  },
-  {
-    "path": "/vade-mecum/categorias",
-    "group": "Vade-mecum",
-    "label": "Vade Mecum Categorias",
-    "description": "Redirecionamento automático legado para a rota /vade-mecum",
-    "isRedirect": true,
-    "redirectTarget": "/vade-mecum",
-    "isProtected": false,
-    "isAdmin": false,
-    "component": "Componente",
-    "exampleUrl": "/vade-mecum/categorias",
-    "weightScore": 0,
-    "weightLevel": "zero",
-    "weightEstimate": "0 KB",
-    "weightReasons": [
-      "Redirecionamento instantâneo",
-      "Zero impacto de bundle"
     ]
   },
   {
