@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy, LayoutGrid, List, Briefcase } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
@@ -14,7 +14,6 @@ import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { cn } from '@/lib/utils';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
-import FlashcardsMasterDeck from '@/components/flashcards/FlashcardsMasterDeck';
 
 const ATALHOS_FLASHCARDS = [
   { id: 'decks', label: 'Decks', desc: 'Seus baralhos', icon: FolderPlus, route: '/flashcards/decks' },
@@ -29,32 +28,7 @@ const Flashcards = () => {
   const { data: areasRaw, isLoading: loadingAreas } = useFlashcardsResumoAreas();
 
   const [filtroAberto, setFiltroAberto] = useState(false);
-  const [activeFilterSlide, setActiveFilterSlide] = useState(0);
-  const scrollerRef = useRef<HTMLDivElement | null>(null);
   const loading = loadingDash;
-
-  const scrollToSlide = (idx: number) => {
-    haptic.selection();
-    setActiveFilterSlide(idx);
-    if (scrollerRef.current) {
-      const width = scrollerRef.current.clientWidth;
-      scrollerRef.current.scrollTo({
-        left: idx * (width + 16),
-        behavior: 'smooth',
-      });
-    }
-  };
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const el = e.currentTarget;
-    const width = el.clientWidth;
-    if (width > 0) {
-      const idx = Math.round(el.scrollLeft / width);
-      if (idx !== activeFilterSlide && (idx === 0 || idx === 1)) {
-        setActiveFilterSlide(idx);
-      }
-    }
-  };
 
   const areas = useMemo(() => {
     return areasRaw && areasRaw.length > 0 ? areasRaw : FALLBACK_FLASHCARDS_AREAS;
@@ -101,117 +75,26 @@ const Flashcards = () => {
         </div>
         
         <div className="pt-1 space-y-6">
-          {/* ── Carrossel de Filtros: Filtro Rápido & Cargos ───────────────── */}
-          <div className="space-y-2.5">
-            {/* Abas e Controles de Navegação do Carrossel */}
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-card/70 border border-border/70 backdrop-blur-md shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => scrollToSlide(0)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all",
-                    activeFilterSlide === 0
-                      ? "bg-[#36AF85] text-white shadow-md"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <Filter className="h-3.5 w-3.5" />
-                  <span>Filtro Rápido</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => scrollToSlide(1)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all",
-                    activeFilterSlide === 1
-                      ? "bg-amber-500 text-zinc-950 shadow-md"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <Briefcase className="h-3.5 w-3.5" />
-                  <span>Por Cargos</span>
-                </button>
-              </div>
-
-              {/* Dots Indicadores de Slide */}
-              <div className="flex items-center gap-1.5 px-2">
-                <button
-                  type="button"
-                  onClick={() => scrollToSlide(0)}
-                  aria-label="Slide Filtro Rápido"
-                  className={cn(
-                    "h-2 rounded-full transition-all duration-300",
-                    activeFilterSlide === 0 ? "w-6 bg-[#36AF85]" : "w-2 bg-zinc-700 hover:bg-zinc-500"
-                  )}
-                />
-                <button
-                  type="button"
-                  onClick={() => scrollToSlide(1)}
-                  aria-label="Slide Cargos"
-                  className={cn(
-                    "h-2 rounded-full transition-all duration-300",
-                    activeFilterSlide === 1 ? "w-6 bg-amber-500" : "w-2 bg-zinc-700 hover:bg-zinc-500"
-                  )}
-                />
-              </div>
+          {/* ── Card Principal com Botão "Filtro Rápido" ───────────────── */}
+          <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
+            <div className="flex items-center gap-2">
+              <span className="h-5 w-1 rounded-full bg-[#36AF85]" />
+              <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Praticar Flashcards</h2>
             </div>
+            <p className="ml-3 mt-1 text-xs text-muted-foreground">
+              Escolha filtros personalizados por matéria, assunto e tipos para começar.
+            </p>
 
-            {/* Scroller Horizontal com Snap */}
-            <div
-              ref={scrollerRef}
-              onScroll={handleScroll}
-              className="flex w-full overflow-x-auto snap-x snap-mandatory scroll-smooth gap-3.5 rounded-3xl [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            <motion.button
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => { haptic.selection(); setFiltroAberto(true); }}
+              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#2C9570] hover:bg-[#237A5C] text-white text-base sm:text-lg font-black shadow-md transition-colors focus-visible:outline-none border border-[#2C9570]/30"
             >
-              {/* Slide 1: Filtro Rápido */}
-              <div className="w-full shrink-0 snap-center bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl relative overflow-hidden">
-                <div className="flex items-center gap-2">
-                  <span className="h-5 w-1 rounded-full bg-[#36AF85]" />
-                  <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">
-                    Praticar Flashcards
-                  </h2>
-                </div>
-                <p className="ml-3 mt-1 text-xs text-muted-foreground">
-                  Escolha filtros personalizados por matéria, assunto e tipos para começar.
-                </p>
-
-                <motion.button
-                  whileHover={{ scale: 1.015 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => { haptic.selection(); setFiltroAberto(true); }}
-                  className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#2C9570] hover:bg-[#237A5C] text-white text-base sm:text-lg font-black shadow-md transition-colors focus-visible:outline-none border border-[#2C9570]/30"
-                >
-                  <Filter className="h-6 w-6 text-white" strokeWidth={2} />
-                  <span className="tracking-wide text-white">Filtro Rápido</span>
-                  <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
-                </motion.button>
-              </div>
-
-              {/* Slide 2: Por Cargos */}
-              <div className="w-full shrink-0 snap-center bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl relative overflow-hidden">
-                <div className="flex items-center gap-2">
-                  <span className="h-5 w-1 rounded-full bg-amber-500" />
-                  <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">
-                    Flashcards por Cargo
-                  </h2>
-                </div>
-                <p className="ml-3 mt-1 text-xs text-muted-foreground">
-                  Estude focado no edital: Magistratura, MP, Delegado, Defensoria, PRF e mais.
-                </p>
-
-                <motion.button
-                  whileHover={{ scale: 1.015 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => { haptic.selection(); navigate('/flashcards/cargos'); }}
-                  className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white text-base sm:text-lg font-black shadow-md transition-all focus-visible:outline-none border border-amber-500/30"
-                >
-                  <Briefcase className="h-6 w-6 text-white" strokeWidth={2} />
-                  <span className="tracking-wide text-white">Ver Cargos e Editais</span>
-                  <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
-                </motion.button>
-              </div>
-            </div>
+              <Filter className="h-6 w-6 text-white" strokeWidth={2} />
+              <span className="tracking-wide text-white">Filtro Rápido</span>
+              <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
+            </motion.button>
           </div>
 
 
@@ -263,9 +146,77 @@ const Flashcards = () => {
 
 
 
-          {/* ── Decks 3D de Flashcards por Disciplina ───────────────────── */}
-          <section className="pt-1">
-            <FlashcardsMasterDeck areas={areas} />
+          {/* ── Matérias de Flashcards (Grade de Disciplinas) ───────────────────── */}
+          <section className="pt-2 space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-1 rounded-full bg-[#36AF85]" />
+              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                Matérias ({areas.length})
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+              {areas.map((area) => {
+                const iconInfo = areaIconFor(area.slug || area.area);
+                const AreaIcon = iconInfo?.Icon || BookOpen;
+                const palette = getAreaThemePalette(area.slug || area.area);
+                const coverInfo = getAreaCover(area.area) || getAreaCover(area.slug);
+                const coverUrl = coverInfo?.cover;
+
+                return (
+                  <motion.button
+                    key={area.slug || area.area}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => {
+                      haptic.selection();
+                      navigate(`/flashcards/area/${area.slug || area.area}`);
+                    }}
+                    className="group relative flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 hover:border-zinc-400/50 transition-all text-left overflow-hidden shadow-sm min-h-[140px] focus-visible:outline-none"
+                    style={{
+                      background: coverUrl
+                        ? `linear-gradient(to top, rgba(10,10,12,0.95) 0%, rgba(10,10,12,0.7) 60%, rgba(10,10,12,0.45) 100%), url(${coverUrl}) center/cover no-repeat`
+                        : `linear-gradient(145deg, ${palette.primary}22 0%, #141416 100%)`
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-2 z-10 w-full">
+                      <div
+                        className="w-8 h-8 rounded-xl flex items-center justify-center border border-white/10 shadow-sm"
+                        style={{ backgroundColor: `${iconInfo?.color || '#36AF85'}22` }}
+                      >
+                        <AreaIcon className="w-4 h-4" style={{ color: iconInfo?.color || '#36AF85' }} strokeWidth={2.2} />
+                      </div>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white/90 border border-white/10 shrink-0">
+                        {area.total_cards > 0 ? `${area.total_cards} cards` : 'Em breve'}
+                      </span>
+                    </div>
+
+                    <div className="z-10 mt-3 w-full">
+                      <h3 className="text-xs sm:text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-[#36AF85] transition-colors">
+                        {area.area}
+                      </h3>
+                      {area.compreendidos > 0 ? (
+                        <div className="mt-2 flex items-center gap-1.5">
+                          <div className="flex-1 bg-white/10 h-1.5 rounded-full overflow-hidden">
+                            <div
+                              className="bg-[#36AF85] h-full rounded-full"
+                              style={{ width: `${Math.min(100, Math.round((area.compreendidos / (area.total_cards || 1)) * 100))}%` }}
+                            />
+                          </div>
+                          <span className="text-[9px] text-muted-foreground font-semibold">
+                            {area.compreendidos} dominados
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-[10px] text-muted-foreground mt-1 group-hover:text-zinc-300 transition-colors">
+                          Começar revisão →
+                        </p>
+                      )}
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
           </section>
 
 
