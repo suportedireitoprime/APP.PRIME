@@ -9,8 +9,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
 import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
-import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
-import { getAreaCover } from '@/lib/areasDireitoCovers';
+import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { cn } from '@/lib/utils';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import ShapeGrid from '@/components/ui/ShapeGrid';
@@ -159,9 +158,7 @@ const Flashcards = () => {
               {areas.map((area) => {
                 const iconInfo = areaIconFor(area.slug || area.area);
                 const AreaIcon = iconInfo?.Icon || BookOpen;
-                const palette = getAreaThemePalette(area.slug || area.area);
-                const coverInfo = getAreaCover(area.area) || getAreaCover(area.slug);
-                const coverUrl = coverInfo?.cover;
+                const areaColor = iconInfo?.color || '#36AF85';
 
                 return (
                   <motion.button
@@ -172,44 +169,63 @@ const Flashcards = () => {
                       haptic.selection();
                       navigate(`/flashcards/area/${area.slug || area.area}`);
                     }}
-                    className="group relative flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl bg-card border border-border/80 hover:border-zinc-400/50 transition-all text-left overflow-hidden shadow-sm min-h-[140px] focus-visible:outline-none"
+                    className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-card/75 border border-border/80 hover:border-zinc-400/50 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-lg min-h-[148px] focus-visible:outline-none"
                     style={{
-                      background: coverUrl
-                        ? `linear-gradient(to top, rgba(10,10,12,0.95) 0%, rgba(10,10,12,0.7) 60%, rgba(10,10,12,0.45) 100%), url(${coverUrl}) center/cover no-repeat`
-                        : `linear-gradient(145deg, ${palette.primary}22 0%, #141416 100%)`
+                      background: `radial-gradient(circle at top left, ${areaColor}15 0%, rgba(18, 19, 23, 0.95) 75%)`
                     }}
                   >
                     <div className="flex items-start justify-between gap-2 z-10 w-full">
                       <div
-                        className="w-8 h-8 rounded-xl flex items-center justify-center border border-white/10 shadow-sm"
-                        style={{ backgroundColor: `${iconInfo?.color || '#36AF85'}22` }}
+                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center border shadow-sm transition-transform duration-300 group-hover:scale-105"
+                        style={{
+                          backgroundColor: `${areaColor}18`,
+                          borderColor: `${areaColor}33`,
+                          boxShadow: `0 4px 16px -2px ${areaColor}22`
+                        }}
                       >
-                        <AreaIcon className="w-4 h-4" style={{ color: iconInfo?.color || '#36AF85' }} strokeWidth={2.2} />
+                        <AreaIcon
+                          className="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 group-hover:rotate-3"
+                          style={{ color: areaColor }}
+                          strokeWidth={2.2}
+                        />
                       </div>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/60 text-white/90 border border-white/10 shrink-0">
-                        {area.total_cards > 0 ? `${area.total_cards} cards` : 'Em breve'}
+                      <span
+                        className="text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-full bg-zinc-900/80 text-zinc-300 border border-white/10 shrink-0"
+                        style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                      >
+                        {area.total_cards > 0 ? `${area.total_cards.toLocaleString('pt-BR')} cards` : 'Em breve'}
                       </span>
                     </div>
 
                     <div className="z-10 mt-3 w-full">
-                      <h3 className="text-xs sm:text-sm font-bold text-white leading-snug line-clamp-2 group-hover:text-[#36AF85] transition-colors">
+                      <p
+                        className="text-sm sm:text-base font-bold text-foreground leading-snug line-clamp-2 group-hover:text-[#36AF85] transition-colors"
+                        style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
+                      >
                         {area.area}
-                      </h3>
+                      </p>
                       {area.compreendidos > 0 ? (
-                        <div className="mt-2 flex items-center gap-1.5">
+                        <div className="mt-2.5 flex items-center gap-2">
                           <div className="flex-1 bg-white/10 h-1.5 rounded-full overflow-hidden">
                             <div
-                              className="bg-[#36AF85] h-full rounded-full"
+                              className="bg-[#36AF85] h-full rounded-full transition-all duration-500"
                               style={{ width: `${Math.min(100, Math.round((area.compreendidos / (area.total_cards || 1)) * 100))}%` }}
                             />
                           </div>
-                          <span className="text-[9px] text-muted-foreground font-semibold">
+                          <span
+                            className="text-[10px] sm:text-[11px] text-muted-foreground font-medium shrink-0"
+                            style={{ fontFamily: "'Inter', sans-serif" }}
+                          >
                             {area.compreendidos} dominados
                           </span>
                         </div>
                       ) : (
-                        <p className="text-[10px] text-muted-foreground mt-1 group-hover:text-zinc-300 transition-colors">
-                          Começar revisão →
+                        <p
+                          className="text-[11px] sm:text-xs text-muted-foreground mt-2 group-hover:text-zinc-200 transition-colors flex items-center gap-1 font-medium"
+                          style={{ fontFamily: "'Inter', sans-serif" }}
+                        >
+                          <span>Começar revisão</span>
+                          <ChevronRight className="w-3.5 h-3.5 text-[#36AF85] transition-transform group-hover:translate-x-0.5" />
                         </p>
                       )}
                     </div>
