@@ -260,25 +260,36 @@ Deno.serve(async (req) => {
     }
 
     // Registra registro PENDING em asaas_subscriptions para que o Realtime listener acompanhe
+    // Importante: NÃO rebaixa usuários que já possuem assinatura ACTIVE
     try {
       const admin = createClient(
         Deno.env.get('SUPABASE_URL')!,
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
       );
 
-      const planoFinal = (plan === 'mensal' || plan === 'mensal_pix') 
-        ? 'mensal' 
-        : (plan === 'vitalicio' || plan === 'vitalicio_pix' ? 'vitalicio' : 'anual');
+      const { data: existingSub } = await admin
+        .from('asaas_subscriptions')
+        .select('status')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      await admin.from('asaas_subscriptions').upsert({
-        user_id: user.id,
-        plano: planoFinal,
-        status: 'PENDING',
-        asaas_customer_id: customerId,
-        asaas_subscription_id: paymentId || sub.id,
-        origem: 'asaas',
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' });
+      const isAlreadyActive = existingSub && ['ACTIVE', 'ACTIVE_GRACE', 'active'].includes(existingSub.status);
+
+      if (!isAlreadyActive) {
+        const planoFinal = (plan === 'mensal' || plan === 'mensal_pix') 
+          ? 'mensal' 
+          : (plan === 'vitalicio' || plan === 'vitalicio_pix' ? 'vitalicio' : 'anual');
+
+        await admin.from('asaas_subscriptions').upsert({
+          user_id: user.id,
+          plano: planoFinal,
+          status: 'PENDING',
+          asaas_customer_id: customerId,
+          asaas_subscription_id: paymentId || sub.id,
+          origem: 'asaas',
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
+      }
     } catch (e) {
       console.warn('Pending subscription upsert warning:', e);
     }
