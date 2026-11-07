@@ -24,6 +24,11 @@ export type FlashcardsFiltro = {
 
 export const FILTRO_FLASHCARDS_KEY = 'flashcards:filtro';
 
+export const formatarTemaTitulo = (t: string) => {
+  if (!t) return '';
+  return t.replace(/^\d+[\.\-\s]+/, '').trim();
+};
+
 export const FILTRO_FLASHCARDS_VAZIO: FlashcardsFiltro = {
   disciplinas: [], assuntos: [], status: [], quantidade: null,
 };
@@ -31,7 +36,13 @@ export const FILTRO_FLASHCARDS_VAZIO: FlashcardsFiltro = {
 export function lerFiltroFlashcardsSalvo(): FlashcardsFiltro | null {
   try {
     const raw = sessionStorage.getItem(FILTRO_FLASHCARDS_KEY);
-    return raw ? { ...FILTRO_FLASHCARDS_VAZIO, ...JSON.parse(raw) } : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return {
+      ...FILTRO_FLASHCARDS_VAZIO,
+      ...parsed,
+      assuntos: Array.isArray(parsed.assuntos) ? parsed.assuntos.map(formatarTemaTitulo).filter(Boolean) : [],
+    };
   } catch { return null; }
 }
 
@@ -349,7 +360,7 @@ const FlashcardsFiltroSheet = ({
     .map(a => a.area)
     .sort((a, b) => a.localeCompare(b, 'pt-BR')), [areasData]);
   
-  const [assuntosCache, setAssuntosCache] = useState<Record<string, string[]>>({});
+  const [assuntosCache, setAssuntosCache] = useState<Record<string, Array<{ tema: string; total: number }>>>({});
   const [carregandoAssuntos, setCarregandoAssuntos] = useState(false);
 
   // Busca temas (assuntos) das disciplinas selecionadas
@@ -365,10 +376,19 @@ const FlashcardsFiltroSheet = ({
       
       if (missingAreas.length > 0) {
         const promises = missingAreas.map(area => 
-          supabase.rpc('flashcards_temas', { _area: area }).then(({ data }) => ({
-            area,
-            temas: ((data as any[]) || []).map(t => t.tema)
-          }))
+          supabase.rpc('flashcards_temas', { _area: area }).then(({ data }) => {
+            const temaMap = new Map<string, number>();
+            ((data as any[]) || []).forEach(t => {
+              const clean = formatarTemaTitulo(t.tema || '');
+              if (clean) {
+                temaMap.set(clean, (temaMap.get(clean) || 0) + (Number(t.total) || 0));
+              }
+            });
+            return {
+              area,
+              temas: Array.from(temaMap.entries()).map(([tema, total]) => ({ tema, total })),
+            };
+          })
         );
         
         const results = await Promise.all(promises);
@@ -386,13 +406,20 @@ const FlashcardsFiltroSheet = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f.disciplinas]);
 
-  const assuntosDisponiveis = useMemo(() => {
-    const list = new Set<string>();
+  const assuntosDisponiveisMap = useMemo(() => {
+    const map = new Map<string, number>();
     f.disciplinas.forEach(d => {
-      if (assuntosCache[d]) assuntosCache[d].forEach(t => list.add(t));
+      const itens = assuntosCache[d] || [];
+      itens.forEach(item => {
+        map.set(item.tema, (map.get(item.tema) || 0) + item.total);
+      });
     });
-    return Array.from(list).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    return map;
   }, [f.disciplinas, assuntosCache]);
+
+  const assuntosDisponiveis = useMemo(() => {
+    return Array.from(assuntosDisponiveisMap.keys()).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [assuntosDisponiveisMap]);
 
   const proximo = !f.disciplinas.length ? 'disciplinas'
     : !f.assuntos.length ? 'assuntos'
@@ -403,13 +430,26 @@ const FlashcardsFiltroSheet = ({
     (f.status?.length > 0 ? 1 : 0) +
     (f.quantidade ? 1 : 0);
 
+  const totalDisciplinaCards = useMemo(() => {
+    if (!areasData || !f.disciplinas.length) return 0;
+    return f.disciplinas.reduce((acc, d) => acc + (areasData.find(a => a.area === d)?.total_cards || 0), 0);
+  }, [areasData, f.disciplinas]);
+
   const totalCountCalc = useMemo(() => {
     if (!areasData) return 0;
+    // Se o usuário selecionou assuntos específicos, a contagem TOTAL deve ser a soma dos assuntos selecionados
+    if (f.assuntos.length > 0) {
+      return f.assuntos.reduce((acc, assunto) => {
+        const clean = formatarTemaTitulo(assunto);
+        return acc + (assuntosDisponiveisMap.get(clean) || 0);
+      }, 0);
+    }
+    // Caso contrário, soma todas as disciplinas selecionadas
     if (f.disciplinas.length > 0) {
-      return f.disciplinas.reduce((acc, d) => acc + (areasData.find(a => a.area === d)?.total_cards || 0), 0);
+      return totalDisciplinaCards;
     }
     return 0;
-  }, [f.disciplinas, areasData]);
+  }, [f.disciplinas, f.assuntos, areasData, assuntosDisponiveisMap, totalDisciplinaCards]);
 
   const limpar = () => setF({ ...FILTRO_FLASHCARDS_VAZIO });
 
@@ -468,7 +508,13 @@ const FlashcardsFiltroSheet = ({
               />
               <StepRow
                 step={2} label="Assuntos"
-                hint={f.assuntos.length ? `${f.assuntos.length} selecionado(s)` : (carregandoAssuntos ? 'Carregando temas...' : 'Todos os assuntos')}
+                hint={
+                  f.assuntos.length === 1
+                    ? formatarTemaTitulo(f.assuntos[0])
+                    : f.assuntos.length > 1
+                      ? `${f.assuntos.length} selecionados`
+                      : (carregandoAssuntos ? 'Carregando temas...' : 'Todos os assuntos')
+                }
                 locked={!f.disciplinas.length} active={proximo === 'assuntos'} done={!!f.assuntos.length}
                 badge={f.assuntos.length || undefined}
                 lockedMessage="Escolha a disciplina primeiro."
@@ -518,11 +564,28 @@ const FlashcardsFiltroSheet = ({
               {passo === 'assuntos' && (
                 <SelecaoSheet
                   key="ass" titulo="Assuntos" buscavel
+                  loading={carregandoAssuntos}
+                  totalCount={totalDisciplinaCards}
                   opcoes={assuntosDisponiveis}
-                  selecionado={f.assuntos}
+                  selecionado={f.assuntos.map(formatarTemaTitulo)}
                   onFechar={() => setPasso(null)}
                   onConfirmar={(v) => {
-                    setF((p) => ({ ...p, assuntos: v }));
+                    setF((p) => ({ ...p, assuntos: v.map(formatarTemaTitulo) }));
+                  }}
+                  renderOpcao={(o) => {
+                    const count = assuntosDisponiveisMap.get(o);
+                    return (
+                      <div className="flex items-center justify-between w-full pr-2">
+                        <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white line-clamp-1">
+                          {o}
+                        </span>
+                        {count !== undefined && count > 0 && (
+                          <span className="text-[12px] font-medium text-zinc-400 bg-zinc-800/90 border border-zinc-700/60 px-2.5 py-0.5 rounded-full whitespace-nowrap ml-2 shrink-0">
+                            {count} {count === 1 ? 'card' : 'cards'}
+                          </span>
+                        )}
+                      </div>
+                    );
                   }}
                 />
               )}

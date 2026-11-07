@@ -40,10 +40,11 @@ function toSentence(s: string): string {
 }
 
 function formatTemaBreadcrumb(raw: string): string[] {
-  const dashIdx = raw.search(/\s[-–]\s/);
-  if (dashIdx === -1) return [toSentence(raw)];
-  const leiName = raw.slice(0, dashIdx).trim();
-  let remaining = raw.slice(dashIdx).replace(/^\s*[-–]\s*/, '').trim();
+  const cleanRaw = raw.replace(/^\d+[\.\-\s]+/, '').trim();
+  const dashIdx = cleanRaw.search(/\s[-–]\s/);
+  if (dashIdx === -1) return [toSentence(cleanRaw)];
+  const leiName = cleanRaw.slice(0, dashIdx).trim();
+  let remaining = cleanRaw.slice(dashIdx).replace(/^\s*[-–]\s*/, '').trim();
   const badges: string[] = [];
   const structRegex = /^(?:PARTE|LIVRO|T[ÍI]TULO|CAP[ÍI]TULO|SE[ÇC][ÃA]O|SUBSE[ÇC][ÃA]O)\s+[\wºª]+(?:-[\wºª]+)?/i;
   
