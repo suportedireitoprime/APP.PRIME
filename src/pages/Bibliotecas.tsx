@@ -1,27 +1,22 @@
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import { lazyWithRetry } from "@/utils/lazyWithRetry";
 import { useIsDesktop } from '@/hooks/use-desktop';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { useBibliotecasData } from '@/components/biblioteca/useBibliotecasData';
 import { BibliotecaMobileContent } from '@/components/biblioteca/BibliotecaMobileContent';
 import { BibliotecaModals } from '@/components/biblioteca/BibliotecaModals';
-import BibliotecaBottomNav from '@/components/biblioteca/BibliotecaBottomNav';
 
 const BibliotecasDesktop = lazyWithRetry(() => import('./BibliotecasDesktop'));
-const ShapeGrid = lazyWithRetry(() => import('@/components/ui/ShapeGrid'));
 
 const Bibliotecas = () => {
   useTrackArea("biblioteca_aberta");
   const isDesktop = useIsDesktop();
-  // Adia o ShapeGrid para não competir com o primeiro paint da tela
-  const [gridReady, setGridReady] = useState(false);
+
   useEffect(() => {
     // Força o topo assim que a página renderizar (evita scroll indesejado herdado)
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    
-    const t = setTimeout(() => setGridReady(true), 300);
-    return () => clearTimeout(t);
   }, []);
+
   const {
     counts,
     materiaAberta,
@@ -43,24 +38,7 @@ const Bibliotecas = () => {
   }
 
   return (
-    <main className="min-h-dvh bg-zinc-950 pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative overflow-x-hidden">
-      {/* Fundo ShapeGrid fixo em toda a viewport para cobrir 100% da tela sem cortes */}
-      {gridReady && (
-        <div className="fixed inset-0 z-0 pointer-events-none">
-          <Suspense fallback={null}>
-            <ShapeGrid
-              speed={0.5}
-              squareSize={40}
-              direction="diagonal"
-              borderColor="rgba(255, 255, 255, 0.05)"
-              hoverFillColor="rgba(255, 255, 255, 0.1)"
-              shape="square"
-              hoverTrailAmount={5}
-            />
-          </Suspense>
-        </div>
-      )}
-
+    <main className="min-h-dvh bg-[#18181B] text-white pb-[calc(2.5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] relative overflow-x-hidden">
       <div className="relative z-10">
         <BibliotecaMobileContent
           counts={counts}
@@ -69,6 +47,7 @@ const Bibliotecas = () => {
             setCustomPdfTitle(titulo);
             setCustomPdfUrl(url);
           }}
+          onAbrirMateria={(m) => setMateriaAberta(m)}
         />
 
         <BibliotecaModals
@@ -84,7 +63,6 @@ const Bibliotecas = () => {
             setCustomPdfTitle('');
           }}
         />
-        <BibliotecaBottomNav />
       </div>
     </main>
   );

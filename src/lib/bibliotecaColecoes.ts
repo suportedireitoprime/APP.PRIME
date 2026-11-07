@@ -305,20 +305,29 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
   let downloadEscura: string | null = null;
   let versoesPdf: { clara?: string | null; escura?: string | null } | null = null;
 
-  if (typeof cur === 'object' && cur !== null) {
-    if (cur.download_escura) downloadEscura = cur.download_escura;
-    if (cur.versoes_pdf) versoesPdf = cur.versoes_pdf;
+  const curObj = typeof cur === 'object' && cur !== null
+    ? cur
+    : typeof cur === 'string' && cur.trim()
+    ? (() => { try { return JSON.parse(cur); } catch { return null; } })()
+    : null;
+
+  if (curObj && typeof curObj === 'object') {
+    if (curObj.download_escura) downloadEscura = curObj.download_escura;
+    if (curObj.versoes_pdf) versoesPdf = curObj.versoes_pdf;
   }
 
-  // Tratamento especial para Dos Delitos e das Penas (Cesare Beccaria)
+  // Tratamento especial para Dos Delitos e das Penas (Cesare Beccaria) ou obras já com versões no R2
   const isDelitos = String(titulo).toLowerCase().includes('delitos e das penas') || String(row.id) === '123';
   let downloadUrl = row[colecao.downloadField] ?? null;
-  if (isDelitos) {
+  if (isDelitos && (!versoesPdf || !versoesPdf.clara)) {
     const urlClara = 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/dos-delitos-e-das-penas/dos-delitos-e-das-penas-versao-clara.pdf';
     const urlEscura = 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/dos-delitos-e-das-penas/dos-delitos-e-das-penas-versao-escura.pdf';
     downloadUrl = urlClara;
     downloadEscura = urlEscura;
     versoesPdf = { clara: urlClara, escura: urlEscura };
+  } else if (versoesPdf) {
+    if (versoesPdf.clara && !downloadUrl) downloadUrl = versoesPdf.clara;
+    if (versoesPdf.escura && !downloadEscura) downloadEscura = versoesPdf.escura;
   }
 
   return {

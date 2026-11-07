@@ -41,15 +41,65 @@ export function planValue(plano?: string | null): number {
   return PLAN_VALUE[plano] ?? 0;
 }
 
-export async function logDb(event_name: string, metadata: Record<string, unknown> = {}) {
+let dbEventQueue: Array<{
+  event_name: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}> = [];
+let dbFlushTimeout: any = null;
+let isDbPermissionDenied = false;
+
+async function flushDbEvents() {
+  if (dbEventQueue.length === 0 || isDbPermissionDenied) return;
+  const batch = [...dbEventQueue];
+  dbEventQueue = [];
   try {
     const { data: { user } } = await supabase.auth.getUser();
-    await supabase.from("app_events" as any).insert({
+    if (!user) {
+      // Usuário anônimo: RLS bloqueia insert para anon (42501). Evita sobrecarga de erros no Postgres.
+      return;
+    }
+    const payload = batch.map(ev => ({
+      event_name: ev.event_name,
+      user_id: user.id,
+      email: user.email ?? null,
+      metadata: ev.metadata,
+      created_at: ev.created_at,
+    }));
+    const { error } = await supabase.from("app_events" as any).insert(payload);
+    if (error && (error.code === '42501' || error.message?.includes('permission denied'))) {
+      isDbPermissionDenied = true;
+    }
+  } catch {
+    /* silencioso: telemetria não deve quebrar UX */
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", () => {
+    void flushDbEvents();
+  });
+}
+
+export async function logDb(event_name: string, metadata: Record<string, unknown> = {}) {
+  try {
+    if (isDbPermissionDenied) return;
+    dbEventQueue.push({
       event_name,
-      user_id: user?.id ?? null,
-      email: user?.email ?? null,
       metadata,
+      created_at: new Date().toISOString(),
     });
+    // Agrupa requisições: se acumular 5 eventos, envia de imediato; senão aguarda 8s
+    if (dbEventQueue.length >= 5) {
+      if (dbFlushTimeout) clearTimeout(dbFlushTimeout);
+      dbFlushTimeout = null;
+      void flushDbEvents();
+    } else if (!dbFlushTimeout) {
+      dbFlushTimeout = setTimeout(() => {
+        dbFlushTimeout = null;
+        void flushDbEvents();
+      }, 8000);
+    }
   } catch {
     /* silencioso: telemetria não deve quebrar UX */
   }

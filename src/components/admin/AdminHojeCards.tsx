@@ -1128,7 +1128,7 @@ export function AdminHojeCards() {
           { data: profs }
         ] = await Promise.all([
           supabase.rpc('admin_user_auth_providers' as any, { _ids: ids }),
-          supabase.from('activity_logs').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
+          supabase.from('user_activity_log').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
           id === 'paywall'
             ? supabase.from('app_events').select('user_id, created_at').in('event_name', ['assinatura_aberta', 'paywall_view']).in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString())
             : Promise.resolve({ data: [] }),

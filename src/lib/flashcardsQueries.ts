@@ -56,7 +56,12 @@ export const useFlashcardsResumoAreas = () => {
           const hasTermos = result.find(r => r.area === 'Termos Jurídicos');
           if (!hasTermos) {
             try {
-              const { count } = await supabase.from('flashcards_cards').select('*', { count: 'exact', head: true }).eq('area', 'Termos Jurídicos');
+              const { data: areaRow } = await supabase
+                .from('flashcards_areas')
+                .select('total_cards')
+                .eq('area', 'Termos Jurídicos')
+                .maybeSingle();
+              const count = areaRow?.total_cards;
               if (count && count > 0) {
                 result.push({
                   area: 'Termos Jurídicos',

@@ -34,14 +34,14 @@ export function scheduleBackgroundImageWarmup(): void {
       try {
         // 2. Busca URLs de capas de obras mais recentes ou em destaque
         const { data: livros } = await supabase
-          .from('livros')
-          .select('capa')
-          .not('capa', 'is', null)
+          .from('biblioteca_estudos')
+          .select('capa_livro')
+          .not('capa_livro', 'is', null)
           .limit(12);
 
         if (livros && livros.length > 0) {
           const urls = livros
-            .map((l: { capa: string | null }) => l.capa)
+            .map((l: { capa_livro: string | null }) => l.capa_livro)
             .filter((url: string | null): url is string => Boolean(url && url.startsWith('http')));
 
           if (urls.length > 0) {

@@ -11,11 +11,15 @@ const SHORTCUT_ITEMS = [
   { label: 'Meus PDFs',   icon: HardDrive,  action: () => abrirAtalhoBiblioteca('personalizado'), color: '#A855F7' },
 ];
 
-const BibliotecaActionShortcuts = () => {
+interface BibliotecaActionShortcutsProps {
+  className?: string;
+}
+
+const BibliotecaActionShortcuts = ({ className = '' }: BibliotecaActionShortcutsProps) => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-between gap-2 mx-1 mt-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-2 shadow-2xl">
+    <div className={`flex items-center justify-between gap-1 sm:gap-2 bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl sm:rounded-3xl p-1.5 sm:p-2 shadow-2xl ${className}`}>
       {SHORTCUT_ITEMS.map((item, index) => {
         const Icon = item.icon;
         return (
