@@ -411,13 +411,8 @@ const Flashcards = () => {
         onAplicar={(f) => {
           setFiltroAberto(false);
           const p = new URLSearchParams();
-          if (f.objetivo === 'termos_juridicos') {
-            p.set('areas', 'Termos Jurídicos');
-            if (f.indice && f.indice.length && f.indice.length < 26) p.set('temas', f.indice.join('|'));
-          } else {
-            if (f.disciplinas && f.disciplinas.length) p.set('areas', f.disciplinas.join('|'));
-            if (f.assuntos && f.assuntos.length) p.set('temas', f.assuntos.join('|'));
-          }
+          if (f.disciplinas && f.disciplinas.length) p.set('areas', f.disciplinas.join('|'));
+          if (f.assuntos && f.assuntos.length) p.set('temas', f.assuntos.join('|'));
           if (f.status && f.status.length) p.set('modo', f.status[0]);
           if (f.quantidade) p.set('limite', String(f.quantidade));
           
