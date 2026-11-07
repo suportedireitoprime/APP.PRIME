@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
     
     const body = await req.json();
     const endpoint = body.endpoint || 'subscriptions';
-    const params = new URLSearchParams(body.params || {}).toString();
+    const params = body.params ? new URLSearchParams(body.params).toString() : '';
 
     const asaasKey = Deno.env.get('ASAAS_API_KEY') || Deno.env.get('ASAAS_WEBHOOK_TOKEN');
     const baseUrl = Deno.env.get('ASAAS_API_URL') || 'https://api.asaas.com/v3';
@@ -35,12 +35,15 @@ Deno.serve(async (req) => {
       throw new Error('ASAAS_API_KEY not configured in Edge Functions');
     }
 
-    const url = `${baseUrl}/${endpoint}?${params}`;
+    const url = params ? `${baseUrl}/${endpoint}?${params}` : `${baseUrl}/${endpoint}`;
+    const method = (body.method || 'GET').toUpperCase();
     const asaasRes = await fetch(url, {
-      method: 'GET',
+      method,
       headers: {
         'access_token': asaasKey,
-      }
+        ...(body.data ? { 'Content-Type': 'application/json' } : {})
+      },
+      body: body.data ? JSON.stringify(body.data) : undefined,
     });
 
     const json = await asaasRes.json();
