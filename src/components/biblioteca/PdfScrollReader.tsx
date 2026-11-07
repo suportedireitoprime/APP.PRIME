@@ -78,7 +78,8 @@ const PdfScrollReader = ({
   const [zoom, setZoom] = useState(1);
   const isNative = Capacitor.isNativePlatform();
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
-  const [dualPage, setDualPage] = useState<boolean>(() => isDesktop);
+  // Começar em largura total sem margens de padrão
+  const [dualPage, setDualPage] = useState<boolean>(false);
   const isDarkPdf = url.includes('escura') || url.includes('dark');
 
   useEffect(() => {
@@ -201,9 +202,10 @@ const PdfScrollReader = ({
       pagesRef.current.set(idx, page);
       
       const containerWidth = containerRef.current?.clientWidth || window.innerWidth;
+      // Largura total sem margens de padrão
       const targetWidth = dualPage
-        ? Math.min((containerWidth - 60) / 2, 600)
-        : Math.min(containerWidth - 24, 900);
+        ? containerWidth / 2
+        : containerWidth;
       const viewport = page.getViewport({ scale: 1 });
       
       // Multiplicador de alta definição (Retina / Ultra HD)
@@ -219,7 +221,7 @@ const PdfScrollReader = ({
       const canvas = document.createElement('canvas');
       canvas.width = Math.floor(finalVp.width);
       canvas.height = Math.floor(finalVp.height);
-      canvas.style.width = `${displayWidth}px`;
+      canvas.style.width = '100%';
       canvas.style.height = `${displayHeight}px`;
       canvas.style.display = 'block';
       canvas.style.margin = '0 auto';
@@ -269,7 +271,8 @@ const PdfScrollReader = ({
     scrollToPage(Math.min(totalPages, currentPage + step));
   };
 
-  // ---- Zoom em pinça (dois dedos) + botões ----
+  // ---- Zoom em pinça (dois dedos) + botões (Passos de 5%) ----
+  const ZOOM_STEP = 0.05;
   const pinchRef = useRef<{ dist: number; zoom: number } | null>(null);
 
   const dist2 = (t: TouchList) =>
@@ -284,8 +287,10 @@ const PdfScrollReader = ({
   const onTouchMove = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 2 && pinchRef.current) {
       const d = dist2(e.touches as any);
-      const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, (pinchRef.current.zoom * d) / pinchRef.current.dist));
-      setZoom(Number(next.toFixed(3)));
+      const raw = (pinchRef.current.zoom * d) / pinchRef.current.dist;
+      const stepped = Math.round(raw / ZOOM_STEP) * ZOOM_STEP;
+      const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, stepped));
+      setZoom(Number(next.toFixed(2)));
     }
   }, []);
 
@@ -294,7 +299,11 @@ const PdfScrollReader = ({
   }, []);
 
   const ajustarZoom = (delta: number) =>
-    setZoom((z) => Number(Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z + delta)).toFixed(3)));
+    setZoom((z) => {
+      const next = Math.round((z + delta) / ZOOM_STEP) * ZOOM_STEP;
+      const clamped = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, next));
+      return Number(clamped.toFixed(2));
+    });
 
   const toggleBookmark = () => {
     if (bookmark === currentPage) {
@@ -447,7 +456,7 @@ const PdfScrollReader = ({
           )}
           {!loading && !error && !dualPage && (
             <div
-              className="py-4 pb-44 space-y-3"
+              className="pb-44 space-y-2 w-full"
               style={{
                 transform: `scale(${zoom})`,
                 transformOrigin: 'top center',
@@ -460,10 +469,9 @@ const PdfScrollReader = ({
                 <div
                   key={i}
                   data-page={i + 1}
-                  className={`mx-auto rounded shadow-lg min-h-[400px] flex items-center justify-center overflow-hidden transition-colors ${
+                  className={`w-full min-h-[400px] flex items-center justify-center overflow-hidden transition-colors ${
                     isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
                   }`}
-                  style={{ maxWidth: 900 }}
                 >
                   <div className="text-xs py-8">Página {i + 1}</div>
                 </div>
@@ -472,7 +480,7 @@ const PdfScrollReader = ({
           )}
           {!loading && !error && dualPage && (
             <div
-              className="py-6 pb-44 px-4 flex flex-wrap items-start justify-center gap-6"
+              className="pb-44 flex flex-wrap items-start justify-center gap-2 w-full"
               style={{
                 transform: `scale(${zoom})`,
                 transformOrigin: 'top center',
@@ -487,24 +495,22 @@ const PdfScrollReader = ({
                 return (
                   <div
                     key={`spread-${spreadIdx}`}
-                    className="w-full flex flex-col md:flex-row items-center justify-center gap-4 border-b border-white/5 pb-8 mb-4"
+                    className="w-full flex flex-col md:flex-row items-center justify-center gap-2 border-b border-white/5 pb-4 mb-2"
                   >
                     <div
                       data-page={p1}
-                      className={`rounded-lg shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
+                      className={`w-full md:w-1/2 shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
                         isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
                       }`}
-                      style={{ maxWidth: 600, width: '100%' }}
                     >
                       <div className="text-xs py-8">Página {p1}</div>
                     </div>
                     {p2 <= totalPages && (
                       <div
                         data-page={p2}
-                        className={`rounded-lg shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
+                        className={`w-full md:w-1/2 shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
                           isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
                         }`}
-                        style={{ maxWidth: 600, width: '100%' }}
                       >
                         <div className="text-xs py-8">Página {p2}</div>
                       </div>
@@ -534,28 +540,28 @@ const PdfScrollReader = ({
           </>
         )}
 
-        {/* Controles de zoom */}
+        {/* Controles de zoom (passos de 5%) */}
         {!loading && !error && (
           <div className="absolute right-3 bottom-48 z-[4] flex flex-col gap-2">
             <button
-              onClick={() => ajustarZoom(0.25)}
-              aria-label="Aumentar zoom"
-              className="w-11 h-11 rounded-full bg-neutral-950/85 border border-white/10 text-white flex items-center justify-center backdrop-blur shadow-lg"
+              onClick={() => ajustarZoom(0.05)}
+              aria-label="Aumentar zoom (+5%)"
+              className="w-11 h-11 rounded-full bg-neutral-950/85 border border-white/10 text-white flex items-center justify-center backdrop-blur shadow-lg active:scale-90 transition cursor-pointer"
             >
               <ZoomIn className="w-[18px] h-[18px]" />
             </button>
             <button
-              onClick={() => ajustarZoom(-0.25)}
-              aria-label="Diminuir zoom"
+              onClick={() => ajustarZoom(-0.05)}
+              aria-label="Diminuir zoom (-5%)"
               disabled={zoom <= MIN_ZOOM}
-              className="w-11 h-11 rounded-full bg-neutral-950/85 border border-white/10 text-white flex items-center justify-center backdrop-blur shadow-lg disabled:opacity-30"
+              className="w-11 h-11 rounded-full bg-neutral-950/85 border border-white/10 text-white flex items-center justify-center backdrop-blur shadow-lg disabled:opacity-30 active:scale-90 transition cursor-pointer"
             >
               <ZoomOut className="w-[18px] h-[18px]" />
             </button>
             {zoom > 1 && (
               <button
                 onClick={() => setZoom(1)}
-                className="px-2 py-1 rounded-full bg-neutral-950/85 border border-white/10 text-white text-[10px] tabular-nums backdrop-blur"
+                className="px-2 py-1 rounded-full bg-neutral-950/85 border border-white/10 text-white text-[10px] font-bold tabular-nums backdrop-blur shadow active:scale-95 transition cursor-pointer"
               >
                 {Math.round(zoom * 100)}%
               </button>

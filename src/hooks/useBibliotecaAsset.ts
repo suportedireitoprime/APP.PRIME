@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { getLocalCoverUrl } from '@/services/bibliotecaCapasPrefetch';
 import { directImg } from '@/lib/cdnImg';
+import { assetUrl } from '@/lib/assetUrl';
 import { getImageOfflineUrl, fetchAndCacheImageOffline } from '@/services/imageOfflineStore';
 
 // Cache in-memory do manifest de capas nativas exportadas
@@ -10,6 +11,10 @@ let manifestPromise: Promise<void> | null = null;
 
 export async function getOfflineCover(remoteUrl: string): Promise<string | null> {
   if (!remoteUrl) return null;
+  const localAsset = assetUrl(remoteUrl);
+  if (localAsset && !/^https?:\/\//i.test(localAsset)) {
+    return localAsset;
+  }
   if (!offlineCoversManifest) {
     if (!manifestPromise) {
       manifestPromise = fetch('/offline-covers/manifest.json')
@@ -33,13 +38,22 @@ export const resolvedCoversCache = new Map<string, string>();
  * Utiliza arquitetura em 5 camadas com renderização imediata (0ms) e persistência offline.
  */
 export function useBibliotecaCapa(remoteUrl: string | null | undefined, width = 300): string {
-  const cdn = remoteUrl ? directImg(remoteUrl, width) : '';
-  const cached = remoteUrl ? resolvedCoversCache.get(remoteUrl) || null : null;
-  const [local, setLocal] = useState<string | null>(cached);
+  const bundledAsset = remoteUrl ? assetUrl(remoteUrl) : '';
+  const isLocalBundle = Boolean(bundledAsset && !/^https?:\/\//i.test(bundledAsset));
+
+  const cdn = isLocalBundle ? bundledAsset : (remoteUrl ? directImg(remoteUrl, width) : '');
+  const cached = remoteUrl ? resolvedCoversCache.get(remoteUrl) || (isLocalBundle ? bundledAsset : null) : null;
+  const [local, setLocal] = useState<string | null>(cached || (isLocalBundle ? bundledAsset : null));
 
   useEffect(() => {
     let cancelled = false;
     if (!remoteUrl) { setLocal(null); return; }
+    
+    if (isLocalBundle) {
+      resolvedCoversCache.set(remoteUrl, bundledAsset);
+      setLocal(bundledAsset);
+      return;
+    }
     
     // Se já estiver no cache síncrono em memória, não precisa buscar novamente
     if (resolvedCoversCache.has(remoteUrl)) {

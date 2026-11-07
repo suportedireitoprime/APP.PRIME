@@ -85,7 +85,7 @@ const PdfPaginatedReader = ({
     return v ? Number(v) : null;
   });
   
-  const [dualPage, setDualPage] = useState<boolean>(true);
+  const [dualPage, setDualPage] = useState<boolean>(false);
   const [renderedPages, setRenderedPages] = useState<number[]>([]);
   const isDarkPdf = url.includes('escura') || url.includes('dark');
 
@@ -333,8 +333,8 @@ const PdfPaginatedReader = ({
           </div>
         ) : (
           <div className="flex-1 flex flex-col h-full w-full">
-            <div className="flex-1 flex items-center justify-center p-4 lg:p-8 min-h-0 w-full overflow-hidden">
-              <div className="relative flex items-center justify-center max-w-[1400px] w-full h-full gap-4">
+            <div className="flex-1 flex items-center justify-center p-0 min-h-0 w-full overflow-hidden">
+              <div className="relative flex items-center justify-center w-full h-full">
                 <button 
                   onClick={goPrev} 
                   disabled={currentPage <= 1}
@@ -439,12 +439,12 @@ const PdfPage = ({
         const page = await pdf.getPage(pageNumber);
         if (cancelled) return;
 
-        const containerHeight = containerRef.current.clientHeight - 60;
-        const containerWidth = containerRef.current.clientWidth - 100;
+        const containerHeight = containerRef.current.clientHeight;
+        const containerWidth = containerRef.current.clientWidth;
         
         const unscaledViewport = page.getViewport({ scale: 1 });
         
-        const maxPageWidth = isDual ? (containerWidth / 2) - 16 : containerWidth;
+        const maxPageWidth = isDual ? (containerWidth / 2) : containerWidth;
         const scaleHeight = containerHeight / unscaledViewport.height;
         const scaleWidth = maxPageWidth / unscaledViewport.width;
         

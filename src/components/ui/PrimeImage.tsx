@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
 import { directImg, generateResponsiveSrcSet, safeStorageUrl, convertGoogleDriveUrl } from '@/lib/cdnImg';
+import { assetUrl } from '@/lib/assetUrl';
 import fallbackCover from '@/assets/covers/fundamentos-da-lei.webp';
 import { BookOpen, Maximize2 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
@@ -214,13 +215,17 @@ export function PrimeImageBase({
     // @ts-expect-error NetworkInformation API experimental
     Boolean(navigator.connection?.saveData === true);
   const effectiveTargetWidth = isSaveData ? Math.min(targetWidth, 200) : targetWidth;
-  const optimizedSrc = cleanSrc ? directImg(cleanSrc, effectiveTargetWidth, quality) : null;
+  const bundledAsset = cleanSrc ? assetUrl(cleanSrc) : null;
+  const isLocalBundle = Boolean(bundledAsset && !/^https?:\/\//i.test(bundledAsset));
+  const optimizedSrc = isLocalBundle
+    ? bundledAsset
+    : (cleanSrc ? directImg(cleanSrc, effectiveTargetWidth, quality) : null);
 
   let activeSrc: string | null = null;
   if (attemptLevel === 'optimized') {
     activeSrc = optimizedSrc || cleanSrc || fallbackSrc || null;
   } else if (attemptLevel === 'raw') {
-    activeSrc = cleanSrc || fallbackSrc || null;
+    activeSrc = isLocalBundle ? bundledAsset : (cleanSrc || fallbackSrc || null);
   } else if (attemptLevel === 'offline') {
     activeSrc = offlineCandidateSrc || fallbackSrc || null;
   } else {
@@ -412,7 +417,6 @@ export function PrimeImageBase({
             !isLoaded && !hasFailed ? "opacity-0 will-change-opacity" : "opacity-100 will-change-auto",
             className
           )}
-          crossOrigin="anonymous"
           {...rest}
         />
       ) : (

@@ -143,7 +143,7 @@ fun BibliotecaScreen(
         livros = fallbackLivros
         coroutineScope.launch(Dispatchers.IO) {
             try {
-                val url = URL("https://dnjrgpldcwcpoywamorr.supabase.co/rest/v1/biblioteca_classicos?select=id,livro,autor,sobre,download&limit=40")
+                val url = URL("https://dnjrgpldcwcpoywamorr.supabase.co/rest/v1/biblioteca_classicos?select=id,livro,autor,sobre,download,imagem&limit=40")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
                 connection.setRequestProperty("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuanJncGxkY3djcG95d2Ftb3JyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODYxMzMsImV4cCI6MjA5ODI2MjEzM30.GuZuUn1ITbjsTYi_SjL-eFSCxdxxs3rUASArbMf62O0")
@@ -163,6 +163,7 @@ fun BibliotecaScreen(
                                 id = obj.optString("id", "cl-$i"),
                                 titulo = obj.optString("livro", "Sem título"),
                                 autor = obj.optString("autor", "Autor Clássico"),
+                                capa = obj.optString("imagem", ""),
                                 sobre = obj.optString("sobre", ""),
                                 colecao = "classicos",
                                 area = "Clássicos do Direito",
@@ -404,25 +405,35 @@ fun NativeLivroCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Mini Capa / Ícone Estilizado
-            Box(
-                modifier = Modifier
-                    .size(width = 54.dp, height = 74.dp)
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color(0xFF333338), Color(0xFF1E1E22))
-                        )
-                    )
-                    .border(1.dp, Color(0xFF3E3E44), RoundedCornerShape(8.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Book,
-                    contentDescription = null,
-                    tint = Color(0xFFF59E0B),
-                    modifier = Modifier.size(24.dp)
+            // Mini Capa / Imagem da Obra
+            if (livro.capa.isNotBlank()) {
+                NetworkImage(
+                    url = livro.capa,
+                    modifier = Modifier
+                        .size(width = 54.dp, height = 74.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .border(1.dp, Color(0xFF3E3E44), RoundedCornerShape(8.dp))
                 )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(width = 54.dp, height = 74.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(Color(0xFF333338), Color(0xFF1E1E22))
+                            )
+                        )
+                        .border(1.dp, Color(0xFF3E3E44), RoundedCornerShape(8.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Book,
+                        contentDescription = null,
+                        tint = Color(0xFFF59E0B),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
 
             // Informações
@@ -529,9 +540,20 @@ fun NativeLivroDetailSheet(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
                     verticalAlignment = Alignment.Top
                 ) {
+                    if (livro.capa.isNotBlank()) {
+                        NetworkImage(
+                            url = livro.capa,
+                            modifier = Modifier
+                                .width(68.dp)
+                                .height(96.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .border(1.dp, Color(0xFF3E3E44), RoundedCornerShape(8.dp))
+                        )
+                    }
+
                     Column(modifier = Modifier.weight(1f)) {
                         if (livro.area.isNotEmpty()) {
                             Text(

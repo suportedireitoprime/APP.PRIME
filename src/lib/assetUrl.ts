@@ -48,19 +48,28 @@ type AssetJson = { url?: string; original_filename?: string };
 function resolveBundled(nameOrUrl: string | undefined | null): string | undefined {
   if (!nameOrUrl) return undefined;
   const normalized = nameOrUrl.replace(/\\/g, '/');
-  const name = normalized.split('/').pop();
-  return name ? bundledMap[name] : undefined;
+  const name = normalized.split('/').pop()?.split('?')[0]?.split('#')[0];
+  if (name && bundledMap[name]) return bundledMap[name];
+  if (normalized.includes('biblioteca-obras/capas/')) {
+    const filename = normalized.split('biblioteca-obras/capas/')[1]?.split('?')[0]?.split('#')[0];
+    if (filename) {
+      if (bundledMap[filename]) return bundledMap[filename];
+      return `/biblioteca-obras/capas/${filename}`;
+    }
+  }
+  return undefined;
 }
 
 export function assetUrl(url: string | undefined | null): string {
   if (!url) return '';
   const normalized = url.replace(/\\/g, '/');
+
+  // Prioriza sempre o binário embutido no bundle (src/assets) se existir pelo nome do arquivo
+  const bundled = resolveBundled(normalized);
+  if (bundled) return bundled;
+
   if (/^https?:\/\//i.test(normalized)) return normalized;
   if (normalized.startsWith('/__l5e/')) {
-    // Sempre priorize o binário embutido — evita depender do CDN e
-    // garante que a imagem apareça offline (native) ou instantaneamente (web).
-    const bundled = resolveBundled(normalized);
-    if (bundled) return bundled;
     return `${CDN_HOST}${normalized}`;
   }
   return normalized;

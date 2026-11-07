@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { useGoBack } from '@/hooks/useGoBack';
 import { haptic } from '@/lib/nativeHaptics';
 import { directImg, prefetchImages } from '@/lib/cdnImg';
+import { assetUrl } from '@/lib/assetUrl';
 import { supabase } from '@/integrations/supabase/client';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
 import { setPersistedColecao, getPersistedColecao } from '@/services/offlineDb';
@@ -569,7 +570,9 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
               <div className="divide-y divide-white/[0.08]">
                 {matchingJuridicoBooks.slice(0, 20).map((livro, idx) => {
                   const isSaved = favoriteIds.has(`${livro.colecaoId}:${livro.id}`);
-                  const coverSrc = livro.capa ? directImg(livro.capa) : bibliotecaCoverImg;
+                  const localCover = livro.capa ? assetUrl(livro.capa) : null;
+                  const isLocal = Boolean(localCover && !/^https?:\/\//i.test(localCover));
+                  const coverSrc = isLocal ? localCover! : (livro.capa ? directImg(livro.capa) : bibliotecaCoverImg);
                   return (
                     <div
                       key={`search-juridico-${livro.id}`}
@@ -641,7 +644,9 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
           ) : (
             visibleLivros.map((livro, idx) => {
               const isSaved = favoriteIds.has(`${livro.colecaoId}:${livro.id}`);
-              const coverSrc = livro.capa ? directImg(livro.capa) : bibliotecaCoverImg;
+              const localCover = livro.capa ? assetUrl(livro.capa) : null;
+              const isLocal = Boolean(localCover && !/^https?:\/\//i.test(localCover));
+              const coverSrc = isLocal ? localCover! : (livro.capa ? directImg(livro.capa) : bibliotecaCoverImg);
 
               return (
                 <div

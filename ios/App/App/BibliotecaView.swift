@@ -9,6 +9,7 @@ struct SwiftLivro: Identifiable, Decodable {
     let area: String?
     let paginas: Int?
     let download: String?
+    let capa: String?
 }
 
 struct BibliotecaView: View {
@@ -249,25 +250,48 @@ struct BibliotecaView: View {
                                     selectedLivro = livro
                                 }) {
                                     HStack(spacing: 12) {
-                                        // Mini Capa / Ícone
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(
-                                                    LinearGradient(
-                                                        colors: [Color(red: 0.2, green: 0.2, blue: 0.22), Color(red: 0.12, green: 0.12, blue: 0.14)],
-                                                        startPoint: .top,
-                                                        endPoint: .bottom
+                                        // Mini Capa / Imagem da Obra
+                                        if let capa = livro.capa, !capa.isEmpty, let capaUrl = URL(string: capa) {
+                                            AsyncImage(url: capaUrl) { phase in
+                                                switch phase {
+                                                case .success(let image):
+                                                    image
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fill)
+                                                default:
+                                                    ZStack {
+                                                        RoundedRectangle(cornerRadius: 8)
+                                                            .fill(LinearGradient(colors: [Color(red: 0.2, green: 0.2, blue: 0.22), Color(red: 0.12, green: 0.12, blue: 0.14)], startPoint: .top, endPoint: .bottom))
+                                                        Image(systemName: "book.fill")
+                                                            .font(.system(size: 22))
+                                                            .foregroundColor(Color(red: 0.96, green: 0.62, blue: 0.04))
+                                                    }
+                                                }
+                                            }
+                                            .frame(width: 54, height: 74)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(red: 0.25, green: 0.25, blue: 0.28), lineWidth: 1))
+                                        } else {
+                                            // Mini Capa / Ícone
+                                            ZStack {
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .fill(
+                                                        LinearGradient(
+                                                            colors: [Color(red: 0.2, green: 0.2, blue: 0.22), Color(red: 0.12, green: 0.12, blue: 0.14)],
+                                                            startPoint: .top,
+                                                            endPoint: .bottom
+                                                        )
                                                     )
-                                                )
-                                                .frame(width: 54, height: 74)
-                                                .overlay(
-                                                    RoundedRectangle(cornerRadius: 8)
-                                                        .stroke(Color(red: 0.25, green: 0.25, blue: 0.28), lineWidth: 1)
-                                                )
+                                                    .frame(width: 54, height: 74)
+                                                    .overlay(
+                                                        RoundedRectangle(cornerRadius: 8)
+                                                            .stroke(Color(red: 0.25, green: 0.25, blue: 0.28), lineWidth: 1)
+                                                    )
 
-                                            Image(systemName: "book.fill")
-                                                .font(.system(size: 22))
-                                                .foregroundColor(Color(red: 0.96, green: 0.62, blue: 0.04))
+                                                Image(systemName: "book.fill")
+                                                    .font(.system(size: 22))
+                                                    .foregroundColor(Color(red: 0.96, green: 0.62, blue: 0.04))
+                                            }
                                         }
 
                                         // Informações
@@ -340,7 +364,7 @@ struct BibliotecaView: View {
     }
 
     private func fetchLivros() {
-        guard let url = URL(string: "https://dnjrgpldcwcpoywamorr.supabase.co/rest/v1/biblioteca_classicos?select=id,livro,autor,sobre,download&limit=40") else { return }
+        guard let url = URL(string: "https://dnjrgpldcwcpoywamorr.supabase.co/rest/v1/biblioteca_classicos?select=id,livro,autor,sobre,download,imagem&limit=40") else { return }
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -364,7 +388,8 @@ struct BibliotecaView: View {
                             colecao: "classicos",
                             area: "Clássicos do Direito",
                             paginas: 250,
-                            download: obj["download"] as? String
+                            download: obj["download"] as? String,
+                            capa: obj["imagem"] as? String
                         )
                     }
 
@@ -401,7 +426,21 @@ struct SwiftLivroDetailSheet: View {
                 }
                 .padding(.top, 12)
 
-                HStack(alignment: .top) {
+                HStack(alignment: .top, spacing: 14) {
+                    if let capa = livro.capa, !capa.isEmpty, let capaUrl = URL(string: capa) {
+                        AsyncImage(url: capaUrl) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().aspectRatio(contentMode: .fill)
+                            default:
+                                Color(red: 0.2, green: 0.2, blue: 0.22)
+                            }
+                        }
+                        .frame(width: 68, height: 96)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color(red: 0.25, green: 0.25, blue: 0.28), lineWidth: 1))
+                    }
+
                     VStack(alignment: .leading, spacing: 4) {
                         if let area = livro.area, !area.isEmpty {
                             Text(area.uppercased())
