@@ -79,6 +79,11 @@ const PdfScrollReader = ({
   const isNative = Capacitor.isNativePlatform();
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
   const [dualPage, setDualPage] = useState<boolean>(() => isDesktop);
+  const isDarkPdf = url.includes('escura') || url.includes('dark');
+
+  useEffect(() => {
+    renderedRef.current.clear();
+  }, [dualPage]);
 
   const {
     showBusca,
@@ -137,7 +142,7 @@ const PdfScrollReader = ({
                 }
 
                 el.style.minHeight = `${el.clientHeight}px`;
-                el.innerHTML = `<div class="text-neutral-400 text-xs py-8 w-full h-full flex items-center justify-center">Página ${idx}</div>`;
+                el.innerHTML = `<div class="${isDarkPdf ? 'text-neutral-500' : 'text-neutral-400'} text-xs py-8 w-full h-full flex items-center justify-center">Página ${idx}</div>`;
                 renderedRef.current.delete(idx);
 
                 // Libera a memória interna que o PDF.js alocou para as estruturas dessa página
@@ -200,20 +205,30 @@ const PdfScrollReader = ({
         ? Math.min((containerWidth - 60) / 2, 600)
         : Math.min(containerWidth - 24, 900);
       const viewport = page.getViewport({ scale: 1 });
-      const scale = (targetWidth / viewport.width) * (window.devicePixelRatio || 1);
-      const finalVp = page.getViewport({ scale });
+      
+      // Multiplicador de alta definição (Retina / Ultra HD)
+      // Mínimo 2.25x e até 3.0x para nitidez cristalina absoluta de fontes e vetores
+      const dpr = Math.min(Math.max((window.devicePixelRatio || 1) * 1.5, 2.25), 3.0);
+      const baseScale = targetWidth / viewport.width;
+      const renderScale = baseScale * dpr;
+      const finalVp = page.getViewport({ scale: renderScale });
+
+      const displayWidth = Math.round(targetWidth);
+      const displayHeight = Math.round(viewport.height * baseScale);
 
       const canvas = document.createElement('canvas');
-      canvas.width = finalVp.width;
-      canvas.height = finalVp.height;
-      canvas.style.width = `${targetWidth}px`;
-      canvas.style.height = 'auto';
+      canvas.width = Math.floor(finalVp.width);
+      canvas.height = Math.floor(finalVp.height);
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.height = `${displayHeight}px`;
       canvas.style.display = 'block';
       canvas.style.margin = '0 auto';
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
       
-      const renderTask = page.render({ canvasContext: ctx, viewport: finalVp, canvas } as any);
+      const renderTask = page.render({ canvasContext: ctx, viewport: finalVp, canvas, intent: 'display' } as any);
       renderTasksRef.current.set(idx, renderTask);
       
       try {
@@ -229,6 +244,7 @@ const PdfScrollReader = ({
 
       host.innerHTML = '';
       host.appendChild(canvas);
+      host.style.minHeight = `${displayHeight}px`;
     } catch (e) {
       console.error('[PdfScrollReader] render page', idx, e);
       renderedRef.current.delete(idx);
@@ -444,10 +460,12 @@ const PdfScrollReader = ({
                 <div
                   key={i}
                   data-page={i + 1}
-                  className="mx-auto bg-white rounded shadow-lg min-h-[400px] flex items-center justify-center overflow-hidden"
+                  className={`mx-auto rounded shadow-lg min-h-[400px] flex items-center justify-center overflow-hidden transition-colors ${
+                    isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
+                  }`}
                   style={{ maxWidth: 900 }}
                 >
-                  <div className="text-neutral-400 text-xs py-8">Página {i + 1}</div>
+                  <div className="text-xs py-8">Página {i + 1}</div>
                 </div>
               ))}
             </div>
@@ -473,18 +491,22 @@ const PdfScrollReader = ({
                   >
                     <div
                       data-page={p1}
-                      className="bg-white rounded-lg shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden"
+                      className={`rounded-lg shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
+                        isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
+                      }`}
                       style={{ maxWidth: 600, width: '100%' }}
                     >
-                      <div className="text-neutral-400 text-xs py-8">Página {p1}</div>
+                      <div className="text-xs py-8">Página {p1}</div>
                     </div>
                     {p2 <= totalPages && (
                       <div
                         data-page={p2}
-                        className="bg-white rounded-lg shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden"
+                        className={`rounded-lg shadow-2xl min-h-[450px] flex items-center justify-center overflow-hidden transition-colors ${
+                          isDarkPdf ? 'bg-[#18181b] text-neutral-500' : 'bg-white text-neutral-400'
+                        }`}
                         style={{ maxWidth: 600, width: '100%' }}
                       >
-                        <div className="text-neutral-400 text-xs py-8">Página {p2}</div>
+                        <div className="text-xs py-8">Página {p2}</div>
                       </div>
                     )}
                   </div>

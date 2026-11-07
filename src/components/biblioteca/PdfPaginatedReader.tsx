@@ -87,6 +87,7 @@ const PdfPaginatedReader = ({
   
   const [dualPage, setDualPage] = useState<boolean>(true);
   const [renderedPages, setRenderedPages] = useState<number[]>([]);
+  const isDarkPdf = url.includes('escura') || url.includes('dark');
 
   // Sliding window de pré-renderização para troca instantânea de páginas
   useEffect(() => {
@@ -361,6 +362,7 @@ const PdfPaginatedReader = ({
                             isDual={dualPage} 
                             containerRef={containerRef}
                             renderTasksRef={renderTasksRef}
+                            isDark={isDarkPdf}
                           />
                         </div>
                       );
@@ -413,13 +415,15 @@ const PdfPage = ({
   pageNumber, 
   isDual, 
   containerRef,
-  renderTasksRef
+  renderTasksRef,
+  isDark = false,
 }: { 
   pdf: any, 
   pageNumber: number, 
   isDual: boolean,
   containerRef: React.MutableRefObject<HTMLDivElement | null>,
-  renderTasksRef: React.MutableRefObject<Map<number, any>>
+  renderTasksRef: React.MutableRefObject<Map<number, any>>,
+  isDark?: boolean,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [rendered, setRendered] = useState(false);
@@ -445,20 +449,28 @@ const PdfPage = ({
         const scaleWidth = maxPageWidth / unscaledViewport.width;
         
         const baseScale = Math.min(scaleHeight, scaleWidth);
-        const finalScale = baseScale * (window.devicePixelRatio || 1);
+        // Multiplicador de alta definição (Retina / Ultra HD)
+        // Mínimo 2.25x e até 3.0x para nitidez cristalina absoluta de fontes e vetores
+        const dpr = Math.min(Math.max((window.devicePixelRatio || 1) * 1.5, 2.25), 3.0);
+        const finalScale = baseScale * dpr;
         
         const finalVp = page.getViewport({ scale: finalScale });
         
         const canvas = canvasRef.current;
-        canvas.width = finalVp.width;
-        canvas.height = finalVp.height;
-        canvas.style.width = `${unscaledViewport.width * baseScale}px`;
-        canvas.style.height = `${unscaledViewport.height * baseScale}px`;
+        canvas.width = Math.floor(finalVp.width);
+        canvas.height = Math.floor(finalVp.height);
+
+        const displayWidth = Math.round(unscaledViewport.width * baseScale);
+        const displayHeight = Math.round(unscaledViewport.height * baseScale);
+        canvas.style.width = `${displayWidth}px`;
+        canvas.style.height = `${displayHeight}px`;
         
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         
-        renderTask = page.render({ canvasContext: ctx, viewport: finalVp, canvas } as any);
+        renderTask = page.render({ canvasContext: ctx, viewport: finalVp, canvas, intent: 'display' } as any);
         renderTasksRef.current.set(pageNumber, renderTask);
         
         await renderTask.promise;
@@ -490,10 +502,14 @@ const PdfPage = ({
   }, [pdf, pageNumber, isDual, containerRef]);
 
   return (
-    <div className={`relative bg-white rounded shadow-lg overflow-hidden flex items-center justify-center transition-opacity duration-300 ${rendered ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`relative rounded shadow-lg overflow-hidden flex items-center justify-center transition-opacity duration-300 ${
+      isDark ? 'bg-[#18181b]' : 'bg-white'
+    } ${rendered ? 'opacity-100' : 'opacity-0'}`}>
       <canvas ref={canvasRef} className="block" />
       {!rendered && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/50">
+        <div className={`absolute inset-0 flex items-center justify-center ${
+          isDark ? 'bg-[#18181b]/80' : 'bg-white/50'
+        }`}>
           <Loader2 className="w-6 h-6 animate-spin text-neutral-400" />
         </div>
       )}
