@@ -553,22 +553,22 @@ const Flashcard3D = memo(function Flashcard3D({
                   )}
                 </div>
 
-                {/* Placa Editorial Translúcida: Tema e Assunto (Harmônicos e sem poluição de números) */}
-                <div className="relative z-10 mb-2 rounded-2xl bg-black/40 border border-white/10 px-3.5 py-2 backdrop-blur-md shadow-inner">
-                  <div className="flex items-center gap-1.5 text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-white/75">
-                    <span className="truncate">{cleanTema}</span>
-                    {cleanAssunto && (
-                      <ChevronRight className="h-2.5 w-2.5 shrink-0 text-white/40" />
-                    )}
-                    <span className="text-[9.5px] font-medium tracking-normal text-white/50 lowercase">
-                      {atual.area}
-                    </span>
+                {/* Tema e Assunto: Limpos, sem caixas pesadas, sem área redundante e com tipografia elegante */}
+                <div className="relative z-10 mb-2 space-y-0.5">
+                  {/* Tema Superior */}
+                  <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-white/70 tracking-wide">
+                    <span>{cleanTema}</span>
+                    {cleanAssunto && <ChevronRight className="h-3 w-3 text-white/40 shrink-0" />}
                   </div>
 
+                  {/* Assunto Específico com tipografia moderna, suave e legível (sem Bebas Neue ou uppercase) */}
                   {cleanAssunto && (
-                    <h3 className="text-[12.5px] sm:text-[13.5px] font-bold text-white leading-snug line-clamp-2 mt-0.5 drop-shadow-sm">
+                    <p
+                      className="text-[13.5px] sm:text-[14.5px] font-semibold text-white/95 leading-snug line-clamp-2 drop-shadow-sm"
+                      style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
+                    >
                       {cleanAssunto}
-                    </h3>
+                    </p>
                   )}
                 </div>
                 
@@ -673,7 +673,10 @@ const Flashcard3D = memo(function Flashcard3D({
                         Resposta Explicada
                       </p>
                       {cleanAssunto && (
-                        <p className="text-[11px] font-semibold text-white/70 truncate mt-0.5">
+                        <p
+                          className="text-[11.5px] font-medium text-white/70 truncate mt-0.5"
+                          style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
+                        >
                           {cleanAssunto}
                         </p>
                       )}
