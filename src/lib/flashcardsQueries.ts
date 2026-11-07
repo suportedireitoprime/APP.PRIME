@@ -18,6 +18,8 @@ export type FlashcardCard = {
   reforco_conteudo: string | null;
   artigo_numero: string | null;
   status: string | null;
+  tipo: string | null;
+  resumo_ia?: string | null;
 };
 
 export const useFlashcardsDashboard = () => {
@@ -98,6 +100,7 @@ export const useFlashcardsSessao = (params: {
   modo: string;
   deckId: string | null;
   limit: number;
+  tipos?: string[] | null;
 }, enabled: boolean = true) => {
   return useQuery({
     queryKey: ['flashcards_sessao', params],
@@ -136,7 +139,8 @@ export const useFlashcardsSessao = (params: {
             dica: c.dica || null,
             reforco_conteudo: null,
             artigo_numero: null,
-            status: c.status || null
+            status: c.status || null,
+            tipo: 'Pergunta e Resposta'
           })) as unknown as FlashcardCard[];
         }
       }
@@ -150,9 +154,13 @@ export const useFlashcardsSessao = (params: {
           _modo: params.modo,
           _deck_id: params.deckId,
           _limit: effectiveLimit,
+          _tipos: params.tipos && params.tipos.length > 0 ? params.tipos : null,
         });
         if (error) throw error;
-        const list = (data || []) as unknown as FlashcardCard[];
+        const list = (data || []).map((c: any) => ({
+          ...c,
+          tipo: c.tipo || c.resumo_ia || 'Pergunta e Resposta'
+        })) as unknown as FlashcardCard[];
         if (list.length > 0 && params.areas && params.areas.length > 0) {
           // Persiste cartões baixados por área no IndexedDB para estudo offline
           const byArea = new Map<string, FlashcardCard[]>();
@@ -180,6 +188,9 @@ export const useFlashcardsSessao = (params: {
         }
         if (params.temas && params.temas.length > 0) {
           allCards = allCards.filter(c => params.temas!.includes(c.tema || ''));
+        }
+        if (params.tipos && params.tipos.length > 0) {
+          allCards = allCards.filter(c => params.tipos!.includes(c.tipo || c.resumo_ia || ''));
         }
         return allCards.sort(() => 0.5 - Math.random()).slice(0, effectiveLimit);
       };

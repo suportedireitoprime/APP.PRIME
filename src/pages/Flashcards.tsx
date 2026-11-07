@@ -413,6 +413,7 @@ const Flashcards = () => {
           const p = new URLSearchParams();
           if (f.disciplinas && f.disciplinas.length) p.set('areas', f.disciplinas.join('|'));
           if (f.assuntos && f.assuntos.length) p.set('temas', f.assuntos.join('|'));
+          if (f.tipos && f.tipos.length) p.set('tipos', f.tipos.join('|'));
           if (f.status && f.status.length) p.set('modo', f.status[0]);
           if (f.quantidade) p.set('limite', String(f.quantidade));
           

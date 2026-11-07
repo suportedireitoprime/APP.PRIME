@@ -18,6 +18,7 @@ export type FlashcardsFiltro = {
   indice?: string[];
   disciplinas: string[];
   assuntos: string[];
+  tipos: string[];
   status: string[];
   quantidade: number | null;
 };
@@ -29,8 +30,18 @@ export const formatarTemaTitulo = (t: string) => {
   return t.replace(/^\d+[\.\-\s]+/, '').trim();
 };
 
+export const TIPOS_FLASHCARDS = [
+  { id: 'Pergunta e Resposta', label: 'Pergunta e Resposta', desc: 'Padrão clássico frente e verso' },
+  { id: 'Múltipla Escolha', label: 'Múltipla Escolha', desc: '4 alternativas (2 por linha) com gabarito' },
+  { id: 'Verdadeiro ou Falso', label: 'Verdadeiro ou Falso', desc: 'Julgamento rápido de afirmações jurídicas' },
+  { id: 'Completar Lacunas', label: 'Completar Lacunas', desc: 'Preenchimento de termos e lacunas de leis' },
+  { id: 'Ache o Erro', label: 'Ache o Erro', desc: 'Identificação de inversões sutis na frase' },
+  { id: 'Ditado', label: 'Ditado (Áudio / Voz)', desc: 'Treino de fala com reconhecimento de voz' },
+  { id: 'Pegadinha', label: 'Pegadinha', desc: 'Análise de armadilhas de provas e bancas' },
+];
+
 export const FILTRO_FLASHCARDS_VAZIO: FlashcardsFiltro = {
-  disciplinas: [], assuntos: [], status: [], quantidade: null,
+  disciplinas: [], assuntos: [], tipos: [], status: [], quantidade: null,
 };
 
 export function lerFiltroFlashcardsSalvo(): FlashcardsFiltro | null {
@@ -42,6 +53,7 @@ export function lerFiltroFlashcardsSalvo(): FlashcardsFiltro | null {
       ...FILTRO_FLASHCARDS_VAZIO,
       ...parsed,
       assuntos: Array.isArray(parsed.assuntos) ? parsed.assuntos.map(formatarTemaTitulo).filter(Boolean) : [],
+      tipos: Array.isArray(parsed.tipos) ? parsed.tipos : [],
     };
   } catch { return null; }
 }
@@ -351,7 +363,7 @@ const FlashcardsFiltroSheet = ({
   onAplicar: (f: FlashcardsFiltro) => void;
 }) => {
   const [f, setF] = useState<FlashcardsFiltro>(() => lerFiltroFlashcardsSalvo() ?? FILTRO_FLASHCARDS_VAZIO);
-  const [passo, setPasso] = useState<null | 'disciplinas' | 'assuntos' | 'status' | 'quantidade'>(null);
+  const [passo, setPasso] = useState<null | 'disciplinas' | 'assuntos' | 'tipos' | 'status' | 'quantidade'>(null);
   
 
 
@@ -427,6 +439,7 @@ const FlashcardsFiltroSheet = ({
 
   const selecionados =
     f.disciplinas.length + f.assuntos.length +
+    (f.tipos?.length > 0 ? 1 : 0) +
     (f.status?.length > 0 ? 1 : 0) +
     (f.quantidade ? 1 : 0);
 
@@ -521,7 +534,20 @@ const FlashcardsFiltroSheet = ({
                 onClick={() => setPasso('assuntos')}
               />
               <StepRow
-                step={3} label="Status"
+                step={3} label="Tipo de Flashcard"
+                hint={
+                  f.tipos.length === 1
+                    ? f.tipos[0]
+                    : f.tipos.length > 1
+                      ? `${f.tipos.length} tipos selecionados`
+                      : 'Todos os tipos (Múltipla escolha, V/F, Ditado...)'
+                }
+                done={!!f.tipos.length}
+                badge={f.tipos.length || undefined}
+                onClick={() => setPasso('tipos')}
+              />
+              <StepRow
+                step={4} label="Status"
                 hint={f.status.length ? `${f.status.length} selecionado(s)` : 'Todos os status'}
                 locked={!f.disciplinas.length} done={!!f.status.length}
                 badge={f.status.length || undefined}
@@ -529,7 +555,7 @@ const FlashcardsFiltroSheet = ({
                 onClick={() => setPasso('status')}
               />
               <StepRow
-                step={4} label="Quantidade"
+                step={5} label="Quantidade"
                 hint={f.quantidade ? `${f.quantidade} flashcards` : 'Todos os cards do filtro'}
                 done={f.quantidade !== undefined && f.quantidade !== null}
                 onClick={() => setPasso('quantidade')}
@@ -582,6 +608,31 @@ const FlashcardsFiltroSheet = ({
                         {count !== undefined && count > 0 && (
                           <span className="text-[12px] font-medium text-zinc-400 bg-zinc-800/90 border border-zinc-700/60 px-2.5 py-0.5 rounded-full whitespace-nowrap ml-2 shrink-0">
                             {count} {count === 1 ? 'card' : 'cards'}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  }}
+                />
+              )}
+              {passo === 'tipos' && (
+                <SelecaoSheet
+                  key="tipos"
+                  titulo="Tipos de Flashcards"
+                  opcoes={TIPOS_FLASHCARDS.map(t => t.id)}
+                  selecionado={f.tipos}
+                  onFechar={() => setPasso(null)}
+                  onConfirmar={(v) => setF((p) => ({ ...p, tipos: v }))}
+                  renderOpcao={(o) => {
+                    const info = TIPOS_FLASHCARDS.find(t => t.id === o);
+                    return (
+                      <div className="flex flex-col py-1">
+                        <span className="text-[15px] font-bold text-zinc-100 group-hover:text-white leading-tight">
+                          {info?.label || o}
+                        </span>
+                        {info?.desc && (
+                          <span className="text-[12px] text-zinc-400 mt-0.5 leading-snug">
+                            {info.desc}
                           </span>
                         )}
                       </div>

@@ -15,6 +15,7 @@ export function useFlashcardsEngine() {
   const areasParam = params.get('areas');
   const temasParam = params.get('temas') || params.get('tema');
   const subtemaParam = params.get('subtema') || params.get('subtemas');
+  const tiposParam = params.get('tipos') || params.get('tipo');
   const deckId = params.get('deck');
   const modo = params.get('modo') || 'todos';
   const ordemParam = params.get('ordem') || 'embaralhado';
@@ -39,6 +40,7 @@ export function useFlashcardsEngine() {
   const temasList = temasParam
     ? temasParam.split('|').filter(Boolean).map(t => t.replace(/^\d+[\.\-\s]+/, '').trim())
     : null;
+  const tiposList = tiposParam ? tiposParam.split('|').filter(Boolean) : null;
   
   const [sessaoId] = useState(() => params.get('sessaoId') || Date.now().toString());
 
@@ -47,7 +49,8 @@ export function useFlashcardsEngine() {
     temas: temasList,
     modo: modo,
     deckId: deckId,
-    limit: limitParam
+    limit: limitParam,
+    tipos: tiposList
   }, true);
 
   const [cards, setCards] = useState<FlashcardCard[]>([]);
