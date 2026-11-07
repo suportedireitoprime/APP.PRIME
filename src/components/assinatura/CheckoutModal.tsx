@@ -166,6 +166,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   });
 
   const [pixData, setPixData] = useState<{ qrCode: string; payload: string } | null>(null);
+  const [pixPaymentId, setPixPaymentId] = useState<string | null>(null);
   const [pixTimeLeft, setPixTimeLeft] = useState<number>(600);
   const [pixExpiryTime, setPixExpiryTime] = useState<number | null>(null);
   const [verifyCooldown, setVerifyCooldown] = useState<number>(0);
@@ -222,6 +223,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     if (open) {
       setStep(1);
       setPixData(null);
+      setPixPaymentId(null);
       setPixTimeLeft(600);
       setPixExpiryTime(null);
       setInstallmentCount(1);
@@ -315,7 +317,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
         .subscribe();
     });
 
-    // 2. Polling de contingência com backoff progressivo
+    // 2. Polling de contingência com backoff progressivo + verificação no Asaas
     const pollCheck = async () => {
       if (!isMounted) return;
       try {
@@ -335,6 +337,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             handleSuccess();
             return;
           }
+
+          // Se tiver paymentId e já passaram 2 ciclos de polling, consulta o Asaas diretamente
+          if (pixPaymentId && delay >= 8000) {
+            const { data: checkData } = await supabase.functions.invoke('asaas-checkout', {
+              body: { action: 'check_status', paymentId: pixPaymentId }
+            });
+            if (checkData?.confirmed) {
+              handleSuccess();
+              return;
+            }
+          }
         }
       } catch {}
 
@@ -349,9 +362,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     return () => {
       isMounted = false;
       if (pollTimer) clearTimeout(pollTimer);
-      if (channel) supabase.removeChannel(channel);
+      if (channelAsaas) supabase.removeChannel(channelAsaas);
+      if (channelProfile) supabase.removeChannel(channelProfile);
     };
-  }, [step, pixData, onSuccess, onOpenChange]);
+  }, [step, pixData, pixPaymentId, onSuccess, onOpenChange]);
 
   // PIX Expiration Timer — stable interval, uses absolute time to survive background states
   useEffect(() => {
@@ -525,6 +539,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       if (isPix && data?.pixQrCode) {
         void logDb('checkout_pix_gerado', { plano: activePlan });
         setPixData({ qrCode: data.pixQrCode, payload: data.pixCopyPaste });
+        setPixPaymentId(data.paymentId || null);
         setPixExpiryTime(Date.now() + 600 * 1000);
         setStep(3);
       } else if (!isPix) {
@@ -622,6 +637,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           triggerSuccessAnimation();
           return;
         }
+
+        // Consulta direta no Asaas via edge function caso o webhook ainda não tenha chegado
+        if (pixPaymentId) {
+          const { data: checkData } = await supabase.functions.invoke('asaas-checkout', {
+            body: { action: 'check_status', paymentId: pixPaymentId }
+          });
+          if (checkData?.confirmed) {
+            toast.success('Pagamento confirmado via PIX!');
+            triggerSuccessAnimation();
+            return;
+          }
+        }
       }
       toast('Pagamento ainda não confirmado. Aguarde alguns segundos e tente novamente.', { icon: 'â³' });
       setVerifyCooldown(5);
@@ -635,6 +662,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
   const handleRegeneratePixQr = () => {
     hasWarnedExpiryRef.current = false;
     setPixData(null);
+    setPixPaymentId(null);
     setPixTimeLeft(600);
     setPixExpiryTime(null);
     processCheckout();
