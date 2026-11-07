@@ -220,6 +220,11 @@ export interface LivroNormalizado {
   capa?: string | null;
   link?: string | null;
   download?: string | null;
+  downloadEscura?: string | null;
+  versoesPdf?: {
+    clara?: string | null;
+    escura?: string | null;
+  } | null;
   area?: string | null;
   colecaoId: string;
   // Novos campos de enriquecimento
@@ -297,6 +302,25 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
     return trimmed;
   };
 
+  let downloadEscura: string | null = null;
+  let versoesPdf: { clara?: string | null; escura?: string | null } | null = null;
+
+  if (typeof cur === 'object' && cur !== null) {
+    if (cur.download_escura) downloadEscura = cur.download_escura;
+    if (cur.versoes_pdf) versoesPdf = cur.versoes_pdf;
+  }
+
+  // Tratamento especial para Dos Delitos e das Penas (Cesare Beccaria)
+  const isDelitos = String(titulo).toLowerCase().includes('delitos e das penas') || String(row.id) === '123';
+  let downloadUrl = row[colecao.downloadField] ?? null;
+  if (isDelitos) {
+    const urlClara = 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/dos-delitos-e-das-penas/dos-delitos-e-das-penas-versao-clara.pdf';
+    const urlEscura = 'https://pub-9cd49875afe549788617b01e97309a55.r2.dev/classicos/dos-delitos-e-das-penas/dos-delitos-e-das-penas-versao-escura.pdf';
+    downloadUrl = urlClara;
+    downloadEscura = urlEscura;
+    versoesPdf = { clara: urlClara, escura: urlEscura };
+  }
+
   return {
     id: row.id,
     titulo,
@@ -304,7 +328,9 @@ export function normalizeLivro(row: any, colecao: ColecaoConfig): LivroNormaliza
     sobre,
     capa: sanitizeCover(row[colecao.capaField]),
     link: row[colecao.linkField] ?? null,
-    download: row[colecao.downloadField] ?? null,
+    download: downloadUrl,
+    downloadEscura,
+    versoesPdf,
     area,
     colecaoId: colecao.id,
     capaHorizontal: sanitizeCover(row.capa_horizontal),

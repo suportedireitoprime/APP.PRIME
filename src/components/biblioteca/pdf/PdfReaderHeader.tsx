@@ -1,4 +1,4 @@
-import { ArrowLeft, Columns, Search } from 'lucide-react';
+import { ArrowLeft, Columns, Search, Sun, Moon } from 'lucide-react';
 
 interface PdfReaderHeaderProps {
   titulo: string;
@@ -7,6 +7,10 @@ interface PdfReaderHeaderProps {
   dualPage: boolean;
   onToggleDualPage: () => void;
   onOpenBusca: () => void;
+  urlClara?: string | null;
+  urlEscura?: string | null;
+  currentUrl?: string;
+  onSwitchVersao?: (versao: 'clara' | 'escura') => void;
 }
 
 export default function PdfReaderHeader({
@@ -16,7 +20,13 @@ export default function PdfReaderHeader({
   dualPage,
   onToggleDualPage,
   onOpenBusca,
+  urlClara,
+  urlEscura,
+  currentUrl,
+  onSwitchVersao,
 }: PdfReaderHeaderProps) {
+  const isEscura = currentUrl?.toLowerCase().includes('escura');
+
   return (
     <div
       className="flex items-center gap-3 shrink-0 bg-neutral-950/95 backdrop-blur border-b border-white/5"
@@ -39,6 +49,25 @@ export default function PdfReaderHeader({
         {titulo}
       </p>
       <div className="flex items-center gap-2 shrink-0">
+        {urlClara && urlEscura && onSwitchVersao && (
+          <button
+            onClick={() => onSwitchVersao(isEscura ? 'clara' : 'escura')}
+            title={isEscura ? 'Alternar para Versão Clara' : 'Alternar para Versão Escura'}
+            className="px-3 py-2 rounded-full border text-xs font-bold flex items-center gap-1.5 transition bg-white/[0.06] border-white/10 hover:bg-white/15"
+          >
+            {isEscura ? (
+              <>
+                <Sun className="w-4 h-4 text-amber-400" />
+                <span className="hidden sm:inline text-amber-300">Clara</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-emerald-400" />
+                <span className="hidden sm:inline text-emerald-300">Escura</span>
+              </>
+            )}
+          </button>
+        )}
         {isDesktop && (
           <button
             onClick={onToggleDualPage}

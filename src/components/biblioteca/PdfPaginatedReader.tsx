@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft, Loader2, ChevronLeft, ChevronRight, Bookmark, BookmarkCheck,
-  Columns, Square, X, Search, List
+  Columns, Square, X, Search, List, Sun, Moon
 } from 'lucide-react';
 import { pdfjsLib, configurarPdfWorker } from '@/lib/pdfWorkerConfig';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
@@ -49,6 +49,9 @@ async function fetchPdfBytes(url: string): Promise<Uint8Array> {
 
 interface Props {
   url: string;
+  urlClara?: string | null;
+  urlEscura?: string | null;
+  onSwitchVersao?: (versao: 'clara' | 'escura') => void;
   titulo: string;
   onClose: () => void;
   livroId?: number | string | null;
@@ -58,7 +61,15 @@ interface Props {
 const BOOKMARK_KEY = (url: string) => `pdf-reader:bookmark:${url}`;
 const PAGE_KEY = (url: string) => `pdf-reader:page:${url}`;
 
-const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
+const PdfPaginatedReader = ({
+  url,
+  urlClara,
+  urlEscura,
+  onSwitchVersao,
+  titulo,
+  onClose,
+  livroId,
+}: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pdfRef = useRef<any>(null);
   const renderTasksRef = useRef<Map<number, any>>(new Map());
@@ -253,6 +264,28 @@ const PdfPaginatedReader = ({ url, titulo, onClose, livroId }: Props) => {
           <h2 className="text-white font-medium text-sm sm:text-base truncate">{titulo}</h2>
         </div>
         <div className="flex items-center space-x-2 ml-4">
+          {urlClara && urlEscura && onSwitchVersao && (
+            <button
+              onClick={() => {
+                const isEscura = url?.toLowerCase().includes('escura');
+                onSwitchVersao(isEscura ? 'clara' : 'escura');
+              }}
+              title={url?.toLowerCase().includes('escura') ? 'Mudar para Versão Clara' : 'Mudar para Versão Escura'}
+              className="h-9 px-3 rounded-lg border border-white/10 hover:bg-white/10 text-xs font-bold flex items-center gap-1.5 transition text-white/80 hover:text-white"
+            >
+              {url?.toLowerCase().includes('escura') ? (
+                <>
+                  <Sun className="w-4 h-4 text-amber-400" />
+                  <span className="hidden sm:inline text-amber-300">Clara</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="w-4 h-4 text-emerald-400" />
+                  <span className="hidden sm:inline text-emerald-300">Escura</span>
+                </>
+              )}
+            </button>
+          )}
           <button
             onClick={() => setDualPage(!dualPage)}
             className="w-11 h-11 flex items-center justify-center text-white/70 hover:text-white transition-colors rounded-lg hover:bg-white/10"

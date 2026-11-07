@@ -23,6 +23,9 @@ import { usePdfDocument } from './pdf/usePdfDocument';
 
 interface Props {
   url: string;
+  urlClara?: string | null;
+  urlEscura?: string | null;
+  onSwitchVersao?: (versao: 'clara' | 'escura') => void;
   titulo: string;
   onClose: () => void;
   livroId?: number | string | null;
@@ -33,7 +36,16 @@ interface Props {
  * Leitor de PDF com suporte a scroll contínuo e modo página dupla (lado a lado) no desktop.
  * Renderiza páginas em <canvas> conforme entram no viewport.
  */
-const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
+const PdfScrollReader = ({
+  url,
+  urlClara,
+  urlEscura,
+  onSwitchVersao,
+  titulo,
+  onClose,
+  livroId,
+  capaUrl,
+}: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const renderedRef = useRef<Set<number>>(new Set());
   const renderTasksRef = useRef<Map<number, any>>(new Map());
@@ -315,6 +327,10 @@ const PdfScrollReader = ({ url, titulo, onClose, livroId, capaUrl }: Props) => {
         dualPage={dualPage}
         onToggleDualPage={() => setDualPage((d) => !d)}
         onOpenBusca={() => setShowBusca(true)}
+        urlClara={urlClara}
+        urlEscura={urlEscura}
+        currentUrl={url}
+        onSwitchVersao={onSwitchVersao}
       />
 
       {/* Área de leitura */}

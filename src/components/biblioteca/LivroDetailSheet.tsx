@@ -161,15 +161,19 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
   if (!currentLivro) return null;
 
   const hasOnline = !!currentLivro.link;
-  const hasPdf = !!currentLivro.download;
+  const hasPdf = !!(currentLivro.download || currentLivro.versoesPdf?.clara);
+  const hasVersaoEscura = !!(currentLivro.downloadEscura || currentLivro.versoesPdf?.escura);
+  const urlClara = currentLivro.versoesPdf?.clara || currentLivro.download;
+  const urlEscura = currentLivro.versoesPdf?.escura || currentLivro.downloadEscura;
 
-  const ensurePdfLocalUrl = async (): Promise<string> => {
-    if (!currentLivro.download) return '';
+  const ensurePdfLocalUrl = async (urlTarget?: string | null): Promise<string> => {
+    const raw = urlTarget || currentLivro.download;
+    if (!raw) return '';
     if (Capacitor.isNativePlatform()) {
-      const local = await getLocalPdfUrl(currentLivro.download);
+      const local = await getLocalPdfUrl(raw);
       if (local) return local;
     }
-    return currentLivro.download;
+    return raw;
   };
 
   const handleDownloadPdf = async () => {
@@ -216,8 +220,12 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
     }
     setLerDialog(false);
     if (modo === 'nativa') setReaderMode('nativa');
-    else if (modo === 'pdf') {
-      const url = await ensurePdfLocalUrl();
+    else if (modo === 'pdf' || modo === 'pdf-clara') {
+      const url = await ensurePdfLocalUrl(urlClara);
+      setPdfUrlForReader(url);
+      setReaderMode('pdf');
+    } else if (modo === 'pdf-escura') {
+      const url = await ensurePdfLocalUrl(urlEscura);
       setPdfUrlForReader(url);
       setReaderMode('pdf');
     } else if (modo === 'online' && currentLivro.link) {
@@ -352,6 +360,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
         onSelect={onSelectModo}
         hasPdf={hasPdf}
         hasOnline={hasOnline}
+        hasVersaoEscura={hasVersaoEscura}
         pdfCached={pdfCached}
         downloadProgress={downloadingPdf}
         livroTitulo={currentLivro?.titulo}
@@ -366,6 +375,15 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
               {isDesktop ? (
                 <PdfPaginatedReader
                   url={pdfUrlForReader || currentLivro.download!}
+                  urlClara={urlClara}
+                  urlEscura={urlEscura}
+                  onSwitchVersao={async (versao) => {
+                    const target = versao === 'clara' ? urlClara : urlEscura;
+                    if (target) {
+                      const local = await ensurePdfLocalUrl(target);
+                      setPdfUrlForReader(local);
+                    }
+                  }}
                   titulo={currentLivro.titulo}
                   livroId={String(currentLivro.id)}
                   capaUrl={capaUrl}
@@ -374,6 +392,15 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
               ) : (
                 <PdfScrollReader
                   url={pdfUrlForReader || currentLivro.download!}
+                  urlClara={urlClara}
+                  urlEscura={urlEscura}
+                  onSwitchVersao={async (versao) => {
+                    const target = versao === 'clara' ? urlClara : urlEscura;
+                    if (target) {
+                      const local = await ensurePdfLocalUrl(target);
+                      setPdfUrlForReader(local);
+                    }
+                  }}
                   titulo={currentLivro.titulo}
                   livroId={String(currentLivro.id)}
                   capaUrl={capaUrl}

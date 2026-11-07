@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { Smartphone, BookOpen, X, ChevronRight } from 'lucide-react';
+import { Smartphone, BookOpen, X, ChevronRight, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { haptic } from '@/lib/nativeHaptics';
 
-export type LerModo = 'nativa' | 'pdf' | 'online' | 'download' | 'desktop';
+export type LerModo = 'nativa' | 'pdf' | 'online' | 'download' | 'desktop' | 'pdf-clara' | 'pdf-escura';
 
 interface Props {
   open: boolean;
@@ -16,9 +16,10 @@ interface Props {
   downloadProgress?: number | null;
   livroTitulo?: string;
   livroAutor?: string;
+  hasVersaoEscura?: boolean;
 }
 
-const LerAgoraDialog: React.FC<Props> = ({ open, onClose, onSelect }) => {
+const LerAgoraDialog: React.FC<Props> = ({ open, onClose, onSelect, hasVersaoEscura }) => {
   // Fechar com tecla Escape
   useEffect(() => {
     if (!open) return;
@@ -103,24 +104,76 @@ const LerAgoraDialog: React.FC<Props> = ({ open, onClose, onSelect }) => {
                 <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0" />
               </button>
 
-              {/* Botão 2: Ler Arquivo Original (PDF) */}
-              <button
-                onClick={() => handleSelect('pdf')}
-                className="group w-full rounded-2xl p-4 text-left flex items-center gap-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all duration-150 active:scale-[0.99]"
-              >
-                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300 shrink-0 group-hover:scale-105 transition-transform">
-                  <BookOpen className="w-6 h-6" strokeWidth={1.8} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-display font-bold text-[15px] text-zinc-200 tracking-wide uppercase">
-                    Ler Arquivo Original (PDF)
+              {hasVersaoEscura ? (
+                <>
+                  {/* Botão 2A: Arquivo Original — Versão Clara (PDF) */}
+                  <button
+                    onClick={() => handleSelect('pdf-clara')}
+                    className="group w-full rounded-2xl p-4 text-left flex items-center gap-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-amber-400/50 transition-all duration-150 active:scale-[0.99]"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-400 shrink-0 group-hover:scale-105 transition-transform">
+                      <Sun className="w-6 h-6" strokeWidth={1.8} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-display font-bold text-[15px] text-white tracking-wide uppercase">
+                          Arquivo Original — Clara
+                        </span>
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-300 border border-amber-400/25">
+                          PDF
+                        </span>
+                      </div>
+                      <div className="text-[12.5px] text-zinc-400 leading-snug mt-0.5 font-body">
+                        Documento original com páginas claras tradicionais.
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </button>
+
+                  {/* Botão 2B: Arquivo Original — Versão Escura (PDF) */}
+                  <button
+                    onClick={() => handleSelect('pdf-escura')}
+                    className="group w-full rounded-2xl p-4 text-left flex items-center gap-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-emerald-400/50 transition-all duration-150 active:scale-[0.99]"
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-emerald-400/10 border border-emerald-400/20 flex items-center justify-center text-emerald-400 shrink-0 group-hover:scale-105 transition-transform">
+                      <Moon className="w-6 h-6" strokeWidth={1.8} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-display font-bold text-[15px] text-white tracking-wide uppercase">
+                          Arquivo Original — Escura
+                        </span>
+                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-400/15 text-emerald-300 border border-emerald-400/25">
+                          PDF DARK
+                        </span>
+                      </div>
+                      <div className="text-[12.5px] text-zinc-400 leading-snug mt-0.5 font-body">
+                        Fundo escuro personalizado para leitura noturna confortável.
+                      </div>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  </button>
+                </>
+              ) : (
+                /* Botão 2: Ler Arquivo Original (PDF) Padrão */
+                <button
+                  onClick={() => handleSelect('pdf')}
+                  className="group w-full rounded-2xl p-4 text-left flex items-center gap-3.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 transition-all duration-150 active:scale-[0.99]"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300 shrink-0 group-hover:scale-105 transition-transform">
+                    <BookOpen className="w-6 h-6" strokeWidth={1.8} />
                   </div>
-                  <div className="text-[12.5px] text-zinc-400 leading-snug mt-0.5 font-body">
-                    Visualização idêntica ao documento original.
+                  <div className="flex-1 min-w-0">
+                    <div className="font-display font-bold text-[15px] text-zinc-200 tracking-wide uppercase">
+                      Ler Arquivo Original (PDF)
+                    </div>
+                    <div className="text-[12.5px] text-zinc-400 leading-snug mt-0.5 font-body">
+                      Visualização idêntica ao documento original.
+                    </div>
                   </div>
-                </div>
-                <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
-              </button>
+                  <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0" />
+                </button>
+              )}
             </div>
           </motion.div>
         </motion.div>
