@@ -21,7 +21,7 @@ export function useFlashcardsEngine() {
   const quantidadeParam = params.get('quantidade');
   const artigosParam = params.get('artigos');
 
-  const escolhendo = !areaParam && !areasParam && !temasParam && !deckId && modo !== 'edital';
+  const escolhendo = false;
   const rawLimitStr = params.get('limite');
   let limitParam = 10000;
   if (rawLimitStr === 'todos' || rawLimitStr === 'all') {
@@ -46,7 +46,7 @@ export function useFlashcardsEngine() {
     modo: modo,
     deckId: deckId,
     limit: limitParam
-  }, !escolhendo);
+  }, true);
 
   const [cards, setCards] = useState<FlashcardCard[]>([]);
   const [idx, setIdx] = useState(0);
@@ -55,12 +55,12 @@ export function useFlashcardsEngine() {
   const [sessionCompreendidos, setSessionCompreendidos] = useState(0);
   const [sessionRevisar, setSessionRevisar] = useState(0);
   const [exitDirection, setExitDirection] = useState<'left' | 'down'>('left');
-  const [emContagem, setEmContagem] = useState(false);
+  const [emContagem, setEmContagem] = useState(true);
   
   const salvando = useRef(false);
   const gateFlashcards = useGatedFeature('flashcards', 'flashcards');
   
-  const loading = (loadingCards || emContagem) && !escolhendo;
+  const loading = loadingCards || emContagem;
 
   // Filtragem local
   useEffect(() => {

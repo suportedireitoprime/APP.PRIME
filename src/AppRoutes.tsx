@@ -868,7 +868,7 @@ function AnimatedRoutes() {
           <Route path="/flashcards/area/:slug" element={<ProtectedRoute><PageTransition instant><FlashcardsArea /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards" element={<ProtectedRoute><FlashcardsRouteWrapper><PageTransition instant><Flashcards /></PageTransition></FlashcardsRouteWrapper></ProtectedRoute>} />
           <Route path="/flashcards/estudo" element={<ProtectedRoute><PageTransition instant><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
-          <Route path="/flashcards/estudar" element={<Navigate to="/flashcards/estudo" replace />} />
+          <Route path="/flashcards/estudar" element={<ProtectedRoute><PageTransition instant><FlashcardsEstudo /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/trilhas" element={<ProtectedRoute><PageTransition instant><FlashcardsTrilhas /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/cargos" element={<ProtectedRoute><PageTransition instant><FlashcardsCargos /></PageTransition></ProtectedRoute>} />
           <Route path="/flashcards/cargos/:id" element={<ProtectedRoute><PageTransition instant><FlashcardsCargosDetalhes /></PageTransition></ProtectedRoute>} />
