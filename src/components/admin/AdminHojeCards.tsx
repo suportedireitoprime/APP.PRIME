@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { UserDossieSheet } from './UserDossieSheet';
 import { rotaParaFuncao, formatarDuracao } from '@/lib/rotaFuncoes';
+import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO } from '@/lib/precos';
 
 type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial';
 type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
@@ -506,7 +507,7 @@ export function AdminHojeCards() {
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
           const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício'));
-          const valor = isVit ? 249.90 : isAnual ? 199.90 : 29.90;
+          const valor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
           subUsers.set(uid, { plano: (isAnual && isPromo) ? 'anual_promocional' : plano, valor });
         });
 
@@ -514,7 +515,7 @@ export function AdminHojeCards() {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
           const uid = s.user_id || s.id;
           const plano = s.product_id?.includes('anual') ? 'anual' : s.product_id?.includes('vitalicio') ? 'vitalicio' : 'mensal';
-          const valor = plano === 'anual' ? 199.90 : plano === 'vitalicio' ? 249.90 : 29.90;
+          const valor = plano === 'anual' ? PRECO_ANUAL : plano === 'vitalicio' ? PRECO_VITALICIO : PRECO_MENSAL;
           if (!subUsers.has(uid)) {
             subUsers.set(uid, { plano, valor });
           }
@@ -524,7 +525,7 @@ export function AdminHojeCards() {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
           const uid = s.user_id || s.id;
           const plano = s.product_id?.includes('anual') ? 'anual' : 'mensal';
-          const valor = plano === 'anual' ? 199.90 : 29.90;
+          const valor = plano === 'anual' ? PRECO_ANUAL : PRECO_MENSAL;
           if (!subUsers.has(uid)) {
             subUsers.set(uid, { plano, valor });
           }
@@ -534,7 +535,7 @@ export function AdminHojeCards() {
           if (s.status !== 'ACTIVE' && s.status !== 'ACTIVE_GRACE' && s.status !== 'active') return;
           const uid = s.claimed_user_id || s.id;
           const plano = s.tipo || 'mensal';
-          const valor = plano === 'vitalicio' ? 199.90 : plano === 'anual' ? 199.90 : 29.90;
+          const valor = plano === 'vitalicio' ? PRECO_VITALICIO : plano === 'anual' ? PRECO_ANUAL : PRECO_MENSAL;
           if (!subUsers.has(uid)) {
             subUsers.set(uid, { plano, valor });
           }
@@ -786,7 +787,7 @@ export function AdminHojeCards() {
             const isPromo = subText.includes('promocional') || subText.includes('promo') || titleText.includes('promocional');
             const isAnual = subText.includes('anual') || titleText.includes('anual');
             const isVit = !isPromo && (subText.includes('vitalicio') || subText.includes('vitalício') || titleText.includes('vitalicio'));
-            const planValor = isVit ? 249.90 : isAnual ? 199.90 : 29.90;
+            const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
             const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
             const uid = r.user_id || r.id;
             if (uid) existingUserIds.add(uid);
@@ -855,7 +856,7 @@ export function AdminHojeCards() {
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
           const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
-          const planValor = isVit ? 249.90 : isAnual ? 199.90 : 29.90;
+          const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
           const profInfo = profMap.get(s.user_id);
 
@@ -879,7 +880,7 @@ export function AdminHojeCards() {
         (playRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const isAnualOrVit = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio');
-          const planValor = isAnualOrVit ? 199.90 : 29.90;
+          const planValor = isAnualOrVit ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = isAnualOrVit ? 'Anual/Vitalício' : 'Mensal';
           const profInfo = profMap.get(s.user_id);
 
@@ -903,7 +904,7 @@ export function AdminHojeCards() {
         (appleRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const isAnual = s.product_id?.includes('anual');
-          const planValor = isAnual ? 199.90 : 29.90;
+          const planValor = isAnual ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = isAnual ? 'Anual' : 'Mensal';
           const profInfo = profMap.get(s.user_id);
 
@@ -935,7 +936,7 @@ export function AdminHojeCards() {
             acessos: null,
             avatar_url: null,
             is_premium: true,
-            planValue: e.tipo === 'vitalicio' ? 249.90 : 29.90,
+            planValue: e.tipo === 'vitalicio' ? PRECO_VITALICIO : PRECO_MENSAL,
             planTag: { plano: e.tipo || 'Assinatura', status: e.status, expires_at: null },
           });
         });
@@ -1385,7 +1386,7 @@ export function AdminHojeCards() {
                       "block font-['Plus_Jakarta_Sans',sans-serif] text-[9.5px] font-bold mt-0.5 truncate",
                       counts.trialValor === 0 ? "text-zinc-600" : "text-emerald-400"
                     )}>
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(counts.trialValor)}
+                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(counts.trialValor)}
                     </span>
                   )}
                 </div>
