@@ -406,24 +406,49 @@ export function AdminHojeCards() {
       if (periodo === 'hoje') {
         const processList = (listData: any, defaultSubtitle?: string) => {
           if (!Array.isArray(listData) || listData.length === 0) return [];
-          return listData
+          const userMap = new Map<string, any>();
+          
+          listData
             .filter((r: any) => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()))
-            .map((r: any) => ({
-              key: r.key || r.user_id || r.id || Math.random().toString(),
-              userId: r.user_id || r.id,
-              title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
-              email: r.email || null,
-              provider: r.avatar_url?.includes('googleusercontent.com') ? 'google' : (r.provider || (r.email ? 'email' : null)),
-              subtitle: r.subtitle ? rotaParaFuncao(r.subtitle).label : defaultSubtitle,
-              meta: hora(r.at || r.last_seen || r.created_at),
-              acessos: typeof r.acessos === 'number' ? r.acessos : null,
-              avatarUrl: r.avatar_url || null,
-              isPremium: r.is_premium ?? r.premium ?? false,
-              planValue: r.planValue,
-              planTag: r.planTag,
-              created_at: r.created_at || null,
-              faixaEtaria: r.faixa_etaria || null,
-            }));
+            .forEach((r: any) => {
+              const uid = r.user_id || r.id;
+              const em = (r.email || '').toLowerCase().trim();
+              const dedupeKey = uid || em || r.key || Math.random().toString();
+              const atTime = new Date(r.at || r.last_seen || r.created_at || 0).getTime();
+
+              if (!userMap.has(dedupeKey)) {
+                userMap.set(dedupeKey, {
+                  key: dedupeKey,
+                  userId: uid,
+                  title: r.title || r.nome || em.split('@')[0] || 'Usuário',
+                  email: r.email || null,
+                  provider: r.avatar_url?.includes('googleusercontent.com') ? 'google' : (r.provider || (r.email ? 'email' : null)),
+                  subtitle: r.subtitle ? rotaParaFuncao(r.subtitle).label : defaultSubtitle,
+                  meta: hora(r.at || r.last_seen || r.created_at),
+                  rawAt: atTime,
+                  acessos: typeof r.acessos === 'number' && r.acessos > 0 ? r.acessos : 1,
+                  avatarUrl: r.avatar_url || null,
+                  isPremium: r.is_premium ?? r.premium ?? false,
+                  planValue: r.planValue,
+                  planTag: r.planTag,
+                  created_at: r.created_at || null,
+                  faixaEtaria: r.faixa_etaria || null,
+                });
+              } else {
+                const cur = userMap.get(dedupeKey);
+                cur.acessos = (cur.acessos || 1) + 1;
+                if (atTime > cur.rawAt) {
+                  cur.rawAt = atTime;
+                  cur.meta = hora(r.at || r.last_seen || r.created_at);
+                }
+                if (!cur.avatarUrl && r.avatar_url) cur.avatarUrl = r.avatar_url;
+                if (r.is_premium) cur.isPremium = true;
+                if (r.planValue && !cur.planValue) cur.planValue = r.planValue;
+                if (r.planTag && !cur.planTag) cur.planTag = r.planTag;
+              }
+            });
+
+          return Array.from(userMap.values());
         };
 
         if (Array.isArray(list5m) && list5m.length > 0) {
@@ -954,6 +979,10 @@ export function AdminHojeCards() {
           maxDate.setDate(maxDate.getDate() + 1);
           maxDate.setHours(0, 0, 0, 0);
           
+          const eventNames = id === 'viu_planos' 
+            ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] 
+            : ['trial_click', 'assinatura_aberta', 'paywall_view'];
+
           const { data: vpEvents } = await supabase
             .from('app_events')
             .select(`
@@ -961,13 +990,13 @@ export function AdminHojeCards() {
               profiles:user_id ( display_name, is_premium ),
               users:user_id ( email, raw_user_meta_data )
             `)
-            .in('event_name', id === 'viu_planos' ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] : ['trial_click', 'assinatura_aberta'])
+            .in('event_name', eventNames)
             .gte('created_at', minDate.toISOString())
             .lt('created_at', maxDate.toISOString())
             .order('created_at', { ascending: true });
             
           if (vpEvents) {
-            // Group events by user
+            // Group events by user and count occurrences
             const userEventsMap = new Map<string, any>();
             vpEvents.forEach((e: any) => {
               const em = (e.users?.email || e.email || '').toLowerCase().trim();
@@ -978,11 +1007,17 @@ export function AdminHojeCards() {
                 userEventsMap.set(uid, {
                    ...e,
                    uemail: e.users?.email || e.email || 'Visitante',
-                   logs: []
+                   logs: [],
+                   acessos: 0,
+                   latestAt: e.created_at
                 });
               }
               const userObj = userEventsMap.get(uid);
-              if (e.event_name !== 'trial_click' && e.event_name !== 'assinatura_aberta') {
+              userObj.acessos = (userObj.acessos || 0) + 1;
+              if (new Date(e.created_at).getTime() > new Date(userObj.latestAt).getTime()) {
+                userObj.latestAt = e.created_at;
+              }
+              if (e.event_name !== 'trial_click' && e.event_name !== 'assinatura_aberta' && e.event_name !== 'paywall_view') {
                  userObj.logs.push({
                     event_name: e.event_name,
                     created_at: e.created_at,
@@ -994,13 +1029,13 @@ export function AdminHojeCards() {
 
             const vpMapped = Array.from(userEventsMap.values()).map((e: any) => {
                 return {
-                  key: e.id,
+                  key: e.user_id || e.id,
                   user_id: e.user_id,
                   title: e.profiles?.display_name || e.uemail.split('@')[0],
                   email: e.uemail,
                   subtitle: id === 'viu_planos' ? 'Abriu checkout (Clicou)' : 'Abriu planos',
-                  at: e.created_at,
-                  acessos: null,
+                  at: e.latestAt || e.created_at,
+                  acessos: e.acessos || 1,
                   avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
                   is_premium: e.profiles?.is_premium || false,
                   created_at: e.created_at,
@@ -1065,12 +1100,26 @@ export function AdminHojeCards() {
         }
       }
 
-      // Deduplicate by user (since same user could be online on multiple days)
+      // Deduplicate by user (since same user could be online or trigger multiple events)
       const uniqueMap = new Map();
       allLists.forEach(r => {
-        const dedupeKey = r.email || r.user_id || r.key;
+        const uid = r.user_id || r.userId;
+        const em = (r.email || '').toLowerCase().trim();
+        const dedupeKey = uid || em || r.key;
         if (!uniqueMap.has(dedupeKey)) {
-          uniqueMap.set(dedupeKey, r);
+          uniqueMap.set(dedupeKey, { ...r, acessos: typeof r.acessos === 'number' && r.acessos > 0 ? r.acessos : 1 });
+        } else {
+          const cur = uniqueMap.get(dedupeKey);
+          cur.acessos = Math.max(cur.acessos || 1, (cur.acessos || 0) + (typeof r.acessos === 'number' && r.acessos > 0 ? r.acessos : 1));
+          const thisAt = new Date(r.at || r.last_seen || r.created_at || 0).getTime();
+          const curAt = new Date(cur.at || cur.last_seen || cur.created_at || 0).getTime();
+          if (thisAt > curAt) {
+            cur.at = r.at || r.last_seen || r.created_at;
+          }
+          if (!cur.avatar_url && r.avatar_url) cur.avatar_url = r.avatar_url;
+          if (!cur.logsCheckout && r.logsCheckout) cur.logsCheckout = r.logsCheckout;
+          if (r.is_premium) cur.is_premium = true;
+          if (!cur.user_id && r.user_id) cur.user_id = r.user_id;
         }
       });
       const list = Array.from(uniqueMap.values()).map((r) => ({
@@ -1081,7 +1130,7 @@ export function AdminHojeCards() {
         provider: r.provider || null,
         subtitle: (id === 'online' || id === 'online5m') ? rotaParaFuncao(r.subtitle).label : r.subtitle,
         meta: hora(r.at),
-        acessos: typeof r.acessos === 'number' ? r.acessos : null,
+        acessos: typeof r.acessos === 'number' ? r.acessos : 1,
         avatarUrl: r.avatar_url,
         isPremium: r.is_premium,
         planValue: r.planValue,
@@ -1130,8 +1179,8 @@ export function AdminHojeCards() {
         ] = await Promise.all([
           supabase.rpc('admin_user_auth_providers' as any, { _ids: ids }),
           supabase.from('user_activity_log').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
-          id === 'paywall'
-            ? supabase.from('app_events').select('user_id, created_at').in('event_name', ['assinatura_aberta', 'paywall_view']).in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString())
+          (id === 'paywall' || id === 'viu_planos')
+            ? supabase.from('app_events').select('user_id, email, created_at').in('event_name', id === 'viu_planos' ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] : ['assinatura_aberta', 'paywall_view']).in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString())
             : Promise.resolve({ data: [] }),
           supabase.from('user_sessions').select('user_id, initial_route, started_at').in('user_id', ids).gte('started_at', minD.toISOString()).lt('started_at', maxD.toISOString()),
           supabase.from('profiles').select('id, created_at, faixa_etaria').in('id', ids)
@@ -1165,11 +1214,13 @@ export function AdminHojeCards() {
           });
         }
 
-        if (id === 'paywall' && pwEvents) {
-          // Conta exatamente quantas vezes o usuário abriu a tela de assinaturas no período
+        if ((id === 'paywall' || id === 'viu_planos') && pwEvents) {
+          // Conta exatamente quantas vezes o usuário abriu a tela de assinaturas ou checkout no período
           const pwByUser: Record<string, number> = {};
           pwEvents.forEach((pw: any) => {
             if (pw.user_id) pwByUser[pw.user_id] = (pwByUser[pw.user_id] || 0) + 1;
+            const em = (pw.email || '').toLowerCase().trim();
+            if (em) pwByUser[em] = (pwByUser[em] || 0) + 1;
           });
           Object.keys(pwByUser).forEach(uid => {
             acessosMap.set(uid, pwByUser[uid]);
@@ -1201,8 +1252,9 @@ export function AdminHojeCards() {
         setRows((current) => {
           const updated = current.map((r) => {
             const rUid = r.userId || r.key;
+            const rEm = (r.email || '').toLowerCase().trim();
             const rProv = map.get(rUid) || (r.avatarUrl?.includes('googleusercontent.com') ? 'google' : r.provider);
-            const calcAcessos = acessosMap.get(rUid);
+            const calcAcessos = acessosMap.get(rUid) || (rEm ? acessosMap.get(rEm) : undefined);
             const profData = profMap.get(rUid);
             return { 
               ...r, 
@@ -1485,9 +1537,9 @@ export function AdminHojeCards() {
                         {r.isPremium && (
                           <Crown className="w-4 h-4 text-[#FFD700] fill-[#FFD700] drop-shadow-md shrink-0" />
                         )}
-                        {typeof r.acessos === 'number' && r.acessos > 0 && (
+                        {typeof r.acessos === 'number' && r.acessos > 1 && (
                           <span
-                            title={`${r.acessos} acesso${r.acessos === 1 ? '' : 's'} no dia`}
+                            title={`${r.acessos} acessos no dia`}
                             className="shrink-0 font-body text-[10.5px] font-bold text-rose-400"
                           >
                             {r.acessos}x
