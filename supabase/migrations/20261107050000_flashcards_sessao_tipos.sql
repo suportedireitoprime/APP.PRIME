@@ -77,3 +77,4 @@ END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.flashcards_sessao(text[], text[], text, uuid, integer, text[]) TO authenticated, anon;
+
