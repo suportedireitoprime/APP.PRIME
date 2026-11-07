@@ -24,6 +24,7 @@ export function useBibliotecasData() {
   const materiaUrl = searchParams.get('materia');
 
   const [livroAberto, setLivroAberto] = useState<LivroNormalizado | null>(null);
+  const [livroModoInicial, setLivroModoInicial] = useState<'nativa' | 'pdf' | 'pdf-clara' | 'pdf-escura' | undefined>(undefined);
   const [customPdfUrl, setCustomPdfUrl] = useState<string | null>(null);
   const [customPdfTitle, setCustomPdfTitle] = useState<string>('');
   // Counts derivados do cache do React Query ou rede — nunca bloqueia render.
@@ -197,6 +198,8 @@ export function useBibliotecasData() {
     materias,
     livroAberto,
     setLivroAberto,
+    livroModoInicial,
+    setLivroModoInicial,
     customPdfUrl,
     setCustomPdfUrl,
     customPdfTitle,

@@ -42,14 +42,17 @@ import {
 const PdfScrollReader = lazy(() => import('./PdfScrollReader'));
 const PdfPaginatedReader = lazy(() => import('./PdfPaginatedReader'));
 
+import { saveUltimoModoLeitura } from '@/lib/leituraModoTracker';
+
 interface LivroDetailSheetProps {
   livro: LivroNormalizado | null;
   open: boolean;
   onClose: () => void;
   inline?: boolean;
+  initialMode?: 'nativa' | 'pdf' | 'pdf-clara' | 'pdf-escura';
 }
 
-const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProps) => {
+const LivroDetailSheet = ({ livro, open, onClose, inline, initialMode }: LivroDetailSheetProps) => {
   const mountedAt = useRef(0);
   useEffect(() => {
     if (open) mountedAt.current = Date.now();
@@ -219,12 +222,16 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
       return;
     }
     setLerDialog(false);
-    if (modo === 'nativa') setReaderMode('nativa');
-    else if (modo === 'pdf' || modo === 'pdf-clara') {
+    if (modo === 'nativa') {
+      saveUltimoModoLeitura(currentLivro.id, 'nativa');
+      setReaderMode('nativa');
+    } else if (modo === 'pdf' || modo === 'pdf-clara') {
+      saveUltimoModoLeitura(currentLivro.id, 'pdf-clara');
       const url = await ensurePdfLocalUrl(urlClara);
       setPdfUrlForReader(url);
       setReaderMode('pdf');
     } else if (modo === 'pdf-escura') {
+      saveUltimoModoLeitura(currentLivro.id, 'pdf-escura');
       const url = await ensurePdfLocalUrl(urlEscura);
       setPdfUrlForReader(url);
       setReaderMode('pdf');
@@ -232,6 +239,18 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
       setReaderMode('online');
     }
   };
+
+  // Se veio com modo inicial direto (ex: continuar leitura), abre direto sem passar pelo dialog
+  const initialTriggeredRef = useRef(false);
+  useEffect(() => {
+    if (open && initialMode && currentLivro && !initialTriggeredRef.current) {
+      initialTriggeredRef.current = true;
+      void onSelectModo(initialMode);
+    }
+    if (!open) {
+      initialTriggeredRef.current = false;
+    }
+  }, [open, initialMode, currentLivro?.id]);
 
   const renderContent = () => (
     <>
@@ -378,6 +397,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
                   urlClara={urlClara}
                   urlEscura={urlEscura}
                   onSwitchVersao={async (versao) => {
+                    saveUltimoModoLeitura(currentLivro.id, versao === 'clara' ? 'pdf-clara' : 'pdf-escura');
                     const target = versao === 'clara' ? urlClara : urlEscura;
                     if (target) {
                       const local = await ensurePdfLocalUrl(target);
@@ -395,6 +415,7 @@ const LivroDetailSheet = ({ livro, open, onClose, inline }: LivroDetailSheetProp
                   urlClara={urlClara}
                   urlEscura={urlEscura}
                   onSwitchVersao={async (versao) => {
+                    saveUltimoModoLeitura(currentLivro.id, versao === 'clara' ? 'pdf-clara' : 'pdf-escura');
                     const target = versao === 'clara' ? urlClara : urlEscura;
                     if (target) {
                       const local = await ensurePdfLocalUrl(target);

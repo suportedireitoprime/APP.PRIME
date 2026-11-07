@@ -154,7 +154,7 @@ const getColecaoNome = (colecaoId: string): string => {
 
 interface BibliotecaMobileContentProps {
   counts: Record<string, number>;
-  onAbrirLivro: (livro: LivroNormalizado) => void;
+  onAbrirLivro: (livro: LivroNormalizado, modoInicial?: 'nativa' | 'pdf' | 'pdf-clara' | 'pdf-escura') => void;
   onAbrirCustomPdf: (titulo: string, url: string) => void;
   onAbrirMateria: (materia: string) => void;
 }

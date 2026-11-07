@@ -12,6 +12,7 @@ interface BibliotecaModalsProps {
   materiaAberta: string | null;
   onCloseMateria: () => void;
   livroAberto: LivroNormalizado | null;
+  initialMode?: 'nativa' | 'pdf' | 'pdf-clara' | 'pdf-escura';
   onCloseLivro: () => void;
   onAbrirLivro: (livro: LivroNormalizado) => void;
   customPdfUrl: string | null;
@@ -23,6 +24,7 @@ export const BibliotecaModals: React.FC<BibliotecaModalsProps> = ({
   materiaAberta,
   onCloseMateria,
   livroAberto,
+  initialMode,
   onCloseLivro,
   onAbrirLivro,
   customPdfUrl,
@@ -54,6 +56,7 @@ export const BibliotecaModals: React.FC<BibliotecaModalsProps> = ({
           <LivroDetailSheet
             livro={livroAberto}
             open={!!livroAberto}
+            initialMode={initialMode}
             onClose={onCloseLivro}
           />
         )}
