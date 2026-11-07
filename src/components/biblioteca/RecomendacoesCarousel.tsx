@@ -316,13 +316,16 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
 
   if (total === 0) {
     return (
-      <div className="mt-6 mb-8 select-none overflow-hidden">
-        <div className="px-4 mb-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span className="w-1 h-7 rounded-full bg-primary shrink-0" aria-hidden />
-            <h3 className="font-display text-foreground text-[18px] font-bold leading-tight truncate uppercase tracking-widest">
-              Selecionados para você
+      <div className="mt-4 mb-6 select-none overflow-hidden">
+        <div className="px-1 mb-3 flex items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
+              <span className="w-1 h-5 rounded-full bg-rose-500 shrink-0" aria-hidden />
+              <span className="truncate">CLÁSSICOS DO DIREITO</span>
             </h3>
+            <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
+              Obras fundamentais que moldaram o pensamento jurídico
+            </p>
           </div>
         </div>
         <div className="w-full pt-3 pb-2 flex flex-col items-center">
@@ -345,26 +348,29 @@ const RecomendacoesCarousel = ({ onAbrirLivro }: Props) => {
 
   return (
     <div
-      className="mt-6 mb-8 relative w-full flex flex-col items-center select-none overflow-hidden"
+      className="mt-4 mb-6 relative w-full flex flex-col items-center select-none overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
       {/* Cabeçalho da seção */}
-      <div className="w-full px-4 mb-3 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <span className="w-1 h-7 rounded-full bg-primary shrink-0" aria-hidden />
-          <h3 className="font-display text-foreground text-[18px] font-bold leading-tight truncate uppercase tracking-widest">
-            Selecionados para você
+      <div className="w-full px-1 mb-3 flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h3 className="font-sans text-white text-[15px] sm:text-[16px] font-bold flex items-center gap-2 uppercase tracking-wider">
+            <span className="w-1 h-5 rounded-full bg-rose-500 shrink-0" aria-hidden />
+            <span className="truncate">CLÁSSICOS DO DIREITO</span>
           </h3>
+          <p className="text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3">
+            Obras fundamentais que moldaram o pensamento jurídico
+          </p>
         </div>
         <button
           type="button"
           onClick={() => navigate('/bibliotecas/classicos')}
           aria-label="Ver todos os clássicos do direito"
-          className="group pointer-events-auto shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:opacity-70 backdrop-blur-md border border-white/15 hover:border-white/25 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm"
+          className="group pointer-events-auto shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/15 hover:bg-rose-500/25 active:opacity-70 backdrop-blur-md border border-rose-500/30 hover:border-rose-500/50 text-[12px] font-semibold text-rose-200 hover:text-white transition-all shadow-sm"
         >
           <span>Ver todos</span>
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" aria-hidden />
+          <ChevronRight className="w-3.5 h-3.5 text-rose-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" aria-hidden />
         </button>
       </div>
 

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, HardDrive } from 'lucide-react';
+import { useGoBack } from '@/hooks/useGoBack';
 import { haptic } from '@/lib/nativeHaptics';
 import BibliotecaActionShortcuts from './BibliotecaActionShortcuts';
 import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
@@ -10,11 +11,13 @@ import bibliotecaCoverImg from '@/assets/biblioteca-cover.webp';
 
 interface Props {
   onBuscar?: () => void;
+  onAbrirCustomPdf?: () => void;
   children?: React.ReactNode;
 }
 
-const BibliotecaHero = ({ children }: Props) => {
+const BibliotecaHero = ({ onAbrirCustomPdf, children }: Props) => {
   const navigate = useNavigate();
+  const goBack = useGoBack();
   const { data: totalCount = 2000, isLoading } = useTotalLivrosCount();
 
   return (
@@ -73,18 +76,25 @@ const BibliotecaHero = ({ children }: Props) => {
       <header className="absolute top-0 right-0 left-0 z-30 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pointer-events-none">
         <div className="pointer-events-auto px-4 pb-2 pt-2 flex items-center justify-between">
           <button
-            onClick={() => { haptic.selection(); navigate('/'); }}
+            onClick={() => { haptic.selection(); goBack(); }}
             aria-label="Voltar"
-            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-lg"
           >
             <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
           </button>
           <button
-            onClick={() => { haptic.selection(); navigate('/modo-offline/livros'); }}
-            aria-label="Armazenamento Offline"
-            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70"
+            onClick={() => {
+              haptic.selection();
+              if (onAbrirCustomPdf) {
+                onAbrirCustomPdf();
+              } else {
+                navigate('/modo-offline/livros');
+              }
+            }}
+            aria-label="Meus PDFs ou Armazenamento Offline"
+            className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-black/40 border border-white/10 text-white backdrop-blur-md transition-colors hover:bg-black/60 active:opacity-70 cursor-pointer shadow-lg"
           >
-            <HardDrive className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+            <HardDrive className="w-5 h-5 sm:w-6 sm:h-6 text-white" strokeWidth={2} />
           </button>
         </div>
       </header>
