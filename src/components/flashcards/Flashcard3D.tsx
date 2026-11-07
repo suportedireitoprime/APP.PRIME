@@ -45,6 +45,46 @@ function toSentence(s: string): string {
   }).join(' ');
 }
 
+function cleanTextoTitulo(raw: string | null | undefined): string {
+  if (!raw) return '';
+  let s = raw.trim();
+  // Remove prefixos numéricos como "01. ", "07 - ", "12. ", "1.", "3 -", "04. "
+  s = s.replace(/^\d+[\s.\-_–:]+\s*/, '');
+  // Remove sufixos isolados
+  s = s.replace(/\s*[-–]\s*$/, '');
+  return toSentence(s.trim());
+}
+
+function cleanTemaTitulo(raw: string | null | undefined, areaFallback?: string | null): string {
+  const base = raw?.trim() || areaFallback?.trim() || 'Direito';
+  const parts = base.split(/\s*(?:>|›|\/|\|)\s*/).filter(Boolean);
+  const main = parts[0] || base;
+  const stripped = main.replace(/^\d+[\s.\-_–:]+\s*/, '').trim();
+  return toSentence(stripped || main);
+}
+
+function formatNivelArtigo(raw: string | null | undefined): { label: string; isArtigo: boolean } | null {
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+
+  // Ex: "1 - CONCEITO" ou "2 - APLICAÇÃO" -> "1 · Conceito"
+  const m = trimmed.match(/^(\d+)\s*[-–]\s*(.+)$/i);
+  if (m) {
+    return {
+      label: `${m[1]} · ${toSentence(m[2].trim())}`,
+      isArtigo: false,
+    };
+  }
+
+  // Ex: "Art. 121", "Artigo 5º"
+  if (/^art/i.test(trimmed)) {
+    return { label: trimmed, isArtigo: true };
+  }
+
+  return { label: toSentence(trimmed), isArtigo: false };
+}
+
 function formatTemaBreadcrumb(raw: string): string[] {
   const cleanRaw = raw.replace(/^\d+[\.\-\s]+/, '').trim();
   const dashIdx = cleanRaw.search(/\s[-–]\s/);
@@ -361,6 +401,57 @@ const Flashcard3D = memo(function Flashcard3D({
     setTimeout(() => onVirar(), 750);
   };
 
+  const isFormatoPadrao = tipoCard === 'Pergunta e Resposta';
+
+  const cleanAssunto = useMemo(() => {
+    return cleanTextoTitulo(atual.subtema);
+  }, [atual.subtema]);
+
+  const cleanTema = useMemo(() => {
+    return cleanTemaTitulo(atual.tema, atual.area);
+  }, [atual.tema, atual.area]);
+
+  const nivelInfo = useMemo(() => {
+    return formatNivelArtigo(atual.artigo_numero);
+  }, [atual.artigo_numero]);
+
+  const handleCardClick = () => {
+    // Se o card já está virado (mostrando o verso/resposta), o usuário pode clicar para virar de volta
+    if (virado) {
+      onVirar();
+      return;
+    }
+
+    // Se estiver na frente:
+    if (isFormatoPadrao) {
+      // Formato padrão (Pergunta e Resposta): vira normalmente com o clique
+      onVirar();
+    } else {
+      // Formatos interativos (Completar Lacunas, Múltipla Escolha, V/F, Ditado, Ache o Erro, Pegadinha):
+      // SÓ VIRA SE A PESSOA SELECIONAR AS OPÇÕES/RESPOSTAS!
+      haptic.selection?.();
+      const dicasInterativas: Record<string, string> = {
+        'Completar Lacunas': 'Selecione uma palavra nas opções abaixo para preencher a lacuna.',
+        'Múltipla Escolha': 'Selecione uma das alternativas abaixo para responder.',
+        'Verdadeiro ou Falso': 'Escolha Verdadeiro ou Falso abaixo para responder.',
+        'Ache o Erro': 'Identifique o termo com erro nas opções abaixo.',
+        'Ditado': 'Toque no microfone abaixo para ditar sua resposta.',
+        'Pegadinha': 'Avalie se há pegadinha nas opções abaixo.',
+      };
+      toast.info(dicasInterativas[tipoCard] || 'Selecione uma resposta abaixo para virar o card.', {
+        id: 'flashcard-interactive-hint',
+        duration: 1800,
+      });
+    }
+  };
+
+  const handleCardKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
   return (
     <>
       <AnimatePresence mode="wait" initial={false}>
@@ -379,10 +470,13 @@ const Flashcard3D = memo(function Flashcard3D({
           <div
             role="button"
             tabIndex={0}
-            onClick={onVirar}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onVirar(); }}
-            aria-label={virado ? 'Ver pergunta' : 'Ver resposta'}
-            className="relative w-full h-full text-left focus:outline-none cursor-pointer select-none"
+            onClick={handleCardClick}
+            onKeyDown={handleCardKeyDown}
+            aria-label={virado ? 'Ver pergunta' : isFormatoPadrao ? 'Ver resposta' : 'Flashcard interativo'}
+            className={cn(
+              "relative w-full h-full text-left focus:outline-none select-none",
+              virado || isFormatoPadrao ? "cursor-pointer" : "cursor-default"
+            )}
           >
             <div
               ref={cardContainerRef}
@@ -421,11 +515,23 @@ const Flashcard3D = memo(function Flashcard3D({
                   className="pointer-events-none absolute -right-3 -bottom-3 w-[150px] sm:w-[190px] md:w-[230px] h-auto object-contain opacity-35 select-none filter drop-shadow-[0_4px_14px_rgba(0,0,0,0.7)] z-0"
                 />
 
-                {/* Topo: Tipo do Card & Nível */}
-                <div className="relative z-10 mb-2 flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10.5px] font-black uppercase tracking-wider bg-black/50 border border-white/20 text-white shadow-sm backdrop-blur-md">
+                {/* Topo Harmônico: Badges de Tipo & Nível/Artigo */}
+                <div className="relative z-10 mb-2.5 flex items-center justify-between gap-2">
+                  {/* Badge do Tipo de Flashcard com visual Glassmorphism refinado */}
+                  <span
+                    className={cn(
+                      'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10.5px] font-black uppercase tracking-wider shadow-sm backdrop-blur-md border transition-all',
+                      tipoCard === 'Pergunta e Resposta' && 'bg-emerald-950/70 border-emerald-500/40 text-emerald-200',
+                      tipoCard === 'Completar Lacunas' && 'bg-violet-950/70 border-violet-500/40 text-violet-200',
+                      tipoCard === 'Múltipla Escolha' && 'bg-cyan-950/70 border-cyan-500/40 text-cyan-200',
+                      tipoCard === 'Verdadeiro ou Falso' && 'bg-teal-950/70 border-teal-500/40 text-teal-200',
+                      tipoCard === 'Ache o Erro' && 'bg-rose-950/70 border-rose-500/40 text-rose-200',
+                      tipoCard === 'Ditado' && 'bg-amber-950/70 border-amber-500/40 text-amber-200',
+                      tipoCard === 'Pegadinha' && 'bg-yellow-950/70 border-yellow-500/40 text-yellow-200'
+                    )}
+                  >
                     {tipoCard === 'Múltipla Escolha' && <ListOrdered className="h-3 w-3 text-cyan-400" />}
-                    {tipoCard === 'Verdadeiro ou Falso' && <CheckCircle2 className="h-3 w-3 text-emerald-400" />}
+                    {tipoCard === 'Verdadeiro ou Falso' && <CheckCircle2 className="h-3 w-3 text-teal-400" />}
                     {tipoCard === 'Ditado' && <Mic className="h-3 w-3 text-amber-400 animate-pulse" />}
                     {tipoCard === 'Pegadinha' && <AlertTriangle className="h-3 w-3 text-yellow-400" />}
                     {tipoCard === 'Completar Lacunas' && <Edit3 className="h-3 w-3 text-violet-400" />}
@@ -434,41 +540,36 @@ const Flashcard3D = memo(function Flashcard3D({
                     <span>{tipoCard}</span>
                   </span>
 
-                  {atual.artigo_numero && (
-                    <span className="text-[10px] font-bold text-white/75 uppercase tracking-widest bg-white/10 px-2 py-0.5 rounded-full border border-white/10">
-                      {atual.artigo_numero}
+                  {/* Badge de Nível / Fase / Artigo */}
+                  {nivelInfo && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase bg-white/10 border border-white/15 text-white/90 backdrop-blur-md shadow-sm">
+                      {nivelInfo.isArtigo ? (
+                        <BookOpen className="h-2.5 w-2.5 text-white/70 shrink-0" />
+                      ) : (
+                        <Scale className="h-2.5 w-2.5 text-white/70 shrink-0" />
+                      )}
+                      <span>{nivelInfo.label}</span>
                     </span>
                   )}
                 </div>
 
-                {/* Cabeçalho do Card: Breadcrumb do Tema / Subtema */}
-                <div className="relative z-10 mb-2 flex items-start justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 min-w-0 flex-1">
-                    {atual.area === 'Termos Jurídicos' && (
-                      <span className="mr-1.5 flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30">
-                        <BookOpen className="h-2.5 w-2.5" />
-                        Glossário
-                      </span>
+                {/* Placa Editorial Translúcida: Tema e Assunto (Harmônicos e sem poluição de números) */}
+                <div className="relative z-10 mb-2 rounded-2xl bg-black/40 border border-white/10 px-3.5 py-2 backdrop-blur-md shadow-inner">
+                  <div className="flex items-center gap-1.5 text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-white/75">
+                    <span className="truncate">{cleanTema}</span>
+                    {cleanAssunto && (
+                      <ChevronRight className="h-2.5 w-2.5 shrink-0 text-white/40" />
                     )}
-                    {(() => {
-                      const baseTema = atual.tema ?? atual.area ?? 'Flashcard';
-                      const parts = formatTemaBreadcrumb(baseTema);
-                      if (atual.subtema && !parts.some(p => p.toLowerCase() === atual.subtema?.toLowerCase())) {
-                        parts.push(toSentence(atual.subtema));
-                      }
-                      return parts.map((part, i, arr) => (
-                        <span key={i} className="flex items-center gap-1">
-                          <span className="text-[11px] md:text-xs font-semibold leading-snug text-white/95 drop-shadow-sm">
-                            {part}
-                          </span>
-                          {i < arr.length - 1 && (
-                            <ChevronRight className="h-2.5 w-2.5 shrink-0 text-white/50" />
-                          )}
-                        </span>
-                      ));
-                    })()}
+                    <span className="text-[9.5px] font-medium tracking-normal text-white/50 lowercase">
+                      {atual.area}
+                    </span>
                   </div>
-                  <Scale className="h-4 w-4 shrink-0 mt-0.5 text-white/80 drop-shadow-sm" aria-hidden />
+
+                  {cleanAssunto && (
+                    <h3 className="text-[12.5px] sm:text-[13.5px] font-bold text-white leading-snug line-clamp-2 mt-0.5 drop-shadow-sm">
+                      {cleanAssunto}
+                    </h3>
+                  )}
                 </div>
                 
                 {/* Pergunta (com interpolação dinâmica de lacunas preenchidas) */}
@@ -487,15 +588,49 @@ const Flashcard3D = memo(function Flashcard3D({
                   </motion.div>
                 </div>
                 
-                {/* Rodapé da Frente */}
-                <div className="relative z-10 mt-auto shrink-0 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-normal tracking-wide text-white/75 pt-2">
-                  <RotateCcw className="h-3 w-3 text-white/75" />
-                  {tipoCard === 'Múltipla Escolha' ? 'Selecione uma alternativa abaixo' :
-                   tipoCard === 'Verdadeiro ou Falso' ? 'Julgue a afirmação abaixo' :
-                   tipoCard === 'Ditado' ? 'Grave sua fala no microfone abaixo' :
-                   tipoCard === 'Pegadinha' ? 'Avalie se há pegadinha abaixo' :
-                   tipoCard === 'Completar Lacunas' ? 'Selecione as palavras da lacuna abaixo' :
-                   'Toque ou aperte espaço para virar'}
+                {/* Rodapé da Frente com instrução contextualizada */}
+                <div className="relative z-10 mt-auto shrink-0 flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-medium tracking-wide text-white/80 pt-2">
+                  {isFormatoPadrao ? (
+                    <>
+                      <RotateCcw className="h-3.5 w-3.5 text-white/75" />
+                      <span>Toque ou aperte espaço para virar</span>
+                    </>
+                  ) : tipoCard === 'Completar Lacunas' ? (
+                    <>
+                      <Edit3 className="h-3.5 w-3.5 text-violet-300" />
+                      <span>Selecione a palavra correta abaixo para preencher</span>
+                    </>
+                  ) : tipoCard === 'Múltipla Escolha' ? (
+                    <>
+                      <ListOrdered className="h-3.5 w-3.5 text-cyan-300" />
+                      <span>Selecione uma alternativa abaixo para responder</span>
+                    </>
+                  ) : tipoCard === 'Verdadeiro ou Falso' ? (
+                    <>
+                      <CheckCircle2 className="h-3.5 w-3.5 text-teal-300" />
+                      <span>Julgue a afirmação como Verdadeira ou Falsa abaixo</span>
+                    </>
+                  ) : tipoCard === 'Ache o Erro' ? (
+                    <>
+                      <XCircle className="h-3.5 w-3.5 text-rose-300" />
+                      <span>Identifique o termo com erro nas opções abaixo</span>
+                    </>
+                  ) : tipoCard === 'Ditado' ? (
+                    <>
+                      <Mic className="h-3.5 w-3.5 text-amber-300" />
+                      <span>Grave sua fala no microfone abaixo para responder</span>
+                    </>
+                  ) : tipoCard === 'Pegadinha' ? (
+                    <>
+                      <AlertTriangle className="h-3.5 w-3.5 text-yellow-300" />
+                      <span>Avalie se há pegadinha nas opções abaixo</span>
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="h-3.5 w-3.5 text-white/75" />
+                      <span>Selecione uma resposta abaixo para virar</span>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -532,11 +667,18 @@ const Flashcard3D = memo(function Flashcard3D({
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
-                    <p className="text-[10px] uppercase tracking-[0.2em] font-black" style={{ color: palette.primary }}>
-                      Resposta Explicada
-                    </p>
-                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                  <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2 gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] uppercase tracking-[0.2em] font-black" style={{ color: palette.primary }}>
+                        Resposta Explicada
+                      </p>
+                      {cleanAssunto && (
+                        <p className="text-[11px] font-semibold text-white/70 truncate mt-0.5">
+                          {cleanAssunto}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest shrink-0 bg-white/5 px-2.5 py-1 rounded-full border border-white/10">
                       {tipoCard}
                     </span>
                   </div>
