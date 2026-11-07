@@ -40,7 +40,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Aprenda a base fundamental do Estado",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-constitucional.webp`),
     aulasInfo: "26 aulas",
-    rota: "/audioaulas/Direito%20Constitucional",
+    rota: "/audioaulas?area=Direito%20Constitucional",
   },
   {
     id: "cp",
@@ -49,7 +49,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Crimes, penas e tipicidade penal",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-penal.webp`),
     aulasInfo: "11 aulas",
-    rota: "/audioaulas/Direito%20Penal",
+    rota: "/audioaulas?area=Direito%20Penal",
   },
   {
     id: "cpp",
@@ -58,7 +58,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Ritos, inquérito, provas e procedimentos",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-processual-penal.webp`),
     aulasInfo: "35 aulas",
-    rota: "/audioaulas/Processo%20Penal",
+    rota: "/audioaulas?area=Processo%20Penal",
   },
   {
     id: "cc",
@@ -67,7 +67,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Pessoas, bens, obrigações e contratos",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-civil.webp`),
     aulasInfo: "Acervo de Leis",
-    rota: "/audioaulas/Processo%20Civil",
+    rota: "/audioaulas?area=Processo%20Civil",
   },
   {
     id: "cpc",
@@ -76,7 +76,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Prazos, recursos e tutela jurisdicional",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-processual-civil.webp`),
     aulasInfo: "17 aulas",
-    rota: "/audioaulas/Processo%20Civil",
+    rota: "/audioaulas?area=Processo%20Civil",
   },
   {
     id: "clt",
@@ -85,7 +85,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Direitos, regras e deveres trabalhistas",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-do-trabalho.webp`),
     aulasInfo: "7 aulas",
-    rota: "/audioaulas/Direito%20do%20Trabalho",
+    rota: "/audioaulas?area=Direito%20do%20Trabalho",
   },
   {
     id: "cpt",
@@ -94,7 +94,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Audiências, dissídios, ritos e execução",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-processual-do-trabalho.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioaulas/Processo%20do%20Trabalho",
+    rota: "/audioaulas?area=Processo%20do%20Trabalho",
   },
   {
     id: "ctn",
@@ -121,7 +121,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Sociedades, títulos de crédito e falência",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-empresarial.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioaulas/Direito%20Empresarial",
+    rota: "/audioaulas?area=Direito%20Empresarial",
   },
   {
     id: "ce",
@@ -139,7 +139,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Licitações, atos administrativos e servidores",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-administrativo.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioaulas/Direito%20Administrativo",
+    rota: "/audioaulas?area=Direito%20Administrativo",
   },
   {
     id: "amb",
@@ -148,7 +148,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Código Florestal, fauna, flora e crimes ambientais",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-ambiental.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioaulas/Direito%20Ambiental",
+    rota: "/audioaulas?area=Direito%20Ambiental",
   },
   {
     id: "prev",
@@ -157,7 +157,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Benefícios, custeio e seguridade social",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-previdenciario.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioaulas/Direito%20Previdenciário",
+    rota: "/audioaulas?area=Direito%20Previdenciário",
   },
   {
     id: "int",
@@ -166,7 +166,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Tratados, extradição e cooperação internacional",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-internacional.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioaulas/Direito%20Internacional",
+    rota: "/audioaulas?area=Direito%20Internacional",
   },
   {
     id: "dh",
@@ -175,7 +175,7 @@ const CATALOGO_CODIGOS: CodigoItem[] = [
     subtitulo: "Pactos, convenções e garantias fundamentais",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direitos-humanos.webp`),
     aulasInfo: "Legislação em Áudio",
-    rota: "/audioaulas/Direitos%20Humanos",
+    rota: "/audioaulas?area=Direitos%20Humanos",
   },
   {
     id: "ctb",
@@ -197,7 +197,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     subtitulo: "Lei nº 8.069/1990 — Aulas completas artigo por artigo",
     capa: directImg(`${SUPABASE_STORAGE_CAPAS}/direito-crianca-adolescente-eca.webp`),
     aulasInfo: "322 aulas",
-    rota: "/audioaulas/ECA%20(Crian%C3%A7a%20e%20Adolescente)",
+    rota: "/audioaulas?area=ECA%20(Crian%C3%A7a%20e%20Adolescente)",
   },
   {
     id: "eoab",
@@ -206,7 +206,7 @@ const CATALOGO_ESTATUTOS: EstatutoItem[] = [
     subtitulo: "Lei nº 8.906/1994 — Ética e prerrogativas artigo por artigo",
     capa: "/assets/eoab-woman-fixed.webp",
     aulasInfo: "96 aulas",
-    rota: "/audioaulas/Estatuto%20da%20OAB",
+    rota: "/audioaulas?area=Estatuto%20da%20OAB",
   },
   {
     id: "ei",
@@ -301,8 +301,12 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
   // Função para sincronizar a quantidade de aulas de cada card em tempo real com o banco
   const getAulasInfoDinamica = useCallback(
     (rota: string, fallback?: string) => {
-      if (rota.startsWith("/audioaulas/")) {
-        const areaNome = decodeURIComponent(rota.replace("/audioaulas/", "")).toLowerCase().trim();
+      const areaNome = rota.includes("area=")
+        ? decodeURIComponent(rota.split("area=")[1].split("&")[0]).toLowerCase().trim()
+        : rota.startsWith("/audioaulas/")
+          ? decodeURIComponent(rota.replace("/audioaulas/", "")).toLowerCase().trim()
+          : null;
+      if (areaNome) {
         const count = areaAulasMap.get(areaNome);
         if (typeof count === "number") {
           return `${count} ${count === 1 ? "aula" : "aulas"}`;
@@ -322,10 +326,12 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
   const totalAulasCodigos = useMemo(() => {
     let total = 0;
     for (const cod of CATALOGO_CODIGOS) {
-      if (cod.rota.startsWith("/audioaulas/")) {
-        const areaNome = decodeURIComponent(cod.rota.replace("/audioaulas/", ""))
-          .toLowerCase()
-          .trim();
+      const areaNome = cod.rota.includes("area=")
+        ? decodeURIComponent(cod.rota.split("area=")[1].split("&")[0]).toLowerCase().trim()
+        : cod.rota.startsWith("/audioaulas/")
+          ? decodeURIComponent(cod.rota.replace("/audioaulas/", "")).toLowerCase().trim()
+          : null;
+      if (areaNome) {
         const count = areaAulasMap.get(areaNome);
         if (typeof count === "number") {
           total += count;
@@ -344,10 +350,12 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
   const totalAulasEstatutos = useMemo(() => {
     let total = 0;
     for (const est of CATALOGO_ESTATUTOS) {
-      if (est.rota.startsWith("/audioaulas/")) {
-        const areaNome = decodeURIComponent(est.rota.replace("/audioaulas/", ""))
-          .toLowerCase()
-          .trim();
+      const areaNome = est.rota.includes("area=")
+        ? decodeURIComponent(est.rota.split("area=")[1].split("&")[0]).toLowerCase().trim()
+        : est.rota.startsWith("/audioaulas/")
+          ? decodeURIComponent(est.rota.replace("/audioaulas/", "")).toLowerCase().trim()
+          : null;
+      if (areaNome) {
         const count = areaAulasMap.get(areaNome);
         if (typeof count === "number") {
           total += count;
@@ -492,7 +500,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                   return (
                     <button
                       key={nome}
-                      onClick={() => irParaRota(`/audioaulas/${encodeURIComponent(nome)}`)}
+                      onClick={() => irParaRota(`/audioaulas?area=${encodeURIComponent(nome)}`)}
                       className="group relative w-40 sm:w-47.5 md:w-52.5 aspect-4/5 shrink-0 snap-start rounded-2xl overflow-hidden text-left border border-white/10 transition-all duration-300 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/20 focus-visible:outline-none active:scale-[0.98]"
                     >
                       <CapaOtimizada
@@ -595,7 +603,7 @@ export const AudioaulasGridAreas = React.memo(function AudioaulasGridAreas({
                   return (
                     <button
                       key={nome}
-                      onClick={() => irParaRota(`/audioaulas/${encodeURIComponent(nome)}`)}
+                      onClick={() => irParaRota(`/audioaulas?area=${encodeURIComponent(nome)}`)}
                       className="group flex items-center justify-between gap-3 sm:gap-4 p-2.5 sm:p-3 rounded-2xl bg-white/4 border border-white/5 hover:border-primary/40 hover:bg-white/[0.07] transition-all duration-200 active:scale-[0.99] text-left"
                     >
                       <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">

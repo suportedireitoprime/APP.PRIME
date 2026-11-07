@@ -158,26 +158,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/admin/pilulas",
-    "group": "Administração",
-    "label": "Admin Pilulas",
-    "description": "Página correspondente ao componente AdminPilulas",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": true,
-    "component": "AdminPilulas",
-    "exampleUrl": "/admin/pilulas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.5 MB",
-    "weightReasons": [
-      "Engine Vanilla Three.js",
-      "Shaders e geometrias 3D",
-      "Render loop"
-    ]
-  },
-  {
     "path": "/ajustes/excluir-conta",
     "group": "Ajustes",
     "label": "Ajustes Excluir Conta",
@@ -235,25 +215,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     ]
   },
   {
-    "path": "/atualizacoes",
-    "group": "Notícias & Informativos",
-    "label": "Atualizacoes",
-    "description": "Histórico de atualizações das leis do Vade Mecum",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "Atualizacoes",
-    "exampleUrl": "/atualizacoes",
-    "weightScore": 1,
-    "weightLevel": "leve",
-    "weightEstimate": "~120 KB",
-    "weightReasons": [
-      "Página padrão leve",
-      "Carga instantânea 0ms"
-    ]
-  },
-  {
     "path": "/audioaulas",
     "group": "Audioaulas",
     "label": "Audioaulas (Catálogo Principal)",
@@ -264,26 +225,6 @@ export const APP_ROUTES_CATALOG: AppRouteItem[] = [
     "isAdmin": false,
     "component": "Audioaulas",
     "exampleUrl": "/audioaulas",
-    "weightScore": 5,
-    "weightLevel": "muito_pesada",
-    "weightEstimate": "~3.2 MB",
-    "weightReasons": [
-      "Streaming de áudio R2",
-      "Catálogo de 58 mil linhas",
-      "Sincronizador SRT"
-    ]
-  },
-  {
-    "path": "/audioaulas/:area",
-    "group": "Audioaulas",
-    "label": "Audioaulas — Área de Estudo",
-    "description": "Grade de audioaulas da disciplina selecionada",
-    "isRedirect": false,
-    "redirectTarget": null,
-    "isProtected": true,
-    "isAdmin": false,
-    "component": "Audioaulas",
-    "exampleUrl": "/audioaulas/direito-penal",
     "weightScore": 5,
     "weightLevel": "muito_pesada",
     "weightEstimate": "~3.2 MB",

@@ -117,7 +117,6 @@ const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
 const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
 const AdminRotas = lazy(() => import("./pages/AdminRotas.tsx"));
 
-const AdminPilulas = lazy(() => import("./pages/AdminPilulas.tsx"));
 const Simulados = lazy(() => import("./pages/Simulados.tsx"));
 const SimuladosEstatisticas = lazy(() => import("./pages/SimuladosEstatisticas.tsx"));
 import { supabase } from "@/integrations/supabase/client";
@@ -125,7 +124,6 @@ import { supabase } from "@/integrations/supabase/client";
 // Lazy loaded
 const Noticias = lazy(routePrefetch.noticias);
 const Boletins = lazy(() => import("./pages/Boletins.tsx"));
-const Atualizacoes = lazy(() => import("./pages/Atualizacoes.tsx"));
 const Novidades = lazy(() => import("./pages/Novidades.tsx"));
 const AvaliacaoInteligente = lazy(() => import("./pages/graficos/AvaliacaoInteligente.tsx"));
 const PessoalGrifos = lazy(() => import("./pages/pessoal/Grifos.tsx"));
@@ -831,7 +829,6 @@ function AnimatedRoutes() {
           <Route path="/noticias" element={<ProtectedRoute><PageTransition><Noticias /></PageTransition></ProtectedRoute>} />
           <Route path="/radar-concursos" element={<ProtectedRoute><PageTransition><RadarConcursos /></PageTransition></ProtectedRoute>} />
           <Route path="/radar-concursos/estatisticas" element={<ProtectedRoute><PageTransition><RadarEstatisticas /></PageTransition></ProtectedRoute>} />
-          <Route path="/atualizacoes" element={<ProtectedRoute><PageTransition instant><Atualizacoes /></PageTransition></ProtectedRoute>} />
           <Route path="/boletins" element={<ProtectedRoute><PageTransition instant><Boletins /></PageTransition></ProtectedRoute>} />
           <Route path="/novidades" element={<ProtectedRoute><PageTransition><Novidades /></PageTransition></ProtectedRoute>} />
           <Route path="/lembretes" element={<ProtectedRoute><PageTransition><CentralLembretes /></PageTransition></ProtectedRoute>} />
@@ -939,7 +936,6 @@ function AnimatedRoutes() {
 
           <Route path="/questoes/desempenho" element={<ProtectedRoute><PageTransition instant><QuestoesDesempenho /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/historico" element={<ProtectedRoute><PageTransition instant><QuestoesHistorico /></PageTransition></ProtectedRoute>} />
-          <Route path="/admin/pilulas" element={<ProtectedRoute><PageTransition><AdminPilulas /></PageTransition></ProtectedRoute>} />
 
           <Route path="/perfil" element={<ProtectedRoute><PageTransition instant><Perfil /></PageTransition></ProtectedRoute>} />
           <Route path="/sobre" element={<ProtectedRoute><PageTransition><SobreApp /></PageTransition></ProtectedRoute>} />
@@ -963,7 +959,6 @@ function AnimatedRoutes() {
           <Route path="/admin-horus" element={<ProtectedRoute><PageTransition><AdminHorus /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-omniroute" element={<ProtectedRoute><PageTransition><AdminOmniRouteTeste /></PageTransition></ProtectedRoute>} />
           <Route path="/audioaulas" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
-          <Route path="/audioaulas/:area" element={<ProtectedRoute><PageTransition instant><Audioaulas /></PageTransition></ProtectedRoute>} />
 
           <Route path="/me-explique" element={<ProtectedRoute><PageTransition instant><MeExplique /></PageTransition></ProtectedRoute>} />
           <Route path="/chat-juridico" element={<ProtectedRoute><PageTransition instant><ChatJuridico /></PageTransition></ProtectedRoute>} />

@@ -21,12 +21,13 @@ import { AudioaulasContinuarOuvindo } from '@/components/audioaulas/home/Audioau
 const Audioaulas = () => {
   const navigate = useNavigate();
   const { area } = useParams();
-  const areaAtual = area ? decodeURIComponent(area) : null;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const areaQuery = searchParams.get('area');
+  const areaAtual = (area || areaQuery) ? decodeURIComponent(area || areaQuery!) : null;
   const buscaRef = useRef<HTMLInputElement | null>(null);
 
   const isDesktop = useIsDesktop();
   const state = useAudioaulas(areaAtual);
-  const [searchParams, setSearchParams] = useSearchParams();
 
   const { aulas, loading: loadingAulas, handleTocarAula, setAba, setBusca } = state;
 

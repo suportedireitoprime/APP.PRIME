@@ -19,7 +19,6 @@ import { Route as AdminPushRouteImport } from './routes/admin-push'
 import { Route as AdminRotasRouteImport } from './routes/admin-rotas'
 import { Route as AssinaturaRouteImport } from './routes/assinatura'
 import { Route as AssistenteHorusRouteImport } from './routes/assistente-horus'
-import { Route as AtualizacoesRouteImport } from './routes/atualizacoes'
 import { Route as AudioaulasRouteImport } from './routes/audioaulas'
 import { Route as AudiobooksRouteImport } from './routes/audiobooks'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -59,9 +58,7 @@ import { Route as SuportePublicoRouteImport } from './routes/suporte-publico'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as VadeMecumRouteImport } from './routes/vade-mecum'
 import { Route as VideoaulasRouteImport } from './routes/videoaulas'
-import { Route as AdminPilulasRouteImport } from './routes/admin.pilulas'
 import { Route as AjustesExcluirContaRouteImport } from './routes/ajustes.excluir-conta'
-import { Route as AudioaulasAreaRouteImport } from './routes/audioaulas.$area'
 import { Route as BibliotecasColecaoIdRouteImport } from './routes/bibliotecas.$colecaoId'
 import { Route as BibliotecasTrilhasRouteImport } from './routes/bibliotecas.trilhas'
 import { Route as DesktopLinkTokenRouteImport } from './routes/desktop-link.$token'
@@ -207,11 +204,6 @@ const AssinaturaRoute = AssinaturaRouteImport.update({
 const AssistenteHorusRoute = AssistenteHorusRouteImport.update({
   id: '/assistente-horus',
   path: '/assistente-horus',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AtualizacoesRoute = AtualizacoesRouteImport.update({
-  id: '/atualizacoes',
-  path: '/atualizacoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AudioaulasRoute = AudioaulasRouteImport.update({
@@ -409,20 +401,10 @@ const VideoaulasRoute = VideoaulasRouteImport.update({
   path: '/videoaulas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminPilulasRoute = AdminPilulasRouteImport.update({
-  id: '/admin/pilulas',
-  path: '/admin/pilulas',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AjustesExcluirContaRoute = AjustesExcluirContaRouteImport.update({
   id: '/ajustes/excluir-conta',
   path: '/ajustes/excluir-conta',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AudioaulasAreaRoute = AudioaulasAreaRouteImport.update({
-  id: '/$area',
-  path: '/$area',
-  getParentRoute: () => AudioaulasRoute,
 } as any)
 const BibliotecasColecaoIdRoute = BibliotecasColecaoIdRouteImport.update({
   id: '/$colecaoId',
@@ -935,8 +917,7 @@ export interface FileRoutesByFullPath {
   '/admin-rotas': typeof AdminRotasRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente-horus': typeof AssistenteHorusRoute
-  '/atualizacoes': typeof AtualizacoesRoute
-  '/audioaulas': typeof AudioaulasRouteWithChildren
+  '/audioaulas': typeof AudioaulasRoute
   '/audiobooks': typeof AudiobooksRoute
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
@@ -975,9 +956,7 @@ export interface FileRoutesByFullPath {
   '/termos': typeof TermosRoute
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
-  '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
-  '/audioaulas/$area': typeof AudioaulasAreaRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
@@ -1086,8 +1065,7 @@ export interface FileRoutesByTo {
   '/admin-rotas': typeof AdminRotasRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente-horus': typeof AssistenteHorusRoute
-  '/atualizacoes': typeof AtualizacoesRoute
-  '/audioaulas': typeof AudioaulasRouteWithChildren
+  '/audioaulas': typeof AudioaulasRoute
   '/audiobooks': typeof AudiobooksRoute
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
@@ -1126,9 +1104,7 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
-  '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
-  '/audioaulas/$area': typeof AudioaulasAreaRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
@@ -1238,8 +1214,7 @@ export interface FileRoutesById {
   '/admin-rotas': typeof AdminRotasRoute
   '/assinatura': typeof AssinaturaRoute
   '/assistente-horus': typeof AssistenteHorusRoute
-  '/atualizacoes': typeof AtualizacoesRoute
-  '/audioaulas': typeof AudioaulasRouteWithChildren
+  '/audioaulas': typeof AudioaulasRoute
   '/audiobooks': typeof AudiobooksRoute
   '/auth': typeof AuthRoute
   '/bibliotecas': typeof BibliotecasRouteWithChildren
@@ -1278,9 +1253,7 @@ export interface FileRoutesById {
   '/termos': typeof TermosRoute
   '/vade-mecum': typeof VadeMecumRouteWithChildren
   '/videoaulas': typeof VideoaulasRouteWithChildren
-  '/admin/pilulas': typeof AdminPilulasRoute
   '/ajustes/excluir-conta': typeof AjustesExcluirContaRoute
-  '/audioaulas/$area': typeof AudioaulasAreaRoute
   '/bibliotecas/$colecaoId': typeof BibliotecasColecaoIdRouteWithChildren
   '/bibliotecas/trilhas': typeof BibliotecasTrilhasRoute
   '/desktop-link/$token': typeof DesktopLinkTokenRoute
@@ -1391,7 +1364,6 @@ export interface FileRouteTypes {
     | '/admin-rotas'
     | '/assinatura'
     | '/assistente-horus'
-    | '/atualizacoes'
     | '/audioaulas'
     | '/audiobooks'
     | '/auth'
@@ -1431,9 +1403,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/vade-mecum'
     | '/videoaulas'
-    | '/admin/pilulas'
     | '/ajustes/excluir-conta'
-    | '/audioaulas/$area'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
@@ -1542,7 +1512,6 @@ export interface FileRouteTypes {
     | '/admin-rotas'
     | '/assinatura'
     | '/assistente-horus'
-    | '/atualizacoes'
     | '/audioaulas'
     | '/audiobooks'
     | '/auth'
@@ -1582,9 +1551,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/vade-mecum'
     | '/videoaulas'
-    | '/admin/pilulas'
     | '/ajustes/excluir-conta'
-    | '/audioaulas/$area'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
@@ -1693,7 +1660,6 @@ export interface FileRouteTypes {
     | '/admin-rotas'
     | '/assinatura'
     | '/assistente-horus'
-    | '/atualizacoes'
     | '/audioaulas'
     | '/audiobooks'
     | '/auth'
@@ -1733,9 +1699,7 @@ export interface FileRouteTypes {
     | '/termos'
     | '/vade-mecum'
     | '/videoaulas'
-    | '/admin/pilulas'
     | '/ajustes/excluir-conta'
-    | '/audioaulas/$area'
     | '/bibliotecas/$colecaoId'
     | '/bibliotecas/trilhas'
     | '/desktop-link/$token'
@@ -1845,8 +1809,7 @@ export interface RootRouteChildren {
   AdminRotasRoute: typeof AdminRotasRoute
   AssinaturaRoute: typeof AssinaturaRoute
   AssistenteHorusRoute: typeof AssistenteHorusRoute
-  AtualizacoesRoute: typeof AtualizacoesRoute
-  AudioaulasRoute: typeof AudioaulasRouteWithChildren
+  AudioaulasRoute: typeof AudioaulasRoute
   AudiobooksRoute: typeof AudiobooksRoute
   AuthRoute: typeof AuthRoute
   BibliotecasRoute: typeof BibliotecasRouteWithChildren
@@ -1885,7 +1848,6 @@ export interface RootRouteChildren {
   TermosRoute: typeof TermosRoute
   VadeMecumRoute: typeof VadeMecumRouteWithChildren
   VideoaulasRoute: typeof VideoaulasRouteWithChildren
-  AdminPilulasRoute: typeof AdminPilulasRoute
   AjustesExcluirContaRoute: typeof AjustesExcluirContaRoute
   DesktopLinkTokenRoute: typeof DesktopLinkTokenRoute
   GraficosAvaliacaoRoute: typeof GraficosAvaliacaoRoute
@@ -1972,13 +1934,6 @@ declare module '@tanstack/react-router' {
       path: '/assistente-horus'
       fullPath: '/assistente-horus'
       preLoaderRoute: typeof AssistenteHorusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/atualizacoes': {
-      id: '/atualizacoes'
-      path: '/atualizacoes'
-      fullPath: '/atualizacoes'
-      preLoaderRoute: typeof AtualizacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/audioaulas': {
@@ -2254,26 +2209,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VideoaulasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/pilulas': {
-      id: '/admin/pilulas'
-      path: '/admin/pilulas'
-      fullPath: '/admin/pilulas'
-      preLoaderRoute: typeof AdminPilulasRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/ajustes/excluir-conta': {
       id: '/ajustes/excluir-conta'
       path: '/ajustes/excluir-conta'
       fullPath: '/ajustes/excluir-conta'
       preLoaderRoute: typeof AjustesExcluirContaRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/audioaulas/$area': {
-      id: '/audioaulas/$area'
-      path: '/$area'
-      fullPath: '/audioaulas/$area'
-      preLoaderRoute: typeof AudioaulasAreaRouteImport
-      parentRoute: typeof AudioaulasRoute
     }
     '/bibliotecas/$colecaoId': {
       id: '/bibliotecas/$colecaoId'
@@ -2950,18 +2891,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AudioaulasRouteChildren {
-  AudioaulasAreaRoute: typeof AudioaulasAreaRoute
-}
-
-const AudioaulasRouteChildren: AudioaulasRouteChildren = {
-  AudioaulasAreaRoute: AudioaulasAreaRoute,
-}
-
-const AudioaulasRouteWithChildren = AudioaulasRoute._addFileChildren(
-  AudioaulasRouteChildren,
-)
-
 interface BibliotecasColecaoIdRouteChildren {
   BibliotecasColecaoIdAreaSlugRoute: typeof BibliotecasColecaoIdAreaSlugRoute
 }
@@ -3432,8 +3361,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRotasRoute: AdminRotasRoute,
   AssinaturaRoute: AssinaturaRoute,
   AssistenteHorusRoute: AssistenteHorusRoute,
-  AtualizacoesRoute: AtualizacoesRoute,
-  AudioaulasRoute: AudioaulasRouteWithChildren,
+  AudioaulasRoute: AudioaulasRoute,
   AudiobooksRoute: AudiobooksRoute,
   AuthRoute: AuthRoute,
   BibliotecasRoute: BibliotecasRouteWithChildren,
@@ -3472,7 +3400,6 @@ const rootRouteChildren: RootRouteChildren = {
   TermosRoute: TermosRoute,
   VadeMecumRoute: VadeMecumRouteWithChildren,
   VideoaulasRoute: VideoaulasRouteWithChildren,
-  AdminPilulasRoute: AdminPilulasRoute,
   AjustesExcluirContaRoute: AjustesExcluirContaRoute,
   DesktopLinkTokenRoute: DesktopLinkTokenRoute,
   GraficosAvaliacaoRoute: GraficosAvaliacaoRoute,

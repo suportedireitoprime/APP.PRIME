@@ -64,7 +64,6 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
   "/admin-push": () => import("./AdminPush"),
   "/admin-horus": () => import("./AdminHorus"),
   "/admin-omniroute": () => import("./AdminOmniRouteTeste"),
-  "/admin/pilulas": () => import("./AdminPilulas"),
   "/admin-rotas": () => import("./AdminRotas"),
   "/explicacao-lei": () => import("./ExplicacaoLei"),
 };
@@ -197,13 +196,6 @@ const CATEGORIES: Category[] = [
         icon: Sparkles,
         desc: "Central unificada de modelos e chaves de IA do aplicativo",
         route: "/admin-omniroute",
-      },
-      {
-        id: "admin-pilulas",
-        label: "Pílulas (Clássicos)",
-        icon: Pill,
-        desc: "Gerenciar áudios e prompts para pílulas de clássicos",
-        route: "/admin/pilulas",
       },
       {
         id: "explicacao-lei",
