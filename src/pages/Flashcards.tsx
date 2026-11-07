@@ -15,9 +15,9 @@ import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards
 import ShapeGrid from '@/components/ui/ShapeGrid';
 
 const ATALHOS_FLASHCARDS = [
+  { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/flashcards/historico' },
   { id: 'decks', label: 'Decks', desc: 'Seus baralhos', icon: FolderPlus, route: '/flashcards/decks' },
   { id: 'revisar', label: 'Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/flashcards/revisar' },
-  { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/flashcards/historico' },
   { id: 'desempenho', label: 'Desempenho', desc: 'Estatísticas', icon: BarChart3, route: '/flashcards/progresso' },
 ];
 

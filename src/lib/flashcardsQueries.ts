@@ -148,9 +148,36 @@ export const useFlashcardsSessao = (params: {
 
       const effectiveLimit = params.limit && params.limit > 0 ? params.limit : 10000;
       const onlineFn = async () => {
+        let effectiveTemas = params.temas;
+        if (params.temas && params.temas.length > 0 && params.areas && params.areas.length > 0) {
+          try {
+            const areaPromises = params.areas.map(area =>
+              supabase.rpc('flashcards_temas', { _area: area }).then(({ data }) => data || [])
+            );
+            const areaResults = await Promise.all(areaPromises);
+            const allDbTemas = areaResults.flat() as Array<{ tema: string }>;
+            
+            if (allDbTemas.length > 0) {
+              const expanded = new Set<string>(params.temas);
+              for (const tParam of params.temas) {
+                const cleanParam = tParam.replace(/^\d+[\.\-\s_:]+/, '').trim().toLowerCase();
+                for (const dbT of allDbTemas) {
+                  const cleanDb = (dbT.tema || '').replace(/^\d+[\.\-\s_:]+/, '').trim().toLowerCase();
+                  if (cleanDb === cleanParam || dbT.tema.toLowerCase() === tParam.toLowerCase()) {
+                    expanded.add(dbT.tema);
+                  }
+                }
+              }
+              effectiveTemas = Array.from(expanded);
+            }
+          } catch (e) {
+            console.warn('Erro ao resolver temas expandidos:', e);
+          }
+        }
+
         const { data, error } = await supabase.rpc('flashcards_sessao', {
           _areas: params.areas,
-          _temas: params.temas,
+          _temas: effectiveTemas,
           _modo: params.modo,
           _deck_id: params.deckId,
           _limit: effectiveLimit,

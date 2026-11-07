@@ -37,9 +37,9 @@ export function useFlashcardsEngine() {
     limitParam = 50;
   }
   const listaAreas = areasParam ? areasParam.split('|').filter(Boolean) : areaParam ? [areaParam] : null;
-  const temasList = temasParam
-    ? temasParam.split('|').filter(Boolean).map(t => t.replace(/^\d+[\.\-\s]+/, '').trim())
-    : null;
+  const rawTemas = temasParam ? temasParam.split('|').filter(Boolean) : null;
+  const cleanTemas = rawTemas ? rawTemas.map(t => t.replace(/^\d+[\.\-\s_:]+/, '').trim()) : null;
+  const temasList = rawTemas && cleanTemas ? Array.from(new Set([...rawTemas, ...cleanTemas])) : rawTemas;
   const tiposList = tiposParam ? tiposParam.split('|').filter(Boolean) : null;
   
   const [sessaoId] = useState(() => params.get('sessaoId') || Date.now().toString());
