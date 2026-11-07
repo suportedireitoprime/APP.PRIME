@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
 import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
@@ -27,6 +27,9 @@ const Flashcards = () => {
   const { data: areasRaw, isLoading: loadingAreas } = useFlashcardsResumoAreas();
 
   const [filtroAberto, setFiltroAberto] = useState(false);
+  const [filtroDisciplinaPrevia, setFiltroDisciplinaPrevia] = useState<string | undefined>();
+  const [filtroPassoPrevio, setFiltroPassoPrevio] = useState<'disciplinas' | 'assuntos' | 'tipos' | 'status' | 'quantidade' | undefined>();
+  const [areaSelecionadaModal, setAreaSelecionadaModal] = useState<FlashcardsAreaRow | null>(null);
   const loading = loadingDash;
 
   const areas = useMemo(() => {
@@ -80,8 +83,8 @@ const Flashcards = () => {
               <span className="h-5 w-1 rounded-full bg-[#36AF85]" />
               <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Praticar Flashcards</h2>
             </div>
-            <p className="ml-3 mt-1 text-xs text-muted-foreground">
-              Escolha filtros personalizados por matéria, assunto e tipos para começar.
+            <p className="ml-3 mt-1 text-xs text-muted-foreground truncate">
+              Escolha filtros por matéria, assunto e tipo para praticar.
             </p>
 
             <motion.button
@@ -166,7 +169,7 @@ const Flashcards = () => {
                     whileTap={{ scale: 0.97 }}
                     onClick={() => {
                       haptic.selection();
-                      navigate(`/flashcards/area/${area.slug || area.area}`);
+                      setAreaSelecionadaModal(area);
                     }}
                     className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-850/80 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md min-h-[142px] focus-visible:outline-none"
                   >
@@ -229,11 +232,125 @@ const Flashcards = () => {
         </div>
       </div>
 
+      {/* ── Modal Flutuante: Opções da Matéria (Filtrar vs Trilhas) ── */}
+      <AnimatePresence>
+        {areaSelecionadaModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setAreaSelecionadaModal(null)}
+              className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+            />
+
+            {/* Card Flutuante */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 16 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 320 }}
+              className="relative w-full max-w-sm rounded-3xl bg-zinc-900 border border-zinc-800 p-6 shadow-2xl z-10 overflow-hidden"
+            >
+              {/* Fechar */}
+              <button
+                type="button"
+                onClick={() => setAreaSelecionadaModal(null)}
+                className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white rounded-full bg-zinc-800/60 transition-colors"
+                aria-label="Fechar"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* Informações da Matéria */}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700/80 flex items-center justify-center shadow-inner mb-3">
+                  {(() => {
+                    const AreaIcon = areaIconFor(areaSelecionadaModal.slug || areaSelecionadaModal.area)?.Icon || BookOpen;
+                    return <AreaIcon className="w-7 h-7 text-zinc-200" strokeWidth={1.8} />;
+                  })()}
+                </div>
+                <h3 className="text-lg font-bold text-white leading-snug px-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  {areaSelecionadaModal.area}
+                </h3>
+                <p className="text-xs text-zinc-400 mt-1">
+                  {areaSelecionadaModal.total_cards > 0 ? `${areaSelecionadaModal.total_cards.toLocaleString('pt-BR')} flashcards disponíveis` : 'Matéria'}
+                </p>
+              </div>
+
+              {/* Opções de Ação */}
+              <div className="mt-6 space-y-2.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const areaNome = areaSelecionadaModal.area;
+                    setAreaSelecionadaModal(null);
+                    setFiltroDisciplinaPrevia(areaNome);
+                    setFiltroPassoPrevio('assuntos');
+                    setFiltroAberto(true);
+                  }}
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-zinc-800/90 hover:bg-zinc-750 border border-zinc-700 text-left transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#36AF85]/15 border border-[#36AF85]/30 flex items-center justify-center text-[#36AF85] group-hover:scale-105 transition-transform">
+                      <Filter className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white group-hover:text-[#36AF85] transition-colors" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        Filtrar Assuntos
+                      </p>
+                      <p className="text-[11px] text-zinc-400">
+                        Escolha temas, tipos e quantidade
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-transform group-hover:translate-x-0.5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const slug = areaSelecionadaModal.slug || areaSelecionadaModal.area;
+                    setAreaSelecionadaModal(null);
+                    navigate(`/flashcards/area/${slug}`);
+                  }}
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#2C9570] hover:bg-[#237A5C] border border-[#2C9570]/40 text-left text-white shadow-lg transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                      <Route className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        Ir para as Trilhas
+                      </p>
+                      <p className="text-[11px] text-emerald-100/80">
+                        Trilha progressiva deck a deck
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-0.5" />
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <FlashcardsFiltroSheet
         aberto={filtroAberto}
-        onFechar={() => setFiltroAberto(false)}
+        disciplinaInicial={filtroDisciplinaPrevia}
+        passoInicial={filtroPassoPrevio}
+        onFechar={() => {
+          setFiltroAberto(false);
+          setFiltroDisciplinaPrevia(undefined);
+          setFiltroPassoPrevio(undefined);
+        }}
         onAplicar={(f) => {
           setFiltroAberto(false);
+          setFiltroDisciplinaPrevia(undefined);
+          setFiltroPassoPrevio(undefined);
           const p = new URLSearchParams();
           if (f.disciplinas && f.disciplinas.length) p.set('areas', f.disciplinas.join('|'));
           if (f.assuntos && f.assuntos.length) p.set('temas', f.assuntos.join('|'));

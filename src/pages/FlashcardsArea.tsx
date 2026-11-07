@@ -281,9 +281,10 @@ const FlashcardsArea = () => {
     if (isFlash && temasFlashcards && temasFlashcards.length > 0) {
       return temasFlashcards.map((t, idx) => {
         const isLocked = !isPremium && idx >= 2;
+        const cleanTitle = (t.tema || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
         return {
           key: `deck-${t.tema}-${idx}`,
-          titulo: t.tema,
+          titulo: cleanTitle || t.tema,
           ordemStr: String(idx + 1).padStart(2, '0'),
           badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
           displayTotal: t.total,
@@ -312,9 +313,10 @@ const FlashcardsArea = () => {
         const estTotal = totalFlashcardsArea > 0 ? Math.max(10, Math.floor(totalFlashcardsArea / fallbackTopics.length)) : 30;
         return fallbackTopics.map((tema, idx) => {
           const isLocked = !isPremium && idx >= 2;
+          const cleanTitle = (tema || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
           return {
             key: `canon-deck-${tema}-${idx}`,
-            titulo: tema,
+            titulo: cleanTitle || tema,
             ordemStr: String(idx + 1).padStart(2, '0'),
             badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
             displayTotal: estTotal,

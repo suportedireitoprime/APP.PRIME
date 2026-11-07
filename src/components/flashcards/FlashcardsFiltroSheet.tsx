@@ -216,7 +216,14 @@ export function SelecaoSheet({
         >
           <ChevronLeft className="h-6 w-6" />
         </button>
-        <p className="flex-1 text-center text-[18px] font-extrabold text-zinc-100">{titulo}</p>
+        <div className="flex-1 text-center min-w-0 px-2">
+          <p className="text-[17px] sm:text-[18px] font-extrabold text-zinc-100 truncate">{titulo}</p>
+          {totalCount !== undefined && totalCount > 0 && (
+            <p className="text-[11px] font-semibold text-zinc-400">
+              {totalCount.toLocaleString('pt-BR')} cards no total
+            </p>
+          )}
+        </div>
         <button
           onClick={() => { haptic.selection?.(); setLocal([]); }}
           className="px-3 text-[14px] font-bold text-[#36AF85] hover:text-[#2C9570] active:opacity-70 transition-colors"
@@ -356,18 +363,40 @@ export function SelecaoSheet({
 
 /* -------------------------------------------------- filtro principal */
 const FlashcardsFiltroSheet = ({
-  aberto, onFechar, onAplicar,
+  aberto, onFechar, onAplicar, disciplinaInicial, passoInicial,
 }: {
   aberto: boolean;
   onFechar: () => void;
   onAplicar: (f: FlashcardsFiltro) => void;
+  disciplinaInicial?: string;
+  passoInicial?: null | 'disciplinas' | 'assuntos' | 'tipos' | 'status' | 'quantidade';
 }) => {
-  const [f, setF] = useState<FlashcardsFiltro>(() => lerFiltroFlashcardsSalvo() ?? FILTRO_FLASHCARDS_VAZIO);
-  const [passo, setPasso] = useState<null | 'disciplinas' | 'assuntos' | 'tipos' | 'status' | 'quantidade'>(null);
+  const [f, setF] = useState<FlashcardsFiltro>(() => {
+    const base = lerFiltroFlashcardsSalvo() ?? FILTRO_FLASHCARDS_VAZIO;
+    if (disciplinaInicial) {
+      return { ...base, disciplinas: [disciplinaInicial], assuntos: [] };
+    }
+    return base;
+  });
+  const [passo, setPasso] = useState<null | 'disciplinas' | 'assuntos' | 'tipos' | 'status' | 'quantidade'>(passoInicial ?? null);
+
+  useEffect(() => {
+    if (disciplinaInicial) {
+      setF((prev) => ({ ...prev, disciplinas: [disciplinaInicial], assuntos: [] }));
+    }
+    if (passoInicial !== undefined) {
+      setPasso(passoInicial);
+    }
+  }, [disciplinaInicial, passoInicial, aberto]);
   
 
 
   const { data: areasData } = useFlashcardsResumoAreas();
+  const totalCardsGeral = useMemo(() => {
+    if (!areasData || !areasData.length) return 78077;
+    return areasData.reduce((acc, a) => acc + (a.total_cards || 0), 0);
+  }, [areasData]);
+
   const disciplinas = useMemo(() => (areasData || [])
     .map(a => a.area)
     .sort((a, b) => a.localeCompare(b, 'pt-BR')), [areasData]);
@@ -581,10 +610,26 @@ const FlashcardsFiltroSheet = ({
               {passo === 'disciplinas' && (
                 <SelecaoSheet
                   key="disc" titulo="Disciplina" buscavel single
+                  totalCount={totalCardsGeral}
                   opcoes={disciplinas}
                   selecionado={f.disciplinas}
                   onFechar={() => setPasso(null)}
                   onConfirmar={(v) => setF((p) => ({ ...p, disciplinas: v, assuntos: [] }))}
+                  renderOpcao={(d) => {
+                    const count = areasData?.find((a) => a.area === d)?.total_cards || 0;
+                    return (
+                      <div className="flex items-center justify-between w-full pr-2">
+                        <span className="text-[15px] font-semibold text-zinc-100 group-hover:text-white truncate">
+                          {d}
+                        </span>
+                        {count > 0 && (
+                          <span className="text-[11px] sm:text-[12px] font-medium text-zinc-400 bg-zinc-800/90 border border-zinc-700/60 px-2.5 py-0.5 rounded-full whitespace-nowrap ml-2 shrink-0">
+                            {count.toLocaleString('pt-BR')} cards
+                          </span>
+                        )}
+                      </div>
+                    );
+                  }}
                 />
               )}
               {passo === 'assuntos' && (
