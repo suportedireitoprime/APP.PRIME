@@ -158,7 +158,6 @@ const Flashcards = () => {
               {areas.map((area) => {
                 const iconInfo = areaIconFor(area.slug || area.area);
                 const AreaIcon = iconInfo?.Icon || BookOpen;
-                const areaColor = iconInfo?.color || '#36AF85';
 
                 return (
                   <motion.button
@@ -169,28 +168,17 @@ const Flashcards = () => {
                       haptic.selection();
                       navigate(`/flashcards/area/${area.slug || area.area}`);
                     }}
-                    className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-card/75 border border-border/80 hover:border-zinc-400/50 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-lg min-h-[148px] focus-visible:outline-none"
-                    style={{
-                      background: `radial-gradient(circle at top left, ${areaColor}15 0%, rgba(18, 19, 23, 0.95) 75%)`
-                    }}
+                    className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-850/80 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md min-h-[142px] focus-visible:outline-none"
                   >
                     <div className="flex items-start justify-between gap-2 z-10 w-full">
-                      <div
-                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center border shadow-sm transition-transform duration-300 group-hover:scale-105"
-                        style={{
-                          backgroundColor: `${areaColor}18`,
-                          borderColor: `${areaColor}33`,
-                          boxShadow: `0 4px 16px -2px ${areaColor}22`
-                        }}
-                      >
+                      <div className="relative shrink-0 flex items-center justify-center p-0.5">
                         <AreaIcon
-                          className="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 group-hover:rotate-3"
-                          style={{ color: areaColor }}
-                          strokeWidth={2.2}
+                          className="w-6 h-6 sm:w-7 sm:h-7 text-zinc-300 group-hover:text-white transition-all duration-200 group-hover:scale-110"
+                          strokeWidth={1.8}
                         />
                       </div>
                       <span
-                        className="text-[10px] sm:text-[11px] font-semibold px-2.5 py-1 rounded-full bg-zinc-900/80 text-zinc-300 border border-white/10 shrink-0"
+                        className="text-[10px] sm:text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-zinc-800/90 text-zinc-400 border border-zinc-700/50 shrink-0"
                         style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
                       >
                         {area.total_cards > 0 ? `${area.total_cards.toLocaleString('pt-BR')} cards` : 'Em breve'}
@@ -199,21 +187,21 @@ const Flashcards = () => {
 
                     <div className="z-10 mt-3 w-full">
                       <p
-                        className="text-sm sm:text-base font-bold text-foreground leading-snug line-clamp-2 group-hover:text-[#36AF85] transition-colors"
+                        className="text-sm sm:text-base font-bold text-foreground leading-snug line-clamp-2 group-hover:text-white transition-colors"
                         style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
                       >
                         {area.area}
                       </p>
                       {area.compreendidos > 0 ? (
                         <div className="mt-2.5 flex items-center gap-2">
-                          <div className="flex-1 bg-white/10 h-1.5 rounded-full overflow-hidden">
+                          <div className="flex-1 bg-zinc-800 h-1.5 rounded-full overflow-hidden">
                             <div
-                              className="bg-[#36AF85] h-full rounded-full transition-all duration-500"
+                              className="bg-zinc-300 h-full rounded-full transition-all duration-500"
                               style={{ width: `${Math.min(100, Math.round((area.compreendidos / (area.total_cards || 1)) * 100))}%` }}
                             />
                           </div>
                           <span
-                            className="text-[10px] sm:text-[11px] text-muted-foreground font-medium shrink-0"
+                            className="text-[10px] sm:text-[11px] text-zinc-400 font-medium shrink-0"
                             style={{ fontFamily: "'Inter', sans-serif" }}
                           >
                             {area.compreendidos} dominados
@@ -221,11 +209,11 @@ const Flashcards = () => {
                         </div>
                       ) : (
                         <p
-                          className="text-[11px] sm:text-xs text-muted-foreground mt-2 group-hover:text-zinc-200 transition-colors flex items-center gap-1 font-medium"
+                          className="text-[11px] sm:text-xs text-zinc-500 mt-2 group-hover:text-zinc-300 transition-colors flex items-center gap-1 font-medium"
                           style={{ fontFamily: "'Inter', sans-serif" }}
                         >
                           <span>Começar revisão</span>
-                          <ChevronRight className="w-3.5 h-3.5 text-[#36AF85] transition-transform group-hover:translate-x-0.5" />
+                          <ChevronRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-transform group-hover:translate-x-0.5" />
                         </p>
                       )}
                     </div>
