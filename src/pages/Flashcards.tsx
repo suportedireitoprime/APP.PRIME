@@ -166,17 +166,11 @@ const Flashcards = () => {
             >
               {/* Slide 1: Filtro Rápido */}
               <div className="w-full shrink-0 snap-center bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl relative overflow-hidden">
-                <div className="absolute -top-12 -right-12 w-36 h-36 bg-[#36AF85]/15 rounded-full blur-2xl pointer-events-none" />
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="h-5 w-1 rounded-full bg-[#36AF85]" />
-                    <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">
-                      Praticar Flashcards
-                    </h2>
-                  </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#36AF85]/15 text-[#36AF85] border border-[#36AF85]/30">
-                    Rápido
-                  </span>
+                <div className="flex items-center gap-2">
+                  <span className="h-5 w-1 rounded-full bg-[#36AF85]" />
+                  <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">
+                    Praticar Flashcards
+                  </h2>
                 </div>
                 <p className="ml-3 mt-1 text-xs text-muted-foreground">
                   Escolha filtros personalizados por matéria, assunto e tipos para começar.
@@ -186,7 +180,7 @@ const Flashcards = () => {
                   whileHover={{ scale: 1.015 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => { haptic.selection(); setFiltroAberto(true); }}
-                  className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#2C9570] hover:bg-[#237A5C] text-white text-base sm:text-lg font-black shadow-xl shadow-[#2C9570]/35 transition-colors focus-visible:outline-none border border-[#2C9570]/30"
+                  className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#2C9570] hover:bg-[#237A5C] text-white text-base sm:text-lg font-black shadow-md transition-colors focus-visible:outline-none border border-[#2C9570]/30"
                 >
                   <Filter className="h-6 w-6 text-white" strokeWidth={2} />
                   <span className="tracking-wide text-white">Filtro Rápido</span>
@@ -196,17 +190,11 @@ const Flashcards = () => {
 
               {/* Slide 2: Por Cargos */}
               <div className="w-full shrink-0 snap-center bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl relative overflow-hidden">
-                <div className="absolute -top-12 -right-12 w-36 h-36 bg-amber-500/15 rounded-full blur-2xl pointer-events-none" />
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="h-5 w-1 rounded-full bg-amber-500" />
-                    <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">
-                      Flashcards por Cargo
-                    </h2>
-                  </div>
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
-                    Editais
-                  </span>
+                <div className="flex items-center gap-2">
+                  <span className="h-5 w-1 rounded-full bg-amber-500" />
+                  <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">
+                    Flashcards por Cargo
+                  </h2>
                 </div>
                 <p className="ml-3 mt-1 text-xs text-muted-foreground">
                   Estude focado no edital: Magistratura, MP, Delegado, Defensoria, PRF e mais.
@@ -216,7 +204,7 @@ const Flashcards = () => {
                   whileHover={{ scale: 1.015 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => { haptic.selection(); navigate('/flashcards/cargos'); }}
-                  className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white text-base sm:text-lg font-black shadow-xl shadow-amber-600/35 transition-all focus-visible:outline-none border border-amber-500/30"
+                  className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white text-base sm:text-lg font-black shadow-md transition-all focus-visible:outline-none border border-amber-500/30"
                 >
                   <Briefcase className="h-6 w-6 text-white" strokeWidth={2} />
                   <span className="tracking-wide text-white">Ver Cargos e Editais</span>
