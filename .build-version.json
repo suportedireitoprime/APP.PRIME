@@ -1,6 +1,6 @@
 {
   "_comment": "Contador persistente de builds Android. Atualizado automaticamente pelo workflow 'Build Android' após cada build bem-sucedida e commitado de volta ao repo. Ao remixar o projeto pra outro repositório, este arquivo garante continuidade da numeração — a próxima build parte de buildNumber+1.",
-  "buildNumber": 366,
-  "versionCode": 263121239,
-  "versionName": "1.4.0.28"
+  "buildNumber": 367,
+  "versionCode": 263121746,
+  "versionName": "1.4.0.29"
 }
