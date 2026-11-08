@@ -504,18 +504,18 @@ export function AdminHojeCards() {
           totalViuPlanos = Math.max(totalViuPlanos, uniqueVp.size);
         }
 
-        // Buscar novas assinaturas no Asaas, Play Store, Apple, Legado, Eventos de Compra e Perfis
+        // Buscar novas assinaturas no Asaas, Play Store, Apple, Legado e Eventos de Compra
         const inPeriod = (dateStr?: string | null) => {
           if (!dateStr) return false;
           const t = new Date(dateStr).getTime();
           return !isNaN(t) && t >= new Date(startIso).getTime() && t < new Date(endIso).getTime();
         };
 
-        const [asaasRes, playRes, appleRes, legRes, purchaseEvRes, profsPremiumRes] = await Promise.all([
+        const [asaasRes, playRes, appleRes, legRes, purchaseEvRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions')
-            .select('id, user_id, created_at, started_at, updated_at, plano, status')
-            .or(`started_at.gte.${startIso},created_at.gte.${startIso},updated_at.gte.${startIso}`),
+            .select('id, user_id, created_at, started_at, plano, status')
+            .or(`started_at.gte.${startIso},created_at.gte.${startIso}`),
           supabase
             .from('play_subscriptions')
             .select('id, user_id, created_at, product_id, status')
@@ -533,15 +533,9 @@ export function AdminHojeCards() {
           supabase
             .from('app_events')
             .select('user_id, email, created_at, event_name, metadata')
-            .in('event_name', ['purchase', 'checkout_cc_aprovado', 'checkout_pix_aprovado', 'subscription_started', 'payment_confirmed'])
+            .eq('event_name', 'purchase')
             .gte('created_at', startIso)
-            .lt('created_at', endIso),
-          supabase
-            .from('profiles')
-            .select('id, display_name, is_premium, updated_at')
-            .eq('is_premium', true)
-            .gte('updated_at', startIso)
-            .lt('updated_at', endIso)
+            .lt('created_at', endIso)
         ]);
 
         const subUsers = new Map<string, { plano: string; valor: number }>();
@@ -549,7 +543,7 @@ export function AdminHojeCards() {
         (asaasRes.data || []).forEach((s: any) => {
           const st = (s.status || '').toUpperCase();
           if (st !== 'ACTIVE' && st !== 'ACTIVE_GRACE' && st !== 'CONFIRMED' && st !== 'RECEIVED' && st !== 'PAGA') return;
-          if (!inPeriod(s.started_at) && !inPeriod(s.updated_at) && !inPeriod(s.created_at)) return;
+          if (!inPeriod(s.started_at) && !inPeriod(s.created_at)) return;
           const uid = s.user_id || s.id;
           const plano = (s.plano || 'mensal').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
@@ -606,11 +600,6 @@ export function AdminHojeCards() {
             ? meta.value
             : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
           subUsers.set(uid, { plano: (isAnual && isPromo) ? 'anual_promocional' : plano, valor });
-        });
-
-        (profsPremiumRes.data || []).forEach((p: any) => {
-          if (!p.id || subUsers.has(p.id)) return;
-          subUsers.set(p.id, { plano: 'anual', valor: PRECO_ANUAL });
         });
 
         totalTrial = subUsers.size;
@@ -817,15 +806,15 @@ export function AdminHojeCards() {
         // 1. Chamar admin_lista_dia para todos os dias do período
         const rpcPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
 
-        // 2. Buscar também diretamente no asaas_subscriptions, play_subscriptions, apple_subscriptions, legacy_subscribers, app_events e profiles
-        const [rpcResults, asaasRes, playRes, appleRes, legRes, purchaseEvRes, profsPremiumRes] = await Promise.all([
+        // 2. Buscar também diretamente no asaas_subscriptions, play_subscriptions, apple_subscriptions, legacy_subscribers e app_events
+        const [rpcResults, asaasRes, playRes, appleRes, legRes, purchaseEvRes] = await Promise.all([
           Promise.all(rpcPromises),
           supabase
             .from('asaas_subscriptions')
             .select(`
-              id, user_id, created_at, started_at, updated_at, plano, status, asaas_customer_id, asaas_subscription_id
+              id, user_id, created_at, started_at, plano, status, asaas_customer_id, asaas_subscription_id
             `)
-            .or(`started_at.gte.${startIso},created_at.gte.${startIso},updated_at.gte.${startIso}`),
+            .or(`started_at.gte.${startIso},created_at.gte.${startIso}`),
           supabase
             .from('play_subscriptions')
             .select(`
@@ -849,17 +838,10 @@ export function AdminHojeCards() {
           supabase
             .from('app_events')
             .select('id, user_id, email, created_at, event_name, metadata')
-            .in('event_name', ['purchase', 'checkout_cc_aprovado', 'checkout_pix_aprovado', 'subscription_started', 'payment_confirmed'])
+            .eq('event_name', 'purchase')
             .gte('created_at', startIso)
             .lt('created_at', endIso)
-            .order('created_at', { ascending: false }),
-          supabase
-            .from('profiles')
-            .select('id, display_name, is_premium, updated_at, created_at')
-            .eq('is_premium', true)
-            .gte('updated_at', startIso)
-            .lt('updated_at', endIso)
-            .order('updated_at', { ascending: false })
+            .order('created_at', { ascending: false })
         ]);
 
         const existingUserIds = new Set<string>();
@@ -898,8 +880,7 @@ export function AdminHojeCards() {
           ...(asaasRes.data || []).map((s: any) => s.user_id),
           ...(playRes.data || []).map((s: any) => s.user_id),
           ...(appleRes.data || []).map((s: any) => s.user_id),
-          ...(purchaseEvRes.data || []).map((e: any) => e.user_id),
-          ...(profsPremiumRes.data || []).map((p: any) => p.id)
+          ...(purchaseEvRes.data || []).map((e: any) => e.user_id)
         ])).filter(uid => Boolean(uid) && !existingUserIds.has(uid)) as string[];
 
         const profMap = new Map<string, { name?: string; email?: string }>();
@@ -940,7 +921,7 @@ export function AdminHojeCards() {
         (asaasRes.data || []).forEach((s: any) => {
           const st = (s.status || '').toUpperCase();
           if (st !== 'ACTIVE' && st !== 'ACTIVE_GRACE' && st !== 'CONFIRMED' && st !== 'RECEIVED' && st !== 'PAGA') return;
-          if (!inPeriod(s.started_at) && !inPeriod(s.updated_at) && !inPeriod(s.created_at)) return;
+          if (!inPeriod(s.started_at) && !inPeriod(s.created_at)) return;
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const planoLower = (s.plano || '').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
@@ -956,7 +937,7 @@ export function AdminHojeCards() {
             title: profInfo?.name || 'Assinante Asaas',
             email: profInfo?.email || null,
             subtitle: `Assinou via Asaas (${planName})`,
-            at: s.started_at || s.updated_at || s.created_at,
+            at: s.started_at || s.created_at,
             acessos: null,
             avatar_url: null,
             is_premium: true,
@@ -998,26 +979,6 @@ export function AdminHojeCards() {
             planTag: { plano: planName, status: 'Ativo', expires_at: null },
           });
           existingUserIds.add(uid);
-        });
-
-        // Complementa com Perfis que viraram Premium hoje
-        (profsPremiumRes.data || []).forEach((p: any) => {
-          if (!p.id || existingUserIds.has(p.id)) return;
-          const profInfo = profMap.get(p.id);
-          allLists.push({
-            key: `prof-${p.id}`,
-            user_id: p.id,
-            title: p.display_name || profInfo?.name || 'Assinante',
-            email: profInfo?.email || null,
-            subtitle: `Assinante Ativo (Anual)`,
-            at: p.updated_at || p.created_at,
-            acessos: null,
-            avatar_url: null,
-            is_premium: true,
-            planValue: PRECO_ANUAL,
-            planTag: { plano: 'Anual', status: 'Ativo', expires_at: null },
-          });
-          existingUserIds.add(p.id);
         });
 
         // Complementa com Play Store faltantes
