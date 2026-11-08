@@ -20,7 +20,7 @@ export interface DrunoBookCardProps {
 export const DrunoBookCard: React.FC<DrunoBookCardProps> = ({
   titulo,
   ordemStr,
-  badgeLabel = `Tópico ${ordemStr}`,
+  badgeLabel = `Tema ${ordemStr}`,
   displayTotal,
   displayConcluidas,
   displayPct,
@@ -183,9 +183,9 @@ export const DrunoBookCard: React.FC<DrunoBookCardProps> = ({
 
       {/* ── TEXTO E INFORMAÇÕES DO LIVRO (ABAIXO DA CAPA - IGUAL DRUNO) ── */}
       <div className="mt-2.5 px-0.5 space-y-0.5 w-full min-w-0">
-        <h4 className="text-[13px] xs:text-[14px] sm:text-[15px] font-extrabold text-white group-hover:text-amber-300 transition-colors leading-snug line-clamp-2">
+        <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[13px] xs:text-[14px] sm:text-[15px] font-bold text-white group-hover:text-amber-300 transition-colors leading-snug line-clamp-2">
           {titulo}
-        </h4>
+        </p>
         <p className="text-[11px] sm:text-[12px] text-zinc-400 truncate">
           {badgeLabel} • {displayTotal} questões
         </p>
@@ -212,3 +212,4 @@ export const DrunoBookCard: React.FC<DrunoBookCardProps> = ({
 };
 
 export default DrunoBookCard;
+

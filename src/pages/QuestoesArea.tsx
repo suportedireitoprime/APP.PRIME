@@ -25,6 +25,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 import { getAllProgressoArea, TopicoProgresso } from '@/lib/questoesTrilhaProgress';
 import QuestoesFiltroSheet, { FILTRO_KEY, FILTRO_VAZIO } from '@/components/questoes/QuestoesFiltroSheet';
+import GalaxyBackground from '@/components/questoes/GalaxyBackground';
 
 // ── CAPAS DE LIVROS CLÁSSICOS & JURÍDICOS (PADRÃO DRUNO) ──
 import capaDosDelitos from '@/assets/covers/dos_delitos_e_das_penas_manual.jpg';
@@ -338,7 +339,7 @@ const QuestoesArea = () => {
         key: `tema-${t.titulo}-${idx}`,
         titulo: t.titulo,
         ordemStr: numStr,
-        badgeLabel: `Tópico ${numStr}`,
+        badgeLabel: `Tema ${numStr}`,
         displayTotal,
         displayConcluidas,
         displayPct,
@@ -398,7 +399,7 @@ const QuestoesArea = () => {
   }, [itemsToRender]);
 
   const titleDisplay = (
-    <span className="font-sans font-extrabold uppercase tracking-widest text-[15px] sm:text-[16px] text-white">
+    <span className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] font-bold uppercase tracking-wider text-[15px] sm:text-[16px] text-white">
       {officialFlashcardArea || area?.nome || effectiveAreaName}
     </span>
   );
@@ -406,7 +407,7 @@ const QuestoesArea = () => {
   const mobileHeader = (
     <PageHeader 
       title={titleDisplay} 
-      subtitle="Trilha de Livros Druno" 
+      subtitle="Trilha de Questões" 
       onBack={goBack} 
       variant="dark"
     />
@@ -417,29 +418,11 @@ const QuestoesArea = () => {
       wide
       activeId="aprender"
       title={officialFlashcardArea || area?.nome || effectiveAreaName}
-      subtitle="Trilha de Livros Druno"
+      subtitle="Trilha de Questões"
       mobileHeader={mobileHeader}
     >
-      {/* ── Fundo Espacial Noturno com Estrelas Cintilantes (Padrão Druno) ── */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0B18]">
-        {/* Gradiente radial de profundidade cósmica */}
-        <div 
-          className="absolute inset-0 opacity-40 pointer-events-none"
-          style={{
-            background: `radial-gradient(circle at 50% 25%, #2a1548 0%, #0d0b18 70%)`
-          }}
-        />
-
-        {/* Estrelas pontilhadas discretas */}
-        <div 
-          className="absolute inset-0 opacity-30 pointer-events-none"
-          style={{
-            backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px), radial-gradient(rgba(255,255,255,0.7) 1px, transparent 1px)`,
-            backgroundSize: '48px 48px, 96px 96px',
-            backgroundPosition: '0 0, 24px 24px'
-          }}
-        />
-      </div>
+      {/* ── Fundo Cósmico Galáxia com Cometas e Estrelas ── */}
+      <GalaxyBackground />
 
       <div className="relative z-10 w-full max-w-[540px] md:max-w-[640px] mx-auto px-3 sm:px-6 pb-32 pt-2 min-w-0 overflow-x-hidden box-border">
         
@@ -454,9 +437,9 @@ const QuestoesArea = () => {
               <ArrowLeft className="w-4 h-4" />
             </button>
             <div className="min-w-0">
-              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-white truncate">
+              <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-xs sm:text-sm font-bold uppercase tracking-wider text-white truncate">
                 {effectiveAreaName || area?.nome || 'Direito'}
-              </h2>
+              </p>
               <p className="text-[10px] sm:text-[11px] text-zinc-400">
                 {totalRespondidasArea} / {totalQuestoesArea} questões ({progressoPctArea}%)
               </p>
@@ -549,7 +532,7 @@ const QuestoesArea = () => {
                   {isFirstInModule && (
                     <div className="w-full flex items-center justify-center gap-3 my-6 pointer-events-none">
                       <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                      <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-zinc-400 bg-[#161228] px-3 py-1 rounded-full border border-white/10 shadow-sm">
+                      <span className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-300 bg-[#161228]/90 px-3.5 py-1 rounded-full border border-white/10 shadow-sm">
                         {moduleLabel}
                       </span>
                       <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
@@ -680,19 +663,19 @@ const QuestoesArea = () => {
                     </div>
 
                     {/* ── RÓTULO ABAIXO DO PEDESTAL (IGUAL DRUNO: SEG., 9) ── */}
-                    <div className="mt-1 text-center max-w-[130px] sm:max-w-[150px] space-y-0.5">
+                    <div className="mt-1.5 text-center max-w-[140px] sm:max-w-[160px] space-y-0.5">
                       <p 
                         className={cn(
-                          "text-[11px] sm:text-xs font-black uppercase tracking-wider",
+                          "font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[11px] sm:text-xs font-extrabold uppercase tracking-wider",
                           item.isEmAndamento ? "text-[#F97316]" : item.isConcluido ? "text-emerald-400" : "text-zinc-400"
                         )}
                       >
                         {item.badgeLabel}
                       </p>
-                      <h4 className="text-[12px] sm:text-[13px] font-extrabold text-white line-clamp-2 leading-tight group-hover:text-amber-300 transition-colors">
+                      <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[12px] sm:text-[13px] font-bold text-white line-clamp-2 leading-snug group-hover:text-amber-300 transition-colors">
                         {item.titulo}
-                      </h4>
-                      <p className="text-[10px] text-zinc-500">
+                      </p>
+                      <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[10px] text-zinc-400">
                         {item.displayConcluidas}/{item.displayTotal} resolvidas
                       </p>
                     </div>
@@ -724,12 +707,12 @@ const QuestoesArea = () => {
               </div>
 
               <div className="space-y-1.5 min-w-0 flex-1">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#F97316]/20 text-[#F97316] border border-[#F97316]/40">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#F97316]/20 text-[#F97316] border border-[#F97316]/40">
                   {livroSelecionado.badgeLabel}
                 </span>
-                <h3 className="text-base sm:text-lg font-black text-white leading-snug">
+                <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-base sm:text-lg font-bold text-white leading-snug">
                   {livroSelecionado.titulo}
-                </h3>
+                </p>
                 <p className="text-xs text-zinc-400">
                   {livroSelecionado.displayTotal} questões oficiais comentadas
                 </p>
@@ -748,10 +731,10 @@ const QuestoesArea = () => {
                   setLivroSelecionado(null);
                   livroSelecionado.onClick();
                 }}
-                className="w-full py-3.5 rounded-2xl bg-[#F97316] hover:bg-[#EA580C] text-white font-black text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(249,115,22,0.6)] transition-all flex items-center justify-center gap-2 active:scale-95"
+                className="w-full py-3.5 rounded-2xl bg-[#F97316] hover:bg-[#EA580C] text-white font-extrabold text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(249,115,22,0.6)] transition-all flex items-center justify-center gap-2 active:scale-95"
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span>Começar Livro</span>
+                <span>Começar Tema</span>
               </button>
 
               <button
