@@ -100,15 +100,46 @@ const QuestoesFiltroSheet = ({
   aberto,
   onFechar,
   onAplicar,
+  disciplinaFixa,
+  filtroInicial,
 }: {
   aberto: boolean;
   onFechar: () => void;
   onAplicar: (f: QuestoesFiltro) => void;
+  disciplinaFixa?: string;
+  filtroInicial?: Partial<QuestoesFiltro>;
 }) => {
-  const [f, setF] = useState<QuestoesFiltro>(() => lerFiltroSalvo() ?? FILTRO_VAZIO);
+  const [f, setF] = useState<QuestoesFiltro>(() => {
+    const salvo = lerFiltroSalvo() ?? FILTRO_VAZIO;
+    if (disciplinaFixa) {
+      return {
+        ...salvo,
+        segmentos: salvo.segmentos.length ? salvo.segmentos : ['concursos', 'oab', 'conceituais', 'policiais'],
+        disciplinas: [disciplinaFixa],
+        ...(filtroInicial || {}),
+      };
+    }
+    return filtroInicial ? { ...salvo, ...filtroInicial } : salvo;
+  });
   const [passo, setPasso] = useState<null | 'segmento' | 'disciplinas' | 'assuntos' | 'anos' | 'status' | 'quantidade'>(null);
   const [counts, setCounts] = useState<Counts>(getInitialCounts);
   const [carregando, setCarregando] = useState(false);
+
+  // Sincroniza quando disciplinaFixa ou filtroInicial mudar ao abrir
+  useEffect(() => {
+    if (aberto) {
+      if (disciplinaFixa) {
+        setF((prev) => ({
+          ...prev,
+          segmentos: prev.segmentos.length ? prev.segmentos : ['concursos', 'oab', 'conceituais', 'policiais'],
+          disciplinas: [disciplinaFixa],
+          ...(filtroInicial || {}),
+        }));
+      } else if (filtroInicial) {
+        setF((prev) => ({ ...prev, ...filtroInicial }));
+      }
+    }
+  }, [aberto, disciplinaFixa]);
 
   // Contagens reais do banco conforme o que já foi escolhido
   useEffect(() => {
@@ -201,17 +232,23 @@ const QuestoesFiltroSheet = ({
   const limpar = () => setF({ ...FILTRO_VAZIO });
 
   const aplicar = () => {
-    if (!f.segmentos.length) {
+    const nextF: QuestoesFiltro = {
+      ...f,
+      segmentos: f.segmentos.length ? f.segmentos : (disciplinaFixa ? ['concursos', 'oab', 'conceituais', 'policiais'] : []),
+      disciplinas: f.disciplinas.length ? f.disciplinas : (disciplinaFixa ? [disciplinaFixa] : []),
+    };
+
+    if (!nextF.segmentos.length) {
       haptic.error();
       toast('Escolha o segmento primeiro', { description: 'O segmento é obrigatório para aplicar filtros.' });
       return;
     }
-    if (!f.disciplinas.length) {
+    if (!nextF.disciplinas.length) {
       haptic.error();
       toast('Escolha as disciplinas', { description: 'Você precisa selecionar pelo menos uma disciplina.' });
       return;
     }
-    if (!f.assuntos.length) {
+    if (!disciplinaFixa && !nextF.assuntos.length) {
       haptic.error();
       toast('Escolha os assuntos', { description: 'Você precisa selecionar pelo menos um assunto.' });
       return;
@@ -219,7 +256,7 @@ const QuestoesFiltroSheet = ({
 
     haptic.success?.();
     try {
-      sessionStorage.setItem(FILTRO_KEY, JSON.stringify(f));
+      sessionStorage.setItem(FILTRO_KEY, JSON.stringify(nextF));
     } catch {
       /* noop */
     }
@@ -227,7 +264,7 @@ const QuestoesFiltroSheet = ({
     // Animação do PrimeBottomSheet dura ~300ms
     onFechar();
     setTimeout(() => {
-      onAplicar(f);
+      onAplicar(nextF);
     }, 300);
   };
 
@@ -245,11 +282,11 @@ const QuestoesFiltroSheet = ({
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-2 text-[20px] font-extrabold text-zinc-100 tracking-tight">
-                  <Filter className="h-5 w-5 text-[#E11D48]" /> Filtrar questões
+                <p className="flex items-center gap-2 text-[18px] sm:text-[20px] font-extrabold text-zinc-100 tracking-tight truncate">
+                  <Filter className="h-5 w-5 text-[#E11D48] shrink-0" /> {disciplinaFixa ? `Filtrar ${disciplinaFixa}` : 'Filtrar questões'}
                 </p>
-                <p className="mt-0.5 text-[13px] leading-snug text-zinc-400 truncate">
-                  Refine por segmento, disciplina, assunto e mais.
+                <p className="mt-0.5 text-[12px] sm:text-[13px] leading-snug text-zinc-400 truncate">
+                  {disciplinaFixa ? 'Personalize tópicos, bancas, ano e status.' : 'Refine por segmento, disciplina, assunto e mais.'}
                 </p>
               </div>
               <button
@@ -279,7 +316,7 @@ const QuestoesFiltroSheet = ({
               <StepRow
                 step={2}
                 label="Disciplinas"
-                hint={f.disciplinas.length ? `${f.disciplinas.length} selecionada(s)` : 'Todas as disciplinas'}
+                hint={disciplinaFixa ? disciplinaFixa : f.disciplinas.length ? `${f.disciplinas.length} selecionada(s)` : 'Todas as disciplinas'}
                 locked={!f.segmentos.length}
                 active={proximo === 'disciplinas'}
                 done={!!f.disciplinas.length}

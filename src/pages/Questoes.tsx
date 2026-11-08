@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   RotateCcw, BarChart3, ChevronRight, ListChecks, NotebookPen, 
-  Filter, History, Timer, Flame
+  Filter, History, BookOpen
 } from 'lucide-react';
 import QuestoesHero from '@/components/questoes/QuestoesHero';
 import QuestoesFiltroSheet from '@/components/questoes/QuestoesFiltroSheet';
@@ -12,6 +12,7 @@ import { useQuestoesCargos, useQuestoesDesempenho, useQuestoesAreas } from '@/ho
 import QuestoesMasterDeck from '@/components/questoes/QuestoesMasterDeck';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
+import { areaIconFor } from '@/lib/areasDireitoIcons';
 
 const ATALHOS_4 = [
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/questoes/historico' },
@@ -145,44 +146,69 @@ const Questoes = () => {
           </motion.div>
           </motion.div>
 
-          {/* ── Recursos (Simulado e Desafios) ───────────────────── */}
-          <motion.section variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} className="space-y-3 pt-2">
-            <div className="flex items-center gap-2">
-              <span className="h-4 w-1 rounded-full bg-primary" />
-              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                Recursos
-              </p>
+          {/* ── Áreas do Direito (Grade de Trilhas) ───────────────────── */}
+          <motion.section 
+            variants={{ hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } } }} 
+            className="space-y-3 pt-2"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="h-4 w-1 rounded-full bg-primary" />
+                <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                  Áreas do Direito ({materiasAreas.length})
+                </p>
+              </div>
+              <span className="text-[10px] text-muted-foreground font-medium">
+                Toque para abrir a trilha
+              </span>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => { haptic.selection(); navigate('/questoes/simulado'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-all focus-visible:outline-none text-center"
-              >
-                <div className="flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                  <Timer className="h-8 w-8" strokeWidth={1.5} />
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm font-bold text-foreground">Simulado</span>
-                  <span className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">Prova com cronômetro</span>
-                </div>
-              </motion.button>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.96 }}
-                onClick={() => { haptic.selection(); navigate('/questoes/desafios'); }}
-                className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-primary/50 transition-all focus-visible:outline-none text-center"
-              >
-                <div className="flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                  <Flame className="h-8 w-8" strokeWidth={1.5} />
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-sm font-bold text-foreground">Desafios</span>
-                  <span className="text-[10px] text-muted-foreground mt-0.5 hidden sm:block">Metas e conquistas</span>
-                </div>
-              </motion.button>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
+              {materiasAreas.map((area) => {
+                const iconInfo = areaIconFor(area.slug || area.area);
+                const AreaIcon = iconInfo?.Icon || BookOpen;
+
+                return (
+                  <motion.button
+                    key={area.slug || area.area}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => {
+                      haptic.selection();
+                      navigate(`/questoes/area/${area.slug}`);
+                    }}
+                    className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-primary/50 hover:bg-zinc-850/80 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md min-h-[135px] focus-visible:outline-none"
+                  >
+                    <div className="flex items-start justify-between gap-2 z-10 w-full">
+                      <div className="relative shrink-0 flex items-center justify-center p-0.5">
+                        <AreaIcon
+                          className="w-6 h-6 sm:w-7 sm:h-7 text-zinc-300 group-hover:text-primary transition-all duration-200 group-hover:scale-110"
+                          strokeWidth={1.8}
+                        />
+                      </div>
+                      <span
+                        className="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800/90 text-zinc-400 border border-zinc-700/50 shrink-0"
+                      >
+                        {area.total_questoes > 0 ? `${area.total_questoes.toLocaleString('pt-BR')} q.` : 'Trilha'}
+                      </span>
+                    </div>
+
+                    <div className="z-10 mt-3 w-full">
+                      <p
+                        className="text-sm sm:text-base font-bold text-foreground leading-snug line-clamp-2 group-hover:text-white transition-colors"
+                      >
+                        {area.area}
+                      </p>
+                      <p
+                        className="text-[11px] sm:text-xs text-zinc-500 mt-2 group-hover:text-primary transition-colors flex items-center gap-1 font-medium"
+                      >
+                        <span>Acessar trilha</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+                      </p>
+                    </div>
+                  </motion.button>
+                );
+              })}
             </div>
           </motion.section>
 

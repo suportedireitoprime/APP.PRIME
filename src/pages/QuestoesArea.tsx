@@ -16,7 +16,10 @@ import {
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
-import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Check, Search } from 'lucide-react';
+import { 
+  BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Check, Search,
+  Filter, SlidersHorizontal, Sparkles, AlertCircle, Award
+} from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
@@ -26,6 +29,7 @@ import { CANONICAL_AREA_TOPICS } from '@/data/canonicalAreaTopics';
 import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 import { getAllProgressoArea, TopicoProgresso } from '@/lib/questoesTrilhaProgress';
+import QuestoesFiltroSheet, { FILTRO_KEY, FILTRO_VAZIO } from '@/components/questoes/QuestoesFiltroSheet';
 
 const QuestoesArea = () => {
   useTrackArea("questoes_area_aberta");
@@ -44,6 +48,7 @@ const QuestoesArea = () => {
   const [loading, setLoading] = useState(!initial);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filtroAberto, setFiltroAberto] = useState(false);
 
   useEffect(() => {
     if (!data || !moduloIdParam) return;
@@ -406,6 +411,129 @@ const QuestoesArea = () => {
           </div>
         ) : (
           <>
+            {/* ── Filtro da Área no Topo ──────────────────────────── */}
+            <div className="mb-5 rounded-2xl bg-zinc-900/90 border border-zinc-800/80 p-4 sm:p-5 backdrop-blur-md shadow-xl space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div 
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-white/10 shadow-inner"
+                    style={{ backgroundColor: `${palette.primary}25`, color: palette.primary }}
+                  >
+                    <Filter className="w-5 h-5" strokeWidth={2.2} />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-sm sm:text-base font-extrabold text-white truncate leading-tight">
+                      Filtrar {effectiveAreaName || area?.nome || 'Questões'}
+                    </h3>
+                    <p className="text-[11px] text-zinc-400 truncate">
+                      Personalize bancas, anos, status ou pratique diretamente
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    setFiltroAberto(true);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700/80 transition-all shrink-0 active:scale-95 shadow-sm"
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5 text-zinc-300" />
+                  <span>Filtros</span>
+                </button>
+              </div>
+
+              {/* Pílulas de Filtro Rápido da Área */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    navigate(`/questoes/praticar?area=${encodeURIComponent(effectiveAreaName || area?.nome || 'Direito')}&areaSlug=${slug || ''}`);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/15 transition-all shrink-0 active:scale-95"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Praticar Todas</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    const filtroCustom = {
+                      ...FILTRO_VAZIO,
+                      segmentos: ['concursos', 'oab', 'conceituais', 'policiais'],
+                      disciplinas: [effectiveAreaName || area?.nome || 'Direito'],
+                      status: ['nao_resolvidas'],
+                    };
+                    sessionStorage.setItem(FILTRO_KEY, JSON.stringify(filtroCustom));
+                    navigate('/questoes/praticar?filtro=1');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 transition-all shrink-0 active:scale-95"
+                >
+                  <ListChecks className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Não Resolvidas</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    const filtroCustom = {
+                      ...FILTRO_VAZIO,
+                      segmentos: ['oab'],
+                      disciplinas: [effectiveAreaName || area?.nome || 'Direito'],
+                    };
+                    sessionStorage.setItem(FILTRO_KEY, JSON.stringify(filtroCustom));
+                    navigate('/questoes/praticar?filtro=1');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 transition-all shrink-0 active:scale-95"
+                >
+                  <Award className="w-3.5 h-3.5 text-blue-400" />
+                  <span>OAB / FGV</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    const filtroCustom = {
+                      ...FILTRO_VAZIO,
+                      segmentos: ['concursos'],
+                      disciplinas: [effectiveAreaName || area?.nome || 'Direito'],
+                    };
+                    sessionStorage.setItem(FILTRO_KEY, JSON.stringify(filtroCustom));
+                    navigate('/questoes/praticar?filtro=1');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 transition-all shrink-0 active:scale-95"
+                >
+                  <GraduationCap className="w-3.5 h-3.5 text-violet-400" />
+                  <span>Concursos</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    const filtroCustom = {
+                      ...FILTRO_VAZIO,
+                      segmentos: ['concursos', 'oab', 'conceituais', 'policiais'],
+                      disciplinas: [effectiveAreaName || area?.nome || 'Direito'],
+                      status: ['errei'],
+                    };
+                    sessionStorage.setItem(FILTRO_KEY, JSON.stringify(filtroCustom));
+                    navigate('/questoes/praticar?filtro=1');
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 transition-all shrink-0 active:scale-95"
+                >
+                  <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Revisar Erros</span>
+                </button>
+              </div>
+            </div>
+
             {/* Top Bar Selecione o Módulo */}
             <div className="flex items-center justify-between mb-4 w-full min-w-0">
               <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -807,6 +935,17 @@ const QuestoesArea = () => {
           </>
         )}
       </div>
+
+      {/* Sheet de Filtro da Área */}
+      <QuestoesFiltroSheet
+        aberto={filtroAberto}
+        onFechar={() => setFiltroAberto(false)}
+        disciplinaFixa={effectiveAreaName || area?.nome || 'Direito'}
+        onAplicar={() => {
+          setFiltroAberto(false);
+          navigate('/questoes/praticar?filtro=1');
+        }}
+      />
     </DesktopPageLayout>
   );
 };
