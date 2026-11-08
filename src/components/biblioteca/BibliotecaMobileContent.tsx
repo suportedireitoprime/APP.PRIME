@@ -25,7 +25,7 @@ import { getAreaCover } from '@/lib/areasDireitoCovers';
 import BibliotecaHero from './BibliotecaHero';
 import BibliotecaAtalhosBar from './BibliotecaAtalhosBar';
 import BibliotecaContinuarLeituraBanner from './BibliotecaContinuarLeituraBanner';
-import RecomendacoesCarousel from './RecomendacoesCarousel';
+import FerramentasLivrosCarrossel from '@/components/ferramentas/FerramentasLivrosCarrossel';
 
 import bibliotecaCoverImg from '@/assets/biblioteca-cover.webp';
 import salvosImg from '@/assets/covers/resumos-philosophers-hero.webp';
@@ -419,7 +419,7 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         {/* SEÇÃO 2: CARROSSEL VERMELHO ANTIGO DE CLÁSSICOS          */}
         {/* ======================================================== */}
         <section className="pt-1">
-          <RecomendacoesCarousel onAbrirLivro={onAbrirLivro} />
+          <FerramentasLivrosCarrossel onAbrirLivro={onAbrirLivro} />
         </section>
 
         {/* ======================================================== */}

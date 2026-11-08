@@ -188,7 +188,11 @@ if (typeof window !== 'undefined') {
   void ensureClassicosPool();
 }
 
-export const FerramentasLivrosCarrossel = () => {
+interface Props {
+  onAbrirLivro?: (livro: LivroNormalizado) => void;
+}
+
+export const FerramentasLivrosCarrossel = ({ onAbrirLivro }: Props = {}) => {
   const navigate = useNavigate();
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const autoplayRef = useRef<number | null>(null);
@@ -297,7 +301,11 @@ export const FerramentasLivrosCarrossel = () => {
 
   const handleOpenLivro = (livro: LivroNormalizado) => {
     haptic.selection();
-    setSelectedLivro(livro);
+    if (onAbrirLivro) {
+      onAbrirLivro(livro);
+    } else {
+      setSelectedLivro(livro);
+    }
   };
 
   if (!livros.length) return null;
@@ -305,14 +313,14 @@ export const FerramentasLivrosCarrossel = () => {
   return (
     <section className="space-y-3">
       {/* Cabeçalho do Carrossel de Livros */}
-      <div className="mb-0 relative z-10 pointer-events-none px-5 flex items-start justify-between gap-3">
+      <div className="mb-0 relative z-10 pointer-events-none px-1 flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-display text-foreground text-[18px] font-bold mb-1 flex items-center gap-2 pointer-events-auto uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-primary" />
+          <h3 className="font-display text-white text-[15px] sm:text-[16px] font-bold mb-0.5 flex items-center gap-2 pointer-events-auto uppercase tracking-wider">
+            <span className="w-1 h-5 rounded-full bg-rose-500 shrink-0" />
             CLÁSSICOS DO DIREITO
           </h3>
-          <p className="font-body text-muted-foreground text-[12.5px] leading-snug ml-3 pointer-events-auto whitespace-nowrap truncate">
-            obras fundamentais e livros jurídicos
+          <p className="font-sans text-white/60 text-[11.5px] sm:text-[12px] leading-snug ml-3 pointer-events-auto whitespace-nowrap truncate">
+            Obras fundamentais e livros jurídicos
           </p>
         </div>
         <button
@@ -321,10 +329,10 @@ export const FerramentasLivrosCarrossel = () => {
             haptic.selection();
             navigate('/bibliotecas/classicos');
           }}
-          className="group pointer-events-auto shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] hover:bg-white/[0.14] active:opacity-70 backdrop-blur-md border border-white/15 hover:border-white/25 text-[12px] font-semibold text-foreground/90 hover:text-white transition-all shadow-sm"
+          className="group pointer-events-auto shrink-0 mt-0.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-rose-500/15 hover:bg-rose-500/25 active:opacity-70 backdrop-blur-md border border-rose-500/30 hover:border-rose-500/50 text-[12px] font-semibold text-rose-200 hover:text-white transition-all shadow-sm"
         >
           <span>Ver todos</span>
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+          <ChevronRight className="w-3.5 h-3.5 text-rose-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
         </button>
       </div>
 
@@ -333,7 +341,7 @@ export const FerramentasLivrosCarrossel = () => {
         ref={scrollerRef}
         onPointerDown={pauseAutoplay}
         onTouchStart={pauseAutoplay}
-        className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 px-[7.5%] md:px-[4%] lg:px-[3%] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="flex gap-3 md:gap-4 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-1 -mx-4 sm:-mx-6 px-4 sm:px-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {livros.map((livro, i) => {
           const isActive = i === activeIndex;
@@ -347,11 +355,14 @@ export const FerramentasLivrosCarrossel = () => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(i * 0.04, 0.2) }}
-              className="snap-center shrink-0 w-[85%] md:w-[46%] lg:w-[31%] active:scale-[0.99] text-left"
+              className="snap-center shrink-0 w-[84%] sm:w-[48%] md:w-[46%] lg:w-[32%] active:scale-[0.99] text-left"
             >
               <div
-                className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform bg-brand-gradient ${
-                  isActive ? 'opacity-100 scale-100 shadow-lg' : 'opacity-85 scale-[0.98]'
+                style={{
+                  background: 'linear-gradient(135deg, #BE123C 0%, #881337 55%, #4C0519 100%)',
+                }}
+                className={`relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform border border-white/15 shadow-md ${
+                  isActive ? 'opacity-100 scale-100 shadow-rose-950/40' : 'opacity-85 scale-[0.98]'
                 }`}
               >
                 {/* SVGs jurídicos decorativos ao fundo */}
@@ -431,12 +442,14 @@ export const FerramentasLivrosCarrossel = () => {
       {/* Indicadores de Paginação */}
       <CarouselDots total={livros.length} activeIndex={activeIndex} />
 
-      {/* Sheet Modal com Detalhes Completos, Leitor e Resumo em Áudio */}
-      <LivroDetailSheet
-        livro={selectedLivro}
-        open={!!selectedLivro}
-        onClose={() => setSelectedLivro(null)}
-      />
+      {/* Sheet Modal com Detalhes Completos (usado quando montado sem handler externo) */}
+      {!onAbrirLivro && (
+        <LivroDetailSheet
+          livro={selectedLivro}
+          open={!!selectedLivro}
+          onClose={() => setSelectedLivro(null)}
+        />
+      )}
     </section>
   );
 };
