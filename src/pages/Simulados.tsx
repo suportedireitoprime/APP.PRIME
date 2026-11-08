@@ -162,10 +162,13 @@ export default function Simulados() {
   };
 
   // Iniciar Simulado direto
-  const handleIniciarSimulado = (sim: any) => {
+  const handleIniciarSimulado = (sim: any, filtroMaterias?: string[]) => {
     setProvasSheetAberto(false);
     navigate(`/simulados/resolver/${sim.id}`, {
-      state: { simulado: sim },
+      state: {
+        simulado: sim,
+        filtroMaterias: filtroMaterias && filtroMaterias.length > 0 ? filtroMaterias : undefined,
+      },
     });
   };
 
