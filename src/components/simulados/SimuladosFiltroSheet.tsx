@@ -23,14 +23,6 @@ interface Props {
   simuladosList: any[];
 }
 
-const CARGOS_OPCOES = [
-  { id: 'oab', label: 'OAB (Exame de Ordem)', desc: '47 Provas Oficiais • 3.820 Questões Digitalizadas (FGV)', disponivel: true },
-  { id: 'juiz', label: 'Juiz de Direito (Magistratura)', desc: '6 Concursos Oficiais • 600 Questões (TJSP, TJGO, etc)', disponivel: true },
-  { id: 'delegado', label: 'Delegado de Polícia', desc: 'Polícia Civil e Federal • Em breve novas provas', disponivel: false },
-  { id: 'pf', label: 'Polícia Federal (PF)', desc: 'Agente, Escrivão e Perito • Em breve', disponivel: false },
-  { id: 'prf', label: 'Polícia Rodoviária Federal (PRF)', desc: 'Policial Rodoviário Federal • Em breve', disponivel: false },
-];
-
 const DISCIPLINAS_OAB = [
   'Ética Profissional',
   'Direito Constitucional',
@@ -51,6 +43,11 @@ const DISCIPLINAS_OAB = [
   'Direito Financeiro',
   'Direito Previdenciário',
   'Direito Eleitoral',
+  'Língua Portuguesa',
+  'Raciocínio Lógico',
+  'Informática',
+  'Legislação Especial',
+  'Legislação de Trânsito',
 ];
 
 export const SimuladosFiltroSheet = ({
@@ -59,7 +56,45 @@ export const SimuladosFiltroSheet = ({
   onIniciar,
   simuladosList,
 }: Props) => {
-  const [cargoId, setCargoId] = useState('oab');
+  // Lista dinâmica de cargos a partir dos simulados cadastrados
+  const cargosOpcoes = useMemo(() => {
+    const map = new Map<string, { id: string; label: string; provasCount: number; questoesCount: number }>();
+
+    for (const s of simuladosList) {
+      const examName = s.exam?.name || 'Geral';
+      const examId = s.exam_id || s.exam?.id || examName;
+      const qCount = s.simulado_questions?.[0]?.count || 0;
+
+      if (!map.has(examId)) {
+        map.set(examId, {
+          id: examId,
+          label: examName,
+          provasCount: 0,
+          questoesCount: 0,
+        });
+      }
+      const item = map.get(examId)!;
+      item.provasCount += 1;
+      item.questoesCount += qCount;
+    }
+
+    const list = Array.from(map.values()).sort((a, b) => b.questoesCount - a.questoesCount);
+
+    if (list.length === 0) {
+      return [
+        { id: 'oab', label: 'OAB (Exame de Ordem)', desc: '47 Provas Oficiais • 3.820 Questões', disponivel: true },
+      ];
+    }
+
+    return list.map((c) => ({
+      id: c.id,
+      label: c.label,
+      desc: `${c.provasCount} Provas Oficiais • ${c.questoesCount.toLocaleString('pt-BR')} Questões Digitalizadas`,
+      disponivel: true,
+    }));
+  }, [simuladosList]);
+
+  const [cargoId, setCargoId] = useState<string>('');
   const [ano, setAno] = useState('recente');
   const [disciplinas, setDisciplinas] = useState<string[]>([]);
   const [modo, setModo] = useState<'oficial' | 'estudo'>('oficial');
@@ -67,22 +102,26 @@ export const SimuladosFiltroSheet = ({
 
   const [passoAtivo, setPassoAtivo] = useState<null | 'cargo' | 'ano' | 'disciplinas' | 'quantidade'>(null);
 
+  const cargoAtual = useMemo(() => {
+    if (!cargoId && cargosOpcoes.length > 0) return cargosOpcoes[0];
+    return cargosOpcoes.find((c) => c.id === cargoId || c.label.toLowerCase() === cargoId.toLowerCase()) || cargosOpcoes[0];
+  }, [cargosOpcoes, cargoId]);
+
   // Provas do cargo selecionado
   const provasDoCargo = useMemo(() => {
+    if (!cargoAtual) return simuladosList;
     return simuladosList.filter((s) => {
+      const examId = s.exam_id || s.exam?.id;
       const examName = (s.exam?.name || '').toLowerCase();
-      if (cargoId === 'juiz') return examName.includes('juiz');
-      return !examName.includes('juiz');
+      return examId === cargoAtual.id || examName === cargoAtual.label.toLowerCase();
     });
-  }, [simuladosList, cargoId]);
+  }, [simuladosList, cargoAtual]);
 
   // Lista de anos/edições disponíveis
   const opcoesAnos = useMemo(() => {
     const years = Array.from(new Set(provasDoCargo.map((s) => s.year?.toString()).filter(Boolean)));
     return ['Mais Recente (Recomendado)', ...years.sort((a, b) => Number(b) - Number(a))];
   }, [provasDoCargo]);
-
-  const cargoAtual = CARGOS_OPCOES.find((c) => c.id === cargoId) || CARGOS_OPCOES[0];
 
   const handleConfirmar = () => {
     try { haptic.impact(); } catch {}
@@ -93,8 +132,8 @@ export const SimuladosFiltroSheet = ({
     }
 
     onIniciar({
-      cargoId,
-      cargoNome: cargoAtual.label,
+      cargoId: cargoAtual?.id || 'oab',
+      cargoNome: cargoAtual?.label || 'Oficial',
       simuladoId: provaAlvo?.id,
       ano,
       disciplinas,
@@ -103,7 +142,7 @@ export const SimuladosFiltroSheet = ({
     });
   };
 
-  const totalQuestoesPrevistas = quantidade || (cargoId === 'juiz' ? 100 : 80);
+  const totalQuestoesPrevistas = quantidade || (provasDoCargo[0]?.simulado_questions?.[0]?.count || 80);
 
   return (
     <PrimeBottomSheet open={aberto} onClose={onFechar}>
@@ -268,12 +307,12 @@ export const SimuladosFiltroSheet = ({
               key="cargo"
               titulo="Escolher Cargo"
               single
-              opcoes={CARGOS_OPCOES.map((c) => c.label)}
-              descricoes={Object.fromEntries(CARGOS_OPCOES.map((c) => [c.label, c.desc]))}
+              opcoes={cargosOpcoes.map((c) => c.label)}
+              descricoes={Object.fromEntries(cargosOpcoes.map((c) => [c.label, c.desc]))}
               selecionado={[cargoAtual.label]}
               onFechar={() => setPassoAtivo(null)}
               onConfirmar={(v) => {
-                const found = CARGOS_OPCOES.find((c) => c.label === v[0]);
+                const found = cargosOpcoes.find((c) => c.label === v[0]);
                 if (found) {
                   setCargoId(found.id);
                   setAno('recente');

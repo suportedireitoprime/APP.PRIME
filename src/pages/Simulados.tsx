@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
@@ -10,7 +10,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import {
   RotateCcw, BarChart3, ChevronRight, NotebookPen,
   Filter, History, Timer, Scale, X, ExternalLink,
-  PlayCircle
+  PlayCircle, Shield, BookOpen, ShieldAlert, Gavel
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import SimuladosHero from '@/components/simulados/SimuladosHero';
@@ -100,7 +100,10 @@ export default function Simulados() {
   const totalAcertos = userHistorico.reduce((acc, h) => acc + (h.acertos || 0), 0);
   const totalQuestoesFeitas = userHistorico.reduce((acc, h) => acc + (h.total_questoes || 0), 0);
   const pctAcerto = totalQuestoesFeitas > 0 ? Math.round((totalAcertos / totalQuestoesFeitas) * 100) : 0;
-  const totalQuestoesBanco = 4680;
+  const totalQuestoesBanco = useMemo(() => {
+    const sum = simuladosList.reduce((acc, s) => acc + (s.simulado_questions?.[0]?.count || 0), 0);
+    return sum > 0 ? sum : 22056;
+  }, [simuladosList]);
 
   // Iniciar Simulado a partir do Filtro Rápido
   const handleIniciarFiltro = (cfg: SimuladoFiltroConfig) => {
@@ -110,7 +113,14 @@ export default function Simulados() {
     if (!targetId && simuladosList.length > 0) {
       const doCargo = simuladosList.filter((s) => {
         const name = (s.exam?.name || '').toLowerCase();
-        return cfg.cargoId === 'juiz' ? name.includes('juiz') : !name.includes('juiz');
+        const examId = s.exam_id || s.exam?.id;
+        const cargoQuery = (cfg.cargoId || '').toLowerCase();
+        const cargoNomeQuery = (cfg.cargoNome || '').toLowerCase();
+        return (
+          examId === cfg.cargoId ||
+          name.includes(cargoQuery) ||
+          (cargoNomeQuery && name.includes(cargoNomeQuery))
+        );
       });
       targetId = doCargo[0]?.id || simuladosList[0]?.id;
     }
@@ -263,7 +273,7 @@ export default function Simulados() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {/* Card OAB */}
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -272,14 +282,71 @@ export default function Simulados() {
                     try { haptic.selection(); } catch {}
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
                   <div className="flex items-center justify-center text-[#7c3aed] group-hover:scale-110 transition-transform">
-                    <Timer className="h-8 w-8 text-[#7c3aed]" strokeWidth={1.8} />
+                    <Timer className="h-7 w-7 sm:h-8 sm:w-8 text-[#7c3aed]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="text-sm font-bold text-foreground">OAB (Exame de Ordem)</span>
+                    <span className="text-xs sm:text-sm font-bold text-foreground">OAB Nacional</span>
                     <span className="text-[10px] text-muted-foreground mt-0.5">47 Edições • 1ª Fase Oficial</span>
+                  </div>
+                </motion.button>
+
+                {/* Card PRF */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    setProvasSheetAberto(true);
+                  }}
+                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                >
+                  <div className="flex items-center justify-center text-[#eab308] group-hover:scale-110 transition-transform">
+                    <Shield className="h-7 w-7 sm:h-8 sm:w-8 text-[#eab308]" strokeWidth={1.8} />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs sm:text-sm font-bold text-foreground">PRF (Polícia Rodoviária)</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">Cebraspe • Provas Completas</span>
+                  </div>
+                </motion.button>
+
+                {/* Card Delegado */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    setProvasSheetAberto(true);
+                  }}
+                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                >
+                  <div className="flex items-center justify-center text-[#3b82f6] group-hover:scale-110 transition-transform">
+                    <ShieldAlert className="h-7 w-7 sm:h-8 sm:w-8 text-[#3b82f6]" strokeWidth={1.8} />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs sm:text-sm font-bold text-foreground">Delegado de Polícia</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">PF & Polícia Civil (PC)</span>
+                  </div>
+                </motion.button>
+
+                {/* Card Escrevente TJ-SP */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    setProvasSheetAberto(true);
+                  }}
+                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                >
+                  <div className="flex items-center justify-center text-[#10b981] group-hover:scale-110 transition-transform">
+                    <BookOpen className="h-7 w-7 sm:h-8 sm:w-8 text-[#10b981]" strokeWidth={1.8} />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs sm:text-sm font-bold text-foreground">Escrevente TJ-SP</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">Vunesp • Todas as Edições</span>
                   </div>
                 </motion.button>
 
@@ -291,14 +358,33 @@ export default function Simulados() {
                     try { haptic.selection(); } catch {}
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
-                  <div className="flex items-center justify-center text-[#7c3aed] group-hover:scale-110 transition-transform">
-                    <Scale className="h-8 w-8 text-[#8b5cf6]" strokeWidth={1.8} />
+                  <div className="flex items-center justify-center text-[#8b5cf6] group-hover:scale-110 transition-transform">
+                    <Scale className="h-7 w-7 sm:h-8 sm:w-8 text-[#8b5cf6]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
-                    <span className="text-sm font-bold text-foreground">Juiz Substituto</span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">Magistratura Estadual</span>
+                    <span className="text-xs sm:text-sm font-bold text-foreground">Juiz Substituto</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">Magistratura Estadual & Federal</span>
+                  </div>
+                </motion.button>
+
+                {/* Card Promotor MP */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    setProvasSheetAberto(true);
+                  }}
+                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                >
+                  <div className="flex items-center justify-center text-[#ef4444] group-hover:scale-110 transition-transform">
+                    <Gavel className="h-7 w-7 sm:h-8 sm:w-8 text-[#ef4444]" strokeWidth={1.8} />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs sm:text-sm font-bold text-foreground">Promotor de Justiça</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">Ministério Público Estadual</span>
                   </div>
                 </motion.button>
               </div>
