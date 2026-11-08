@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw, Timer, Target } from 'lucide-react';
+import { Radio, UserPlus, Sparkles, Loader2, Mail, BarChart3, ChevronRight, Crown, Zap, DollarSign, Check, RefreshCw, Timer, Target, Repeat } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -8,7 +8,7 @@ import { UserDossieSheet } from './UserDossieSheet';
 import { rotaParaFuncao, formatarDuracao } from '@/lib/rotaFuncoes';
 import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO } from '@/lib/precos';
 
-type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial';
+type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial' | 'renovou';
 type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
 
 const ADMIN_EMAILS = ['wn7corporation@gmail.com', 'suporte@direitoprime.com.br', 'wn7juridico@gmail.com'];
@@ -232,13 +232,13 @@ const writeSeen = (id: CardId, d: Date, seen: Seen) => {
 };
 
 export function AdminHojeCards() {
-  const [counts, setCounts] = useState<Record<CardId | 'trialValor', number>>(() => {
+  const [counts, setCounts] = useState<Record<CardId | 'trialValor' | 'renovouValor', number>>(() => {
     try {
       const hojeIso = isoDate(getHojeBrasilia());
       const cached = localStorage.getItem(`admin_hoje_counts_cache_${hojeIso}`);
       if (cached) return JSON.parse(cached);
     } catch {}
-    return { online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0, trialValor: 0 };
+    return { online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0, trialValor: 0, renovou: 0, renovouValor: 0 };
   });
   const [seenCounts, setSeenCounts] = useState<Record<CardId, number>>(() => {
     const hoje = getHojeBrasilia();
@@ -249,6 +249,7 @@ export function AdminHojeCards() {
       paywall: readSeen('paywall', hoje).count,
       viu_planos: readSeen('viu_planos', hoje).count,
       trial: readSeen('trial', hoje).count,
+      renovou: readSeen('renovou', hoje).count,
     };
   });
   const [novosKeys, setNovosKeys] = useState<Set<string>>(new Set());
@@ -511,7 +512,7 @@ export function AdminHojeCards() {
           return !isNaN(t) && t >= new Date(startIso).getTime() && t < new Date(endIso).getTime();
         };
 
-        const [asaasRes, playRes, appleRes, legRes, purchaseEvRes] = await Promise.all([
+        const [asaasRes, playRes, appleRes, legRes, purchaseEvRes, oldLegRes, prevPurchasesRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions')
             .select('id, user_id, created_at, started_at, plano, status')
@@ -535,32 +536,96 @@ export function AdminHojeCards() {
             .select('user_id, email, created_at, event_name, metadata')
             .eq('event_name', 'purchase')
             .gte('created_at', startIso)
-            .lt('created_at', endIso)
+            .lt('created_at', endIso),
+          supabase
+            .from('legacy_subscribers')
+            .select('email, claimed_user_id')
+            .lt('created_at', startIso),
+          supabase
+            .from('app_events')
+            .select('user_id, email')
+            .eq('event_name', 'purchase')
+            .lt('created_at', startIso)
         ]);
 
+        const oldLegEmails = new Set<string>();
+        const oldLegUids = new Set<string>();
+        (oldLegRes?.data || []).forEach((l: any) => {
+          if (l.claimed_user_id) oldLegUids.add(l.claimed_user_id);
+          if (l.email) oldLegEmails.add(l.email.toLowerCase().trim());
+        });
+
+        const prevPurchasesUids = new Set<string>();
+        const prevPurchasesEmails = new Set<string>();
+        (prevPurchasesRes?.data || []).forEach((p: any) => {
+          if (p.user_id) prevPurchasesUids.add(p.user_id);
+          if (p.email) prevPurchasesEmails.add(p.email.toLowerCase().trim());
+        });
+
+        // Buscar emails dos candidatos do Asaas para cruzamento anti-recorrência
+        const asaasCandidateUids = (asaasRes.data || []).map((s: any) => s.user_id).filter(Boolean);
+        const { data: asaasProfs } = asaasCandidateUids.length > 0
+          ? await supabase.from('profiles').select('id, email').in('id', asaasCandidateUids)
+          : { data: [] };
+        const asaasEmailMap = new Map<string, string>();
+        (asaasProfs || []).forEach((p: any) => {
+          if (p.id && p.email) asaasEmailMap.set(p.id, p.email.toLowerCase().trim());
+        });
+
+        const isAntigo = (uid?: string | null, email?: string | null, createdAt?: string | null) => {
+          const em = (email || '').toLowerCase().trim();
+          if (uid && oldLegUids.has(uid)) return true;
+          if (em && oldLegEmails.has(em)) return true;
+          if (uid && prevPurchasesUids.has(uid)) return true;
+          if (em && prevPurchasesEmails.has(em)) return true;
+          if (createdAt) {
+            const createdTime = new Date(createdAt).getTime();
+            const startTime = new Date(startIso).getTime();
+            if (!isNaN(createdTime) && createdTime < startTime) return true;
+          }
+          return false;
+        };
+
         const subUsers = new Map<string, { plano: string; valor: number }>();
+        const renewUsers = new Map<string, { plano: string; valor: number }>();
 
         (asaasRes.data || []).forEach((s: any) => {
           const st = (s.status || '').toUpperCase();
           if (st !== 'ACTIVE' && st !== 'ACTIVE_GRACE' && st !== 'CONFIRMED' && st !== 'RECEIVED' && st !== 'PAGA') return;
           if (!inPeriod(s.started_at) && !inPeriod(s.created_at)) return;
           const uid = s.user_id || s.id;
+          const userEmail = asaasEmailMap.get(s.user_id);
+          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
+
           const plano = (s.plano || 'mensal').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
           const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício'));
           const valor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
-          subUsers.set(uid, { plano: (isAnual && isPromo) ? 'anual_promocional' : plano, valor });
+          const planName = (isAnual && isPromo) ? 'anual_promocional' : plano;
+
+          if (userIsAntigo) {
+            renewUsers.set(uid, { plano: planName, valor });
+          } else {
+            subUsers.set(uid, { plano: planName, valor });
+          }
         });
 
         (playRes.data || []).forEach((s: any) => {
           const st = (s.status || '').toUpperCase();
           if (!st.includes('ACTIVE') && !st.includes('GRACE')) return;
           const uid = s.user_id || s.id;
+          const userIsAntigo = isAntigo(s.user_id, null, s.created_at);
           const plano = s.product_id?.includes('anual') ? 'anual' : s.product_id?.includes('vitalicio') ? 'vitalicio' : 'mensal';
           const valor = plano === 'anual' ? PRECO_ANUAL : plano === 'vitalicio' ? PRECO_VITALICIO : PRECO_MENSAL;
-          if (!subUsers.has(uid)) {
-            subUsers.set(uid, { plano, valor });
+          if (userIsAntigo) {
+            if (!renewUsers.has(uid) && !subUsers.has(uid)) {
+              renewUsers.set(uid, { plano, valor });
+            }
+          } else {
+            if (!subUsers.has(uid) && !renewUsers.has(uid)) {
+              subUsers.set(uid, { plano, valor });
+            }
           }
         });
 
@@ -568,10 +633,17 @@ export function AdminHojeCards() {
           const st = (s.status || '').toLowerCase();
           if (st !== 'active' && st !== 'in_grace') return;
           const uid = s.user_id || s.id;
+          const userIsAntigo = isAntigo(s.user_id, null, s.created_at);
           const plano = s.product_id?.includes('anual') ? 'anual' : 'mensal';
           const valor = plano === 'anual' ? PRECO_ANUAL : PRECO_MENSAL;
-          if (!subUsers.has(uid)) {
-            subUsers.set(uid, { plano, valor });
+          if (userIsAntigo) {
+            if (!renewUsers.has(uid) && !subUsers.has(uid)) {
+              renewUsers.set(uid, { plano, valor });
+            }
+          } else {
+            if (!subUsers.has(uid) && !renewUsers.has(uid)) {
+              subUsers.set(uid, { plano, valor });
+            }
           }
         });
 
@@ -579,10 +651,17 @@ export function AdminHojeCards() {
           const st = (s.status || '').toLowerCase();
           if (st !== 'active' && st !== 'active_grace') return;
           const uid = s.claimed_user_id || s.id;
+          const userIsAntigo = isAntigo(s.claimed_user_id, s.email, s.created_at);
           const plano = s.tipo || 'mensal';
           const valor = plano === 'vitalicio' ? PRECO_VITALICIO : plano === 'anual' ? PRECO_ANUAL : PRECO_MENSAL;
-          if (!subUsers.has(uid)) {
-            subUsers.set(uid, { plano, valor });
+          if (userIsAntigo) {
+            if (!renewUsers.has(uid) && !subUsers.has(uid)) {
+              renewUsers.set(uid, { plano, valor });
+            }
+          } else {
+            if (!subUsers.has(uid) && !renewUsers.has(uid)) {
+              subUsers.set(uid, { plano, valor });
+            }
           }
         });
 
@@ -590,7 +669,9 @@ export function AdminHojeCards() {
           const em = (e.email || '').toLowerCase().trim();
           if (ADMIN_EMAILS.includes(em)) return;
           const uid = e.user_id || em;
-          if (!uid || subUsers.has(uid)) return;
+          if (!uid) return;
+          const userIsAntigo = isAntigo(e.user_id, em, null);
+
           const meta = e.metadata || {};
           const plano = (meta.plano || 'anual').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
@@ -599,18 +680,36 @@ export function AdminHojeCards() {
           const valor = typeof meta.value === 'number' && meta.value > 0
             ? meta.value
             : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
-          subUsers.set(uid, { plano: (isAnual && isPromo) ? 'anual_promocional' : plano, valor });
+          const planName = (isAnual && isPromo) ? 'anual_promocional' : plano;
+
+          if (userIsAntigo) {
+            if (!renewUsers.has(uid) && !subUsers.has(uid)) {
+              renewUsers.set(uid, { plano: planName, valor });
+            } else if (renewUsers.has(uid) && typeof meta.value === 'number' && meta.value > 0) {
+              renewUsers.set(uid, { plano: planName, valor });
+            }
+          } else {
+            if (!subUsers.has(uid) && !renewUsers.has(uid)) {
+              subUsers.set(uid, { plano: planName, valor });
+            } else if (subUsers.has(uid) && typeof meta.value === 'number' && meta.value > 0) {
+              subUsers.set(uid, { plano: planName, valor });
+            }
+          }
         });
 
         totalTrial = subUsers.size;
-
-        // Soma real da receita dos assinantes
         let somaValores = 0;
         subUsers.forEach(({ valor }) => {
           somaValores += valor;
         });
-        
         totalTrialValor = somaValores;
+
+        const totalRenovou = renewUsers.size;
+        let somaRenovou = 0;
+        renewUsers.forEach(({ valor }) => {
+          somaRenovou += valor;
+        });
+        const totalRenovouValor = somaRenovou;
 
       } catch (e: any) {
         console.error('Error fetching today events/subscriptions', e);
@@ -627,14 +726,16 @@ export function AdminHojeCards() {
       // Para online (dia inteiro), pega o totalOnline extraído do RPC (se disponível) ou da lista
       const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
       const countOnline = Math.max(totalOnline, countOnlineFromList, count5m);
-      const novos: Record<CardId | 'trialValor', number> = {
+      const novos: Record<CardId | 'trialValor' | 'renovouValor', number> = {
         online5m: count5m, 
         online: countOnline, 
         cadastros: totalCadastros, 
         paywall: totalPaywall,
         viu_planos: totalViuPlanos,
         trial: totalTrial,
-        trialValor: totalTrialValor
+        trialValor: totalTrialValor,
+        renovou: totalRenovou,
+        renovouValor: totalRenovouValor,
       };
       setCounts(novos);
     
@@ -651,7 +752,7 @@ export function AdminHojeCards() {
         }
       } catch {}
 
-      (['online5m', 'online', 'cadastros', 'paywall', 'viu_planos', 'trial'] as CardId[]).forEach((id) => {
+      (['online5m', 'online', 'cadastros', 'paywall', 'viu_planos', 'trial', 'renovou'] as CardId[]).forEach((id) => {
         const seenKey = seenStorageKey(id, datas[0]);
         if (!localStorage.getItem(seenKey)) {
           writeSeen(id, datas[0], { count: novos[id], keys: [] });
@@ -659,7 +760,7 @@ export function AdminHojeCards() {
         }
       });
     } else {
-      setSeenCounts({ online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0 });
+      setSeenCounts({ online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0, renovou: 0 });
     }
   } catch (err) {
     console.error('Erro em AdminHojeCards load():', err);
@@ -794,7 +895,8 @@ export function AdminHojeCards() {
       let allLists: any[] = [];
       let listPromises: any[] = [];
       
-      if (id === 'trial') {
+      if (id === 'trial' || id === 'renovou') {
+        const isRenovou = id === 'renovou';
         const { startIso, endIso } = getBrasiliaDayRange(datas);
 
         const inPeriod = (dateStr?: string | null) => {
@@ -807,7 +909,7 @@ export function AdminHojeCards() {
         const rpcPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
 
         // 2. Buscar também diretamente no asaas_subscriptions, play_subscriptions, apple_subscriptions, legacy_subscribers e app_events
-        const [rpcResults, asaasRes, playRes, appleRes, legRes, purchaseEvRes] = await Promise.all([
+        const [rpcResults, asaasRes, playRes, appleRes, legRes, purchaseEvRes, oldLegRes, prevPurchasesRes] = await Promise.all([
           Promise.all(rpcPromises),
           supabase
             .from('asaas_subscriptions')
@@ -841,14 +943,62 @@ export function AdminHojeCards() {
             .eq('event_name', 'purchase')
             .gte('created_at', startIso)
             .lt('created_at', endIso)
-            .order('created_at', { ascending: false })
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('legacy_subscribers')
+            .select('email, claimed_user_id')
+            .lt('created_at', startIso),
+          supabase
+            .from('app_events')
+            .select('user_id, email')
+            .eq('event_name', 'purchase')
+            .lt('created_at', startIso)
         ]);
+
+        const oldLegEmails = new Set<string>();
+        const oldLegUids = new Set<string>();
+        (oldLegRes?.data || []).forEach((l: any) => {
+          if (l.claimed_user_id) oldLegUids.add(l.claimed_user_id);
+          if (l.email) oldLegEmails.add(l.email.toLowerCase().trim());
+        });
+
+        const prevPurchasesUids = new Set<string>();
+        const prevPurchasesEmails = new Set<string>();
+        (prevPurchasesRes?.data || []).forEach((p: any) => {
+          if (p.user_id) prevPurchasesUids.add(p.user_id);
+          if (p.email) prevPurchasesEmails.add(p.email.toLowerCase().trim());
+        });
+
+        const isAntigo = (uid?: string | null, email?: string | null, createdAt?: string | null) => {
+          const em = (email || '').toLowerCase().trim();
+          if (uid && oldLegUids.has(uid)) return true;
+          if (em && oldLegEmails.has(em)) return true;
+          if (uid && prevPurchasesUids.has(uid)) return true;
+          if (em && prevPurchasesEmails.has(em)) return true;
+          if (createdAt) {
+            const createdTime = new Date(createdAt).getTime();
+            const startTime = new Date(startIso).getTime();
+            if (!isNaN(createdTime) && createdTime < startTime) return true;
+          }
+          return false;
+        };
 
         const existingUserIds = new Set<string>();
 
-        // Processa os dados retornados pela RPC (já contém display_name, email e avatar)
+        const asaasCreatedAtMap = new Map<string, string>();
+        (asaasRes.data || []).forEach((s: any) => {
+          if (s.user_id && s.created_at) asaasCreatedAtMap.set(s.user_id, s.created_at);
+        });
+
+        // Processa os dados retornados pela RPC
         rpcResults.forEach(({ data }) => {
           ((data as any[]) || []).forEach(r => {
+            const uid = r.user_id || r.id;
+            const subCreatedAt = r.created_at || (uid ? asaasCreatedAtMap.get(uid) : null);
+            const userIsAntigo = isAntigo(uid, r.email, subCreatedAt);
+            if (isRenovou ? !userIsAntigo : userIsAntigo) return;
+            if (uid) existingUserIds.add(uid);
+
             const subText = (r.subtitle || '').toLowerCase();
             const titleText = (r.title || '').toLowerCase();
             const isPromo = subText.includes('promocional') || subText.includes('promo') || titleText.includes('promocional');
@@ -856,15 +1006,13 @@ export function AdminHojeCards() {
             const isVit = !isPromo && (subText.includes('vitalicio') || subText.includes('vitalício') || titleText.includes('vitalicio'));
             const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
             const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
-            const uid = r.user_id || r.id;
-            if (uid) existingUserIds.add(uid);
 
             allLists.push({
               key: r.key || uid || r.email || Math.random().toString(),
               user_id: uid,
               title: r.title || r.nome || 'Assinante',
               email: r.email || null,
-              subtitle: r.subtitle || `Assinatura ${planName}`,
+              subtitle: isRenovou ? `Renovou via Asaas (${planName})` : (r.subtitle || `Assinou via Asaas (${planName})`),
               at: r.at || r.created_at,
               acessos: null,
               avatar_url: r.avatar_url || null,
@@ -923,20 +1071,23 @@ export function AdminHojeCards() {
           if (st !== 'ACTIVE' && st !== 'ACTIVE_GRACE' && st !== 'CONFIRMED' && st !== 'RECEIVED' && st !== 'PAGA') return;
           if (!inPeriod(s.started_at) && !inPeriod(s.created_at)) return;
           if (s.user_id && existingUserIds.has(s.user_id)) return;
+          const profInfo = profMap.get(s.user_id);
+          const userIsAntigo = isAntigo(s.user_id, profInfo?.email, s.created_at);
+          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
+
           const planoLower = (s.plano || '').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
           const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
           const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
-          const profInfo = profMap.get(s.user_id);
 
           allLists.push({
             key: `asaas-${s.id}`,
             user_id: s.user_id,
             title: profInfo?.name || 'Assinante Asaas',
             email: profInfo?.email || null,
-            subtitle: `Assinou via Asaas (${planName})`,
+            subtitle: isRenovou ? `Renovou via Asaas (${planName})` : `Assinou via Asaas (${planName})`,
             at: s.started_at || s.created_at,
             acessos: null,
             avatar_url: null,
@@ -953,6 +1104,9 @@ export function AdminHojeCards() {
           if (ADMIN_EMAILS.includes(em)) return;
           const uid = e.user_id || em;
           if (!uid || existingUserIds.has(uid)) return;
+          const profInfo = profMap.get(e.user_id);
+          const userIsAntigo = isAntigo(e.user_id, em || profInfo?.email, null);
+          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
 
           const meta = e.metadata || {};
           const planoLower = (meta.plano || 'anual').toLowerCase();
@@ -963,14 +1117,13 @@ export function AdminHojeCards() {
             ? meta.value
             : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
-          const profInfo = profMap.get(e.user_id);
 
           allLists.push({
             key: `event-${e.id}`,
             user_id: e.user_id || null,
             title: profInfo?.name || em.split('@')[0] || 'Assinante',
             email: em || profInfo?.email || null,
-            subtitle: `Assinou via Checkout (${planName})`,
+            subtitle: isRenovou ? `Renovou via Asaas (${planName})` : `Assinou via Checkout (${planName})`,
             at: e.created_at,
             acessos: null,
             avatar_url: null,
@@ -984,17 +1137,19 @@ export function AdminHojeCards() {
         // Complementa com Play Store faltantes
         (playRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
+          const profInfo = profMap.get(s.user_id);
+          const userIsAntigo = isAntigo(s.user_id, profInfo?.email, s.created_at);
+          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
           const isAnualOrVit = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio');
           const planValor = isAnualOrVit ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = isAnualOrVit ? 'Anual/Vitalício' : 'Mensal';
-          const profInfo = profMap.get(s.user_id);
 
           allLists.push({
             key: `play-${s.id}`,
             user_id: s.user_id,
             title: profInfo?.name || 'Assinante Play Store',
             email: profInfo?.email || null,
-            subtitle: `Assinou via Google Play (${planName})`,
+            subtitle: isRenovou ? `Renovou via Google Play (${planName})` : `Assinou via Google Play (${planName})`,
             at: s.created_at,
             acessos: null,
             avatar_url: null,
@@ -1008,17 +1163,19 @@ export function AdminHojeCards() {
         // Complementa com Apple Store faltantes
         (appleRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
+          const profInfo = profMap.get(s.user_id);
+          const userIsAntigo = isAntigo(s.user_id, profInfo?.email, s.created_at);
+          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
           const isAnual = s.product_id?.includes('anual');
           const planValor = isAnual ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = isAnual ? 'Anual' : 'Mensal';
-          const profInfo = profMap.get(s.user_id);
 
           allLists.push({
             key: `apple-${s.id}`,
             user_id: s.user_id,
             title: profInfo?.name || 'Assinante App Store',
             email: profInfo?.email || null,
-            subtitle: `Assinou via Apple (${planName})`,
+            subtitle: isRenovou ? `Renovou via Apple (${planName})` : `Assinou via Apple (${planName})`,
             at: s.created_at || s.start_time,
             acessos: null,
             avatar_url: null,
@@ -1031,12 +1188,14 @@ export function AdminHojeCards() {
 
         // Complementa com Legados se houver
         (legRes.data || []).forEach((e: any) => {
+          const userIsAntigo = isAntigo(e.claimed_user_id, e.email, e.created_at);
+          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
           allLists.push({
             key: `leg-${e.id}`,
             user_id: e.claimed_user_id || null,
             title: e.nome || e.email?.split('@')[0] || 'Usuário',
             email: e.email,
-            subtitle: `Assinou via Asaas (${e.status})`,
+            subtitle: isRenovou ? `Renovou via Asaas (${e.status})` : `Assinou via Asaas (${e.status})`,
             at: e.created_at,
             acessos: null,
             avatar_url: null,
@@ -1452,11 +1611,11 @@ export function AdminHojeCards() {
     fetchRows(id, hoje);
   }, [fetchRows, counts, periodo]);
 
-  // Deep link vindo do push do admin: /admin-funcoes?card=cadastros|trial|online
+  // Deep link vindo do push do admin: /admin-funcoes?card=cadastros|trial|renovou|online
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const card = params.get('card');
-    if (card === 'cadastros' || card === 'trial' || card === 'online' || card === 'online5m' || card === 'paywall' || card === 'viu_planos') {
+    if (card === 'cadastros' || card === 'trial' || card === 'renovou' || card === 'online' || card === 'online5m' || card === 'paywall' || card === 'viu_planos') {
       openCard(card as CardId);
       params.delete('card');
       const qs = params.toString();
@@ -1491,6 +1650,7 @@ export function AdminHojeCards() {
     { id: 'paywall', label: 'Tela de Assinaturas', icon: Sparkles },
     { id: 'viu_planos', label: 'Checkout', icon: Check },
     { id: 'trial', label: 'Assinou', icon: DollarSign },
+    { id: 'renovou', label: 'Renovou', icon: Repeat },
   ];
 
   const titles: Record<CardId, string> = {
@@ -1500,6 +1660,7 @@ export function AdminHojeCards() {
     paywall: 'Entraram em Assinaturas',
     viu_planos: 'Abriram Checkout',
     trial: 'Assinaram',
+    renovou: 'Renovaram',
   };
 
   const rotuloPeriodo = {
@@ -1516,6 +1677,57 @@ export function AdminHojeCards() {
         return true;
       })
     : rows;
+
+  const renderCardButton = ({ id, label, icon: Icon }: typeof CARDS[0]) => {
+    const isZero = counts[id] === 0;
+    const isFinancial = id === 'trial' || id === 'renovou';
+    const valorFinanceiro = id === 'trial' ? counts.trialValor : counts.renovouValor;
+
+    return (
+      <button
+        key={id}
+        onClick={() => openCard(id)}
+        className="group relative rounded-xl border border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98] p-2.5 sm:p-3 text-left transition-all overflow-hidden flex flex-col justify-between min-h-[76px]"
+      >
+        <div className="flex items-start justify-between w-full">
+          <div className="w-6 h-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors shrink-0">
+            <Icon className="w-3.5 h-3.5" />
+          </div>
+
+          <div className="text-right flex flex-col items-end">
+            <div className="flex items-center gap-1">
+              {counts[id] - (seenCounts[id] || 0) > 0 && (
+                <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1.5 py-[0.5px] font-body text-[9px] font-bold text-emerald-400 animate-pulse">
+                  +{counts[id] - (seenCounts[id] || 0)}
+                </span>
+              )}
+              <span className={cn(
+                "font-['Plus_Jakarta_Sans',sans-serif] text-xl sm:text-[22px] font-extrabold tracking-tight leading-none tabular-nums",
+                isZero ? "text-zinc-600" : "text-foreground"
+              )}>
+                {counts[id]}
+              </span>
+            </div>
+            {isFinancial && (
+              <span className={cn(
+                "block font-['Plus_Jakarta_Sans',sans-serif] text-[9.5px] font-bold mt-0.5 truncate",
+                valorFinanceiro === 0 ? "text-zinc-600" : "text-emerald-400"
+              )}>
+                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className={cn(
+          "font-body text-[10.5px] sm:text-[11px] leading-tight mt-2 font-medium line-clamp-2",
+          isZero ? "text-muted-foreground/60" : "text-muted-foreground"
+        )}>
+          {label}
+        </div>
+      </button>
+    );
+  };
 
   return (
     <>
@@ -1561,54 +1773,14 @@ export function AdminHojeCards() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 sm:gap-2.5 mb-3">
-        {CARDS.map(({ id, label, icon: Icon }) => {
-          const isZero = counts[id] === 0;
-          return (
-            <button
-              key={id}
-              onClick={() => openCard(id)}
-              className="group relative rounded-xl border border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98] p-2.5 sm:p-3 text-left transition-all overflow-hidden flex flex-col justify-between min-h-[76px]"
-            >
-              <div className="flex items-start justify-between w-full">
-                <div className="w-6 h-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors shrink-0">
-                  <Icon className="w-3.5 h-3.5" />
-                </div>
+      {/* Linha 1: 3 cards de Tráfego e Cadastros */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-2.5 mb-2 sm:mb-2.5">
+        {CARDS.slice(0, 3).map(renderCardButton)}
+      </div>
 
-                <div className="text-right flex flex-col items-end">
-                  <div className="flex items-center gap-1">
-                    {counts[id] - (seenCounts[id] || 0) > 0 && (
-                      <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1.5 py-[0.5px] font-body text-[9px] font-bold text-emerald-400 animate-pulse">
-                        +{counts[id] - (seenCounts[id] || 0)}
-                      </span>
-                    )}
-                    <span className={cn(
-                      "font-['Plus_Jakarta_Sans',sans-serif] text-xl sm:text-[22px] font-extrabold tracking-tight leading-none tabular-nums",
-                      isZero ? "text-zinc-600" : "text-foreground"
-                    )}>
-                      {counts[id]}
-                    </span>
-                  </div>
-                  {id === 'trial' && (
-                    <span className={cn(
-                      "block font-['Plus_Jakarta_Sans',sans-serif] text-[9.5px] font-bold mt-0.5 truncate",
-                      counts.trialValor === 0 ? "text-zinc-600" : "text-emerald-400"
-                    )}>
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(counts.trialValor)}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className={cn(
-                "font-body text-[10.5px] sm:text-[11px] leading-tight mt-2 font-medium line-clamp-2",
-                isZero ? "text-muted-foreground/60" : "text-muted-foreground"
-              )}>
-                {label}
-              </div>
-            </button>
-          );
-        })}
+      {/* Linha 2: 4 cards de Conversão, Vendas e Renovações */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 mb-3">
+        {CARDS.slice(3).map(renderCardButton)}
       </div>
 
       <Sheet open={!!open} onOpenChange={(v) => !v && setOpen(null)}>
