@@ -426,37 +426,47 @@ const QuestoesArea = () => {
 
       <div className="relative z-10 w-full max-w-[540px] md:max-w-[640px] mx-auto px-3 sm:px-6 pb-32 pt-2 min-w-0 overflow-x-hidden box-border">
         
-        {/* ── Barra Superior com Botão de Filtros Rápidos ── */}
-        <div className="flex items-center justify-between gap-3 mb-4 p-3 rounded-2xl bg-[#17122B]/80 border border-white/10 backdrop-blur-md shadow-xl">
-          <div className="flex items-center gap-2.5 min-w-0">
+        {/* ── Barra Superior com Indicador da Área & Barra de Progresso Oficial ── */}
+        <div className="flex flex-col gap-2.5 mb-5 p-3.5 sm:p-4 rounded-2xl bg-[#17122B]/85 border border-white/10 backdrop-blur-md shadow-xl">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-[#E11D48]/20 text-[#FB7185] border border-[#E11D48]/30 shadow-inner shrink-0">
+                <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-xs sm:text-sm font-bold uppercase tracking-wider text-white truncate">
+                  {effectiveAreaName || area?.nome || 'Direito'}
+                </p>
+                <p className="text-[10px] sm:text-[11px] text-zinc-300">
+                  {totalRespondidasArea} de {totalQuestoesArea} questões ({progressoPctArea}%)
+                </p>
+              </div>
+            </div>
+
             <button
               type="button"
-              onClick={goBack}
-              className="w-9 h-9 rounded-xl flex items-center justify-center bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95"
+              onClick={() => {
+                try { haptic.selection(); } catch {}
+                setFiltroAberto(true);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-[#E11D48] to-[#BE123C] hover:from-[#BE123C] hover:to-[#9F1239] shadow-[0_0_18px_rgba(225,29,72,0.6)] transition-all shrink-0 active:scale-95"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Filtros</span>
             </button>
-            <div className="min-w-0">
-              <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-xs sm:text-sm font-bold uppercase tracking-wider text-white truncate">
-                {effectiveAreaName || area?.nome || 'Direito'}
-              </p>
-              <p className="text-[10px] sm:text-[11px] text-zinc-400">
-                {totalRespondidasArea} / {totalQuestoesArea} questões ({progressoPctArea}%)
-              </p>
-            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              try { haptic.selection(); } catch {}
-              setFiltroAberto(true);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#F97316] hover:bg-[#EA580C] shadow-[0_0_15px_rgba(249,115,22,0.5)] transition-all shrink-0 active:scale-95"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>Filtros</span>
-          </button>
+          {/* Barra de Progresso Oficial da Área (Estilo Questões) */}
+          <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden border border-white/5">
+            <div 
+              className="h-full rounded-full transition-all duration-700 ease-out"
+              style={{
+                width: `${Math.max(progressoPctArea, 1)}%`,
+                background: 'linear-gradient(90deg, #E11D48, #FB7185)',
+                boxShadow: '0 0 10px rgba(225, 29, 72, 0.8)',
+              }}
+            />
+          </div>
         </div>
 
         {/* ════════════════════════════════════════════════════════════════
@@ -498,14 +508,23 @@ const QuestoesArea = () => {
                     strokeLinecap="round"
                   />
 
-                  {/* Linha Guia Pontilhada Central (Neon Laranja até o nó atual, depois cinza pontilhada) */}
+                  {/* Linha Guia Pontilhada Central (Neon Carmim até o nó atual, depois cinza pontilhada) */}
                   <path
                     d={`M ${x1}% ${y1} C ${x1}% ${midY}, ${x2}% ${midY}, ${x2}% ${y2}`}
                     fill="none"
-                    stroke={item.isConcluido || item.isEmAndamento ? "#F97316" : "rgba(255, 255, 255, 0.2)"}
+                    stroke={item.isConcluido || item.isEmAndamento ? "#E11D48" : "rgba(255, 255, 255, 0.2)"}
                     strokeWidth="3"
                     strokeDasharray="8 8"
                     strokeLinecap="round"
+                    filter={item.isConcluido || item.isEmAndamento ? "url(#road-glow)" : undefined}
+                  />
+
+                  {/* Marco / Pérola de Trilha no Ponto Médio */}
+                  <circle
+                    cx={`${(x1 + x2) / 2}%`}
+                    cy={midY}
+                    r={item.isConcluido || item.isEmAndamento ? "4" : "2.5"}
+                    fill={item.isConcluido || item.isEmAndamento ? "#FB7185" : "rgba(255, 255, 255, 0.25)"}
                     filter={item.isConcluido || item.isEmAndamento ? "url(#road-glow)" : undefined}
                   />
                 </g>
@@ -553,31 +572,31 @@ const QuestoesArea = () => {
                     {/* ── BALÃO FLUTUANTE "CONTINUAR" / "INICIAR" (PADRÃO DRUNO) ── */}
                     {item.isEmAndamento && (
                       <div className="absolute -top-12 z-30 flex flex-col items-center animate-bounce">
-                        <div className="px-4 py-1.5 rounded-full bg-[#181126] border-2 border-[#F97316] text-[#F97316] font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(249,115,22,0.8)] backdrop-blur-md">
+                        <div className="px-4 py-1.5 rounded-full bg-[#1A0E1D] border-2 border-[#E11D48] text-[#FB7185] font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(225,29,72,0.85)] backdrop-blur-md">
                           CONTINUAR
                         </div>
                         {/* Cauda do balão apontando para o livro */}
-                        <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-[#F97316]" />
+                        <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-[#E11D48]" />
                       </div>
                     )}
 
                     {/* ── AVATAR DO USUÁRIO AO LADO DO NÓ ATUAL (IGUAL DRUNO) ── */}
                     {item.isEmAndamento && (
                       <div className="absolute -left-16 sm:-left-20 top-6 z-30 flex flex-col items-center pointer-events-none animate-pulse">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full p-0.5 bg-gradient-to-tr from-[#F97316] to-[#A855F7] shadow-[0_0_20px_rgba(249,115,22,0.7)]">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full p-0.5 bg-gradient-to-tr from-[#E11D48] to-[#A855F7] shadow-[0_0_20px_rgba(225,29,72,0.7)]">
                           <div className="w-full h-full rounded-full bg-[#1C1433] flex items-center justify-center overflow-hidden border border-white/30">
                             {user?.user_metadata?.avatar_url ? (
                               <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
-                              <User className="w-6 h-6 text-amber-300" />
+                              <User className="w-6 h-6 text-rose-300" />
                             )}
                           </div>
                         </div>
                       </div>
                     )}
 
-                    {/* ── LIVRO 3D EM PÉ (DIMENSÕES & PERSPECTIVA DO DRUNO) ── */}
-                    <div className="relative w-[82px] xs:w-[94px] sm:w-[105px] h-[120px] xs:h-[138px] sm:h-[154px] rounded-xl z-20 transition-all duration-300 group-hover:-translate-y-2">
+                    {/* ── LIVRO 3D EM PÉ (DIMENSÕES & PERSPECTIVA DO DRUNO LAPIDADO) ── */}
+                    <div className="relative w-[86px] xs:w-[98px] sm:w-[110px] h-[126px] xs:h-[144px] sm:h-[160px] rounded-2xl z-20 transition-all duration-300 group-hover:-translate-y-2">
                       
                       {/* Efeito 3D das Páginas Físicas na Lateral Direita */}
                       <div 
@@ -588,96 +607,117 @@ const QuestoesArea = () => {
                       />
 
                       {/* Efeito 3D da Lombada à Esquerda */}
-                      <div className="absolute top-0 bottom-0 left-0 w-2.5 rounded-l-xl bg-gradient-to-r from-black/60 to-transparent pointer-events-none z-20" />
+                      <div className="absolute top-0 bottom-0 left-0 w-2.5 rounded-l-2xl bg-gradient-to-r from-black/60 to-transparent pointer-events-none z-20" />
 
-                      {/* Capa Principal do Livro */}
+                      {/* Capa Principal do Livro (Lapidada com estética 3D premium sem poluição de números) */}
                       <div 
                         className={cn(
-                          "relative w-full h-full rounded-xl overflow-hidden border transition-all duration-300 shadow-2xl flex flex-col justify-between p-2",
+                          "relative w-full h-full rounded-2xl overflow-hidden border transition-all duration-300 shadow-2xl flex flex-col justify-center items-center p-2",
                           item.isEmAndamento
-                            ? "border-[#F97316] shadow-[0_0_25px_rgba(249,115,22,0.6)]"
+                            ? "border-[#E11D48] shadow-[0_0_28px_rgba(225,29,72,0.65)] ring-1 ring-[#FB7185]/50"
                             : item.isConcluido
-                            ? "border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.5)]"
-                            : "border-white/20 bg-zinc-900/90 opacity-75 grayscale-[40%]"
+                            ? "border-emerald-400 shadow-[0_0_22px_rgba(16,185,129,0.5)] ring-1 ring-emerald-300/40"
+                            : "border-white/15 bg-zinc-900/90 opacity-70 grayscale-[35%]"
                         )}
                         style={{ backgroundColor: '#130F24' }}
                       >
-                        {/* Imagem de Capa do Livro */}
+                        {/* Imagem de Capa do Livro (Full-bleed limpa, sem poluição de texto interno) */}
                         <img 
                           src={item.coverImage} 
                           alt={item.titulo} 
-                          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                          className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-500 group-hover:scale-105"
                         />
 
-                        {/* Overlay escuro de contraste */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40 pointer-events-none" />
+                        {/* Overlay cinematográfico com vinheta suave */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/35 pointer-events-none" />
 
-                        {/* Brilho diagonal laminado */}
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
-
-                        {/* Topo da Capa: Badge de Número */}
-                        <div className="relative z-10 flex items-center justify-between w-full">
-                          <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-black/70 text-white border border-white/20">
-                            #{item.ordemStr}
-                          </span>
-                        </div>
+                        {/* Brilho diagonal laminado e reflexo de vidro */}
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-white/[0.18] pointer-events-none" />
+                        
+                        {/* Borda interna refinada chanfrada */}
+                        <div className="absolute inset-0 rounded-2xl border border-white/10 pointer-events-none" />
 
                         {/* Centro da Capa: Botão Play Branco / Cadeado / Check */}
-                        <div className="relative z-10 my-auto flex items-center justify-center">
+                        <div className="relative z-10 flex items-center justify-center">
                           {item.isConcluido ? (
-                            <div className="w-9 h-9 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg border-2 border-emerald-300">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.7)] border-2 border-emerald-200">
                               <Check className="w-5 h-5 stroke-[3]" />
                             </div>
                           ) : item.isEmAndamento ? (
-                            <div className="w-10 h-10 rounded-full bg-white text-[#F97316] flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.9)] transition-transform duration-300 group-hover:scale-110">
-                              <Play className="w-5 h-5 fill-current translate-x-0.5" />
+                            <div className="relative flex items-center justify-center">
+                              {/* Pulso de halo neon sob o play */}
+                              <div className="absolute inset-0 rounded-full bg-[#E11D48] blur-md opacity-75 animate-ping scale-110" />
+                              <div className="relative w-11 h-11 rounded-full bg-white text-[#E11D48] flex items-center justify-center shadow-[0_0_22px_rgba(255,255,255,0.95)] border-2 border-white transition-transform duration-300 group-hover:scale-110">
+                                <Play className="w-5 h-5 fill-current translate-x-0.5" />
+                              </div>
                             </div>
                           ) : (
-                            <div className="w-8 h-8 rounded-full bg-black/70 text-white/80 border border-white/30 flex items-center justify-center backdrop-blur-sm">
-                              <Lock className="w-4 h-4 text-purple-300" />
+                            <div className="w-9 h-9 rounded-full bg-black/60 text-white/90 border border-white/25 flex items-center justify-center backdrop-blur-md shadow-lg">
+                              <Lock className="w-4 h-4 text-purple-200" />
                             </div>
                           )}
-                        </div>
-
-                        {/* Rodapé da Capa: Questões */}
-                        <div className="relative z-10 text-center">
-                          <span className="text-[9px] font-extrabold text-white/95 px-1 py-0.5 rounded bg-black/60">
-                            {item.displayTotal} q.
-                          </span>
                         </div>
                       </div>
                     </div>
 
-                    {/* ── PEDESTAL 3D ELÍPTICO SOB O LIVRO (PADRÃO DRUNO) ── */}
-                    <div className="relative -mt-4 w-32 xs:w-36 sm:w-40 h-8 xs:h-9 z-10 pointer-events-none flex items-center justify-center">
+                    {/* ── PEDESTAL 3D ELÍPTICO SOB O LIVRO (PADRÃO DRUNO LAPIDADO) ── */}
+                    <div className="relative -mt-4 w-32 xs:w-36 sm:w-42 h-9 xs:h-10 z-10 pointer-events-none flex items-center justify-center">
+                      {/* Aura luminosa difusa no chão */}
                       <div 
                         className={cn(
-                          "w-full h-full rounded-[50%] border transition-all duration-300",
-                          item.isEmAndamento
-                            ? "bg-gradient-to-b from-[#EA580C] to-[#9A3412] border-[#F97316] shadow-[0_0_30px_rgba(249,115,22,0.8)]"
-                            : item.isConcluido
-                            ? "bg-gradient-to-b from-emerald-600 to-emerald-950 border-emerald-400/80 shadow-[0_0_20px_rgba(16,185,129,0.5)]"
-                            : "bg-gradient-to-b from-[#251E3D] to-[#120E22] border-white/10 shadow-lg"
-                        )}
+                          "absolute inset-0 rounded-[50%] blur-md transition-all duration-300",
+                          item.isEmAndamento 
+                            ? "bg-[#E11D48]/70 scale-110" 
+                            : item.isConcluido 
+                            ? "bg-emerald-500/50 scale-105" 
+                            : "bg-[#1E1635]/60"
+                        )} 
                       />
+
+                      {/* Corpo do Pedestal 3D com profundidade */}
+                      <div 
+                        className={cn(
+                          "relative w-full h-full rounded-[50%] border transition-all duration-300 shadow-xl overflow-hidden flex items-center justify-center",
+                          item.isEmAndamento
+                            ? "bg-gradient-to-b from-[#E11D48] via-[#BE123C] to-[#881337] border-[#FB7185] shadow-[0_0_30px_rgba(225,29,72,0.85)]"
+                            : item.isConcluido
+                            ? "bg-gradient-to-b from-emerald-500 via-emerald-700 to-emerald-950 border-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+                            : "bg-gradient-to-b from-[#251E3D] via-[#1B152F] to-[#0E0B19] border-white/10 shadow-lg"
+                        )}
+                      >
+                        {/* Relevo interno superior da plataforma (Top Lip 3D) */}
+                        <div className="w-[84%] h-[74%] rounded-[50%] border border-white/20 bg-black/10" />
+                      </div>
                     </div>
 
-                    {/* ── RÓTULO ABAIXO DO PEDESTAL (IGUAL DRUNO: SEG., 9) ── */}
-                    <div className="mt-1.5 text-center max-w-[140px] sm:max-w-[160px] space-y-0.5">
-                      <p 
+                    {/* ── RÓTULO ABAIXO DO PEDESTAL (TEMA & DETALHES LAPIDADOS) ── */}
+                    <div className="mt-2 text-center max-w-[150px] sm:max-w-[175px] space-y-1 flex flex-col items-center">
+                      <span 
                         className={cn(
-                          "font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[11px] sm:text-xs font-extrabold uppercase tracking-wider",
-                          item.isEmAndamento ? "text-[#F97316]" : item.isConcluido ? "text-emerald-400" : "text-zinc-400"
+                          "font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border transition-colors inline-block",
+                          item.isEmAndamento 
+                            ? "bg-[#E11D48]/20 text-[#FB7185] border-[#E11D48]/40 shadow-[0_0_12px_rgba(225,29,72,0.4)]" 
+                            : item.isConcluido 
+                            ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" 
+                            : "bg-white/5 text-zinc-400 border-white/10"
                         )}
                       >
                         {item.badgeLabel}
-                      </p>
-                      <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[12px] sm:text-[13px] font-bold text-white line-clamp-2 leading-snug group-hover:text-amber-300 transition-colors">
+                      </span>
+
+                      <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[12.5px] sm:text-[13.5px] font-bold text-white line-clamp-2 leading-snug group-hover:text-rose-200 transition-colors drop-shadow-sm px-1">
                         {item.titulo}
                       </p>
-                      <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[10px] text-zinc-400">
-                        {item.displayConcluidas}/{item.displayTotal} resolvidas
-                      </p>
+
+                      <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11px] font-medium text-zinc-400">
+                        {item.isConcluido ? (
+                          <span className="text-emerald-400 font-bold flex items-center gap-1">
+                            <Check className="w-3 h-3 stroke-[3]" /> Concluído
+                          </span>
+                        ) : (
+                          <span>{item.displayConcluidas}/{item.displayTotal} resolvidas</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -697,17 +737,14 @@ const QuestoesArea = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start gap-4">
-              {/* Miniatura 3D do Livro */}
+              {/* Miniatura 3D do Livro Limpa */}
               <div className="relative w-20 h-28 rounded-xl overflow-hidden shrink-0 border-2 border-white/30 shadow-xl">
                 <img src={livroSelecionado.coverImage} alt={livroSelecionado.titulo} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
-                <div className="absolute bottom-1 left-1.5 text-[10px] font-black text-white">
-                  #{livroSelecionado.ordemStr}
-                </div>
               </div>
 
               <div className="space-y-1.5 min-w-0 flex-1">
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#F97316]/20 text-[#F97316] border border-[#F97316]/40">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#E11D48]/20 text-[#FB7185] border border-[#E11D48]/40">
                   {livroSelecionado.badgeLabel}
                 </span>
                 <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-base sm:text-lg font-bold text-white leading-snug">
@@ -731,7 +768,7 @@ const QuestoesArea = () => {
                   setLivroSelecionado(null);
                   livroSelecionado.onClick();
                 }}
-                className="w-full py-3.5 rounded-2xl bg-[#F97316] hover:bg-[#EA580C] text-white font-extrabold text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(249,115,22,0.6)] transition-all flex items-center justify-center gap-2 active:scale-95"
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#E11D48] to-[#BE123C] hover:from-[#BE123C] hover:to-[#9F1239] text-white font-extrabold text-sm uppercase tracking-wider shadow-[0_0_22px_rgba(225,29,72,0.7)] transition-all flex items-center justify-center gap-2 active:scale-95"
               >
                 <Play className="w-4 h-4 fill-current" />
                 <span>Começar Tema</span>

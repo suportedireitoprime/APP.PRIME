@@ -109,12 +109,8 @@ export const DrunoBookCard: React.FC<DrunoBookCardProps> = ({
           {/* Reflexo Dinâmico no Hover */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none" />
 
-          {/* Topo da Capa: Badge de Tópico / Medalhão */}
-          <div className="relative z-10 flex items-center justify-between w-full">
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider text-white bg-black/60 backdrop-blur-md border border-white/20 shadow-sm">
-              #{ordemStr}
-            </span>
-
+          {/* Topo da Capa: Status discreto se concluído */}
+          <div className="relative z-10 flex items-center justify-end w-full">
             {isConcluido ? (
               <span className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg border border-emerald-300">
                 <Check className="w-3.5 h-3.5 stroke-[3]" />
@@ -155,29 +151,21 @@ export const DrunoBookCard: React.FC<DrunoBookCardProps> = ({
             </div>
           </div>
 
-          {/* Rodapé da Capa: Duração / Questões & Barra de Progresso */}
-          <div className="relative z-10 w-full space-y-1.5">
-            <div className="flex items-center justify-between text-[10px] xs:text-[11px] font-semibold text-white/90">
-              <span className="px-1.5 py-0.5 rounded bg-black/60 backdrop-blur-sm border border-white/10">
-                {displayTotal} questões
-              </span>
-              <span className={cn("font-bold tabular-nums", isConcluido ? "text-emerald-400" : "text-white")}>
-                {displayPct}%
-              </span>
+          {/* Rodapé da Capa: Barra de Progresso elegante e discreta se iniciado */}
+          {displayConcluidas > 0 && (
+            <div className="relative z-10 w-full">
+              <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden backdrop-blur-sm border border-white/10">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: `${Math.max(displayPct, 6)}%`,
+                    backgroundColor: isConcluido ? '#10B981' : accentColor,
+                    boxShadow: isConcluido ? '0 0 8px #10B981' : `0 0 8px ${accentColor}`,
+                  }}
+                />
+              </div>
             </div>
-
-            {/* Barra de Progresso estilo Druno no rodapé da capa */}
-            <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden backdrop-blur-sm">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{
-                  width: `${Math.max(displayPct, displayTotal > 0 ? 6 : 0)}%`,
-                  backgroundColor: isConcluido ? '#10B981' : accentColor,
-                  boxShadow: isConcluido ? '0 0 8px #10B981' : `0 0 8px ${accentColor}`,
-                }}
-              />
-            </div>
-          </div>
+          )}
         </div>
       </div>
 

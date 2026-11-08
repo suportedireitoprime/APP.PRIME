@@ -208,3 +208,4 @@ export const GalaxyBackground: React.FC = () => {
 };
 
 export default GalaxyBackground;
+
