@@ -347,8 +347,17 @@ export function AdminHojeCards() {
       const datas = getDatasPeriodo(periodo);
       
       const metricasPromises = datas.map(d => supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(d) }));
-      const metricasResults = await Promise.allSettled(metricasPromises);
+      const [metricasResults, list5mResult, listOnlineResult, listCadastrosResult] = await Promise.allSettled([
+        Promise.allSettled(metricasPromises),
+        supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(datas[0]) }),
+        supabase.rpc('admin_lista_dia' as any, { _tipo: 'online', _dia: isoDate(datas[0]) }),
+        supabase.rpc('admin_lista_dia' as any, { _tipo: 'cadastros', _dia: isoDate(datas[0]) }),
+      ]);
       
+      const list5m = (list5mResult.status === 'fulfilled' && Array.isArray((list5mResult.value as any)?.data)) ? (list5mResult.value as any).data : [];
+      const listOnline = (listOnlineResult.status === 'fulfilled' && Array.isArray((listOnlineResult.value as any)?.data)) ? (listOnlineResult.value as any).data : [];
+      const listCadastros = (listCadastrosResult.status === 'fulfilled' && Array.isArray((listCadastrosResult.value as any)?.data)) ? (listCadastrosResult.value as any).data : [];
+
       let totalOnline5m = 0;
       let totalOnline = 0;
       let totalCadastros = 0;
@@ -356,27 +365,96 @@ export function AdminHojeCards() {
       let totalViuPlanos = 0;
       let totalTrial = 0;
       let totalTrialValor = 0;
+      let totalRenovou = 0;
+      let totalRenovouValor = 0;
 
       let rawRpcResponse: any = null;
-      metricasResults.forEach((res) => {
-        if (res.status === 'fulfilled') {
-          if (res.value.error) console.error('RPC ERROR', res.value.error);
-          const m = (res.value.data as any) || {};
-          rawRpcResponse = m;
-          totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
-          totalOnline = Math.max(totalOnline, m.online || 0, totalOnline5m);
-          totalCadastros += m.cadastros || 0;
-          totalPaywall = Math.max(totalPaywall, m.paywall || 0);
-          totalViuPlanos = Math.max(totalViuPlanos, m.checkout || 0);
-        } else {
-          console.error('[ADMIN DEBUG] metrica rejected:', res.reason);
-        }
-      });
+      if (metricasResults.status === 'fulfilled') {
+        metricasResults.value.forEach((res) => {
+          if (res.status === 'fulfilled') {
+            if (res.value.error) console.error('RPC ERROR', res.value.error);
+            const m = (res.value.data as any) || {};
+            rawRpcResponse = m;
+            totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
+            totalOnline = Math.max(totalOnline, m.online || 0, totalOnline5m);
+            totalCadastros += m.cadastros || 0;
+            totalPaywall = Math.max(totalPaywall, m.paywall || 0);
+            totalViuPlanos = Math.max(totalViuPlanos, m.checkout || 0);
+          } else {
+            console.error('[ADMIN DEBUG] metrica rejected:', res.reason);
+          }
+        });
+      }
       
       (window as any)._adminRpcDebug = rawRpcResponse;
 
+      if (periodo === 'hoje') {
+        const processList = (listData: any, defaultSubtitle?: string) => {
+          const userMap = new Map();
+          (listData || []).forEach((r: any) => {
+            const uid = r.user_id || r.id;
+            const em = (r.email || '').toLowerCase().trim();
+            if (ADMIN_EMAILS.includes(em)) return;
+            const routeLabel = r.subtitle ? rotaParaFuncao(r.subtitle).label : null;
+            const cleanSubtitle = (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : defaultSubtitle;
+            const key = uid || em || r.key;
+            if (!userMap.has(key)) {
+              userMap.set(key, {
+                key,
+                userId: uid,
+                title: r.title || r.nome || em.split('@')[0] || 'Usuário',
+                email: r.email,
+                provider: r.avatar_url?.includes('googleusercontent.com') ? 'google' : (r.provider || (r.email ? 'email' : null)),
+                subtitle: cleanSubtitle,
+                at: r.at || r.last_seen || r.created_at,
+                isPremium: r.is_premium ?? r.premium ?? false,
+                avatarUrl: r.avatar_url,
+                acessos: typeof r.acessos === 'number' ? r.acessos : 1,
+                created_at: r.created_at,
+                faixaEtaria: r.faixa_etaria
+              });
+            }
+          });
+          return Array.from(userMap.values());
+        };
+
+        if (list5m.length > 0) rowsCache.current['online5m'] = processList(list5m);
+        if (listOnline.length > 0) rowsCache.current['online'] = processList(listOnline);
+        if (listCadastros.length > 0) rowsCache.current['cadastros'] = processList(listCadastros, 'Novo cadastro');
+      }
+
+      const count5mFromList = ((list5m as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
+      totalOnline5m = Math.max(totalOnline5m, count5mFromList);
+
+      const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
+      totalOnline = Math.max(totalOnline, countOnlineFromList, totalOnline5m);
+
+      const countCadastrosFromList = ((listCadastros as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
+      totalCadastros = Math.max(totalCadastros, countCadastrosFromList);
+
       try {
         const { startIso, endIso } = getBrasiliaDayRange(datas);
+
+        // Fallback direto de contagem em profiles e user_activity_log
+        try {
+          const { count: directCadastros } = await supabase
+            .from('profiles')
+            .select('id', { count: 'exact', head: true })
+            .gte('created_at', startIso)
+            .lt('created_at', endIso);
+          if (typeof directCadastros === 'number' && directCadastros > 0) {
+            totalCadastros = Math.max(totalCadastros, directCadastros);
+          }
+
+          const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+          const { count: direct5m } = await supabase
+            .from('user_activity_log')
+            .select('user_id', { count: 'exact', head: true })
+            .gte('last_seen_at', fiveMinAgo);
+          if (typeof direct5m === 'number' && direct5m > 0 && periodo === 'hoje') {
+            totalOnline5m = Math.max(totalOnline5m, direct5m);
+          }
+        } catch {}
 
         // Buscar novas assinaturas no Asaas, Play Store, Apple, Legado e Eventos de Compra
         const inPeriod = (dateStr?: string | null) => {
@@ -580,12 +658,12 @@ export function AdminHojeCards() {
         });
         totalTrialValor = somaValores;
 
-        const totalRenovou = renewUsers.size;
+        totalRenovou = renewUsers.size;
         let somaRenovou = 0;
         renewUsers.forEach(({ valor }) => {
           somaRenovou += valor;
         });
-        const totalRenovouValor = somaRenovou;
+        totalRenovouValor = somaRenovou;
 
       } catch (e: any) {
         console.error('Error fetching today events/subscriptions', e);
@@ -596,22 +674,18 @@ export function AdminHojeCards() {
       // Ensure paywall (Tela de Assinatura) is at least equal to viu_planos
       totalPaywall = Math.max(totalPaywall, totalViuPlanos);
 
-      const count5mFromList = periodo === 'hoje' ? ((list5m as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length : 0;
-      const count5m = periodo === 'hoje' ? Math.max(totalOnline5m, count5mFromList) : 0;
-      
-      // Para online (dia inteiro), pega o totalOnline extraído do RPC (se disponível) ou da lista
-      const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
-      const countOnline = Math.max(totalOnline, countOnlineFromList, count5m);
+      const count5m = periodo === 'hoje' ? totalOnline5m : 0;
+      const countOnline = Math.max(totalOnline, count5m);
       const novos: Record<CardId | 'trialValor' | 'renovouValor', number> = {
-        online5m: count5m, 
-        online: countOnline, 
-        cadastros: totalCadastros, 
-        paywall: totalPaywall,
-        viu_planos: totalViuPlanos,
-        trial: totalTrial,
-        trialValor: totalTrialValor,
-        renovou: totalRenovou,
-        renovouValor: totalRenovouValor,
+        online5m: count5m || 0, 
+        online: countOnline || 0, 
+        cadastros: totalCadastros || 0, 
+        paywall: totalPaywall || 0,
+        viu_planos: totalViuPlanos || 0,
+        trial: totalTrial || 0,
+        trialValor: totalTrialValor || 0,
+        renovou: totalRenovou || 0,
+        renovouValor: totalRenovouValor || 0,
       };
       setCounts(novos);
     
@@ -1019,63 +1093,106 @@ export function AdminHojeCards() {
           });
         });
       } else if (id === 'cadastros') {
-        const { data: cadProfs } = await supabase
-          .from('profiles')
-          .select('id, email, display_name, created_at, avatar_url, is_premium')
-          .gte('created_at', startIso)
-          .lt('created_at', endIso)
-          .order('created_at', { ascending: false })
-          .limit(100);
+        const { data: rpcCad } = await supabase.rpc('admin_lista_dia' as any, { _tipo: 'cadastros', _dia: isoDate(datas[0]) });
+        if (Array.isArray(rpcCad) && rpcCad.length > 0) {
+          allLists = rpcCad.map((r: any) => {
+            const uid = r.user_id || r.id;
+            const isGoogle = r.avatar_url?.includes('googleusercontent.com');
+            return {
+              key: uid || r.key || Math.random().toString(),
+              user_id: uid,
+              title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
+              email: r.email,
+              provider: isGoogle ? 'google' : (r.provider || (r.email ? 'email' : null)),
+              subtitle: 'Novo cadastro',
+              at: r.at || r.created_at,
+              is_premium: r.is_premium ?? r.premium ?? false,
+              avatar_url: r.avatar_url || null,
+              acessos: null,
+              created_at: r.created_at || r.at
+            };
+          });
+        } else {
+          const { data: cadProfs } = await supabase
+            .from('profiles')
+            .select('id, email, display_name, created_at, avatar_url, is_premium')
+            .gte('created_at', startIso)
+            .lt('created_at', endIso)
+            .order('created_at', { ascending: false })
+            .limit(100);
 
-        allLists = (cadProfs || []).map((p: any) => {
-          const isGoogle = p.avatar_url?.includes('googleusercontent.com');
-          return {
-            key: p.id,
-            user_id: p.id,
-            title: p.display_name || p.email?.split('@')[0] || 'Usuário',
-            email: p.email,
-            provider: isGoogle ? 'google' : (p.email ? 'email' : null),
-            subtitle: 'Novo cadastro',
-            at: p.created_at,
-            is_premium: p.is_premium ?? false,
-            avatar_url: p.avatar_url || null,
-            acessos: null,
-            created_at: p.created_at
-          };
-        });
+          allLists = (cadProfs || []).map((p: any) => {
+            const isGoogle = p.avatar_url?.includes('googleusercontent.com');
+            return {
+              key: p.id,
+              user_id: p.id,
+              title: p.display_name || p.email?.split('@')[0] || 'Usuário',
+              email: p.email,
+              provider: isGoogle ? 'google' : (p.email ? 'email' : null),
+              subtitle: 'Novo cadastro',
+              at: p.created_at,
+              is_premium: p.is_premium ?? false,
+              avatar_url: p.avatar_url || null,
+              acessos: null,
+              created_at: p.created_at
+            };
+          });
+        }
       } else if (id === 'online5m' || id === 'online') {
-        const minTime = id === 'online5m'
-          ? new Date(Date.now() - 5 * 60 * 1000).toISOString()
-          : startIso;
+        const { data: rpcOnline } = await supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(datas[0]) });
+        if (Array.isArray(rpcOnline) && rpcOnline.length > 0) {
+          allLists = rpcOnline.map((r: any) => {
+            const uid = r.user_id || r.id;
+            const isGoogle = r.avatar_url?.includes('googleusercontent.com');
+            const routeLabel = r.subtitle ? rotaParaFuncao(r.subtitle).label : null;
+            return {
+              key: uid || r.key || Math.random().toString(),
+              user_id: uid,
+              title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
+              email: r.email,
+              provider: isGoogle ? 'google' : (r.provider || (r.email ? 'email' : null)),
+              subtitle: (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'online5m' ? 'Online nos últimos 5 min' : 'Online hoje'),
+              at: r.at || r.last_seen || r.created_at,
+              is_premium: r.is_premium ?? r.premium ?? false,
+              avatar_url: r.avatar_url || null,
+              acessos: typeof r.acessos === 'number' ? r.acessos : null,
+              created_at: r.created_at || null
+            };
+          });
+        } else {
+          const minTime = id === 'online5m'
+            ? new Date(Date.now() - 5 * 60 * 1000).toISOString()
+            : startIso;
 
-        const { data: actRows } = await supabase
-          .from('user_activity_log')
-          .select(`
-            user_id, last_seen_at, last_route,
-            profiles:user_id ( id, display_name, email, avatar_url, is_premium )
-          `)
-          .gte('last_seen_at', minTime)
-          .order('last_seen_at', { ascending: false })
-          .limit(100);
+          const { data: actRows } = await supabase
+            .from('user_activity_log')
+            .select(`
+              user_id, last_seen_at, last_route,
+              profiles:user_id ( id, display_name, email, avatar_url, is_premium )
+            `)
+            .gte('last_seen_at', minTime)
+            .order('last_seen_at', { ascending: false })
+            .limit(100);
 
-        allLists = (actRows || []).map((a: any) => {
-          const p = a.profiles || {};
-          const isGoogle = p.avatar_url?.includes('googleusercontent.com');
-          const routeLabel = a.last_route ? rotaParaFuncao(a.last_route).label : null;
-          return {
-            key: a.user_id,
-            user_id: a.user_id,
-            title: p.display_name || p.email?.split('@')[0] || 'Usuário',
-            email: p.email,
-            provider: isGoogle ? 'google' : (p.email ? 'email' : null),
-            subtitle: (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'online5m' ? 'Online nos últimos 5 min' : 'Online hoje'),
-            at: a.last_seen_at,
-            is_premium: p.is_premium ?? false,
-            avatar_url: p.avatar_url || null,
-            acessos: null,
-            created_at: null
-          };
-        });
+          allLists = (actRows || []).map((a: any) => {
+            const p = a.profiles || {};
+            const isGoogle = p.avatar_url?.includes('googleusercontent.com');
+            const routeLabel = a.last_route ? rotaParaFuncao(a.last_route).label : null;
+            return {
+              key: a.user_id,
+              user_id: a.user_id,
+              title: p.display_name || p.email?.split('@')[0] || 'Usuário',
+              email: p.email,
+              provider: isGoogle ? 'google' : (p.email ? 'email' : null),
+              subtitle: (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'online5m' ? 'Online nos últimos 5 min' : 'Online hoje'),
+              at: a.last_seen_at,
+              is_premium: p.is_premium ?? false,
+              avatar_url: p.avatar_url || null,
+              acessos: null,
+              created_at: null
+            };
+          });
+        }
       } else if (id === 'paywall' || id === 'viu_planos') {
         const eventNames = id === 'viu_planos' 
           ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] 
@@ -1479,9 +1596,11 @@ export function AdminHojeCards() {
     : rows;
 
   const renderCardButton = ({ id, label, icon: Icon }: typeof CARDS[0]) => {
-    const isZero = counts[id] === 0;
+    const cardCount = typeof counts[id] === 'number' && !isNaN(counts[id]) ? counts[id] : 0;
+    const isZero = cardCount === 0;
     const isFinancial = id === 'trial' || id === 'renovou';
-    const valorFinanceiro = id === 'trial' ? counts.trialValor : counts.renovouValor;
+    const rawVal = id === 'trial' ? counts.trialValor : counts.renovouValor;
+    const valorFinanceiro = typeof rawVal === 'number' && !isNaN(rawVal) ? rawVal : 0;
 
     return (
       <button
@@ -1496,16 +1615,16 @@ export function AdminHojeCards() {
 
           <div className="text-right flex flex-col items-end">
             <div className="flex items-center gap-1">
-              {counts[id] - (seenCounts[id] || 0) > 0 && (
+              {cardCount - (seenCounts[id] || 0) > 0 && (
                 <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1.5 py-[0.5px] font-body text-[9px] font-bold text-emerald-400 animate-pulse">
-                  +{counts[id] - (seenCounts[id] || 0)}
+                  +{cardCount - (seenCounts[id] || 0)}
                 </span>
               )}
               <span className={cn(
                 "font-['Plus_Jakarta_Sans',sans-serif] text-xl sm:text-[22px] font-extrabold tracking-tight leading-none tabular-nums",
                 isZero ? "text-zinc-600" : "text-foreground"
               )}>
-                {counts[id]}
+                {cardCount}
               </span>
             </div>
             {isFinancial && (
