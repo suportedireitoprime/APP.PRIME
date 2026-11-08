@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { PrimeBottomSheet } from '../vademecum/overlays/PrimeBottomSheet';
 import { X, Search, FileText, PlayCircle, BarChart3 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
@@ -10,6 +10,7 @@ interface Props {
   onIniciar: (sim: any) => void;
   onVerGabarito: (url: string, title: string) => void;
   onVerRaioX: (sim: any) => void;
+  filtroInicialCargo?: string;
 }
 
 export const SimuladosProvasSheet = ({
@@ -19,6 +20,7 @@ export const SimuladosProvasSheet = ({
   onIniciar,
   onVerGabarito,
   onVerRaioX,
+  filtroInicialCargo,
 }: Props) => {
   const [tabCargo, setTabCargo] = useState<string>('todos');
   const [busca, setBusca] = useState('');
@@ -37,6 +39,22 @@ export const SimuladosProvasSheet = ({
     const sorted = Array.from(map.values()).sort((a, b) => b.count - a.count);
     return [{ id: 'todos', label: 'Todas as Provas', count: simuladosList.length }, ...sorted];
   }, [simuladosList]);
+
+  useEffect(() => {
+    if (aberto && filtroInicialCargo) {
+      const match = examsCategorias.find(c => 
+        c.id === filtroInicialCargo || 
+        c.label.toLowerCase().includes(filtroInicialCargo.toLowerCase())
+      );
+      if (match) {
+        setTabCargo(match.id);
+      } else {
+        setTabCargo(filtroInicialCargo);
+      }
+    } else if (aberto && !filtroInicialCargo) {
+      setTabCargo('todos');
+    }
+  }, [aberto, filtroInicialCargo, examsCategorias]);
 
   const filtradas = useMemo(() => {
     return simuladosList.filter((sim) => {

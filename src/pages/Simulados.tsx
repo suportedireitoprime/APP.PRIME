@@ -33,6 +33,7 @@ export default function Simulados() {
   // Estados de Modais e Sheets
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [provasSheetAberto, setProvasSheetAberto] = useState(false);
+  const [filtroCargoProvasSheet, setFiltroCargoProvasSheet] = useState<string | undefined>(undefined);
   const [historicoSheetTipo, setHistoricoSheetTipo] = useState<'historico' | 'desempenho' | 'revisao' | null>(null);
 
   // Estados de PDF e Raio-X
@@ -103,6 +104,28 @@ export default function Simulados() {
   const totalQuestoesBanco = useMemo(() => {
     const sum = simuladosList.reduce((acc, s) => acc + (s.simulado_questions?.[0]?.count || 0), 0);
     return sum > 0 ? sum : 22056;
+  }, [simuladosList]);
+
+  // Contagens dinâmicas por carreira para os cards de destaque
+  const contagensDestaque = useMemo(() => {
+    const getStats = (filterFn: (name: string) => boolean, fallbackQ: number, fallbackP: number) => {
+      const filtered = simuladosList.filter((s) => filterFn((s.exam?.name || '').toLowerCase()));
+      const questoes = filtered.reduce((acc, s) => acc + (s.simulado_questions?.[0]?.count || 0), 0);
+      const provas = filtered.length;
+      return {
+        questoes: questoes > 0 ? questoes : fallbackQ,
+        provas: provas > 0 ? provas : fallbackP,
+      };
+    };
+
+    return {
+      oab: getStats((n) => n.includes('oab'), 7698, 47),
+      prf: getStats((n) => n.includes('prf') || n.includes('rodovi'), 1001, 14),
+      delegado: getStats((n) => n.includes('delegado'), 1823, 22),
+      escrevente: getStats((n) => n.includes('escrevente') || n.includes('tjsp'), 1552, 22),
+      juiz: getStats((n) => n.includes('juiz') || n.includes('magistratura'), 5213, 58),
+      promotor: getStats((n) => n.includes('promotor') || n.includes('ministério público') || n.includes('mpe'), 2285, 23),
+    };
   }, [simuladosList]);
 
   // Iniciar Simulado a partir do Filtro Rápido
@@ -280,16 +303,22 @@ export default function Simulados() {
                   whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     try { haptic.selection(); } catch {}
+                    setFiltroCargoProvasSheet('oab');
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
                   <div className="flex items-center justify-center text-[#7c3aed] group-hover:scale-110 transition-transform">
                     <Timer className="h-7 w-7 sm:h-8 sm:w-8 text-[#7c3aed]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-xs sm:text-sm font-bold text-foreground">OAB Nacional</span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">47 Edições • 1ª Fase Oficial</span>
+                    <span className="text-xs font-black text-purple-400 mt-1">
+                      {contagensDestaque.oab.questoes.toLocaleString('pt-BR')} questões
+                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">
+                      {contagensDestaque.oab.provas} Edições • 1ª Fase Oficial
+                    </span>
                   </div>
                 </motion.button>
 
@@ -299,16 +328,22 @@ export default function Simulados() {
                   whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     try { haptic.selection(); } catch {}
+                    setFiltroCargoProvasSheet('prf');
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
                   <div className="flex items-center justify-center text-[#eab308] group-hover:scale-110 transition-transform">
                     <Shield className="h-7 w-7 sm:h-8 sm:w-8 text-[#eab308]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-xs sm:text-sm font-bold text-foreground">PRF (Polícia Rodoviária)</span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">Cebraspe • Provas Completas</span>
+                    <span className="text-xs font-black text-amber-400 mt-1">
+                      {contagensDestaque.prf.questoes.toLocaleString('pt-BR')} questões
+                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">
+                      {contagensDestaque.prf.provas} provas • Cebraspe
+                    </span>
                   </div>
                 </motion.button>
 
@@ -318,16 +353,22 @@ export default function Simulados() {
                   whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     try { haptic.selection(); } catch {}
+                    setFiltroCargoProvasSheet('delegado');
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
                   <div className="flex items-center justify-center text-[#3b82f6] group-hover:scale-110 transition-transform">
                     <ShieldAlert className="h-7 w-7 sm:h-8 sm:w-8 text-[#3b82f6]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-xs sm:text-sm font-bold text-foreground">Delegado de Polícia</span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">PF & Polícia Civil (PC)</span>
+                    <span className="text-xs font-black text-blue-400 mt-1">
+                      {contagensDestaque.delegado.questoes.toLocaleString('pt-BR')} questões
+                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">
+                      {contagensDestaque.delegado.provas} provas • PF & PC
+                    </span>
                   </div>
                 </motion.button>
 
@@ -337,16 +378,22 @@ export default function Simulados() {
                   whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     try { haptic.selection(); } catch {}
+                    setFiltroCargoProvasSheet('escrevente');
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
                   <div className="flex items-center justify-center text-[#10b981] group-hover:scale-110 transition-transform">
                     <BookOpen className="h-7 w-7 sm:h-8 sm:w-8 text-[#10b981]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-xs sm:text-sm font-bold text-foreground">Escrevente TJ-SP</span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">Vunesp • Todas as Edições</span>
+                    <span className="text-xs font-black text-emerald-400 mt-1">
+                      {contagensDestaque.escrevente.questoes.toLocaleString('pt-BR')} questões
+                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">
+                      {contagensDestaque.escrevente.provas} provas • Vunesp
+                    </span>
                   </div>
                 </motion.button>
 
@@ -356,16 +403,22 @@ export default function Simulados() {
                   whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     try { haptic.selection(); } catch {}
+                    setFiltroCargoProvasSheet('juiz');
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
                   <div className="flex items-center justify-center text-[#8b5cf6] group-hover:scale-110 transition-transform">
                     <Scale className="h-7 w-7 sm:h-8 sm:w-8 text-[#8b5cf6]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-xs sm:text-sm font-bold text-foreground">Juiz Substituto</span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">Magistratura Estadual & Federal</span>
+                    <span className="text-xs font-black text-violet-400 mt-1">
+                      {contagensDestaque.juiz.questoes.toLocaleString('pt-BR')} questões
+                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">
+                      {contagensDestaque.juiz.provas} provas • Magistratura
+                    </span>
                   </div>
                 </motion.button>
 
@@ -375,16 +428,22 @@ export default function Simulados() {
                   whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     try { haptic.selection(); } catch {}
+                    setFiltroCargoProvasSheet('promotor');
                     setProvasSheetAberto(true);
                   }}
-                  className="group flex flex-col items-center justify-center gap-3 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
+                  className="group flex flex-col items-center justify-center gap-2.5 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-[#7c3aed]/50 transition-all focus-visible:outline-none text-center cursor-pointer"
                 >
                   <div className="flex items-center justify-center text-[#ef4444] group-hover:scale-110 transition-transform">
                     <Gavel className="h-7 w-7 sm:h-8 sm:w-8 text-[#ef4444]" strokeWidth={1.8} />
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-xs sm:text-sm font-bold text-foreground">Promotor de Justiça</span>
-                    <span className="text-[10px] text-muted-foreground mt-0.5">Ministério Público Estadual</span>
+                    <span className="text-xs font-black text-rose-400 mt-1">
+                      {contagensDestaque.promotor.questoes.toLocaleString('pt-BR')} questões
+                    </span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">
+                      {contagensDestaque.promotor.provas} provas • Ministério Público
+                    </span>
                   </div>
                 </motion.button>
               </div>
@@ -404,8 +463,12 @@ export default function Simulados() {
       {/* ── BOTTOM SHEET DE TODAS AS PROVAS OFICIAIS ── */}
       <SimuladosProvasSheet
         aberto={provasSheetAberto}
-        onFechar={() => setProvasSheetAberto(false)}
+        onFechar={() => {
+          setProvasSheetAberto(false);
+          setFiltroCargoProvasSheet(undefined);
+        }}
         simuladosList={simuladosList}
+        filtroInicialCargo={filtroCargoProvasSheet}
         onIniciar={handleIniciarSimulado}
         onVerGabarito={(url, title) => {
           setPreviewPdfUrl(url);
