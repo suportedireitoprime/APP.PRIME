@@ -347,29 +347,7 @@ export function AdminHojeCards() {
       const datas = getDatasPeriodo(periodo);
       
       const metricasPromises = datas.map(d => supabase.rpc('admin_metricas_dia' as any, { _dia: isoDate(d) }));
-      const list5mPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online5m', _dia: isoDate(datas[0]) });
-      const listOnlinePromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'online', _dia: isoDate(datas[0]) });
-      const listCadastrosPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'cadastros', _dia: isoDate(datas[0]) });
-      const listPaywallPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'paywall', _dia: isoDate(datas[0]) });
-      const listViuPlanosPromise = supabase.rpc('admin_lista_dia' as any, { _tipo: 'viu_planos', _dia: isoDate(datas[0]) });
-      const trialPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
-
-      const [metricasResults, list5mResult, listOnlineResult, listCadastrosResult, listPaywallResult, listViuPlanosResult, trialResult] = await Promise.allSettled([
-        Promise.allSettled(metricasPromises),
-        list5mPromise,
-        listOnlinePromise,
-        listCadastrosPromise,
-        listPaywallPromise,
-        listViuPlanosPromise,
-        Promise.allSettled(trialPromises)
-      ]);
-
-      const list5m = list5mResult.status === 'fulfilled' ? list5mResult.value.data : [];
-      const listOnline = listOnlineResult.status === 'fulfilled' ? listOnlineResult.value.data : [];
-      const listCadastros = listCadastrosResult.status === 'fulfilled' ? listCadastrosResult.value.data : [];
-      const listPaywall = listPaywallResult.status === 'fulfilled' ? listPaywallResult.value.data : [];
-      const listViuPlanos = listViuPlanosResult.status === 'fulfilled' ? listViuPlanosResult.value.data : [];
-      const listTrial = trialResult.status === 'fulfilled' ? (trialResult.value[0]?.status === 'fulfilled' ? trialResult.value[0].value.data : []) : [];
+      const metricasResults = await Promise.allSettled(metricasPromises);
       
       let totalOnline5m = 0;
       let totalOnline = 0;
@@ -380,130 +358,25 @@ export function AdminHojeCards() {
       let totalTrialValor = 0;
 
       let rawRpcResponse: any = null;
-      if (metricasResults.status === 'fulfilled') {
-        metricasResults.value.forEach((res) => {
-          if (res.status === 'fulfilled') {
-            if (res.value.error) console.error('RPC ERROR', res.value.error);
-            const m = (res.value.data as any) || {};
-            rawRpcResponse = m;
-            totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
-            totalOnline = Math.max(totalOnline, m.online || 0, totalOnline5m);
-            totalCadastros += m.cadastros || 0;
-            // totalTrial += m.trial || 0; // Ignorado, vamos usar apenas subUsers.size
-            totalPaywall = Math.max(totalPaywall, m.paywall || 0);
-            totalViuPlanos = Math.max(totalViuPlanos, m.checkout || 0);
-          } else {
-            console.error('[ADMIN DEBUG] metrica rejected:', res.reason);
-          }
-        });
-      } else {
-        console.error('[ADMIN DEBUG] metricasResults rejected:', metricasResults);
-      }
+      metricasResults.forEach((res) => {
+        if (res.status === 'fulfilled') {
+          if (res.value.error) console.error('RPC ERROR', res.value.error);
+          const m = (res.value.data as any) || {};
+          rawRpcResponse = m;
+          totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
+          totalOnline = Math.max(totalOnline, m.online || 0, totalOnline5m);
+          totalCadastros += m.cadastros || 0;
+          totalPaywall = Math.max(totalPaywall, m.paywall || 0);
+          totalViuPlanos = Math.max(totalViuPlanos, m.checkout || 0);
+        } else {
+          console.error('[ADMIN DEBUG] metrica rejected:', res.reason);
+        }
+      });
       
-      // Store raw response in a ref for debug rendering
       (window as any)._adminRpcDebug = rawRpcResponse;
-      console.log('[ADMIN DEBUG] rawRpcResponse:', rawRpcResponse, '| totalCadastros:', totalCadastros, '| totalOnline:', totalOnline, '| list5m:', (list5m as any[])?.length, '| listOnline:', (listOnline as any[])?.length);
-
-      if (periodo === 'hoje') {
-        const processList = (listData: any, defaultSubtitle?: string) => {
-          if (!Array.isArray(listData) || listData.length === 0) return [];
-          const userMap = new Map<string, any>();
-          
-          listData
-            .filter((r: any) => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()))
-            .forEach((r: any) => {
-              const uid = r.user_id || r.id;
-              const em = (r.email || '').toLowerCase().trim();
-              const dedupeKey = uid || em || r.key || Math.random().toString();
-              const atTime = new Date(r.at || r.last_seen || r.created_at || 0).getTime();
-
-              const isPrem = Boolean(r.is_premium ?? r.premium ?? false);
-              if (!userMap.has(dedupeKey)) {
-                userMap.set(dedupeKey, {
-                  key: dedupeKey,
-                  userId: uid,
-                  title: r.title || r.nome || em.split('@')[0] || 'Usuário',
-                  email: r.email || null,
-                  provider: r.avatar_url?.includes('googleusercontent.com') ? 'google' : (r.provider || (r.email ? 'email' : null)),
-                  subtitle: r.subtitle ? rotaParaFuncao(r.subtitle).label : defaultSubtitle,
-                  meta: hora(r.at || r.last_seen || r.created_at),
-                  rawAt: atTime,
-                  acessos: typeof r.acessos === 'number' && r.acessos > 0 ? r.acessos : 1,
-                  avatarUrl: r.avatar_url || null,
-                  isPremium: isPrem,
-                  planValue: r.planValue || (isPrem ? PRECO_ANUAL : undefined),
-                  planTag: r.planTag || (isPrem ? { plano: 'Anual', status: 'ACTIVE', expires_at: null } : undefined),
-                  created_at: r.created_at || null,
-                  faixaEtaria: r.faixa_etaria || null,
-                });
-              } else {
-                const cur = userMap.get(dedupeKey);
-                cur.acessos = (cur.acessos || 1) + 1;
-                if (atTime > cur.rawAt) {
-                  cur.rawAt = atTime;
-                  cur.meta = hora(r.at || r.last_seen || r.created_at);
-                }
-                if (!cur.avatarUrl && r.avatar_url) cur.avatarUrl = r.avatar_url;
-                if (isPrem) {
-                  cur.isPremium = true;
-                  if (!cur.planTag) cur.planTag = { plano: 'Anual', status: 'ACTIVE', expires_at: null };
-                  if (!cur.planValue) cur.planValue = PRECO_ANUAL;
-                }
-                if (r.planValue && !cur.planValue) cur.planValue = r.planValue;
-                if (r.planTag && !cur.planTag) cur.planTag = r.planTag;
-              }
-            });
-
-          return Array.from(userMap.values());
-        };
-
-        if (Array.isArray(list5m) && list5m.length > 0) {
-          rowsCache.current['online5m'] = processList(list5m);
-        }
-        if (Array.isArray(listOnline) && listOnline.length > 0) {
-          rowsCache.current['online'] = processList(listOnline);
-        }
-        if (Array.isArray(listCadastros) && listCadastros.length > 0) {
-          rowsCache.current['cadastros'] = processList(listCadastros, 'Novo cadastro');
-        }
-        if (Array.isArray(listPaywall) && listPaywall.length > 0) {
-          rowsCache.current['paywall'] = processList(listPaywall, 'Abriu planos');
-        }
-        if (Array.isArray(listViuPlanos) && listViuPlanos.length > 0) {
-          rowsCache.current['viu_planos'] = processList(listViuPlanos, 'Abriu checkout (Clicou)');
-        }
-        if (Array.isArray(listTrial) && listTrial.length > 0) {
-          rowsCache.current['trial'] = processList(listTrial, 'Assinatura Ativa');
-        }
-      }
 
       try {
         const { startIso, endIso } = getBrasiliaDayRange(datas);
-
-        // Buscar eventos de paywall e checkout
-        const { data: events, error: evError } = await supabase
-          .from('app_events')
-          .select('user_id, id, email, event_name')
-          .in('event_name', ['trial_click', 'assinatura_aberta', 'paywall_view'])
-          .gte('created_at', startIso)
-          .lt('created_at', endIso);
-          
-        if (evError) {
-          console.warn('app_events fallback warning:', evError.message);
-        } else if (events) {
-          const nonAdminEvents = events.filter((e: any) => {
-            const em = (e.email || '').toLowerCase().trim();
-            return !ADMIN_EMAILS.includes(em);
-          });
-
-          const allPwEvents = nonAdminEvents.filter((e: any) => e.event_name === 'assinatura_aberta' || e.event_name === 'paywall_view');
-          const uniquePw = new Set(allPwEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
-          totalPaywall = Math.max(totalPaywall, uniquePw.size);
-
-          const vpEvents = nonAdminEvents.filter((e: any) => e.event_name === 'trial_click');
-          const uniqueVp = new Set(vpEvents.map((e: any) => e.email || e.user_id || 'anonymous'));
-          totalViuPlanos = Math.max(totalViuPlanos, uniqueVp.size);
-        }
 
         // Buscar novas assinaturas no Asaas, Play Store, Apple, Legado e Eventos de Compra
         const inPeriod = (dateStr?: string | null) => {
@@ -512,7 +385,7 @@ export function AdminHojeCards() {
           return !isNaN(t) && t >= new Date(startIso).getTime() && t < new Date(endIso).getTime();
         };
 
-        const [asaasRes, playRes, appleRes, legRes, purchaseEvRes, oldLegRes, prevPurchasesRes] = await Promise.all([
+        const [asaasRes, playRes, appleRes, legRes, purchaseEvRes, oldLegRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions')
             .select('id, user_id, created_at, started_at, plano, status')
@@ -540,11 +413,6 @@ export function AdminHojeCards() {
           supabase
             .from('legacy_subscribers')
             .select('email, claimed_user_id')
-            .lt('created_at', startIso),
-          supabase
-            .from('app_events')
-            .select('user_id, email')
-            .eq('event_name', 'purchase')
             .lt('created_at', startIso)
         ]);
 
@@ -555,29 +423,37 @@ export function AdminHojeCards() {
           if (l.email) oldLegEmails.add(l.email.toLowerCase().trim());
         });
 
-        const prevPurchasesUids = new Set<string>();
-        const prevPurchasesEmails = new Set<string>();
-        (prevPurchasesRes?.data || []).forEach((p: any) => {
-          if (p.user_id) prevPurchasesUids.add(p.user_id);
-          if (p.email) prevPurchasesEmails.add(p.email.toLowerCase().trim());
-        });
-
-        // Buscar emails dos candidatos do Asaas para cruzamento anti-recorrência
+        // Buscar perfis e assinaturas anteriores dos candidatos do Asaas para identificar renovações vs novos
         const asaasCandidateUids = (asaasRes.data || []).map((s: any) => s.user_id).filter(Boolean);
-        const { data: asaasProfs } = asaasCandidateUids.length > 0
-          ? await supabase.from('profiles').select('id, email').in('id', asaasCandidateUids)
-          : { data: [] };
+        const [{ data: asaasProfs }, { data: priorAsaasSubs }] = asaasCandidateUids.length > 0
+          ? await Promise.all([
+              supabase.from('profiles').select('id, email, created_at').in('id', asaasCandidateUids),
+              supabase.from('asaas_subscriptions').select('user_id').in('user_id', asaasCandidateUids).lt('created_at', startIso)
+            ])
+          : [{ data: [] }, { data: [] }];
+
         const asaasEmailMap = new Map<string, string>();
+        const profileCreatedMap = new Map<string, string>();
         (asaasProfs || []).forEach((p: any) => {
           if (p.id && p.email) asaasEmailMap.set(p.id, p.email.toLowerCase().trim());
+          if (p.id && p.created_at) profileCreatedMap.set(p.id, p.created_at);
+        });
+
+        const priorAsaasUids = new Set<string>();
+        (priorAsaasSubs || []).forEach((s: any) => {
+          if (s.user_id) priorAsaasUids.add(s.user_id);
         });
 
         const isAntigo = (uid?: string | null, email?: string | null, createdAt?: string | null) => {
           const em = (email || '').toLowerCase().trim();
           if (uid && oldLegUids.has(uid)) return true;
           if (em && oldLegEmails.has(em)) return true;
-          if (uid && prevPurchasesUids.has(uid)) return true;
-          if (em && prevPurchasesEmails.has(em)) return true;
+          if (uid && priorAsaasUids.has(uid)) return true;
+          if (uid && profileCreatedMap.has(uid)) {
+            const pTime = new Date(profileCreatedMap.get(uid)!).getTime();
+            const sTime = new Date(startIso).getTime();
+            if (!isNaN(pTime) && pTime < sTime) return true;
+          }
           if (createdAt) {
             const createdTime = new Date(createdAt).getTime();
             const startTime = new Date(startIso).getTime();
@@ -777,7 +653,7 @@ export function AdminHojeCards() {
   useEffect(() => {
     void load();
     if (periodo === 'hoje') {
-      // Polling a cada 10s para manter dados e Online 5 min 100% responsivos
+      // Polling a cada 30s para manter dados atualizados com baixo consumo de conexões
       const t = setInterval(() => {
         const hojeAtual = isoDate(getHojeBrasilia());
         if (currentDayRef.current !== hojeAtual) {
@@ -785,7 +661,7 @@ export function AdminHojeCards() {
           setDia(getHojeBrasilia());
         }
         void load();
-      }, 10_000);
+      }, 30_000);
       return () => clearInterval(t);
     }
   }, [load, periodo]);
@@ -813,7 +689,7 @@ export function AdminHojeCards() {
     };
   }, [load]);
 
-  // Supabase Realtime: atualiza dashboard instantaneamente quando há qualquer atividade
+  // Supabase Realtime: atualiza dashboard instantaneamente em novos cadastros e assinaturas
   useEffect(() => {
     if (periodo !== 'hoje') return;
 
@@ -822,29 +698,14 @@ export function AdminHojeCards() {
       if (debounceTimer) clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
         void load();
-      }, 400);
+      }, 2000);
     };
 
     const channel = supabase
       .channel('admin-dashboard-realtime')
       .on(
         'postgres_changes' as any,
-        { event: '*', schema: 'public', table: 'user_activity_log' },
-        triggerDebouncedLoad
-      )
-      .on(
-        'postgres_changes' as any,
-        { event: '*', schema: 'public', table: 'user_sessions' },
-        triggerDebouncedLoad
-      )
-      .on(
-        'postgres_changes' as any,
         { event: 'INSERT', schema: 'public', table: 'profiles' },
-        triggerDebouncedLoad
-      )
-      .on(
-        'postgres_changes' as any,
-        { event: 'INSERT', schema: 'public', table: 'app_events' },
         triggerDebouncedLoad
       )
       .on(
@@ -891,13 +752,11 @@ export function AdminHojeCards() {
     
     try {
       const datas = getDatasPeriodo(periodo);
-      
+      const { startIso, endIso } = getBrasiliaDayRange(datas);
       let allLists: any[] = [];
-      let listPromises: any[] = [];
-      
+
       if (id === 'trial' || id === 'renovou') {
         const isRenovou = id === 'renovou';
-        const { startIso, endIso } = getBrasiliaDayRange(datas);
 
         const inPeriod = (dateStr?: string | null) => {
           if (!dateStr) return false;
@@ -905,12 +764,7 @@ export function AdminHojeCards() {
           return !isNaN(t) && t >= new Date(startIso).getTime() && t < new Date(endIso).getTime();
         };
 
-        // 1. Chamar admin_lista_dia para todos os dias do período
-        const rpcPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
-
-        // 2. Buscar também diretamente no asaas_subscriptions, play_subscriptions, apple_subscriptions, legacy_subscribers e app_events
-        const [rpcResults, asaasRes, playRes, appleRes, legRes, purchaseEvRes, oldLegRes, prevPurchasesRes] = await Promise.all([
-          Promise.all(rpcPromises),
+        const [asaasRes, playRes, appleRes, legRes, purchaseEvRes, oldLegRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions')
             .select(`
@@ -947,11 +801,6 @@ export function AdminHojeCards() {
           supabase
             .from('legacy_subscribers')
             .select('email, claimed_user_id')
-            .lt('created_at', startIso),
-          supabase
-            .from('app_events')
-            .select('user_id, email')
-            .eq('event_name', 'purchase')
             .lt('created_at', startIso)
         ]);
 
@@ -962,19 +811,66 @@ export function AdminHojeCards() {
           if (l.email) oldLegEmails.add(l.email.toLowerCase().trim());
         });
 
-        const prevPurchasesUids = new Set<string>();
-        const prevPurchasesEmails = new Set<string>();
-        (prevPurchasesRes?.data || []).forEach((p: any) => {
-          if (p.user_id) prevPurchasesUids.add(p.user_id);
-          if (p.email) prevPurchasesEmails.add(p.email.toLowerCase().trim());
+        const existingUserIds = new Set<string>();
+
+        // Buscar perfis para preencher nomes/emails e identificar se conta já existia antes de hoje
+        const allUids = Array.from(new Set([
+          ...(asaasRes.data || []).map((s: any) => s.user_id),
+          ...(playRes.data || []).map((s: any) => s.user_id),
+          ...(appleRes.data || []).map((s: any) => s.user_id),
+          ...(purchaseEvRes.data || []).map((e: any) => e.user_id)
+        ])).filter(Boolean) as string[];
+
+        const [{ data: profs }, { data: legUsers }, { data: userEvents }, { data: priorAsaasSubs }] = await Promise.all([
+          allUids.length > 0 ? supabase.from('profiles').select('id, display_name, email, created_at, avatar_url').in('id', allUids) : { data: [] },
+          allUids.length > 0 ? supabase.from('legacy_subscribers').select('claimed_user_id, email, nome').in('claimed_user_id', allUids) : { data: [] },
+          allUids.length > 0 ? supabase.from('app_events').select('user_id, email').in('user_id', allUids).not('email', 'is', null) : { data: [] },
+          allUids.length > 0 ? supabase.from('asaas_subscriptions').select('user_id').in('user_id', allUids).lt('created_at', startIso) : { data: [] }
+        ]);
+
+        const profMap = new Map<string, { name?: string; email?: string; created_at?: string; avatar_url?: string }>();
+        if (profs) {
+          profs.forEach((p: any) => {
+            profMap.set(p.id, { name: p.display_name, email: p.email, created_at: p.created_at, avatar_url: p.avatar_url });
+          });
+        }
+        if (legUsers) {
+          legUsers.forEach((l: any) => {
+            if (l.claimed_user_id) {
+              const cur = profMap.get(l.claimed_user_id) || {};
+              profMap.set(l.claimed_user_id, {
+                ...cur,
+                name: cur.name || l.nome,
+                email: l.email || cur.email
+              });
+            }
+          });
+        }
+        if (userEvents) {
+          userEvents.forEach((e: any) => {
+            if (e.user_id && e.email) {
+              const cur = profMap.get(e.user_id) || {};
+              if (!cur.email) cur.email = e.email;
+              profMap.set(e.user_id, cur);
+            }
+          });
+        }
+
+        const priorAsaasUids = new Set<string>();
+        (priorAsaasSubs || []).forEach((s: any) => {
+          if (s.user_id) priorAsaasUids.add(s.user_id);
         });
 
         const isAntigo = (uid?: string | null, email?: string | null, createdAt?: string | null) => {
           const em = (email || '').toLowerCase().trim();
           if (uid && oldLegUids.has(uid)) return true;
           if (em && oldLegEmails.has(em)) return true;
-          if (uid && prevPurchasesUids.has(uid)) return true;
-          if (em && prevPurchasesEmails.has(em)) return true;
+          if (uid && priorAsaasUids.has(uid)) return true;
+          if (uid && profMap.has(uid)) {
+            const pTime = new Date(profMap.get(uid)?.created_at || 0).getTime();
+            const sTime = new Date(startIso).getTime();
+            if (!isNaN(pTime) && pTime > 0 && pTime < sTime) return true;
+          }
           if (createdAt) {
             const createdTime = new Date(createdAt).getTime();
             const startTime = new Date(startIso).getTime();
@@ -983,89 +879,7 @@ export function AdminHojeCards() {
           return false;
         };
 
-        const existingUserIds = new Set<string>();
-
-        const asaasCreatedAtMap = new Map<string, string>();
-        (asaasRes.data || []).forEach((s: any) => {
-          if (s.user_id && s.created_at) asaasCreatedAtMap.set(s.user_id, s.created_at);
-        });
-
-        // Processa os dados retornados pela RPC
-        rpcResults.forEach(({ data }) => {
-          ((data as any[]) || []).forEach(r => {
-            const uid = r.user_id || r.id;
-            const subCreatedAt = r.created_at || (uid ? asaasCreatedAtMap.get(uid) : null);
-            const userIsAntigo = isAntigo(uid, r.email, subCreatedAt);
-            if (isRenovou ? !userIsAntigo : userIsAntigo) return;
-            if (uid) existingUserIds.add(uid);
-
-            const subText = (r.subtitle || '').toLowerCase();
-            const titleText = (r.title || '').toLowerCase();
-            const isPromo = subText.includes('promocional') || subText.includes('promo') || titleText.includes('promocional');
-            const isAnual = subText.includes('anual') || titleText.includes('anual');
-            const isVit = !isPromo && (subText.includes('vitalicio') || subText.includes('vitalício') || titleText.includes('vitalicio'));
-            const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
-            const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
-
-            allLists.push({
-              key: r.key || uid || r.email || Math.random().toString(),
-              user_id: uid,
-              title: r.title || r.nome || 'Assinante',
-              email: r.email || null,
-              subtitle: isRenovou ? `Renovou via Asaas (${planName})` : (r.subtitle || `Assinou via Asaas (${planName})`),
-              at: r.at || r.created_at,
-              acessos: null,
-              avatar_url: r.avatar_url || null,
-              is_premium: true,
-              planValue: planValor,
-              planTag: { plano: planName, status: 'Ativo', expires_at: null },
-            });
-          });
-        });
-
-        // Buscar perfis para preencher nomes/emails de eventuais assinaturas não capturadas pela RPC
-        const missingUids = Array.from(new Set([
-          ...(asaasRes.data || []).map((s: any) => s.user_id),
-          ...(playRes.data || []).map((s: any) => s.user_id),
-          ...(appleRes.data || []).map((s: any) => s.user_id),
-          ...(purchaseEvRes.data || []).map((e: any) => e.user_id)
-        ])).filter(uid => Boolean(uid) && !existingUserIds.has(uid)) as string[];
-
-        const profMap = new Map<string, { name?: string; email?: string }>();
-        if (missingUids.length > 0) {
-          const [{ data: profs }, { data: legUsers }, { data: userEvents }] = await Promise.all([
-            supabase.from('profiles').select('id, display_name').in('id', missingUids),
-            supabase.from('legacy_subscribers').select('claimed_user_id, email, nome').in('claimed_user_id', missingUids),
-            supabase.from('app_events').select('user_id, email').in('user_id', missingUids).not('email', 'is', null)
-          ]);
-          if (profs) {
-            profs.forEach((p: any) => {
-              profMap.set(p.id, { name: p.display_name });
-            });
-          }
-          if (legUsers) {
-            legUsers.forEach((l: any) => {
-              if (l.claimed_user_id) {
-                const cur = profMap.get(l.claimed_user_id) || {};
-                profMap.set(l.claimed_user_id, {
-                  name: cur.name || l.nome,
-                  email: l.email || cur.email
-                });
-              }
-            });
-          }
-          if (userEvents) {
-            userEvents.forEach((e: any) => {
-              if (e.user_id && e.email) {
-                const cur = profMap.get(e.user_id) || {};
-                if (!cur.email) cur.email = e.email;
-                profMap.set(e.user_id, cur);
-              }
-            });
-          }
-        }
-
-        // Complementa com Asaas faltantes
+        // 1. Assinaturas Asaas
         (asaasRes.data || []).forEach((s: any) => {
           const st = (s.status || '').toUpperCase();
           if (st !== 'ACTIVE' && st !== 'ACTIVE_GRACE' && st !== 'CONFIRMED' && st !== 'RECEIVED' && st !== 'PAGA') return;
@@ -1090,7 +904,7 @@ export function AdminHojeCards() {
             subtitle: isRenovou ? `Renovou via Asaas (${planName})` : `Assinou via Asaas (${planName})`,
             at: s.started_at || s.created_at,
             acessos: null,
-            avatar_url: null,
+            avatar_url: profInfo?.avatar_url || null,
             is_premium: true,
             planValue: planValor,
             planTag: { plano: planName, status: 'Ativo', expires_at: s.expires_at },
@@ -1098,7 +912,7 @@ export function AdminHojeCards() {
           if (s.user_id) existingUserIds.add(s.user_id);
         });
 
-        // Complementa com Eventos de Checkout/Compra confirmados hoje
+        // 2. Eventos de Checkout/Compra confirmados hoje
         (purchaseEvRes.data || []).forEach((e: any) => {
           const em = (e.email || '').toLowerCase().trim();
           if (ADMIN_EMAILS.includes(em)) return;
@@ -1126,7 +940,7 @@ export function AdminHojeCards() {
             subtitle: isRenovou ? `Renovou via Asaas (${planName})` : `Assinou via Checkout (${planName})`,
             at: e.created_at,
             acessos: null,
-            avatar_url: null,
+            avatar_url: profInfo?.avatar_url || null,
             is_premium: true,
             planValue: planValor,
             planTag: { plano: planName, status: 'Ativo', expires_at: null },
@@ -1134,7 +948,7 @@ export function AdminHojeCards() {
           existingUserIds.add(uid);
         });
 
-        // Complementa com Play Store faltantes
+        // 3. Play Store
         (playRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const profInfo = profMap.get(s.user_id);
@@ -1152,7 +966,7 @@ export function AdminHojeCards() {
             subtitle: isRenovou ? `Renovou via Google Play (${planName})` : `Assinou via Google Play (${planName})`,
             at: s.created_at,
             acessos: null,
-            avatar_url: null,
+            avatar_url: profInfo?.avatar_url || null,
             is_premium: true,
             planValue: planValor,
             planTag: { plano: planName, status: s.status, expires_at: null },
@@ -1160,7 +974,7 @@ export function AdminHojeCards() {
           if (s.user_id) existingUserIds.add(s.user_id);
         });
 
-        // Complementa com Apple Store faltantes
+        // 4. Apple Store
         (appleRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const profInfo = profMap.get(s.user_id);
@@ -1178,7 +992,7 @@ export function AdminHojeCards() {
             subtitle: isRenovou ? `Renovou via Apple (${planName})` : `Assinou via Apple (${planName})`,
             at: s.created_at || s.start_time,
             acessos: null,
-            avatar_url: null,
+            avatar_url: profInfo?.avatar_url || null,
             is_premium: true,
             planValue: planValor,
             planTag: { plano: planName, status: s.status, expires_at: null },
@@ -1186,7 +1000,7 @@ export function AdminHojeCards() {
           if (s.user_id) existingUserIds.add(s.user_id);
         });
 
-        // Complementa com Legados se houver
+        // 5. Legados
         (legRes.data || []).forEach((e: any) => {
           const userIsAntigo = isAntigo(e.claimed_user_id, e.email, e.created_at);
           if (isRenovou ? !userIsAntigo : userIsAntigo) return;
@@ -1204,138 +1018,124 @@ export function AdminHojeCards() {
             planTag: { plano: e.tipo || 'Assinatura', status: e.status, expires_at: null },
           });
         });
-      } else {
-        listPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(d) }));
-        let extraPromises: any[] = [];
-        
-        if (id === 'paywall' || id === 'viu_planos') {
-          // "Tela de assinaturas" also implicitly includes anyone who clicked a plan (viu_planos/trial)
-          // But we will just pull the raw app_events for trial_click plus the trial list to make sure the counts reflect Math.max
-          extraPromises = datas.map(d => supabase.rpc('admin_lista_dia' as any, { _tipo: 'trial', _dia: isoDate(d) }));
-          const minDate = new Date(datas[datas.length - 1]);
-          minDate.setHours(0, 0, 0, 0);
-          const maxDate = new Date(datas[0]);
-          maxDate.setDate(maxDate.getDate() + 1);
-          maxDate.setHours(0, 0, 0, 0);
-          
-          const eventNames = id === 'viu_planos' 
-            ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] 
-            : ['trial_click', 'assinatura_aberta', 'paywall_view'];
+      } else if (id === 'cadastros') {
+        const { data: cadProfs } = await supabase
+          .from('profiles')
+          .select('id, email, display_name, created_at, avatar_url, is_premium')
+          .gte('created_at', startIso)
+          .lt('created_at', endIso)
+          .order('created_at', { ascending: false })
+          .limit(100);
 
-          const { data: vpEvents } = await supabase
-            .from('app_events')
-            .select(`
-              id, user_id, created_at, email, event_name, metadata,
-              profiles:user_id ( display_name, is_premium ),
-              users:user_id ( email, raw_user_meta_data )
-            `)
-            .in('event_name', eventNames)
-            .gte('created_at', minDate.toISOString())
-            .lt('created_at', maxDate.toISOString())
-            .order('created_at', { ascending: true });
-            
-          if (vpEvents) {
-            // Group events by user and count occurrences
-            const userEventsMap = new Map<string, any>();
-            vpEvents.forEach((e: any) => {
-              const em = (e.users?.email || e.email || '').toLowerCase().trim();
-              if (ADMIN_EMAILS.includes(em)) return;
-              
-              const uid = e.user_id || em;
-              if (!userEventsMap.has(uid)) {
-                userEventsMap.set(uid, {
-                   ...e,
-                   uemail: e.users?.email || e.email || 'Visitante',
-                   logs: [],
-                   acessos: 0,
-                   latestAt: e.created_at
-                });
-              }
-              const userObj = userEventsMap.get(uid);
-              userObj.acessos = (userObj.acessos || 0) + 1;
-              if (new Date(e.created_at).getTime() > new Date(userObj.latestAt).getTime()) {
-                userObj.latestAt = e.created_at;
-              }
-              if (e.event_name !== 'trial_click' && e.event_name !== 'assinatura_aberta' && e.event_name !== 'paywall_view') {
-                 userObj.logs.push({
-                    event_name: e.event_name,
-                    created_at: e.created_at,
-                    erro: e.metadata?.erro,
-                    plano: e.metadata?.plano
-                 });
-              }
-            });
-
-            const vpMapped = Array.from(userEventsMap.values()).map((e: any) => {
-                return {
-                  key: e.user_id || e.id,
-                  user_id: e.user_id,
-                  title: e.profiles?.display_name || e.uemail.split('@')[0],
-                  email: e.uemail,
-                  subtitle: id === 'viu_planos' ? 'Abriu checkout (Clicou)' : 'Abriu planos',
-                  at: e.latestAt || e.created_at,
-                  acessos: e.acessos || 1,
-                  avatar_url: e.users?.raw_user_meta_data?.avatar_url || e.users?.raw_user_meta_data?.picture,
-                  is_premium: e.profiles?.is_premium || false,
-                  created_at: e.created_at,
-                  logsCheckout: e.logs
-                };
-            });
-            allLists = allLists.concat(vpMapped);
-          }
-        }
-
-        const [results, extraResults] = await Promise.all([
-          Promise.all(listPromises),
-          Promise.all(extraPromises)
-        ]);
-        
-        results.forEach(({ data }) => {
-          const mapped = ((data as any[]) || []).map(r => {
-            const isGoogleAvatar = r.avatar_url?.includes('googleusercontent.com');
-            const uid = r.user_id || r.id;
-            const routeLabel = r.subtitle ? rotaParaFuncao(r.subtitle).label : null;
-            const cleanSubtitle = (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'cadastros' ? 'Novo cadastro' : null);
-            return {
-              key: r.key || uid || r.email || Math.random().toString(),
-              user_id: uid,
-              title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
-              email: r.email,
-              provider: isGoogleAvatar ? 'google' : (r.provider || (r.email ? 'email' : null)),
-              subtitle: cleanSubtitle,
-              at: r.at || r.last_seen || r.created_at,
-              is_premium: r.is_premium ?? r.premium ?? false,
-              avatar_url: r.avatar_url || null,
-              acessos: typeof r.acessos === 'number' ? r.acessos : null,
-              created_at: r.created_at || null,
-              faixa_etaria: r.faixa_etaria || null
-            };
-          });
-          allLists = allLists.concat(mapped);
+        allLists = (cadProfs || []).map((p: any) => {
+          const isGoogle = p.avatar_url?.includes('googleusercontent.com');
+          return {
+            key: p.id,
+            user_id: p.id,
+            title: p.display_name || p.email?.split('@')[0] || 'Usuário',
+            email: p.email,
+            provider: isGoogle ? 'google' : (p.email ? 'email' : null),
+            subtitle: 'Novo cadastro',
+            at: p.created_at,
+            is_premium: p.is_premium ?? false,
+            avatar_url: p.avatar_url || null,
+            acessos: null,
+            created_at: p.created_at
+          };
         });
-        
-        if (id === 'paywall') {
-          extraResults.forEach(({ data }) => {
-            const trials = ((data as any[]) || []).map(r => {
-              const isGoogleAvatar = r.avatar_url?.includes('googleusercontent.com');
-              const uid = r.user_id || r.id;
-              return {
-                key: r.key || uid || r.email || Math.random().toString(),
-                user_id: uid,
-                title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
-                email: r.email,
-                subtitle: 'Abriu planos (Iniciou teste)',
-                at: r.at || r.created_at || r.last_seen,
-                is_premium: r.is_premium ?? r.premium ?? false,
-                avatar_url: r.avatar_url || null,
-                provider: isGoogleAvatar ? 'google' : (r.provider || 'email'),
-                acessos: null,
-                created_at: r.created_at || r.at,
-                faixa_etaria: r.faixa_etaria || null
-              };
-            });
-            allLists = allLists.concat(trials);
+      } else if (id === 'online5m' || id === 'online') {
+        const minTime = id === 'online5m'
+          ? new Date(Date.now() - 5 * 60 * 1000).toISOString()
+          : startIso;
+
+        const { data: actRows } = await supabase
+          .from('user_activity_log')
+          .select(`
+            user_id, last_seen_at, last_route,
+            profiles:user_id ( id, display_name, email, avatar_url, is_premium )
+          `)
+          .gte('last_seen_at', minTime)
+          .order('last_seen_at', { ascending: false })
+          .limit(100);
+
+        allLists = (actRows || []).map((a: any) => {
+          const p = a.profiles || {};
+          const isGoogle = p.avatar_url?.includes('googleusercontent.com');
+          const routeLabel = a.last_route ? rotaParaFuncao(a.last_route).label : null;
+          return {
+            key: a.user_id,
+            user_id: a.user_id,
+            title: p.display_name || p.email?.split('@')[0] || 'Usuário',
+            email: p.email,
+            provider: isGoogle ? 'google' : (p.email ? 'email' : null),
+            subtitle: (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'online5m' ? 'Online nos últimos 5 min' : 'Online hoje'),
+            at: a.last_seen_at,
+            is_premium: p.is_premium ?? false,
+            avatar_url: p.avatar_url || null,
+            acessos: null,
+            created_at: null
+          };
+        });
+      } else if (id === 'paywall' || id === 'viu_planos') {
+        const eventNames = id === 'viu_planos' 
+          ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] 
+          : ['trial_click', 'assinatura_aberta', 'paywall_view'];
+
+        const { data: vpEvents } = await supabase
+          .from('app_events')
+          .select(`
+            id, user_id, created_at, email, event_name, metadata,
+            profiles:user_id ( display_name, is_premium )
+          `)
+          .in('event_name', eventNames)
+          .gte('created_at', startIso)
+          .lt('created_at', endIso)
+          .order('created_at', { ascending: false })
+          .limit(100);
+
+        if (vpEvents) {
+          const userEventsMap = new Map<string, any>();
+          vpEvents.forEach((e: any) => {
+            const em = (e.email || '').toLowerCase().trim();
+            if (ADMIN_EMAILS.includes(em)) return;
+            const uid = e.user_id || em;
+            if (!userEventsMap.has(uid)) {
+              userEventsMap.set(uid, {
+                ...e,
+                uemail: e.email || 'Visitante',
+                logs: [],
+                acessos: 0,
+                latestAt: e.created_at
+              });
+            }
+            const userObj = userEventsMap.get(uid);
+            userObj.acessos = (userObj.acessos || 0) + 1;
+            if (new Date(e.created_at).getTime() > new Date(userObj.latestAt).getTime()) {
+              userObj.latestAt = e.created_at;
+            }
+            if (e.event_name !== 'trial_click' && e.event_name !== 'assinatura_aberta' && e.event_name !== 'paywall_view') {
+              userObj.logs.push({
+                event_name: e.event_name,
+                created_at: e.created_at,
+                erro: e.metadata?.erro,
+                plano: e.metadata?.plano
+              });
+            }
           });
+
+          allLists = Array.from(userEventsMap.values()).map((e: any) => ({
+            key: e.user_id || e.id,
+            user_id: e.user_id,
+            title: e.profiles?.display_name || e.uemail.split('@')[0],
+            email: e.uemail,
+            subtitle: id === 'viu_planos' ? 'Abriu checkout (Clicou)' : 'Abriu planos',
+            at: e.latestAt || e.created_at,
+            acessos: e.acessos || 1,
+            avatar_url: null,
+            is_premium: e.profiles?.is_premium || false,
+            created_at: e.created_at,
+            logsCheckout: e.logs
+          }));
         }
       }
 
