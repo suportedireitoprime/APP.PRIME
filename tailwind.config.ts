@@ -131,6 +131,8 @@ export default {
         display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
         body: ['"Barlow"', 'system-ui', 'sans-serif'],
         legal: ['"Barlow"', 'Georgia', 'serif'],
+        card: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
+        title: ['"Playfair Display"', 'Georgia', 'serif'],
       },
       colors: {
         ...MONO_COLOR_ALIASES,

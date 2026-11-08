@@ -109,7 +109,7 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
 
         <div className="h-[1.5px] bg-border/70 w-full mb-2" />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 md:gap-4 min-h-[200px] content-start">
-          {activeTab === 'todas' && AREA_CATS.map((c) => {
+          {activeTab === 'todas' && AREA_CATS.map((c, i) => {
             const displayLabel = getAreaDisplayLabel(c.label);
             return (
               <HomeCard
@@ -118,11 +118,7 @@ const HomeTabEmAlta = ({ onOpenCategory, onSelectRadar, onOpenLei, onOpenJurispr
                 label={displayLabel}
                 sublabel={c.sublabel}
                 color={c.color}
-                delay={0}
-                solidColor={true}
-                hideChevron={true}
-                hideWatermark={true}
-                titleClassName="font-sans font-medium text-[13.5px] xs:text-[14px] leading-tight text-white/95 break-words"
+                delay={i * 0.03}
                 onClick={() => onOpenCategory({ ...c, label: displayLabel })}
                 data-track="home_card_click"
                 data-track-name={displayLabel}

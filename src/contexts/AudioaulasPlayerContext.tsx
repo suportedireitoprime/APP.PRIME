@@ -14,6 +14,8 @@ import {
 } from '@/lib/audioaulaProgresso';
 import { R2_VACATIO_AUDIO_BASE_URL, safeStorageUrl } from '@/lib/cdnImg';
 import { NOVAS_AUDIOAULAS_CATALOG } from '@/data/novasAudioaulasCatalog';
+import { AUDIOAULAS_ACERVO_INICIAL } from '@/data/audioaulasAcervo';
+import { getCachedAudioaulas, saveCachedAudioaulas } from '@/services/audioaulasWarmup';
 import { get as idbGet, set as idbSet } from 'idb-keyval';
 
 export const AUDIOAULAS_CACHE_KEY = 'audioaulas_acervo_cache_v2';
@@ -109,8 +111,16 @@ export function useAudioaulasPlayer() {
 }
 
 export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [aulas, setAulas] = useState<AulaAudio[]>(() => memoryAulasCache ?? []);
-  const [loading, setLoading] = useState(() => !memoryAulasCache || memoryAulasCache.length === 0);
+  const [aulas, setAulas] = useState<AulaAudio[]>(() => {
+    if (memoryAulasCache && memoryAulasCache.length > 0) return memoryAulasCache;
+    const cached = getCachedAudioaulas();
+    if (cached && cached.length > 0) {
+      memoryAulasCache = cached;
+      return cached;
+    }
+    return (AUDIOAULAS_ACERVO_INICIAL as AulaAudio[]) || [];
+  });
+  const [loading, setLoading] = useState(() => aulas.length === 0);
   const [atualId, setAtualId] = useState<number | null>(null);
   const [tocando, setTocando] = useState(false);
   const [tempo, setTempo] = useState(0);

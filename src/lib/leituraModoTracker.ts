@@ -48,3 +48,4 @@ export function getUltimoModoLeitura(
 
   return 'nativa';
 }
+

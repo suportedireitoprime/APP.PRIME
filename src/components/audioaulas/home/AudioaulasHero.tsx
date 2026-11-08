@@ -1,150 +1,403 @@
-import React from "react";
-import { ArrowLeft, Headphones } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { CAPA_HUB, capaDaArea } from "@/lib/audioaulasHelper";
-import { resetGlobalScroll } from "@/lib/scrollUtils";
-import { CapaOtimizada } from "./CapaOtimizada";
-import CassetteAnimation from "./CassetteAnimation";
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Headphones, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import HeroMotifs from '@/components/vademecum/home/HeroMotifs';
+import { AudioActionShortcuts } from '@/components/audio/AudioActionShortcuts';
+import { type AulaAudio } from '@/contexts/AudioaulasPlayerContext';
+import { haptic } from '@/lib/nativeHaptics';
+import { resetGlobalScroll } from '@/lib/scrollUtils';
+
+const AudioFavoritosModal = React.lazy(() => import('@/components/audio/AudioFavoritosModal').then((m) => ({ default: m.AudioFavoritosModal })));
+const AudioRecentesModal = React.lazy(() => import('@/components/audio/AudioRecentesModal').then((m) => ({ default: m.AudioRecentesModal })));
+const AudioEstatisticasModal = React.lazy(() => import('@/components/audio/AudioEstatisticasModal').then((m) => ({ default: m.AudioEstatisticasModal })));
+const AudioEmAltaModal = React.lazy(() => import('@/components/audio/AudioEmAltaModal').then((m) => ({ default: m.AudioEmAltaModal })));
+const AudioTrilhasModal = React.lazy(() => import('@/components/audio/AudioTrilhasModal').then((m) => ({ default: m.AudioTrilhasModal })));
+
+import cenarioOnibus from '@/assets/audio-cenarios/cenario-onibus.webp';
+import cenarioAcademia from '@/assets/audio-cenarios/cenario-academia.webp';
+import cenarioCaminhada from '@/assets/audio-cenarios/cenario-caminhada.webp';
+import cenarioCafe from '@/assets/audio-cenarios/cenario-cafe.webp';
+import cenarioTransito from '@/assets/audio-cenarios/cenario-transito.webp';
+import cenarioDescanso from '@/assets/audio-cenarios/cenario-descanso.webp';
 
 interface AudioaulasHeroProps {
   areaAtual: string | null;
   loading: boolean;
   totalAulas: number;
+  totalAreas?: number;
+  totalFavoritas?: number;
+  aulasFavoritas?: AulaAudio[];
+  totalRecentes?: number;
+  aulasRecentes?: AulaAudio[];
+  onTocarAula?: (aula: AulaAudio, fila?: AulaAudio[]) => void;
+  onAlternarFavoritoAula?: (aula: AulaAudio) => void;
+  aulas?: AulaAudio[];
+  onBuscar?: () => void;
+  onFavoritos?: () => void;
+  onRecentes?: () => void;
+  onLimparRecentes?: () => void;
+  onEmAlta?: () => void;
+  onEstatistica?: () => void;
+  onTrilhas?: () => void;
   onVoltar?: () => void;
   subtituloCustom?: string;
   tituloCustom?: string;
   unidadeCustom?: string;
 }
 
-export const AudioaulasHero = React.memo(function AudioaulasHero({
-  areaAtual,
-  loading,
-  totalAulas,
-  onVoltar,
-  subtituloCustom,
-  tituloCustom,
-  unidadeCustom,
-}: AudioaulasHeroProps) {
-  const navigate = useNavigate();
-  const isEca = areaAtual && /eca|criança|adolescente/i.test(areaAtual);
-  const heroTitulo =
-    tituloCustom ||
-    (isEca
-      ? "ECA"
-      : areaAtual
-        ? areaAtual.replace(/^Direitos?\s+(do\s+)?/i, "").trim()
-        : "Audioaulas");
+const CENARIOS_AULAS = [
+  {
+    id: 'onibus',
+    imagem: cenarioOnibus,
+    tag: '🚌 No trajeto',
+    descricao: 'Revisão ágil de cada matéria em qualquer lugar',
+  },
+  {
+    id: 'academia',
+    imagem: cenarioAcademia,
+    tag: '💪 Na academia',
+    descricao: 'Seu preparo teórico em ritmo acelerado',
+  },
+  {
+    id: 'caminhada',
+    imagem: cenarioCaminhada,
+    tag: '🚶‍♀️ Caminhando',
+    descricao: 'Aprenda ouvindo e fixe os conceitos chaves',
+  },
+  {
+    id: 'cafe',
+    imagem: cenarioCafe,
+    tag: '☕ No café',
+    descricao: 'Aproveite momentos de pausa para revisar conceitos',
+  },
+  {
+    id: 'transito',
+    imagem: cenarioTransito,
+    tag: '🚗 No trânsito',
+    descricao: 'Converta horas paradas em produtividade nos estudos',
+  },
+  {
+    id: 'descanso',
+    imagem: cenarioDescanso,
+    tag: '🛋️ Em casa',
+    descricao: 'Estudo contínuo e confortável no seu próprio ritmo',
+  },
+];
 
-  const heroSub =
-    subtituloCustom ||
-    (isEca
-      ? "Estatuto da Criança e do Adolescente • Lei nº 8.069/1990"
-      : areaAtual
-        ? "Aulas em áudio para ouvir e revisar."
-        : "Aprenda ouvindo, por área do Direito.");
+export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
+  function AudioaulasHero({
+    areaAtual,
+    loading,
+    totalAulas,
+    totalAreas = 12,
+    totalFavoritas = 0,
+    aulasFavoritas = [],
+    totalRecentes = 0,
+    aulasRecentes = [],
+    onTocarAula,
+    onAlternarFavoritoAula,
+    aulas = [],
+    onBuscar,
+    onFavoritos,
+    onRecentes,
+    onLimparRecentes,
+    onEmAlta,
+    onEstatistica,
+    onTrilhas,
+    onVoltar,
+    subtituloCustom,
+    tituloCustom,
+    unidadeCustom,
+  }) {
+    const navigate = useNavigate();
+    const [cenarioIndex, setCenarioIndex] = useState(0);
 
-  const capaImg = areaAtual ? capaDaArea(areaAtual) : CAPA_HUB;
+    const [recentesOpen, setRecentesOpen] = useState(false);
+    const [favoritosOpen, setFavoritosOpen] = useState(false);
+    const [statsOpen, setStatsOpen] = useState(false);
+    const [emAltaOpen, setEmAltaOpen] = useState(false);
+    const [trilhasOpen, setTrilhasOpen] = useState(false);
 
-  const handleVoltar = () => {
-    resetGlobalScroll();
-    if (onVoltar) {
-      onVoltar();
-    } else if (areaAtual) {
-      navigate("/audioaulas");
-    } else {
-      navigate("/");
-    }
-    requestAnimationFrame(() => resetGlobalScroll());
-  };
+    // Rotação suave automática das capas a cada 5 segundos
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setCenarioIndex((prev) => (prev + 1) % CENARIOS_AULAS.length);
+      }, 5000);
+      return () => clearInterval(timer);
+    }, []);
 
-  return (
-    <div className="relative px-4 pt-[calc(1.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-5 overflow-visible sm:px-6 lg:px-10 lg:pt-[calc(2.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] lg:pb-8">
-      <div className="mx-auto w-full max-w-350 2xl:max-w-[1600px] relative z-10">
-        <button
-          onClick={handleVoltar}
-          aria-label="Voltar"
-          className="mb-5 w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-white/10 transition shrink-0 active:scale-95 z-10 relative"
+    const cenarioAtual = CENARIOS_AULAS[cenarioIndex];
+    const isEca = areaAtual && /eca|criança|adolescente/i.test(areaAtual);
+    const heroTitulo =
+      tituloCustom ||
+      (isEca
+        ? 'ECA'
+        : areaAtual
+          ? areaAtual.replace(/^Direitos?\s+(do\s+)?/i, '').trim()
+          : 'Áudio Aulas');
+
+    const heroSub =
+      subtituloCustom ||
+      (isEca
+        ? 'Estatuto da Criança e do Adolescente'
+        : areaAtual
+          ? `ÁREA: ${areaAtual.toUpperCase()}`
+          : 'DOUTRINA EM ÁUDIO');
+
+    const handleVoltar = () => {
+      resetGlobalScroll();
+      if (onVoltar) {
+        onVoltar();
+      } else if (areaAtual) {
+        navigate('/audioaulas');
+      } else {
+        navigate('/');
+      }
+      requestAnimationFrame(() => resetGlobalScroll());
+    };
+
+    return (
+      <div className="relative mb-6">
+        {/* Shell principal com bordas arredondadas e fundo escuro azulado */}
+        <div
+          className="relative overflow-hidden rounded-b-[2rem] flex flex-col z-20 shadow-xl"
+          style={{
+            transform: 'translateZ(0)',
+            backgroundColor: '#070f1e',
+            paddingTop: 'var(--sai-top, env(safe-area-inset-top, 0px))',
+          }}
         >
-          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
-        </button>
+          {/* Blindagem de overscroll superior contra vazamento do fundo */}
+          <div
+            className="pointer-events-none absolute -top-[1200px] left-0 right-0 h-[1200px] z-0"
+            style={{ backgroundColor: '#070f1e' }}
+            aria-hidden="true"
+          />
 
-        <div className="flex items-center justify-between gap-3 sm:gap-6 lg:gap-8">
-          <div className="flex items-center gap-3.5 sm:gap-5 lg:gap-8 min-w-0 flex-1">
-            <span className="relative h-20 w-20 sm:h-28 sm:w-28 lg:h-36 lg:w-36 shrink-0 rounded-2xl overflow-hidden shadow-2xl shadow-black/70 border border-white/10 bg-[#1c1c1c]">
-              {!areaAtual ? (
-                <CassetteAnimation />
-              ) : (
-                <CapaOtimizada src={capaImg} alt="" animacaoEntrada />
-              )}
-            </span>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-3xl lg:text-5xl font-black tracking-wide sm:tracking-widest uppercase leading-tight text-white drop-shadow-md wrap-break-word">
-                {heroTitulo}
-              </h1>
-              <p className="text-xs sm:text-sm text-zinc-300 mt-1 sm:mt-2 font-medium wrap-break-word">
-                {heroSub}
-              </p>
+          {/* Imagem de Capa do Painel do Início (Lado Direito) com Transição Suave */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={cenarioAtual.id}
+                src={cenarioAtual.imagem}
+                alt={cenarioAtual.tag}
+                initial={{ opacity: 0, scale: 1.06 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.7, ease: 'easeInOut' }}
+                className="absolute top-0 bottom-0 right-0 h-full w-[65%] sm:w-[62%] lg:w-[58%] object-cover object-center select-none"
+              />
+            </AnimatePresence>
+
+            {/* Degradê lateral para fundir a imagem à direita no shell escuro */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#070f1e]/85 via-transparent to-transparent sm:hidden" />
+            <div className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#070f1e]/60 via-transparent to-transparent" />
+
+            {/* Badge do Cenário Atual flutuando no canto inferior direito */}
+            <div className="absolute bottom-3 right-3 z-10 hidden sm:flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-white shadow-xl">
+              <span className="text-xs font-bold">{cenarioAtual.tag}</span>
+              <span className="w-1 h-1 rounded-full bg-white/40" />
+              <span className="text-[11px] text-zinc-300 font-medium">{cenarioAtual.descricao}</span>
+            </div>
+
+            {/* Indicadores de bolinha para alternar cenários */}
+            <div className="absolute bottom-3 left-auto right-3 sm:right-3 sm:bottom-10 z-20 flex items-center gap-1.5 pointer-events-auto">
+              {CENARIOS_AULAS.map((cen, idx) => (
+                <button
+                  key={cen.id}
+                  onClick={() => setCenarioIndex(idx)}
+                  aria-label={`Ver cenário ${cen.tag}`}
+                  className={`transition-all duration-300 rounded-full cursor-pointer ${
+                    idx === cenarioIndex
+                      ? 'w-5 h-1.5 bg-zinc-200 shadow-md shadow-zinc-400/40'
+                      : 'w-1.5 h-1.5 bg-white/40 hover:bg-white/80'
+                  }`}
+                />
+              ))}
             </div>
           </div>
 
-          {/* Gráfico Redondo Interativo com Total de Aulas (ampliado para máxima visibilidade) */}
-          {!loading && totalAulas > 0 && (
-            <div className="shrink-0 flex flex-col items-center justify-center pl-1 sm:pl-3">
+          {/* Overlay Azul com gradiente e corte diagonal */}
+          <div
+            className="absolute inset-0 z-[1] pointer-events-none"
+            style={{
+              filter: 'drop-shadow(25px 0 25px rgba(0,0,0,0.85)) drop-shadow(8px 0 10px rgba(0,0,0,0.95))',
+            }}
+          >
+            <div
+              className="absolute inset-0 overflow-hidden"
+              style={{
+                clipPath: 'polygon(0 0, 49% 0, 37% 100%, 0% 100%)',
+              }}
+            >
+              {/* Gradiente Azul Luxuoso correspondente ao Painel de Áudio Aulas */}
               <div
-                className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 flex items-center justify-center rounded-full bg-black/50 border border-white/15 shadow-2xl shadow-black/80 group hover:border-primary/60 hover:scale-105 transition-all duration-300 ring-1 ring-white/10"
-                title={`${totalAulas.toLocaleString("pt-BR")} ${unidadeCustom || "aulas"} disponíveis no total`}
-              >
-                {/* SVG Donut Ring com gradiente neon */}
-                <svg
-                  className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none"
-                  viewBox="0 0 100 100"
-                >
-                  <defs>
-                    <linearGradient id="heroGaugeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#ef4444" />
-                      <stop offset="100%" stopColor="#f87171" />
-                    </linearGradient>
-                  </defs>
-                  {/* Trilha de fundo */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="40"
-                    stroke="rgba(255, 255, 255, 0.12)"
-                    strokeWidth="8"
-                    fill="none"
-                  />
-                  {/* Arco com gradiente e glow */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="40"
-                    stroke="url(#heroGaugeGrad)"
-                    strokeWidth="8"
-                    strokeDasharray="251.2"
-                    strokeDashoffset="45"
-                    strokeLinecap="round"
-                    fill="none"
-                    style={{
-                      filter: "drop-shadow(0 0 8px rgba(239, 68, 68, 0.65))",
-                    }}
-                  />
-                </svg>
+                className="absolute inset-0"
+                style={{
+                  background: 'linear-gradient(135deg, #0d2847 0%, #081d33 45%, #051220 85%, #030a12 100%)',
+                }}
+              />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(56,189,248,0.35),transparent_65%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.6),transparent_70%)]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-                {/* Conteúdo Central */}
-                <div className="relative z-10 flex flex-col items-center justify-center text-center px-1">
-                  <span className="text-base sm:text-xl lg:text-2xl font-black text-white leading-none tracking-tight drop-shadow-sm font-sans">
-                    {totalAulas.toLocaleString("pt-BR")}
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] lg:text-xs font-extrabold text-zinc-300 uppercase tracking-widest leading-none mt-1">
-                    {unidadeCustom || (totalAulas === 1 ? "aula" : "aulas")}
-                  </span>
-                </div>
-              </div>
+              {/* Motifs jurídicos clássicos */}
+              <HeroMotifs />
+
+              {/* Grid Pattern Background */}
+              <div
+                className="absolute inset-0 opacity-15"
+                style={{
+                  backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px)',
+                  backgroundSize: '24px 24px',
+                }}
+              />
             </div>
-          )}
+          </div>
+
+          {/* Barra Superior Padronizada: Botão Voltar e Botão Pesquisar */}
+          <header className="relative z-20 px-4 sm:px-6 lg:px-10 pt-3.5 pb-2 flex items-center justify-between">
+            <button
+              onClick={() => {
+                haptic.light();
+                handleVoltar();
+              }}
+              aria-label="Voltar"
+              className="w-12 h-12 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none shrink-0 cursor-pointer"
+            >
+              <ArrowLeft className="w-6 h-6 text-white drop-shadow" strokeWidth={2.2} />
+            </button>
+
+            {onBuscar && (
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.selection();
+                  onBuscar();
+                }}
+                aria-label="Pesquisar áudio aulas"
+                className="w-12 h-12 rounded-full flex items-center justify-center bg-black/40 backdrop-blur-xl border border-white/25 shadow-[0_8px_24px_rgba(0,0,0,0.35)] active:scale-95 transition touch-manipulation select-none shrink-0 cursor-pointer"
+              >
+                <Search className="w-6 h-6 text-white drop-shadow" strokeWidth={2.2} />
+              </button>
+            )}
+          </header>
+
+          {/* Conteúdo Principal do Painel Azul à Esquerda */}
+          <div className="relative z-10 px-4 sm:px-6 lg:px-10 pt-4 sm:pt-5 pb-3 sm:pb-4 flex-1 flex flex-col justify-center max-w-[48%] sm:max-w-[44%] lg:max-w-[38%]">
+            <h1 className="font-title italic text-white text-[24px] sm:text-[28px] leading-[1.05] font-semibold tracking-tight drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)] whitespace-nowrap">
+              {heroTitulo}
+            </h1>
+
+            <p className="font-body text-sky-200/90 text-[9px] sm:text-[10px] font-bold tracking-[0.25em] uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] mt-1">
+              {heroSub}
+            </p>
+
+            {/* Lema com divisor vertical idêntico ao da Home */}
+            <div className="mt-2 flex items-center text-left gap-2">
+              <div className="w-[2px] h-6 bg-white/40 rounded-full shrink-0" />
+              <p className="font-serif italic text-white/80 text-[11px] sm:text-[12px] leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] line-clamp-2">
+                Aulas didáticas<br />por área do Direito.
+              </p>
+            </div>
+
+            {/* Tag de Narrações Disponíveis com Altura Confortável e Animação de Reflexo */}
+            <div className="mt-3.5 flex items-center">
+              <span className="tag-narracoes-shine inline-flex items-center gap-2 px-4 py-2.5 sm:px-4.5 sm:py-3 min-h-[42px] sm:min-h-[46px] rounded-xl sm:rounded-2xl bg-black/45 text-white border border-white/20 font-bold text-xs sm:text-[13px] shadow-lg backdrop-blur-md">
+                <Headphones className="w-4 h-4 text-zinc-200 shrink-0" />
+                <span className="tracking-wide">
+                  {!loading && totalAulas > 0
+                    ? `${totalAulas.toLocaleString('pt-BR')} ${unidadeCustom || 'áudio aulas'}`
+                    : '133 áudio aulas'}
+                </span>
+              </span>
+            </div>
+          </div>
+
+          {/* Atalhos Rápidos no Painel Hero: Recentes, Em alta, Estatística, Trilhas */}
+          <div className="relative z-10 px-3 sm:px-6 lg:px-10 pb-3 pt-1">
+            <AudioActionShortcuts
+              colorScheme="blue"
+              onRecentes={() => {
+                if (onRecentes) onRecentes();
+                else setRecentesOpen(true);
+              }}
+              onEmAlta={() => {
+                if (onEmAlta) onEmAlta();
+                else setEmAltaOpen(true);
+              }}
+              onEstatistica={() => {
+                if (onEstatistica) onEstatistica();
+                else setStatsOpen(true);
+              }}
+              onTrilhas={() => {
+                if (onTrilhas) onTrilhas();
+                else setTrilhasOpen(true);
+              }}
+              badgeRecentes={totalRecentes || aulasRecentes.length}
+            />
+          </div>
         </div>
+
+        {/* Modais de Ações de Áudio com tema Azul (Carregados sob demanda) */}
+        {recentesOpen && (
+          <React.Suspense fallback={null}>
+            <AudioRecentesModal
+              isOpen={recentesOpen}
+              onClose={() => setRecentesOpen(false)}
+              colorScheme="blue"
+              aulasRecentes={aulasRecentes}
+              onTocarAula={onTocarAula}
+              onLimparRecentes={onLimparRecentes}
+              onAlternarFavoritoAula={onAlternarFavoritoAula}
+            />
+          </React.Suspense>
+        )}
+        {favoritosOpen && (
+          <React.Suspense fallback={null}>
+            <AudioFavoritosModal
+              isOpen={favoritosOpen}
+              onClose={() => setFavoritosOpen(false)}
+              colorScheme="blue"
+              aulasFavoritas={aulasFavoritas}
+              onTocarAula={onTocarAula}
+              onAlternarFavoritoAula={onAlternarFavoritoAula}
+            />
+          </React.Suspense>
+        )}
+        {statsOpen && (
+          <React.Suspense fallback={null}>
+            <AudioEstatisticasModal
+              isOpen={statsOpen}
+              onClose={() => setStatsOpen(false)}
+              colorScheme="blue"
+            />
+          </React.Suspense>
+        )}
+        {emAltaOpen && (
+          <React.Suspense fallback={null}>
+            <AudioEmAltaModal
+              isOpen={emAltaOpen}
+              onClose={() => setEmAltaOpen(false)}
+              colorScheme="blue"
+              aulas={aulas}
+              onTocarAula={onTocarAula}
+            />
+          </React.Suspense>
+        )}
+        {trilhasOpen && (
+          <React.Suspense fallback={null}>
+            <AudioTrilhasModal
+              isOpen={trilhasOpen}
+              onClose={() => setTrilhasOpen(false)}
+              colorScheme="blue"
+            />
+          </React.Suspense>
+        )}
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
+
+export default AudioaulasHero;

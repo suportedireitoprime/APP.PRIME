@@ -60,7 +60,7 @@ const HomeActionShortcuts = () => {
               style={{ color: item.color, filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }}
               strokeWidth={2}
             />
-            <span className="font-body text-white text-[12px] sm:text-[13px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
+            <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-medium leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">
               {item.label}
             </span>
           </button>

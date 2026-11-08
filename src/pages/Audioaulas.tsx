@@ -137,6 +137,15 @@ const Audioaulas = () => {
           areaAtual={areaAtual}
           loading={state.loading}
           totalAulas={areaAtual ? state.daArea.length : state.aulas.length}
+          totalAreas={state.areas?.length || 12}
+          totalFavoritas={state.favoritos?.size || 0}
+          totalRecentes={state.historicoRecentes?.length || 0}
+          aulasRecentes={state.historicoRecentes}
+          onLimparRecentes={state.limparRecentes}
+          onTocarAula={state.handleTocarAula}
+          onAlternarFavoritoAula={state.alternarFavorito}
+          onBuscar={() => state.setAba('buscar')}
+          aulas={state.aulas}
           onVoltar={
             areaAtual
               ? () => {

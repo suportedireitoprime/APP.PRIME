@@ -30,7 +30,7 @@ const VadeMecumQuickActions: React.FC<VadeMecumQuickActionsProps> = ({ onSelectQ
         aria-label="Abrir Favoritos"
       >
         <Heart className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#F43F5E', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
-        <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">Favoritos</span>
+        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-medium leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">Favoritos</span>
       </button>
       
       <button 
@@ -39,7 +39,7 @@ const VadeMecumQuickActions: React.FC<VadeMecumQuickActionsProps> = ({ onSelectQ
         aria-label="Abrir Anotações"
       >
         <NotebookPen className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#60A5FA', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
-        <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">Anotações</span>
+        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-medium leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">Anotações</span>
       </button>
 
       <button 
@@ -51,7 +51,7 @@ const VadeMecumQuickActions: React.FC<VadeMecumQuickActionsProps> = ({ onSelectQ
         aria-label="Abrir Novidades"
       >
         <AlertTriangle className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#FBBF24', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
-        <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">Novidades</span>
+        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-medium leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">Novidades</span>
       </button>
 
       <button 
@@ -60,7 +60,7 @@ const VadeMecumQuickActions: React.FC<VadeMecumQuickActionsProps> = ({ onSelectQ
         aria-label="Abrir Radares"
       >
         <Radar className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" style={{ color: '#A78BFA', filter: 'saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,0.5))' }} strokeWidth={2} />
-        <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">Radares</span>
+        <span className="font-sans text-white/95 text-[12px] sm:text-[12.5px] font-medium leading-tight tracking-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] truncate max-w-full">Radares</span>
       </button>
     </div>
   );

@@ -1,33 +1,35 @@
 import { memo } from 'react';
-
-import { ChevronRight, ArrowUpRight, type LucideIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ChevronRight, type LucideIcon } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 
 interface HomeCardProps {
   icon: LucideIcon;
   label: string;
-  sublabel: string;
+  sublabel?: string;
   color: string;
   delay?: number;
+  inlineTitle?: boolean;
   onClick: () => void;
   className?: string;
-  iconClassName?: string;
-  titleClassName?: string;
-  hideChevron?: boolean;
-  hideWatermark?: boolean;
+  statusBadge?: string;
   badge?: string;
   'data-track'?: string;
   'data-track-name'?: string;
   'data-track-section'?: string;
   solidColor?: boolean;
+  hideChevron?: boolean;
+  hideWatermark?: boolean;
+  titleClassName?: string;
+  iconClassName?: string;
+  iconStrokeWidth?: number;
   style?: React.CSSProperties;
   iconStyle?: React.CSSProperties;
-  iconStrokeWidth?: number;
 }
 
 /**
  * Card padrão usado em Categorias, Em Alta e Áreas.
- * Garante proporção, ícone, tipografia e espaçamento idênticos.
+ * Garante proporção, ícone, tipografia e espaçamento idênticos ao padrão Vacatio App.
  */
 const HomeCardImpl = ({
   icon: Icon,
@@ -35,81 +37,106 @@ const HomeCardImpl = ({
   sublabel,
   color,
   delay = 0,
+  inlineTitle = false,
   onClick,
   className = '',
-  iconClassName = '',
-  titleClassName = '',
-  hideChevron = false,
-  hideWatermark = false,
+  statusBadge,
   badge,
   'data-track': dataTrack,
   'data-track-name': dataTrackName,
   'data-track-section': dataTrackSection,
-  solidColor = false,
+  hideChevron = false,
+  titleClassName,
+  iconClassName,
+  iconStrokeWidth,
   style,
   iconStyle,
-  iconStrokeWidth,
-}: HomeCardProps) => (
-  <button
-    onClick={() => {
-      haptic.selection();
-      onClick();
-    }}
-    data-track={dataTrack}
-    data-track-name={dataTrackName}
-    data-track-section={dataTrackSection}
-    className={`group relative flex h-auto min-h-[105px] w-full min-w-0 flex-row items-center justify-between overflow-hidden py-3.5 pl-3.5 ${
-      badge ? 'pr-[90px]' : hideChevron ? 'pr-3.5' : 'pr-8'
-    } rounded-2xl shadow-sm hover:shadow-md transition-all focus-visible:outline-none text-left active:scale-[0.97] border border-border/80 bg-zinc-800/80 hover:bg-zinc-700/80 ${className}`}
-    style={style}
-  >
-    {!hideChevron && (
-      <div className="absolute top-3 right-3 z-20">
-        {badge ? (
-          <span className={`rounded-full border px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wide ${solidColor ? 'border-border/60 bg-black/40 text-muted-foreground' : 'border-border bg-muted text-muted-foreground'}`}>
-            {badge}
-          </span>
-        ) : (
-          <ArrowUpRight className={`w-4 h-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 ${solidColor ? 'text-muted-foreground' : 'text-muted-foreground'}`} />
-        )}
-      </div>
-    )}
-    
-    <div className="flex flex-col items-start gap-3 w-full min-w-0 z-10 h-full justify-between">
-      <div className="relative shrink-0 flex items-start justify-start p-1">
-        <Icon
-          className={`relative transition-transform duration-300 group-hover:scale-110 group-active:opacity-70 group-active:-translate-y-1 ${iconClassName || 'w-7 h-7 xs:w-8 xs:h-8'}`}
-          style={{ color: color, ...iconStyle }}
-          strokeWidth={iconStrokeWidth ?? (solidColor ? 1.6 : 1.25)}
-        />
-      </div>
-      
-      <div className="flex-1 min-w-0 flex flex-col justify-end w-full">
-        <p className={titleClassName || `font-display text-[14.5px] xs:text-[16px] sm:text-[17px] font-bold leading-tight tracking-tighter ${solidColor ? 'text-foreground' : 'text-foreground'}`}>
-          {label}
-        </p>
-        {!solidColor && sublabel && (
-          <p className="font-body text-[11px] xs:text-[11.5px] leading-snug mt-0.5 text-muted-foreground">
-            {sublabel}
-          </p>
-        )}
-      </div>
-    </div>
+}: HomeCardProps) => {
+  const finalBadge = statusBadge || badge;
 
-    {solidColor && !hideWatermark && (
-      <div className="absolute -right-3 -bottom-3 w-[84px] h-[84px] pointer-events-none transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6 group-active:opacity-70">
-        <div className="absolute inset-0 opacity-[0.15]">
-          <Icon className="w-full h-full" style={{ color }} strokeWidth={1.5} />
+  return (
+    <motion.button
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.22, ease: [0.22, 0.61, 0.36, 1] }}
+      onClick={() => {
+        haptic.selection();
+        onClick();
+      }}
+      data-track={dataTrack}
+      data-track-name={dataTrackName}
+      data-track-section={dataTrackSection}
+      style={style}
+      className={`group relative flex flex-col justify-between w-full min-h-[118px] sm:min-h-[124px] h-auto p-3.5 sm:p-4 rounded-2xl bg-card hover:bg-secondary/60 border border-border/60 hover:border-primary/40 shadow-sm hover:shadow-xl hover:-translate-y-[2px] active:scale-[0.98] transition-all duration-300 text-left overflow-hidden ${className}`}
+    >
+      {finalBadge && (
+        <div className="absolute top-2.5 right-3 px-1.5 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold uppercase tracking-wider hidden sm:block">
+          {finalBadge}
         </div>
-        <div className="absolute inset-0 opacity-[0.4] svg-shine">
-          <Icon className="w-full h-full" style={{ color }} strokeWidth={1.5} />
-        </div>
-      </div>
-    )}
-  </button>
-);
+      )}
 
-// Memoize: parent re-renders (tab switches, voice input state, sheets opening)
-// were causing the entire card grid to re-render even though card props are stable.
+      {inlineTitle ? (
+        <>
+          <div className="flex items-start w-full gap-2">
+            <div className="flex items-start gap-2.5 min-w-0 flex-1">
+              <Icon
+                className={`w-7 h-7 sm:w-[30px] sm:h-[30px] relative shrink-0 transition-transform duration-300 group-hover:scale-105 ${iconClassName || ''}`}
+                style={{
+                  color,
+                  filter: 'saturate(1.25) drop-shadow(0 2px 6px rgba(0,0,0,0.5))',
+                  ...iconStyle,
+                }}
+                strokeWidth={iconStrokeWidth ?? 1.5}
+              />
+              <p className={titleClassName || "font-card text-foreground font-medium text-[14px] sm:text-[15px] tracking-[-0.01em] leading-snug line-clamp-1 min-h-[22px] flex items-center"}>
+                {label}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-end justify-between w-full mt-auto pt-1 gap-2">
+            <div className="min-w-0 flex-1">
+              {sublabel && (
+                <p className="font-body text-muted-foreground text-[11px] sm:text-[11.5px] leading-tight line-clamp-1 truncate">
+                  {sublabel}
+                </p>
+              )}
+            </div>
+            {!hideChevron && (
+              <ChevronRight className="w-4 h-4 text-muted-foreground/40 shrink-0 group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex items-center justify-between w-full">
+            <Icon
+              className={`w-7 h-7 relative shrink-0 transition-transform duration-300 group-hover:scale-105 ${iconClassName || ''}`}
+              style={{
+                color,
+                filter: 'saturate(1.2) drop-shadow(0 1px 4px rgba(0,0,0,0.4))',
+                ...iconStyle,
+              }}
+              strokeWidth={iconStrokeWidth ?? 1.5}
+            />
+            {!hideChevron && (
+              <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
+            )}
+          </div>
+          <div className="w-full min-w-0 mt-auto">
+            <p className={titleClassName || "font-card text-foreground font-medium text-[14px] sm:text-[15px] tracking-[-0.01em] leading-snug line-clamp-1"}>
+              {label}
+            </p>
+            {sublabel && (
+              <p className="font-body text-muted-foreground text-[11px] sm:text-[11.5px] leading-tight mt-1 line-clamp-1 truncate">
+                {sublabel}
+              </p>
+            )}
+          </div>
+        </>
+      )}
+    </motion.button>
+  );
+};
+
 const HomeCard = memo(HomeCardImpl);
 export default HomeCard;
