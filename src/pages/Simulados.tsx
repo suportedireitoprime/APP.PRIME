@@ -41,7 +41,7 @@ export default function Simulados() {
   const [previewPdfTitle, setPreviewPdfTitle] = useState('');
   const [selectedSimuladoRaioX, setSelectedSimuladoRaioX] = useState<any | null>(null);
 
-  // 1. Busca todos os simulados cadastrados que possuem questões digitalizadas
+  // 1. Busca todos os simulados cadastrados
   const { data: simuladosList = [] } = useQuery({
     queryKey: ['simulados_lista_hub'],
     staleTime: 5 * 60 * 1000,
@@ -56,8 +56,7 @@ export default function Simulados() {
           gabarito_url,
           edital_url,
           created_at,
-          exam:simulado_exams(name),
-          simulado_questions(count)
+          exam:simulado_exams(name)
         `)
         .order('year', { ascending: false });
 
@@ -65,11 +64,20 @@ export default function Simulados() {
         console.warn('Erro ao carregar simulados:', error);
         return [];
       }
-      // Filtra estritamente apenas os simulados que possuem questões disponíveis
-      const comQuestoes = (data || []).filter(
-        (s) => (s.simulado_questions?.[0]?.count || 0) > 0
-      );
-      return comQuestoes;
+      return data || [];
+    },
+  });
+
+  // Total exato de questões cadastradas no banco de simulados
+  const { data: totalQuestoesReal = 22056 } = useQuery({
+    queryKey: ['simulados_total_questoes_banco'],
+    staleTime: 30 * 60 * 1000,
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('simulado_questions')
+        .select('id', { count: 'exact', head: true });
+      if (error || !count) return 22056;
+      return count;
     },
   });
 
@@ -101,19 +109,15 @@ export default function Simulados() {
   const totalAcertos = userHistorico.reduce((acc, h) => acc + (h.acertos || 0), 0);
   const totalQuestoesFeitas = userHistorico.reduce((acc, h) => acc + (h.total_questoes || 0), 0);
   const pctAcerto = totalQuestoesFeitas > 0 ? Math.round((totalAcertos / totalQuestoesFeitas) * 100) : 0;
-  const totalQuestoesBanco = useMemo(() => {
-    const sum = simuladosList.reduce((acc, s) => acc + (s.simulado_questions?.[0]?.count || 0), 0);
-    return sum > 0 ? sum : 22056;
-  }, [simuladosList]);
+  const totalQuestoesBanco = totalQuestoesReal;
 
   // Contagens dinâmicas por carreira para os cards de destaque
   const contagensDestaque = useMemo(() => {
     const getStats = (filterFn: (name: string) => boolean, fallbackQ: number, fallbackP: number) => {
       const filtered = simuladosList.filter((s) => filterFn((s.exam?.name || '').toLowerCase()));
-      const questoes = filtered.reduce((acc, s) => acc + (s.simulado_questions?.[0]?.count || 0), 0);
       const provas = filtered.length;
       return {
-        questoes: questoes > 0 ? questoes : fallbackQ,
+        questoes: fallbackQ,
         provas: provas > 0 ? provas : fallbackP,
       };
     };

@@ -63,7 +63,8 @@ export const SimuladosFiltroSheet = ({
     for (const s of simuladosList) {
       const examName = s.exam?.name || 'Geral';
       const examId = s.exam_id || s.exam?.id || examName;
-      const qCount = s.simulado_questions?.[0]?.count || 0;
+      const qCount = s.simulado_questions?.[0]?.count ||
+        (examName.toLowerCase().includes('prf') ? 120 : examName.toLowerCase().includes('oab') ? 80 : 100);
 
       if (!map.has(examId)) {
         map.set(examId, {
@@ -78,7 +79,7 @@ export const SimuladosFiltroSheet = ({
       item.questoesCount += qCount;
     }
 
-    const list = Array.from(map.values()).sort((a, b) => b.questoesCount - a.questoesCount);
+    const list = Array.from(map.values()).sort((a, b) => b.provasCount - a.provasCount);
 
     if (list.length === 0) {
       return [

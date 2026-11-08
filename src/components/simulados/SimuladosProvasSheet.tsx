@@ -169,6 +169,18 @@ export const SimuladosProvasSheet = ({
     return `${examName} • ${sim.year}`;
   };
 
+  const getExamQCount = (sim: any) => {
+    const examName = (sim.exam?.name || '').toLowerCase();
+    if (examName.includes('prf') || examName.includes('rodovi')) return 120;
+    if (examName.includes('oab')) return 80;
+    if (examName.includes('escrevente') || examName.includes('tjsp')) return 100;
+    if (examName.includes('juiz') || examName.includes('magistratura')) return 100;
+    if (examName.includes('promotor') || examName.includes('mpe')) return 100;
+    if (examName.includes('delegado')) return 100;
+    if (examName.includes('analista')) return 70;
+    return sim.simulado_questions?.[0]?.count || 80;
+  };
+
   // Filtragem dinâmica
   const filtradas = useMemo(() => {
     return simuladosList.filter((sim) => {
@@ -412,7 +424,7 @@ export const SimuladosProvasSheet = ({
             ) : (
               filtradas.map((sim) => {
                 const titulo = getNomeProva(sim);
-                const qCount = sim.simulado_questions?.[0]?.count || 80;
+                const qCount = getExamQCount(sim);
                 const examName = sim.exam?.name || 'Oficial';
                 return (
                   <div
