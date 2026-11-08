@@ -40,7 +40,7 @@ export const CapaOtimizada = React.memo(function CapaOtimizada({
           onLoad={() => setLoaded(true)}
           onError={() => setError(true)}
           className={cn(
-            "w-full h-full object-cover transition-all duration-[800ms] ease-out",
+            "w-full h-full object-cover transition-all duration-[800ms] ease-out brightness-115 contrast-105",
             !loaded ? "opacity-0" : "opacity-100",
             animacaoEntrada && mounted && loaded ? "scale-100" : animacaoEntrada ? "scale-115" : "",
           )}

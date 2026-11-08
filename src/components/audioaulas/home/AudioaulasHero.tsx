@@ -175,7 +175,7 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
             aria-hidden="true"
           />
 
-          {/* Imagem de Capa do Painel do Início (Lado Direito) com Transição Suave */}
+          {/* Imagem de Capa do Painel do Início (Lado Direito) com Transição Suave e Alta Luminosidade */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
             <AnimatePresence mode="wait">
               <motion.img
@@ -186,13 +186,13 @@ export const AudioaulasHero: React.FC<AudioaulasHeroProps> = React.memo(
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
                 transition={{ duration: 0.7, ease: 'easeInOut' }}
-                className="absolute top-0 bottom-0 right-0 h-full w-[65%] sm:w-[62%] lg:w-[58%] object-cover object-center select-none"
+                className="absolute top-0 bottom-0 right-0 h-full w-[65%] sm:w-[62%] lg:w-[58%] object-cover object-center select-none brightness-125 contrast-105 saturate-110"
               />
             </AnimatePresence>
 
-            {/* Degradê lateral para fundir a imagem à direita no shell escuro */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#070f1e]/85 via-transparent to-transparent sm:hidden" />
-            <div className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#070f1e]/60 via-transparent to-transparent" />
+            {/* Degradê lateral suave e sutil para manter a capa bem clara e vívida */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#070f1e]/40 via-transparent to-transparent sm:hidden" />
+            <div className="absolute inset-0 hidden sm:block bg-gradient-to-r from-[#070f1e]/30 via-transparent to-transparent" />
 
             {/* Badge do Cenário Atual flutuando no canto inferior direito */}
             <div className="absolute bottom-3 right-3 z-10 hidden sm:flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10 text-white shadow-xl">
