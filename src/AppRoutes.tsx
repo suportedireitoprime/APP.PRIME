@@ -119,6 +119,7 @@ const AdminRotas = lazy(() => import("./pages/AdminRotas.tsx"));
 
 const Simulados = lazy(() => import("./pages/Simulados.tsx"));
 const SimuladosEstatisticas = lazy(() => import("./pages/SimuladosEstatisticas.tsx"));
+const SimuladosResolver = lazy(() => import("./pages/SimuladosResolver.tsx"));
 import { supabase } from "@/integrations/supabase/client";
 
 // Lazy loaded
@@ -922,6 +923,9 @@ function AnimatedRoutes() {
           <Route path="/resumos-juridicos/:area" element={<ProtectedRoute><ResumosJuridicosRouteWrapper><PageTransition instant><ResumosJuridicosTemas /></PageTransition></ResumosJuridicosRouteWrapper></ProtectedRoute>} />
           <Route path="/questoes" element={<ProtectedRoute><PageTransition instant><Questoes /></PageTransition></ProtectedRoute>} />
           <Route path="/simulados" element={<ProtectedRoute><PageTransition instant><Simulados /></PageTransition></ProtectedRoute>} />
+          <Route path="/simulados/resolver/:id" element={<ProtectedRoute><PageTransition instant><SimuladosResolver /></PageTransition></ProtectedRoute>} />
+          <Route path="/simulados/resolver" element={<ProtectedRoute><PageTransition instant><SimuladosResolver /></PageTransition></ProtectedRoute>} />
+          <Route path="/ferramentas/simulados/resolver/:id" element={<ProtectedRoute><PageTransition instant><SimuladosResolver /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/areas" element={<ProtectedRoute><PageTransition instant><QuestoesAreas /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/praticar" element={<ProtectedRoute><PageTransition instant><QuestoesPraticar /></PageTransition></ProtectedRoute>} />
           <Route path="/questoes/simulado" element={<ProtectedRoute><PageTransition instant><QuestoesSimulado /></PageTransition></ProtectedRoute>} />

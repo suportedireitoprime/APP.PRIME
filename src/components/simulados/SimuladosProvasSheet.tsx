@@ -162,11 +162,74 @@ export const SimuladosProvasSheet = ({
     (selectedAno !== 'todos' ? 1 : 0) +
     (selectedBanca !== 'todas' ? 1 : 0);
 
-  const getNomeProva = (sim: any) => {
+  const formatarProva = (sim: any) => {
     const raw = (sim.prova_url || '').trim();
-    if (raw && !raw.startsWith('http')) return raw;
     const examName = sim.exam?.name || 'Exame Oficial';
-    return `${examName} • ${sim.year}`;
+    const ano = sim.year || 2026;
+
+    if (!raw || raw.startsWith('http')) {
+      return {
+        banca: null,
+        titulo: examName,
+        ano,
+      };
+    }
+
+    const parts = raw.split(/\s*[-–—]\s*/).filter(Boolean);
+
+    let banca: string | null = null;
+    let tituloFormatado = raw;
+
+    if (parts.length >= 3) {
+      const possibleBanca = parts[0].trim();
+      if (possibleBanca.length <= 15 && !/\d/.test(possibleBanca)) {
+        banca = possibleBanca.toUpperCase();
+      }
+
+      const rest = parts.slice(1);
+      const semAno = rest.filter((p) => p.trim() !== String(ano));
+
+      if (semAno.length >= 2) {
+        tituloFormatado = semAno.join(' • ');
+      } else if (semAno.length === 1) {
+        tituloFormatado = semAno[0];
+      }
+    } else if (parts.length === 2) {
+      const possibleBanca = parts[0].trim();
+      if (possibleBanca.length <= 12 && !/\d/.test(possibleBanca)) {
+        banca = possibleBanca.toUpperCase();
+        tituloFormatado = parts[1].trim();
+      } else {
+        tituloFormatado = parts.join(' • ');
+      }
+    }
+
+    // Capitalização limpa se tiver tudo em maiúsculas longas
+    if (tituloFormatado === tituloFormatado.toUpperCase() && tituloFormatado.length > 25) {
+      tituloFormatado = tituloFormatado
+        .split(' • ')
+        .map((bloco) => {
+          if (bloco.length <= 6) return bloco; // sigla: TJ-RJ, MPE-GO, PC-PI, OAB
+          return bloco
+            .toLowerCase()
+            .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase())
+            .replace(/\bDe\b/g, 'de')
+            .replace(/\bDa\b/g, 'da')
+            .replace(/\bDo\b/g, 'do')
+            .replace(/\bE\b/g, 'e');
+        })
+        .join(' • ');
+    }
+
+    return {
+      banca,
+      titulo: tituloFormatado,
+      ano,
+    };
+  };
+
+  const getNomeProva = (sim: any) => {
+    return formatarProva(sim).titulo;
   };
 
   const getExamQCount = (sim: any) => {
@@ -423,28 +486,31 @@ export const SimuladosProvasSheet = ({
               </div>
             ) : (
               filtradas.map((sim) => {
-                const titulo = getNomeProva(sim);
+                const info = formatarProva(sim);
                 const qCount = getExamQCount(sim);
-                const examName = sim.exam?.name || 'Oficial';
                 return (
                   <div
                     key={sim.id}
                     className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-900/70 border border-zinc-800/80 hover:border-zinc-700 transition"
                   >
                     <div className="min-w-0 flex-1 pr-3">
-                      <div className="flex items-center gap-1.5 text-[11px] font-medium text-violet-400 font-sans">
-                        <span>{sim.year}</span>
-                        <span>•</span>
-                        <span className="font-bold text-violet-300">{qCount} Questões</span>
-                        <span>•</span>
-                        <span className="text-zinc-400 font-normal truncate max-w-[150px]">{examName}</span>
+                      {/* Metadados limpos e sem redundância */}
+                      <div className="flex items-center gap-1.5 text-[11px] font-sans">
+                        {info.banca && (
+                          <span className="px-1.5 py-0.5 rounded-md bg-violet-950/80 border border-violet-800/60 text-violet-300 font-bold text-[10px] tracking-wide">
+                            {info.banca}
+                          </span>
+                        )}
+                        <span className="text-zinc-400 font-medium">{info.ano}</span>
+                        <span className="text-zinc-600">•</span>
+                        <span className="text-violet-400 font-bold">{qCount} Questões</span>
                       </div>
-                      {/* Título com Tipografia legível Plus Jakarta Sans */}
+                      {/* Título Principal Limpo, Amplo e Legível */}
                       <div
-                        className="text-xs sm:text-sm font-semibold text-zinc-100 font-sans tracking-normal leading-snug truncate mt-0.5"
+                        className="text-xs sm:text-sm font-bold text-zinc-100 font-sans tracking-normal leading-snug truncate mt-1"
                         style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
                       >
-                        {titulo}
+                        {info.titulo}
                       </div>
                     </div>
 
@@ -466,7 +532,7 @@ export const SimuladosProvasSheet = ({
                           type="button"
                           onClick={() => {
                             try { haptic.selection(); } catch {}
-                            onVerGabarito(sim.gabarito_url, `Gabarito - ${titulo}`);
+                            onVerGabarito(sim.gabarito_url, `Gabarito - ${info.titulo}`);
                           }}
                           className="w-8 h-8 rounded-lg bg-zinc-800 text-emerald-400 flex items-center justify-center hover:bg-zinc-700 transition cursor-pointer"
                           title="Gabarito PDF"
