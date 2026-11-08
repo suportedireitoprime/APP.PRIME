@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,18 +9,15 @@ import {
   AprenderAreaData,
   getCachedAprenderArea,
   hydrateAprenderAreaCache,
-  loadAprenderArea,
   fetchAprenderAreaFromNetwork,
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
-import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
 import { 
-  BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Check, Search,
-  Filter, SlidersHorizontal, Sparkles, AlertCircle, Award
+  Play, Check, Lock, Filter, SlidersHorizontal, Sparkles, 
+  ChevronRight, ArrowLeft, BookOpen, Layers, Award, Shield, User
 } from 'lucide-react';
-import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
-import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
+import { getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
 import { CANONICAL_AREA_TOPICS } from '@/data/canonicalAreaTopics';
@@ -29,6 +25,62 @@ import { haptic } from '@/lib/nativeHaptics';
 import { cn } from '@/lib/utils';
 import { getAllProgressoArea, TopicoProgresso } from '@/lib/questoesTrilhaProgress';
 import QuestoesFiltroSheet, { FILTRO_KEY, FILTRO_VAZIO } from '@/components/questoes/QuestoesFiltroSheet';
+
+// ── CAPAS DE LIVROS CLÁSSICOS & JURÍDICOS (PADRÃO DRUNO) ──
+import capaDosDelitos from '@/assets/covers/dos_delitos_e_das_penas_manual.jpg';
+import capaVigiarEPunir from '@/assets/covers/vigiar_e_punir_nascimento_da_prisao_manual.jpg';
+import capaCpArtigos from '@/assets/covers/cp_artigos_v2.webp';
+import capaOProcesso from '@/assets/covers/o_processo_manual.jpg';
+import capaTeoriaPura from '@/assets/covers/teoria_pura_do_direito_manual.jpg';
+import capaVademecumJudge from '@/assets/covers/vademecum-judge.webp';
+import capaAdvogadosTribunal from '@/assets/covers/hero-advogados-tribunal.webp';
+import capaSocratesThemis from '@/assets/covers/socrates-themis-hero.webp';
+import capaALutaPeloDireito from '@/assets/covers/a_luta_pelo_direito_manual.webp';
+import capaOEspiritoDasLeis from '@/assets/covers/o_espirito_das_leis_manual.webp';
+import capaHistoriaLegislacao from '@/assets/covers/historia-da-legislacao.webp';
+import capaFundamentosDaLei from '@/assets/covers/fundamentos-da-lei.webp';
+import capaEstruturaEstado from '@/assets/covers/estrutura-do-estado.webp';
+import capaEticaNicomaco from '@/assets/covers/etica_a_nicomaco_manual.jpg';
+import capaOPrincipe from '@/assets/covers/o_principe_manual.jpg';
+import capaAcessoJustica from '@/assets/covers/acesso_a_justica_manual.jpg';
+import capaSobreLiberdade from '@/assets/covers/sobre_a_liberdade_manual.webp';
+import capaExploradoresCavernas from '@/assets/covers/o_caso_dos_exploradores_de_cavernas_manual.jpg';
+
+const CURATED_BOOK_COVERS = [
+  capaDosDelitos,
+  capaVigiarEPunir,
+  capaCpArtigos,
+  capaOProcesso,
+  capaTeoriaPura,
+  capaVademecumJudge,
+  capaAdvogadosTribunal,
+  capaSocratesThemis,
+  capaALutaPeloDireito,
+  capaOEspiritoDasLeis,
+  capaHistoriaLegislacao,
+  capaFundamentosDaLei,
+  capaEstruturaEstado,
+  capaEticaNicomaco,
+  capaOPrincipe,
+  capaAcessoJustica,
+  capaSobreLiberdade,
+  capaExploradoresCavernas,
+];
+
+interface TrilhaItem {
+  key: string;
+  titulo: string;
+  ordemStr: string;
+  badgeLabel: string;
+  displayTotal: number;
+  displayConcluidas: number;
+  displayPct: number;
+  coverImage: string;
+  isConcluido: boolean;
+  isEmAndamento: boolean;
+  isBloqueado: boolean;
+  onClick: () => void;
+}
 
 const QuestoesArea = () => {
   useTrackArea("questoes_area_aberta");
@@ -45,9 +97,10 @@ const QuestoesArea = () => {
   const initial = slug ? getCachedAprenderArea(slug, user?.id ?? null) : undefined;
   const [data, setData] = useState<AprenderAreaData | null>(initial ?? null);
   const [loading, setLoading] = useState(!initial);
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   const [filtroAberto, setFiltroAberto] = useState(false);
+
+  // Modal para detalhe do Livro / Tópico selecionado
+  const [livroSelecionado, setLivroSelecionado] = useState<TrilhaItem | null>(null);
 
   useEffect(() => {
     if (!data || !moduloIdParam) return;
@@ -73,14 +126,14 @@ const QuestoesArea = () => {
           ordem: found.ordem,
           areaId: data.area?.id ?? '',
           areaNome: data.area?.nome ?? 'Direito',
-          areaSlug: data.area?.slug ?? slug ?? 'geral',
+          areaSlug: (data.area as any)?.slug ?? slug ?? 'geral',
         },
         aulas: moduloAulas,
       });
 
       navigate(`/aprender/modulo/${moduloIdParam}?tab=${activeTab}`, {
         replace: true,
-        state: { modulo: found, area: data.area ? { ...data.area, slug: data.area.slug ?? slug } : undefined, aulas: moduloAulas, tab: activeTab },
+        state: { modulo: found, area: data.area ? { ...data.area, slug: (data.area as any)?.slug ?? slug } : undefined, aulas: moduloAulas, tab: activeTab },
       });
     }
   }, [data, moduloIdParam, activeTab, navigate, user?.id, slug]);
@@ -121,8 +174,6 @@ const QuestoesArea = () => {
 
   const area = data?.area ?? null;
   const modulos = data?.modulos ?? [];
-  const aulas = data?.aulas ?? [];
-  const progresso = data?.progresso ?? {};
 
   const effectiveAreaName = useMemo(() => {
     if (area?.nome) return area.nome;
@@ -169,7 +220,6 @@ const QuestoesArea = () => {
     return [...modulos].sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   }, [modulos]);
 
-  // Busca lista oficial de áreas de flashcards com contagens e slugs
   const { data: flashcardsAreasResumo } = useFlashcardsResumoAreas();
 
   const officialFlashcardArea = useMemo(() => {
@@ -184,12 +234,6 @@ const QuestoesArea = () => {
     return found ? found.area : effectiveAreaName;
   }, [flashcardsAreasResumo, slug, area?.nome, effectiveAreaName]);
 
-  const flashcardAreaRow = useMemo(() => {
-    if (!flashcardsAreasResumo) return null;
-    return flashcardsAreasResumo.find((a) => a.area === officialFlashcardArea || a.slug === slug) || null;
-  }, [flashcardsAreasResumo, officialFlashcardArea, slug]);
-
-  // Carrega progresso local dos tópicos desta trilha de questões
   const [progressoLocal, setProgressoLocal] = useState<Record<string, TopicoProgresso>>({});
 
   useEffect(() => {
@@ -198,7 +242,6 @@ const QuestoesArea = () => {
     }
   }, [slug, location.key]);
 
-  // Busca temas e contagens de questões desta matéria no banco
   const { data: temasQuestoes, isLoading: loadingQuestoesTemas } = useQuery({
     queryKey: ['area_questoes_temas', officialFlashcardArea, effectiveAreaName, slug],
     queryFn: async () => {
@@ -236,7 +279,6 @@ const QuestoesArea = () => {
         } catch {}
       }
 
-      // Se não encontrou temas via RPC ou se a área tiver tópicos canônicos configurados:
       if (slug && CANONICAL_AREA_TOPICS[slug]) {
         return CANONICAL_AREA_TOPICS[slug].map((t) => ({
           tema: t,
@@ -250,101 +292,95 @@ const QuestoesArea = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  const iconInfo = areaIconFor(slug || area?.slug || area?.nome || 'geral');
-  const AreaIconComp = iconInfo?.Icon || BookOpenText;
-  const palette = useMemo(() => getAreaThemePalette(slug || area?.nome || area?.slug || 'geral'), [slug, area]);
+  const palette = useMemo(() => getAreaThemePalette(slug || area?.nome || (area as any)?.slug || 'geral'), [slug, area]);
 
-  // Itens unificados da Trilha de Questões
-  const itemsToRender = useMemo(() => {
+  const coverInfo = area ? (getAreaCover(area.nome) || getAreaCover((area as any)?.slug)) : (slug ? getAreaCover(slug) : null);
+  const coverUrl = coverInfo?.cover || "/images/gamificacao/deusa_temis_vazada.webp";
+
+  const getTopicCover = (topicTitle: string, index: number): string => {
+    const directMatch = getAreaCover(topicTitle)?.cover;
+    if (directMatch) return directMatch;
+    return CURATED_BOOK_COVERS[index % CURATED_BOOK_COVERS.length] || coverUrl;
+  };
+
+  // Itens da Trilha Druno
+  const itemsToRender: TrilhaItem[] = useMemo(() => {
+    let rawTopics: { titulo: string; total: number }[] = [];
+
     if (temasQuestoes && temasQuestoes.length > 0) {
-      return temasQuestoes.map((t, idx) => {
-        const prog = progressoLocal[t.tema] || { respondidas: 0, acertos: 0 };
-        const numStr = String(idx + 1).padStart(2, '0');
-        const displayTotal = t.total || 25;
-        const displayConcluidas = prog.respondidas || 0;
-        const displayPct = displayTotal > 0 ? Math.min(100, Math.round((displayConcluidas / displayTotal) * 100)) : 0;
-
-        return {
-          key: `tema-${t.tema}-${idx}`,
-          titulo: t.tema,
-          ordemStr: numStr,
-          badgeLabel: `Tópico ${numStr}`,
-          displayTotal,
-          displayConcluidas,
-          displayLabel: 'questões',
-          displayPct,
-          onClick: () => {
-            try { haptic.light(); } catch {}
-            navigate(`/questoes/praticar?area=${encodeURIComponent(effectiveAreaName || area?.nome || 'Direito')}&assunto=${encodeURIComponent(t.tema)}&areaSlug=${slug || ''}`, {
-              state: { from: `/questoes/area/${slug}`, tema: t.tema }
-            });
-          },
-        };
-      });
+      rawTopics = temasQuestoes.map(t => ({ titulo: t.tema, total: t.total || 25 }));
+    } else if (slug && CANONICAL_AREA_TOPICS[slug]) {
+      rawTopics = CANONICAL_AREA_TOPICS[slug].map(t => ({ titulo: t, total: 25 }));
+    } else {
+      rawTopics = modulosOrdenados.map((m, idx) => ({
+        titulo: m.titulo.replace(/^\d+\.\s*/, ''),
+        total: 20
+      }));
     }
 
-    const fallbackTopics = (slug && CANONICAL_AREA_TOPICS[slug]) || [];
-    if (fallbackTopics.length > 0) {
-      return fallbackTopics.map((tema, idx) => {
-        const prog = progressoLocal[tema] || { respondidas: 0, acertos: 0 };
-        const numStr = String(idx + 1).padStart(2, '0');
-        const displayTotal = 25;
-        const displayConcluidas = prog.respondidas || 0;
-        const displayPct = Math.min(100, Math.round((displayConcluidas / displayTotal) * 100));
+    // Identifica qual é o primeiro nó ativo (o que está em andamento, ou o primeiro não concluído)
+    let primeiroIncompletoIdx = -1;
 
-        return {
-          key: `canon-tema-${tema}-${idx}`,
-          titulo: tema,
-          ordemStr: numStr,
-          badgeLabel: `Tópico ${numStr}`,
-          displayTotal,
-          displayConcluidas,
-          displayLabel: 'questões',
-          displayPct,
-          onClick: () => {
-            try { haptic.light(); } catch {}
-            navigate(`/questoes/praticar?area=${encodeURIComponent(effectiveAreaName || area?.nome || 'Direito')}&assunto=${encodeURIComponent(tema)}&areaSlug=${slug || ''}`, {
-              state: { from: `/questoes/area/${slug}`, tema }
-            });
-          },
-        };
-      });
-    }
-
-    return modulosOrdenados.map((m, idx) => {
-      const numStr = String(m.ordem || idx + 1).padStart(2, '0');
-      const prog = progressoLocal[m.titulo] || { respondidas: 0, acertos: 0 };
-      const displayTotal = 20;
+    const parsed = rawTopics.map((t, idx) => {
+      const prog = progressoLocal[t.titulo] || { respondidas: 0, acertos: 0 };
+      const numStr = String(idx + 1).padStart(2, '0');
+      const displayTotal = t.total || 25;
       const displayConcluidas = prog.respondidas || 0;
-      const displayPct = Math.min(100, Math.round((displayConcluidas / displayTotal) * 100));
+      const displayPct = displayTotal > 0 ? Math.min(100, Math.round((displayConcluidas / displayTotal) * 100)) : 0;
+      const itemCover = getTopicCover(t.titulo, idx);
+      const isConcluido = displayPct >= 100 || (displayConcluidas >= displayTotal && displayTotal > 0);
+
+      if (!isConcluido && primeiroIncompletoIdx === -1) {
+        primeiroIncompletoIdx = idx;
+      }
 
       return {
-        key: m.id,
-        titulo: m.titulo.replace(/^\d+\.\s*/, ''),
+        key: `tema-${t.titulo}-${idx}`,
+        titulo: t.titulo,
         ordemStr: numStr,
         badgeLabel: `Tópico ${numStr}`,
         displayTotal,
         displayConcluidas,
-        displayLabel: 'questões',
         displayPct,
+        coverImage: itemCover,
+        isConcluido,
+        isEmAndamento: false,
+        isBloqueado: false,
         onClick: () => {
-          try { haptic.light(); } catch {}
-          navigate(`/questoes/praticar?area=${encodeURIComponent(effectiveAreaName || area?.nome || 'Direito')}&assunto=${encodeURIComponent(m.titulo)}&areaSlug=${slug || ''}`, {
-            state: { from: `/questoes/area/${slug}`, tema: m.titulo }
+          try { haptic.impact(); } catch {}
+          navigate(`/questoes/praticar?area=${encodeURIComponent(effectiveAreaName || area?.nome || 'Direito')}&assunto=${encodeURIComponent(t.titulo)}&areaSlug=${slug || ''}`, {
+            state: { from: `/questoes/area/${slug}`, tema: t.titulo }
           });
         },
       };
     });
-  }, [temasQuestoes, progressoLocal, slug, effectiveAreaName, area?.nome, modulosOrdenados, navigate]);
 
-  const filteredItems = useMemo(() => {
-    if (!searchTerm) return itemsToRender;
-    const term = searchTerm.toLowerCase();
-    return itemsToRender.filter(item => 
-      item.titulo.toLowerCase().includes(term) ||
-      (item.badgeLabel && item.badgeLabel.toLowerCase().includes(term))
-    );
-  }, [itemsToRender, searchTerm]);
+    if (primeiroIncompletoIdx === -1) primeiroIncompletoIdx = 0;
+
+    return parsed.map((item, idx) => {
+      const isEmAndamento = idx === primeiroIncompletoIdx;
+      // Permite navegação livre em todos os tópicos, mas marca visualmente os nós seguintes como bloqueados por progressão (estilo Druno)
+      const isBloqueado = idx > primeiroIncompletoIdx + 1 && !item.isConcluido;
+
+      return {
+        ...item,
+        isEmAndamento,
+        isBloqueado,
+      };
+    });
+  }, [temasQuestoes, progressoLocal, slug, effectiveAreaName, area?.nome, modulosOrdenados, navigate, coverUrl]);
+
+  // Posicionamento serpenteante em X na trilha (padrão Druno: esquerda, centro, direita, centro...)
+  const getOffsetPercent = (index: number) => {
+    const cycle = index % 4;
+    switch (cycle) {
+      case 0: return 28; // Esquerda
+      case 1: return 45; // Centro-esquerda
+      case 2: return 72; // Direita
+      case 3: return 50; // Centro
+      default: return 50;
+    }
+  };
 
   const totalQuestoesArea = useMemo(() => {
     return itemsToRender.reduce((acc, t) => acc + (t.displayTotal || 0), 0);
@@ -356,11 +392,10 @@ const QuestoesArea = () => {
 
   const progressoPctArea = totalQuestoesArea > 0 ? Math.min(100, Math.round((totalRespondidasArea / totalQuestoesArea) * 100)) : 0;
 
-
-  // Capa oficial ilustrada da matéria
-  const coverInfo = area ? (getAreaCover(area.nome) || getAreaCover(area.slug)) : (slug ? getAreaCover(slug) : null);
-  const coverUrl = coverInfo?.cover || "/images/gamificacao/deusa_temis_vazada.webp";
-
+  // Nó ativo atualmente na trilha Druno
+  const activeNode = useMemo(() => {
+    return itemsToRender.find(item => item.isEmAndamento) || itemsToRender[0] || null;
+  }, [itemsToRender]);
 
   const titleDisplay = (
     <span className="font-sans font-extrabold uppercase tracking-widest text-[15px] sm:text-[16px] text-white">
@@ -371,7 +406,7 @@ const QuestoesArea = () => {
   const mobileHeader = (
     <PageHeader 
       title={titleDisplay} 
-      subtitle="Praticar Questões" 
+      subtitle="Trilha de Livros Druno" 
       onBack={goBack} 
       variant="dark"
     />
@@ -382,598 +417,354 @@ const QuestoesArea = () => {
       wide
       activeId="aprender"
       title={officialFlashcardArea || area?.nome || effectiveAreaName}
-      subtitle="Praticar Questões"
+      subtitle="Trilha de Livros Druno"
       mobileHeader={mobileHeader}
     >
-      {/* Fundo Escuro Limpo Sem Quadrados Animados */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]">
+      {/* ── Fundo Espacial Noturno com Estrelas Cintilantes (Padrão Druno) ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0B18]">
+        {/* Gradiente radial de profundidade cósmica */}
         <div 
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="absolute inset-0 opacity-40 pointer-events-none"
           style={{
-            background: `radial-gradient(circle at 50% 15%, ${palette.primary}25 0%, transparent 65%)`
+            background: `radial-gradient(circle at 50% 25%, #2a1548 0%, #0d0b18 70%)`
+          }}
+        />
+
+        {/* Estrelas pontilhadas discretas */}
+        <div 
+          className="absolute inset-0 opacity-30 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px), radial-gradient(rgba(255,255,255,0.7) 1px, transparent 1px)`,
+            backgroundSize: '48px 48px, 96px 96px',
+            backgroundPosition: '0 0, 24px 24px'
           }}
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-20 pt-4 min-w-0 overflow-x-hidden box-border">
-        {loading && !data && !effectiveAreaName ? (
-          <div className="space-y-4 px-4 py-5 sm:px-6">
-            <div className="h-44 rounded-2xl bg-muted animate-pulse" />
-            {[...Array(4)].map((_, i) => <div key={i} className="h-20 rounded-2xl bg-muted animate-pulse" />)}
+      <div className="relative z-10 w-full max-w-[540px] md:max-w-[640px] mx-auto px-3 sm:px-6 pb-32 pt-2 min-w-0 overflow-x-hidden box-border">
+        
+        {/* ── Barra Superior com Botão de Filtros Rápidos ── */}
+        <div className="flex items-center justify-between gap-3 mb-4 p-3 rounded-2xl bg-[#17122B]/80 border border-white/10 backdrop-blur-md shadow-xl">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <button
+              type="button"
+              onClick={goBack}
+              className="w-9 h-9 rounded-xl flex items-center justify-center bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div className="min-w-0">
+              <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-white truncate">
+                {effectiveAreaName || area?.nome || 'Direito'}
+              </h2>
+              <p className="text-[10px] sm:text-[11px] text-zinc-400">
+                {totalRespondidasArea} / {totalQuestoesArea} questões ({progressoPctArea}%)
+              </p>
+            </div>
           </div>
-        ) : !area && !effectiveAreaName ? (
-          <div className="mx-4 my-6 rounded-2xl border border-border bg-card p-8 text-center text-muted-foreground">
-            Área não encontrada.
-          </div>
-        ) : (
-          <>
-            {/* ── Filtro da Área no Topo ──────────────────────────── */}
-            <div className="mb-5 rounded-2xl bg-zinc-900/90 border border-zinc-800/80 p-4 sm:p-5 backdrop-blur-md shadow-xl space-y-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 min-w-0">
+
+          <button
+            type="button"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              setFiltroAberto(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-[#F97316] hover:bg-[#EA580C] shadow-[0_0_15px_rgba(249,115,22,0.5)] transition-all shrink-0 active:scale-95"
+          >
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+            <span>Filtros</span>
+          </button>
+        </div>
+
+        {/* ════════════════════════════════════════════════════════════════
+            TRILHA ESPACIAL DRUNO COM LIVROS 3D SOBRE PEDESTAIS
+        ════════════════════════════════════════════════════════════════ */}
+        <div className="relative w-full py-6 select-none">
+          
+          {/* Pista Central Serpenteante (SVG Road contínua que desce conectando os nós) */}
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <filter id="road-glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+
+            {itemsToRender.map((item, idx) => {
+              if (idx === itemsToRender.length - 1) return null;
+              const y1 = idx * 220 + 110;
+              const y2 = (idx + 1) * 220 + 110;
+              const x1 = getOffsetPercent(idx);
+              const x2 = getOffsetPercent(idx + 1);
+              const midY = (y1 + y2) / 2;
+
+              return (
+                <g key={`road-${idx}`}>
+                  {/* Pista Asfaltada Translúcida */}
+                  <path
+                    d={`M ${x1}% ${y1} C ${x1}% ${midY}, ${x2}% ${midY}, ${x2}% ${y2}`}
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.07)"
+                    strokeWidth="36"
+                    strokeLinecap="round"
+                  />
+
+                  {/* Linha Guia Pontilhada Central (Neon Laranja até o nó atual, depois cinza pontilhada) */}
+                  <path
+                    d={`M ${x1}% ${y1} C ${x1}% ${midY}, ${x2}% ${midY}, ${x2}% ${y2}`}
+                    fill="none"
+                    stroke={item.isConcluido || item.isEmAndamento ? "#F97316" : "rgba(255, 255, 255, 0.2)"}
+                    strokeWidth="3"
+                    strokeDasharray="8 8"
+                    strokeLinecap="round"
+                    filter={item.isConcluido || item.isEmAndamento ? "url(#road-glow)" : undefined}
+                  />
+                </g>
+              );
+            })}
+          </svg>
+
+          {/* Nós da Trilha: Livros 3D sobre Pedestais */}
+          <div className="relative z-10 flex flex-col space-y-24 sm:space-y-28">
+            {itemsToRender.map((item, idx) => {
+              const xPercent = getOffsetPercent(idx);
+              const isFirstInModule = idx === 0 || idx === 3 || idx === 7 || idx === 12;
+
+              let moduleLabel = '';
+              if (idx === 0) moduleLabel = 'MÓDULO 1: TEORIA GERAL DO CRIME';
+              else if (idx === 3) moduleLabel = 'MÓDULO 2: PENAS & CONDUTA';
+              else if (idx === 7) moduleLabel = 'MÓDULO 3: CRIMES EM ESPÉCIE';
+              else if (idx === 12) moduleLabel = 'MÓDULO 4: LEGISLAÇÃO ESPECIAL';
+
+              return (
+                <div key={item.key} className="w-full relative flex flex-col items-center">
+                  
+                  {/* ── DIVISOR DE FASE / DATA (IGUAL DRUNO: 9 DE NOV. – 15 DE NOV.) ── */}
+                  {isFirstInModule && (
+                    <div className="w-full flex items-center justify-center gap-3 my-6 pointer-events-none">
+                      <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                      <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-zinc-400 bg-[#161228] px-3 py-1 rounded-full border border-white/10 shadow-sm">
+                        {moduleLabel}
+                      </span>
+                      <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                    </div>
+                  )}
+
+                  {/* Contêiner do Nó posicionado em X */}
                   <div 
-                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-white/10 shadow-inner"
-                    style={{ backgroundColor: `${palette.primary}25`, color: palette.primary }}
-                  >
-                    <Filter className="w-5 h-5" strokeWidth={2.2} />
-                  </div>
-                  <div className="min-w-0">
-                    <h3 className="text-sm sm:text-base font-extrabold text-white truncate leading-tight">
-                      Filtrar {effectiveAreaName || area?.nome || 'Questões'}
-                    </h3>
-                    <p className="text-[11px] text-zinc-400 truncate">
-                      Personalize bancas, anos, status ou pratique diretamente
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    setFiltroAberto(true);
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700/80 transition-all shrink-0 active:scale-95 shadow-sm"
-                >
-                  <SlidersHorizontal className="w-3.5 h-3.5 text-zinc-300" />
-                  <span>Filtros</span>
-                </button>
-              </div>
-
-              {/* Pílulas de Filtro Rápido da Área */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none pt-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    navigate(`/questoes/praticar?area=${encodeURIComponent(effectiveAreaName || area?.nome || 'Direito')}&areaSlug=${slug || ''}`);
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/15 transition-all shrink-0 active:scale-95"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Praticar Todas</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    const filtroCustom = {
-                      ...FILTRO_VAZIO,
-                      segmentos: ['concursos', 'oab', 'conceituais', 'policiais'],
-                      disciplinas: [effectiveAreaName || area?.nome || 'Direito'],
-                      status: ['nao_resolvidas'],
-                    };
-                    sessionStorage.setItem(FILTRO_KEY, JSON.stringify(filtroCustom));
-                    navigate('/questoes/praticar?filtro=1');
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 transition-all shrink-0 active:scale-95"
-                >
-                  <ListChecks className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Não Resolvidas</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    const filtroCustom = {
-                      ...FILTRO_VAZIO,
-                      segmentos: ['oab'],
-                      disciplinas: [effectiveAreaName || area?.nome || 'Direito'],
-                    };
-                    sessionStorage.setItem(FILTRO_KEY, JSON.stringify(filtroCustom));
-                    navigate('/questoes/praticar?filtro=1');
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 transition-all shrink-0 active:scale-95"
-                >
-                  <Award className="w-3.5 h-3.5 text-blue-400" />
-                  <span>OAB / FGV</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    const filtroCustom = {
-                      ...FILTRO_VAZIO,
-                      segmentos: ['concursos'],
-                      disciplinas: [effectiveAreaName || area?.nome || 'Direito'],
-                    };
-                    sessionStorage.setItem(FILTRO_KEY, JSON.stringify(filtroCustom));
-                    navigate('/questoes/praticar?filtro=1');
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 transition-all shrink-0 active:scale-95"
-                >
-                  <GraduationCap className="w-3.5 h-3.5 text-violet-400" />
-                  <span>Concursos</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    const filtroCustom = {
-                      ...FILTRO_VAZIO,
-                      segmentos: ['concursos', 'oab', 'conceituais', 'policiais'],
-                      disciplinas: [effectiveAreaName || area?.nome || 'Direito'],
-                      status: ['errei'],
-                    };
-                    sessionStorage.setItem(FILTRO_KEY, JSON.stringify(filtroCustom));
-                    navigate('/questoes/praticar?filtro=1');
-                  }}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-zinc-800/80 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 transition-all shrink-0 active:scale-95"
-                >
-                  <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
-                  <span>Revisar Erros</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Top Bar Selecione o Módulo */}
-            <div className="flex items-center justify-between mb-4 w-full min-w-0">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <BookOpenText className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
-                <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
-                  Praticar por Tópico
-                </h2>
-              </div>
-
-              {/* Barra de Pesquisa Expansível */}
-              <div className="relative flex items-center justify-end z-20 shrink-0">
-                <div 
-                  className={cn(
-                    "flex items-center bg-black/40 border transition-all duration-300 overflow-hidden rounded-full",
-                    isSearchExpanded 
-                      ? "w-[160px] sm:w-[200px] border-white/20 px-3 opacity-100" 
-                      : "w-8 h-8 sm:w-9 sm:h-9 border-transparent opacity-80 cursor-pointer justify-center hover:bg-white/10"
-                  )}
-                  onClick={() => !isSearchExpanded && setIsSearchExpanded(true)}
-                >
-                  <Search 
-                    className={cn(
-                      "text-white/70 shrink-0 cursor-pointer transition-all",
-                      isSearchExpanded ? "w-4 h-4 mr-2" : "w-4 h-4"
-                    )} 
-                    onClick={(e) => {
-                      if (isSearchExpanded) {
-                        e.stopPropagation();
-                        setIsSearchExpanded(false);
-                        setSearchTerm('');
-                      }
-                    }}
-                  />
-                  {isSearchExpanded && (
-                    <input
-                      autoFocus
-                      type="text"
-                      placeholder="Pesquisar..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full bg-transparent border-none outline-none text-[13px] text-white placeholder:text-white/40 py-1.5"
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Barra de progresso geral da área */}
-            {totalQuestoesArea > 0 && (
-              <div className="w-full mt-2 mb-1">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                    {totalRespondidasArea} / {totalQuestoesArea} resolvidas
-                  </span>
-                  <span 
-                    className="text-[11px] sm:text-xs font-bold tabular-nums"
-                    style={{ color: palette.primary }}
-                  >
-                    {progressoPctArea}%
-                  </span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-700 ease-out"
+                    className="relative flex flex-col items-center cursor-pointer transition-transform duration-300 active:scale-95 group"
                     style={{
-                      width: `${Math.max(progressoPctArea, 1)}%`,
-                      background: `linear-gradient(90deg, ${palette.primary}, ${palette.accent || palette.primary})`,
-                      boxShadow: `0 0 8px ${palette.primary}66`,
+                      marginLeft: `${(xPercent - 50) * 1.6}%`,
                     }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {loadingQuestoesTemas && itemsToRender.length === 0 ? (
-              <div className="space-y-4 py-6">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="h-36 rounded-2xl bg-muted/40 animate-pulse border border-white/5" />
-                ))}
-              </div>
-            ) : (
-              /* Trilha em Zigue-Zague Fluida com Caminho Serpenteante e Cards em Tamanho de Capa */
-              <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">
-                {/* ── Imagem Majestosa da Deusa Têmis Vazada e Impactante no Fundo Central da Trilha ── */}
-                <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
-                  <img
-                    src="/images/gamificacao/deusa_temis_vazada.webp"
-                    alt=""
-                    aria-hidden="true"
-                    loading="eager"
-                    fetchpriority="high"
-                    decoding="async"
-                    className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-25 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.28)] pointer-events-none"
-                    style={{
-                      maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                      WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+                    onClick={() => {
+                      try { haptic.impact(); } catch {}
+                      setLivroSelecionado(item);
                     }}
-                  />
-                </div>
+                  >
+                    {/* ── BALÃO FLUTUANTE "CONTINUAR" / "INICIAR" (PADRÃO DRUNO) ── */}
+                    {item.isEmAndamento && (
+                      <div className="absolute -top-12 z-30 flex flex-col items-center animate-bounce">
+                        <div className="px-4 py-1.5 rounded-full bg-[#181126] border-2 border-[#F97316] text-[#F97316] font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(249,115,22,0.8)] backdrop-blur-md">
+                          CONTINUAR
+                        </div>
+                        {/* Cauda do balão apontando para o livro */}
+                        <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-[#F97316]" />
+                      </div>
+                    )}
 
-                <div className="w-full min-w-0 relative z-[2] flex flex-col">
-                  {filteredItems.map((item, i) => {
-                    const isLeft = i % 2 === 0;
-                    const itemCover = getAreaCover(item.titulo)?.cover || coverUrl;
-                    const isConcluido = item.displayPct >= 100 || (item.displayConcluidas >= item.displayTotal && item.displayTotal > 0);
-                    const isEmAndamento = !isConcluido && item.displayConcluidas > 0;
-
-                    return (
-                      <div key={item.key} className="w-full flex flex-col">
-                        {/* Linha do Card em Zigue-Zague com Card e Título no Lado Oposto Conectado por Linha Fina */}
-                        <div
-                          className={cn(
-                            "relative z-10 flex w-full items-center justify-between gap-2 xs:gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
-                            isLeft ? "flex-row" : "flex-row-reverse"
-                          )}
-                        >
-                          {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK ABERTO EM LEQUE COM ALTURA NIVELADA ── */}
-                          <div
-                            onClick={item.onClick}
-                            onPointerEnter={(item as any).onPrefetch}
-                            onTouchStart={(item as any).onPrefetch}
-                            className="relative shrink-0 w-[140px] xs:w-[155px] sm:w-[185px] md:w-[210px] h-[215px] xs:h-[235px] sm:h-[265px] md:h-[290px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
-                          >
-                            {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Estável e Elegante) */}
-                            <div
-                              className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-8.5 sm:h-8.5 border-2 border-white/80 text-white font-bold text-xs shadow-xl transition-all duration-300 group-hover:scale-110"
-                              style={{
-                                backgroundColor: isConcluido ? '#10B981' : palette.primary,
-                                boxShadow: isConcluido ? '0 0 14px rgba(16,185,129,0.8)' : (isEmAndamento ? `0 0 16px ${palette.primary}` : palette.nodeBoxShadow),
-                              }}
-                            >
-                              {isConcluido ? (
-                                <Check className="w-4 h-4 stroke-[3] text-white" />
-                              ) : (
-                                <span className="font-sans font-extrabold text-[11px] sm:text-xs">
-                                  {item.ordemStr}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* ── CARTA 1 (Traseira/Fundo - Menor e mais escura) ── */}
-                            <div
-                              className={cn(
-                                "absolute inset-0 rounded-2xl border border-white/10 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
-                                isLeft
-                                  ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
-                                  : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
-                              )}
-                              style={{
-                                background: palette.cardGradient,
-                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                              }}
-                            >
-                              {/* Capa sutil de fundo para textura realista */}
-                              <img
-                                src={itemCover}
-                                alt=""
-                                aria-hidden="true"
-                                className="pointer-events-none absolute inset-0 w-full h-full object-cover opacity-20"
-                              />
-                              {/* Overlay de escurecimento para dar profundidade (Carta mais ao fundo) */}
-                              <div className="absolute inset-0 bg-black/50 pointer-events-none z-[1]" />
-                              
-                              <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
-                                <div
-                                  className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center opacity-30"
-                                  style={{ borderColor: palette.primary }}
-                                >
-                                  <Layers className="w-4 h-4 text-white/60" />
-                                </div>
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none" />
-                              </div>
-                            </div>
-
-                            {/* ── CARTA 2 (Meio - Tamanho intermediário) ── */}
-                            <div
-                              className={cn(
-                                "absolute inset-0 rounded-2xl border border-white/15 opacity-75 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden",
-                                isLeft
-                                  ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
-                                  : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
-                              )}
-                              style={{
-                                background: palette.cardGradient,
-                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                              }}
-                            >
-                              {/* Capa intermediária */}
-                              <img
-                                src={itemCover}
-                                alt=""
-                                aria-hidden="true"
-                                className="pointer-events-none absolute inset-0 w-full h-full object-cover opacity-35"
-                              />
-                              {/* Overlay de escurecimento médio para dar profundidade */}
-                              <div className="absolute inset-0 bg-black/25 pointer-events-none z-[1]" />
-
-                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
-                                <div
-                                  className="w-10 h-10 rounded-full border border-white/15 flex items-center justify-center opacity-30"
-                                  style={{ borderColor: palette.primary }}
-                                >
-                                  <Layers className="w-4 h-4 text-white/60" />
-                                </div>
-                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:8px_8px] pointer-events-none" />
-                              </div>
-                            </div>
-
-                            {/* ── CARTA 3 (Principal Frontal - Centro Estável) ── */}
-                            <div
-                              className={cn(
-                                "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border transition-all duration-300 origin-bottom",
-                                isConcluido ? "border-emerald-500/60 shadow-[0_0_20px_rgba(16,185,129,0.25)]" : "border-white/30 hover:border-amber-400/60",
-                                isLeft
-                                  ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)] group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
-                                  : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)] group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
-                              )}
-                              style={{
-                                background: palette.cardGradient,
-                                boxShadow: palette.shadow,
-                              }}
-                            >
-                              {/* Brilho reflexivo sutil no hover */}
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
-
-                              {/* Moldura Interna Chanfrada de Carta de Baralho */}
-                              <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
-
-                              {/* Efeito de Brilho e Acabamento Laminado da Carta */}
-                              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-white/[0.12] pointer-events-none z-10" />
-
-                              {/* Imagem de Fundo (Capa da Matéria Expandida e Original) */}
-                              <img
-                                src={itemCover}
-                                alt={item.titulo}
-                                aria-hidden="true"
-                                loading="lazy"
-                                decoding="async"
-                                className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
-                              />
-                              {/* Overlay para Contraste do Topo e Rodapé, mantendo o centro limpo para a ilustração */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/50 pointer-events-none z-0" />
-
-                              {/* Centro da Carta: Botão de Ação Estilo Druno */}
-                              <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
-                                <div className="relative flex items-center justify-center">
-                                  {/* Pulso luminoso ativo se em andamento */}
-                                  <div
-                                    className={cn(
-                                      "absolute inset-0 rounded-full blur-md transition-opacity duration-300 scale-125 pointer-events-none",
-                                      isEmAndamento ? "opacity-100 animate-pulse" : "opacity-0 group-hover:opacity-100"
-                                    )}
-                                    style={{ backgroundColor: `${palette.primary}60` }}
-                                  />
-
-                                  {/* Botão de Vidro Fosco Minimalista e Moderno */}
-                                  <div
-                                    className={cn(
-                                      "relative w-11 h-11 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-full backdrop-blur-md flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110",
-                                      isConcluido
-                                        ? "bg-emerald-500/80 border border-emerald-300 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)]"
-                                        : "bg-black/60 border border-white/40 text-white group-hover:bg-amber-500 group-hover:border-amber-300 group-hover:text-black group-hover:shadow-[0_0_25px_rgba(245,158,11,0.7)]"
-                                    )}
-                                  >
-                                    {isConcluido ? (
-                                      <Check className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3]" />
-                                    ) : (
-                                      <Play className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 fill-current translate-x-0.5 transition-colors" />
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Rodapé da Carta: Progresso e Estatísticas de Maestria */}
-                              <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
-                                <div>
-                                  <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-semibold text-white/95 mb-1 sm:mb-1.5">
-                                    <span className="truncate">
-                                      {item.displayConcluidas > 0
-                                        ? `${item.displayConcluidas}/${item.displayTotal} resolvidas`
-                                        : `${item.displayTotal} ${item.displayLabel}`}
-                                    </span>
-                                    <span 
-                                      className={cn(
-                                        "font-bold font-sans ml-1 tabular-nums",
-                                        isConcluido ? "text-emerald-400" : "text-white"
-                                      )}
-                                    >
-                                      {item.displayPct}%
-                                    </span>
-                                  </div>
-                                  <div className="w-full bg-black/60 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
-                                    <div
-                                      className="h-full rounded-full transition-all duration-700 shadow-sm"
-                                      style={{
-                                        width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%`,
-                                        backgroundColor: isConcluido ? '#10B981' : palette.primary,
-                                        boxShadow: isConcluido ? '0 0 8px #10B981' : `0 0 8px ${palette.primary}88`,
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* ── LINHA FINA CONECTORA E TÍTULO NO LADO OPOSTO ── */}
-                          <div
-                            onClick={item.onClick}
-                            onPointerEnter={(item as any).onPrefetch}
-                            onTouchStart={(item as any).onPrefetch}
-                            className={cn(
-                              "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
-                              isLeft
-                                ? "flex-row pl-1.5 xs:pl-2 sm:pl-3"
-                                : "flex-row-reverse pr-1.5 xs:pr-2 sm:pr-3"
+                    {/* ── AVATAR DO USUÁRIO AO LADO DO NÓ ATUAL (IGUAL DRUNO) ── */}
+                    {item.isEmAndamento && (
+                      <div className="absolute -left-16 sm:-left-20 top-6 z-30 flex flex-col items-center pointer-events-none animate-pulse">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full p-0.5 bg-gradient-to-tr from-[#F97316] to-[#A855F7] shadow-[0_0_20px_rgba(249,115,22,0.7)]">
+                          <div className="w-full h-full rounded-full bg-[#1C1433] flex items-center justify-center overflow-hidden border border-white/30">
+                            {user?.user_metadata?.avatar_url ? (
+                              <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                              <User className="w-6 h-6 text-amber-300" />
                             )}
-                          >
-                            {/* Linha Fina Conectora com Degradê */}
-                            <div
-                              className={cn(
-                                "flex items-center shrink-0 w-6 xs:w-8 sm:w-12 md:w-16",
-                                isLeft ? "flex-row" : "flex-row-reverse"
-                              )}
-                            >
-                              {/* Ponto de Ancoragem na Lateral do Card */}
-                              <div
-                                className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
-                                style={{
-                                  backgroundColor: isConcluido ? '#10B981' : palette.primary,
-                                  boxShadow: `0 0 8px ${isConcluido ? '#10B981' : palette.primary}`,
-                                }}
-                              />
-                              {/* Linha Fina */}
-                              <div
-                                className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
-                                style={{
-                                  background: isLeft
-                                    ? `linear-gradient(to right, ${isConcluido ? '#10B981' : palette.primary}, rgba(255,255,255,0.3), transparent)`
-                                    : `linear-gradient(to left, ${isConcluido ? '#10B981' : palette.primary}, rgba(255,255,255,0.3), transparent)`,
-                                }}
-                              />
-                            </div>
-
-                            {/* Nome do Card */}
-                            <div
-                              className={cn(
-                                "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
-                                isLeft ? "items-start text-left" : "items-end text-right"
-                              )}
-                            >
-                              <div
-                                className={cn(
-                                  "flex items-center gap-1.5 mb-1 opacity-90",
-                                  isLeft ? "justify-start" : "justify-end"
-                                )}
-                              >
-                                <span
-                                  className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
-                                  style={{ color: isConcluido ? '#10B981' : palette.primary }}
-                                >
-                                  {isConcluido ? '✓ ' + item.badgeLabel : item.badgeLabel}
-                                </span>
-                                <span className="w-1 h-1 rounded-full bg-white/25" />
-                                <span className="text-[10px] sm:text-[12px] font-medium text-zinc-400">
-                                  {item.displayTotal} {item.displayLabel}
-                                </span>
-                              </div>
-
-                              <h3 className="font-sans font-extrabold text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] leading-[1.25] break-words text-white group-hover:text-amber-300 transition-colors drop-shadow-md line-clamp-3 sm:line-clamp-4 mt-1">
-                                {item.titulo}
-                              </h3>
-
-                              {isConcluido && (
-                                <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400">
-                                  <Check className="w-3.5 h-3.5 stroke-[3]" /> Tópico Dominado
-                                </span>
-                              )}
-                            </div>
                           </div>
                         </div>
-
-                        {/* Conector Serpenteante de Trilha em Zigue-Zague Conectando Suavemente de Deck a Deck */}
-                        {i < filteredItems.length - 1 && (
-                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
-                            <svg
-                              className="w-full h-full overflow-visible"
-                              viewBox="0 0 100 100"
-                              preserveAspectRatio="none"
-                            >
-                              <defs>
-                                <filter id={`trail-glow-${i}`} x="-20%" y="-20%" width="140%" height="140%">
-                                  <feGaussianBlur stdDeviation="3" result="blur" />
-                                  <feMerge>
-                                    <feMergeNode in="blur" />
-                                    <feMergeNode in="SourceGraphic" />
-                                  </feMerge>
-                                </filter>
-                              </defs>
-
-                              {/* Leito da Trilha (traço suave e discreto) */}
-                              <path
-                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
-                                fill="none"
-                                stroke="rgba(255, 255, 255, 0.08)"
-                                strokeWidth="4"
-                                strokeLinecap="round"
-                                vectorEffect="non-scaling-stroke"
-                              />
-
-                              {/* Linha da Trilha em Zigue-Zague Pontilhada ou Sólida Iluminada */}
-                              <path
-                                d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
-                                fill="none"
-                                stroke={isConcluido ? (palette.accent || '#10B981') : palette.primary}
-                                strokeWidth={isConcluido ? "3.5" : "2.5"}
-                                strokeDasharray={isConcluido ? "none" : "5 7"}
-                                strokeLinecap="round"
-                                vectorEffect="non-scaling-stroke"
-                                filter={`url(#trail-glow-${i})`}
-                              />
-                            </svg>
-
-                            {/* Passos / Checkpoints Esféricos Perfeitos */}
-                            <div
-                              className="absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border-2 border-white shadow-lg transition-all"
-                              style={{
-                                left: '50%',
-                                top: '50%',
-                                backgroundColor: isConcluido ? '#10B981' : palette.primary,
-                                boxShadow: isConcluido ? '0 0 12px #10B981' : `0 0 10px ${palette.primary}`,
-                              }}
-                            />
-                          </div>
-                        )}
                       </div>
-                    );
-                  })}
+                    )}
+
+                    {/* ── LIVRO 3D EM PÉ (DIMENSÕES & PERSPECTIVA DO DRUNO) ── */}
+                    <div className="relative w-[82px] xs:w-[94px] sm:w-[105px] h-[120px] xs:h-[138px] sm:h-[154px] rounded-xl z-20 transition-all duration-300 group-hover:-translate-y-2">
+                      
+                      {/* Efeito 3D das Páginas Físicas na Lateral Direita */}
+                      <div 
+                        className="absolute top-1.5 bottom-1.5 -right-2 w-2 rounded-r-[3px] bg-gradient-to-r from-amber-50 to-zinc-200 border-r border-t border-b border-black/40 shadow-sm pointer-events-none z-0"
+                        style={{
+                          backgroundImage: 'repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px)'
+                        }}
+                      />
+
+                      {/* Efeito 3D da Lombada à Esquerda */}
+                      <div className="absolute top-0 bottom-0 left-0 w-2.5 rounded-l-xl bg-gradient-to-r from-black/60 to-transparent pointer-events-none z-20" />
+
+                      {/* Capa Principal do Livro */}
+                      <div 
+                        className={cn(
+                          "relative w-full h-full rounded-xl overflow-hidden border transition-all duration-300 shadow-2xl flex flex-col justify-between p-2",
+                          item.isEmAndamento
+                            ? "border-[#F97316] shadow-[0_0_25px_rgba(249,115,22,0.6)]"
+                            : item.isConcluido
+                            ? "border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+                            : "border-white/20 bg-zinc-900/90 opacity-75 grayscale-[40%]"
+                        )}
+                        style={{ backgroundColor: '#130F24' }}
+                      >
+                        {/* Imagem de Capa do Livro */}
+                        <img 
+                          src={item.coverImage} 
+                          alt={item.titulo} 
+                          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                        />
+
+                        {/* Overlay escuro de contraste */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/40 pointer-events-none" />
+
+                        {/* Brilho diagonal laminado */}
+                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent pointer-events-none" />
+
+                        {/* Topo da Capa: Badge de Número */}
+                        <div className="relative z-10 flex items-center justify-between w-full">
+                          <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-black/70 text-white border border-white/20">
+                            #{item.ordemStr}
+                          </span>
+                        </div>
+
+                        {/* Centro da Capa: Botão Play Branco / Cadeado / Check */}
+                        <div className="relative z-10 my-auto flex items-center justify-center">
+                          {item.isConcluido ? (
+                            <div className="w-9 h-9 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg border-2 border-emerald-300">
+                              <Check className="w-5 h-5 stroke-[3]" />
+                            </div>
+                          ) : item.isEmAndamento ? (
+                            <div className="w-10 h-10 rounded-full bg-white text-[#F97316] flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.9)] transition-transform duration-300 group-hover:scale-110">
+                              <Play className="w-5 h-5 fill-current translate-x-0.5" />
+                            </div>
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-black/70 text-white/80 border border-white/30 flex items-center justify-center backdrop-blur-sm">
+                              <Lock className="w-4 h-4 text-purple-300" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Rodapé da Capa: Questões */}
+                        <div className="relative z-10 text-center">
+                          <span className="text-[9px] font-extrabold text-white/95 px-1 py-0.5 rounded bg-black/60">
+                            {item.displayTotal} q.
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* ── PEDESTAL 3D ELÍPTICO SOB O LIVRO (PADRÃO DRUNO) ── */}
+                    <div className="relative -mt-4 w-32 xs:w-36 sm:w-40 h-8 xs:h-9 z-10 pointer-events-none flex items-center justify-center">
+                      <div 
+                        className={cn(
+                          "w-full h-full rounded-[50%] border transition-all duration-300",
+                          item.isEmAndamento
+                            ? "bg-gradient-to-b from-[#EA580C] to-[#9A3412] border-[#F97316] shadow-[0_0_30px_rgba(249,115,22,0.8)]"
+                            : item.isConcluido
+                            ? "bg-gradient-to-b from-emerald-600 to-emerald-950 border-emerald-400/80 shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+                            : "bg-gradient-to-b from-[#251E3D] to-[#120E22] border-white/10 shadow-lg"
+                        )}
+                      />
+                    </div>
+
+                    {/* ── RÓTULO ABAIXO DO PEDESTAL (IGUAL DRUNO: SEG., 9) ── */}
+                    <div className="mt-1 text-center max-w-[130px] sm:max-w-[150px] space-y-0.5">
+                      <p 
+                        className={cn(
+                          "text-[11px] sm:text-xs font-black uppercase tracking-wider",
+                          item.isEmAndamento ? "text-[#F97316]" : item.isConcluido ? "text-emerald-400" : "text-zinc-400"
+                        )}
+                      >
+                        {item.badgeLabel}
+                      </p>
+                      <h4 className="text-[12px] sm:text-[13px] font-extrabold text-white line-clamp-2 leading-tight group-hover:text-amber-300 transition-colors">
+                        {item.titulo}
+                      </h4>
+                      <p className="text-[10px] text-zinc-500">
+                        {item.displayConcluidas}/{item.displayTotal} resolvidas
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════════════════════════════════
+          MODAL DE DETALHES DO LIVRO AO TOCAR NA TRILHA (DRUNO SHEET)
+      ════════════════════════════════════════════════════════════════ */}
+      {livroSelecionado && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div 
+            className="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-[#161228] border border-white/15 p-6 shadow-2xl space-y-5 animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-4">
+              {/* Miniatura 3D do Livro */}
+              <div className="relative w-20 h-28 rounded-xl overflow-hidden shrink-0 border-2 border-white/30 shadow-xl">
+                <img src={livroSelecionado.coverImage} alt={livroSelecionado.titulo} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+                <div className="absolute bottom-1 left-1.5 text-[10px] font-black text-white">
+                  #{livroSelecionado.ordemStr}
                 </div>
               </div>
-            )}
-          </>
-        )}
-      </div>
+
+              <div className="space-y-1.5 min-w-0 flex-1">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#F97316]/20 text-[#F97316] border border-[#F97316]/40">
+                  {livroSelecionado.badgeLabel}
+                </span>
+                <h3 className="text-base sm:text-lg font-black text-white leading-snug">
+                  {livroSelecionado.titulo}
+                </h3>
+                <p className="text-xs text-zinc-400">
+                  {livroSelecionado.displayTotal} questões oficiais comentadas
+                </p>
+                <div className="flex items-center gap-2 pt-1 text-xs font-bold text-emerald-400">
+                  <Check className="w-4 h-4" />
+                  <span>{livroSelecionado.displayConcluidas} resolvidas ({livroSelecionado.displayPct}%)</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Ações do Modal */}
+            <div className="space-y-2 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setLivroSelecionado(null);
+                  livroSelecionado.onClick();
+                }}
+                className="w-full py-3.5 rounded-2xl bg-[#F97316] hover:bg-[#EA580C] text-white font-black text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(249,115,22,0.6)] transition-all flex items-center justify-center gap-2 active:scale-95"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                <span>Começar Livro</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setLivroSelecionado(null)}
+                className="w-full py-2.5 rounded-2xl bg-white/5 hover:bg-white/10 text-zinc-300 font-bold text-xs transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sheet de Filtro da Área */}
       <QuestoesFiltroSheet
