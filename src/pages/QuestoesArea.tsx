@@ -634,6 +634,8 @@ const QuestoesArea = () => {
                   {filteredItems.map((item, i) => {
                     const isLeft = i % 2 === 0;
                     const itemCover = getAreaCover(item.titulo)?.cover || coverUrl;
+                    const isConcluido = item.displayPct >= 100 || (item.displayConcluidas >= item.displayTotal && item.displayTotal > 0);
+                    const isEmAndamento = !isConcluido && item.displayConcluidas > 0;
 
                     return (
                       <div key={item.key} className="w-full flex flex-col">
@@ -653,16 +655,16 @@ const QuestoesArea = () => {
                           >
                             {/* Medalhão de Milestone / Nó da Trilha Centralizado no Topo (Estável e Elegante) */}
                             <div
-                              className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-8.5 sm:h-8.5 border-2 border-white/70 text-white font-bold text-xs shadow-xl transition-transform duration-300 group-hover:scale-110"
+                              className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center rounded-full w-8 h-8 sm:w-8.5 sm:h-8.5 border-2 border-white/80 text-white font-bold text-xs shadow-xl transition-all duration-300 group-hover:scale-110"
                               style={{
-                                backgroundColor: item.displayPct >= 100 ? '#10B981' : palette.primary,
-                                boxShadow: item.displayPct >= 100 ? '0 0 12px rgba(16,185,129,0.7)' : palette.nodeBoxShadow,
+                                backgroundColor: isConcluido ? '#10B981' : palette.primary,
+                                boxShadow: isConcluido ? '0 0 14px rgba(16,185,129,0.8)' : (isEmAndamento ? `0 0 16px ${palette.primary}` : palette.nodeBoxShadow),
                               }}
                             >
-                              {item.displayPct >= 100 || (item.displayConcluidas >= item.displayTotal && item.displayTotal > 0) ? (
+                              {isConcluido ? (
                                 <Check className="w-4 h-4 stroke-[3] text-white" />
                               ) : (
-                                <span className="font-sans font-bold text-[11px] sm:text-xs">
+                                <span className="font-sans font-extrabold text-[11px] sm:text-xs">
                                   {item.ordemStr}
                                 </span>
                               )}
@@ -739,7 +741,8 @@ const QuestoesArea = () => {
                             {/* ── CARTA 3 (Principal Frontal - Centro Estável) ── */}
                             <div
                               className={cn(
-                                "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 hover:border-amber-400/60 transition-all duration-300 origin-bottom",
+                                "relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border transition-all duration-300 origin-bottom",
+                                isConcluido ? "border-emerald-500/60 shadow-[0_0_20px_rgba(16,185,129,0.25)]" : "border-white/30 hover:border-amber-400/60",
                                 isLeft
                                   ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)] group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
                                   : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)] group-hover:shadow-[0_22px_45px_rgba(0,0,0,0.85)]"
@@ -768,45 +771,63 @@ const QuestoesArea = () => {
                                 className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
                               />
                               {/* Overlay para Contraste do Topo e Rodapé, mantendo o centro limpo para a ilustração */}
-                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/90 via-black/10 to-[#0d0f12]/50 pointer-events-none z-0" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/50 pointer-events-none z-0" />
 
-                              {/* Cabeçalho da Carta: Tag Deck no Lado Esquerdo removida a pedido */}
-
-                              {/* Centro da Carta: Ícone de Player (Destaque Elegante para Iniciar o Deck) */}
+                              {/* Centro da Carta: Botão de Ação Estilo Druno */}
                               <div className="my-auto py-2 z-[1] w-full flex items-center justify-center">
                                 <div className="relative flex items-center justify-center">
-                                  {/* Pulso luminoso no hover */}
+                                  {/* Pulso luminoso ativo se em andamento */}
                                   <div
-                                    className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
-                                    style={{ backgroundColor: `${palette.primary}50` }}
+                                    className={cn(
+                                      "absolute inset-0 rounded-full blur-md transition-opacity duration-300 scale-125 pointer-events-none",
+                                      isEmAndamento ? "opacity-100 animate-pulse" : "opacity-0 group-hover:opacity-100"
+                                    )}
+                                    style={{ backgroundColor: `${palette.primary}60` }}
                                   />
 
-                                  {/* Botão de Play Minimalista e Moderno */}
+                                  {/* Botão de Vidro Fosco Minimalista e Moderno */}
                                   <div
-                                    className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-13 sm:h-13 rounded-full bg-black/50 backdrop-blur-md border border-white/30 flex items-center justify-center text-white/90 shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_22px_rgba(245,158,11,0.6)]"
+                                    className={cn(
+                                      "relative w-11 h-11 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-full backdrop-blur-md flex items-center justify-center shadow-2xl transition-all duration-300 group-hover:scale-110",
+                                      isConcluido
+                                        ? "bg-emerald-500/80 border border-emerald-300 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+                                        : "bg-black/60 border border-white/40 text-white group-hover:bg-amber-500 group-hover:border-amber-300 group-hover:text-black group-hover:shadow-[0_0_25px_rgba(245,158,11,0.7)]"
+                                    )}
                                   >
-                                    <Play className="w-4 h-4 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 fill-current translate-x-0.5 transition-colors" />
+                                    {isConcluido ? (
+                                      <Check className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3]" />
+                                    ) : (
+                                      <Play className="w-4 h-4 xs:w-5 xs:h-5 sm:w-6 sm:h-6 fill-current translate-x-0.5 transition-colors" />
+                                    )}
                                   </div>
                                 </div>
                               </div>
 
-                              {/* Rodapé da Carta: Progresso e Estatísticas */}
+                              {/* Rodapé da Carta: Progresso e Estatísticas de Maestria */}
                               <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
                                 <div>
-                                  <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-normal text-white/95 mb-1 sm:mb-1.5">
+                                  <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-semibold text-white/95 mb-1 sm:mb-1.5">
                                     <span className="truncate">
                                       {item.displayConcluidas > 0
                                         ? `${item.displayConcluidas}/${item.displayTotal} resolvidas`
                                         : `${item.displayTotal} ${item.displayLabel}`}
                                     </span>
-                                    <span className="font-semibold font-sans ml-1">{item.displayPct}%</span>
+                                    <span 
+                                      className={cn(
+                                        "font-bold font-sans ml-1 tabular-nums",
+                                        isConcluido ? "text-emerald-400" : "text-white"
+                                      )}
+                                    >
+                                      {item.displayPct}%
+                                    </span>
                                   </div>
-                                  <div className="w-full bg-black/50 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
+                                  <div className="w-full bg-black/60 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
                                     <div
-                                      className="h-full rounded-full transition-all duration-500 shadow-sm"
+                                      className="h-full rounded-full transition-all duration-700 shadow-sm"
                                       style={{
                                         width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%`,
-                                        backgroundColor: palette.primary,
+                                        backgroundColor: isConcluido ? '#10B981' : palette.primary,
+                                        boxShadow: isConcluido ? '0 0 8px #10B981' : `0 0 8px ${palette.primary}88`,
                                       }}
                                     />
                                   </div>
@@ -838,8 +859,8 @@ const QuestoesArea = () => {
                               <div
                                 className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
                                 style={{
-                                  backgroundColor: palette.primary,
-                                  boxShadow: `0 0 8px ${palette.primary}`,
+                                  backgroundColor: isConcluido ? '#10B981' : palette.primary,
+                                  boxShadow: `0 0 8px ${isConcluido ? '#10B981' : palette.primary}`,
                                 }}
                               />
                               {/* Linha Fina */}
@@ -847,13 +868,13 @@ const QuestoesArea = () => {
                                 className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
                                 style={{
                                   background: isLeft
-                                    ? `linear-gradient(to right, ${palette.primary}, rgba(255,255,255,0.3), transparent)`
-                                    : `linear-gradient(to left, ${palette.primary}, rgba(255,255,255,0.3), transparent)`,
+                                    ? `linear-gradient(to right, ${isConcluido ? '#10B981' : palette.primary}, rgba(255,255,255,0.3), transparent)`
+                                    : `linear-gradient(to left, ${isConcluido ? '#10B981' : palette.primary}, rgba(255,255,255,0.3), transparent)`,
                                 }}
                               />
                             </div>
 
-                            {/* Nome do Card em Letras Finas (Conforme Solicitado) */}
+                            {/* Nome do Card */}
                             <div
                               className={cn(
                                 "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
@@ -862,25 +883,31 @@ const QuestoesArea = () => {
                             >
                               <div
                                 className={cn(
-                                  "flex items-center gap-1.5 mb-1 opacity-80",
+                                  "flex items-center gap-1.5 mb-1 opacity-90",
                                   isLeft ? "justify-start" : "justify-end"
                                 )}
                               >
                                 <span
                                   className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
-                                  style={{ color: palette.primary }}
+                                  style={{ color: isConcluido ? '#10B981' : palette.primary }}
                                 >
-                                  {item.badgeLabel}
+                                  {isConcluido ? '✓ ' + item.badgeLabel : item.badgeLabel}
                                 </span>
                                 <span className="w-1 h-1 rounded-full bg-white/25" />
-                                <span className="text-[10px] sm:text-[12px] font-light text-zinc-400">
+                                <span className="text-[10px] sm:text-[12px] font-medium text-zinc-400">
                                   {item.displayTotal} {item.displayLabel}
                                 </span>
                               </div>
 
-                              <h3 className="font-sans font-medium text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-3 sm:line-clamp-4 mt-1">
+                              <h3 className="font-sans font-extrabold text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] leading-[1.25] break-words text-white group-hover:text-amber-300 transition-colors drop-shadow-md line-clamp-3 sm:line-clamp-4 mt-1">
                                 {item.titulo}
                               </h3>
+
+                              {isConcluido && (
+                                <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400">
+                                  <Check className="w-3.5 h-3.5 stroke-[3]" /> Tópico Dominado
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -913,26 +940,27 @@ const QuestoesArea = () => {
                                 vectorEffect="non-scaling-stroke"
                               />
 
-                              {/* Linha da Trilha em Zigue-Zague Pontilhada Luminosa */}
+                              {/* Linha da Trilha em Zigue-Zague Pontilhada ou Sólida Iluminada */}
                               <path
                                 d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
                                 fill="none"
-                                stroke={palette.primary}
-                                strokeWidth="2.5"
-                                strokeDasharray="5 7"
+                                stroke={isConcluido ? (palette.accent || '#10B981') : palette.primary}
+                                strokeWidth={isConcluido ? "3.5" : "2.5"}
+                                strokeDasharray={isConcluido ? "none" : "5 7"}
                                 strokeLinecap="round"
                                 vectorEffect="non-scaling-stroke"
                                 filter={`url(#trail-glow-${i})`}
                               />
                             </svg>
 
-                            {/* Passos / Checkpoints Esféricos Perfeitos (Apenas a central branca) */}
+                            {/* Passos / Checkpoints Esféricos Perfeitos */}
                             <div
-                              className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+                              className="absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border-2 border-white shadow-lg transition-all"
                               style={{
                                 left: '50%',
                                 top: '50%',
-                                boxShadow: `0 0 10px ${palette.primary}`,
+                                backgroundColor: isConcluido ? '#10B981' : palette.primary,
+                                boxShadow: isConcluido ? '0 0 12px #10B981' : `0 0 10px ${palette.primary}`,
                               }}
                             />
                           </div>
