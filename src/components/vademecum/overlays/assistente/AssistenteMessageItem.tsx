@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   FileDown,
@@ -34,6 +34,7 @@ import {
 import { ChatFeedback } from '@/components/chat/ChatFeedback';
 import { Message, ArtifactKind, ANALYZE_STEPS } from './assistenteTypes';
 import { AssistenteFluxogramaCard } from './AssistenteFluxogramaCard';
+import { AssistenteExemploGrafoModal } from './AssistenteExemploGrafoModal';
 
 export const ActionBtn: React.FC<{
   icon: any;
@@ -99,7 +100,7 @@ function preprocessLegalMarkdown(raw: string): string {
   text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(O QUE DIZ O TEXTO|TEXTO DA LEI|O QUE DIZ A LEI):?\s*$/gimu, '### O QUE DIZ A LEI');
   text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(EM PORTUGUÊS CLARO|EXPLICAÇÃO DIDÁTICA|EM TERMOS CLAROS):?\s*$/gimu, '### EM PORTUGUÊS CLARO');
   text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(ATENÇÃO|CUIDADO EM PROVA|PEGADINHA DE CONCURSO|PEGADINHA|CUIDADO|PEGADINHA DE PROVA & ATENÇÃO):?\s*$/gimu, '### PEGADINHA DE PROVA & ATENÇÃO');
-  text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(EXEMPLO PRÁTICO|NA PRÁTICA|CASO CONCRETO):?\s*$/gimu, '### EXEMPLO PRÁTICO');
+  text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(EXEMPLO PRÁTICO.*|NA PRÁTICA.*|CASO CONCRETO.*):?\s*$/gimu, '### EXEMPLO PRÁTICO');
   text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(FLUXOGRAMA|FLUXOGRAMA PASSO A PASSO|ESQUEMATIZAÇÃO|FLUXOGRAMA:.*):?\s*$/gimu, (m, p1) => `### ${p1.replace(/^[\u{1F300}-\u{1F9FF}\s]+/u, '')}`);
   text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(QUADRO COMPARATIVO|TABELA COMPARATIVA|SÍNTESE|QUADRO COMPARATIVO:.*):?\s*$/gimu, (m, p1) => `### ${p1.replace(/^[\u{1F300}-\u{1F9FF}\s]+/u, '')}`);
 
@@ -187,6 +188,16 @@ const getHeadingDetails = (children: React.ReactNode) => {
     };
   }
 
+  if (upper.includes('EXEMPLO') || upper.includes('PRÁTICO') || upper.includes('CASO CONCRETO') || upper.includes('NA PRÁTICA')) {
+    return {
+      title: cleanTitle,
+      icon: Sparkles,
+      iconColor: 'text-sky-400',
+      badgeBg: 'bg-sky-400/10 border-sky-400/25',
+      textColor: 'text-sky-300',
+    };
+  }
+
   return {
     title: cleanTitle,
     icon: Sparkles,
@@ -205,6 +216,8 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
   onGenerateArtifact,
   onOpenShare,
 }) => {
+  const [isGrafoOpen, setIsGrafoOpen] = useState(false);
+
   return (
     <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} w-full`}>
       <div
@@ -293,11 +306,14 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                   h1: ({ children }) => {
                     const { title, icon: Icon, iconColor, badgeBg, textColor } = getHeadingDetails(children);
                     return (
-                      <div className="mt-7 mb-3.5 first:mt-1 pb-2.5 border-b border-white/10 flex items-center gap-3">
+                      <div className="mt-7 mb-3.5 first:mt-1 pb-2.5 border-b border-white/10 flex items-center gap-2.5 min-h-[34px]">
                         <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border shadow-sm ${badgeBg}`}>
-                          <Icon className={`w-4 h-4 ${iconColor}`} strokeWidth={2.4} />
+                          <Icon className={`w-4.5 h-4.5 ${iconColor}`} strokeWidth={2.4} />
                         </div>
-                        <h1 className={`text-[18px] sm:text-[20px] font-black tracking-widest uppercase font-display ${textColor}`}>
+                        <h1
+                          className={`text-[16.5px] sm:text-[18.5px] font-black tracking-wide uppercase leading-none font-sans ${textColor} flex items-center translate-y-[-0.5px] m-0 p-0`}
+                          style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                        >
                           {title}
                         </h1>
                       </div>
@@ -305,34 +321,59 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                   },
                   h2: ({ children }) => {
                     const { title, icon: Icon, iconColor, badgeBg, textColor } = getHeadingDetails(children);
+                    const isExemplo = title.toUpperCase().includes('EXEMPLO');
                     return (
-                      <div className="mt-6 mb-3 first:mt-1 pb-2 border-b border-white/10 flex items-center gap-2.5">
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border shadow-sm ${badgeBg}`}>
-                          <Icon className={`w-4 h-4 ${iconColor}`} strokeWidth={2.4} />
+                      <div className="mt-6 mb-3 first:mt-1 pb-2 border-b border-white/10 flex items-center justify-between gap-2.5 min-h-[32px]">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border shadow-sm ${badgeBg}`}>
+                            <Icon className={`w-4 h-4 ${iconColor}`} strokeWidth={2.4} />
+                          </div>
+                          <h2
+                            className={`text-[15px] sm:text-[16.5px] font-extrabold tracking-wide uppercase leading-none font-sans ${textColor} flex items-center translate-y-[-0.5px] m-0 p-0`}
+                            style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                          >
+                            {title}
+                          </h2>
                         </div>
-                        <h2 className={`text-[16px] sm:text-[18px] font-bold tracking-wider uppercase font-display ${textColor}`}>
-                          {title}
-                        </h2>
+                        {isExemplo && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              haptic.light();
+                              setIsGrafoOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 text-[11px] font-bold text-sky-300 hover:text-white transition-all active:scale-95 shrink-0"
+                          >
+                            <Workflow className="w-3 h-3" />
+                            <span>Ver em Grafo</span>
+                          </button>
+                        )}
                       </div>
                     );
                   },
                   h3: ({ children }) => {
                     const { title, icon: Icon, iconColor, badgeBg, textColor } = getHeadingDetails(children);
                     return (
-                      <div className="mt-5 mb-2.5 first:mt-1 flex items-center gap-2.5">
+                      <div className="mt-5 mb-2.5 first:mt-1 flex items-center gap-2.5 min-h-[28px]">
                         <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 border ${badgeBg}`}>
                           <Icon className={`w-3.5 h-3.5 ${iconColor}`} strokeWidth={2.2} />
                         </div>
-                        <h3 className={`text-[14.5px] sm:text-[16px] font-bold tracking-wide uppercase font-display ${textColor}`}>
+                        <h3
+                          className={`text-[13.5px] sm:text-[15px] font-bold tracking-wide uppercase leading-none font-sans ${textColor} flex items-center translate-y-[-0.5px] m-0 p-0`}
+                          style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                        >
                           {title}
                         </h3>
                       </div>
                     );
                   },
                   h4: ({ children }) => (
-                    <h4 className="mt-4 mb-2 text-xs sm:text-sm font-semibold tracking-wider uppercase text-zinc-300 flex items-center gap-2 font-display">
+                    <h4
+                      className="mt-4 mb-2 text-xs sm:text-sm font-bold tracking-wider uppercase text-zinc-300 flex items-center gap-2 font-sans leading-none"
+                      style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                    >
                       <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
-                      {children}
+                      <span className="translate-y-[-0.5px]">{children}</span>
                     </h4>
                   ),
                   ul: ({ children }) => (
@@ -437,45 +478,60 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
 
                     if (upper === 'O QUE DIZ O TEXTO:' || upper === 'O QUE DIZ A LEI:' || upper === 'TEXTO DA LEI:') {
                       return (
-                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-amber-300 font-display flex items-center gap-2 pb-1 border-b border-amber-500/20">
+                        <span
+                          className="flex items-center gap-2 mt-5 mb-2 pb-1 border-b border-amber-500/20 text-sm sm:text-base font-extrabold uppercase tracking-wider text-amber-300 font-sans leading-none"
+                          style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                        >
                           <Scale className="w-4 h-4 text-amber-400 shrink-0" />
-                          <span>{children}</span>
+                          <span className="translate-y-[-0.5px]">{children}</span>
                         </span>
                       );
                     }
 
                     if (upper.includes('EM PORTUGUÊS CLARO') || upper.includes('EXPLICAÇÃO DIDÁTICA') || upper.includes('ENTENDA O ARTIGO')) {
                       return (
-                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-emerald-300 font-display flex items-center gap-2 pb-1 border-b border-emerald-500/20">
+                        <span
+                          className="flex items-center gap-2 mt-5 mb-2 pb-1 border-b border-emerald-500/20 text-sm sm:text-base font-extrabold uppercase tracking-wider text-emerald-300 font-sans leading-none"
+                          style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                        >
                           <Lightbulb className="w-4 h-4 text-emerald-400 shrink-0" />
-                          <span>{children}</span>
+                          <span className="translate-y-[-0.5px]">{children}</span>
                         </span>
                       );
                     }
 
                     if (upper.includes('PEGADINHA') || upper.includes('ATENÇÃO') || upper.includes('CUIDADO EM PROVA') || upper.includes('CUIDADO:')) {
                       return (
-                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-rose-300 font-display flex items-center gap-2 pb-1 border-b border-rose-500/20">
+                        <span
+                          className="flex items-center gap-2 mt-5 mb-2 pb-1 border-b border-rose-500/20 text-sm sm:text-base font-extrabold uppercase tracking-wider text-rose-300 font-sans leading-none"
+                          style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                        >
                           <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
-                          <span>{children}</span>
+                          <span className="translate-y-[-0.5px]">{children}</span>
                         </span>
                       );
                     }
 
                     if (upper.includes('EXEMPLO PRÁTICO') || upper.includes('NA PRÁTICA') || upper.includes('CASO CONCRETO')) {
                       return (
-                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-sky-300 font-display flex items-center gap-2 pb-1 border-b border-sky-500/20">
+                        <span
+                          className="flex items-center gap-2 mt-5 mb-2 pb-1 border-b border-sky-500/20 text-sm sm:text-base font-extrabold uppercase tracking-wider text-sky-300 font-sans leading-none"
+                          style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                        >
                           <Sparkles className="w-4 h-4 text-sky-400 shrink-0" />
-                          <span>{children}</span>
+                          <span className="translate-y-[-0.5px]">{children}</span>
                         </span>
                       );
                     }
 
                     if (upper.includes('FLUXOGRAMA') || upper.includes('ESQUEMA') || upper.includes('PASSO A PASSO')) {
                       return (
-                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-purple-300 font-display flex items-center gap-2 pb-1 border-b border-purple-500/20">
+                        <span
+                          className="flex items-center gap-2 mt-5 mb-2 pb-1 border-b border-purple-500/20 text-sm sm:text-base font-extrabold uppercase tracking-wider text-purple-300 font-sans leading-none"
+                          style={{ fontFamily: '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif' }}
+                        >
                           <Workflow className="w-4 h-4 text-purple-400 shrink-0" />
-                          <span>{children}</span>
+                          <span className="translate-y-[-0.5px]">{children}</span>
                         </span>
                       );
                     }
@@ -493,7 +549,15 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
               </ReactMarkdown>
             </motion.div>
 
+            {/* Fontes citadas na internet (como nas builds anteriores) */}
             {msg.sources && msg.sources.length > 0 && <SourcesFooter sources={msg.sources} />}
+
+            {/* Modal do Grafo do Exemplo Prático */}
+            <AssistenteExemploGrafoModal
+              open={isGrafoOpen}
+              onClose={() => setIsGrafoOpen(false)}
+              content={msg.content}
+            />
 
             {msg.content && msg.content.length > 0 && (
               <motion.div
@@ -501,6 +565,13 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 className="mt-3 pt-3 border-t border-border/60 flex flex-wrap items-center gap-1.5"
               >
+                <ActionBtn
+                  icon={Workflow}
+                  label="Grafo"
+                  colorClass="text-sky-400 group-hover:text-sky-300"
+                  hoverClass="hover:border-sky-500/40 hover:bg-sky-500/10"
+                  onClick={() => setIsGrafoOpen(true)}
+                />
                 <ActionBtn
                   icon={Copy}
                   label="Copiar"

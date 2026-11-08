@@ -365,15 +365,21 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
 1. TÍTULOS DESTACADOS: Estruture sempre a resposta com títulos claros de seções em Markdown (PROIBIDO usar emojis nos títulos; use apenas texto claro em caixa alta):
    - ## CONCEITO ESSENCIAL
-   - ### O QUE DIZ A LEI (cite o texto literal entre aspas ou citação em bloco)
+   - ### O QUE DIZ A LEI (cite o texto literal da norma entre aspas ou bloco e indique expressamente a lei, ex: "Artigo 18, inciso I, do Código Penal", "Art. 5º da Constituição Federal")
    - ### EM PORTUGUÊS CLARO (explicação didática, dinâmica e sem juridiquês inútil)
+   - ### EXEMPLO PRÁTICO (CASO CONCRETO EM CAMADAS): (SEMPRE apresente um exemplo prático real, dividido em 4 camadas estruturadas:
+     1. [FATO CONCRETO]: A situação fática da vida real com os agentes envolvidos.
+     2. [CONDUTA & ELEMENTO SUBJETIVO]: Análise da vontade e consciência (dolo direto, dolo eventual ou culpa consciente/inconsciente).
+     3. [ENQUADRAMENTO LEGAL]: Artigos da lei violados e subsunção formal e material da conduta.
+     4. [DESFECHO & SOLUÇÃO]: Consequência jurídica, responsabilidade civil/penal ou condenação/absolvição).
    - ### QUADRO COMPARATIVO (SEMPRE que houver 2 ou mais hipóteses, espécies, prazos, requisitos ou teorias, monte uma tabela Markdown com colunas: Requisito | Regra | Exceção/Aplicação)
    - ### FLUXOGRAMA PASSO A PASSO (SEMPRE esquematize a sequência lógica ou rito processual entre colchetes com setas: [Passo 1] -> [Passo 2] -> [Passo 3 (Decisão)])
    - ### PEGADINHA DE PROVA & ATENÇÃO (detalhes cruciais cobrados em provas da OAB e concursos)
 2. TABELAS: Monte tabelas Markdown completas (| Item | Regra | Exceção |) sempre que organizar dados.
 3. FLUXOGRAMAS: Use blocos com colchetes e setas: [Fato Ocorrido] -> [Existe Lei Anterior?] -> [Aplicação da Pena].
-4. SEM EMOJIS: Não utilize emojis infantis nos títulos nem nas listas; o sistema renderiza ícones SVG oficiais para cada seção.
-5. FOCO EM RETENÇÃO E TIPOGRAFIA: Seja didático, dinâmico, direto ao ponto e focado na melhor retenção visual.`;
+4. DISPOSITIVOS LEGAIS CITADOS: Indique sempre o nome do código e o número do artigo de forma clara (ex: "Art. 18, I, do Código Penal", "Art. 5º, XXXIX, da CF/88") para que o sistema alimente as fontes automáticas no rodapé.
+5. SEM EMOJIS: Não utilize emojis infantis nos títulos nem nas listas; o sistema renderiza ícones SVG oficiais para cada seção.
+6. FOCO EM RETENÇÃO E TIPOGRAFIA: Seja didático, dinâmico, direto ao ponto e focado na melhor retenção visual.`;
 
       const payloadMessages = [
         { role: 'system', content: SYSTEM_INSTRUCTIONS_JURIDICO },
@@ -445,19 +451,14 @@ DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
         }
 
         const webSources: ChatSource[] = Array.isArray(data?.sources) ? data.sources : [];
-        const startN = (webSources.length ? Math.max(...webSources.map((s: any) => s.n)) : 0) + 1;
         const rawReply: string =
           data?.reply || 'Não consegui gerar uma resposta agora. Tente reformular.';
-        const { text: enrichedReply, sources: statuteSources } = extractStatuteSources(
-          rawReply,
-          startN
-        );
         const asMsg: Message = {
           id: asMsgId,
           role: 'assistant',
-          content: enrichedReply,
+          content: rawReply,
           createdAt: Date.now(),
-          sources: [...webSources, ...statuteSources],
+          sources: webSources,
           webSearch,
           thoughtTime: Math.max(1, elapsed),
         };
@@ -470,19 +471,14 @@ DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
       if (!contentType.includes('text/event-stream') || !res.body) {
         const data = await res.json();
         const webSources: ChatSource[] = Array.isArray(data?.sources) ? data.sources : [];
-        const startN = (webSources.length ? Math.max(...webSources.map((s) => s.n)) : 0) + 1;
         const rawReply: string =
           data?.reply || 'Não consegui gerar uma resposta agora. Tente reformular.';
-        const { text: enrichedReply, sources: statuteSources } = extractStatuteSources(
-          rawReply,
-          startN
-        );
         const asMsg: Message = {
           id: asMsgId,
           role: 'assistant',
-          content: enrichedReply,
+          content: rawReply,
           createdAt: Date.now(),
-          sources: [...webSources, ...statuteSources],
+          sources: webSources,
           webSearch,
           thoughtTime: Math.max(1, elapsed),
         };
@@ -556,16 +552,10 @@ DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
         if (done) break;
       }
 
-      // Post-process para estatutos
-      const startN = (webSources.length ? Math.max(...webSources.map((s) => s.n)) : 0) + 1;
-      const { text: enrichedReply, sources: statuteSources } = extractStatuteSources(
-        fullText,
-        startN
-      );
       setMessages((prev) =>
         prev.map((m) =>
           m.id === asMsgId
-            ? { ...m, content: enrichedReply, sources: [...webSources, ...statuteSources] }
+            ? { ...m, content: fullText, sources: webSources }
             : m
         )
       );

@@ -85,56 +85,41 @@ function domainOf(url: string) {
 
 export function SourcesFooter({ sources }: { sources: ChatSource[] }) {
   if (!sources?.length) return null;
+  // Exibe apenas as fontes reais pesquisadas na internet (como nas builds anteriores)
+  const webSources = sources.filter((s) => s.url && (s.url.startsWith('http://') || s.url.startsWith('https://') || !s.internal));
+  if (!webSources.length) return null;
+
   return (
-    <div className="mt-4 pt-4 border-t border-border/40">
-      <details className="group [&_summary::-webkit-details-marker]:hidden">
-        <summary className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-muted-foreground font-semibold cursor-pointer select-none hover:text-foreground transition-colors w-fit mb-2">
-          <BookOpen className="w-3.5 h-3.5" />
-          Ver fontes citadas
-          <ChevronRight className="w-3.5 h-3.5 transition-transform group-open:rotate-90 ml-1" />
-        </summary>
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
-          {sources.map((s) => {
-            const commonClass =
-              'group flex items-start gap-2 p-2 rounded-lg bg-secondary/60 border border-border hover:border-accent/60 hover:bg-accent/5 transition-colors';
-            const inner = (
-              <>
-              <span className="shrink-0 min-w-[22px] h-[22px] rounded-md bg-accent/20 border border-accent/40 text-[11px] font-bold text-accent flex items-center justify-center">
-                {s.n}
+    <div className="mt-3 pt-3 border-t border-border/40">
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 flex items-center gap-1.5 font-sans">
+        <ExternalLink className="w-3.5 h-3.5 text-rose-400" />
+        Fontes citadas
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+        {webSources.map((s) => (
+          <a
+            id={`src-${s.n}`}
+            key={s.n}
+            href={s.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-start gap-2 p-2 rounded-xl bg-secondary/60 border border-border hover:border-accent/60 hover:bg-accent/5 transition-colors text-left"
+          >
+            <span className="shrink-0 min-w-[22px] h-[22px] rounded-md bg-accent/20 border border-accent/40 text-[11px] font-bold text-accent flex items-center justify-center font-mono">
+              {s.n}
+            </span>
+            <span className="flex-1 min-w-0">
+              <span className="block text-[12px] font-semibold text-foreground truncate leading-tight group-hover:text-accent">
+                {s.title || s.domain || domainOf(s.url)}
               </span>
-              <span className="flex-1 min-w-0">
-                <span className="block text-[12px] font-semibold text-foreground truncate leading-tight">
-                  {s.title || s.domain || domainOf(s.url)}
-                </span>
-                <span className="block text-[10px] text-muted-foreground truncate flex items-center gap-1 mt-0.5">
-                  <ExternalLink className="w-2.5 h-2.5" />
-                  {s.domain || domainOf(s.url)}
-                </span>
+              <span className="block text-[10px] text-muted-foreground truncate flex items-center gap-1 mt-0.5">
+                <ExternalLink className="w-2.5 h-2.5" />
+                {s.domain || domainOf(s.url)}
               </span>
-              </>
-            );
-            if (s.internal && s.url.startsWith('/')) {
-              return (
-                <Link id={`src-${s.n}`} key={s.n} to={s.url} className={commonClass}>
-                  {inner}
-                </Link>
-              );
-            }
-            return (
-              <a
-                id={`src-${s.n}`}
-                key={s.n}
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={commonClass}
-              >
-                {inner}
-              </a>
-            );
-          })}
-        </div>
-      </details>
+            </span>
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
@@ -161,10 +146,22 @@ function escapeReg(s: string) {
 
 // Sort by length desc so longer keys match first (e.g. "Código Penal" before "CP")
 const LAW_ENTRIES: Array<{ key: string; lei: LeiCatalogItem }> = LEIS_CATALOG
-  .flatMap((lei) => [
-    { key: lei.sigla, lei },
-    { key: lei.nome, lei },
-  ])
+  .flatMap((lei) => {
+    const list = [
+      { key: lei.sigla, lei },
+      { key: lei.nome, lei },
+    ];
+    if (lei.sigla === 'CF/88') {
+      list.push({ key: 'Constituição Federal de 1988', lei });
+      list.push({ key: 'CF', lei });
+      list.push({ key: 'Constituição', lei });
+      list.push({ key: 'CRFB', lei });
+    }
+    if (lei.sigla === 'CP') {
+      list.push({ key: 'Código Penal Brasileiro', lei });
+    }
+    return list;
+  })
   .filter((e) => e.key && e.key.length >= 2)
   .sort((a, b) => b.key.length - a.key.length);
 
@@ -173,8 +170,8 @@ const LAW_ALT = LAW_ENTRIES.map((e) => escapeReg(e.key)).join('|');
 // Matches: art(igo)? NUM (extras)? (do/da)? LAW
 const STATUTE_RE = new RegExp(
   `\\b(arts?\\.?|artigos?)\\s*(\\d+(?:-[A-Z])?)[ºª°]?` +
-    `((?:\\s*(?:,|e)\\s*(?:§\\s*\\d+[ºª°]?|inc(?:\\.|iso)?\\s*[IVXLCDM]+|\\d+(?:-[A-Z])?))*)` +
-    `\\s*(?:d[oa]s?\\s+)?(${LAW_ALT})\\b`,
+    `((?:[\\s,]+(?:§+\\s*\\d+[ºª°]?|inc(?:\\.|iso)?\\s*[IVXLCDM]+|[IVXLCDM]+|alínea\\s*[a-z]|\\d+(?:-[A-Z])?|[e,|]))*)` +
+    `[\\s,]*(?:d[oa]s?\\s+)?(${LAW_ALT})\\b`,
   'gi',
 );
 
@@ -195,9 +192,10 @@ export function extractStatuteSources(
   const seen = new Map<string, number>(); // `${leiId}|${artigo}` -> n
   let n = Math.max(1, startN);
 
-  const replaced = text.replace(STATUTE_RE, (match, _artWord, artNum, _extras, lawText) => {
+  const replaced = text.replace(STATUTE_RE, (match, _artWord, artNum, extras, lawText, offset, fullStr) => {
     const entry = LAW_ENTRIES.find((e) => e.key.toLowerCase() === String(lawText).toLowerCase());
     if (!entry) return match;
+    const cleanExtras = typeof extras === 'string' ? extras.replace(/^[,\s]+/, '').trim() : '';
     const key = `${entry.lei.id}|${artNum}`;
     let num = seen.get(key);
     if (!num) {
@@ -206,15 +204,20 @@ export function extractStatuteSources(
       const url = `/legislacao/${tipoToSlug(entry.lei.tipo)}/${leiToSlug(entry.lei)}/${encodeURIComponent(
         String(artNum),
       )}`;
+      const titleExtra = cleanExtras ? `, ${cleanExtras}` : '';
       sources.push({
         n: num,
-        title: `Art. ${artNum} — ${entry.lei.sigla}`,
+        title: `Art. ${artNum}${titleExtra} — ${entry.lei.sigla}`,
         url,
         domain: entry.lei.nome,
         internal: true,
       });
     }
-    // Avoid double-injecting if the model already appended [n]
+    // Check if the original text already had a [n] citation immediately following
+    const following = fullStr.slice(offset + match.length, offset + match.length + 8);
+    if (/^\s*\[\d+\]/.test(following)) {
+      return match;
+    }
     return `${match} [${num}]`;
   });
 
