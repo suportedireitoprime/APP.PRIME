@@ -5,7 +5,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
   AprenderAreaData,
@@ -386,16 +385,13 @@ const QuestoesArea = () => {
       subtitle="Praticar Questões"
       mobileHeader={mobileHeader}
     >
-      {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
+      {/* Fundo Escuro Limpo Sem Quadrados Animados */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]">
-        <ShapeGrid
-          speed={0.5}
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.04)"
-          hoverFillColor="rgba(255, 255, 255, 0.08)"
-          shape="square"
-          hoverTrailAmount={5}
+        <div 
+          className="absolute inset-0 opacity-20 pointer-events-none"
+          style={{
+            background: `radial-gradient(circle at 50% 15%, ${palette.primary}25 0%, transparent 65%)`
+          }}
         />
       </div>
 
@@ -637,6 +633,7 @@ const QuestoesArea = () => {
                 <div className="w-full min-w-0 relative z-[2] flex flex-col">
                   {filteredItems.map((item, i) => {
                     const isLeft = i % 2 === 0;
+                    const itemCover = getAreaCover(item.titulo)?.cover || coverUrl;
 
                     return (
                       <div key={item.key} className="w-full flex flex-col">
@@ -684,6 +681,13 @@ const QuestoesArea = () => {
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
                               }}
                             >
+                              {/* Capa sutil de fundo para textura realista */}
+                              <img
+                                src={itemCover}
+                                alt=""
+                                aria-hidden="true"
+                                className="pointer-events-none absolute inset-0 w-full h-full object-cover opacity-20"
+                              />
                               {/* Overlay de escurecimento para dar profundidade (Carta mais ao fundo) */}
                               <div className="absolute inset-0 bg-black/50 pointer-events-none z-[1]" />
                               
@@ -711,6 +715,13 @@ const QuestoesArea = () => {
                                 boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
                               }}
                             >
+                              {/* Capa intermediária */}
+                              <img
+                                src={itemCover}
+                                alt=""
+                                aria-hidden="true"
+                                className="pointer-events-none absolute inset-0 w-full h-full object-cover opacity-35"
+                              />
                               {/* Overlay de escurecimento médio para dar profundidade */}
                               <div className="absolute inset-0 bg-black/25 pointer-events-none z-[1]" />
 
@@ -749,8 +760,8 @@ const QuestoesArea = () => {
 
                               {/* Imagem de Fundo (Capa da Matéria Expandida e Original) */}
                               <img
-                                src={coverUrl}
-                                alt=""
+                                src={itemCover}
+                                alt={item.titulo}
                                 aria-hidden="true"
                                 loading="lazy"
                                 decoding="async"
