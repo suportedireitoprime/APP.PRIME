@@ -80,7 +80,7 @@ export const AudioRecentesModal: React.FC<AudioRecentesModalProps> = ({
   const totalRecentes = isPurple ? recentesLeis.length : aulasRecentes.length;
 
   const handleTocarTodas = () => {
-    haptic.impactMedium();
+    haptic.medium();
     if (isPurple) {
       if (recentesLeis.length > 0) {
         if (onPlayTrack) onPlayTrack(recentesLeis[0]);

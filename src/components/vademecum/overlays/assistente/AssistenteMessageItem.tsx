@@ -18,6 +18,7 @@ import {
   Lightbulb,
   Workflow,
   ArrowRight,
+  Target,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
@@ -81,22 +82,28 @@ const formatForWhatsApp = (text: string) => {
 };
 
 /**
- * Normaliza e enriquece o Markdown jurídico para garantir títulos destacados,
- * citações de leis encapsuladas e detecção de esquemas/fluxogramas.
+ * Normaliza e enriquece o Markdown jurídico:
+ * - Remove emojis de títulos (substituídos por ícones SVG oficiais)
+ * - Identifica fluxogramas e sequências com setas
+ * - Normaliza citações legais
  */
 function preprocessLegalMarkdown(raw: string): string {
   if (!raw) return '';
   let text = raw;
 
-  // 1. Converte linhas que são títulos isolados em títulos com tracking e ícone
-  text = text.replace(/^(?:#+\s*)?(O QUE DIZ O TEXTO|TEXTO DA LEI|O QUE DIZ A LEI):?\s*$/gim, '### 📜 $1');
-  text = text.replace(/^(?:#+\s*)?(EM PORTUGUÊS CLARO|EXPLICAÇÃO DIDÁTICA|EM TERMOS CLAROS):?\s*$/gim, '### 💡 $1');
-  text = text.replace(/^(?:#+\s*)?(ATENÇÃO|CUIDADO EM PROVA|PEGADINHA DE CONCURSO|PEGADINHA|CUIDADO):?\s*$/gim, '### ⚠️ $1');
-  text = text.replace(/^(?:#+\s*)?(EXEMPLO PRÁTICO|NA PRÁTICA|CASO CONCRETO):?\s*$/gim, '### 🎯 $1');
-  text = text.replace(/^(?:#+\s*)?(FLUXOGRAMA|FLUXOGRAMA PASSO A PASSO|ESQUEMATIZAÇÃO):?\s*$/gim, '### 🔄 $1');
-  text = text.replace(/^(?:#+\s*)?(QUADRO COMPARATIVO|TABELA COMPARATIVA|SÍNTESE):?\s*$/gim, '### 📊 $1');
+  // Remove emojis existentes em títulos
+  text = text.replace(/^(#+\s*)[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E0}-\u{1F1FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]\s*/gmu, '$1');
 
-  // 2. Converte aspas duplas/triplas no início de artigos de lei para blockquote oficial
+  // Converte linhas que são títulos isolados em títulos Markdown limpos SEM emojis
+  text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(CONCEITO ESSENCIAL|CONCEITO|DEFINIÇÃO):?\s*$/gimu, '## CONCEITO ESSENCIAL');
+  text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(O QUE DIZ O TEXTO|TEXTO DA LEI|O QUE DIZ A LEI):?\s*$/gimu, '### O QUE DIZ A LEI');
+  text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(EM PORTUGUÊS CLARO|EXPLICAÇÃO DIDÁTICA|EM TERMOS CLAROS):?\s*$/gimu, '### EM PORTUGUÊS CLARO');
+  text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(ATENÇÃO|CUIDADO EM PROVA|PEGADINHA DE CONCURSO|PEGADINHA|CUIDADO|PEGADINHA DE PROVA & ATENÇÃO):?\s*$/gimu, '### PEGADINHA DE PROVA & ATENÇÃO');
+  text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(EXEMPLO PRÁTICO|NA PRÁTICA|CASO CONCRETO):?\s*$/gimu, '### EXEMPLO PRÁTICO');
+  text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(FLUXOGRAMA|FLUXOGRAMA PASSO A PASSO|ESQUEMATIZAÇÃO|FLUXOGRAMA:.*):?\s*$/gimu, (m, p1) => `### ${p1.replace(/^[\u{1F300}-\u{1F9FF}\s]+/u, '')}`);
+  text = text.replace(/^(?:#+\s*)?(?:[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\s]*)?(QUADRO COMPARATIVO|TABELA COMPARATIVA|SÍNTESE|QUADRO COMPARATIVO:.*):?\s*$/gimu, (m, p1) => `### ${p1.replace(/^[\u{1F300}-\u{1F9FF}\s]+/u, '')}`);
+
+  // Converte aspas duplas/triplas no início de artigos de lei para blockquote oficial
   text = text.replace(/(?:^|\n)\s*["”']{2,3}([\s\S]*?)["”']{2,3}/g, (match, p1) => {
     const lines = p1.trim().split('\n');
     return '\n\n' + lines.map((l: string) => `> ${l}`).join('\n') + '\n\n';
@@ -104,6 +111,90 @@ function preprocessLegalMarkdown(raw: string): string {
 
   return text;
 }
+
+const getHeadingDetails = (children: React.ReactNode) => {
+  let text = '';
+  if (typeof children === 'string') {
+    text = children;
+  } else if (Array.isArray(children)) {
+    text = children.map((c) => (typeof c === 'string' ? c : '')).join('');
+  }
+
+  // Remove qualquer emoji residual do texto do título
+  const cleanTitle = text
+    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E0}-\u{1F1FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu, '')
+    .trim();
+
+  const upper = cleanTitle.toUpperCase();
+
+  if (upper.includes('CONCEITO') || upper.includes('ESSENCIAL') || upper.includes('DEFINIÇÃO')) {
+    return {
+      title: cleanTitle,
+      icon: Target,
+      iconColor: 'text-amber-400',
+      badgeBg: 'bg-amber-400/10 border-amber-400/25',
+      textColor: 'text-amber-300',
+    };
+  }
+
+  if (upper.includes('O QUE DIZ A LEI') || upper.includes('TEXTO DA LEI') || upper.includes('LEI') || upper.includes('LEGISLAÇÃO')) {
+    return {
+      title: cleanTitle,
+      icon: Scale,
+      iconColor: 'text-rose-400',
+      badgeBg: 'bg-rose-400/10 border-rose-400/25',
+      textColor: 'text-white',
+    };
+  }
+
+  if (upper.includes('EM PORTUGUÊS CLARO') || upper.includes('EXPLICAÇÃO') || upper.includes('DIDÁTICA')) {
+    return {
+      title: cleanTitle,
+      icon: Lightbulb,
+      iconColor: 'text-yellow-400',
+      badgeBg: 'bg-yellow-400/10 border-yellow-400/25',
+      textColor: 'text-yellow-200',
+    };
+  }
+
+  if (upper.includes('QUADRO COMPARATIVO') || upper.includes('TABELA') || upper.includes('SÍNTESE')) {
+    return {
+      title: cleanTitle,
+      icon: Table2,
+      iconColor: 'text-emerald-400',
+      badgeBg: 'bg-emerald-400/10 border-emerald-400/25',
+      textColor: 'text-emerald-300',
+    };
+  }
+
+  if (upper.includes('FLUXOGRAMA') || upper.includes('PASSO A PASSO') || upper.includes('RITO') || upper.includes('ESQUEMA')) {
+    return {
+      title: cleanTitle,
+      icon: Workflow,
+      iconColor: 'text-sky-400',
+      badgeBg: 'bg-sky-400/10 border-sky-400/25',
+      textColor: 'text-sky-300',
+    };
+  }
+
+  if (upper.includes('PEGADINHA') || upper.includes('ATENÇÃO') || upper.includes('CUIDADO')) {
+    return {
+      title: cleanTitle,
+      icon: AlertTriangle,
+      iconColor: 'text-rose-400',
+      badgeBg: 'bg-rose-500/15 border-rose-500/30',
+      textColor: 'text-rose-300',
+    };
+  }
+
+  return {
+    title: cleanTitle,
+    icon: Sparkles,
+    iconColor: 'text-amber-400',
+    badgeBg: 'bg-white/5 border-white/10',
+    textColor: 'text-white',
+  };
+};
 
 export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
   msg,
@@ -154,7 +245,7 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
             <motion.div
               initial={{ opacity: 0.6 }}
               animate={{ opacity: 1 }}
-              className="prose prose-base dark:prose-invert max-w-none font-body text-[15px] leading-relaxed [&_p]:my-2 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-1 text-foreground"
+              className="prose prose-base dark:prose-invert max-w-none font-sans text-[16px] sm:text-[17px] leading-[1.8] sm:leading-[1.85] [&_p]:my-3.5 [&_ul]:my-3.5 [&_ol]:my-3.5 [&_li]:my-2 text-foreground"
               onCopy={(e) => {
                 const sel = window.getSelection()?.toString() ?? '';
                 if (!sel) return;
@@ -177,40 +268,88 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                       </a>
                     );
                   },
-                  h1: ({ children }) => (
-                    <div className="mt-6 mb-3 first:mt-1 pb-2 border-b border-rose-500/25 flex items-center gap-2.5">
-                      <span className="w-1.5 h-6 rounded-full bg-gradient-to-b from-rose-500 to-amber-500 shrink-0 shadow-sm" />
-                      <h1 className="text-base sm:text-lg font-black tracking-widest uppercase text-white font-display">
+                  p: ({ children }) => {
+                    const text = typeof children === 'string'
+                      ? children
+                      : Array.isArray(children)
+                      ? children.map((c) => (typeof c === 'string' ? c : '')).join('')
+                      : '';
+
+                    // Detecta se é um fluxograma linear enviado em parágrafo: ex: [A] -> [B] -> [C]
+                    const arrowDelimiters = /\s*(?:-->|->|➔|→|=>|⇒)\s*/;
+                    if (
+                      (text.includes('->') || text.includes('-->') || text.includes('➔') || text.includes('→')) &&
+                      (text.includes('[') || text.split(arrowDelimiters).length >= 2)
+                    ) {
+                      return <AssistenteFluxogramaCard content={text} title="Fluxograma Dinâmico de Aplicação" />;
+                    }
+
+                    return (
+                      <p className="my-3.5 leading-[1.8] sm:leading-[1.85] text-[16px] sm:text-[17px] text-zinc-100 font-sans tracking-normal">
                         {children}
-                      </h1>
-                    </div>
-                  ),
-                  h2: ({ children }) => (
-                    <div className="mt-5 mb-2.5 first:mt-1 pb-1.5 border-b border-white/10 flex items-center gap-2">
-                      <span className="w-1.5 h-5 rounded-full bg-amber-400 shrink-0 shadow-sm" />
-                      <h2 className="text-[15px] sm:text-base font-bold tracking-wider uppercase text-amber-300 font-display">
-                        {children}
-                      </h2>
-                    </div>
-                  ),
-                  h3: ({ children }) => (
-                    <div className="mt-4 mb-2 first:mt-1 flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-rose-400 ring-2 ring-rose-400/25 shrink-0" />
-                      <h3 className="text-xs sm:text-sm font-bold tracking-widest uppercase text-zinc-100 font-display">
-                        {children}
-                      </h3>
-                    </div>
-                  ),
+                      </p>
+                    );
+                  },
+                  h1: ({ children }) => {
+                    const { title, icon: Icon, iconColor, badgeBg, textColor } = getHeadingDetails(children);
+                    return (
+                      <div className="mt-7 mb-3.5 first:mt-1 pb-2.5 border-b border-white/10 flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border shadow-sm ${badgeBg}`}>
+                          <Icon className={`w-4 h-4 ${iconColor}`} strokeWidth={2.4} />
+                        </div>
+                        <h1 className={`text-[18px] sm:text-[20px] font-black tracking-widest uppercase font-display ${textColor}`}>
+                          {title}
+                        </h1>
+                      </div>
+                    );
+                  },
+                  h2: ({ children }) => {
+                    const { title, icon: Icon, iconColor, badgeBg, textColor } = getHeadingDetails(children);
+                    return (
+                      <div className="mt-6 mb-3 first:mt-1 pb-2 border-b border-white/10 flex items-center gap-2.5">
+                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 border shadow-sm ${badgeBg}`}>
+                          <Icon className={`w-4 h-4 ${iconColor}`} strokeWidth={2.4} />
+                        </div>
+                        <h2 className={`text-[16px] sm:text-[18px] font-bold tracking-wider uppercase font-display ${textColor}`}>
+                          {title}
+                        </h2>
+                      </div>
+                    );
+                  },
+                  h3: ({ children }) => {
+                    const { title, icon: Icon, iconColor, badgeBg, textColor } = getHeadingDetails(children);
+                    return (
+                      <div className="mt-5 mb-2.5 first:mt-1 flex items-center gap-2.5">
+                        <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 border ${badgeBg}`}>
+                          <Icon className={`w-3.5 h-3.5 ${iconColor}`} strokeWidth={2.2} />
+                        </div>
+                        <h3 className={`text-[14.5px] sm:text-[16px] font-bold tracking-wide uppercase font-display ${textColor}`}>
+                          {title}
+                        </h3>
+                      </div>
+                    );
+                  },
                   h4: ({ children }) => (
-                    <h4 className="mt-3 mb-1.5 text-xs font-semibold tracking-wider uppercase text-zinc-300 flex items-center gap-1.5 font-display">
-                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 shrink-0" />
+                    <h4 className="mt-4 mb-2 text-xs sm:text-sm font-semibold tracking-wider uppercase text-zinc-300 flex items-center gap-2 font-display">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
                       {children}
                     </h4>
                   ),
+                  ul: ({ children }) => (
+                    <ul className="my-3.5 pl-1 space-y-2.5 list-none">{children}</ul>
+                  ),
+                  ol: ({ children }) => (
+                    <ol className="my-3.5 pl-5 space-y-2.5 list-decimal text-[16px] sm:text-[17px] leading-[1.8] text-zinc-100">{children}</ol>
+                  ),
+                  li: ({ children }) => (
+                    <li className="relative pl-5 text-[15.5px] sm:text-[16.5px] leading-[1.75] text-zinc-200 before:content-[''] before:absolute before:left-1 before:top-[0.65em] before:w-1.5 before:h-1.5 before:rounded-full before:bg-rose-500">
+                      {children}
+                    </li>
+                  ),
                   table: ({ children }) => (
                     <div className="my-5 w-full overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-b from-zinc-900/95 via-zinc-950/95 to-black/95 shadow-2xl backdrop-blur-md">
-                      <div className="px-3.5 py-2.5 bg-gradient-to-r from-rose-500/15 via-amber-500/10 to-transparent border-b border-white/10 flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-300">
+                      <div className="px-4 py-3 bg-gradient-to-r from-rose-500/15 via-amber-500/10 to-transparent border-b border-white/10 flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm font-bold uppercase tracking-widest text-amber-300">
                           <Table2 className="w-4 h-4 text-amber-400 shrink-0" />
                           <span>Quadro Comparativo & Síntese</span>
                         </div>
@@ -219,7 +358,7 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                         </span>
                       </div>
                       <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-white/10">
-                        <table className="w-full min-w-[340px] text-left border-collapse text-xs sm:text-sm">
+                        <table className="w-full min-w-[360px] text-left border-collapse text-xs sm:text-sm">
                           {children}
                         </table>
                       </div>
@@ -245,13 +384,13 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                     </td>
                   ),
                   blockquote: ({ children }) => (
-                    <div className="my-3.5 relative overflow-hidden rounded-xl border border-amber-500/30 bg-amber-950/15 p-3.5 sm:p-4 shadow-md backdrop-blur-sm">
+                    <div className="my-4 relative overflow-hidden rounded-xl border border-amber-500/30 bg-amber-950/20 p-4 shadow-md backdrop-blur-sm">
                       <div className="absolute top-0 left-0 bottom-0 w-1.5 bg-gradient-to-b from-amber-400 to-rose-500" />
                       <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold uppercase tracking-widest text-amber-300/90 font-mono">
                         <Scale className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                         <span>Texto da Norma / Jurisprudência</span>
                       </div>
-                      <div className="pl-2 text-zinc-200/95 italic text-xs sm:text-sm leading-relaxed font-sans">
+                      <div className="pl-2 text-zinc-200/95 italic text-[15px] sm:text-[16px] leading-[1.75] font-serif">
                         {children}
                       </div>
                     </div>
@@ -266,14 +405,14 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                       !inline &&
                       (str.includes('->') || str.includes('-->') || str.includes('➔') || str.includes('→'));
 
-                    if (!inline && (isMermaid || hasFlowArrows)) {
+                    if (!inline && (isMermaid || hasFlowArrows || className?.includes('fluxo'))) {
                       return <AssistenteFluxogramaCard content={str} title="Fluxograma Dinâmico de Aplicação" />;
                     }
 
                     if (inline) {
                       return (
                         <code
-                          className="px-1.5 py-0.5 rounded-md bg-white/10 text-rose-300 font-mono text-[13px] border border-white/10"
+                          className="px-1.5 py-0.5 rounded-md bg-white/10 text-rose-300 font-mono text-[13.5px] border border-white/10"
                           {...props}
                         >
                           {children}
@@ -282,7 +421,7 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
                     }
 
                     return (
-                      <div className="my-3 rounded-xl border border-white/10 bg-zinc-950/90 overflow-hidden shadow-lg">
+                      <div className="my-3 rounded-xl border border-white/10 bg-zinc-950 overflow-hidden shadow-lg">
                         <div className="px-3 py-1.5 bg-white/5 border-b border-white/10 text-[10px] uppercase font-mono tracking-wider text-zinc-400">
                           Esquema / Código
                         </div>
@@ -298,8 +437,8 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
 
                     if (upper === 'O QUE DIZ O TEXTO:' || upper === 'O QUE DIZ A LEI:' || upper === 'TEXTO DA LEI:') {
                       return (
-                        <span className="block mt-4 mb-2 text-xs sm:text-sm font-black uppercase tracking-widest text-amber-300 font-display flex items-center gap-1.5 pb-1 border-b border-amber-500/20">
-                          <Scale className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-amber-300 font-display flex items-center gap-2 pb-1 border-b border-amber-500/20">
+                          <Scale className="w-4 h-4 text-amber-400 shrink-0" />
                           <span>{children}</span>
                         </span>
                       );
@@ -307,8 +446,8 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
 
                     if (upper.includes('EM PORTUGUÊS CLARO') || upper.includes('EXPLICAÇÃO DIDÁTICA') || upper.includes('ENTENDA O ARTIGO')) {
                       return (
-                        <span className="block mt-4 mb-2 text-xs sm:text-sm font-black uppercase tracking-widest text-emerald-300 font-display flex items-center gap-1.5 pb-1 border-b border-emerald-500/20">
-                          <Lightbulb className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-emerald-300 font-display flex items-center gap-2 pb-1 border-b border-emerald-500/20">
+                          <Lightbulb className="w-4 h-4 text-emerald-400 shrink-0" />
                           <span>{children}</span>
                         </span>
                       );
@@ -316,8 +455,8 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
 
                     if (upper.includes('PEGADINHA') || upper.includes('ATENÇÃO') || upper.includes('CUIDADO EM PROVA') || upper.includes('CUIDADO:')) {
                       return (
-                        <span className="block mt-4 mb-2 text-xs sm:text-sm font-black uppercase tracking-widest text-rose-300 font-display flex items-center gap-1.5 pb-1 border-b border-rose-500/20">
-                          <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-rose-300 font-display flex items-center gap-2 pb-1 border-b border-rose-500/20">
+                          <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
                           <span>{children}</span>
                         </span>
                       );
@@ -325,8 +464,8 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
 
                     if (upper.includes('EXEMPLO PRÁTICO') || upper.includes('NA PRÁTICA') || upper.includes('CASO CONCRETO')) {
                       return (
-                        <span className="block mt-4 mb-2 text-xs sm:text-sm font-black uppercase tracking-widest text-sky-300 font-display flex items-center gap-1.5 pb-1 border-b border-sky-500/20">
-                          <Sparkles className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-sky-300 font-display flex items-center gap-2 pb-1 border-b border-sky-500/20">
+                          <Sparkles className="w-4 h-4 text-sky-400 shrink-0" />
                           <span>{children}</span>
                         </span>
                       );
@@ -334,8 +473,8 @@ export const AssistenteMessageItem: React.FC<AssistenteMessageItemProps> = ({
 
                     if (upper.includes('FLUXOGRAMA') || upper.includes('ESQUEMA') || upper.includes('PASSO A PASSO')) {
                       return (
-                        <span className="block mt-4 mb-2 text-xs sm:text-sm font-black uppercase tracking-widest text-purple-300 font-display flex items-center gap-1.5 pb-1 border-b border-purple-500/20">
-                          <Workflow className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+                        <span className="block mt-5 mb-2 text-sm sm:text-base font-black uppercase tracking-widest text-purple-300 font-display flex items-center gap-2 pb-1 border-b border-purple-500/20">
+                          <Workflow className="w-4 h-4 text-purple-400 shrink-0" />
                           <span>{children}</span>
                         </span>
                       );

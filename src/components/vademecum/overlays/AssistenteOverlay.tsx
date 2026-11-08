@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2, Check, Square } from 'lucide-react';
+import { Loader2, Check, Square, ArrowDown } from 'lucide-react';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -97,6 +97,8 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
   const podeUsarPremium = chatLimit.isPremium || chatLimit.isAdmin;
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const lastMsgCountRef = useRef(0);
 
   useEffect(() => {
     if (open) {
@@ -158,15 +160,28 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
     return () => clearTimeout(tId);
   }, [messages, sessionId, artifacts]);
 
+  // Controle de rolagem:
+  // - Quando o usuário envia mensagem, rola até ela
+  // - Quando a IA responde, NÃO rola continuamente para o final; mantém o foco no início da resposta
   useEffect(() => {
-    if (scrollRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
-      const isNearBottom = scrollHeight - scrollTop - clientHeight < 150;
-      if (isNearBottom || messages[messages.length - 1]?.role === 'user') {
+    if (!scrollRef.current) return;
+    const lastMsg = messages[messages.length - 1];
+    if (!lastMsg) return;
+
+    if (messages.length !== lastMsgCountRef.current) {
+      lastMsgCountRef.current = messages.length;
+      if (lastMsg.role === 'user') {
         scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
       }
     }
-  }, [messages, loading]);
+  }, [messages.length]);
+
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    const isFar = scrollHeight - scrollTop - clientHeight > 120;
+    setShowScrollBottom(isFar);
+  };
 
   // Passos de análise
   useEffect(() => {
@@ -348,16 +363,17 @@ const AssistenteOverlay = ({ open, onClose }: Props) => {
 
       const SYSTEM_INSTRUCTIONS_JURIDICO = `Você é o Tutor Jurídico de Elite do Direito Prime.
 DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
-1. TÍTULOS DESTACADOS: Estruture sempre a resposta com títulos claros de seções em Markdown:
-   - ## 🎯 CONCEITO ESSENCIAL
-   - ### 📜 O QUE DIZ A LEI (cite o texto literal entre aspas ou citação em bloco)
-   - ### 💡 EM PORTUGUÊS CLARO (explicação didática, dinâmica e sem juridiquês inútil)
-   - ### 📊 QUADRO COMPARATIVO (SEMPRE que houver 2 ou mais hipóteses, espécies, prazos, requisitos ou teorias, monte uma tabela Markdown com colunas: Requisito | Regra | Exceção/Aplicação)
-   - ### 🔄 FLUXOGRAMA PASSO A PASSO (SEMPRE esquematize a sequência lógica ou rito processual com setas: [Passo 1] ➔ [Passo 2] ➔ [Passo 3 (Decisão)])
-   - ### ⚠️ PEGADINHA DE PROVA & ATENÇÃO (detalhes cruciais cobrados em provas da OAB e concursos)
+1. TÍTULOS DESTACADOS: Estruture sempre a resposta com títulos claros de seções em Markdown (PROIBIDO usar emojis nos títulos; use apenas texto claro em caixa alta):
+   - ## CONCEITO ESSENCIAL
+   - ### O QUE DIZ A LEI (cite o texto literal entre aspas ou citação em bloco)
+   - ### EM PORTUGUÊS CLARO (explicação didática, dinâmica e sem juridiquês inútil)
+   - ### QUADRO COMPARATIVO (SEMPRE que houver 2 ou mais hipóteses, espécies, prazos, requisitos ou teorias, monte uma tabela Markdown com colunas: Requisito | Regra | Exceção/Aplicação)
+   - ### FLUXOGRAMA PASSO A PASSO (SEMPRE esquematize a sequência lógica ou rito processual entre colchetes com setas: [Passo 1] -> [Passo 2] -> [Passo 3 (Decisão)])
+   - ### PEGADINHA DE PROVA & ATENÇÃO (detalhes cruciais cobrados em provas da OAB e concursos)
 2. TABELAS: Monte tabelas Markdown completas (| Item | Regra | Exceção |) sempre que organizar dados.
-3. FLUXOGRAMAS: Use blocos com setas (--> ou ->) para descrever a linha do tempo ou rito dos atos.
-4. FOCO EM RETENÇÃO: Seja didático, dinâmico, direto ao ponto e focado na melhor retenção visual.`;
+3. FLUXOGRAMAS: Use blocos com colchetes e setas: [Fato Ocorrido] -> [Existe Lei Anterior?] -> [Aplicação da Pena].
+4. SEM EMOJIS: Não utilize emojis infantis nos títulos nem nas listas; o sistema renderiza ícones SVG oficiais para cada seção.
+5. FOCO EM RETENÇÃO E TIPOGRAFIA: Seja didático, dinâmico, direto ao ponto e focado na melhor retenção visual.`;
 
       const payloadMessages = [
         { role: 'system', content: SYSTEM_INSTRUCTIONS_JURIDICO },
@@ -769,7 +785,11 @@ DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
             )}
 
             {/* Messages Area */}
-            <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4">
+            <div
+              ref={scrollRef}
+              onScroll={handleScroll}
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4 relative"
+            >
               <div className={isDesktop ? 'max-w-3xl mx-auto w-full' : 'contents'}>
                 {messages.length === 0 && !loading && (
                   <AssistenteEmptyState
@@ -848,6 +868,31 @@ DIRETRIZES DE RESPOSTA DIDÁTICA, DINÂMICA E VISUAL:
                 </button>
               </div>
             )}
+
+            {/* Botão flutuante sutil: Ir para baixo */}
+            <AnimatePresence>
+              {showScrollBottom && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.85, y: 8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.85, y: 8 }}
+                  className="absolute bottom-[92px] right-4 sm:right-8 z-30 pointer-events-auto"
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.light();
+                      scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/95 hover:bg-zinc-800 text-zinc-200 hover:text-white border border-white/15 shadow-xl backdrop-blur-md text-xs font-semibold active:scale-95 transition-all shadow-black/60"
+                    title="Rolar para o final"
+                  >
+                    <ArrowDown className="w-3.5 h-3.5 text-rose-500 animate-bounce" />
+                    <span className="text-[11px] font-mono">Ir para baixo</span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Input area */}
             <AssistenteInputBar

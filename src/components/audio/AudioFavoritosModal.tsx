@@ -78,7 +78,7 @@ export const AudioFavoritosModal: React.FC<AudioFavoritosModalProps> = ({
   const totalFavoritos = isPurple ? favoritosLeis.length : aulasFavoritas.length;
 
   const handleTocarTodas = () => {
-    haptic.impactMedium();
+    haptic.medium();
     if (isPurple) {
       if (favoritosLeis.length > 0) {
         if (onPlayTrack) onPlayTrack(favoritosLeis[0]);

@@ -139,9 +139,9 @@ const Audioaulas = () => {
           totalAulas={areaAtual ? state.daArea.length : state.aulas.length}
           totalAreas={state.areas?.length || 12}
           totalFavoritas={state.favoritos?.size || 0}
-          totalRecentes={state.historicoRecentes?.length || 0}
-          aulasRecentes={state.historicoRecentes}
-          onLimparRecentes={state.limparRecentes}
+          totalRecentes={0}
+          aulasRecentes={[]}
+          onLimparRecentes={() => {}}
           onTocarAula={state.handleTocarAula}
           onAlternarFavoritoAula={state.alternarFavorito}
           onBuscar={() => state.setAba('buscar')}

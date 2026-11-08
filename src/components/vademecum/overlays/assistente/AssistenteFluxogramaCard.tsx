@@ -48,12 +48,14 @@ function parseFluxoSteps(rawContent: string): FluxoStep[] | null {
       return rawSteps.map((s, idx) => {
         const isDecision = s.toLowerCase().includes('?') || s.toLowerCase().startsWith('se ') || s.includes('decisão');
         const colonIdx = s.indexOf(':');
-        if (colonIdx > 0 && colonIdx < 30) {
+        if (colonIdx > 0 && colonIdx <= 18) {
+          const prefix = s.slice(0, colonIdx).trim();
+          const rest = s.slice(colonIdx + 1).trim();
           return {
             id: idx + 1,
-            label: s.slice(0, colonIdx).trim(),
-            sublabel: s.slice(colonIdx + 1).trim(),
-            isDecision,
+            label: rest || prefix,
+            badge: rest ? prefix : undefined,
+            isDecision: isDecision || /^(sim|não|nao|se|condição)/i.test(prefix),
           };
         }
         return {
@@ -196,23 +198,25 @@ export const AssistenteFluxogramaCard: React.FC<AssistenteFluxogramaCardProps> =
                       : 'bg-zinc-900/80 border-white/10 hover:border-white/20'
                   } shadow-md backdrop-blur-sm`}
                 >
-                  <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
                     <span
-                      className={`text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-md font-mono ${
-                        isFirst
-                          ? 'bg-rose-500/20 text-rose-300'
+                      className={`text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-md font-mono ${
+                        step.badge
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          : isFirst
+                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                           : isLast
-                          ? 'bg-emerald-500/20 text-emerald-300'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                           : step.isDecision
-                          ? 'bg-amber-500/20 text-amber-300'
-                          : 'bg-white/5 text-zinc-400'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          : 'bg-white/5 text-zinc-400 border border-white/10'
                       }`}
                     >
-                      {isFirst ? 'Início / Gatilho' : isLast ? 'Resultado / Conclusão' : step.isDecision ? 'Decisão / Ponto Crítico' : `Etapa ${step.id}`}
+                      {step.badge || (isFirst ? 'Início / Fato' : isLast ? 'Resultado / Conclusão' : step.isDecision ? 'Ponto Crítico / Análise' : `Etapa ${step.id}`)}
                     </span>
                   </div>
 
-                  <p className="font-bold text-zinc-100 text-xs sm:text-sm leading-snug">
+                  <p className="font-bold text-white text-sm sm:text-[15px] leading-snug">
                     {step.label}
                   </p>
 

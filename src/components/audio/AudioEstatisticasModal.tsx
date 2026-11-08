@@ -220,7 +220,7 @@ export const AudioEstatisticasModal: React.FC<AudioEstatisticasModalProps> = ({
                     <Headphones className="w-4 h-4 text-zinc-300" />
                   </div>
                   <div>
-                    <div className="text-xl sm:text-2xl font-black text-white">{stats.artigosOuvidosCount}</div>
+                    <div className="text-xl sm:text-2xl font-black text-white">{stats.artigosOuvidosCount ?? Object.keys(stats.tracksStats || {}).length}</div>
                     <div className="text-[11px] text-zinc-400 mt-0.5">Áudios reproduzidos</div>
                   </div>
                 </div>

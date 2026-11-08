@@ -8,6 +8,9 @@ export interface AulaAudio {
   url_audio: string | null;
   imagem_miniatura?: string | null;
   tag?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  [key: string]: any;
 }
 
 export const AUDIOAULAS_ACERVO_INICIAL: AulaAudio[] = [

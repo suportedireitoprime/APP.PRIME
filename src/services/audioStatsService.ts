@@ -7,6 +7,7 @@ export interface TrackPlayStat {
   id: string;
   titulo: string;
   leiNome: string;
+  leiSlug?: string;
   artigoNumero?: string;
   tipo: 'lei' | 'aula';
   totalSegundos: number;
@@ -23,6 +24,7 @@ export interface AudioStatsData {
   dataHoje: string; // YYYY-MM-DD
   tracksStats: Record<string, TrackPlayStat>;
   trilhasConcluidas: string[];
+  artigosOuvidosCount?: number;
 }
 
 const STORAGE_KEY = 'vacatio_audio_stats_v2';

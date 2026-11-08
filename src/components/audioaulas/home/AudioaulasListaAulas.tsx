@@ -1501,24 +1501,26 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
 
     return (
       <div className="relative mx-auto w-full max-w-350 px-4 space-y-3.5 sm:space-y-4 mt-1 sm:mt-2 lg:px-10 2xl:max-w-[1600px] pb-24">
-        {/* Imagem Majestosa da Deusa Têmis Vazada no Fundo Central da Trilha */}
-        <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
-          <img
-            src="/images/gamificacao/deusa_temis_vazada.webp"
-            alt=""
-            aria-hidden="true"
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-20 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.28)] pointer-events-none"
-            style={{
-              maskImage:
-                "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
-              WebkitMaskImage:
-                "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
-            }}
-          />
-        </div>
+        {/* Imagem Majestosa da Deusa Têmis Vazada no Fundo Central da Trilha (Apenas no Hub) */}
+        {capituloSelecionado === null && (
+          <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
+            <img
+              src="/images/gamificacao/deusa_temis_vazada.webp"
+              alt=""
+              aria-hidden="true"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-20 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.28)] pointer-events-none"
+              style={{
+                maskImage:
+                  "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)",
+              }}
+            />
+          </div>
+        )}
 
         <div className="relative z-10 space-y-3 sm:space-y-4">
           {/* Painel Compacto de Produtividade da Disciplina (exibido apenas na lista de capítulos) */}
@@ -1775,8 +1777,8 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                           onClick={() => handleSelecionarCapitulo(tema)}
                           className={`group relative flex flex-col justify-between gap-3 p-4 sm:p-4.5 rounded-2xl text-left border transition-all duration-200 ${
                             contemAulaTocando
-                              ? "bg-primary/15 border-primary/40 shadow-lg shadow-primary/15"
-                              : "bg-white/3 hover:bg-white/6 border-white/10 hover:border-primary/40"
+                              ? "bg-[#181e2b] border-primary/60 shadow-lg shadow-primary/15"
+                              : "bg-[#141518] hover:bg-[#181920] border-white/10 hover:border-primary/40"
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3 w-full">
@@ -1963,7 +1965,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                         value={buscaAula}
                         onChange={(e) => setBuscaAula(e.target.value)}
                         placeholder={placeholderAula}
-                        className="pl-12 pr-12 h-14 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all"
+                        className="pl-12 pr-12 h-14 rounded-2xl bg-[#141518] border border-white/10 focus:border-primary/50 text-[15px] font-medium text-white placeholder:text-zinc-400 shadow-sm transition-all"
                       />
                       <button
                         type="button"
@@ -2043,11 +2045,11 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                   </div>
                 </div>
 
-                {/* Conteúdo: Lista de Aulas estilo Resumos com Nós Numerados */}
+                {/* Conteúdo: Lista de Aulas 100% Sólida e Responsiva */}
                 <div className="max-w-5xl mx-auto px-1 sm:px-4 pt-2">
                   {/* Card Resumo de Métricas e Progresso do Capítulo */}
                   {!isShimmering && contagemStatus.todas > 0 && (
-                    <div className="mb-4 sm:mb-5 p-3.5 sm:p-4.5 rounded-2xl bg-white/4 border border-white/10 backdrop-blur-md shadow-md space-y-3">
+                    <div className="mb-4 sm:mb-5 p-3.5 sm:p-4.5 rounded-2xl bg-[#141518] border border-white/10 shadow-lg space-y-3">
                       <div className="flex items-center justify-between gap-3 flex-wrap">
                         <div className="flex items-center gap-3 min-w-0">
                           <div
@@ -2083,7 +2085,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                     ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
                                     : pctCap > 0
                                     ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                                    : "bg-white/5 text-zinc-400 border-white/10",
+                                    : "bg-[#1c1d22] text-zinc-400 border-white/10",
                                 )}
                               >
                                 {pctCap}% CONCLUÍDO
@@ -2141,7 +2143,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                 "px-2.5 py-1 rounded-lg text-xs font-semibold transition-all border active:scale-95",
                                 ativo
                                   ? "bg-primary text-white border-primary shadow-sm shadow-primary/20"
-                                  : "bg-white/5 text-zinc-400 border-white/5 hover:bg-white/10 hover:text-white",
+                                  : "bg-[#1c1d22] text-zinc-400 border-white/10 hover:bg-white/10 hover:text-white",
                               )}
                             >
                               {chip.label}
@@ -2157,15 +2159,12 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                       {[1, 2, 3, 4, 5].map((idx) => (
                         <div
                           key={idx}
-                          className="flex items-center gap-3.5 p-3 rounded-2xl bg-white/2 border border-white/5 animate-pulse"
+                          className="w-full flex items-center gap-3.5 p-3.5 sm:p-4 rounded-2xl bg-[#141518] border border-white/10 animate-pulse"
                         >
-                          <div className="w-8 h-8 rounded-full bg-white/10 shrink-0" />
-                          <div className="flex-1 flex items-center gap-3 p-3 rounded-xl bg-white/2 border border-white/4">
-                            <div className="w-10 h-10 rounded-full bg-white/10 shrink-0" />
-                            <div className="flex-1 space-y-2 min-w-0">
-                              <div className="h-4 bg-white/10 rounded w-3/4" />
-                              <div className="h-3 bg-white/5 rounded w-1/4" />
-                            </div>
+                          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white/10 shrink-0" />
+                          <div className="flex-1 space-y-2 min-w-0">
+                            <div className="h-4 bg-white/10 rounded w-3/4" />
+                            <div className="h-3 bg-white/5 rounded w-1/4" />
                           </div>
                         </div>
                       ))}
@@ -2194,8 +2193,8 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                       )}
                     </div>
                   ) : (
-                    <div className="relative py-4 sm:py-6 w-full min-w-0 max-w-full overflow-hidden">
-                      <div className="relative space-y-4 ml-1 sm:ml-4 pb-12 z-[2]">
+                    <div className="relative py-3 sm:py-5 w-full min-w-0 max-w-full overflow-hidden">
+                      <div className="relative space-y-3 sm:space-y-3.5 pb-12 z-[2]">
                         <AnimatePresence mode="popLayout">
                           {aulasProcessadas.map((a, i) => {
                             const numero = String(
@@ -2219,45 +2218,23 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                               <motion.div
                                 layout
                                 key={a.id}
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -10 }}
-                                transition={{ duration: 0.2 }}
-                                className="flex items-center gap-2.5 sm:gap-4"
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -8 }}
+                                transition={{ duration: 0.18 }}
+                                className="w-full"
                               >
-                                {/* Nó da Linha do Tempo com Estado de Conclusão */}
+                                {/* Card da Aula 100% Sólido e Responsivo */}
                                 <div
                                   className={cn(
-                                    "w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 flex items-center justify-center text-xs font-bold shrink-0 transition-all shadow-md",
+                                    "relative w-full overflow-hidden flex flex-col justify-between p-3.5 sm:p-4 rounded-2xl border transition-all text-left group shadow-md select-none",
                                     isTocando
-                                      ? "bg-primary/20 text-primary border-primary shadow-primary/20"
+                                      ? "border-primary/80 bg-[#161b26] shadow-primary/10"
                                       : isFav
-                                      ? "bg-[#ef4444]/20 text-[#ef4444] border-[#ef4444]"
+                                      ? "bg-[#18151b] shadow-sm border-rose-500/40"
                                       : concluida
-                                      ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/60"
-                                      : "bg-card text-muted-foreground border-border/80",
-                                  )}
-                                >
-                                  {isTocando ? (
-                                    <EqualizadorAnimado cor={palette.primary} />
-                                  ) : concluida ? (
-                                    <Check className="w-4 h-4 text-emerald-400" strokeWidth={3} />
-                                  ) : (
-                                    <span>{numero}</span>
-                                  )}
-                                </div>
-
-                                {/* Card da Aula com Barra de Progresso e Métricas Completas */}
-                                <div
-                                  className={cn(
-                                    "relative min-h-[92px] sm:min-h-[98px] overflow-hidden flex-1 min-w-0 flex flex-col justify-between p-3 sm:p-3.5 rounded-2xl border transition-all text-left group shadow-sm select-none",
-                                    isTocando
-                                      ? "border-primary/60 bg-primary/[0.08] shadow-md shadow-primary/10"
-                                      : isFav
-                                      ? "bg-card shadow-sm border-rose-500/30"
-                                      : concluida
-                                      ? "border-emerald-500/30 bg-emerald-500/[0.04] hover:bg-emerald-500/[0.08]"
-                                      : "border-border/50 bg-card/40 hover:bg-card/60",
+                                      ? "border-emerald-500/40 bg-[#121915] hover:bg-[#142018]"
+                                      : "border-white/10 bg-[#141518] hover:bg-[#191a20]",
                                   )}
                                   style={{
                                     borderColor: isTocando
@@ -2267,12 +2244,15 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                       : undefined,
                                   }}
                                 >
-                                  <div
-                                    className="absolute inset-y-0 left-0 w-1 opacity-20 group-hover:opacity-100 transition-opacity"
-                                    style={{
-                                      background: `linear-gradient(to bottom, ${palette.primary}, transparent)`,
-                                    }}
-                                  />
+                                  {/* Indicador de reprodução ativo */}
+                                  {isTocando && (
+                                    <div
+                                      className="absolute inset-y-0 left-0 w-1"
+                                      style={{
+                                        background: `linear-gradient(to bottom, ${palette.primary}, transparent)`,
+                                      }}
+                                    />
+                                  )}
 
                                   {/* Linha Principal de Conteúdo */}
                                   <div
@@ -2282,38 +2262,34 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                       handleTocarAula(a);
                                     }}
                                   >
-                                    {/* Círculo do Ícone */}
-                                    <div className="flex flex-col items-center justify-center shrink-0 w-10 sm:w-11">
-                                      <div
-                                        className={cn(
-                                          "w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border overflow-hidden shadow-inner shrink-0 transition-colors",
-                                          isTocando
-                                            ? "bg-primary/20 border-primary text-primary"
-                                            : concluida
-                                            ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400"
-                                            : "bg-white/5 border-white/10 text-white/80 group-hover:text-white",
-                                        )}
-                                      >
-                                        {isTocando ? (
-                                          <Headphones className="w-5 h-5 text-primary animate-pulse" />
-                                        ) : concluida ? (
-                                          <Check className="w-5 h-5 text-emerald-400" strokeWidth={2.5} />
-                                        ) : (
-                                          <FileText
-                                            className="w-5 h-5 transition-colors select-none"
-                                            strokeWidth={1.8}
-                                            aria-hidden="true"
-                                          />
-                                        )}
-                                      </div>
+                                    {/* Badge Numerado / Ícone de Status da Aula */}
+                                    <div
+                                      className={cn(
+                                        "w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center shrink-0 border transition-all shadow-sm",
+                                        isTocando
+                                          ? "bg-primary/20 border-primary text-primary"
+                                          : concluida
+                                          ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400"
+                                          : isFav
+                                          ? "bg-rose-500/15 border-rose-500/40 text-rose-300"
+                                          : "bg-[#1c1d22] border-white/10 text-zinc-300 group-hover:text-white group-hover:border-white/20",
+                                      )}
+                                    >
+                                      {isTocando ? (
+                                        <EqualizadorAnimado cor={palette.primary} />
+                                      ) : concluida ? (
+                                        <Check className="w-5 h-5 text-emerald-400" strokeWidth={2.5} />
+                                      ) : (
+                                        <span className="font-mono font-bold text-xs sm:text-sm tracking-tight">{numero}</span>
+                                      )}
                                     </div>
 
-                                    {/* Informações da Aula */}
+                                    {/* Informações da Aula (Título e Métricas com largura máxima) */}
                                     <div className="min-w-0 flex-1 flex flex-col justify-center">
                                       <h3
                                         className={cn(
                                           "text-sm sm:text-base font-medium font-sans wrap-break-word leading-snug line-clamp-2 transition-colors",
-                                          isTocando ? "text-primary font-semibold" : "text-foreground",
+                                          isTocando ? "text-primary font-bold" : "text-zinc-100 group-hover:text-white",
                                         )}
                                       >
                                         {formatarTituloAula(a.titulo) || a.titulo}
@@ -2336,7 +2312,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                             EM ANDAMENTO • {pct}%
                                           </span>
                                         ) : (
-                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium text-zinc-400 bg-white/5 border border-white/10 shrink-0">
+                                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium text-zinc-400 bg-[#1c1d22] border border-white/10 shrink-0">
                                             NÃO OUVIDA
                                           </span>
                                         )}
@@ -2357,8 +2333,8 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                       </div>
                                     </div>
 
-                                    {/* Ações: Marcar Concluída + Favorito + Chevron */}
-                                    <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                                    {/* Ações: Marcar Concluída + Favorito (Sem o Chevron) */}
+                                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                                       {/* Botão de Marcar/Desmarcar como Concluída */}
                                       <button
                                         type="button"
@@ -2373,10 +2349,10 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                           }
                                         }}
                                         className={cn(
-                                          "p-1.5 rounded-xl border transition-all active:scale-90",
+                                          "w-8 h-8 sm:w-9 sm:h-9 rounded-xl border flex items-center justify-center transition-all active:scale-90",
                                           concluida
                                             ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/30"
-                                            : "bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10",
+                                            : "bg-[#1c1d22] border-white/10 text-zinc-400 hover:text-white hover:bg-white/10",
                                         )}
                                         title={concluida ? "Marcar como não ouvida" : "Marcar como ouvida"}
                                         aria-label={concluida ? "Marcar como não ouvida" : "Marcar como ouvida"}
@@ -2392,7 +2368,7 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                           haptic.selection();
                                           alternarFavorito(a);
                                         }}
-                                        className="p-1.5 rounded-xl hover:bg-white/10 active:scale-90 transition-all"
+                                        className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-white/10 bg-[#1c1d22] flex items-center justify-center hover:bg-white/10 active:scale-90 transition-all"
                                         title={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
                                         aria-label={isFav ? "Remover dos favoritos" : "Adicionar aos favoritos"}
                                       >
@@ -2402,11 +2378,6 @@ export const AudioaulasListaAulas = React.memo(function AudioaulasListaAulas({
                                           <Heart className="w-4 h-4 text-zinc-400 hover:text-white" />
                                         )}
                                       </button>
-
-                                      <ChevronRight
-                                        className="w-4 h-4 text-zinc-500 transition-transform duration-300 group-hover:translate-x-0.5"
-                                        style={{ color: palette.primary }}
-                                      />
                                     </div>
                                   </div>
 

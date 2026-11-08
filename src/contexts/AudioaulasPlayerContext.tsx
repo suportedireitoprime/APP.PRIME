@@ -32,6 +32,11 @@ export interface AulaAudio {
   descricao: string | null;
   url_audio: string | null;
   r2_key?: string | null;
+  imagem_miniatura?: string | null;
+  tag?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  [key: string]: any;
 }
 
 interface AudioaulasPlayerContextType {
