@@ -29,6 +29,7 @@ const Questoes = () => {
   const { areas: rawAreas } = useQuestoesAreas();
 
   const [filtroAberto, setFiltroAberto] = useState(false);
+  const [areaFiltroSelecionada, setAreaFiltroSelecionada] = useState<string | null>(null);
 
   const materiasAreas = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -159,7 +160,7 @@ const Questoes = () => {
                 </p>
               </div>
               <span className="text-[10px] text-muted-foreground font-medium">
-                Toque para abrir a trilha
+                Toque para filtrar por área
               </span>
             </div>
 
@@ -175,7 +176,7 @@ const Questoes = () => {
                     whileTap={{ scale: 0.97 }}
                     onClick={() => {
                       haptic.selection();
-                      navigate(`/questoes/area/${area.slug}`);
+                      setAreaFiltroSelecionada(area.area);
                     }}
                     className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-primary/50 hover:bg-zinc-850/80 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md min-h-[135px] focus-visible:outline-none"
                   >
@@ -189,7 +190,7 @@ const Questoes = () => {
                       <span
                         className="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800/90 text-zinc-400 border border-zinc-700/50 shrink-0"
                       >
-                        {area.total_questoes > 0 ? `${area.total_questoes.toLocaleString('pt-BR')} q.` : 'Trilha'}
+                        {area.total_questoes > 0 ? `${area.total_questoes.toLocaleString('pt-BR')} q.` : 'Filtrar'}
                       </span>
                     </div>
 
@@ -202,7 +203,7 @@ const Questoes = () => {
                       <p
                         className="text-[11px] sm:text-xs text-zinc-500 mt-2 group-hover:text-primary transition-colors flex items-center gap-1 font-medium"
                       >
-                        <span>Acessar trilha</span>
+                        <span>Filtrar questões</span>
                         <ChevronRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
                       </p>
                     </div>
@@ -217,13 +218,19 @@ const Questoes = () => {
         </div>
       </div>
 
-      {/* Filtro completo */}
+      {/* Filtro completo e Filtro Dedicado por Área */}
       <QuestoesFiltroSheet
-        aberto={filtroAberto}
-        onFechar={() => setFiltroAberto(false)}
-        onAplicar={() => {
+        aberto={filtroAberto || Boolean(areaFiltroSelecionada)}
+        disciplinaFixa={areaFiltroSelecionada || undefined}
+        onFechar={() => {
           setFiltroAberto(false);
-          navigate('/questoes/praticar?filtro=1');
+          setAreaFiltroSelecionada(null);
+        }}
+        onAplicar={(f) => {
+          const areaParam = areaFiltroSelecionada ? `&area=${encodeURIComponent(areaFiltroSelecionada)}` : '';
+          setFiltroAberto(false);
+          setAreaFiltroSelecionada(null);
+          navigate(`/questoes/praticar?filtro=1${areaParam}`);
         }}
       />
     </div>

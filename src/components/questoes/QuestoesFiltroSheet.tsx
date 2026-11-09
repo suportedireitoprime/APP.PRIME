@@ -229,7 +229,19 @@ const QuestoesFiltroSheet = ({
     (f.status?.length > 0 ? 1 : 0) +
     (f.quantidade ? 1 : 0);
 
-  const limpar = () => setF({ ...FILTRO_VAZIO });
+  const limpar = () => {
+    if (disciplinaFixa) {
+      setF({
+        ...FILTRO_VAZIO,
+        segmentos: ['concursos', 'oab', 'conceituais', 'policiais'],
+        disciplinas: [disciplinaFixa],
+      });
+      toast.info(`Filtro redefinido para ${disciplinaFixa}`);
+    } else {
+      setF({ ...FILTRO_VAZIO });
+      toast.info('Filtro limpo');
+    }
+  };
 
   const aplicar = () => {
     const nextF: QuestoesFiltro = {
@@ -316,13 +328,19 @@ const QuestoesFiltroSheet = ({
               <StepRow
                 step={2}
                 label="Disciplinas"
-                hint={disciplinaFixa ? disciplinaFixa : f.disciplinas.length ? `${f.disciplinas.length} selecionada(s)` : 'Todas as disciplinas'}
+                hint={disciplinaFixa ? `${disciplinaFixa} (Fixada nesta área)` : f.disciplinas.length ? `${f.disciplinas.length} selecionada(s)` : 'Todas as disciplinas'}
                 locked={!f.segmentos.length}
-                active={proximo === 'disciplinas'}
+                active={proximo === 'disciplinas' && !disciplinaFixa}
                 done={!!f.disciplinas.length}
                 badge={f.disciplinas.length}
                 lockedMessage="Escolha o segmento primeiro."
-                onClick={() => setPasso('disciplinas')}
+                onClick={() => {
+                  if (disciplinaFixa) {
+                    toast.info(`Disciplina fixada em ${disciplinaFixa}`);
+                    return;
+                  }
+                  setPasso('disciplinas');
+                }}
               />
               <StepRow
                 step={3}
