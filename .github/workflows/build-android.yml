@@ -29,8 +29,16 @@ jobs:
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
+        continue-on-error: true
+        id: setup-bun
         with:
           bun-version: latest
+
+      - name: Fallback Setup Bun via npm if needed
+        if: steps.setup-bun.outcome != 'success'
+        run: |
+          echo "⚠️ setup-bun via GitHub release falhou. Instalando Bun via npm registry..."
+          npm install -g bun
 
       - name: Setup JDK 21
         uses: actions/setup-java@v4
