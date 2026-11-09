@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { haptic } from '@/lib/nativeHaptics';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 import {
   audiobooksTracking,
   AudiobookFavItem,
@@ -95,6 +96,39 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
   };
 
   if (!activeSheet) return null;
+
+  // ── MODO TELA CHEIA: TRILHA SEQUENCIAL DE RESUMOS (PADRÃO QUESTÕES / DRUNO) ──
+  // Padrão 0ms: sem gap superior, cabeçalho sticky no topo absoluto com botão voltar 48x48/52x52
+  if (tabAtiva === 'resumos') {
+    return (
+      <AnimatePresence>
+        <motion.div
+          key="audiobooks-trilha-resumos-fullscreen"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 0.2 }}
+          className="fixed inset-0 z-[100] w-full h-[100dvh] bg-[#07050E] overflow-y-auto overflow-x-hidden flex flex-col"
+        >
+          <AudiobooksTrilhaResumos
+            onBack={onClose}
+            onPlayResumo={(livro, capIdx) => {
+              if (onPlayResumo) {
+                onPlayResumo(livro, capIdx);
+              } else {
+                onPlayLivro(livro, capIdx);
+              }
+              onClose();
+            }}
+            onSelectLivro={(livro) => {
+              onSelectLivro(livro);
+              onClose();
+            }}
+          />
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -201,13 +235,9 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                 haptic.selection();
                 setTabAtiva('resumos');
               }}
-              className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer select-none text-center ${
-                tabAtiva === 'resumos'
-                  ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/35 border border-[#8B5CF6]'
-                  : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
-              }`}
+              className="flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer select-none text-center text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
             >
-              <BookOpen className={`w-3.5 h-3.5 ${tabAtiva === 'resumos' ? 'text-white' : 'text-[#C4B5FD]'}`} />
+              <BookOpen className="w-3.5 h-3.5 text-[#C4B5FD]" />
               <span className="truncate">Resumos</span>
             </button>
           </div>
@@ -404,24 +434,6 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* ── ABA 4: TRILHA SEQUENCIAL DE RESUMOS ── */}
-            {tabAtiva === 'resumos' && (
-              <AudiobooksTrilhaResumos
-                onPlayResumo={(livro, capIdx) => {
-                  if (onPlayResumo) {
-                    onPlayResumo(livro, capIdx);
-                  } else {
-                    onPlayLivro(livro, capIdx);
-                  }
-                  onClose();
-                }}
-                onSelectLivro={(livro) => {
-                  onSelectLivro(livro);
-                  onClose();
-                }}
-              />
             )}
           </div>
         </motion.div>

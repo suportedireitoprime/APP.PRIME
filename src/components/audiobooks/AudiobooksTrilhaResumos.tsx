@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play,
@@ -8,8 +8,8 @@ import {
   Search,
   X,
   Volume2,
+  ArrowLeft,
   Sparkles,
-  BookOpen,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { haptic } from '@/lib/nativeHaptics';
@@ -25,7 +25,7 @@ import {
 import { GalaxyBackground } from '@/components/questoes/GalaxyBackground';
 import { assetUrl } from '@/lib/assetUrl';
 
-// ── MAPEAMENTO DAS 42 CAPAS LOCAIS BUNDLED (0MS LATÊNCIA, ZERO TELA PRETA) ──
+// ── MAPEAMENTO DE CAPAS LOCAIS BUNDLED (0MS LATÊNCIA, 100% GARANTIDO) ──
 const AUDIOBOOK_COVER_FILES: Record<string, string> = {
   '1984': '1984_manual.jpg',
   'a-arte-da-guerra': 'a_arte_da_guerra_manual.jpg',
@@ -96,11 +96,198 @@ export interface TrilhaResumoItem {
 }
 
 interface AudiobooksTrilhaResumosProps {
+  onBack?: () => void;
   onPlayResumo: (livro: AudiobookLivro, capituloIndex?: number) => void;
   onSelectLivro?: (livro: AudiobookLivro) => void;
 }
 
+const NODE_HEIGHT = 310;
+const NODE_CENTER_Y = 120;
+
+// Posicionamento serpenteante em onda suave (Padrão Druno/Questões: esquerda, centro, direita, centro...)
+const getOffsetPercent = (index: number) => {
+  const cycle = index % 4;
+  switch (cycle) {
+    case 0: return 32; // Esquerda
+    case 1: return 50; // Centro
+    case 2: return 68; // Direita
+    case 3: return 50; // Centro
+    default: return 50;
+  }
+};
+
+// ── COMPONENTE ATÔMICO MEMOIZADO COM CONTENT-VISIBILITY (MÁXIMO DESEMPENHO 120FPS) ──
+const TrilhaNodeItem = memo(({
+  item,
+  index,
+  onOpenDetails,
+}: {
+  item: TrilhaResumoItem;
+  index: number;
+  onOpenDetails: (item: TrilhaResumoItem) => void;
+}) => {
+  const xPercent = getOffsetPercent(index);
+  const isEager = index < 3;
+
+  return (
+    <div
+      className="w-full relative flex items-start justify-center transform-gpu pt-4 pb-6"
+      style={{
+        height: `${NODE_HEIGHT}px`,
+        contentVisibility: 'auto',
+        containIntrinsicSize: `${NODE_HEIGHT}px`,
+      }}
+    >
+      <div
+        className="relative flex flex-col items-center cursor-pointer transition-transform duration-200 active:scale-95 group will-change-transform z-10"
+        style={{
+          marginLeft: `${(xPercent - 50) * 1.55}%`,
+        }}
+        onClick={() => {
+          haptic.impact();
+          onOpenDetails(item);
+        }}
+      >
+        {/* ── BALÃO FLUTUANTE "CONTINUAR" / "OUVIR" (PADRÃO DRUNO) ── */}
+        {item.isEmAndamento && (
+          <div className="absolute -top-11 z-30 flex flex-col items-center animate-bounce pointer-events-none">
+            <div className="px-3.5 py-1 rounded-full bg-[#1A0E2A] border-2 border-[#7C3AED] text-[#DDD6FE] font-['Plus_Jakarta_Sans',system-ui,sans-serif] font-black text-[11px] uppercase tracking-wider shadow-[0_0_20px_rgba(124,58,237,0.85)] backdrop-blur-md">
+              CONTINUAR
+            </div>
+            <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#7C3AED]" />
+          </div>
+        )}
+
+        {/* ── LIVRO 3D EM PÉ (COM PÁGINAS FÍSICAS E LOMBADA REALÍSTICA) ── */}
+        <div className="relative w-[90px] xs:w-[100px] sm:w-[112px] h-[130px] xs:h-[146px] sm:h-[162px] rounded-2xl z-20 transition-all duration-300 group-hover:-translate-y-2 transform-gpu">
+          {/* Páginas Físicas na Lateral Direita */}
+          <div
+            className="absolute top-1.5 bottom-1.5 -right-2 w-2 rounded-r-[3px] bg-gradient-to-r from-amber-50 to-zinc-200 border-r border-t border-b border-black/40 shadow-sm pointer-events-none z-0"
+            style={{
+              backgroundImage:
+                'repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px)',
+            }}
+          />
+
+          {/* Lombada 3D na Lateral Esquerda */}
+          <div className="absolute top-0 bottom-0 left-0 w-2.5 rounded-l-2xl bg-gradient-to-r from-black/60 to-transparent pointer-events-none z-20" />
+
+          {/* Capa Principal com Borda Neon e Sombra Real */}
+          <div
+            className={cn(
+              'relative w-full h-full rounded-2xl overflow-hidden border transition-all duration-300 shadow-2xl flex flex-col justify-center items-center p-2',
+              item.isConcluido
+                ? 'border-emerald-400 shadow-[0_0_24px_rgba(16,185,129,0.55)] ring-1 ring-emerald-300/40'
+                : item.isEmAndamento
+                ? 'border-[#A855F7] shadow-[0_0_28px_rgba(168,85,247,0.7)] ring-1 ring-[#C084FC]/60'
+                : 'border-white/15 bg-zinc-900/90 group-hover:border-purple-400/50'
+            )}
+            style={{ backgroundColor: '#130F24' }}
+          >
+            {/* Imagem de Capa do Livro (Full-bleed com fallback garantido) */}
+            <img
+              src={item.coverImage}
+              alt={item.livro.titulo}
+              loading={isEager ? 'eager' : 'lazy'}
+              fetchPriority={index < 2 ? 'high' : 'auto'}
+              decoding="async"
+              onError={(e) => {
+                e.currentTarget.src = assetUrl('fundamentos-da-lei.webp');
+              }}
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-500 group-hover:scale-105"
+            />
+
+            {/* Vinheta suave e reflexo diagonal */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-white/[0.18] pointer-events-none" />
+            <div className="absolute inset-0 rounded-2xl border border-white/10 pointer-events-none" />
+
+            {/* Botão Central: Checkmark / Play com Pulso */}
+            <div className="relative z-10 flex items-center justify-center">
+              {item.isConcluido ? (
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.7)] border-2 border-emerald-200">
+                  <Check className="w-5 h-5 stroke-[3]" />
+                </div>
+              ) : item.isEmAndamento ? (
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute inset-0 rounded-full bg-[#7C3AED] blur-md opacity-75 animate-ping scale-110 pointer-events-none" />
+                  <div className="relative w-11 h-11 rounded-full bg-white text-[#7C3AED] flex items-center justify-center shadow-[0_0_22px_rgba(255,255,255,0.95)] border-2 border-white transition-transform duration-300 group-hover:scale-110">
+                    <Play className="w-5 h-5 fill-current translate-x-0.5" />
+                  </div>
+                </div>
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-black/60 text-white/90 border border-white/25 flex items-center justify-center backdrop-blur-md shadow-lg group-hover:scale-105 transition-transform">
+                  <Play className="w-4 h-4 fill-white ml-0.5" />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── PEDESTAL 3D ELÍPTICO SOB O LIVRO ── */}
+        <div className="relative -mt-4 w-32 xs:w-36 sm:w-40 h-8 xs:h-9 z-10 pointer-events-none flex items-center justify-center">
+          <div
+            className={cn(
+              'absolute inset-0 rounded-[50%] blur-md transition-all duration-300',
+              item.isConcluido
+                ? 'bg-emerald-500/50 scale-105'
+                : item.isEmAndamento
+                ? 'bg-[#7C3AED]/70 scale-110'
+                : 'bg-[#1E1635]/60'
+            )}
+          />
+          <div
+            className={cn(
+              'relative w-full h-full rounded-[50%] border transition-all duration-300 shadow-xl overflow-hidden flex items-center justify-center',
+              item.isConcluido
+                ? 'bg-gradient-to-b from-emerald-500 via-emerald-700 to-emerald-950 border-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
+                : item.isEmAndamento
+                ? 'bg-gradient-to-b from-[#7C3AED] via-[#6D28D9] to-[#4C1D95] border-[#DDD6FE] shadow-[0_0_30px_rgba(124,58,237,0.85)]'
+                : 'bg-gradient-to-b from-[#251E3D] via-[#1B152F] to-[#0E0B19] border-white/10 shadow-lg'
+            )}
+          >
+            <div className="w-[84%] h-[74%] rounded-[50%] border border-white/20 bg-black/10" />
+          </div>
+        </div>
+
+        {/* ── RÓTULO ABAIXO DO PEDESTAL (PADRÃO PLUS JAKARTA SANS COM MARGEM DE SEGURANÇA) ── */}
+        <div className="mt-2.5 text-center w-full max-w-[220px] sm:max-w-[260px] px-1 space-y-1.5 flex flex-col items-center">
+          <span
+            className={cn(
+              "font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border transition-colors inline-block",
+              item.isConcluido
+                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                : item.isEmAndamento
+                ? 'bg-[#7C3AED]/25 text-[#DDD6FE] border-[#8B5CF6]/40 shadow-[0_0_12px_rgba(124,58,237,0.4)]'
+                : 'bg-white/5 text-zinc-400 border-white/10'
+            )}
+          >
+            {item.badgeLabel}
+          </span>
+
+          <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[13px] sm:text-[14px] font-bold text-white line-clamp-2 leading-snug group-hover:text-purple-200 transition-colors drop-shadow-md px-1">
+            {item.livro.titulo}
+          </p>
+
+          <div className="flex items-center justify-center gap-1.5 text-[11px] sm:text-[11.5px] font-medium text-zinc-300 font-['Plus_Jakarta_Sans',system-ui,sans-serif] max-w-full">
+            {item.isConcluido ? (
+              <span className="text-emerald-400 font-bold flex items-center gap-1">
+                <Check className="w-3.5 h-3.5 stroke-[3]" /> Concluído
+              </span>
+            ) : (
+              <span className="truncate max-w-[210px] sm:max-w-[250px]">{item.duracao} • {item.livro.autor}</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+TrilhaNodeItem.displayName = 'TrilhaNodeItem';
+
 export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = ({
+  onBack,
   onPlayResumo,
   onSelectLivro,
 }) => {
@@ -232,26 +419,61 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
 
   const progressoPct = totalObras > 0 ? Math.round((concluidosCount / totalObras) * 100) : 0;
 
-  // Alternância serpentina da Trilha (Padrão Questões / Druno)
-  const getOffsetPercent = (index: number) => {
-    const cycle = index % 4;
-    switch (cycle) {
-      case 0: return 50; // Centro
-      case 1: return 28; // Esquerda
-      case 2: return 72; // Direita
-      case 3: return 50; // Centro
-      default: return 50;
-    }
-  };
+  // Memoiza os trechos da estrada SVG para performance máxima
+  const roadSegments = useMemo(() => {
+    const segments = [];
+    for (let idx = 0; idx < livrosFiltrados.length - 1; idx++) {
+      const y1 = idx * NODE_HEIGHT + NODE_CENTER_Y;
+      const y2 = (idx + 1) * NODE_HEIGHT + NODE_CENTER_Y;
+      const x1 = getOffsetPercent(idx);
+      const x2 = getOffsetPercent(idx + 1);
+      const midY = (y1 + y2) / 2;
+      const isConcluido = livrosFiltrados[idx].isConcluido;
 
-  const NODE_HEIGHT = 220;
+      segments.push({
+        key: `road-${livrosFiltrados[idx].slug}-${idx}`,
+        d: `M ${x1}% ${y1} C ${x1}% ${midY}, ${x2}% ${midY}, ${x2}% ${y2}`,
+        cx: `${(x1 + x2) / 2}%`,
+        cy: midY,
+        isConcluido,
+      });
+    }
+    return segments;
+  }, [livrosFiltrados]);
 
   return (
-    <div className="relative w-full flex flex-col min-h-full pb-24 select-none font-['Plus_Jakarta_Sans',system-ui,sans-serif]">
+    <div className="relative w-full min-h-full flex flex-col bg-[#07050E] pb-24 select-none font-['Plus_Jakarta_Sans',system-ui,sans-serif]">
       {/* ── FUNDO CÓSMICO GALÁXIA COM ESTRELAS (PADRÃO QUESTÕES) ── */}
       <GalaxyBackground />
 
-      <div className="relative z-10 w-full max-w-[540px] md:max-w-[640px] mx-auto px-2 sm:px-6">
+      {/* ── HEADER SUPERIOR FIXO NO TOPO COM BOTÃO VOLTAR PADRÃO PREMIUM (REGRA SUPREMA 48x48 / 52x52) ── */}
+      <header className="sticky top-0 z-50 w-full px-4 sm:px-6 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 flex items-center justify-between bg-[#07050E]/95 backdrop-blur-md border-b border-white/10 shadow-xl shrink-0">
+        <button
+          type="button"
+          onClick={() => {
+            haptic.selection();
+            if (onBack) onBack();
+          }}
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-xl shrink-0"
+          aria-label="Voltar"
+        >
+          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
+        </button>
+
+        <div className="flex flex-col items-center text-center px-2 min-w-0">
+          <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-purple-300 flex items-center gap-1.5 drop-shadow-md">
+            <Headphones className="w-3.5 h-3.5 text-white" />
+            Direito Prime Audiobooks
+          </span>
+          <h1 className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] font-bold text-base sm:text-lg text-white drop-shadow-md truncate">
+            Trilha de Resumos
+          </h1>
+        </div>
+
+        <div className="w-12 sm:w-[52px] shrink-0" />
+      </header>
+
+      <div className="relative z-10 w-full max-w-[540px] md:max-w-[640px] mx-auto px-2 sm:px-6 pt-3">
         {/* ── CARD SUPERIOR DE PROGRESSO DA TRILHA (ESTILO QUESTÕES) ── */}
         <div className="flex flex-col gap-2.5 mb-5 p-3.5 sm:p-4 rounded-2xl bg-[#17122B]/85 border border-white/10 backdrop-blur-md shadow-xl">
           <div className="flex items-center justify-between gap-3">
@@ -299,10 +521,11 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
             TRILHA ESPACIAL COM LIVROS 3D SOBRE PEDESTAIS (PADRÃO QUESTÕES)
         ════════════════════════════════════════════════════════════════ */}
         <div className="relative w-full py-4 select-none">
-          {/* Pista Central Serpenteante (SVG Road contínua que conecta os nós) */}
+          {/* Pista Central Serpenteante (SVG Road contínua acelerada por hardware) */}
           <svg
-            className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
+            className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible transform-gpu"
             xmlns="http://www.w3.org/2000/svg"
+            shapeRendering="geometricPrecision"
           >
             <defs>
               <filter id="road-glow-purple" x="-20%" y="-20%" width="140%" height="140%">
@@ -314,205 +537,50 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
               </filter>
             </defs>
 
-            {livrosFiltrados.map((item, idx) => {
-              if (idx === livrosFiltrados.length - 1) return null;
-              const y1 = idx * NODE_HEIGHT + 110;
-              const y2 = (idx + 1) * NODE_HEIGHT + 110;
-              const x1 = getOffsetPercent(idx);
-              const x2 = getOffsetPercent(idx + 1);
-              const midY = (y1 + y2) / 2;
+            {roadSegments.map((seg) => (
+              <g key={seg.key}>
+                {/* Pista Asfaltada Translúcida */}
+                <path
+                  d={seg.d}
+                  fill="none"
+                  stroke="rgba(255, 255, 255, 0.07)"
+                  strokeWidth="36"
+                  strokeLinecap="round"
+                />
 
-              return (
-                <g key={`road-${item.slug}-${idx}`}>
-                  {/* Pista Asfaltada Translúcida */}
-                  <path
-                    d={`M ${x1}% ${y1} C ${x1}% ${midY}, ${x2}% ${midY}, ${x2}% ${y2}`}
-                    fill="none"
-                    stroke="rgba(255, 255, 255, 0.07)"
-                    strokeWidth="36"
-                    strokeLinecap="round"
-                  />
+                {/* Linha Guia Pontilhada Central com Neon */}
+                <path
+                  d={seg.d}
+                  fill="none"
+                  stroke={seg.isConcluido ? '#10B981' : '#A855F7'}
+                  strokeWidth="3"
+                  strokeDasharray="8 8"
+                  strokeLinecap="round"
+                  filter="url(#road-glow-purple)"
+                />
 
-                  {/* Linha Guia Pontilhada Central com Neon */}
-                  <path
-                    d={`M ${x1}% ${y1} C ${x1}% ${midY}, ${x2}% ${midY}, ${x2}% ${y2}`}
-                    fill="none"
-                    stroke={item.isConcluido ? "#10B981" : "#A855F7"}
-                    strokeWidth="3"
-                    strokeDasharray="8 8"
-                    strokeLinecap="round"
-                    filter="url(#road-glow-purple)"
-                  />
-
-                  {/* Pérola de Trilha no Ponto Médio */}
-                  <circle
-                    cx={`${(x1 + x2) / 2}%`}
-                    cy={midY}
-                    r={item.isConcluido ? "4" : "3"}
-                    fill={item.isConcluido ? "#34D399" : "#C084FC"}
-                    filter="url(#road-glow-purple)"
-                  />
-                </g>
-              );
-            })}
+                {/* Pérola de Trilha no Ponto Médio */}
+                <circle
+                  cx={seg.cx}
+                  cy={seg.cy}
+                  r={seg.isConcluido ? '4' : '3'}
+                  fill={seg.isConcluido ? '#34D399' : '#C084FC'}
+                  filter="url(#road-glow-purple)"
+                />
+              </g>
+            ))}
           </svg>
 
-          {/* Nós da Trilha: Livros 3D em Pé sobre Pedestais Elípticos */}
+          {/* Nós da Trilha: Componentes Memoizados com content-visibility para Fluidez 120fps */}
           <div className="relative z-10 flex flex-col">
-            {livrosFiltrados.map((item, idx) => {
-              const xPercent = getOffsetPercent(idx);
-
-              return (
-                <div
-                  key={item.slug}
-                  className="w-full relative flex items-center justify-center"
-                  style={{ height: `${NODE_HEIGHT}px` }}
-                >
-                  {/* Contêiner do Nó posicionado horizontalmente pela curva da estrada */}
-                  <div
-                    className="relative flex flex-col items-center cursor-pointer transition-transform duration-300 active:scale-95 group"
-                    style={{
-                      marginLeft: `${(xPercent - 50) * 1.55}%`,
-                    }}
-                    onClick={() => {
-                      haptic.impact();
-                      setLivroSelecionado(item);
-                    }}
-                  >
-                    {/* ── BALÃO FLUTUANTE "CONTINUAR" / "OUVIR" (PADRÃO DRUNO) ── */}
-                    {item.isEmAndamento && (
-                      <div className="absolute -top-11 z-30 flex flex-col items-center animate-bounce">
-                        <div className="px-3.5 py-1 rounded-full bg-[#1A0E2A] border-2 border-[#7C3AED] text-[#DDD6FE] font-['Plus_Jakarta_Sans',system-ui,sans-serif] font-black text-[11px] uppercase tracking-wider shadow-[0_0_20px_rgba(124,58,237,0.85)] backdrop-blur-md">
-                          CONTINUAR
-                        </div>
-                        <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-t-[7px] border-t-[#7C3AED]" />
-                      </div>
-                    )}
-
-                    {/* ── LIVRO 3D EM PÉ (COM PÁGINAS FÍSICAS E LOMBADA REALÍSTICA) ── */}
-                    <div className="relative w-[90px] xs:w-[100px] sm:w-[112px] h-[130px] xs:h-[146px] sm:h-[162px] rounded-2xl z-20 transition-all duration-300 group-hover:-translate-y-2">
-                      {/* Páginas Físicas na Lateral Direita */}
-                      <div
-                        className="absolute top-1.5 bottom-1.5 -right-2 w-2 rounded-r-[3px] bg-gradient-to-r from-amber-50 to-zinc-200 border-r border-t border-b border-black/40 shadow-sm pointer-events-none z-0"
-                        style={{
-                          backgroundImage:
-                            'repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0px, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px)',
-                        }}
-                      />
-
-                      {/* Lombada 3D na Lateral Esquerda */}
-                      <div className="absolute top-0 bottom-0 left-0 w-2.5 rounded-l-2xl bg-gradient-to-r from-black/60 to-transparent pointer-events-none z-20" />
-
-                      {/* Capa Principal com Borda Neon e Sombra Real */}
-                      <div
-                        className={cn(
-                          'relative w-full h-full rounded-2xl overflow-hidden border transition-all duration-300 shadow-2xl flex flex-col justify-center items-center p-2',
-                          item.isConcluido
-                            ? 'border-emerald-400 shadow-[0_0_24px_rgba(16,185,129,0.55)] ring-1 ring-emerald-300/40'
-                            : item.isEmAndamento
-                            ? 'border-[#A855F7] shadow-[0_0_28px_rgba(168,85,247,0.7)] ring-1 ring-[#C084FC]/60'
-                            : 'border-white/15 bg-zinc-900/90 group-hover:border-purple-400/50'
-                        )}
-                        style={{ backgroundColor: '#130F24' }}
-                      >
-                        {/* Imagem de Capa do Livro (Full-bleed com fallback garantido) */}
-                        <img
-                          src={item.coverImage}
-                          alt={item.livro.titulo}
-                          loading="lazy"
-                          decoding="async"
-                          onError={(e) => {
-                            e.currentTarget.src = assetUrl('fundamentos-da-lei.webp');
-                          }}
-                          className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-transform duration-500 group-hover:scale-105"
-                        />
-
-                        {/* Vinheta suave e reflexo diagonal */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30 pointer-events-none" />
-                        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-white/[0.18] pointer-events-none" />
-                        <div className="absolute inset-0 rounded-2xl border border-white/10 pointer-events-none" />
-
-                        {/* Botão Central: Checkmark / Play com Pulso */}
-                        <div className="relative z-10 flex items-center justify-center">
-                          {item.isConcluido ? (
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.7)] border-2 border-emerald-200">
-                              <Check className="w-5 h-5 stroke-[3]" />
-                            </div>
-                          ) : item.isEmAndamento ? (
-                            <div className="relative flex items-center justify-center">
-                              <div className="absolute inset-0 rounded-full bg-[#7C3AED] blur-md opacity-75 animate-ping scale-110" />
-                              <div className="relative w-11 h-11 rounded-full bg-white text-[#7C3AED] flex items-center justify-center shadow-[0_0_22px_rgba(255,255,255,0.95)] border-2 border-white transition-transform duration-300 group-hover:scale-110">
-                                <Play className="w-5 h-5 fill-current translate-x-0.5" />
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="w-9 h-9 rounded-full bg-black/60 text-white/90 border border-white/25 flex items-center justify-center backdrop-blur-md shadow-lg group-hover:scale-105 transition-transform">
-                              <Play className="w-4 h-4 fill-white ml-0.5" />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* ── PEDESTAL 3D ELÍPTICO SOB O LIVRO (PADRÃO DRUNO) ── */}
-                    <div className="relative -mt-4 w-32 xs:w-36 sm:w-40 h-8 xs:h-9 z-10 pointer-events-none flex items-center justify-center">
-                      <div
-                        className={cn(
-                          'absolute inset-0 rounded-[50%] blur-md transition-all duration-300',
-                          item.isConcluido
-                            ? 'bg-emerald-500/50 scale-105'
-                            : item.isEmAndamento
-                            ? 'bg-[#7C3AED]/70 scale-110'
-                            : 'bg-[#1E1635]/60'
-                        )}
-                      />
-                      <div
-                        className={cn(
-                          'relative w-full h-full rounded-[50%] border transition-all duration-300 shadow-xl overflow-hidden flex items-center justify-center',
-                          item.isConcluido
-                            ? 'bg-gradient-to-b from-emerald-500 via-emerald-700 to-emerald-950 border-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
-                            : item.isEmAndamento
-                            ? 'bg-gradient-to-b from-[#7C3AED] via-[#6D28D9] to-[#4C1D95] border-[#DDD6FE] shadow-[0_0_30px_rgba(124,58,237,0.85)]'
-                            : 'bg-gradient-to-b from-[#251E3D] via-[#1B152F] to-[#0E0B19] border-white/10 shadow-lg'
-                        )}
-                      >
-                        <div className="w-[84%] h-[74%] rounded-[50%] border border-white/20 bg-black/10" />
-                      </div>
-                    </div>
-
-                    {/* ── RÓTULO ABAIXO DO PEDESTAL (PADRÃO PLUS JAKARTA SANS) ── */}
-                    <div className="mt-2 text-center max-w-[155px] sm:max-w-[180px] space-y-1 flex flex-col items-center">
-                      <span
-                        className={cn(
-                          "font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[10px] sm:text-[10.5px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border transition-colors inline-block",
-                          item.isConcluido
-                            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                            : item.isEmAndamento
-                            ? 'bg-[#7C3AED]/25 text-[#DDD6FE] border-[#8B5CF6]/40 shadow-[0_0_12px_rgba(124,58,237,0.4)]'
-                            : 'bg-white/5 text-zinc-400 border-white/10'
-                        )}
-                      >
-                        {item.badgeLabel}
-                      </span>
-
-                      <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[12.5px] sm:text-[13.5px] font-bold text-white line-clamp-2 leading-snug group-hover:text-purple-200 transition-colors drop-shadow-sm px-1">
-                        {item.livro.titulo}
-                      </p>
-
-                      <div className="flex items-center gap-1.5 text-[10.5px] sm:text-[11px] font-medium text-zinc-400 font-['Plus_Jakarta_Sans',system-ui,sans-serif]">
-                        {item.isConcluido ? (
-                          <span className="text-emerald-400 font-bold flex items-center gap-1">
-                            <Check className="w-3 h-3 stroke-[3]" /> Concluído
-                          </span>
-                        ) : (
-                          <span className="truncate">{item.duracao} • {item.livro.autor}</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {livrosFiltrados.map((item, idx) => (
+              <TrilhaNodeItem
+                key={item.slug}
+                item={item}
+                index={idx}
+                onOpenDetails={setLivroSelecionado}
+              />
+            ))}
 
             {livrosFiltrados.length === 0 && (
               <div className="py-16 text-center text-zinc-400 text-xs font-['Plus_Jakarta_Sans',system-ui,sans-serif]">

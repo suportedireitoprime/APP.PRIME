@@ -1387,17 +1387,37 @@ export function AdminHojeCards() {
 
         const { data: vpEvents } = await supabase
           .from('app_events')
-          .select(`
-            id, user_id, created_at, email, event_name, metadata,
-            profiles:user_id ( display_name, is_premium )
-          `)
+          .select('id, user_id, created_at, email, event_name, metadata')
           .in('event_name', eventNames)
           .gte('created_at', startIso)
           .lt('created_at', endIso)
           .order('created_at', { ascending: false })
           .limit(100);
 
-        if (vpEvents) {
+        if (vpEvents && vpEvents.length > 0) {
+          // Busca os perfis correspondentes aos user_id e emails para obter nome, avatar e is_premium
+          const userIds = Array.from(new Set(vpEvents.map((e: any) => e.user_id).filter(Boolean))) as string[];
+          const emails = Array.from(new Set(vpEvents.map((e: any) => (e.email || '').toLowerCase().trim()).filter(Boolean))) as string[];
+
+          const [profsByIdRes, profsByEmailRes] = await Promise.all([
+            userIds.length > 0
+              ? supabase.from('profiles').select('id, display_name, email, is_premium, avatar_url').in('id', userIds)
+              : { data: [] },
+            emails.length > 0
+              ? supabase.from('profiles').select('id, display_name, email, is_premium, avatar_url').in('email', emails)
+              : { data: [] },
+          ]);
+
+          const profMap = new Map<string, any>();
+          (profsByIdRes.data || []).forEach((p: any) => {
+            profMap.set(p.id, p);
+            if (p.email) profMap.set(p.email.toLowerCase().trim(), p);
+          });
+          (profsByEmailRes.data || []).forEach((p: any) => {
+            if (p.email) profMap.set(p.email.toLowerCase().trim(), p);
+            if (p.id) profMap.set(p.id, p);
+          });
+
           const userEventsMap = new Map<string, any>();
           vpEvents.forEach((e: any) => {
             const em = (e.email || '').toLowerCase().trim();
@@ -1427,19 +1447,25 @@ export function AdminHojeCards() {
             }
           });
 
-          allLists = Array.from(userEventsMap.values()).map((e: any) => ({
-            key: e.user_id || e.id,
-            user_id: e.user_id,
-            title: e.profiles?.display_name || e.uemail.split('@')[0],
-            email: e.uemail,
-            subtitle: id === 'viu_planos' ? 'Abriu checkout (Clicou)' : 'Abriu planos',
-            at: e.latestAt || e.created_at,
-            acessos: e.acessos || 1,
-            avatar_url: null,
-            is_premium: e.profiles?.is_premium || false,
-            created_at: e.created_at,
-            logsCheckout: e.logs
-          }));
+          allLists = Array.from(userEventsMap.values()).map((e: any) => {
+            const prof = (e.user_id ? profMap.get(e.user_id) : null) || (e.uemail ? profMap.get(e.uemail.toLowerCase().trim()) : null) || {};
+            const finalEmail = e.email || prof.email || (e.uemail !== 'Visitante' ? e.uemail : null);
+            const isGoogle = prof.avatar_url?.includes('googleusercontent.com');
+            return {
+              key: e.user_id || e.id,
+              user_id: e.user_id || prof.id || null,
+              title: prof.display_name || (finalEmail ? finalEmail.split('@')[0] : 'Visitante'),
+              email: finalEmail,
+              provider: isGoogle ? 'google' : (finalEmail ? 'email' : null),
+              subtitle: id === 'viu_planos' ? 'Abriu checkout (Clicou)' : 'Entrou em assinaturas',
+              at: e.latestAt || e.created_at,
+              acessos: e.acessos || 1,
+              avatar_url: prof.avatar_url || null,
+              is_premium: prof.is_premium || false,
+              created_at: e.created_at,
+              logsCheckout: e.logs
+            };
+          });
         }
       }
 
@@ -1533,7 +1559,7 @@ export function AdminHojeCards() {
           supabase.rpc('admin_user_auth_providers' as any, { _ids: ids }),
           supabase.from('user_activity_log').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
           (id === 'paywall' || id === 'viu_planos')
-            ? supabase.from('app_events').select('user_id, email, created_at').in('event_name', id === 'viu_planos' ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] : ['assinatura_aberta', 'paywall_view']).in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString())
+            ? supabase.from('app_events').select('user_id, email, created_at').in('event_name', id === 'viu_planos' ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] : ['assinatura_aberta', 'paywall_view', 'trial_click']).in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString())
             : Promise.resolve({ data: [] }),
           supabase.from('user_sessions').select('user_id, initial_route, started_at').in('user_id', ids).gte('started_at', minD.toISOString()).lt('started_at', maxD.toISOString()),
           supabase.from('profiles').select('id, created_at, faixa_etaria, is_premium').in('id', ids),
