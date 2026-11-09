@@ -607,3 +607,4 @@ export function criarLivroPlayerResumo(livro: AudiobookLivro): AudiobookLivro {
     ],
   };
 }
+

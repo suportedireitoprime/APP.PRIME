@@ -44,7 +44,7 @@ async function flush(isClosing = false) {
 
   // Em hibernação (pagehide/visibility hidden), transações async e fetch
   // são abortadas pelo WebKit. Salva síncrono no localStorage para envio futuro.
-  if (isClosing) {
+  if (isClosing || (typeof document !== 'undefined' && document.visibilityState === 'hidden')) {
     writeNum(LS_CLICKS, clicks);
     writeNum(LS_SECONDS, seconds);
     pendingClicks = 0;
@@ -52,25 +52,31 @@ async function flush(isClosing = false) {
     return;
   }
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  try {
+    // Usa getSession() (cache local em memória) em vez de getUser() para não gerar requisições HTTP redundantes no Kong
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) {
+      writeNum(LS_CLICKS, clicks);
+      writeNum(LS_SECONDS, seconds);
+      return;
+    }
+    const { error } = await supabase.rpc('increment_user_metrics', {
+      p_clicks: clicks,
+      p_seconds: seconds,
+    });
+    if (error) {
+      writeNum(LS_CLICKS, clicks);
+      writeNum(LS_SECONDS, seconds);
+    } else {
+      pendingClicks = 0;
+      pendingSeconds = 0;
+      writeNum(LS_CLICKS, 0);
+      writeNum(LS_SECONDS, 0);
+      window.dispatchEvent(new CustomEvent('app-metrics-flushed'));
+    }
+  } catch {
     writeNum(LS_CLICKS, clicks);
     writeNum(LS_SECONDS, seconds);
-    return;
-  }
-  const { error } = await supabase.rpc('increment_user_metrics', {
-    p_clicks: clicks,
-    p_seconds: seconds,
-  });
-  if (error) {
-    writeNum(LS_CLICKS, clicks);
-    writeNum(LS_SECONDS, seconds);
-  } else {
-    pendingClicks = 0;
-    pendingSeconds = 0;
-    writeNum(LS_CLICKS, 0);
-    writeNum(LS_SECONDS, 0);
-    window.dispatchEvent(new CustomEvent('app-metrics-flushed'));
   }
 }
 
@@ -96,7 +102,11 @@ export function startAppMetrics() {
 
   lastTick = performance.now();
   rafHandle = requestAnimationFrame(tick);
-  flushTimer = window.setInterval(() => { void flush(); }, 30_000);
+  flushTimer = window.setInterval(() => {
+    if (typeof document === 'undefined' || document.visibilityState === 'visible') {
+      void flush();
+    }
+  }, 30_000);
 }
 
 export function stopAppMetrics() {

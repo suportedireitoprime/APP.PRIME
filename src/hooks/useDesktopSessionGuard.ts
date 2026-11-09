@@ -8,7 +8,7 @@ export const DESKTOP_SESSION_KEY = 'vacatio.desktop_session_id';
 
 /**
  * Watchdog para sessões desktop:
- * - a cada 30s consulta o backend.
+ * - consulta o backend a cada 30s apenas com a aba ativa.
  * - se a sessão foi revogada (outro desktop escaneou o QR) ou expirou (24h),
  *   faz signOut local e redireciona para /auth.
  */
@@ -25,6 +25,10 @@ export function useDesktopSessionGuard(enabled: boolean) {
     let stopped = false;
 
     const check = async () => {
+      if (stopped) return;
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
+        return;
+      }
       try {
         const j = await callDesktopLink<any>({ action: 'session_status', session_id: sessionId });
         if (stopped) return;
@@ -47,8 +51,17 @@ export function useDesktopSessionGuard(enabled: boolean) {
     // Primeira checagem depois de 5s (evita corrida no login recente).
     const first = window.setTimeout(check, 5000);
     const interval = window.setInterval(check, 30000);
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        void check();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
     return () => {
       stopped = true;
+      document.removeEventListener('visibilitychange', onVisibility);
       window.clearTimeout(first);
       window.clearInterval(interval);
     };

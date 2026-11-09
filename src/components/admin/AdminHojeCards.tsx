@@ -236,7 +236,20 @@ export function AdminHojeCards() {
     try {
       const hojeIso = isoDate(getHojeBrasilia());
       const cached = localStorage.getItem(`admin_hoje_counts_cache_${hojeIso}`);
-      if (cached) return JSON.parse(cached);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        return {
+          online5m: Number(parsed.online5m) || 0,
+          online: Number(parsed.online) || 0,
+          cadastros: Number(parsed.cadastros) || 0,
+          paywall: Number(parsed.paywall) || 0,
+          viu_planos: Number(parsed.viu_planos) || 0,
+          trial: Number(parsed.trial) || 0,
+          trialValor: Number.isFinite(Number(parsed.trialValor)) ? Number(parsed.trialValor) : 0,
+          renovou: Number(parsed.renovou) || 0,
+          renovouValor: Number.isFinite(Number(parsed.renovouValor)) ? Number(parsed.renovouValor) : 0,
+        };
+      }
     } catch {}
     return { online5m: 0, online: 0, cadastros: 0, paywall: 0, viu_planos: 0, trial: 0, trialValor: 0, renovou: 0, renovouValor: 0 };
   });
@@ -332,6 +345,15 @@ export function AdminHojeCards() {
   }, []);
 
   const load = useCallback(async () => {
+    // Evita chamadas em background se a aba estiver oculta para poupar requisições e conexões
+    if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
+      return;
+    }
+    const { data: sessData } = await supabase.auth.getSession();
+    if (!sessData?.session?.access_token) {
+      return;
+    }
+
     if (isFetching.current) return;
     isFetching.current = true;
     setIsUpdating(true);
@@ -654,14 +676,18 @@ export function AdminHojeCards() {
         totalTrial = subUsers.size;
         let somaValores = 0;
         subUsers.forEach(({ valor }) => {
-          somaValores += valor;
+          if (typeof valor === 'number' && Number.isFinite(valor)) {
+            somaValores += valor;
+          }
         });
         totalTrialValor = somaValores;
 
         totalRenovou = renewUsers.size;
         let somaRenovou = 0;
         renewUsers.forEach(({ valor }) => {
-          somaRenovou += valor;
+          if (typeof valor === 'number' && Number.isFinite(valor)) {
+            somaRenovou += valor;
+          }
         });
         totalRenovouValor = somaRenovou;
 
@@ -683,9 +709,9 @@ export function AdminHojeCards() {
         paywall: totalPaywall || 0,
         viu_planos: totalViuPlanos || 0,
         trial: totalTrial || 0,
-        trialValor: totalTrialValor || 0,
+        trialValor: Number.isFinite(totalTrialValor) ? totalTrialValor : 0,
         renovou: totalRenovou || 0,
-        renovouValor: totalRenovouValor || 0,
+        renovouValor: Number.isFinite(totalRenovouValor) ? totalRenovouValor : 0,
       };
       setCounts(novos);
     
@@ -727,8 +753,11 @@ export function AdminHojeCards() {
   useEffect(() => {
     void load();
     if (periodo === 'hoje') {
-      // Polling a cada 30s para manter dados atualizados com baixo consumo de conexões
+      // Polling a cada 30s apenas com a aba visível para não sobrecarregar o Supabase em background
       const t = setInterval(() => {
+        if (typeof document !== 'undefined' && document.visibilityState !== 'visible') {
+          return;
+        }
         const hojeAtual = isoDate(getHojeBrasilia());
         if (currentDayRef.current !== hojeAtual) {
           currentDayRef.current = hojeAtual;
@@ -1596,11 +1625,11 @@ export function AdminHojeCards() {
     : rows;
 
   const renderCardButton = ({ id, label, icon: Icon }: typeof CARDS[0]) => {
-    const cardCount = typeof counts[id] === 'number' && !isNaN(counts[id]) ? counts[id] : 0;
+    const cardCount = typeof counts[id] === 'number' && Number.isFinite(counts[id]) ? counts[id] : 0;
     const isZero = cardCount === 0;
     const isFinancial = id === 'trial' || id === 'renovou';
     const rawVal = id === 'trial' ? counts.trialValor : counts.renovouValor;
-    const valorFinanceiro = typeof rawVal === 'number' && !isNaN(rawVal) ? rawVal : 0;
+    const valorFinanceiro = typeof rawVal === 'number' && Number.isFinite(rawVal) ? rawVal : 0;
 
     return (
       <button
