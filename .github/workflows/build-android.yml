@@ -3874,7 +3874,20 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-        run: ./gradlew bundleRelease --no-daemon --stacktrace --no-watch-fs -Dorg.gradle.jvmargs="-Xmx6144m"
+        run: |
+          for i in 1 2 3; do
+            echo "Tentativa $i de compilar .aab (bundleRelease)..."
+            if ./gradlew bundleRelease --no-daemon --stacktrace --no-watch-fs -Dorg.gradle.jvmargs="-Xmx6144m"; then
+              echo "✅ .aab compilado com sucesso!"
+              break
+            fi
+            if [ "$i" -eq 3 ]; then
+              echo "❌ Falha definitiva apos 3 tentativas de bundleRelease"
+              exit 1
+            fi
+            echo "⚠️ Falha transitória de download na tentativa $i. Aguardando 15s para retentar..."
+            sleep 15
+          done
 
       - name: Build .apk (assembleRelease)
         working-directory: android
@@ -3882,7 +3895,20 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-        run: ./gradlew assembleRelease --no-daemon --stacktrace --no-watch-fs -Dorg.gradle.jvmargs="-Xmx6144m"
+        run: |
+          for i in 1 2 3; do
+            echo "Tentativa $i de compilar .apk (assembleRelease)..."
+            if ./gradlew assembleRelease --no-daemon --stacktrace --no-watch-fs -Dorg.gradle.jvmargs="-Xmx6144m"; then
+              echo "✅ .apk compilado com sucesso!"
+              break
+            fi
+            if [ "$i" -eq 3 ]; then
+              echo "❌ Falha definitiva apos 3 tentativas de assembleRelease"
+              exit 1
+            fi
+            echo "⚠️ Falha transitória de download na tentativa $i. Aguardando 15s para retentar..."
+            sleep 15
+          done
 
       - name: Rename outputs with version (app-vacatio-<versionName>)
         run: |

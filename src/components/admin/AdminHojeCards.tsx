@@ -25,6 +25,7 @@ interface Row {
   tempo_tela?: number | null;
   avatarUrl?: string | null;
   isPremium?: boolean;
+  isAdmin?: boolean;
   funcaoPreferida?: string | null;
   planValue?: number;
   planTag?: { plano: string, status: string, expires_at: string | null };
@@ -416,7 +417,8 @@ export function AdminHojeCards() {
           (listData || []).forEach((r: any) => {
             const uid = r.user_id || r.id;
             const em = (r.email || '').toLowerCase().trim();
-            if (ADMIN_EMAILS.includes(em)) return;
+            const isAdmin = ADMIN_EMAILS.includes(em);
+            if (isAdmin && defaultSubtitle === 'Novo cadastro') return;
             const routeLabel = r.subtitle ? rotaParaFuncao(r.subtitle).label : null;
             const cleanSubtitle = (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : defaultSubtitle;
             const key = uid || em || r.key;
@@ -430,6 +432,7 @@ export function AdminHojeCards() {
                 subtitle: cleanSubtitle,
                 at: r.at || r.last_seen || r.created_at,
                 isPremium: r.is_premium ?? r.premium ?? false,
+                isAdmin,
                 avatarUrl: r.avatar_url,
                 acessos: typeof r.acessos === 'number' ? r.acessos : 1,
                 created_at: r.created_at,
@@ -469,12 +472,25 @@ export function AdminHojeCards() {
           }
 
           const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-          const { count: direct5m } = await supabase
+          const { data: direct5mRows } = await supabase
+            .from('user_activity_log')
+            .select('user_id, email, display_name, current_route, last_seen_at')
+            .gte('last_seen_at', fiveMinAgo)
+            .order('last_seen_at', { ascending: false })
+            .limit(100);
+
+          if (direct5mRows && direct5mRows.length > 0 && periodo === 'hoje') {
+            totalOnline5m = Math.max(totalOnline5m, direct5mRows.length);
+          }
+
+          const { count: directOnlineCount } = await supabase
             .from('user_activity_log')
             .select('user_id', { count: 'exact', head: true })
-            .gte('last_seen_at', fiveMinAgo);
-          if (typeof direct5m === 'number' && direct5m > 0 && periodo === 'hoje') {
-            totalOnline5m = Math.max(totalOnline5m, direct5m);
+            .gte('last_seen_at', startIso)
+            .lt('last_seen_at', endIso);
+
+          if (typeof directOnlineCount === 'number' && directOnlineCount > 0) {
+            totalOnline = Math.max(totalOnline, directOnlineCount, totalOnline5m);
           }
         } catch {}
 
@@ -1195,32 +1211,41 @@ export function AdminHojeCards() {
 
           const { data: actRows } = await supabase
             .from('user_activity_log')
-            .select(`
-              user_id, last_seen_at, last_route,
-              profiles:user_id ( id, display_name, email, avatar_url, is_premium )
-            `)
+            .select('user_id, email, display_name, current_route, last_seen_at')
             .gte('last_seen_at', minTime)
             .order('last_seen_at', { ascending: false })
             .limit(100);
 
-          allLists = (actRows || []).map((a: any) => {
-            const p = a.profiles || {};
-            const isGoogle = p.avatar_url?.includes('googleusercontent.com');
-            const routeLabel = a.last_route ? rotaParaFuncao(a.last_route).label : null;
-            return {
-              key: a.user_id,
-              user_id: a.user_id,
-              title: p.display_name || p.email?.split('@')[0] || 'Usuário',
-              email: p.email,
-              provider: isGoogle ? 'google' : (p.email ? 'email' : null),
-              subtitle: (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'online5m' ? 'Online nos últimos 5 min' : 'Online hoje'),
-              at: a.last_seen_at,
-              is_premium: p.is_premium ?? false,
-              avatar_url: p.avatar_url || null,
-              acessos: null,
-              created_at: null
-            };
-          });
+          if (Array.isArray(actRows) && actRows.length > 0) {
+            const userIds = actRows.map(a => a.user_id).filter(Boolean);
+            const { data: profilesList } = userIds.length > 0
+              ? await supabase.from('profiles').select('id, display_name, email, avatar_url, is_premium, created_at').in('id', userIds)
+              : { data: [] };
+
+            const profMap = new Map((profilesList || []).map(p => [p.id, p]));
+
+            allLists = actRows.map((a: any) => {
+              const p = profMap.get(a.user_id) || {};
+              const email = a.email || p.email;
+              const isGoogle = p.avatar_url?.includes('googleusercontent.com');
+              const routeLabel = a.current_route ? rotaParaFuncao(a.current_route).label : null;
+              const isAdmin = ADMIN_EMAILS.includes((email || '').toLowerCase().trim());
+              return {
+                key: a.user_id || email || Math.random().toString(),
+                user_id: a.user_id,
+                title: p.display_name || a.display_name || email?.split('@')[0] || 'Usuário',
+                email: email,
+                provider: isGoogle ? 'google' : (email ? 'email' : null),
+                subtitle: (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'online5m' ? 'Online nos últimos 5 min' : 'Online hoje'),
+                at: a.last_seen_at,
+                is_premium: p.is_premium ?? false,
+                is_admin: isAdmin,
+                avatar_url: p.avatar_url || null,
+                acessos: 1,
+                created_at: p.created_at || null
+              };
+            });
+          }
         }
       } else if (id === 'paywall' || id === 'viu_planos') {
         const eventNames = id === 'viu_planos' 
@@ -1307,23 +1332,32 @@ export function AdminHojeCards() {
           if (!cur.user_id && r.user_id) cur.user_id = r.user_id;
         }
       });
-      const list = Array.from(uniqueMap.values()).map((r) => ({
-        key: r.key,
-        userId: r.user_id,
-        title: r.title || 'Usuário',
-        email: r.email || null,
-        provider: r.provider || null,
-        subtitle: (id === 'online' || id === 'online5m') ? rotaParaFuncao(r.subtitle).label : r.subtitle,
-        meta: hora(r.at),
-        acessos: typeof r.acessos === 'number' ? r.acessos : 1,
-        avatarUrl: r.avatar_url,
-        isPremium: r.is_premium,
-        planValue: r.planValue,
-        planTag: r.planTag,
-        created_at: r.created_at,
-        faixaEtaria: r.faixa_etaria,
-        logsCheckout: r.logsCheckout,
-      })).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim()));
+      const list = Array.from(uniqueMap.values()).map((r) => {
+        const email = (r.email || '').toLowerCase().trim();
+        const isAdmin = r.is_admin ?? ADMIN_EMAILS.includes(email);
+        return {
+          key: r.key,
+          userId: r.user_id,
+          title: r.title || 'Usuário',
+          email: r.email || null,
+          provider: r.provider || null,
+          subtitle: (id === 'online' || id === 'online5m') ? rotaParaFuncao(r.subtitle).label : r.subtitle,
+          meta: hora(r.at),
+          acessos: typeof r.acessos === 'number' ? r.acessos : 1,
+          avatarUrl: r.avatar_url,
+          isPremium: r.is_premium,
+          isAdmin,
+          planValue: r.planValue,
+          planTag: r.planTag,
+          created_at: r.created_at,
+          faixaEtaria: r.faixa_etaria,
+          logsCheckout: r.logsCheckout,
+        };
+      }).filter((r) => {
+        // No card de online (5m e hoje), mantém quem está online (incluindo admin identificado) para a lista bater com o número
+        if (id === 'online' || id === 'online5m') return true;
+        return !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim());
+      });
 
       if (id === 'trial' && list.length > 0) {
         // Agora tratamos "trial" como "Assinou via Asaas". Não vamos chamar o endpoint antigo de Google/Apple.
@@ -1542,7 +1576,7 @@ export function AdminHojeCards() {
   const openCard = useCallback((id: CardId) => {
     setOpen(id);
     if (id === 'online' || id === 'online5m') {
-      setFiltroUser('gratuitos');
+      setFiltroUser('todos');
     }
     const hoje = getHojeBrasilia();
     // Ao abrir o card, limpa o indicador de novas notificações
@@ -1618,7 +1652,7 @@ export function AdminHojeCards() {
 
   const filteredRows = (open === 'online' || open === 'online5m')
     ? rows.filter(r => {
-        if (filtroUser === 'gratuitos') return !r.isPremium;
+        if (filtroUser === 'gratuitos') return !r.isPremium && !r.isAdmin;
         if (filtroUser === 'assinantes') return r.isPremium;
         return true;
       })
@@ -1812,6 +1846,11 @@ export function AdminHojeCards() {
                         <div className="font-body text-sm font-semibold text-foreground truncate">{r.title}</div>
                         {r.isPremium && (
                           <Crown className="w-4 h-4 text-[#FFD700] fill-[#FFD700] drop-shadow-md shrink-0" />
+                        )}
+                        {r.isAdmin && (
+                          <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                            ADMIN
+                          </span>
                         )}
                         {typeof r.acessos === 'number' && r.acessos > 1 && (
                           <span

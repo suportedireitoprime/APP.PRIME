@@ -33,7 +33,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   '1984': {
     slug: '1984',
     titulo: '1984',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'George Orwell',
     audioUrl: `${R2_BASE}/1984/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/1984/audiobook-completo.srt`,
@@ -43,7 +43,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'a-arte-da-guerra': {
     slug: 'a-arte-da-guerra',
     titulo: 'A Arte da Guerra',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Sun Tzu',
     audioUrl: `${R2_BASE}/a-arte-da-guerra/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-arte-da-guerra/audiobook-completo.srt`,
@@ -53,7 +53,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'a-era-dos-direitos': {
     slug: 'a-era-dos-direitos',
     titulo: 'A Era dos Direitos',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Norberto Bobbio',
     audioUrl: `${R2_BASE}/a-era-dos-direitos/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-era-dos-direitos/audiobook-completo.srt`,
@@ -63,7 +63,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'a-estrada-para-o-carater': {
     slug: 'a-estrada-para-o-carater',
     titulo: 'A Estrada para o Caráter',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'David Brooks',
     audioUrl: `${R2_BASE}/a-estrada-para-o-carater/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-estrada-para-o-carater/audiobook-completo.srt`,
@@ -73,7 +73,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'a-luta-pelo-direito': {
     slug: 'a-luta-pelo-direito',
     titulo: 'A Luta pelo Direito',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Rudolf von Ihering',
     audioUrl: `${R2_BASE}/a-luta-pelo-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-luta-pelo-direito/audiobook-completo.srt`,
@@ -83,7 +83,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'a-meta': {
     slug: 'a-meta',
     titulo: 'A Meta',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Eliyahu M. Goldratt',
     audioUrl: `${R2_BASE}/a-meta/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-meta/audiobook-completo.srt`,
@@ -93,7 +93,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'a-republica': {
     slug: 'a-republica',
     titulo: 'A República',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Platão',
     audioUrl: `${R2_BASE}/a-republica/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-republica/audiobook-completo.srt`,
@@ -103,7 +103,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'a-riqueza-das-nacoes': {
     slug: 'a-riqueza-das-nacoes',
     titulo: 'A Riqueza das Nações',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Adam Smith',
     audioUrl: `${R2_BASE}/a-riqueza-das-nacoes/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-riqueza-das-nacoes/audiobook-completo.srt`,
@@ -113,7 +113,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'a-teoria-das-formas-de-governo': {
     slug: 'a-teoria-das-formas-de-governo',
     titulo: 'A Teoria das Formas de Governo',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Norberto Bobbio',
     audioUrl: `${R2_BASE}/a-teoria-das-formas-de-governo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/a-teoria-das-formas-de-governo/audiobook-completo.srt`,
@@ -123,7 +123,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'acesso-a-justica': {
     slug: 'acesso-a-justica',
     titulo: 'Acesso à Justiça',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Mauro Cappelletti e Bryant Garth',
     audioUrl: `${R2_BASE}/acesso-a-justica/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/acesso-a-justica/audiobook-completo.srt`,
@@ -133,7 +133,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'admiravel-mundo-novo': {
     slug: 'admiravel-mundo-novo',
     titulo: 'Admirável Mundo Novo',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Aldous Huxley',
     audioUrl: `${R2_BASE}/admiravel-mundo-novo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/admiravel-mundo-novo/audiobook-completo.srt`,
@@ -143,7 +143,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'as-21-irrefutaveis-leis-da-lideranca': {
     slug: 'as-21-irrefutaveis-leis-da-lideranca',
     titulo: 'As 21 Irrefutáveis Leis da Liderança',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'John C. Maxwell',
     audioUrl: `${R2_BASE}/as-21-irrefutaveis-leis-da-lideranca/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/as-21-irrefutaveis-leis-da-lideranca/audiobook-completo.srt`,
@@ -153,7 +153,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'blink': {
     slug: 'blink',
     titulo: 'Blink: A Decisão num Piscar de Olhos',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Malcolm Gladwell',
     audioUrl: `${R2_BASE}/blink/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/blink/audiobook-completo.srt`,
@@ -163,7 +163,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'comece-pelo-porque': {
     slug: 'comece-pelo-porque',
     titulo: 'Comece pelo Porquê',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Simon Sinek',
     audioUrl: `${R2_BASE}/comece-pelo-porque/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/comece-pelo-porque/audiobook-completo.srt`,
@@ -173,7 +173,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'como-as-democracias-morrem': {
     slug: 'como-as-democracias-morrem',
     titulo: 'Como as Democracias Morrem',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Steven Levitsky e Daniel Ziblatt',
     audioUrl: `${R2_BASE}/como-as-democracias-morrem/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/como-as-democracias-morrem/audiobook-completo.srt`,
@@ -183,7 +183,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'comunicacao-nao-violenta': {
     slug: 'comunicacao-nao-violenta',
     titulo: 'Comunicação Não-Violenta',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Marshall B. Rosenberg',
     audioUrl: `${R2_BASE}/comunicacao-nao-violenta/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/comunicacao-nao-violenta/audiobook-completo.srt`,
@@ -193,7 +193,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'dos-delitos-e-das-penas': {
     slug: 'dos-delitos-e-das-penas',
     titulo: 'Dos Delitos e das Penas',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Cesare Beccaria',
     audioUrl: `${R2_BASE}/dos-delitos-e-das-penas/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/dos-delitos-e-das-penas/audiobook-completo.srt`,
@@ -203,7 +203,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'eles-os-juizes-vistos-por-nos-os-advogados': {
     slug: 'eles-os-juizes-vistos-por-nos-os-advogados',
     titulo: 'Eles, os Juízes, Vistos por Nós, os Advogados',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Piero Calamandrei',
     audioUrl: `${R2_BASE}/eles-os-juizes-vistos-por-nos-os-advogados/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/eles-os-juizes-vistos-por-nos-os-advogados/audiobook-completo.srt`,
@@ -213,7 +213,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'etica-a-nicomaco': {
     slug: 'etica-a-nicomaco',
     titulo: 'Ética a Nicômaco',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Aristóteles',
     audioUrl: `${R2_BASE}/etica-a-nicomaco/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/etica-a-nicomaco/audiobook-completo.srt`,
@@ -223,7 +223,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'filosofia-do-direito': {
     slug: 'filosofia-do-direito',
     titulo: 'Filosofia do Direito',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'G. W. F. Hegel / Sergio Cavalieri Filho',
     audioUrl: `${R2_BASE}/filosofia-do-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/filosofia-do-direito/audiobook-completo.srt`,
@@ -233,7 +233,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'introducao-ao-estudo-do-direito': {
     slug: 'introducao-ao-estudo-do-direito',
     titulo: 'Introdução ao Estudo do Direito',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Tércio Sampaio Ferraz Jr.',
     audioUrl: `${R2_BASE}/introducao-ao-estudo-do-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/introducao-ao-estudo-do-direito/audiobook-completo.srt`,
@@ -243,7 +243,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'justica': {
     slug: 'justica',
     titulo: 'Justiça: O que é fazer a coisa certa',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Michael J. Sandel',
     audioUrl: `${R2_BASE}/justica/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/justica/audiobook-completo.srt`,
@@ -253,7 +253,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'licoes-preliminares-de-direito': {
     slug: 'licoes-preliminares-de-direito',
     titulo: 'Lições Preliminares de Direito',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Miguel Reale',
     audioUrl: `${R2_BASE}/licoes-preliminares-de-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/licoes-preliminares-de-direito/audiobook-completo.srt`,
@@ -263,7 +263,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-advogado-do-diabo': {
     slug: 'o-advogado-do-diabo',
     titulo: 'O Advogado do Diabo',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Morris West',
     audioUrl: `${R2_BASE}/o-advogado-do-diabo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-advogado-do-diabo/audiobook-completo.srt`,
@@ -273,7 +273,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-caso-dos-exploradores-de-cavernas': {
     slug: 'o-caso-dos-exploradores-de-cavernas',
     titulo: 'O Caso dos Exploradores de Cavernas',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Lon L. Fuller',
     audioUrl: `${R2_BASE}/o-caso-dos-exploradores-de-cavernas/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-caso-dos-exploradores-de-cavernas/audiobook-completo.srt`,
@@ -283,7 +283,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-caso-dos-irmaos-naves': {
     slug: 'o-caso-dos-irmaos-naves',
     titulo: 'O Caso dos Irmãos Naves',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'João Alamy Filho',
     audioUrl: `${R2_BASE}/o-caso-dos-irmaos-naves/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-caso-dos-irmaos-naves/audiobook-completo.srt`,
@@ -293,7 +293,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-contrato-social': {
     slug: 'o-contrato-social',
     titulo: 'O Contrato Social',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Jean-Jacques Rousseau',
     audioUrl: `${R2_BASE}/o-contrato-social/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-contrato-social/audiobook-completo.srt`,
@@ -303,7 +303,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-espirito-das-leis': {
     slug: 'o-espirito-das-leis',
     titulo: 'O Espírito das Leis',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Montesquieu',
     audioUrl: `${R2_BASE}/o-espirito-das-leis/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-espirito-das-leis/audiobook-completo.srt`,
@@ -313,7 +313,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-futuro-da-democracia': {
     slug: 'o-futuro-da-democracia',
     titulo: 'O Futuro da Democracia',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Norberto Bobbio',
     audioUrl: `${R2_BASE}/o-futuro-da-democracia/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-futuro-da-democracia/audiobook-completo.srt`,
@@ -323,7 +323,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-leviata': {
     slug: 'o-leviata',
     titulo: 'O Leviatã',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Thomas Hobbes',
     audioUrl: `${R2_BASE}/o-leviata/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-leviata/audiobook-completo.srt`,
@@ -333,7 +333,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-monge-e-o-executivo': {
     slug: 'o-monge-e-o-executivo',
     titulo: 'O Monge e o Executivo',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'James C. Hunter',
     audioUrl: `${R2_BASE}/o-monge-e-o-executivo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-monge-e-o-executivo/audiobook-completo.srt`,
@@ -343,7 +343,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-mundo-assombrado-pelos-demonios': {
     slug: 'o-mundo-assombrado-pelos-demonios',
     titulo: 'O Mundo Assombrado pelos Demônios',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Carl Sagan',
     audioUrl: `${R2_BASE}/o-mundo-assombrado-pelos-demonios/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-mundo-assombrado-pelos-demonios/audiobook-completo.srt`,
@@ -353,7 +353,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-mundo-de-sofia': {
     slug: 'o-mundo-de-sofia',
     titulo: 'O Mundo de Sofia',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Jostein Gaarder',
     audioUrl: `${R2_BASE}/o-mundo-de-sofia/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-mundo-de-sofia/audiobook-completo.srt`,
@@ -363,7 +363,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-principe': {
     slug: 'o-principe',
     titulo: 'O Príncipe',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Nicolau Maquiavel',
     audioUrl: `${R2_BASE}/o-principe/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-principe/audiobook-completo.srt`,
@@ -373,7 +373,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-processo': {
     slug: 'o-processo',
     titulo: 'O Processo',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Franz Kafka',
     audioUrl: `${R2_BASE}/o-processo/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-processo/audiobook-completo.srt`,
@@ -383,7 +383,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-que-e-direito': {
     slug: 'o-que-e-direito',
     titulo: 'O que é Direito',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Roberto Lyra Filho',
     audioUrl: `${R2_BASE}/o-que-e-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-que-e-direito/audiobook-completo.srt`,
@@ -393,7 +393,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'o-ultimo-dia-de-um-condenado': {
     slug: 'o-ultimo-dia-de-um-condenado',
     titulo: 'O Último Dia de um Condenado',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Victor Hugo',
     audioUrl: `${R2_BASE}/o-ultimo-dia-de-um-condenado/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/o-ultimo-dia-de-um-condenado/audiobook-completo.srt`,
@@ -403,7 +403,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'os-7-habitos-das-pessoas-altamente-eficazes': {
     slug: 'os-7-habitos-das-pessoas-altamente-eficazes',
     titulo: 'Os 7 Hábitos das Pessoas Altamente Eficazes',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Stephen R. Covey',
     audioUrl: `${R2_BASE}/os-7-habitos-das-pessoas-altamente-eficazes/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/os-7-habitos-das-pessoas-altamente-eficazes/audiobook-completo.srt`,
@@ -413,7 +413,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'sobre-a-liberdade': {
     slug: 'sobre-a-liberdade',
     titulo: 'Sobre a Liberdade',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'John Stuart Mill',
     audioUrl: `${R2_BASE}/sobre-a-liberdade/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/sobre-a-liberdade/audiobook-completo.srt`,
@@ -423,7 +423,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'teoria-pura-do-direito': {
     slug: 'teoria-pura-do-direito',
     titulo: 'Teoria Pura do Direito',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Hans Kelsen',
     audioUrl: `${R2_BASE}/teoria-pura-do-direito/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/teoria-pura-do-direito/audiobook-completo.srt`,
@@ -433,7 +433,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'vigiar-e-punir': {
     slug: 'vigiar-e-punir',
     titulo: 'Vigiar e Punir',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Michel Foucault',
     audioUrl: `${R2_BASE}/vigiar-e-punir/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/vigiar-e-punir/audiobook-completo.srt`,
@@ -443,7 +443,7 @@ export const AUDIOBOOKS_RESUMOS_MAP: Record<string, AudiobookResumoInfo> = {
   'virando-a-propria-mesa': {
     slug: 'virando-a-propria-mesa',
     titulo: 'Virando a Própria Mesa',
-    subtitulo: 'Diálogo Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     autor: 'Ricardo Semler',
     audioUrl: `${R2_BASE}/virando-a-propria-mesa/audiobook-completo.mp3`,
     srtUrl: `${R2_BASE}/virando-a-propria-mesa/audiobook-completo.srt`,
@@ -650,9 +650,9 @@ export function criarLivroPlayerResumo(livro: AudiobookLivro): AudiobookLivro {
       {
         numero: 1,
         id: `${livro.id}-resumo-dialogo`,
-        titulo: 'Resumo Completo (Diálogo Professora & Aluna)',
+        titulo: 'Resumo Analítico Completo',
         autor: resumo?.autor || livro.autor,
-        descricao: resumo?.descricao || `Resumo pedagógico e aprofundado da obra ${livro.titulo}.`,
+        descricao: resumo?.descricao || `Resumo analítico aprofundado da obra ${livro.titulo}.`,
         duracaoSegundos: 2400,
         duracaoFormatada: resumo?.duracaoFormatada || '~35 min',
         audioUrl,
@@ -667,7 +667,7 @@ export function criarLivroPlayerResumo(livro: AudiobookLivro): AudiobookLivro {
     ...livro,
     id: `${livro.id}-resumo`,
     titulo: `${livro.titulo}`,
-    subtitulo: 'Resumo em Diálogo • Professora e Aluna',
+    subtitulo: 'Resumo Analítico',
     status: 'disponivel',
     totalCapitulos: capitulos.length,
     duracaoTotalFormatada: resumo?.duracaoFormatada || `${capitulos.length} capítulos`,
