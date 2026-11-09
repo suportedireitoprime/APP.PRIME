@@ -11,6 +11,7 @@ import {
   X,
   Heart,
   Check,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import ShapeGrid from "@/components/ui/ShapeGrid";
@@ -20,6 +21,7 @@ import {
   O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
   AudiobookLivro,
 } from "@/data/audiobooksCatalogo";
+import { criarLivroPlayerResumo, hasResumoDisponivel } from "@/data/audiobooksResumosMap";
 import { AudiobookPlayerModal } from "@/components/audiobooks/AudiobookPlayerModal";
 import { AudiobookDetailSheet } from "@/components/audiobooks/AudiobookDetailSheet";
 import { AudiobooksHeroPanel } from "@/components/audiobooks/AudiobooksHeroPanel";
@@ -137,6 +139,19 @@ export default function AudiobooksPage() {
     player.tocarLivro(targetLivro, index);
     setPlayerOpen(true);
   }, [livroSelecionado, livroContinuarOuvindo, player]);
+
+  const abrirResumo = useCallback((livroAlvo: AudiobookLivro) => {
+    haptic.selection();
+    const livroResumo = criarLivroPlayerResumo(livroAlvo);
+    setLivroPlayer(livroResumo);
+    setSelectedCapituloIndex(0);
+    setLivroSelecionado(null);
+    setActiveQuickSheet(null);
+
+    // Inicia reprodução do resumo integral com legendas sincronizadas
+    player.tocarLivro(livroResumo, 0);
+    setPlayerOpen(true);
+  }, [player]);
 
   // Alterna favorito de uma obra
   const toggleFavorito = useCallback((livro: AudiobookLivro, e?: React.MouseEvent) => {
@@ -751,14 +766,21 @@ export default function AudiobooksPage() {
                         {livro.autor} {livro.ano && `• ${livro.ano}`}
                       </p>
 
-                      {isNotificado && !isDisponivel && (
-                        <div className="mt-1.5 flex items-center">
+                      <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
+                        {hasResumoDisponivel(livro) && (
+                          <span className="inline-flex items-center gap-1 text-[9.5px] font-bold px-2 py-0.5 rounded-md bg-amber-400/15 text-amber-300 border border-amber-400/30">
+                            <Sparkles className="w-2.5 h-2.5 text-amber-300" />
+                            Resumo em Áudio
+                          </span>
+                        )}
+
+                        {isNotificado && !isDisponivel && (
                           <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-[#7C3AED]/15 text-[#C4B5FD] border border-[#7C3AED]/30">
                             <Bell className="w-2.5 h-2.5 fill-current" />
                             Aviso Ativo
                           </span>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
 
                     {/* Botões de Ação à Direita: Favorito e Abrir */}
@@ -822,6 +844,7 @@ export default function AudiobooksPage() {
         onPlayCapitulo={(index, livroAlvo) => {
           abrirCapitulo(index, livroAlvo || livroSelecionado || undefined);
         }}
+        onPlayResumo={abrirResumo}
         progressoSalvo={
           livroSelecionado
             ? (() => {

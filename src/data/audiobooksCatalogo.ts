@@ -84,6 +84,10 @@ export interface AudiobookLivro {
   tags?: string[];
   status: 'disponivel' | 'em_breve';
   capitulos: AudiobookCapitulo[];
+  temResumo?: boolean;
+  resumoAudioUrl?: string;
+  resumoSrtUrl?: string;
+  resumoDuracaoFormatada?: string;
 }
 
 export const O_CASO_DOS_EXPLORADORES_DE_CAVERNAS: AudiobookLivro = {

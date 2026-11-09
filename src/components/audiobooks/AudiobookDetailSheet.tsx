@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
 import { haptic } from '@/lib/nativeHaptics';
 import { AudiobookLivro } from '@/data/audiobooksCatalogo';
+import { getResumoForLivro } from '@/data/audiobooksResumosMap';
 import { useIsDesktop } from '@/hooks/use-desktop';
 
 interface AudiobookDetailSheetProps {
@@ -23,6 +24,7 @@ interface AudiobookDetailSheetProps {
   livro: AudiobookLivro | null;
   onClose: () => void;
   onPlayCapitulo: (index: number, livro: AudiobookLivro) => void;
+  onPlayResumo?: (livro: AudiobookLivro) => void;
   progressoSalvo?: { capituloIndex: number; time: number } | null;
   isNotificado?: boolean;
   onToggleNotificacao?: (livroId: string, titulo: string) => void;
@@ -33,12 +35,16 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
   livro,
   onClose,
   onPlayCapitulo,
+  onPlayResumo,
   progressoSalvo,
   isNotificado = false,
   onToggleNotificacao,
 }) => {
   const isDesktop = useIsDesktop();
-  const [tabAtiva, setTabAtiva] = useState<'capitulos' | 'sobre' | 'ficha'>('capitulos');
+  const resumoInfo = React.useMemo(() => getResumoForLivro(livro), [livro]);
+  const temResumo = !!resumoInfo;
+
+  const [tabAtiva, setTabAtiva] = useState<'capitulos' | 'resumo' | 'sobre' | 'ficha'>('capitulos');
   const [fav, setFav] = useState(false);
 
   // Imagem de cena dos capítulos no R2 (prioriza a ilustração real de cena do R2 em vez de repetir a capa)
@@ -243,9 +249,10 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
           </div>
 
           {/* ======================================================== */}
-          {/* BOTÃO PRIMÁRIO DE AÇÃO COLORIDO & VIBRANTE               */}
+          {/* BOTÕES DE AÇÃO: AUDIOBOOK COMPLETO OU RESUMO DO LIVRO    */}
           {/* ======================================================== */}
-          <div className="pt-1">
+          <div className="pt-1 space-y-2.5">
+            {/* Opção 1: Audiobook Completo (se disponível) */}
             {isDisponivel ? (
               <button
                 type="button"
@@ -259,18 +266,82 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                   background: 'linear-gradient(135deg, #9333EA 0%, #7C3AED 50%, #6D28D9 100%)',
                   boxShadow: '0 8px 25px -4px rgba(124, 58, 237, 0.65)',
                 }}
-                className="w-full min-h-[52px] px-6 py-3.5 rounded-2xl text-white font-display font-bold text-sm sm:text-base uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all active:scale-[0.98] cursor-pointer border border-purple-400/40 hover:brightness-110"
+                className="w-full min-h-[52px] px-5 py-3 rounded-2xl text-white font-display font-bold text-sm uppercase tracking-wider flex items-center justify-between transition-all active:scale-[0.98] cursor-pointer border border-purple-400/40 hover:brightness-110 group"
               >
-                <Play className="w-4 h-4 fill-white text-white drop-shadow-md" />
-                <span className="drop-shadow-md">
-                  {progressoSalvo
-                    ? (capitulos[progressoSalvo.capituloIndex]?.numero > 0
-                        ? `Continuar Capítulo ${capitulos[progressoSalvo.capituloIndex].numero}`
-                        : 'Continuar Reprodução')
-                    : 'Começar Audiobook'}
-                </span>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <Headphones className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <span className="block font-bold text-sm leading-tight">
+                      {progressoSalvo
+                        ? (capitulos[progressoSalvo.capituloIndex]?.numero > 0
+                            ? `Continuar Capítulo ${capitulos[progressoSalvo.capituloIndex].numero}`
+                            : 'Continuar Reprodução')
+                        : 'Audiobook Completo'}
+                    </span>
+                    <span className="block text-[11px] text-white/70 font-sans normal-case font-normal">
+                      Obra integral em {capitulos.length} capítulos
+                    </span>
+                  </div>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                  <Play className="w-3.5 h-3.5 fill-white text-white translate-x-0.5" />
+                </div>
               </button>
-            ) : (
+            ) : null}
+
+            {/* Opção 2: Resumo em Áudio (Diálogo Professora e Aluna) */}
+            {temResumo && (
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.impact();
+                  if (onPlayResumo) {
+                    onPlayResumo(livro);
+                  } else {
+                    onPlayCapitulo(0, livro);
+                  }
+                  onClose();
+                }}
+                style={{
+                  background: isDisponivel
+                    ? 'linear-gradient(135deg, #1E1B4B 0%, #2E1065 50%, #3B0764 100%)'
+                    : 'linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%)',
+                  boxShadow: isDisponivel
+                    ? '0 6px 20px -4px rgba(46, 16, 101, 0.45)'
+                    : '0 8px 25px -4px rgba(217, 119, 6, 0.65)',
+                }}
+                className={`w-full min-h-[52px] px-5 py-3 rounded-2xl text-white font-display font-bold text-sm uppercase tracking-wider flex items-center justify-between transition-all active:scale-[0.98] cursor-pointer border ${
+                  isDisponivel ? 'border-purple-400/30 hover:border-purple-400/60' : 'border-amber-300/40 hover:brightness-110'
+                } group`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-amber-400/20 border border-amber-300/30 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-4 h-4 text-amber-300" />
+                  </div>
+                  <div className="text-left">
+                    <div className="flex items-center gap-2">
+                      <span className="block font-bold text-sm leading-tight text-white">
+                        Ouvir Resumo do Livro
+                      </span>
+                      <span className="px-1.5 py-0.5 text-[9px] font-sans font-extrabold uppercase rounded bg-amber-400/30 text-amber-200 border border-amber-300/30">
+                        Diálogo
+                      </span>
+                    </div>
+                    <span className="block text-[11px] text-white/70 font-sans normal-case font-normal">
+                      Professora & Aluna • {resumoInfo?.duracaoFormatada || '~35 min'}
+                    </span>
+                  </div>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center group-hover:scale-110 transition-transform shrink-0">
+                  <Play className="w-3.5 h-3.5 fill-amber-300 text-amber-300 translate-x-0.5" />
+                </div>
+              </button>
+            )}
+
+            {/* Se o audiobook completo não estiver disponível */}
+            {!isDisponivel && (
               <button
                 type="button"
                 onClick={() => {
@@ -278,15 +349,17 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                     onToggleNotificacao(livro.id, livro.titulo);
                   }
                 }}
-                className={`w-full min-h-[52px] px-6 py-3.5 rounded-2xl font-display font-bold text-sm uppercase tracking-wide flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-lg active:scale-[0.98] ${
+                className={`w-full min-h-[46px] px-5 py-2.5 rounded-2xl font-display font-medium text-xs uppercase tracking-wide flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md active:scale-[0.98] ${
                   isNotificado
                     ? 'bg-amber-600/25 border border-amber-500/50 text-amber-300'
-                    : 'bg-white/10 hover:bg-white/15 border border-white/15 text-white'
+                    : 'bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white'
                 }`}
               >
-                <Bell className={`w-4 h-4 ${isNotificado ? 'fill-current text-amber-300' : ''}`} />
+                <Bell className={`w-3.5 h-3.5 ${isNotificado ? 'fill-current text-amber-300' : ''}`} />
                 <span>
-                  {isNotificado ? 'Notificação Ativada (Você será avisado)' : 'Me Avise no Lançamento'}
+                  {isNotificado
+                    ? 'Notificação Ativada para Audiobook Completo'
+                    : 'Audiobook Completo em Gravação • Me Avise'}
                 </span>
               </button>
             )}
@@ -296,14 +369,14 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
           {/* ABAS DO PAINEL (PADRÃO LIVROTABSCONTENT DA BIBLIOTECA)    */}
           {/* ======================================================== */}
           <div className="pt-2">
-            <div className="flex items-center gap-1 p-1 bg-white/[0.04] rounded-2xl border border-white/10 mb-4">
+            <div className="flex items-center gap-1 p-1 bg-white/[0.04] rounded-2xl border border-white/10 mb-4 overflow-x-auto scrollbar-none">
               <button
                 type="button"
                 onClick={() => {
                   haptic.selection();
                   setTabAtiva('capitulos');
                 }}
-                className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+                className={`flex-1 min-w-[90px] py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
                   tabAtiva === 'capitulos'
                     ? 'bg-purple-600 text-white shadow-md'
                     : 'text-white/60 hover:text-white'
@@ -312,13 +385,31 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                 Capítulos ({capitulos.length > 0 ? capitulos.length : (isDisponivel ? '8' : '—')})
               </button>
 
+              {temResumo && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic.selection();
+                    setTabAtiva('resumo');
+                  }}
+                  className={`flex-1 min-w-[90px] py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap flex items-center justify-center gap-1.5 ${
+                    tabAtiva === 'resumo'
+                      ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-md'
+                      : 'text-amber-300/80 hover:text-amber-200'
+                  }`}
+                >
+                  <Sparkles className="w-3 h-3" />
+                  Resumo ({resumoInfo?.duracaoFormatada || '~35m'})
+                </button>
+              )}
+
               <button
                 type="button"
                 onClick={() => {
                   haptic.selection();
                   setTabAtiva('sobre');
                 }}
-                className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+                className={`flex-1 min-w-[85px] py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
                   tabAtiva === 'sobre'
                     ? 'bg-purple-600 text-white shadow-md'
                     : 'text-white/60 hover:text-white'
@@ -333,7 +424,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                   haptic.selection();
                   setTabAtiva('ficha');
                 }}
-                className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+                className={`flex-1 min-w-[85px] py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap ${
                   tabAtiva === 'ficha'
                     ? 'bg-purple-600 text-white shadow-md'
                     : 'text-white/60 hover:text-white'
@@ -403,14 +494,92 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                     );
                   })
                 ) : (
-                  <div className="p-8 text-center rounded-2xl bg-white/[0.02] border border-white/5">
-                    <Clock className="w-8 h-8 text-amber-400 mx-auto mb-2 opacity-80" />
-                    <p className="text-sm font-bold text-white">Gravação em Produção</p>
-                    <p className="text-xs text-white/60 mt-1 max-w-sm mx-auto">
-                      Os capítulos deste audiobook estão em fase de narração profissional e legendagem. Você pode ativar a notificação para ser avisado no lançamento.
+                  <div className="p-6 text-center rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
+                    <Clock className="w-8 h-8 text-amber-400 mx-auto opacity-80" />
+                    <p className="text-sm font-bold text-white">Audiobook Completo em Produção</p>
+                    <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
+                      A gravação integral dos capítulos deste clássico está em estúdio.
+                      {temResumo && ' No entanto, o Resumo em Áudio Completo (Diálogo Professora & Aluna) já está disponível!'}
                     </p>
+                    {temResumo && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          haptic.selection();
+                          setTabAtiva('resumo');
+                        }}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-bold transition-all cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                        <span>Ver Resumo em Diálogo ({resumoInfo?.duracaoFormatada || '~35m'})</span>
+                      </button>
+                    )}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Conteúdo da Aba Resumo do Livro (Diálogo Professora e Aluna) */}
+            {tabAtiva === 'resumo' && resumoInfo && (
+              <div className="space-y-3 animate-in fade-in duration-200">
+                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-amber-500/10 via-purple-500/5 to-transparent border border-amber-500/25 shadow-lg">
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-md bg-amber-400/25 text-amber-300 border border-amber-400/35">
+                          Resumo em Áudio HD
+                        </span>
+                        <span className="text-xs text-white/40">•</span>
+                        <span className="text-xs text-amber-200 font-medium">
+                          {resumoInfo.duracaoFormatada}
+                        </span>
+                      </div>
+                      <h4 className="font-display font-bold text-base sm:text-lg text-white mt-1">
+                        Diálogo Professora & Aluna
+                      </h4>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-5 h-5 text-amber-300" />
+                    </div>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-white/80 leading-relaxed mb-4">
+                    {resumoInfo.descricao ||
+                      'Resumo dinâmico e didático com os pontos centrais, teses basilares e dilemas jurídicos da obra.'}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-2 text-center text-xs p-3 rounded-xl bg-black/40 border border-white/5 mb-4">
+                    <div>
+                      <span className="block text-[10px] text-white/40 uppercase font-bold">Formato</span>
+                      <span className="font-bold text-white mt-0.5">Áudio Integral + SRT</span>
+                    </div>
+                    <div>
+                      <span className="block text-[10px] text-white/40 uppercase font-bold">Metodologia</span>
+                      <span className="font-bold text-amber-300 mt-0.5">Socrática / Diálogo</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.impact();
+                      if (onPlayResumo) {
+                        onPlayResumo(livro);
+                      } else {
+                        onPlayCapitulo(0, livro);
+                      }
+                      onClose();
+                    }}
+                    style={{
+                      background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 50%, #B45309 100%)',
+                      boxShadow: '0 8px 25px -4px rgba(217, 119, 6, 0.65)',
+                    }}
+                    className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 text-white active:scale-[0.98] transition-all cursor-pointer border border-amber-300/40 hover:brightness-110"
+                  >
+                    <Play className="w-4 h-4 fill-white text-white translate-x-0.5" />
+                    <span>Reproduzir Resumo em Áudio</span>
+                  </button>
+                </div>
               </div>
             )}
 
