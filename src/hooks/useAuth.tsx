@@ -139,6 +139,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         import('@/lib/appEvents').then(({ appEvents, identifyUser }) => {
           const provider = (session?.user?.app_metadata as Record<string, unknown>)?.provider || 'email';
           if (_event === 'SIGNED_IN') {
+            // Sincroniza avatar e perfil social com a tabela public.profiles
+            if (session?.user) {
+              const meta = (session.user.user_metadata as Record<string, unknown>) || {};
+              const socialAvatar = (meta.avatar_url || meta.picture) as string | undefined;
+              const socialName = (meta.full_name || meta.name) as string | undefined;
+              if (socialAvatar || socialName || session.user.email) {
+                const patch: { avatar_url?: string; display_name?: string; email?: string } = {};
+                if (socialAvatar) patch.avatar_url = socialAvatar;
+                if (socialName) patch.display_name = socialName;
+                if (session.user.email) patch.email = session.user.email;
+                void (supabase.from('profiles') as any).update(patch).eq('id', session.user.id);
+              }
+            }
+
             const sent = typeof window !== 'undefined' ? window.sessionStorage.getItem('ga_login_sent') : '1';
             if (sent !== '1') {
               identifyUser({

@@ -1562,16 +1562,18 @@ export function AdminHojeCards() {
             ? supabase.from('app_events').select('user_id, email, created_at').in('event_name', id === 'viu_planos' ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] : ['assinatura_aberta', 'paywall_view', 'trial_click']).in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString())
             : Promise.resolve({ data: [] }),
           supabase.from('user_sessions').select('user_id, initial_route, started_at').in('user_id', ids).gte('started_at', minD.toISOString()).lt('started_at', maxD.toISOString()),
-          supabase.from('profiles').select('id, created_at, faixa_etaria, is_premium').in('id', ids),
+          supabase.from('profiles').select('id, created_at, faixa_etaria, is_premium, avatar_url, display_name, email').in('id', ids),
           supabase.from('asaas_subscriptions').select('user_id, plano, status, expires_at, started_at').in('user_id', ids),
           supabase.from('play_subscriptions').select('user_id, product_id, status, expires_at').in('user_id', ids),
           supabase.from('apple_subscriptions').select('user_id, product_id, status, expires_at').in('user_id', ids),
           supabase.from('app_events').select('user_id, metadata, event_name').in('user_id', ids).in('event_name', ['purchase', 'checkout_cc_aprovado', 'subscription_started']).order('created_at', { ascending: false })
         ]);
 
-        const map = new Map<string, string>(((provs as any[]) || []).map((p) => [p.user_id || p.id, p.provider]));
-        const profMap = new Map<string, { created_at?: string; faixa_etaria?: string; is_premium?: boolean }>(
-          ((profs as any[]) || []).map((p: any) => [p.id, { created_at: p.created_at, faixa_etaria: p.faixa_etaria, is_premium: p.is_premium }])
+        const provMap = new Map<string, { provider: string; avatar_url?: string }>(
+          ((provs as any[]) || []).map((p) => [p.user_id || p.id, { provider: p.provider, avatar_url: p.avatar_url }])
+        );
+        const profMap = new Map<string, { created_at?: string; faixa_etaria?: string; is_premium?: boolean; avatar_url?: string; display_name?: string }>(
+          ((profs as any[]) || []).map((p: any) => [p.id, { created_at: p.created_at, faixa_etaria: p.faixa_etaria, is_premium: p.is_premium, avatar_url: p.avatar_url, display_name: p.display_name }])
         );
 
         // Mapear plano e preço de cada usuário para exibir na lista
@@ -1694,9 +1696,11 @@ export function AdminHojeCards() {
           const updated = current.map((r) => {
             const rUid = r.userId || r.key;
             const rEm = (r.email || '').toLowerCase().trim();
-            const rProv = map.get(rUid) || (r.avatarUrl?.includes('googleusercontent.com') ? 'google' : r.provider);
-            const calcAcessos = acessosMap.get(rUid) || (rEm ? acessosMap.get(rEm) : undefined);
+            const rProvInfo = provMap.get(rUid);
             const profData = profMap.get(rUid);
+            const finalAvatar = r.avatarUrl || profData?.avatar_url || rProvInfo?.avatar_url || null;
+            const rProv = rProvInfo?.provider || (finalAvatar?.includes('googleusercontent.com') ? 'google' : r.provider);
+            const calcAcessos = acessosMap.get(rUid) || (rEm ? acessosMap.get(rEm) : undefined);
             const subData = subInfoMap.get(rUid);
             const isUserPrem = Boolean(r.isPremium || profData?.is_premium || subData);
             let finalPlanTag = r.planTag || subData?.planTag;
@@ -1709,6 +1713,7 @@ export function AdminHojeCards() {
             return { 
               ...r, 
               provider: rProv,
+              avatarUrl: finalAvatar,
               funcaoPreferida: mapFav.get(rUid),
               tempo_tela: tempoMap.get(rUid) || null,
               acessos: (calcAcessos !== undefined && calcAcessos > 0) ? calcAcessos : (r.acessos || 1),
