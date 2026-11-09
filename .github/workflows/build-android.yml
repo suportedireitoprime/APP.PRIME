@@ -2547,7 +2547,13 @@ jobs:
 
           echo "===== Java/Gradle versions ====="
           java -version
-          (cd android && ./gradlew --version --no-daemon)
+          for i in 1 2 3 4 5; do
+            if (cd android && ./gradlew --version --no-daemon); then
+              break
+            fi
+            echo "Tentativa $i falhou ao verificar Gradle wrapper, aguardando 5s para tentar novamente..."
+            sleep 5
+          done
           echo "===== android/gradle.properties ====="
           grep -E 'org.gradle.java.home|android.useAndroidX|android.enableJetifier' android/gradle.properties || true
           echo "===== android/build.gradle (numbered) ====="
