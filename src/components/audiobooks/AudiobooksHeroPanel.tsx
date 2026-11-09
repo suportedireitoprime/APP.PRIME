@@ -5,7 +5,7 @@ import {
   Heart,
   History,
   BarChart3,
-  Sparkles,
+  BookOpen,
 } from 'lucide-react';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
@@ -182,22 +182,22 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
             </span>
           </button>
 
-          {/* Botão 4: Outros */}
+          {/* Botão 4: Resumos (Substitui Outros) */}
           <button
             type="button"
             onClick={() => {
               haptic.selection();
-              onSelectAction('outros');
+              onSelectAction('resumos');
             }}
             className="flex-1 group relative flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-white/10 active:bg-white/15 transition-all active:scale-95 gap-1 text-center cursor-pointer select-none"
-            aria-label="Outros Recursos"
+            aria-label="Abrir Trilha de Resumos"
           >
-            <Sparkles
+            <BookOpen
               className="w-5 h-5 text-purple-400 group-hover:scale-110 transition-transform duration-200 drop-shadow-md"
               strokeWidth={2}
             />
             <span className="font-body text-white text-[11px] sm:text-[12px] font-semibold leading-tight capitalize tracking-wide drop-shadow-sm">
-              Outros
+              Resumos
             </span>
           </button>
         </div>

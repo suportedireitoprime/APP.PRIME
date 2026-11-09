@@ -805,7 +805,7 @@ export default function AudiobooksPage() {
       </main>
 
       {/* ======================================================== */}
-      {/* SHEET DE AÇÕES RÁPIDAS (FAVORITOS, RECENTES, ESTATÍSTICAS, OUTROS) */}
+      {/* SHEET DE AÇÕES RÁPIDAS (FAVORITOS, RECENTES, ESTATÍSTICAS, RESUMOS) */}
       {/* ======================================================== */}
       <AudiobooksQuickActionSheet
         activeSheet={activeQuickSheet}
@@ -815,6 +815,9 @@ export default function AudiobooksPage() {
         }}
         onPlayLivro={(livro, idx) => {
           player.tocarLivro(livro, idx ?? 0);
+        }}
+        onPlayResumo={(livro, idx) => {
+          abrirResumo(livro, idx ?? 0);
         }}
       />
 

@@ -28,14 +28,16 @@ import {
   O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
   AudiobookLivro,
 } from '@/data/audiobooksCatalogo';
+import { AudiobooksTrilhaResumos } from './AudiobooksTrilhaResumos';
 
-export type AudiobookQuickActionType = 'favoritos' | 'recentes' | 'estatisticas' | 'outros';
+export type AudiobookQuickActionType = 'favoritos' | 'recentes' | 'estatisticas' | 'resumos';
 
 interface AudiobooksQuickActionSheetProps {
   activeSheet: AudiobookQuickActionType | null;
   onClose: () => void;
   onSelectLivro: (livro: AudiobookLivro) => void;
   onPlayLivro: (livro: AudiobookLivro, capituloIndex?: number) => void;
+  onPlayResumo?: (livro: AudiobookLivro, capituloIndex?: number) => void;
 }
 
 export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProps> = ({
@@ -43,6 +45,7 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
   onClose,
   onSelectLivro,
   onPlayLivro,
+  onPlayResumo,
 }) => {
   const [tabAtiva, setTabAtiva] = useState<AudiobookQuickActionType>(activeSheet || 'favoritos');
   const [favoritos, setFavoritos] = useState<AudiobookFavItem[]>(() =>
@@ -85,9 +88,9 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
       title: 'Minhas Estatísticas',
       subtitle: 'Tempo de audição, obras e evolução jurídica',
     },
-    outros: {
-      title: 'Outros Recursos',
-      subtitle: 'Coleções, prévias e preferências de reprodução',
+    resumos: {
+      title: 'Trilha de Resumos',
+      subtitle: 'Obras clássicas sintetizadas em sequência didática',
     },
   };
 
@@ -196,16 +199,16 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
               type="button"
               onClick={() => {
                 haptic.selection();
-                setTabAtiva('outros');
+                setTabAtiva('resumos');
               }}
               className={`flex items-center justify-center gap-1 sm:gap-1.5 py-2 px-1 rounded-xl text-[11px] sm:text-xs font-semibold transition-all cursor-pointer select-none text-center ${
-                tabAtiva === 'outros'
+                tabAtiva === 'resumos'
                   ? 'bg-[#7C3AED] text-white shadow-md shadow-[#7C3AED]/35 border border-[#8B5CF6]'
                   : 'text-white/60 hover:text-white hover:bg-white/5 border border-transparent'
               }`}
             >
-              <Sparkles className={`w-3.5 h-3.5 ${tabAtiva === 'outros' ? 'text-white' : 'text-[#C4B5FD]'}`} />
-              <span className="truncate">Outros</span>
+              <BookOpen className={`w-3.5 h-3.5 ${tabAtiva === 'resumos' ? 'text-white' : 'text-[#C4B5FD]'}`} />
+              <span className="truncate">Resumos</span>
             </button>
           </div>
 
@@ -403,31 +406,22 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
               </div>
             )}
 
-            {/* ── ABA 4: OUTROS RECURSOS ── */}
-            {tabAtiva === 'outros' && (
-              <div className="space-y-3">
-                <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/10 space-y-3">
-                  <h4 className="font-sans font-bold text-white text-sm flex items-center gap-2">
-                    <Volume2 className="w-4 h-4 text-purple-400" />
-                    Qualidade de Estúdio &amp; Narração
-                  </h4>
-                  <p className="text-xs text-white/60 leading-relaxed">
-                    Todos os nossos audiobooks são produzidos com locução humana profissional em estúdio acústico, trilha incidental clássica e legendas sincronizadas palavra por palavra.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/10 flex items-center justify-between">
-                  <div>
-                    <h5 className="font-semibold text-white text-xs">Acervo em Expansão</h5>
-                    <p className="text-[11px] text-white/50 mt-0.5">
-                      34 novas obras clássicas estão sendo gravadas em estúdio.
-                    </p>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full bg-[#7C3AED]/20 text-[#DDD6FE] text-[10px] font-bold border border-[#7C3AED]/40">
-                    35 Livros
-                  </span>
-                </div>
-              </div>
+            {/* ── ABA 4: TRILHA SEQUENCIAL DE RESUMOS ── */}
+            {tabAtiva === 'resumos' && (
+              <AudiobooksTrilhaResumos
+                onPlayResumo={(livro, capIdx) => {
+                  if (onPlayResumo) {
+                    onPlayResumo(livro, capIdx);
+                  } else {
+                    onPlayLivro(livro, capIdx);
+                  }
+                  onClose();
+                }}
+                onSelectLivro={(livro) => {
+                  onSelectLivro(livro);
+                  onClose();
+                }}
+              />
             )}
           </div>
         </motion.div>
