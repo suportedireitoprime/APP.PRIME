@@ -1,4 +1,15 @@
-import { AudiobookLivro } from './audiobooksCatalogo';
+import { AudiobookLivro, AudiobookCapitulo } from './audiobooksCatalogo';
+import resumosCatalogData from './resumosChaptersCatalog.json';
+
+export interface AudiobookResumoCapitulo {
+  numero: number;
+  id: string;
+  arquivo?: string;
+  titulo: string;
+  audioUrl: string;
+  srtUrl?: string;
+  duracaoFormatada?: string;
+}
 
 export interface AudiobookResumoInfo {
   slug: string;
@@ -9,6 +20,7 @@ export interface AudiobookResumoInfo {
   srtUrl?: string;
   duracaoFormatada?: string;
   descricao?: string;
+  capitulos?: AudiobookResumoCapitulo[];
 }
 
 const R2_BASE = 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audiobooks/resumos';
@@ -574,23 +586,67 @@ export function hasResumoDisponivel(livro: { id?: string; titulo?: string } | nu
 }
 
 /**
- * Converte um livro para uma estrutura AudiobookLivro virtual pronta para tocar
- * o Resumo em Áudio contínuo com legendas sincronizadas SRT no Player Modal
+ * Retorna os capítulos individuais do resumo a partir do catálogo gerado
+ */
+export function getResumoCapitulos(livro: { id?: string; titulo?: string } | null | undefined): AudiobookResumoCapitulo[] {
+  if (!livro) return [];
+  const resumo = getResumoForLivro(livro);
+  const slug = resumo?.slug || (livro.id ? livro.id.replace(/-resumo$/, '') : '');
+  const catalogEntry = (resumosCatalogData as Record<string, any>)[slug];
+  if (catalogEntry && Array.isArray(catalogEntry.capitulos)) {
+    return catalogEntry.capitulos;
+  }
+  return [];
+}
+
+/**
+ * Converte um livro para uma estrutura AudiobookLivro virtual dividida em capítulos individuais
+ * (Apresentação, Por que ler, Capítulos numerados e Conclusão) com legendas sincronizadas SRT no Player Modal
  */
 export function criarLivroPlayerResumo(livro: AudiobookLivro): AudiobookLivro {
   const resumo = getResumoForLivro(livro);
-  const audioUrl = resumo?.audioUrl || livro.resumoAudioUrl || '';
-  const srtUrl = resumo?.srtUrl || livro.resumoSrtUrl;
+  const slug = resumo?.slug || (livro.id ? livro.id.replace(/-resumo$/, '') : '');
+  const catalogEntry = (resumosCatalogData as Record<string, any>)[slug];
 
-  return {
-    ...livro,
-    id: `${livro.id}-resumo`,
-    titulo: `${livro.titulo}`,
-    subtitulo: 'Resumo em Diálogo • Professora e Aluna',
-    status: 'disponivel',
-    totalCapitulos: 1,
-    duracaoTotalFormatada: resumo?.duracaoFormatada || 'Resumo',
-    capitulos: [
+  let capitulos: AudiobookCapitulo[] = [];
+
+  if (catalogEntry && Array.isArray(catalogEntry.capitulos) && catalogEntry.capitulos.length > 0) {
+    capitulos = catalogEntry.capitulos.map((c: any, idx: number) => {
+      let enrichedTitle = c.titulo;
+      // Se o capítulo for 'capitulo-XX', tenta enriquecer com o subtítulo do capítulo da obra original
+      const capM = c.arquivo?.match(/capitulo-(\d+)/i);
+      if (capM && Array.isArray(livro.capitulos)) {
+        const num = parseInt(capM[1], 10);
+        const origCap = livro.capitulos.find((oc) => {
+          const om = oc.titulo.match(/Cap[ií]tulo\s*0?(\d+)/i);
+          return om && parseInt(om[1], 10) === num;
+        });
+        if (origCap?.titulo) {
+          enrichedTitle = origCap.titulo;
+        }
+      }
+
+      return {
+        numero: idx + 1,
+        id: `${livro.id}-resumo-${c.id || idx + 1}`,
+        titulo: enrichedTitle,
+        autor: resumo?.autor || livro.autor,
+        descricao: `Resumo pedagógico e aprofundado: ${enrichedTitle} da obra ${livro.titulo}.`,
+        duracaoSegundos: c.duracaoSegundos || 360,
+        duracaoFormatada: c.duracaoFormatada || '~6 min',
+        audioUrl: c.audioUrl,
+        srtUrl: c.srtUrl,
+        cues: [],
+        imagens: livro.capitulos?.[idx]?.imagens || livro.capitulos?.[0]?.imagens || [],
+      };
+    });
+  }
+
+  // Fallback para arquivo completo caso o livro não possua capítulos individuais mapeados
+  if (capitulos.length === 0) {
+    const audioUrl = resumo?.audioUrl || livro.resumoAudioUrl || '';
+    const srtUrl = resumo?.srtUrl || livro.resumoSrtUrl;
+    capitulos = [
       {
         numero: 1,
         id: `${livro.id}-resumo-dialogo`,
@@ -604,7 +660,18 @@ export function criarLivroPlayerResumo(livro: AudiobookLivro): AudiobookLivro {
         cues: [],
         imagens: livro.capitulos?.[0]?.imagens || [],
       },
-    ],
+    ];
+  }
+
+  return {
+    ...livro,
+    id: `${livro.id}-resumo`,
+    titulo: `${livro.titulo}`,
+    subtitulo: 'Resumo em Diálogo • Professora e Aluna',
+    status: 'disponivel',
+    totalCapitulos: capitulos.length,
+    duracaoTotalFormatada: resumo?.duracaoFormatada || `${capitulos.length} capítulos`,
+    capitulos,
   };
 }
 

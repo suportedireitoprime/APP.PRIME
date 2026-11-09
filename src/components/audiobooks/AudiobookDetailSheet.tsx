@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { PrimeBottomSheet } from '@/components/vademecum/overlays/PrimeBottomSheet';
 import { haptic } from '@/lib/nativeHaptics';
 import { AudiobookLivro } from '@/data/audiobooksCatalogo';
-import { getResumoForLivro } from '@/data/audiobooksResumosMap';
+import { getResumoForLivro, getResumoCapitulos } from '@/data/audiobooksResumosMap';
 import { useIsDesktop } from '@/hooks/use-desktop';
 
 interface AudiobookDetailSheetProps {
@@ -24,7 +24,7 @@ interface AudiobookDetailSheetProps {
   livro: AudiobookLivro | null;
   onClose: () => void;
   onPlayCapitulo: (index: number, livro: AudiobookLivro) => void;
-  onPlayResumo?: (livro: AudiobookLivro) => void;
+  onPlayResumo?: (livro: AudiobookLivro, capituloIndex?: number) => void;
   progressoSalvo?: { capituloIndex: number; time: number } | null;
   isNotificado?: boolean;
   onToggleNotificacao?: (livroId: string, titulo: string) => void;
@@ -42,6 +42,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
 }) => {
   const isDesktop = useIsDesktop();
   const resumoInfo = React.useMemo(() => getResumoForLivro(livro), [livro]);
+  const resumoCapitulos = React.useMemo(() => getResumoCapitulos(livro), [livro]);
   const temResumo = !!resumoInfo;
 
   const [tabAtiva, setTabAtiva] = useState<'capitulos' | 'resumo' | 'sobre' | 'ficha'>('capitulos');
@@ -564,7 +565,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                     onClick={() => {
                       haptic.impact();
                       if (onPlayResumo) {
-                        onPlayResumo(livro);
+                        onPlayResumo(livro, 0);
                       } else {
                         onPlayCapitulo(0, livro);
                       }
@@ -577,9 +578,57 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                     className="w-full py-3.5 px-4 rounded-xl font-display font-bold text-xs sm:text-sm uppercase tracking-wider flex items-center justify-center gap-2 text-white active:scale-[0.98] transition-all cursor-pointer border border-amber-300/40 hover:brightness-110"
                   >
                     <Play className="w-4 h-4 fill-white text-white translate-x-0.5" />
-                    <span>Reproduzir Resumo em Áudio</span>
+                    <span>Reproduzir Resumo do Início</span>
                   </button>
                 </div>
+
+                {/* Lista de Capítulos do Resumo */}
+                {resumoCapitulos.length > 0 && (
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center justify-between px-1">
+                      <h5 className="font-display font-bold text-xs uppercase tracking-wider text-amber-300/90">
+                        Capítulos do Resumo ({resumoCapitulos.length})
+                      </h5>
+                      <span className="text-[10.5px] text-white/50">Diálogo Dividido</span>
+                    </div>
+
+                    <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1 [scrollbar-width:thin]">
+                      {resumoCapitulos.map((cap, capIdx) => (
+                        <button
+                          key={cap.id || capIdx}
+                          type="button"
+                          onClick={() => {
+                            haptic.impact();
+                            if (onPlayResumo) {
+                              onPlayResumo(livro, capIdx);
+                            } else {
+                              onPlayCapitulo(capIdx, livro);
+                            }
+                            onClose();
+                          }}
+                          className="w-full p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-amber-400/40 transition-all flex items-center justify-between text-left group cursor-pointer active:scale-[0.99]"
+                        >
+                          <div className="flex items-center gap-3 min-w-0 pr-2">
+                            <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-300 font-mono text-xs font-bold shrink-0 group-hover:scale-105 group-hover:bg-amber-500/25 transition-transform">
+                              {cap.numero}
+                            </div>
+                            <div className="min-w-0">
+                              <span className="block font-bold text-xs sm:text-sm text-white group-hover:text-amber-200 transition-colors truncate">
+                                {cap.titulo}
+                              </span>
+                              <span className="block text-[11px] text-white/50 truncate mt-0.5">
+                                Diálogo Professora & Aluna • {cap.duracaoFormatada || '~6 min'}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="shrink-0 w-7 h-7 rounded-full bg-white/10 group-hover:bg-amber-500/30 flex items-center justify-center transition-colors">
+                            <Play className="w-3 h-3 fill-white text-white translate-x-0.5" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

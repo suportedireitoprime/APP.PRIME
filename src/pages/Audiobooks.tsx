@@ -140,16 +140,16 @@ export default function AudiobooksPage() {
     setPlayerOpen(true);
   }, [livroSelecionado, livroContinuarOuvindo, player]);
 
-  const abrirResumo = useCallback((livroAlvo: AudiobookLivro) => {
+  const abrirResumo = useCallback((livroAlvo: AudiobookLivro, capIdx = 0) => {
     haptic.selection();
     const livroResumo = criarLivroPlayerResumo(livroAlvo);
     setLivroPlayer(livroResumo);
-    setSelectedCapituloIndex(0);
+    setSelectedCapituloIndex(capIdx);
     setLivroSelecionado(null);
     setActiveQuickSheet(null);
 
-    // Inicia reprodução do resumo integral com legendas sincronizadas
-    player.tocarLivro(livroResumo, 0);
+    // Inicia reprodução do resumo no capítulo selecionado com legendas sincronizadas
+    player.tocarLivro(livroResumo, capIdx);
     setPlayerOpen(true);
   }, [player]);
 
