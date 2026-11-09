@@ -64,14 +64,15 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
   return (
     <div className="flex flex-col rounded-b-3xl overflow-hidden shadow-2xl">
       {/* ── Cabeçalho Vade Mecum ───────────────── */}
-      <div className="bg-zinc-950 px-4 pb-4 pt-safe-header flex items-center justify-between">
+      <div className="bg-zinc-950 px-4 pb-3.5 pt-[calc(0.85rem+var(--sai-top,env(safe-area-inset-top,0px)))] flex items-center justify-between">
         <button 
           onClick={() => { haptic.selection(); onBack?.(); }} 
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:opacity-70"
+          aria-label="Voltar para Início"
+          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:scale-95"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
         </button>
-        <h1 className="font-display text-[18px] font-black uppercase tracking-widest text-white text-center flex-1 pr-11">
+        <h1 className="font-display text-[18px] sm:text-[20px] font-black uppercase tracking-widest text-white text-center flex-1 pr-12">
           Questões
         </h1>
       </div>

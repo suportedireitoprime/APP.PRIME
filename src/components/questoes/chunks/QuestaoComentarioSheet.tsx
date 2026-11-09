@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageSquare, Scale, Sparkles, AlertTriangle, Minus, Plus, Type, X,
+  Volume2, VolumeX, Play, Pause, RotateCcw, Layers, CheckCircle2, Bookmark,
 } from 'lucide-react';
 import { useQuestaoAcao, type QuestaoInline } from '@/hooks/useQuestaoAcao';
 import { Overlay, Md, Checklist, Erro } from './QuestaoAcaoOverlay';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { haptic } from '@/lib/nativeHaptics';
 
 export type Fonte = string | QuestaoInline;
 
@@ -158,9 +161,27 @@ function formatarComentario(texto: string | undefined): string {
   return groupSentences(formatado);
 }
 
+function parsePreErradas(texto: string): Array<{ letra: string; texto?: string; motivo: string }> {
+  if (!texto) return [];
+  const parts = texto.split(/(?=(?:\([A-E]\)|[A-E]\))\s*(?:Incorret[ao]|Fals[ao]|Errad[ao]))/gi).filter(Boolean);
+  if (parts.length <= 1) return [];
+
+  return parts.map((part) => {
+    const letraMatch = part.match(/(?:\(([A-E])\)|([A-E])\))\s*(?:Incorret[ao]|Fals[ao]|Errad[ao])[\s.:\-]*/i);
+    const letra = letraMatch ? (letraMatch[1] || letraMatch[2]).toUpperCase() : '';
+    const motivo = part.replace(/(?:\(([A-E])\)|([A-E])\))\s*(?:Incorret[ao]|Fals[ao]|Errad[ao])[\s.:\-]*/i, '').trim();
+    return {
+      letra,
+      motivo,
+    };
+  }).filter((p) => p.letra && p.motivo);
+}
+
 export function ComentarioInner({ source }: { source: Fonte }) {
   const [view, setView] = useState<'correta' | 'erradas'>('correta');
   const [fs, setFsState] = useState(17);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [rate, setRate] = useState<number>(1.2);
 
   const partes = typeof source === 'object' && source !== null 
     ? extrairPartesComentario(source) 
@@ -187,9 +208,142 @@ export function ComentarioInner({ source }: { source: Fonte }) {
   };
   const mdClass = 'text-[1em] prose-headings:text-[1.02em]';
 
+  const textoCorretaLimpo = hasPreCorreta 
+    ? formatarComentario(partes.correta) 
+    : limparTextoComentario(data?.texto || '');
+
+  // Texto sintetizado para narração em áudio
+  const textoParaFalar = useMemo(() => {
+    if (view === 'correta') {
+      const base = textoCorretaLimpo.replace(/[*#_`]/g, '');
+      const fund = data?.fundamento ? ` Fundamento: ${data.fundamento.replace(/[*#_`]/g, '')}` : '';
+      const dica = data?.dica ? ` Dica de prova: ${data.dica.replace(/[*#_`]/g, '')}` : '';
+      return `${base}${fund}${dica}`;
+    } else {
+      if (hasPreErradas) {
+        return partes.erradas.replace(/[*#_`]/g, '');
+      }
+      return erradas.map(e => `Alternativa ${e.letra}: ${e.motivo.replace(/[*#_`]/g, '')}`).join('. ');
+    }
+  }, [view, textoCorretaLimpo, data, hasPreErradas, partes.erradas, erradas]);
+
+  const handleToggleAudio = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      toast.error('Narração de áudio não suportada neste dispositivo.');
+      return;
+    }
+
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(textoParaFalar);
+    utterance.lang = 'pt-BR';
+    utterance.rate = rate;
+
+    utterance.onend = () => setIsPlaying(false);
+    utterance.onerror = () => setIsPlaying(false);
+
+    window.speechSynthesis.speak(utterance);
+    setIsPlaying(true);
+    haptic.selection?.();
+  };
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [view]);
+
+  const handleCriarFlashcard = () => {
+    try {
+      haptic.success?.();
+      const questaoId = (source as any)?.id || 'q-' + Date.now();
+      const titulo = (source as any)?.assunto || (source as any)?.disciplina || 'Questão Prática';
+      const enunciadoCurto = ((source as any)?.enunciado || '').slice(0, 140) + '...';
+      const FLASHCARDS_KEY = 'APP_PRIME_QUESTOES_FLASHCARDS';
+      const existentes = JSON.parse(localStorage.getItem(FLASHCARDS_KEY) || '[]');
+      const novoCard = {
+        id: 'fc-' + Date.now(),
+        questaoId,
+        frente: `${titulo}: ${enunciadoCurto}`,
+        verso: textoCorretaLimpo.slice(0, 350),
+        criadoEm: new Date().toISOString(),
+      };
+      localStorage.setItem(FLASHCARDS_KEY, JSON.stringify([novoCard, ...existentes.slice(0, 99)]));
+      toast.success('Flashcard de revisão criado com sucesso!');
+    } catch {
+      toast.success('Salvo para revisão!');
+    }
+  };
+
+  const preErradasParsed = useMemo(() => {
+    if (!hasPreErradas) return [];
+    return parsePreErradas(partes.erradas);
+  }, [hasPreErradas, partes.erradas]);
+
+  const gabaritoOficial = (source as any)?.gabarito_oficial || (source as any)?.gabarito || null;
+
   return (
-    <div className="space-y-3" style={{ fontSize: `${fs}px` }}>
+    <div className="space-y-4" style={{ fontSize: `${fs}px` }}>
       <TamanhoTextoFab fs={fs} setFs={setFs} />
+
+      {/* ── Barra de Áudio / Narração TTS ────────────────── */}
+      <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-zinc-900/90 p-3 shadow-md backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleToggleAudio}
+            aria-label={isPlaying ? "Pausar narração" : "Ouvir comentário"}
+            className={cn(
+              "grid h-11 w-11 place-items-center rounded-xl font-bold shadow-md transition-all active:scale-95",
+              isPlaying
+                ? "bg-rose-600 text-white animate-pulse"
+                : "bg-primary text-primary-foreground hover:brightness-110"
+            )}
+          >
+            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
+          </button>
+          <div>
+            <p className="text-[13px] font-bold text-white flex items-center gap-1.5">
+              <Volume2 className="h-3.5 w-3.5 text-primary" />
+              {isPlaying ? "Reproduzindo áudio..." : "Ouvir Comentário"}
+            </p>
+            <p className="text-[11px] text-zinc-400">
+              {isPlaying ? "Toque para pausar" : "Voz natural sintetizada"}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/5">
+          {[1, 1.25, 1.5].map((velocidade) => (
+            <button
+              key={velocidade}
+              type="button"
+              onClick={() => {
+                setRate(velocidade);
+                if (isPlaying) {
+                  window.speechSynthesis.cancel();
+                  setIsPlaying(false);
+                }
+              }}
+              className={cn(
+                "h-7 px-2 rounded-lg text-[11px] font-bold transition-all",
+                rate === velocidade
+                  ? "bg-primary text-primary-foreground shadow"
+                  : "text-zinc-400 hover:text-white"
+              )}
+            >
+              {velocidade}x
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 gap-1 rounded-full border border-border bg-muted/40 p-1">
         {(['correta', 'erradas'] as const).map((v) => (
@@ -222,24 +376,49 @@ export function ComentarioInner({ source }: { source: Fonte }) {
           )}
           {error && !isLoading && <Erro msg={error} onRetry={() => refetch()} />}
           {!isLoading && !error && (hasPreCorreta || data) && (
-            <div className="space-y-3">
-              <Md texto={hasPreCorreta ? formatarComentario(partes.correta) : limparTextoComentario(data.texto)} className={mdClass} />
+            <div className="space-y-3.5">
+              {gabaritoOficial && (
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span className="text-[12px] font-extrabold uppercase tracking-wider">
+                    Gabarito Oficial: Alternativa {String(gabaritoOficial).toUpperCase()}
+                  </span>
+                </div>
+              )}
+
+              <div className="rounded-2xl border border-border bg-card/60 p-4 sm:p-5 shadow-sm">
+                <Md texto={textoCorretaLimpo} className={mdClass} />
+              </div>
+
               {data?.fundamento && (
-                <div className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3">
-                  <p className="mb-1 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
-                    <Scale className="h-3 w-3" /> Fundamento
+                <div className="rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3.5 shadow-sm">
+                  <p className="mb-1.5 inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-primary">
+                    <Scale className="h-3.5 w-3.5" /> Dispositivo / Fundamento Legal
                   </p>
                   <Md texto={data.fundamento} className={mdClass} />
                 </div>
               )}
+
               {data?.dica && (
-                <div className="rounded-xl border-l-2 border-primary bg-muted/50 px-4 py-3">
-                  <p className="mb-1 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-primary">
-                    <Sparkles className="h-3 w-3" /> Dica de prova
+                <div className="rounded-2xl border border-amber-500/25 bg-amber-500/5 px-4 py-3.5 shadow-sm">
+                  <p className="mb-1.5 inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider text-amber-400">
+                    <Sparkles className="h-3.5 w-3.5" /> Dica de Prova / Pegadinha da Banca
                   </p>
                   <Md texto={data.dica} className={mdClass} />
                 </div>
               )}
+
+              {/* Botão de Criação de Flashcard */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleCriarFlashcard}
+                  className="flex w-full items-center justify-center gap-2.5 rounded-2xl border border-primary/30 bg-primary/10 py-3.5 px-4 text-[13.5px] font-bold text-primary hover:bg-primary/20 active:scale-[0.98] transition-all shadow-sm"
+                >
+                  <Layers className="h-4 w-4" />
+                  <span>Criar Flashcard deste gabarito</span>
+                </button>
+              </div>
             </div>
           )}
         </>
@@ -248,9 +427,37 @@ export function ComentarioInner({ source }: { source: Fonte }) {
       {view === 'erradas' && (
         <>
           {hasPreErradas ? (
-            <div className="rounded-xl border border-border bg-background/50 p-4 leading-relaxed">
-              <Md texto={formatarComentario(partes.erradas)} className={mdClass} />
-            </div>
+            preErradasParsed.length > 0 ? (
+              <div className="space-y-3">
+                {preErradasParsed.map((e, i) => (
+                  <motion.div
+                    key={`${e.letra}-${i}`}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: i * 0.04 }}
+                    className="overflow-hidden rounded-2xl border border-red-500/25 bg-card/60 shadow-sm"
+                  >
+                    <div className="border-b border-red-500/20 bg-red-500/10 px-4 py-2.5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="grid h-6 w-6 place-items-center rounded-full bg-red-500/20 border border-red-500/30 text-[11px] font-black text-red-300">
+                          {e.letra}
+                        </span>
+                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-red-400">
+                          Alternativa Incorreta
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-black/20">
+                      <Md texto={e.motivo} className={cn(mdClass, 'leading-relaxed')} />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-2xl border border-border bg-card/60 p-4 leading-relaxed shadow-sm">
+                <Md texto={formatarComentario(partes.erradas)} className={mdClass} />
+              </div>
+            )
           ) : (
             <>
               {erradasQ.isLoading && (
@@ -265,37 +472,41 @@ export function ComentarioInner({ source }: { source: Fonte }) {
               )}
               {erradasQ.error && !erradasQ.isLoading && <Erro msg={erradasQ.error} onRetry={() => erradasQ.refetch()} />}
               {!erradasQ.isLoading && !erradasQ.error && erradas.length === 0 && !hasPreErradas && erradasQ.data && (
-                <p className="rounded-xl border border-border bg-background p-4 text-sm text-muted-foreground">
+                <p className="rounded-2xl border border-border bg-card/60 p-4 text-sm text-muted-foreground">
                   Não foi possível identificar alternativas erradas para explicar.
                 </p>
               )}
 
               {erradas.length > 0 && (
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   {erradas.map((e, i) => (
                     <motion.div
                       key={`${e.letra}-${i}`}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.25, delay: i * 0.04 }}
-                      className="overflow-hidden rounded-xl border border-destructive/25 bg-background/40"
+                      className="overflow-hidden rounded-2xl border border-red-500/25 bg-card/60 shadow-sm"
                     >
-                      <div className="border-b border-destructive/20 bg-destructive/10 px-4 py-3">
-                        <div className="mb-1.5 flex items-center gap-2">
-                          <span className="grid h-7 w-7 place-items-center rounded-full border border-destructive/40 bg-destructive/20 text-xs font-bold text-destructive">
+                      <div className="border-b border-red-500/20 bg-red-500/10 px-4 py-2.5 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="grid h-6 w-6 place-items-center rounded-full bg-red-500/20 border border-red-500/30 text-[11px] font-black text-red-300">
                             {e.letra}
                           </span>
                           {e.dispositivo_chave && (
-                            <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
+                            <span className="text-[10px] font-extrabold uppercase tracking-wider text-primary">
                               {e.dispositivo_chave}
                             </span>
                           )}
                         </div>
-                        {e.texto && <p className="text-[0.95em] italic leading-relaxed text-foreground/80">"{e.texto}"</p>}
                       </div>
-                      <div className="bg-foreground/[0.03] px-4 py-3">
-                        <p className="mb-1.5 inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                          <AlertTriangle className="h-3 w-3" /> Por que está errada
+                      {e.texto && (
+                        <div className="px-4 pt-3 pb-1 border-b border-white/5 bg-white/[0.02]">
+                          <p className="text-[0.95em] italic leading-relaxed text-zinc-300">"{e.texto}"</p>
+                        </div>
+                      )}
+                      <div className="p-4 bg-black/20">
+                        <p className="mb-1.5 inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-zinc-400">
+                          <AlertTriangle className="h-3 w-3 text-amber-400" /> Motivo do Erro
                         </p>
                         <Md texto={e.motivo} className={cn(mdClass, 'leading-relaxed')} />
                       </div>

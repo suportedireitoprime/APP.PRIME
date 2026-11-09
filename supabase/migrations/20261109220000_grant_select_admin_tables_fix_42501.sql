@@ -31,3 +31,4 @@ DROP POLICY IF EXISTS admin_select_legacy_subs ON public.legacy_subscribers;
 CREATE POLICY admin_select_legacy_subs ON public.legacy_subscribers 
   FOR SELECT TO authenticated 
   USING (public.is_admin_user(auth.uid()));
+

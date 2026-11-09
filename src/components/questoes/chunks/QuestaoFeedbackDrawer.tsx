@@ -1,9 +1,30 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CheckCircle2, XCircle, X, RotateCw, ChevronRight, ChevronUp, Grid2X2, MessageSquare, ArrowRight,
+  CheckCircle2, XCircle, X, RotateCw, ChevronRight, ChevronUp, Grid2X2, MessageSquare, ArrowRight, Scale, Sparkles,
 } from 'lucide-react';
 import { QuestaoAcoesBar } from '@/components/questoes/QuestaoAcoesBar';
 import { cn } from '@/lib/utils';
+
+function extrairResumoExpress(atual: any): string | null {
+  if (!atual) return null;
+  const raw = atual.gabarito_comentado || atual.comentario || '';
+  if (!raw || typeof raw !== 'string') return null;
+  
+  const limpo = raw
+    .replace(/^(\s*(\*\*|\*|#+\s*)?(Gabarito\s+(Oficial\s+)?Comentado|Coment[áa]rio\s+(do\s+Gabarito)?|Gabarito)[\s:]*(\*\*|\*)?[\s:\-–—]*)/i, '')
+    .trim();
+  if (!limpo) return null;
+
+  const firstBlock = limpo.split(/\n\n|\r\n\r\n/)[0]?.trim() || '';
+  const matchSentenca = firstBlock.match(/^([^\n.!?]+[.!?])/);
+  let frase = matchSentenca ? matchSentenca[1].trim() : firstBlock.slice(0, 160).trim();
+  
+  if (frase.length > 180) {
+    frase = frase.slice(0, 177) + '...';
+  }
+  frase = frase.replace(/[*#_`]/g, '').trim();
+  return frase.length > 15 ? frase : null;
+}
 
 interface QuestaoFeedbackDrawerProps {
   resp?: { escolha: string; acertou: boolean };
@@ -118,7 +139,7 @@ export function QuestaoFeedbackDrawer({
                   exit={{ y: 40, opacity: 0 }}
                   transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
                   className={cn(
-                    'pointer-events-auto relative rounded-t-3xl border-t px-5 pb-safe-nav pt-7 shadow-2xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]',
+                    'pointer-events-auto relative rounded-t-3xl border-t px-5 pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] pt-6 shadow-2xl lg:rounded-2xl lg:border lg:mb-8 lg:max-w-[calc(100%-320px-2rem)]',
                     resp.acertou ? 'bg-[#0f1f14] border-green-500/30' : 'bg-[#1f0a0a] border-red-500/30',
                   )}
                 >
@@ -132,7 +153,7 @@ export function QuestaoFeedbackDrawer({
                   >
                     <X className="h-5 w-5" />
                   </button>
-                  <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
+                  <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
                     <div className="flex items-center gap-4">
                       <div className={cn('flex h-12 w-12 shrink-0 items-center justify-center rounded-full', resp.acertou ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-400')}>
                         {resp.acertou ? <CheckCircle2 className="h-7 w-7" /> : <XCircle className="h-7 w-7" />}
@@ -161,6 +182,25 @@ export function QuestaoFeedbackDrawer({
                         </div>
                       </div>
                     </div>
+
+                    {extrairResumoExpress(atual) && (
+                      <div className={cn(
+                        'rounded-2xl border p-3.5 text-[13px] leading-relaxed flex items-start gap-2.5 backdrop-blur-md shadow-sm',
+                        resp.acertou 
+                          ? 'bg-green-500/10 border-green-500/25 text-green-100' 
+                          : 'bg-red-500/10 border-red-500/25 text-red-100',
+                      )}>
+                        <Scale className={cn('w-4 h-4 shrink-0 mt-0.5', resp.acertou ? 'text-green-400' : 'text-red-400')} />
+                        <div className="flex-1 min-w-0">
+                          <span className={cn('text-[11px] font-black uppercase tracking-wider block mb-0.5', resp.acertou ? 'text-green-400' : 'text-red-400')}>
+                            Fundamento Rápido
+                          </span>
+                          <span className="text-white/90 text-[13px] line-clamp-3 leading-snug">
+                            {extrairResumoExpress(atual)}
+                          </span>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="flex flex-col gap-4 py-1">
                       <button

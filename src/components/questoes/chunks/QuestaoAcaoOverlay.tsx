@@ -34,20 +34,20 @@ export function Overlay({
         transition={{ duration: 0.3, ease: [0.32, 0.72, 0, 1] }}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          'relative flex w-full flex-col rounded-t-3xl border border-border bg-card shadow-2xl pb-[calc(1.25rem+var(--sai-bottom))] sm:max-w-lg sm:rounded-3xl sm:pb-0',
+          'relative flex w-full flex-col rounded-t-3xl border border-border bg-card shadow-2xl pb-[calc(1.25rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] sm:max-w-xl sm:rounded-3xl sm:pb-0',
           alto ? 'h-[90vh]' : 'max-h-[92vh] overflow-y-auto',
         )}
       >
         <div className="sticky top-0 z-10 flex shrink-0 items-center justify-between border-b border-border bg-card/95 px-4 py-3 backdrop-blur">
-          <p className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
-            <Icone className="h-3 w-3" /> {titulo}
+          <p className="inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-primary">
+            <Icone className="h-3.5 w-3.5" /> {titulo}
           </p>
           <button
             onClick={onClose}
             aria-label="Fechar"
-            className="grid h-11 w-11 place-items-center rounded-full border border-border/70 bg-muted/70 text-foreground transition-colors hover:bg-muted"
+            className="grid h-11 w-11 place-items-center rounded-full border border-border/70 bg-muted/70 text-foreground transition-all hover:bg-muted active:scale-95"
           >
-            <X className="h-5 w-5" />
+            <X className="h-5 w-5" strokeWidth={2.2} />
           </button>
         </div>
         <div className={cn('p-4 md:p-5', alto && 'flex min-h-0 flex-1 flex-col overflow-y-auto')}>{children}</div>
