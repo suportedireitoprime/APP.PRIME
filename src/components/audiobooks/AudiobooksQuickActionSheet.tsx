@@ -133,11 +133,11 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
               <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
             </button>
 
-            <div className="text-center flex-1 px-3 min-w-0">
-              <h2 className="font-sans font-bold text-base sm:text-lg text-white truncate">
+            <div className="text-center flex-1 px-3 min-w-0 font-['Plus_Jakarta_Sans',system-ui,sans-serif]">
+              <h2 className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] font-bold text-base sm:text-lg text-white truncate">
                 {titles[tabAtiva].title}
               </h2>
-              <p className="text-[11px] sm:text-[12px] text-white/55 truncate">
+              <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[11px] sm:text-[12px] text-white/55 truncate">
                 {titles[tabAtiva].subtitle}
               </p>
             </div>
@@ -145,8 +145,8 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
             <div className="w-12 sm:w-[52px]" />
           </div>
 
-          {/* Abas Rápidas no Topo do Sheet (Favoritos | Recentes | Estatísticas | Outros) */}
-          <div className="grid grid-cols-4 gap-1 sm:gap-2 px-3 sm:px-6 py-2 border-b border-white/10 bg-zinc-950/80 shrink-0">
+          {/* Abas Rápidas no Topo do Sheet (Favoritos | Recentes | Estatísticas | Resumos) */}
+          <div className="grid grid-cols-4 gap-1 sm:gap-2 px-3 sm:px-6 py-2 border-b border-white/10 bg-zinc-950/80 shrink-0 font-['Plus_Jakarta_Sans',system-ui,sans-serif]">
             <button
               type="button"
               onClick={() => {
