@@ -354,6 +354,16 @@ export function AdminHojeCards() {
     if (!sessData?.session?.access_token) {
       return;
     }
+    const currentUserId = sessData.session.user?.id;
+    const currentUserEmail = (sessData.session.user?.email || '').toLowerCase().trim();
+
+    const isAdminUser = (uid?: string | null, em?: string | null) => {
+      const cleanEm = (em || '').toLowerCase().trim();
+      if (cleanEm && ADMIN_EMAILS.includes(cleanEm)) return true;
+      if (currentUserEmail && cleanEm === currentUserEmail) return true;
+      if (currentUserId && uid === currentUserId) return true;
+      return false;
+    };
 
     if (isFetching.current) return;
     isFetching.current = true;
@@ -398,11 +408,7 @@ export function AdminHojeCards() {
             if (res.value.error) console.error('RPC ERROR', res.value.error);
             const m = (res.value.data as any) || {};
             rawRpcResponse = m;
-            totalOnline5m = Math.max(totalOnline5m, m.online5m || 0);
-            totalOnline = Math.max(totalOnline, m.online || 0, totalOnline5m);
             totalCadastros += m.cadastros || 0;
-            totalPaywall = Math.max(totalPaywall, m.paywall || 0);
-            totalViuPlanos = Math.max(totalViuPlanos, m.checkout || 0);
           } else {
             console.error('[ADMIN DEBUG] metrica rejected:', res.reason);
           }
@@ -417,8 +423,8 @@ export function AdminHojeCards() {
           (listData || []).forEach((r: any) => {
             const uid = r.user_id || r.id;
             const em = (r.email || '').toLowerCase().trim();
-            const isAdmin = ADMIN_EMAILS.includes(em);
-            if (isAdmin && defaultSubtitle === 'Novo cadastro') return;
+            const isAdmin = isAdminUser(uid, em);
+            if (isAdmin) return; // NUNCA inclui o administrador em listas de usuários
             const routeLabel = r.subtitle ? rotaParaFuncao(r.subtitle).label : null;
             const cleanSubtitle = (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : defaultSubtitle;
             const key = uid || em || r.key;
@@ -432,7 +438,7 @@ export function AdminHojeCards() {
                 subtitle: cleanSubtitle,
                 at: r.at || r.last_seen || r.created_at,
                 isPremium: r.is_premium ?? r.premium ?? false,
-                isAdmin,
+                isAdmin: false,
                 avatarUrl: r.avatar_url,
                 acessos: typeof r.acessos === 'number' ? r.acessos : 1,
                 created_at: r.created_at,
@@ -448,13 +454,13 @@ export function AdminHojeCards() {
         if (listCadastros.length > 0) rowsCache.current['cadastros'] = processList(listCadastros, 'Novo cadastro');
       }
 
-      const count5mFromList = ((list5m as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
-      totalOnline5m = Math.max(totalOnline5m, count5mFromList);
+      const count5mFromList = ((list5m as any[]) || []).filter(r => !isAdminUser(r.user_id || r.id, r.email)).length;
+      totalOnline5m = count5mFromList;
 
-      const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
-      totalOnline = Math.max(totalOnline, countOnlineFromList, totalOnline5m);
+      const countOnlineFromList = ((listOnline as any[]) || []).filter(r => !isAdminUser(r.user_id || r.id, r.email)).length;
+      totalOnline = Math.max(countOnlineFromList, totalOnline5m);
 
-      const countCadastrosFromList = ((listCadastros as any[]) || []).filter(r => !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim())).length;
+      const countCadastrosFromList = ((listCadastros as any[]) || []).filter(r => !isAdminUser(r.user_id || r.id, r.email)).length;
       totalCadastros = Math.max(totalCadastros, countCadastrosFromList);
 
       try {
@@ -479,19 +485,55 @@ export function AdminHojeCards() {
             .order('last_seen_at', { ascending: false })
             .limit(100);
 
-          if (direct5mRows && direct5mRows.length > 0 && periodo === 'hoje') {
-            totalOnline5m = Math.max(totalOnline5m, direct5mRows.length);
+          const nonAdmin5m = (direct5mRows || []).filter(r => !isAdminUser(r.user_id, r.email));
+          const distinct5m = new Set(nonAdmin5m.map(r => r.user_id || (r.email || '').toLowerCase().trim()).filter(Boolean));
+          if (periodo === 'hoje') {
+            totalOnline5m = distinct5m.size;
           }
 
-          const { count: directOnlineCount } = await supabase
+          const { data: directOnlineRows } = await supabase
             .from('user_activity_log')
-            .select('user_id', { count: 'exact', head: true })
+            .select('user_id, email')
             .gte('last_seen_at', startIso)
             .lt('last_seen_at', endIso);
 
-          if (typeof directOnlineCount === 'number' && directOnlineCount > 0) {
-            totalOnline = Math.max(totalOnline, directOnlineCount, totalOnline5m);
-          }
+          const nonAdminOnline = (directOnlineRows || []).filter(r => !isAdminUser(r.user_id, r.email));
+          const distinctOnline = new Set(nonAdminOnline.map(r => r.user_id || (r.email || '').toLowerCase().trim()).filter(Boolean));
+          totalOnline = Math.max(distinctOnline.size, totalOnline5m);
+        } catch {}
+
+        // Visualização de Paywall e Checkout diretamente de app_events excluindo admin (sem inflação artificial)
+        try {
+          const [paywallEvsRes, checkoutEvsRes] = await Promise.all([
+            supabase
+              .from('app_events')
+              .select('user_id, email')
+              .in('event_name', ['paywall_view', 'assinatura_aberta', 'trial_click'])
+              .gte('created_at', startIso)
+              .lt('created_at', endIso),
+            supabase
+              .from('app_events')
+              .select('user_id, email')
+              .in('event_name', ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'])
+              .gte('created_at', startIso)
+              .lt('created_at', endIso),
+          ]);
+
+          const distinctPaywall = new Set(
+            (paywallEvsRes.data || [])
+              .filter(e => !isAdminUser(e.user_id, e.email))
+              .map(e => e.user_id || (e.email || '').toLowerCase().trim())
+              .filter(Boolean)
+          );
+          totalPaywall = distinctPaywall.size;
+
+          const distinctCheckout = new Set(
+            (checkoutEvsRes.data || [])
+              .filter(e => !isAdminUser(e.user_id, e.email))
+              .map(e => e.user_id || (e.email || '').toLowerCase().trim())
+              .filter(Boolean)
+          );
+          totalViuPlanos = distinctCheckout.size;
         } catch {}
 
         // Buscar novas assinaturas no Asaas, Play Store, Apple, Legado e Eventos de Compra
@@ -539,12 +581,18 @@ export function AdminHojeCards() {
           if (l.email) oldLegEmails.add(l.email.toLowerCase().trim());
         });
 
-        // Buscar perfis e assinaturas anteriores dos candidatos do Asaas para identificar renovações vs novos
-        const asaasCandidateUids = (asaasRes.data || []).map((s: any) => s.user_id).filter(Boolean);
-        const [{ data: asaasProfs }, { data: priorAsaasSubs }] = asaasCandidateUids.length > 0
+        // Buscar perfis e assinaturas anteriores dos candidatos para identificar renovações vs novos
+        const allCandidateUids = Array.from(new Set([
+          ...(asaasRes.data || []).map((s: any) => s.user_id),
+          ...(playRes.data || []).map((s: any) => s.user_id),
+          ...(appleRes.data || []).map((s: any) => s.user_id),
+          ...(purchaseEvRes.data || []).map((e: any) => e.user_id)
+        ])).filter(Boolean) as string[];
+
+        const [{ data: asaasProfs }, { data: priorAsaasSubs }] = allCandidateUids.length > 0
           ? await Promise.all([
-              supabase.from('profiles').select('id, email, created_at').in('id', asaasCandidateUids),
-              supabase.from('asaas_subscriptions').select('user_id').in('user_id', asaasCandidateUids).lt('created_at', startIso)
+              supabase.from('profiles').select('id, email, created_at').in('id', allCandidateUids),
+              supabase.from('asaas_subscriptions').select('user_id').in('user_id', allCandidateUids).lt('created_at', startIso)
             ])
           : [{ data: [] }, { data: [] }];
 
@@ -566,9 +614,8 @@ export function AdminHojeCards() {
           if (em && oldLegEmails.has(em)) return true;
           if (uid && priorAsaasUids.has(uid)) return true;
           if (uid && profileCreatedMap.has(uid)) {
-            const pTime = new Date(profileCreatedMap.get(uid)!).getTime();
-            const sTime = new Date(startIso).getTime();
-            if (!isNaN(pTime) && pTime < sTime) return true;
+            const pTime = new Date(profileCreatedMap.get(uid) || '').getTime();
+            if (!isNaN(pTime) && pTime < new Date(startIso).getTime()) return true;
           }
           if (createdAt) {
             const createdTime = new Date(createdAt).getTime();
@@ -584,40 +631,55 @@ export function AdminHojeCards() {
         (asaasRes.data || []).forEach((s: any) => {
           const st = (s.status || '').toUpperCase();
           if (st !== 'ACTIVE' && st !== 'ACTIVE_GRACE' && st !== 'CONFIRMED' && st !== 'RECEIVED' && st !== 'PAGA') return;
-          if (!inPeriod(s.started_at) && !inPeriod(s.created_at)) return;
           const uid = s.user_id || s.id;
           const userEmail = asaasEmailMap.get(s.user_id);
+          if (isAdminUser(s.user_id, userEmail)) return;
+
           const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
 
           const plano = (s.plano || 'mensal').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
-          const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício'));
+          const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício') || plano.includes('vital'));
+          const isMensal = !isVit && !isAnual;
           const valor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = (isAnual && isPromo) ? 'anual_promocional' : plano;
 
-          if (userIsAntigo) {
-            renewUsers.set(uid, { plano: planName, valor });
-          } else {
+          const createdInPeriod = inPeriod(s.created_at);
+          const startedInPeriod = inPeriod(s.started_at);
+
+          // 1. Novo assinante de HOJE: a assinatura foi CRIADA hoje por um usuário NOVO (não antigo)!
+          if (createdInPeriod && !userIsAntigo) {
             subUsers.set(uid, { plano: planName, valor });
+            renewUsers.delete(uid);
           }
+          // 2. Renovação de HOJE: somente MENSAL, assinatura antiga, cujo ciclo renovou hoje
+          else if (isMensal && startedInPeriod && userIsAntigo) {
+            renewUsers.set(uid, { plano: planName, valor });
+          }
+          // 3. Assinantes antigos (Vitalício antigo, Anual antigo ou Mensal sem renovação hoje) NÃO entram nas métricas de hoje!
         });
 
         (playRes.data || []).forEach((s: any) => {
           const st = (s.status || '').toUpperCase();
           if (!st.includes('ACTIVE') && !st.includes('GRACE')) return;
           const uid = s.user_id || s.id;
-          const userIsAntigo = isAntigo(s.user_id, null, s.created_at);
-          const plano = s.product_id?.includes('anual') ? 'anual' : s.product_id?.includes('vitalicio') ? 'vitalicio' : 'mensal';
-          const valor = plano === 'anual' ? PRECO_ANUAL : plano === 'vitalicio' ? PRECO_VITALICIO : PRECO_MENSAL;
-          if (userIsAntigo) {
-            if (!renewUsers.has(uid) && !subUsers.has(uid)) {
-              renewUsers.set(uid, { plano, valor });
-            }
-          } else {
-            if (!subUsers.has(uid) && !renewUsers.has(uid)) {
-              subUsers.set(uid, { plano, valor });
-            }
+          const userEmail = asaasEmailMap.get(s.user_id);
+          if (isAdminUser(s.user_id, userEmail)) return;
+
+          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
+          const isAnual = s.product_id?.includes('anual');
+          const isVit = s.product_id?.includes('vitalicio') || s.product_id?.includes('vital');
+          const isMensal = !isVit && !isAnual;
+          const plano = isAnual ? 'anual' : isVit ? 'vitalicio' : 'mensal';
+          const valor = isAnual ? PRECO_ANUAL : isVit ? PRECO_VITALICIO : PRECO_MENSAL;
+
+          const createdInPeriod = inPeriod(s.created_at);
+          if (createdInPeriod && !userIsAntigo) {
+            subUsers.set(uid, { plano, valor });
+            renewUsers.delete(uid);
+          } else if (isMensal && inPeriod(s.created_at) && userIsAntigo) {
+            renewUsers.set(uid, { plano, valor });
           }
         });
 
@@ -625,17 +687,22 @@ export function AdminHojeCards() {
           const st = (s.status || '').toLowerCase();
           if (st !== 'active' && st !== 'in_grace') return;
           const uid = s.user_id || s.id;
-          const userIsAntigo = isAntigo(s.user_id, null, s.created_at);
-          const plano = s.product_id?.includes('anual') ? 'anual' : 'mensal';
-          const valor = plano === 'anual' ? PRECO_ANUAL : PRECO_MENSAL;
-          if (userIsAntigo) {
-            if (!renewUsers.has(uid) && !subUsers.has(uid)) {
-              renewUsers.set(uid, { plano, valor });
-            }
-          } else {
-            if (!subUsers.has(uid) && !renewUsers.has(uid)) {
-              subUsers.set(uid, { plano, valor });
-            }
+          const userEmail = asaasEmailMap.get(s.user_id);
+          if (isAdminUser(s.user_id, userEmail)) return;
+
+          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
+          const isAnual = s.product_id?.includes('anual');
+          const isVit = s.product_id?.includes('vitalicio') || s.product_id?.includes('vital');
+          const isMensal = !isVit && !isAnual;
+          const plano = isAnual ? 'anual' : isVit ? 'vitalicio' : 'mensal';
+          const valor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
+
+          const createdInPeriod = inPeriod(s.created_at);
+          if (createdInPeriod && !userIsAntigo) {
+            subUsers.set(uid, { plano, valor });
+            renewUsers.delete(uid);
+          } else if (isMensal && inPeriod(s.start_time) && userIsAntigo) {
+            renewUsers.set(uid, { plano, valor });
           }
         });
 
@@ -643,47 +710,55 @@ export function AdminHojeCards() {
           const st = (s.status || '').toLowerCase();
           if (st !== 'active' && st !== 'active_grace') return;
           const uid = s.claimed_user_id || s.id;
+          if (isAdminUser(s.claimed_user_id, s.email)) return;
+
           const userIsAntigo = isAntigo(s.claimed_user_id, s.email, s.created_at);
-          const plano = s.tipo || 'mensal';
-          const valor = plano === 'vitalicio' ? PRECO_VITALICIO : plano === 'anual' ? PRECO_ANUAL : PRECO_MENSAL;
-          if (userIsAntigo) {
-            if (!renewUsers.has(uid) && !subUsers.has(uid)) {
-              renewUsers.set(uid, { plano, valor });
-            }
-          } else {
-            if (!subUsers.has(uid) && !renewUsers.has(uid)) {
-              subUsers.set(uid, { plano, valor });
-            }
+          const plano = (s.tipo || 'mensal').toLowerCase();
+          const isVit = plano === 'vitalicio' || plano.includes('vital');
+          const isAnual = plano.includes('anual');
+          const isMensal = !isVit && !isAnual;
+          const valor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
+
+          const createdInPeriod = inPeriod(s.created_at);
+          if (createdInPeriod && !userIsAntigo) {
+            subUsers.set(uid, { plano, valor });
+            renewUsers.delete(uid);
+          } else if (isMensal && createdInPeriod && userIsAntigo) {
+            renewUsers.set(uid, { plano, valor });
           }
         });
 
         (purchaseEvRes.data || []).forEach((e: any) => {
           const em = (e.email || '').toLowerCase().trim();
-          if (ADMIN_EMAILS.includes(em)) return;
+          if (isAdminUser(e.user_id, em)) return;
           const uid = e.user_id || em;
           if (!uid) return;
-          const userIsAntigo = isAntigo(e.user_id, em, null);
+          if (!inPeriod(e.created_at)) return;
+          const userIsAntigo = isAntigo(e.user_id, em, profileCreatedMap.get(e.user_id));
 
           const meta = e.metadata || {};
           const plano = (meta.plano || 'anual').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
-          const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício'));
+          const isVit = !isPromo && (plano.includes('vitalicio') || plano.includes('vitalício') || plano.includes('vital'));
+          const isMensal = !isVit && !isAnual;
           const valor = typeof meta.value === 'number' && meta.value > 0
             ? meta.value
             : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
           const planName = (isAnual && isPromo) ? 'anual_promocional' : plano;
 
-          if (userIsAntigo) {
+          if (isMensal && userIsAntigo) {
             if (!renewUsers.has(uid) && !subUsers.has(uid)) {
               renewUsers.set(uid, { plano: planName, valor });
             } else if (renewUsers.has(uid) && typeof meta.value === 'number' && meta.value > 0) {
               renewUsers.set(uid, { plano: planName, valor });
             }
-          } else {
-            if (!subUsers.has(uid) && !renewUsers.has(uid)) {
+          } else if (!userIsAntigo) {
+            // Nova compra de hoje (somente se usuário não for antigo)
+            renewUsers.delete(uid);
+            if (!subUsers.has(uid)) {
               subUsers.set(uid, { plano: planName, valor });
-            } else if (subUsers.has(uid) && typeof meta.value === 'number' && meta.value > 0) {
+            } else if (typeof meta.value === 'number' && meta.value > 0) {
               subUsers.set(uid, { plano: planName, valor });
             }
           }
@@ -710,11 +785,6 @@ export function AdminHojeCards() {
       } catch (e: any) {
         console.error('Error fetching today events/subscriptions', e);
       }
-
-      // Ensure viu_planos (Checkout) is at least equal to assinantes (trial)
-      totalViuPlanos = Math.max(totalViuPlanos, totalTrial);
-      // Ensure paywall (Tela de Assinatura) is at least equal to viu_planos
-      totalPaywall = Math.max(totalPaywall, totalViuPlanos);
 
       const count5m = periodo === 'hoje' ? totalOnline5m : 0;
       const countOnline = Math.max(totalOnline, count5m);
@@ -870,6 +940,18 @@ export function AdminHojeCards() {
     }
     
     try {
+      const { data: sessData } = await supabase.auth.getSession();
+      const currentUserId = sessData?.session?.user?.id;
+      const currentUserEmail = (sessData?.session?.user?.email || '').toLowerCase().trim();
+
+      const isAdminUser = (uid?: string | null, em?: string | null) => {
+        const cleanEm = (em || '').toLowerCase().trim();
+        if (cleanEm && ADMIN_EMAILS.includes(cleanEm)) return true;
+        if (currentUserEmail && cleanEm === currentUserEmail) return true;
+        if (currentUserId && uid === currentUserId) return true;
+        return false;
+      };
+
       const datas = getDatasPeriodo(periodo);
       const { startIso, endIso } = getBrasiliaDayRange(datas);
       let allLists: any[] = [];
@@ -986,9 +1068,8 @@ export function AdminHojeCards() {
           if (em && oldLegEmails.has(em)) return true;
           if (uid && priorAsaasUids.has(uid)) return true;
           if (uid && profMap.has(uid)) {
-            const pTime = new Date(profMap.get(uid)?.created_at || 0).getTime();
-            const sTime = new Date(startIso).getTime();
-            if (!isNaN(pTime) && pTime > 0 && pTime < sTime) return true;
+            const pTime = new Date(profMap.get(uid)?.created_at || '').getTime();
+            if (!isNaN(pTime) && pTime < new Date(startIso).getTime()) return true;
           }
           if (createdAt) {
             const createdTime = new Date(createdAt).getTime();
@@ -1004,16 +1085,30 @@ export function AdminHojeCards() {
           if (st !== 'ACTIVE' && st !== 'ACTIVE_GRACE' && st !== 'CONFIRMED' && st !== 'RECEIVED' && st !== 'PAGA') return;
           if (!inPeriod(s.started_at) && !inPeriod(s.created_at)) return;
           if (s.user_id && existingUserIds.has(s.user_id)) return;
+
           const profInfo = profMap.get(s.user_id);
-          const userIsAntigo = isAntigo(s.user_id, profInfo?.email, s.created_at);
-          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
+          const userEmail = (profInfo?.email || '').toLowerCase().trim();
+          if (isAdminUser(s.user_id, userEmail)) return;
 
           const planoLower = (s.plano || '').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
-          const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
+          const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício') || planoLower.includes('vital'));
+          const isMensal = !isVit && !isAnual;
           const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
+
+          const createdInPeriod = inPeriod(s.created_at);
+          const startedInPeriod = inPeriod(s.started_at);
+          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
+
+          if (isRenovou) {
+            // "Renovou": estritamente MENSAL de assinatura antiga cujo ciclo renovou hoje
+            if (!isMensal || !startedInPeriod || !userIsAntigo) return;
+          } else {
+            // "Assinou": estritamente assinaturas CRIADAS no período de hoje por usuário novo
+            if (!createdInPeriod || userIsAntigo) return;
+          }
 
           allLists.push({
             key: `asaas-${s.id}`,
@@ -1021,7 +1116,7 @@ export function AdminHojeCards() {
             title: profInfo?.name || 'Assinante Asaas',
             email: profInfo?.email || null,
             subtitle: isRenovou ? `Renovou via Asaas (${planName})` : `Assinou via Asaas (${planName})`,
-            at: s.started_at || s.created_at,
+            at: isRenovou ? (s.started_at || s.created_at) : s.created_at,
             acessos: null,
             avatar_url: profInfo?.avatar_url || null,
             is_premium: true,
@@ -1034,22 +1129,33 @@ export function AdminHojeCards() {
         // 2. Eventos de Checkout/Compra confirmados hoje
         (purchaseEvRes.data || []).forEach((e: any) => {
           const em = (e.email || '').toLowerCase().trim();
-          if (ADMIN_EMAILS.includes(em)) return;
+          if (isAdminUser(e.user_id, em)) return;
           const uid = e.user_id || em;
           if (!uid || existingUserIds.has(uid)) return;
-          const profInfo = profMap.get(e.user_id);
-          const userIsAntigo = isAntigo(e.user_id, em || profInfo?.email, null);
-          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
 
           const meta = e.metadata || {};
           const planoLower = (meta.plano || 'anual').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
-          const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
+          const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício') || planoLower.includes('vital'));
+          const isMensal = !isVit && !isAnual;
           const planValor = typeof meta.value === 'number' && meta.value > 0
             ? meta.value
             : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
           const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
+
+          // Renovou é ESTRITAMENTE MENSAL!
+          if (isRenovou && !isMensal) return;
+
+          const profInfo = profMap.get(e.user_id);
+          const userIsAntigo = isAntigo(e.user_id, em || profInfo?.email, profInfo?.created_at);
+          const createdInPeriod = inPeriod(e.created_at);
+
+          if (isRenovou) {
+            if (!userIsAntigo) return;
+          } else {
+            if (!createdInPeriod || userIsAntigo) return;
+          }
 
           allLists.push({
             key: `event-${e.id}`,
@@ -1071,11 +1177,26 @@ export function AdminHojeCards() {
         (playRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const profInfo = profMap.get(s.user_id);
-          const userIsAntigo = isAntigo(s.user_id, profInfo?.email, s.created_at);
-          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
-          const isAnualOrVit = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio');
-          const planValor = isAnualOrVit ? PRECO_ANUAL : PRECO_MENSAL;
-          const planName = isAnualOrVit ? 'Anual/Vitalício' : 'Mensal';
+          const userEmail = (profInfo?.email || '').toLowerCase().trim();
+          if (isAdminUser(s.user_id, userEmail)) return;
+
+          const isAnual = s.product_id?.includes('anual');
+          const isVit = s.product_id?.includes('vitalicio') || s.product_id?.includes('vital');
+          const isMensal = !isVit && !isAnual;
+
+          if (isRenovou && !isMensal) return;
+
+          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
+          const createdInPeriod = inPeriod(s.created_at);
+
+          if (isRenovou) {
+            if (!userIsAntigo) return;
+          } else {
+            if (!createdInPeriod || userIsAntigo) return;
+          }
+
+          const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
+          const planName = isVit ? 'Vitalício' : isAnual ? 'Anual' : 'Mensal';
 
           allLists.push({
             key: `play-${s.id}`,
@@ -1097,11 +1218,26 @@ export function AdminHojeCards() {
         (appleRes.data || []).forEach((s: any) => {
           if (s.user_id && existingUserIds.has(s.user_id)) return;
           const profInfo = profMap.get(s.user_id);
-          const userIsAntigo = isAntigo(s.user_id, profInfo?.email, s.created_at);
-          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
+          const userEmail = (profInfo?.email || '').toLowerCase().trim();
+          if (isAdminUser(s.user_id, userEmail)) return;
+
           const isAnual = s.product_id?.includes('anual');
-          const planValor = isAnual ? PRECO_ANUAL : PRECO_MENSAL;
-          const planName = isAnual ? 'Anual' : 'Mensal';
+          const isVit = s.product_id?.includes('vitalicio') || s.product_id?.includes('vital');
+          const isMensal = !isVit && !isAnual;
+
+          if (isRenovou && !isMensal) return;
+
+          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
+          const createdInPeriod = inPeriod(s.created_at);
+
+          if (isRenovou) {
+            if (!userIsAntigo) return;
+          } else {
+            if (!createdInPeriod || userIsAntigo) return;
+          }
+
+          const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
+          const planName = isVit ? 'Vitalício' : isAnual ? 'Anual' : 'Mensal';
 
           allLists.push({
             key: `apple-${s.id}`,
@@ -1121,19 +1257,38 @@ export function AdminHojeCards() {
 
         // 5. Legados
         (legRes.data || []).forEach((e: any) => {
+          const em = (e.email || '').toLowerCase().trim();
+          if (isAdminUser(e.claimed_user_id, em)) return;
+
+          const isVit = e.tipo === 'vitalicio' || (e.tipo || '').toLowerCase().includes('vital');
+          const isAnual = (e.tipo || '').toLowerCase().includes('anual');
+          const isMensal = !isVit && !isAnual;
+
+          if (isRenovou && !isMensal) return;
+
           const userIsAntigo = isAntigo(e.claimed_user_id, e.email, e.created_at);
-          if (isRenovou ? !userIsAntigo : userIsAntigo) return;
+          const createdInPeriod = inPeriod(e.created_at);
+
+          if (isRenovou) {
+            if (!userIsAntigo) return;
+          } else {
+            if (!createdInPeriod || userIsAntigo) return;
+          }
+
+          const planName = isVit ? 'Vitalício' : isAnual ? 'Anual' : 'Mensal';
+          const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
+
           allLists.push({
             key: `leg-${e.id}`,
             user_id: e.claimed_user_id || null,
             title: e.nome || e.email?.split('@')[0] || 'Usuário',
             email: e.email,
-            subtitle: isRenovou ? `Renovou via Asaas (${e.status})` : `Assinou via Asaas (${e.status})`,
+            subtitle: isRenovou ? `Renovou via Asaas (${planName})` : `Assinou via Asaas (${planName})`,
             at: e.created_at,
             acessos: null,
             avatar_url: null,
             is_premium: true,
-            planValue: e.tipo === 'vitalicio' ? PRECO_VITALICIO : PRECO_MENSAL,
+            planValue: planValor,
             planTag: { plano: e.tipo || 'Assinatura', status: e.status, expires_at: null },
           });
         });
@@ -1184,68 +1339,46 @@ export function AdminHojeCards() {
           });
         }
       } else if (id === 'online5m' || id === 'online') {
-        const { data: rpcOnline } = await supabase.rpc('admin_lista_dia' as any, { _tipo: id, _dia: isoDate(datas[0]) });
-        if (Array.isArray(rpcOnline) && rpcOnline.length > 0) {
-          allLists = rpcOnline.map((r: any) => {
-            const uid = r.user_id || r.id;
-            const isGoogle = r.avatar_url?.includes('googleusercontent.com');
-            const routeLabel = r.subtitle ? rotaParaFuncao(r.subtitle).label : null;
+        const minTime = id === 'online5m'
+          ? new Date(Date.now() - 5 * 60 * 1000).toISOString()
+          : startIso;
+
+        const { data: actRows } = await supabase
+          .from('user_activity_log')
+          .select('user_id, email, display_name, current_route, last_seen_at')
+          .gte('last_seen_at', minTime)
+          .order('last_seen_at', { ascending: false })
+          .limit(100);
+
+        if (Array.isArray(actRows) && actRows.length > 0) {
+          const nonAdminRows = actRows.filter(a => !isAdminUser(a.user_id, a.email));
+          const userIds = nonAdminRows.map(a => a.user_id).filter(Boolean);
+          const { data: profilesList } = userIds.length > 0
+            ? await supabase.from('profiles').select('id, display_name, email, avatar_url, is_premium, created_at').in('id', userIds)
+            : { data: [] };
+
+          const profMap = new Map((profilesList || []).map(p => [p.id, p]));
+
+          allLists = nonAdminRows.map((a: any) => {
+            const p = profMap.get(a.user_id) || {};
+            const email = a.email || p.email;
+            const isGoogle = p.avatar_url?.includes('googleusercontent.com');
+            const routeLabel = a.current_route ? rotaParaFuncao(a.current_route).label : null;
             return {
-              key: uid || r.key || Math.random().toString(),
-              user_id: uid,
-              title: r.title || r.nome || r.email?.split('@')[0] || 'Usuário',
-              email: r.email,
-              provider: isGoogle ? 'google' : (r.provider || (r.email ? 'email' : null)),
+              key: a.user_id || email || Math.random().toString(),
+              user_id: a.user_id,
+              title: p.display_name || a.display_name || email?.split('@')[0] || 'Usuário',
+              email: email,
+              provider: isGoogle ? 'google' : (email ? 'email' : null),
               subtitle: (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'online5m' ? 'Online nos últimos 5 min' : 'Online hoje'),
-              at: r.at || r.last_seen || r.created_at,
-              is_premium: r.is_premium ?? r.premium ?? false,
-              avatar_url: r.avatar_url || null,
-              acessos: typeof r.acessos === 'number' ? r.acessos : null,
-              created_at: r.created_at || null
+              at: a.last_seen_at,
+              is_premium: p.is_premium ?? false,
+              is_admin: false,
+              avatar_url: p.avatar_url || null,
+              acessos: 1,
+              created_at: p.created_at || null
             };
           });
-        } else {
-          const minTime = id === 'online5m'
-            ? new Date(Date.now() - 5 * 60 * 1000).toISOString()
-            : startIso;
-
-          const { data: actRows } = await supabase
-            .from('user_activity_log')
-            .select('user_id, email, display_name, current_route, last_seen_at')
-            .gte('last_seen_at', minTime)
-            .order('last_seen_at', { ascending: false })
-            .limit(100);
-
-          if (Array.isArray(actRows) && actRows.length > 0) {
-            const userIds = actRows.map(a => a.user_id).filter(Boolean);
-            const { data: profilesList } = userIds.length > 0
-              ? await supabase.from('profiles').select('id, display_name, email, avatar_url, is_premium, created_at').in('id', userIds)
-              : { data: [] };
-
-            const profMap = new Map((profilesList || []).map(p => [p.id, p]));
-
-            allLists = actRows.map((a: any) => {
-              const p = profMap.get(a.user_id) || {};
-              const email = a.email || p.email;
-              const isGoogle = p.avatar_url?.includes('googleusercontent.com');
-              const routeLabel = a.current_route ? rotaParaFuncao(a.current_route).label : null;
-              const isAdmin = ADMIN_EMAILS.includes((email || '').toLowerCase().trim());
-              return {
-                key: a.user_id || email || Math.random().toString(),
-                user_id: a.user_id,
-                title: p.display_name || a.display_name || email?.split('@')[0] || 'Usuário',
-                email: email,
-                provider: isGoogle ? 'google' : (email ? 'email' : null),
-                subtitle: (routeLabel && routeLabel !== 'Desconhecida') ? routeLabel : (id === 'online5m' ? 'Online nos últimos 5 min' : 'Online hoje'),
-                at: a.last_seen_at,
-                is_premium: p.is_premium ?? false,
-                is_admin: isAdmin,
-                avatar_url: p.avatar_url || null,
-                acessos: 1,
-                created_at: p.created_at || null
-              };
-            });
-          }
         }
       } else if (id === 'paywall' || id === 'viu_planos') {
         const eventNames = id === 'viu_planos' 
@@ -1268,7 +1401,7 @@ export function AdminHojeCards() {
           const userEventsMap = new Map<string, any>();
           vpEvents.forEach((e: any) => {
             const em = (e.email || '').toLowerCase().trim();
-            if (ADMIN_EMAILS.includes(em)) return;
+            if (isAdminUser(e.user_id, em)) return;
             const uid = e.user_id || em;
             if (!userEventsMap.has(uid)) {
               userEventsMap.set(uid, {
@@ -1334,7 +1467,7 @@ export function AdminHojeCards() {
       });
       const list = Array.from(uniqueMap.values()).map((r) => {
         const email = (r.email || '').toLowerCase().trim();
-        const isAdmin = r.is_admin ?? ADMIN_EMAILS.includes(email);
+        const isAdmin = r.is_admin ?? isAdminUser(r.user_id, email);
         return {
           key: r.key,
           userId: r.user_id,
@@ -1354,9 +1487,8 @@ export function AdminHojeCards() {
           logsCheckout: r.logsCheckout,
         };
       }).filter((r) => {
-        // No card de online (5m e hoje), mantém quem está online (incluindo admin identificado) para a lista bater com o número
-        if (id === 'online' || id === 'online5m') return true;
-        return !ADMIN_EMAILS.includes((r.email || '').toLowerCase().trim());
+        // NUNCA exibe administradores em nenhuma lista de usuários
+        return !isAdminUser(r.userId || r.key, r.email);
       });
 
       if (id === 'trial' && list.length > 0) {
@@ -1640,7 +1772,7 @@ export function AdminHojeCards() {
     paywall: 'Entraram em Assinaturas',
     viu_planos: 'Abriram Checkout',
     trial: 'Assinaram',
-    renovou: 'Renovaram',
+    renovou: 'Renovaram (Mensal)',
   };
 
   const rotuloPeriodo = {
@@ -1669,22 +1801,22 @@ export function AdminHojeCards() {
       <button
         key={id}
         onClick={() => openCard(id)}
-        className="group relative rounded-xl border border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98] p-2.5 sm:p-3 text-left transition-all overflow-hidden flex flex-col justify-between min-h-[76px]"
+        className="group relative rounded-xl border border-border/60 bg-secondary/30 hover:bg-secondary/60 active:scale-[0.98] p-2 sm:p-3 text-left transition-all overflow-hidden flex flex-col justify-between min-h-[72px] sm:min-h-[76px]"
       >
         <div className="flex items-start justify-between w-full">
-          <div className="w-6 h-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors shrink-0">
-            <Icon className="w-3.5 h-3.5" />
+          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center text-primary group-hover:bg-primary/20 transition-colors shrink-0">
+            <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           </div>
 
           <div className="text-right flex flex-col items-end">
             <div className="flex items-center gap-1">
               {cardCount - (seenCounts[id] || 0) > 0 && (
-                <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1.5 py-[0.5px] font-body text-[9px] font-bold text-emerald-400 animate-pulse">
+                <span className="inline-flex items-center rounded-full bg-emerald-500/15 border border-emerald-500/40 px-1 py-[0.5px] font-body text-[8px] sm:text-[9px] font-bold text-emerald-400 animate-pulse">
                   +{cardCount - (seenCounts[id] || 0)}
                 </span>
               )}
               <span className={cn(
-                "font-['Plus_Jakarta_Sans',sans-serif] text-xl sm:text-[22px] font-extrabold tracking-tight leading-none tabular-nums",
+                "font-['Plus_Jakarta_Sans',sans-serif] text-lg sm:text-[22px] font-extrabold tracking-tight leading-none tabular-nums",
                 isZero ? "text-zinc-600" : "text-foreground"
               )}>
                 {cardCount}
@@ -1692,7 +1824,7 @@ export function AdminHojeCards() {
             </div>
             {isFinancial && (
               <span className={cn(
-                "block font-['Plus_Jakarta_Sans',sans-serif] text-[9.5px] font-bold mt-0.5 truncate",
+                "block font-['Plus_Jakarta_Sans',sans-serif] text-[8.5px] sm:text-[9.5px] font-bold mt-0.5 truncate",
                 valorFinanceiro === 0 ? "text-zinc-600" : "text-emerald-400"
               )}>
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(valorFinanceiro)}
@@ -1702,7 +1834,7 @@ export function AdminHojeCards() {
         </div>
 
         <div className={cn(
-          "font-body text-[10.5px] sm:text-[11px] leading-tight mt-2 font-medium line-clamp-2",
+          "font-body text-[9.5px] sm:text-[11px] leading-tight mt-1.5 sm:mt-2 font-medium line-clamp-2",
           isZero ? "text-muted-foreground/60" : "text-muted-foreground"
         )}>
           {label}
@@ -1760,8 +1892,8 @@ export function AdminHojeCards() {
         {CARDS.slice(0, 3).map(renderCardButton)}
       </div>
 
-      {/* Linha 2: 4 cards de Conversão, Vendas e Renovações */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 mb-3">
+      {/* Linha 2: 4 cards de Conversão, Vendas e Renovações na mesma linha */}
+      <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 mb-3">
         {CARDS.slice(3).map(renderCardButton)}
       </div>
 
