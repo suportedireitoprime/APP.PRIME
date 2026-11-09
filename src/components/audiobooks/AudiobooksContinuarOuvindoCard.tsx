@@ -43,7 +43,7 @@ export const AudiobooksContinuarOuvindoCard: React.FC<AudiobooksContinuarOuvindo
       className="w-full flex items-center gap-3.5 px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border text-left active:scale-[0.98] transition-all overflow-hidden relative shadow-lg group cursor-pointer"
     >
       {/* Capa do Livro à esquerda (substitui o ícone do Vade Mecum) */}
-      <div className="w-12 h-16 sm:w-14 sm:h-18 rounded-xl overflow-hidden border border-white/20 bg-black shrink-0 relative shadow-md group-hover:scale-105 transition-transform">
+      <div className="w-12 h-16 sm:w-14 sm:h-18 rounded-xl overflow-hidden border border-purple-500/30 bg-[#140D26] shrink-0 relative shadow-md group-hover:scale-105 transition-transform">
         <img
           src={livro.capaUrl}
           alt={livro.titulo}

@@ -131,8 +131,8 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
       zIndex={1001}
       className={
         isDesktop
-          ? 'left-0 right-0 mx-auto bottom-auto top-[6dvh] !h-[88dvh] max-w-[760px] rounded-3xl border border-white/10 bg-[#0F0F12] shadow-2xl overflow-hidden'
-          : 'mt-[6dvh] !h-[94dvh] rounded-t-3xl border-t border-white/10 bg-[#0F0F12] shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.8)] overflow-hidden'
+          ? 'left-0 right-0 mx-auto bottom-auto top-[6dvh] !h-[88dvh] max-w-[760px] rounded-3xl border border-purple-500/20 bg-[#0E0820] shadow-2xl overflow-hidden'
+          : 'mt-[6dvh] !h-[94dvh] rounded-t-3xl border-t border-purple-500/20 bg-[#0E0820] shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.8)] overflow-hidden'
       }
     >
       {/* Botões Flutuantes no Topo (Padrão Biblioteca) */}
@@ -222,18 +222,18 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
           </div>
 
           {/* Ficha Técnica Compacta (Padrão Biblioteca) */}
-          <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-white/[0.04] border border-white/10 text-center">
+          <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-purple-950/30 border border-purple-500/20 text-center shadow-md">
             <div className="flex flex-col items-center justify-center p-1">
               <Layers className="w-4 h-4 text-purple-400 mb-1" />
-              <span className="text-[10px] text-white/50 uppercase font-bold">Capítulos</span>
+              <span className="text-[10px] text-purple-200/60 uppercase font-bold">Capítulos</span>
               <span className="text-xs sm:text-sm font-bold text-white mt-0.5">
                 {livro.totalCapitulos || (isDisponivel ? '8' : 'Completo')}
               </span>
             </div>
 
-            <div className="flex flex-col items-center justify-center p-1 border-x border-white/10">
+            <div className="flex flex-col items-center justify-center p-1 border-x border-purple-500/20">
               <Clock className="w-4 h-4 text-purple-400 mb-1" />
-              <span className="text-[10px] text-white/50 uppercase font-bold">Duração</span>
+              <span className="text-[10px] text-purple-200/60 uppercase font-bold">Duração</span>
               <span className="text-xs sm:text-sm font-bold text-white mt-0.5">
                 {livro.duracaoTotalFormatada || (isDisponivel ? '~45 min' : 'Em gravação')}
               </span>
@@ -354,7 +354,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
           {/* ABAS DO PAINEL (PADRÃO LIVROTABSCONTENT DA BIBLIOTECA)    */}
           {/* ======================================================== */}
           <div className="pt-2">
-            <div className="flex items-center gap-2 p-1.5 bg-white/[0.04] rounded-2xl border border-white/10 mb-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full max-w-full">
+            <div className="flex items-center gap-2 p-1.5 bg-purple-950/40 rounded-2xl border border-purple-500/25 mb-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full max-w-full">
               <button
                 type="button"
                 onClick={() => {
@@ -364,7 +364,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                 className={`shrink-0 px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer select-none ${
                   tabAtiva === 'capitulos'
                     ? 'bg-purple-600 text-white shadow-md'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                    : 'text-purple-200/70 hover:text-white hover:bg-purple-900/30'
                 }`}
               >
                 Capítulos ({capitulos.length > 0 ? capitulos.length : (isDisponivel ? '8' : '—')})
@@ -380,7 +380,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                   className={`shrink-0 px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer select-none ${
                     tabAtiva === 'resumo'
                       ? 'bg-purple-600 text-white shadow-md'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                      : 'text-purple-200/70 hover:text-white hover:bg-purple-900/30'
                   }`}
                 >
                   <BookOpen className="w-3.5 h-3.5 text-purple-300" />
@@ -402,7 +402,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                 className={`shrink-0 px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer select-none ${
                   tabAtiva === 'sobre'
                     ? 'bg-purple-600 text-white shadow-md'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                    : 'text-purple-200/70 hover:text-white hover:bg-purple-900/30'
                 }`}
               >
                 Sobre a Obra
@@ -417,7 +417,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                 className={`shrink-0 px-4 py-2 text-xs font-bold rounded-xl transition-all whitespace-nowrap cursor-pointer select-none ${
                   tabAtiva === 'ficha'
                     ? 'bg-purple-600 text-white shadow-md'
-                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                    : 'text-purple-200/70 hover:text-white hover:bg-purple-900/30'
                 }`}
               >
                 Ficha Técnica
@@ -442,14 +442,14 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                         className={`w-full flex items-center gap-3.5 p-3.5 rounded-2xl text-left border transition-all active:scale-[0.99] group cursor-pointer ${
                           isCurrent
                             ? 'bg-purple-500/15 border-purple-500/40 shadow-lg'
-                            : 'bg-white/[0.03] hover:bg-white/[0.07] border-white/5 hover:border-white/15'
+                            : 'bg-purple-950/25 hover:bg-purple-900/40 border-purple-500/20 hover:border-purple-400/40'
                         }`}
                       >
                         <div
                           className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 font-display font-bold text-xs transition-transform group-hover:scale-105 ${
                             isCurrent
                               ? 'bg-purple-600 text-white shadow-md'
-                              : 'bg-white/10 text-white/80 group-hover:bg-purple-600 group-hover:text-white'
+                              : 'bg-purple-900/50 text-purple-200 border border-purple-500/30 group-hover:bg-purple-600 group-hover:text-white'
                           }`}
                         >
                           <Play className="w-3.5 h-3.5 fill-current translate-x-0.5" />
@@ -484,7 +484,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                     );
                   })
                 ) : (
-                  <div className="p-6 text-center rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
+                  <div className="p-6 text-center rounded-2xl bg-purple-950/30 border border-purple-500/20 space-y-3">
                     <Clock className="w-8 h-8 text-amber-400 mx-auto opacity-80" />
                     <p className="text-sm font-bold text-white">Audiobook Completo em Produção</p>
                     <p className="text-xs text-white/60 max-w-sm mx-auto leading-relaxed">
@@ -538,7 +538,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                       'Síntese estruturada com os pontos centrais, teses basilares e dilemas jurídicos da obra.'}
                   </p>
 
-                  <div className="grid grid-cols-2 gap-2 text-center text-xs p-3 rounded-xl bg-black/40 border border-white/5 mb-4">
+                  <div className="grid grid-cols-2 gap-2 text-center text-xs p-3 rounded-xl bg-purple-950/40 border border-purple-500/25 mb-4">
                     <div>
                       <span className="block text-[10px] text-white/40 uppercase font-bold">Formato</span>
                       <span className="font-bold text-white mt-0.5">Áudio Integral + SRT</span>
@@ -595,7 +595,7 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                             }
                             onClose();
                           }}
-                          className="w-full p-3 rounded-2xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:border-purple-400/40 transition-all flex items-center justify-between text-left group cursor-pointer active:scale-[0.99]"
+                          className="w-full p-3 rounded-2xl bg-purple-950/25 hover:bg-purple-900/40 border border-purple-500/20 hover:border-purple-400/40 transition-all flex items-center justify-between text-left group cursor-pointer active:scale-[0.99]"
                         >
                           <div className="flex items-center gap-3 min-w-0 pr-2">
                             <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-400/30 flex items-center justify-center text-purple-300 font-mono text-xs font-bold shrink-0 group-hover:scale-105 group-hover:bg-purple-500/25 transition-transform">
@@ -605,12 +605,12 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                               <span className="block font-bold text-xs sm:text-sm text-white group-hover:text-purple-200 transition-colors truncate">
                                 {cap.titulo}
                               </span>
-                              <span className="block text-[11px] text-white/50 truncate mt-0.5">
+                              <span className="block text-[11px] text-purple-200/60 truncate mt-0.5">
                                 Resumo Analítico • {cap.duracaoFormatada || '~6 min'}
                               </span>
                             </div>
                           </div>
-                          <div className="shrink-0 w-7 h-7 rounded-full bg-white/10 group-hover:bg-purple-600 flex items-center justify-center transition-colors">
+                          <div className="shrink-0 w-7 h-7 rounded-full bg-purple-500/20 border border-purple-400/30 group-hover:bg-purple-600 flex items-center justify-center transition-colors">
                             <Play className="w-3 h-3 fill-white text-white translate-x-0.5" />
                           </div>
                         </button>
@@ -624,22 +624,22 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
             {/* Conteúdo da Aba Sobre a Obra */}
             {tabAtiva === 'sobre' && (
               <div className="space-y-3 animate-in fade-in duration-200">
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-                  <h4 className="text-xs uppercase font-bold text-white/50 tracking-wider mb-2 flex items-center gap-1.5">
+                <div className="p-4 rounded-2xl bg-purple-950/25 border border-purple-500/20">
+                  <h4 className="text-xs uppercase font-bold text-purple-300/80 tracking-wider mb-2 flex items-center gap-1.5">
                     <Info className="w-3.5 h-3.5 text-purple-400" />
                     Sinopse
                   </h4>
-                  <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-purple-100/90 leading-relaxed">
                     {livro.sinopse || livro.descricao}
                   </p>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5">
-                  <h4 className="text-xs uppercase font-bold text-white/50 tracking-wider mb-2 flex items-center gap-1.5">
+                <div className="p-4 rounded-2xl bg-purple-950/25 border border-purple-500/20">
+                  <h4 className="text-xs uppercase font-bold text-purple-300/80 tracking-wider mb-2 flex items-center gap-1.5">
                     <BookOpen className="w-3.5 h-3.5 text-purple-400" />
                     Relevância Jurídica
                   </h4>
-                  <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-purple-200/80 leading-relaxed">
                     Obra referencial que discute os limites entre o Direito Positivo e o Direito Natural, abordando dilemas morais, estado de necessidade e a interpretação das leis frente à realidade fática da condição humana.
                   </p>
                 </div>
@@ -649,26 +649,26 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
             {/* Conteúdo da Aba Ficha Técnica */}
             {tabAtiva === 'ficha' && (
               <div className="space-y-2.5 animate-in fade-in duration-200">
-                <div className="divide-y divide-white/10 rounded-2xl bg-white/[0.03] border border-white/5 text-xs">
+                <div className="divide-y divide-purple-500/15 rounded-2xl bg-purple-950/25 border border-purple-500/20 text-xs">
                   <div className="flex justify-between items-center p-3.5">
-                    <span className="text-white/50">Título Original</span>
+                    <span className="text-purple-200/60">Título Original</span>
                     <span className="text-white font-semibold text-right">{livro.titulo}</span>
                   </div>
 
                   <div className="flex justify-between items-center p-3.5">
-                    <span className="text-white/50">Autor</span>
+                    <span className="text-purple-200/60">Autor</span>
                     <span className="text-white font-semibold">{livro.autor}</span>
                   </div>
 
                   {livro.ano && (
                     <div className="flex justify-between items-center p-3.5">
-                      <span className="text-white/50">Ano de Publicação</span>
+                      <span className="text-purple-200/60">Ano de Publicação</span>
                       <span className="text-white font-semibold">{livro.ano}</span>
                     </div>
                   )}
 
                   <div className="flex justify-between items-center p-3.5">
-                    <span className="text-white/50">Status da Gravação</span>
+                    <span className="text-purple-200/60">Status da Gravação</span>
                     <span
                       className={`font-semibold ${
                         isDisponivel ? 'text-emerald-400' : 'text-amber-400'
@@ -679,12 +679,12 @@ export const AudiobookDetailSheet: React.FC<AudiobookDetailSheetProps> = ({
                   </div>
 
                   <div className="flex justify-between items-center p-3.5">
-                    <span className="text-white/50">Idioma / Local</span>
+                    <span className="text-purple-200/60">Idioma / Local</span>
                     <span className="text-white font-semibold">Português (Brasil)</span>
                   </div>
 
                   <div className="flex justify-between items-center p-3.5">
-                    <span className="text-white/50">Produção</span>
+                    <span className="text-purple-200/60">Produção</span>
                     <span className="text-purple-400 font-bold">Direito Prime Audiobooks</span>
                   </div>
                 </div>

@@ -80,7 +80,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
             haptic.selection();
             if (onBack) onBack();
           }}
-          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-black/40 hover:bg-black/60 active:scale-95 border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-lg backdrop-blur-md"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-purple-950/60 hover:bg-purple-900/60 active:scale-95 border border-purple-500/30 flex items-center justify-center transition-all cursor-pointer shadow-[0_0_20px_rgba(124,58,237,0.3)] backdrop-blur-md"
           aria-label="Voltar"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
@@ -124,7 +124,7 @@ export const AudiobooksHeroPanel: React.FC<AudiobooksHeroPanelProps> = ({
 
       {/* ── 4 Botões de Ação Rápida no Padrão Vade Mecum: Favoritos, Recentes, Estatísticas e Outros ── */}
       <div className="relative z-10 px-3 sm:px-6 md:px-8 pb-3.5 pt-1">
-        <div className="flex items-center justify-between gap-1.5 sm:gap-2 bg-black/55 backdrop-blur-md border border-white/10 rounded-2xl p-1.5 shadow-2xl">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2 bg-[#120B24]/80 backdrop-blur-md border border-purple-500/25 rounded-2xl p-1.5 shadow-[0_8px_30px_rgba(124,58,237,0.25)]">
           {/* Botão 1: Favoritos */}
           <button
             type="button"

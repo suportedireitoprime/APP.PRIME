@@ -149,7 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (socialAvatar) patch.avatar_url = socialAvatar;
                 if (socialName) patch.display_name = socialName;
                 if (session.user.email) patch.email = session.user.email;
-                void (supabase.from('profiles') as any).update(patch).eq('id', session.user.id);
+                void (supabase.from('profiles') as any).update(patch).eq('id', session.user.id).then(() => {}).catch(() => {});
               }
             }
 
@@ -217,8 +217,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (Capacitor.isNativePlatform()) {
       CapacitorApp.addListener('appStateChange', async (state) => {
         if (state.isActive) {
-          // Força refresh explícito da sessão caso o JWT tenha expirado em background
+          // Só tenta refresh explícito se houver sessão ativa em cache com refresh_token
           try {
+            const cached = readCachedSession();
+            if (!cached?.refresh_token) {
+              return;
+            }
             const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
             if (!refreshError && refreshData?.session) {
               if (isMounted) {

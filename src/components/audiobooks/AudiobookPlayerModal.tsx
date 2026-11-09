@@ -416,9 +416,9 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 26, stiffness: 280 }}
-              className="w-full max-w-lg bg-[#141416] rounded-t-3xl border-t border-white/10 p-5 max-h-[82vh] flex flex-col"
+              className="w-full max-w-lg bg-[#140D26] rounded-t-3xl border-t border-purple-500/30 p-5 max-h-[82vh] flex flex-col shadow-[0_-8px_30px_rgba(124,58,237,0.25)]"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center justify-between pb-3 border-b border-purple-500/20">
                 <h3 className="font-sans font-bold text-base text-white flex items-center gap-2">
                   <ListOrdered className="w-5 h-5 text-purple-400" />
                   <span>Capítulos do Audiobook</span>
@@ -426,7 +426,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowCapitulosSheet(false)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 text-white/80 hover:text-white"
+                  className="w-8 h-8 rounded-full flex items-center justify-center bg-purple-950/60 text-purple-200 border border-purple-500/30 hover:bg-purple-900/60 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -446,7 +446,7 @@ export const AudiobookPlayerModal: React.FC<AudiobookPlayerModalProps> = ({
                       className={`w-full flex items-start gap-3 p-3.5 rounded-2xl text-left transition-all relative overflow-hidden ${
                         isCurrent
                           ? "bg-gradient-to-r from-purple-900/60 via-purple-800/40 to-purple-900/40 border border-purple-500/80 shadow-lg shadow-purple-950/60 ring-1 ring-purple-400/50"
-                          : "bg-white/5 hover:bg-white/10 text-white/80 border border-transparent"
+                          : "bg-purple-950/30 hover:bg-purple-900/40 text-purple-200/90 border border-purple-500/20"
                       }`}
                     >
                       {/* Número / Pílula do Capítulo com anel brilhante se ativo */}

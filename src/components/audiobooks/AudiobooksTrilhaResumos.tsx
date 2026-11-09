@@ -182,7 +182,7 @@ const TrilhaNodeItem = memo(({
                 ? 'border-emerald-400 shadow-[0_0_24px_rgba(16,185,129,0.55)] ring-1 ring-emerald-300/40'
                 : item.isEmAndamento
                 ? 'border-[#A855F7] shadow-[0_0_28px_rgba(168,85,247,0.7)] ring-1 ring-[#C084FC]/60'
-                : 'border-white/15 bg-zinc-900/90 group-hover:border-purple-400/50'
+                : 'border-purple-500/30 bg-[#160E2E] shadow-[0_8px_24px_rgba(124,58,237,0.25)] group-hover:border-[#A855F7]/70 group-hover:shadow-[0_0_25px_rgba(168,85,247,0.45)]'
             )}
             style={{ backgroundColor: '#130F24' }}
           >
@@ -202,7 +202,7 @@ const TrilhaNodeItem = memo(({
             {/* Vinheta suave e reflexo diagonal */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/30 pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.05] to-white/[0.18] pointer-events-none" />
-            <div className="absolute inset-0 rounded-2xl border border-white/10 pointer-events-none" />
+            <div className="absolute inset-0 rounded-2xl border border-purple-500/20 pointer-events-none" />
 
             {/* Botão Central: Checkmark / Play com Pulso */}
             <div className="relative z-10 flex items-center justify-center">
@@ -218,8 +218,8 @@ const TrilhaNodeItem = memo(({
                   </div>
                 </div>
               ) : (
-                <div className="w-9 h-9 rounded-full bg-black/60 text-white/90 border border-white/25 flex items-center justify-center backdrop-blur-md shadow-lg group-hover:scale-105 transition-transform">
-                  <Play className="w-4 h-4 fill-white ml-0.5" />
+                <div className="w-9 h-9 rounded-full bg-purple-950/80 text-purple-200 border border-purple-400/40 flex items-center justify-center backdrop-blur-md shadow-[0_0_15px_rgba(124,58,237,0.35)] group-hover:scale-110 group-hover:bg-purple-900 transition-all">
+                  <Play className="w-4 h-4 fill-purple-200 ml-0.5 text-purple-200" />
                 </div>
               )}
             </div>
@@ -235,7 +235,7 @@ const TrilhaNodeItem = memo(({
                 ? 'bg-emerald-500/50 scale-105'
                 : item.isEmAndamento
                 ? 'bg-[#7C3AED]/70 scale-110'
-                : 'bg-[#1E1635]/60'
+                : 'bg-[#7C3AED]/35 scale-100'
             )}
           />
           <div
@@ -245,10 +245,10 @@ const TrilhaNodeItem = memo(({
                 ? 'bg-gradient-to-b from-emerald-500 via-emerald-700 to-emerald-950 border-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.5)]'
                 : item.isEmAndamento
                 ? 'bg-gradient-to-b from-[#7C3AED] via-[#6D28D9] to-[#4C1D95] border-[#DDD6FE] shadow-[0_0_30px_rgba(124,58,237,0.85)]'
-                : 'bg-gradient-to-b from-[#251E3D] via-[#1B152F] to-[#0E0B19] border-white/10 shadow-lg'
+                : 'bg-gradient-to-b from-[#3B1768] via-[#240D42] to-[#120722] border-[#8B5CF6]/40 shadow-[0_0_18px_rgba(124,58,237,0.35)]'
             )}
           >
-            <div className="w-[84%] h-[74%] rounded-[50%] border border-white/20 bg-black/10" />
+            <div className="w-[84%] h-[74%] rounded-[50%] border border-[#A78BFA]/30 bg-purple-950/20" />
           </div>
         </div>
 
@@ -261,7 +261,7 @@ const TrilhaNodeItem = memo(({
                 ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                 : item.isEmAndamento
                 ? 'bg-[#7C3AED]/25 text-[#DDD6FE] border-[#8B5CF6]/40 shadow-[0_0_12px_rgba(124,58,237,0.4)]'
-                : 'bg-white/5 text-zinc-400 border-white/10'
+                : 'bg-[#7C3AED]/20 text-[#DDD6FE] border-[#8B5CF6]/35 shadow-[0_0_10px_rgba(124,58,237,0.25)]'
             )}
           >
             {item.badgeLabel}
@@ -271,13 +271,13 @@ const TrilhaNodeItem = memo(({
             {item.livro.titulo}
           </p>
 
-          <div className="flex items-center justify-center gap-1.5 text-[11px] sm:text-[11.5px] font-medium text-zinc-300 font-['Plus_Jakarta_Sans',system-ui,sans-serif] max-w-full">
+          <div className="flex items-center justify-center gap-1.5 text-[11px] sm:text-[11.5px] font-medium text-purple-200/80 font-['Plus_Jakarta_Sans',system-ui,sans-serif] max-w-full">
             {item.isConcluido ? (
               <span className="text-emerald-400 font-bold flex items-center gap-1">
                 <Check className="w-3.5 h-3.5 stroke-[3]" /> Concluído
               </span>
             ) : (
-              <span className="truncate max-w-[210px] sm:max-w-[250px]">{item.duracao} • {item.livro.autor}</span>
+              <span className="truncate max-w-[210px] sm:max-w-[250px]">{item.duracao} <span className="text-purple-400 font-bold">•</span> {item.livro.autor}</span>
             )}
           </div>
         </div>
@@ -450,14 +450,14 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
       <GalaxyBackground />
 
       {/* ── HEADER SUPERIOR FIXO NO TOPO COM BOTÃO VOLTAR PADRÃO PREMIUM (REGRA SUPREMA 48x48 / 52x52) ── */}
-      <header className="sticky top-0 z-50 w-full px-4 sm:px-6 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 flex items-center justify-between bg-[#07050E]/95 backdrop-blur-md border-b border-white/10 shadow-xl shrink-0">
+      <header className="sticky top-0 z-50 w-full px-4 sm:px-6 pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-3 flex items-center justify-between bg-[#07050E]/95 backdrop-blur-md border-b border-purple-500/20 shadow-xl shrink-0">
         <button
           type="button"
           onClick={() => {
             haptic.selection();
             if (onBack) onBack();
           }}
-          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/10 hover:bg-white/15 active:scale-95 border border-white/20 flex items-center justify-center transition-all cursor-pointer shadow-xl shrink-0"
+          className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-purple-950/60 hover:bg-purple-900/60 active:scale-95 border border-purple-500/30 flex items-center justify-center transition-all cursor-pointer shadow-[0_0_20px_rgba(124,58,237,0.25)] shrink-0"
           aria-label="Voltar"
         >
           <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white" strokeWidth={2.4} />
@@ -465,7 +465,7 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
 
         <div className="flex flex-col items-center text-center px-2 min-w-0">
           <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-purple-300 flex items-center gap-1.5 drop-shadow-md">
-            <Headphones className="w-3.5 h-3.5 text-white" />
+            <Headphones className="w-3.5 h-3.5 text-purple-300" />
             Direito Prime Audiobooks
           </span>
           <h1 className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] font-bold text-base sm:text-lg text-white drop-shadow-md truncate">
@@ -478,7 +478,7 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
 
       <div className="relative z-10 w-full max-w-[540px] md:max-w-[640px] mx-auto px-2 sm:px-6 pt-3">
         {/* ── CARD SUPERIOR DE PROGRESSO DA TRILHA (ESTILO QUESTÕES) ── */}
-        <div className="flex flex-col gap-2.5 mb-5 p-3.5 sm:p-4 rounded-2xl bg-[#17122B]/85 border border-white/10 backdrop-blur-md shadow-xl">
+        <div className="flex flex-col gap-2.5 mb-5 p-3.5 sm:p-4 rounded-2xl bg-[#140D26]/90 border border-purple-500/25 backdrop-blur-md shadow-[0_8px_24px_rgba(124,58,237,0.18)]">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center bg-[#7C3AED]/20 text-[#DDD6FE] border border-[#7C3AED]/30 shadow-inner shrink-0">
@@ -488,7 +488,7 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
                 <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-xs sm:text-sm font-bold uppercase tracking-wider text-white truncate">
                   Trilha de Resumos
                 </p>
-                <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[10px] sm:text-[11px] text-zinc-300">
+                <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[10px] sm:text-[11px] text-purple-200/80">
                   {concluidosCount} de {totalObras} concluídos ({progressoPct}%)
                 </p>
               </div>
@@ -496,19 +496,19 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
 
             {/* Campo de Busca Rápida Integrado */}
             <div className="relative shrink-0 w-36 xs:w-44 sm:w-48">
-              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-3.5 h-3.5 text-purple-300 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Buscar obra..."
-                className="w-full h-8 pl-8 pr-2.5 rounded-xl bg-black/40 border border-white/10 text-white placeholder-zinc-400 text-[11px] font-['Plus_Jakarta_Sans',system-ui,sans-serif] focus:outline-none focus:border-[#7C3AED] transition-colors"
+                className="w-full h-8 pl-8 pr-2.5 rounded-xl bg-purple-950/40 border border-purple-500/30 text-white placeholder-purple-300/50 text-[11px] font-['Plus_Jakarta_Sans',system-ui,sans-serif] focus:outline-none focus:border-[#A855F7] transition-colors"
               />
             </div>
           </div>
 
           {/* Barra de Progresso Oficial (Neon Roxo / Magenta) */}
-          <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden border border-white/5">
+          <div className="w-full bg-purple-950/60 h-2 rounded-full overflow-hidden border border-purple-500/20">
             <div
               className="h-full rounded-full transition-all duration-700 ease-out"
               style={{
@@ -542,11 +542,11 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
 
             {roadSegments.map((seg) => (
               <g key={seg.key}>
-                {/* Pista Asfaltada Translúcida */}
+                {/* Pista Asfaltada Translúcida com Glow Roxo */}
                 <path
                   d={seg.d}
                   fill="none"
-                  stroke="rgba(255, 255, 255, 0.07)"
+                  stroke="rgba(124, 58, 237, 0.16)"
                   strokeWidth="36"
                   strokeLinecap="round"
                 />

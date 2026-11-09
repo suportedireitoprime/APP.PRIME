@@ -24,6 +24,7 @@ import { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
 import { ModalRevisarFlashcards } from '@/components/aulas-interativas/ModalRevisarFlashcards';
 import { ModalPraticarQuestoes } from '@/components/aulas-interativas/ModalPraticarQuestoes';
 import { PlayerAulaNativo } from '@/components/aulas-interativas/PlayerAulaNativo';
+import { assetUrl } from '@/lib/assetUrl';
 import capaAdminOrigens from '@/assets/aulas-interativas/direito-administrativo/capa-aula-01-origens.webp';
 import { 
   MATERIAS_CATALOGO_COMPLETO, 
@@ -1111,11 +1112,14 @@ export default function AdminAulasInterativas() {
                             <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
 
                             <img
-                              src={disc.capaHeroUrl}
+                              src={assetUrl(disc.capaHeroUrl)}
                               alt={disc.nome}
                               loading="eager"
                               fetchPriority="high"
                               decoding="async"
+                              onError={(e) => {
+                                e.currentTarget.src = assetUrl('direito-penal.webp');
+                              }}
                               className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
@@ -1359,7 +1363,7 @@ export default function AdminAulasInterativas() {
               porcentagem={pctDisc}
               corDestaque={disciplinaAtual.corDestaque}
               corFundo={disciplinaAtual.corFundoCard}
-              capaUrl={disciplinaAtual.capaHeroUrl}
+              capaUrl={assetUrl(disciplinaAtual.capaHeroUrl)}
               metricas={[
                 { label: 'Matérias', valor: materiasDaDisc.length },
                 { label: 'Aulas', valor: totalAulasDisc },
@@ -1565,11 +1569,14 @@ export default function AdminAulasInterativas() {
                               <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
 
                               <img
-                                src={mat.capaUrl}
+                                src={assetUrl(mat.capaUrl) || assetUrl(disciplinaAtual.capaHeroUrl)}
                                 alt={mat.titulo}
                                 loading={i < 10 ? "eager" : "lazy"}
                                 fetchPriority={i < 6 ? "high" : "auto"}
                                 decoding="async"
+                                onError={(e) => {
+                                  e.currentTarget.src = assetUrl(disciplinaAtual.capaHeroUrl);
+                                }}
                                 className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
@@ -1900,10 +1907,13 @@ export default function AdminAulasInterativas() {
                         {/* 1. Capa ao lado (proporção 3:4 destacada, limpa e sem textos em cima) */}
                         <div className="relative shrink-0 w-22 sm:w-26 h-26 sm:h-32 rounded-xl sm:rounded-2xl overflow-hidden border border-white/15 bg-black/70 shadow-md group-hover:border-white/35 transition-all">
                           <img
-                            src={aula.capaUrl}
+                            src={assetUrl(aula.capaUrl) || assetUrl(disciplinaAtual.capaHeroUrl)}
                             alt={aula.titulo}
                             loading={idx < 8 ? "eager" : "lazy"}
                             decoding="async"
+                            onError={(e) => {
+                              e.currentTarget.src = assetUrl(disciplinaAtual.capaHeroUrl);
+                            }}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
@@ -2060,10 +2070,13 @@ export default function AdminAulasInterativas() {
                     {/* LADO ESQUERDO: CAPA COM BOLA GIGANTE NO MEIO MOSTRANDO A PORCENTAGEM */}
                     <div className="relative shrink-0 w-36 xs:w-40 sm:w-48 md:w-52 h-48 xs:h-52 sm:h-64 md:h-68 rounded-2xl overflow-hidden border border-white/15 bg-black shadow-2xl self-center sm:self-auto group">
                       <img
-                        src={aula.capaUrl}
+                        src={assetUrl(aula.capaUrl) || assetUrl(disciplinaAtual.capaHeroUrl)}
                         alt={aula.titulo}
                         loading="eager"
                         decoding="async"
+                        onError={(e) => {
+                          e.currentTarget.src = assetUrl(disciplinaAtual.capaHeroUrl);
+                        }}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-black/45 pointer-events-none" />
@@ -2306,11 +2319,14 @@ export default function AdminAulasInterativas() {
           <div className="relative w-full max-w-md bg-[#131318] border border-white/15 rounded-3xl p-6 shadow-2xl overflow-hidden">
             <div className="relative w-full h-44 rounded-2xl overflow-hidden mb-4 bg-black/40 border border-white/10">
               <img 
-                src={aulaPendenteModal.capaUrl} 
+                src={assetUrl(aulaPendenteModal.capaUrl) || assetUrl(disciplinaAtual?.capaHeroUrl)} 
                 alt={aulaPendenteModal.titulo}
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
+                onError={(e) => {
+                  e.currentTarget.src = assetUrl(disciplinaAtual?.capaHeroUrl || 'direito-penal.webp');
+                }}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#131318] via-transparent to-transparent" />
