@@ -22,7 +22,6 @@ import {
   AudiobookLivro,
 } from "@/data/audiobooksCatalogo";
 import { criarLivroPlayerResumo, hasResumoDisponivel } from "@/data/audiobooksResumosMap";
-import { AudiobookPlayerModal } from "@/components/audiobooks/AudiobookPlayerModal";
 import { AudiobookDetailSheet } from "@/components/audiobooks/AudiobookDetailSheet";
 import { AudiobooksHeroPanel } from "@/components/audiobooks/AudiobooksHeroPanel";
 import { AudiobooksContinuarOuvindoCard } from "@/components/audiobooks/AudiobooksContinuarOuvindoCard";
@@ -39,15 +38,6 @@ export default function AudiobooksPage() {
 
   // Livro aberto no Painel de Detalhes
   const [livroSelecionado, setLivroSelecionado] = useState<AudiobookLivro | null>(null);
-
-  // Livro ativo no Player em Tela Cheia
-  const [livroPlayer, setLivroPlayer] = useState<AudiobookLivro>(
-    O_CASO_DOS_EXPLORADORES_DE_CAVERNAS,
-  );
-
-  // Modal do Player
-  const [playerOpen, setPlayerOpen] = useState(false);
-  const [selectedCapituloIndex, setSelectedCapituloIndex] = useState(0);
 
   // Sheet de Ações Rápidas do Painel Hero (Favoritos | Recentes | Estatísticas | Outros)
   const [activeQuickSheet, setActiveQuickSheet] = useState<AudiobookQuickActionType | null>(null);
@@ -130,27 +120,23 @@ export default function AudiobooksPage() {
   const abrirCapitulo = useCallback((index: number, livroAlvo?: AudiobookLivro) => {
     haptic.selection();
     const targetLivro = livroAlvo || livroSelecionado || livroContinuarOuvindo;
-    setLivroPlayer(targetLivro);
-    setSelectedCapituloIndex(index);
     setLivroSelecionado(null);
     setActiveQuickSheet(null);
 
     // Inicia reprodução via player global com persistência no Supabase
-    player.tocarLivro(targetLivro, index);
-    setPlayerOpen(true);
+    if (targetLivro) {
+      player.tocarLivro(targetLivro, index);
+    }
   }, [livroSelecionado, livroContinuarOuvindo, player]);
 
   const abrirResumo = useCallback((livroAlvo: AudiobookLivro, capIdx = 0) => {
     haptic.selection();
     const livroResumo = criarLivroPlayerResumo(livroAlvo);
-    setLivroPlayer(livroResumo);
-    setSelectedCapituloIndex(capIdx);
     setLivroSelecionado(null);
     setActiveQuickSheet(null);
 
-    // Inicia reprodução do resumo no capítulo selecionado com legendas sincronizadas
+    // Inicia reprodução do resumo no capítulo selecionado com legendas sincronizadas via player global
     player.tocarLivro(livroResumo, capIdx);
-    setPlayerOpen(true);
   }, [player]);
 
   // Alterna favorito de uma obra
@@ -828,9 +814,7 @@ export default function AudiobooksPage() {
           setLivroSelecionado(livro);
         }}
         onPlayLivro={(livro, idx) => {
-          setLivroPlayer(livro);
-          setSelectedCapituloIndex(idx ?? 0);
-          setPlayerOpen(true);
+          player.tocarLivro(livro, idx ?? 0);
         }}
       />
 
@@ -859,14 +843,6 @@ export default function AudiobooksPage() {
         }
         isNotificado={livroSelecionado ? !!notificados[livroSelecionado.id] : false}
         onToggleNotificacao={toggleNotificacao}
-      />
-
-      {/* Modal Player em Tela Cheia com Narração e Legendas */}
-      <AudiobookPlayerModal
-        livro={livroPlayer}
-        capituloInicialIndex={selectedCapituloIndex}
-        isOpen={playerOpen}
-        onClose={() => setPlayerOpen(false)}
       />
     </div>
   );
