@@ -24,6 +24,7 @@ import {
 } from '@/data/audiobooksResumosMap';
 import { GalaxyBackground } from '@/components/questoes/GalaxyBackground';
 import { assetUrl } from '@/lib/assetUrl';
+import { AudiobookDetailSheet } from '@/components/audiobooks/AudiobookDetailSheet';
 
 // ── MAPEAMENTO DE CAPAS LOCAIS BUNDLED (0MS LATÊNCIA, 100% GARANTIDO) ──
 const AUDIOBOOK_COVER_FILES: Record<string, string> = {
@@ -99,6 +100,7 @@ interface AudiobooksTrilhaResumosProps {
   onBack?: () => void;
   onPlayResumo: (livro: AudiobookLivro, capituloIndex?: number) => void;
   onSelectLivro?: (livro: AudiobookLivro) => void;
+  onPlayLivro?: (livro: AudiobookLivro, capituloIndex?: number) => void;
 }
 
 const NODE_HEIGHT = 310;
@@ -290,6 +292,7 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
   onBack,
   onPlayResumo,
   onSelectLivro,
+  onPlayLivro,
 }) => {
   const [busca, setBusca] = useState('');
   const [livroSelecionado, setLivroSelecionado] = useState<TrilhaResumoItem | null>(null);
@@ -592,114 +595,38 @@ export const AudiobooksTrilhaResumos: React.FC<AudiobooksTrilhaResumosProps> = (
       </div>
 
       {/* ════════════════════════════════════════════════════════════════
-          MODAL DE DETALHES DO RESUMO AO TOCAR NA TRILHA (PADRÃO DRUNO)
+          PAINEL DE DETALHES COMPLETO DO AUDIOBOOK (100% IGUAL AO AUDIOBOOK)
+          Permite escolher capítulos, ouvir resumo, ver sobre a obra e ficha técnica
       ════════════════════════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {livroSelecionado && (
-          <div
-            className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in"
-            onClick={() => setLivroSelecionado(null)}
-          >
-            <motion.div
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '100%', opacity: 0 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="w-full max-w-md rounded-t-3xl sm:rounded-3xl bg-[#161228] border border-white/15 p-5 sm:p-6 shadow-2xl space-y-4 font-['Plus_Jakarta_Sans',system-ui,sans-serif]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-start gap-4">
-                {/* Capa 3D Miniatura */}
-                <div className="relative w-20 h-28 rounded-xl overflow-hidden shadow-xl border border-white/15 shrink-0 bg-black/60">
-                  <img
-                    src={livroSelecionado.coverImage}
-                    alt={livroSelecionado.livro.titulo}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = assetUrl('fundamentos-da-lei.webp');
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                </div>
-
-                {/* Título e Autor */}
-                <div className="min-w-0 flex-1">
-                  <span className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-[10px] font-extrabold uppercase tracking-wider text-purple-300 px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 inline-block mb-1">
-                    {livroSelecionado.badgeLabel}
-                  </span>
-                  <h3 className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-base font-bold text-white leading-tight">
-                    {livroSelecionado.livro.titulo}
-                  </h3>
-                  <p className="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-xs text-zinc-400 mt-0.5">
-                    {livroSelecionado.livro.autor}
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-[10px] font-semibold flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-purple-300" />
-                      {livroSelecionado.duracao}
-                    </span>
-                    <span className="px-2 py-0.5 rounded-md bg-white/10 text-white text-[10px] font-semibold flex items-center gap-1">
-                      <Volume2 className="w-3 h-3 text-emerald-400" />
-                      Áudio + SRT
-                    </span>
-                  </div>
-                </div>
-
-                {/* Botão Fechar */}
-                <button
-                  type="button"
-                  onClick={() => setLivroSelecionado(null)}
-                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white flex items-center justify-center cursor-pointer transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Descrição Analítica */}
-              <p className="text-xs text-zinc-300 leading-relaxed bg-black/30 p-3 rounded-2xl border border-white/5 font-['Plus_Jakarta_Sans',system-ui,sans-serif]">
-                {livroSelecionado.descricao}
-              </p>
-
-              {/* Botões de Ação */}
-              <div className="space-y-2 pt-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    haptic.selection();
-                    onPlayResumo(livroSelecionado.livro);
-                    setLivroSelecionado(null);
-                  }}
-                  className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#7C3AED] via-[#8B5CF6] to-[#A855F7] text-white font-['Plus_Jakarta_Sans',system-ui,sans-serif] font-bold text-sm flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(124,58,237,0.65)] hover:shadow-[0_0_32px_rgba(124,58,237,0.85)] active:scale-95 transition-all cursor-pointer"
-                >
-                  <Play className="w-4 h-4 fill-white" />
-                  Ouvir Resumo Agora
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    toggleConcluido(livroSelecionado.slug);
-                    setLivroSelecionado((prev) =>
-                      prev ? { ...prev, isConcluido: !prev.isConcluido } : null
-                    );
-                  }}
-                  className={cn(
-                    "w-full py-2.5 px-4 rounded-xl border text-xs font-['Plus_Jakarta_Sans',system-ui,sans-serif] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer",
-                    livroSelecionado.isConcluido
-                      ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/25"
-                      : "bg-white/5 border-white/10 text-zinc-300 hover:bg-white/10"
-                  )}
-                >
-                  <Check className="w-4 h-4 stroke-[2.5]" />
-                  {livroSelecionado.isConcluido
-                    ? 'Concluído (Toque para reabrir)'
-                    : 'Marcar como Concluído'}
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <AudiobookDetailSheet
+        open={!!livroSelecionado}
+        livro={livroSelecionado ? livroSelecionado.livro : null}
+        onClose={() => setLivroSelecionado(null)}
+        onPlayCapitulo={(index, livroAlvo) => {
+          if (onPlayLivro) {
+            onPlayLivro(livroAlvo, index);
+          } else {
+            onPlayResumo(livroAlvo, index);
+          }
+          setLivroSelecionado(null);
+        }}
+        onPlayResumo={(livroAlvo, idx) => {
+          onPlayResumo(livroAlvo, idx);
+          setLivroSelecionado(null);
+        }}
+        progressoSalvo={
+          livroSelecionado
+            ? (() => {
+                try {
+                  const raw = localStorage.getItem(`audiobook_prog_${livroSelecionado.livro.id}`);
+                  return raw ? JSON.parse(raw) : null;
+                } catch {
+                  return null;
+                }
+              })()
+            : null
+        }
+      />
     </div>
   );
 };

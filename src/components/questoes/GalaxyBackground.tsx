@@ -31,51 +31,51 @@ export const GalaxyBackground: React.FC = () => {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#07050E]">
       <style>{`
-        @keyframes cometTravel1 {
+        @keyframes cometFallTopToBottom1 {
           0% {
-            transform: translate3d(0, 0, 0) rotate(-35deg);
+            transform: translate3d(220px, -180px, 0) rotate(-45deg);
             opacity: 0;
           }
-          10% {
+          6% {
+            opacity: 1;
+          }
+          65% {
+            opacity: 0.95;
+          }
+          100% {
+            transform: translate3d(-750px, 790px, 0) rotate(-45deg);
+            opacity: 0;
+          }
+        }
+        @keyframes cometFallTopToBottom2 {
+          0% {
+            transform: translate3d(180px, -150px, 0) rotate(-42deg);
+            opacity: 0;
+          }
+          8% {
             opacity: 1;
           }
           60% {
             opacity: 0.9;
           }
           100% {
-            transform: translate3d(-600px, 420px, 0) rotate(-35deg);
+            transform: translate3d(-680px, 720px, 0) rotate(-42deg);
             opacity: 0;
           }
         }
-        @keyframes cometTravel2 {
+        @keyframes cometFallTopToBottom3 {
           0% {
-            transform: translate3d(0, 0, 0) rotate(-38deg);
+            transform: translate3d(240px, -200px, 0) rotate(-48deg);
             opacity: 0;
           }
-          15% {
+          7% {
             opacity: 1;
           }
           65% {
-            opacity: 0.8;
+            opacity: 0.92;
           }
           100% {
-            transform: translate3d(-700px, 540px, 0) rotate(-38deg);
-            opacity: 0;
-          }
-        }
-        @keyframes cometTravel3 {
-          0% {
-            transform: translate3d(0, 0, 0) rotate(-32deg);
-            opacity: 0;
-          }
-          12% {
-            opacity: 1;
-          }
-          70% {
-            opacity: 0.85;
-          }
-          100% {
-            transform: translate3d(-550px, 340px, 0) rotate(-32deg);
+            transform: translate3d(-800px, 850px, 0) rotate(-48deg);
             opacity: 0;
           }
         }
@@ -135,71 +135,71 @@ export const GalaxyBackground: React.FC = () => {
         ✦
       </div>
 
-      {/* ── COMETAS PASSANDO COM CAUDA BRILHANTE (SHOOTING STARS) ── */}
-      {/* Cometa 1 (Topo-Direita) */}
+      {/* ── COMETAS CAINDO DO TOPO PARA BAIXO COM CAUDA BRILHANTE (SHOOTING STARS REAIS) ── */}
+      {/* Cometa 1 (Topo-Direita cruzando em direção ao chão) */}
       <div 
-        className="absolute top-[12%] right-[8%] z-10 pointer-events-none flex items-center"
+        className="absolute top-[8%] right-[10%] z-10 pointer-events-none flex items-center"
         style={{
-          animation: 'cometTravel1 7.5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite',
-          animationDelay: '1s'
+          animation: 'cometFallTopToBottom1 7.2s cubic-bezier(0.25, 0.1, 0.25, 1) infinite',
+          animationDelay: '0.8s'
         }}
       >
-        {/* Cauda Luminosa do Cometa */}
+        {/* Cabeça Brilhante em Frente (Lidera a queda) */}
         <div 
-          className="w-40 sm:w-56 h-[2px]"
+          className="w-2.5 h-2.5 rounded-full bg-white shrink-0 -mr-1 z-10"
           style={{
-            background: 'linear-gradient(to left, #ffffff, rgba(249,115,22,0.8), rgba(168,85,247,0.5), transparent)'
+            boxShadow: '0 0 14px 4px rgba(255,255,255,1), 0 0 24px 8px rgba(168,85,247,0.85)'
           }}
         />
-        {/* Cabeça Brilhante do Cometa */}
+        {/* Cauda Luminosa do Cometa (Estende para trás e para cima) */}
         <div 
-          className="w-2.5 h-2.5 rounded-full bg-white -ml-1 shrink-0"
+          className="w-48 sm:w-64 h-[2px]"
           style={{
-            boxShadow: '0 0 12px 3px rgba(255,255,255,0.95), 0 0 20px 6px rgba(249,115,22,0.8)'
+            background: 'linear-gradient(to right, #ffffff, rgba(168,85,247,0.85), rgba(59,130,246,0.4), transparent)'
           }}
         />
       </div>
 
-      {/* Cometa 2 (Meio) */}
+      {/* Cometa 2 (Meio-Direita caindo de cima para baixo) */}
       <div 
-        className="absolute top-[42%] right-[15%] z-10 pointer-events-none flex items-center"
+        className="absolute top-[35%] right-[15%] z-10 pointer-events-none flex items-center"
         style={{
-          animation: 'cometTravel2 10.5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite',
-          animationDelay: '4.8s'
+          animation: 'cometFallTopToBottom2 9.8s cubic-bezier(0.25, 0.1, 0.25, 1) infinite',
+          animationDelay: '4.2s'
         }}
       >
         <div 
-          className="w-36 sm:w-48 h-[2px]"
+          className="w-2.5 h-2.5 rounded-full bg-white shrink-0 -mr-1 z-10"
           style={{
-            background: 'linear-gradient(to left, #ffffff, rgba(168,85,247,0.8), rgba(59,130,246,0.5), transparent)'
+            boxShadow: '0 0 14px 4px rgba(255,255,255,1), 0 0 22px 7px rgba(249,115,22,0.85)'
           }}
         />
         <div 
-          className="w-2 h-2 rounded-full bg-white -ml-1 shrink-0"
+          className="w-44 sm:w-56 h-[2px]"
           style={{
-            boxShadow: '0 0 10px 2px rgba(255,255,255,0.95), 0 0 18px 5px rgba(168,85,247,0.7)'
+            background: 'linear-gradient(to right, #ffffff, rgba(249,115,22,0.85), rgba(234,179,8,0.4), transparent)'
           }}
         />
       </div>
 
-      {/* Cometa 3 (Inferior-Direita) */}
+      {/* Cometa 3 (Topo-Centro cruzando de cima para baixo) */}
       <div 
-        className="absolute top-[72%] right-[5%] z-10 pointer-events-none flex items-center"
+        className="absolute top-[18%] right-[30%] z-10 pointer-events-none flex items-center"
         style={{
-          animation: 'cometTravel3 9s cubic-bezier(0.25, 0.1, 0.25, 1) infinite',
-          animationDelay: '7.2s'
+          animation: 'cometFallTopToBottom3 11.2s cubic-bezier(0.25, 0.1, 0.25, 1) infinite',
+          animationDelay: '7.5s'
         }}
       >
         <div 
-          className="w-44 sm:w-60 h-[2px]"
+          className="w-3 h-3 rounded-full bg-white shrink-0 -mr-1 z-10"
           style={{
-            background: 'linear-gradient(to left, #ffffff, rgba(234,179,8,0.8), rgba(249,115,22,0.5), transparent)'
+            boxShadow: '0 0 16px 5px rgba(255,255,255,1), 0 0 26px 8px rgba(236,72,153,0.85)'
           }}
         />
         <div 
-          className="w-2.5 h-2.5 rounded-full bg-white -ml-1 shrink-0"
+          className="w-52 sm:w-72 h-[2.5px]"
           style={{
-            boxShadow: '0 0 12px 3px rgba(255,255,255,0.95), 0 0 20px 6px rgba(234,179,8,0.7)'
+            background: 'linear-gradient(to right, #ffffff, rgba(236,72,153,0.85), rgba(168,85,247,0.4), transparent)'
           }}
         />
       </div>

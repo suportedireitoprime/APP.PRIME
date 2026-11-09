@@ -112,6 +112,10 @@ export const AudiobooksQuickActionSheet: React.FC<AudiobooksQuickActionSheetProp
         >
           <AudiobooksTrilhaResumos
             onBack={onClose}
+            onPlayLivro={(livro, idx) => {
+              onPlayLivro(livro, idx);
+              onClose();
+            }}
             onPlayResumo={(livro, capIdx) => {
               if (onPlayResumo) {
                 onPlayResumo(livro, capIdx);
