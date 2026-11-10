@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { UserDossieSheet } from './UserDossieSheet';
 import { rotaParaFuncao, formatarDuracao } from '@/lib/rotaFuncoes';
 import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO } from '@/lib/precos';
+import { isAnualAntigo } from '@/hooks/useSubscription';
 
 type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial' | 'renovou';
 type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
@@ -1554,7 +1555,8 @@ export function AdminHojeCards() {
           { data: userAsaasSubs },
           { data: userPlaySubs },
           { data: userAppleSubs },
-          { data: userPurchaseEvs }
+          { data: userPurchaseEvs },
+          { data: userLegacySubs }
         ] = await Promise.all([
           supabase.rpc('admin_user_auth_providers' as any, { _ids: ids }),
           supabase.from('user_activity_log').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
@@ -1563,10 +1565,11 @@ export function AdminHojeCards() {
             : Promise.resolve({ data: [] }),
           supabase.from('user_sessions').select('user_id, initial_route, started_at').in('user_id', ids).gte('started_at', minD.toISOString()).lt('started_at', maxD.toISOString()),
           supabase.from('profiles').select('id, created_at, faixa_etaria, is_premium, avatar_url, display_name, email').in('id', ids),
-          supabase.from('asaas_subscriptions').select('user_id, plano, status, expires_at, started_at').in('user_id', ids),
-          supabase.from('play_subscriptions').select('user_id, product_id, status, expires_at').in('user_id', ids),
-          supabase.from('apple_subscriptions').select('user_id, product_id, status, expires_at').in('user_id', ids),
-          supabase.from('app_events').select('user_id, metadata, event_name').in('user_id', ids).in('event_name', ['purchase', 'checkout_cc_aprovado', 'subscription_started']).order('created_at', { ascending: false })
+          supabase.from('asaas_subscriptions').select('user_id, plano, status, expires_at, started_at, created_at').in('user_id', ids),
+          supabase.from('play_subscriptions').select('user_id, product_id, status, expires_at, created_at').in('user_id', ids),
+          supabase.from('apple_subscriptions').select('user_id, product_id, status, expires_at, start_time, created_at').in('user_id', ids),
+          supabase.from('app_events').select('user_id, metadata, event_name, created_at').in('user_id', ids).in('event_name', ['purchase', 'checkout_cc_aprovado', 'subscription_started']).order('created_at', { ascending: false }),
+          supabase.from('legacy_subscribers').select('claimed_user_id, email, tipo, status, expires_at, created_at').in('claimed_user_id', ids)
         ]);
 
         const provMap = new Map<string, { provider: string; avatar_url?: string }>(
@@ -1577,7 +1580,6 @@ export function AdminHojeCards() {
         );
 
         // Mapear plano e preço de cada usuário para exibir na lista
-        const CUTOFF_ANUAL_MS = new Date('2026-11-10T00:00:00Z').getTime();
         const subInfoMap = new Map<string, { planValue: number; planTag: { plano: string; status: string; expires_at: string | null } }>();
 
         (userAsaasSubs || []).forEach((s: any) => {
@@ -1589,19 +1591,13 @@ export function AdminHojeCards() {
           const isAnual = planoLower.includes('anual');
           const isExplicitVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
 
-          // Regra oficial: Qualquer assinatura anual adquirida antes de 10/11/2026 é tratada como vitalícia
-          const startedTime = s.started_at ? new Date(s.started_at).getTime() : 0;
-          const isAnualAntigo = isAnual && (
-            (startedTime > 0 && startedTime < CUTOFF_ANUAL_MS) ||
-            (s.expires_at && new Date(s.expires_at).getTime() < new Date('2027-11-10T00:00:00Z').getTime()) ||
-            (!s.started_at && isAtivo)
-          );
-
-          const isVit = isExplicitVit || isAnualAntigo;
-          const effectiveAnual = isAnual && !isAnualAntigo;
+          // Regra oficial unificada: Qualquer assinatura anual adquirida antes de 10/11/2026 é tratada como vitalícia
+          const isAnualAnt = isAnualAntigo(s.plano, s.started_at, s.expires_at, s.created_at);
+          const isVit = isExplicitVit || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
           const planValor = isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = (effectiveAnual && isPromo) ? 'Anual Promocional' : effectiveAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
-          const finalStatus = isAnualAntigo ? 'ACTIVE' : (isAtivo ? 'ACTIVE' : s.status);
+          const finalStatus = isAnualAnt ? 'ACTIVE' : (isAtivo ? 'ACTIVE' : s.status);
           const finalExpiresAt = isVit ? null : s.expires_at;
 
           subInfoMap.set(s.user_id, {
@@ -1614,17 +1610,14 @@ export function AdminHojeCards() {
           if (!s.user_id || subInfoMap.has(s.user_id)) return;
           const isAnual = s.product_id?.includes('anual');
           const isExplicitVit = s.product_id?.includes('vitalicio');
-          const isAnualAntigo = isAnual && (
-            !s.created_at || new Date(s.created_at).getTime() < CUTOFF_ANUAL_MS ||
-            (s.expires_at && new Date(s.expires_at).getTime() < new Date('2027-11-10T00:00:00Z').getTime())
-          );
-          const isVit = isExplicitVit || isAnualAntigo;
-          const effectiveAnual = isAnual && !isAnualAntigo;
+          const isAnualAnt = isAnualAntigo(s.product_id, null, s.expires_at, s.created_at);
+          const isVit = isExplicitVit || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
           const planValor = isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = isVit ? 'Vitalício' : effectiveAnual ? 'Anual' : 'Mensal';
           subInfoMap.set(s.user_id, {
             planValue: planValor,
-            planTag: { plano: planName, status: isAnualAntigo ? 'ACTIVE' : s.status, expires_at: isVit ? null : s.expires_at }
+            planTag: { plano: planName, status: isAnualAnt ? 'ACTIVE' : s.status, expires_at: isVit ? null : s.expires_at }
           });
         });
 
@@ -1632,17 +1625,30 @@ export function AdminHojeCards() {
           if (!s.user_id || subInfoMap.has(s.user_id)) return;
           const isAnual = s.product_id?.includes('anual');
           const isExplicitVit = s.product_id?.includes('vitalicio');
-          const isAnualAntigo = isAnual && (
-            !s.start_time || new Date(s.start_time).getTime() < CUTOFF_ANUAL_MS ||
-            (s.expires_at && new Date(s.expires_at).getTime() < new Date('2027-11-10T00:00:00Z').getTime())
-          );
-          const isVit = isExplicitVit || isAnualAntigo;
-          const effectiveAnual = isAnual && !isAnualAntigo;
+          const isAnualAnt = isAnualAntigo(s.product_id, s.start_time, s.expires_at, s.created_at);
+          const isVit = isExplicitVit || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
           const planValor = isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL;
           const planName = isVit ? 'Vitalício' : effectiveAnual ? 'Anual' : 'Mensal';
           subInfoMap.set(s.user_id, {
             planValue: planValor,
-            planTag: { plano: planName, status: isAnualAntigo ? 'ACTIVE' : s.status, expires_at: isVit ? null : s.expires_at }
+            planTag: { plano: planName, status: isAnualAnt ? 'ACTIVE' : s.status, expires_at: isVit ? null : s.expires_at }
+          });
+        });
+
+        (userLegacySubs || []).forEach((l: any) => {
+          if (!l.claimed_user_id || subInfoMap.has(l.claimed_user_id)) return;
+          const tipoLower = (l.tipo || '').toLowerCase();
+          const isAnual = tipoLower.includes('anual');
+          const isExplicitVit = tipoLower === 'vitalicio' || tipoLower.includes('vital');
+          const isAnualAnt = isAnualAntigo(l.tipo, null, l.expires_at, l.created_at);
+          const isVit = isExplicitVit || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
+          const planValor = isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL;
+          const planName = isVit ? 'Vitalício' : effectiveAnual ? 'Anual' : 'Mensal';
+          subInfoMap.set(l.claimed_user_id, {
+            planValue: planValor,
+            planTag: { plano: planName, status: (isVit || l.status === 'active') ? 'ACTIVE' : l.status, expires_at: isVit ? null : l.expires_at }
           });
         });
 
@@ -1652,10 +1658,9 @@ export function AdminHojeCards() {
           const planoLower = (meta.plano || 'anual').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
-          const evTime = e.created_at ? new Date(e.created_at).getTime() : 0;
-          const isAnualAntigo = isAnual && evTime > 0 && evTime < CUTOFF_ANUAL_MS;
-          const isVit = (!isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'))) || isAnualAntigo;
-          const effectiveAnual = isAnual && !isAnualAntigo;
+          const isAnualAnt = isAnualAntigo(planoLower, e.created_at, meta.expires_at);
+          const isVit = (!isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'))) || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
           const planValor = typeof meta.value === 'number' && meta.value > 0
             ? meta.value
             : (isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL);
