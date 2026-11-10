@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Info, LogOut, ChevronRight,
-  LifeBuoy, Lock, Gem, Lightbulb,
+  LifeBuoy, Lock, Gem,
   Pencil, Crown, Timer, Bird, Star,
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
@@ -225,18 +225,12 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           />
         </GroupCard>
 
-        {/* Card com as funções principais: Minha assinatura, Sugestão, Avaliar aplicativo, Suporte, Sobre o app */}
+        {/* Card com as funções principais: Minha assinatura, Avaliar aplicativo, Suporte, Sobre o app */}
         <GroupCard>
           <MenuRow
             icon={Gem}
             label={isPremium ? "Minha assinatura" : "Minha assinatura / Planos"}
             onClick={() => handleItemClick('planos')}
-          />
-          <MenuRow
-            icon={Lightbulb}
-            iconColor="text-amber-400"
-            label="Sugestão"
-            onClick={() => handleItemClick('sugestao')}
           />
           <MenuRow
             icon={Star}
