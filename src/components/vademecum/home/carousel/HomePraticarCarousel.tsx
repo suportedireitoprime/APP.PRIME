@@ -166,11 +166,11 @@ const HomePraticarCarousel = () => {
 
   return (
     <section className="space-y-3">
-      {/* Cabeçalho "PRATICAR" idêntico ao "LEIS EM ALTA" */}
+      {/* Cabeçalho "PRATICAR" */}
       <div className="flex items-center justify-between gap-2 px-1">
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+            <span className="w-1 h-5 rounded-full bg-[#E11D48] shrink-0" />
             <span className="truncate">PRATICAR</span>
           </h3>
           <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
@@ -253,17 +253,11 @@ const HomePraticarCarousel = () => {
                 </div>
 
                 <div className="flex justify-between items-end mt-auto">
-                  <div className="flex flex-col w-full pr-1">
-                    <span
-                      className="font-card text-white text-[13px] sm:text-[14px] font-black tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-none whitespace-nowrap"
-                      style={{ fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" }}
-                    >
+                  <div className="flex flex-col">
+                    <span className="font-display text-white text-[19px] sm:text-[21px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
                       {item.title}
                     </span>
-                    <span
-                      className="font-card text-white/90 text-[8.5px] sm:text-[9px] font-bold uppercase tracking-wider mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] leading-none whitespace-nowrap"
-                      style={{ fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" }}
-                    >
+                    <span className="text-white/80 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
                       {item.subtitle}
                     </span>
                   </div>
