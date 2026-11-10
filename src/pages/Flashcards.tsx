@@ -59,24 +59,25 @@ const Flashcards = () => {
         />
       </div>
       
-      <div className="relative z-10">
-        <PageHeader title="Flashcards" onBack={() => navigate('/')} />
-      </div>
-      <div className="relative z-10 mx-auto w-full max-w-2xl lg:max-w-7xl 2xl:max-w-[1600px] px-3 sm:px-6 lg:px-8">
-
-
-        <div className="-mx-3 sm:-mx-6 lg:-mx-8 mb-6 mt-1">
-          <FlashcardsCargoHero 
-            pct={pct} 
-            total={dash?.estudados || 0} 
-            hoje={dash?.hoje || 0} 
-            meta={100} 
-            disponiveis={dash?.total_cards || 78077} 
-            streak={dash?.streak || 0}
-          />
-        </div>
+      <div className="relative z-10 mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-12">
+        <div className="space-y-6">
+          {/* ── Banner de Desempenho (Hero Esmeralda Oficial) ───────────────── */}
+          <div className="w-full">
+            <FlashcardsCargoHero 
+              pct={pct} 
+              total={dash?.estudados || 0} 
+              hoje={dash?.hoje || 0} 
+              meta={100} 
+              disponiveis={dash?.total_cards || 78077} 
+              streak={dash?.streak || 0}
+              onBack={() => navigate('/')}
+              onOpenHoje={() => navigate('/flashcards/revisar')}
+              onOpenRevisados={() => navigate('/flashcards/historico')}
+              onOpenTotal={() => setFiltroAberto(true)}
+            />
+          </div>
         
-        <div className="pt-1 space-y-6">
+          <div className="px-3.5 sm:px-6 lg:px-0 space-y-6">
           {/* ── Card Principal com Botão "Filtro Rápido" ───────────────── */}
           <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
             <div className="flex items-center gap-2">
@@ -231,6 +232,7 @@ const Flashcards = () => {
 
         </div>
       </div>
+    </div>
 
       {/* ── Modal Flutuante: Opções da Matéria (Filtrar vs Trilhas) ── */}
       <AnimatePresence>

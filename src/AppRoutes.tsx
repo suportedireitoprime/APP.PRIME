@@ -907,7 +907,8 @@ function AnimatedRoutes() {
           <Route path="/pilulas/cpp" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cpp" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/clt" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="clt" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/:id" element={<ProtectedRoute><PageTransition instant><PilulasPlayer /></PageTransition></ProtectedRoute>} />
-          {/* Lei Seca */}
+          {/* Lei Seca / Lições */}
+          <Route path="/licoes" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex /></PageTransition></ProtectedRoute></ErrorBoundary>} />
           <Route path="/lei-seca" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex /></PageTransition></ProtectedRoute></ErrorBoundary>} />
           <Route path="/lei-seca/favoritos" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex modo="favoritos" /></PageTransition></ProtectedRoute></ErrorBoundary>} />
           <Route path="/lei-seca/recentes" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex modo="recentes" /></PageTransition></ProtectedRoute></ErrorBoundary>} />

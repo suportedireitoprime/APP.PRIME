@@ -1,14 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ListChecks, ChevronRight, Trophy, Award, BarChart2, Sparkles, UserCheck, ArrowLeft } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { haptic } from '@/lib/nativeHaptics';
 import { useQuestoesAreas } from '@/hooks/useQuestoes';
 import { SeloOabBadge } from '@/components/ui/SeloOabBadge';
-import q1 from '@/assets/questoes-hero/q-1.webp';
-import q2 from '@/assets/questoes-hero/q-2.webp';
-import q3 from '@/assets/questoes-hero/q-3.webp';
-
-const FIGURAS = [q1, q2, q3];
 
 interface Props {
   /** % de acerto */
@@ -44,158 +39,162 @@ const RANKING_PRECISAO = [
 ];
 
 const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props) => {
-  const [heroIdx, setHeroIdx] = useState(0);
   const [sheetAberto, setSheetAberto] = useState<'respondidas' | 'precisao' | 'banco' | null>(null);
   const { areas, loading: loadingAreas } = useQuestoesAreas();
-
-  useEffect(() => {
-    const id = window.setInterval(() => setHeroIdx((i) => (i + 1) % FIGURAS.length), 4500);
-    return () => clearInterval(id);
-  }, []);
-
-  const size = 72;
-  const stroke = 7;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const dashOffset = c - (pct / 100) * c;
 
   const totalSumAreas = areas.reduce((acc, a) => acc + Number(a.total || 0), 0);
 
   return (
     <div className="flex flex-col rounded-b-3xl overflow-hidden shadow-2xl">
-      {/* ── Cabeçalho Vade Mecum ───────────────── */}
-      <div className="bg-zinc-950 px-4 pb-3.5 pt-[calc(0.85rem+var(--sai-top,env(safe-area-inset-top,0px)))] flex items-center justify-between">
+      {/* ── Cabeçalho Nativo ───────────────── */}
+      <div className="bg-zinc-950 px-4 pb-4 pt-safe-header flex items-center justify-between border-b border-white/5">
         <button 
-          onClick={() => { haptic.selection(); onBack?.(); }} 
-          aria-label="Voltar para Início"
-          className="grid w-12 h-12 sm:w-[52px] sm:h-[52px] shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:scale-95"
+          onClick={() => {
+            try { haptic.selection(); } catch {}
+            onBack?.();
+          }} 
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:opacity-70 cursor-pointer"
+          aria-label="Voltar"
         >
-          <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
+          <ArrowLeft className="h-5 w-5" strokeWidth={2.4} />
         </button>
-        <h1 className="font-display text-[18px] sm:text-[20px] font-black uppercase tracking-widest text-white text-center flex-1 pr-12">
-          Questões
+        <h1 className="font-display text-[18px] font-black uppercase tracking-widest text-white text-center flex-1 pr-11">
+          QUESTÕES
         </h1>
       </div>
 
+      {/* ── Painel Principal de Questões (Vermelho Oficial #e11d48) ───────────────── */}
       <section
         className="relative isolate overflow-hidden"
         aria-label="Painel Principal de Questões"
       >
+        {/* Fundo Vermelho Oficial */}
         <div className="absolute inset-0 bg-hero-panel -z-10" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.22),transparent_60%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.28),transparent_65%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.28),transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.35),transparent_65%)]" />
 
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-[42%] overflow-hidden sm:w-[34%]" aria-hidden="true">
-        {FIGURAS.map((url, i) => (
+        {/* Marca d'água de questões no fundo */}
+        <ListChecks
+          className="absolute -right-4 -bottom-4 w-36 h-36 text-white/[0.12] pointer-events-none"
+          strokeWidth={1.2}
+        />
+
+        {/* Personagem 3D Oficial das Questões */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 w-[44%] sm:w-[35%] overflow-hidden flex items-end justify-end z-0"
+          aria-hidden="true"
+        >
           <img
-            key={url}
-            src={url}
-            alt=""
-            loading={i === 0 ? 'eager' : 'lazy'}
+            src="/assets/praticar-questoes.webp"
+            alt="Questões Comentadas"
+            className="h-[105%] w-auto object-contain object-bottom drop-shadow-[0_8px_20px_rgba(0,0,0,0.6)] transform translate-y-1.5"
+            loading="eager"
             decoding="async"
-            className="absolute inset-y-0 right-0 h-full w-auto object-contain object-right transition-opacity duration-[1400ms] ease-in-out"
-            style={{ opacity: i === heroIdx ? 1 : 0, filter: 'brightness(0) invert(1)', mixBlendMode: 'soft-light' }}
           />
-        ))}
-        <div className="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-[hsl(350_74%_42%)] via-[hsl(350_74%_42%)]/60 to-transparent" />
-      </div>
+          <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-[hsl(350_74%_42%)] to-transparent pointer-events-none" />
+        </div>
 
-      <div className="relative p-4 sm:p-5">
-        <div className="flex items-start gap-3">
-          <div className="relative shrink-0" style={{ width: size, height: size }}>
-            <svg width={size} height={size} className="-rotate-90">
-              <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(0,0,0,0.22)" strokeWidth={stroke} fill="none" />
-              <circle
-                cx={size / 2}
-                cy={size / 2}
-                r={r}
-                stroke="#fff"
-                strokeWidth={stroke}
-                strokeLinecap="round"
-                fill="none"
-                strokeDasharray={c}
-                strokeDashoffset={dashOffset}
-                style={{ transition: 'stroke-dashoffset 600ms ease' }}
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-display text-base font-black leading-none text-white">{pct}%</span>
-              <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-white/70">Acerto</span>
+        {/* Conteúdo do Hero */}
+        <div className="relative z-10 px-5 pt-5 pb-4">
+          <div className="flex items-center gap-4">
+            {/* Selo / Rosca de Progresso à esquerda */}
+            <div className="relative flex shrink-0 items-center justify-center">
+              <div className="w-[72px] h-[72px] rounded-2xl bg-white/10 border-2 border-white/20 flex flex-col items-center justify-center text-center shadow-lg backdrop-blur-sm relative">
+                <svg width={56} height={56} className="-rotate-90">
+                  <circle cx={28} cy={28} r={22} stroke="rgba(255,255,255,0.2)" strokeWidth={4.5} fill="none" />
+                  <circle
+                    cx={28}
+                    cy={28}
+                    r={22}
+                    stroke="#fff"
+                    strokeWidth={4.5}
+                    strokeLinecap="round"
+                    fill="none"
+                    strokeDasharray={2 * Math.PI * 22}
+                    strokeDashoffset={(2 * Math.PI * 22) - (pct / 100) * (2 * Math.PI * 22)}
+                    style={{ transition: 'stroke-dashoffset 600ms ease' }}
+                  />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="font-display text-sm font-black leading-none text-white">{pct}%</span>
+                  <span className="mt-0.5 text-[7px] font-bold uppercase tracking-wider text-rose-200">Acerto</span>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className="min-w-0 max-w-[58%]">
-            <div className="flex items-center gap-1.5">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-white/75">Hora de praticar</p>
-              <SeloOabBadge size={15} />
+            {/* Textos */}
+            <div className="flex-1 min-w-0 pr-12 sm:pr-0">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-black/30 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-rose-200 backdrop-blur-sm border border-white/10">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                HORA DE PRATICAR ⚖️
+              </div>
+              <h2 className="font-display text-xl sm:text-2xl font-black italic text-white tracking-wide mt-1 drop-shadow-sm leading-tight">
+                QUESTÕES <span className="font-light not-italic text-rose-200">COMENTADAS</span>
+              </h2>
+              <p className="text-xs text-white/90 line-clamp-1 mt-0.5">
+                Resolva, entenda o erro e fixe com a IA.
+              </p>
             </div>
-            <h1 className="mt-0.5 font-display text-[22px] font-black leading-tight text-white sm:text-[28px]">
-              Questões
-              <span className="ml-2 font-display text-[15px] font-semibold italic text-white/75 sm:text-[20px]">
-                comentadas
-              </span>
-            </h1>
-            <p
-              className="mt-0.5 text-[12px] leading-snug text-white/80 sm:text-[13px]"
-              style={{ fontFamily: "'Barlow', system-ui, sans-serif" }}
-            >
-              Resolva, entenda o erro e fixe com a IA.
-            </p>
           </div>
         </div>
 
-        {/* ── 3 Caixas Clicáveis do Banner ────────────────── */}
-        <div className="relative mt-3 rounded-2xl bg-black/85 text-white shadow-xl ring-1 ring-black/20 overflow-hidden">
-          <div className="grid grid-cols-3 divide-x divide-white/10">
-            {/* Box 1: Respondidas */}
-            <button
-              type="button"
-              onClick={() => { haptic.selection(); setSheetAberto('respondidas'); }}
-              className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/10 active:opacity-70 group"
-            >
-              <div className="flex items-center gap-0.5">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Respondidas</span>
-                <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-              </div>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-white [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
-                {total.toLocaleString('pt-BR')}
-              </span>
-            </button>
+        {/* ── 3 Métricas na Barra Inferior: RESPONDIDAS, TAXA DE ACERTO, BANCO TOTAL ───────────────── */}
+        <div className="relative z-10 grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 bg-black/40 backdrop-blur-md">
+          {/* 1. Respondidas */}
+          <button
+            type="button"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              setSheetAberto('respondidas');
+            }}
+            className="py-3 px-2 text-center group cursor-pointer hover:bg-white/5 active:bg-white/10 transition"
+          >
+            <div className="flex items-center justify-center gap-1 text-[10px] font-black uppercase tracking-wider text-white/75">
+              <span>RESPONDIDAS</span>
+              <ChevronRight className="h-3 w-3 opacity-60 group-hover:translate-x-0.5 transition" />
+            </div>
+            <div className="font-display text-base sm:text-lg font-black text-white mt-0.5">
+              {total.toLocaleString('pt-BR')}
+            </div>
+          </button>
 
-            {/* Box 2: Taxa de Acerto */}
-            <button
-              type="button"
-              onClick={() => { haptic.selection(); setSheetAberto('precisao'); }}
-              className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/10 active:opacity-70 group"
-            >
-              <div className="flex items-center gap-0.5">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Taxa de Acerto</span>
-                <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-              </div>
-              <span className={`mt-0.5 font-display text-base font-black leading-none ${pct >= 60 ? 'text-emerald-400' : 'text-red-400'}`}>
-                {pct}%
-              </span>
-            </button>
+          {/* 2. Taxa de Acerto */}
+          <button
+            type="button"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              setSheetAberto('precisao');
+            }}
+            className="py-3 px-2 text-center group cursor-pointer hover:bg-white/5 active:bg-white/10 transition"
+          >
+            <div className="flex items-center justify-center gap-1 text-[10px] font-black uppercase tracking-wider text-white/75">
+              <span>TAXA DE ACERTO</span>
+              <ChevronRight className="h-3 w-3 opacity-60 group-hover:translate-x-0.5 transition" />
+            </div>
+            <div className={`font-display text-base sm:text-lg font-black mt-0.5 ${pct >= 60 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              {pct}%
+            </div>
+          </button>
 
-            {/* Box 3: Banco Total */}
-            <button
-              type="button"
-              onClick={() => { haptic.selection(); setSheetAberto('banco'); }}
-              className="flex flex-col items-center justify-center px-1.5 py-2.5 transition-colors hover:bg-white/10 active:opacity-70 group"
-            >
-              <div className="flex items-center gap-0.5">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60 group-hover:text-white">Banco Total</span>
-                <ChevronRight className="w-2.5 h-2.5 text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-              </div>
-              <span className="mt-0.5 font-display text-base font-black leading-none text-white [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
-                {disponiveis > 0 ? disponiveis.toLocaleString('pt-BR') : '25.000+'}
-              </span>
-            </button>
-          </div>
+          {/* 3. Banco Total */}
+          <button
+            type="button"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              setSheetAberto('banco');
+            }}
+            className="py-3 px-2 text-center group cursor-pointer hover:bg-white/5 active:bg-white/10 transition"
+          >
+            <div className="flex items-center justify-center gap-1 text-[10px] font-black uppercase tracking-wider text-white/75">
+              <span>BANCO TOTAL</span>
+              <ChevronRight className="h-3 w-3 opacity-60 group-hover:translate-x-0.5 transition" />
+            </div>
+            <div className="font-display text-base sm:text-lg font-black text-white mt-0.5">
+              {disponiveis > 0 ? disponiveis.toLocaleString('pt-BR') : '25.000+'}
+            </div>
+          </button>
         </div>
-      </div>
-
-      <ListChecks className="pointer-events-none absolute bottom-3 left-3 h-8 w-8 text-white/15" />
+      </section>
 
       {/* ── Modais / Sheets Clicáveis ────────────────── */}
 
@@ -338,7 +337,6 @@ const QuestoesHero = ({ pct, total, hoje, acertos, disponiveis, onBack }: Props)
           </div>
         </SheetContent>
       </Sheet>
-    </section>
     </div>
   );
 };
