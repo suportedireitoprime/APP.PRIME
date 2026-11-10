@@ -170,3 +170,4 @@ AS $$
   FROM auth.users u
   WHERE u.id = ANY(_ids);
 $$;
+

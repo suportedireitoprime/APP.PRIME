@@ -462,18 +462,39 @@ export async function syncHorusSubscriptionStatus(
 
     const contextoFormatado = `[CONTEXTO DO ALUNO]\nNome: ${displayName}\nPlano: ${planLabel}${expText}`;
 
-    await admin.from("horus_user_stats").upsert(
-      {
-        telefone: phone,
-        user_id: userId,
-        nome_preferido: displayName.split(" ")[0],
-        plano_atual: planLabel,
-        plano_expira_em: isPremium ? expiresAt || null : null,
-        contexto_formatado: contextoFormatado,
-        updated_at: now,
-      },
-      { onConflict: "telefone" }
-    );
+    // Verifica se já existe registro com este user_id para evitar colisão na constraint UNIQUE
+    const { data: existingUserStat } = await admin
+      .from("horus_user_stats")
+      .select("id, telefone")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (existingUserStat) {
+      await admin
+        .from("horus_user_stats")
+        .update({
+          telefone: phone || existingUserStat.telefone,
+          nome_preferido: displayName.split(" ")[0],
+          plano_atual: planLabel,
+          plano_expira_em: isPremium ? expiresAt || null : null,
+          contexto_formatado: contextoFormatado,
+          updated_at: now,
+        })
+        .eq("id", existingUserStat.id);
+    } else {
+      await admin.from("horus_user_stats").upsert(
+        {
+          telefone: phone,
+          user_id: userId,
+          nome_preferido: displayName.split(" ")[0],
+          plano_atual: planLabel,
+          plano_expira_em: isPremium ? expiresAt || null : null,
+          contexto_formatado: contextoFormatado,
+          updated_at: now,
+        },
+        { onConflict: "telefone" }
+      );
+    }
 
     // Se o telefone sem DDI 55 existir em horus_user_stats (ex.: 11991897603), atualiza também
     const localPhone = phone.replace(/^55/, "");
