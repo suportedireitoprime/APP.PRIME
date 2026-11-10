@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, startTransition } from "react";
 import { useNavigate, useSearchParams, Navigate, useLocation, Link } from "react-router-dom";
 import { Capacitor } from '@capacitor/core';
-import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight, ShieldCheck, Sparkles, Lock, X } from "lucide-react";
+import { CreditCard, QrCode, Smartphone, RotateCw, Gift, ArrowRight, Headphones, ShieldCheck, Sparkles, Lock, X } from "lucide-react";
 
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import { Button } from "@/components/ui/button";
@@ -348,6 +348,20 @@ export default function Assinatura() {
         <PageHeader
           onBack={handleBack}
           title=""
+          rightAction={
+            <Link
+              to="/suporte-publico"
+              className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all active:scale-[0.96] shrink-0 touch-manipulation shadow-md"
+              style={{
+                background: 'hsl(0 0% 100% / 0.1)',
+                border: '1px solid hsl(0 0% 100% / 0.2)',
+                color: 'hsl(40 25% 97%)',
+              }}
+            >
+              <Headphones className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+              <span>Suporte</span>
+            </Link>
+          }
         />
 
         {isTrial && <TrialCountdownBanner expiresAt={expiresAt} />}
