@@ -227,7 +227,8 @@ export default function SimuladosResolver() {
       });
 
       if (acertou) {
-        await supabase.rpc('increment_simulado_acertos', { h_id: historicoId }).catch(async () => {
+        const { error: incErr } = await supabase.rpc('increment_simulado_acertos', { h_id: historicoId });
+        if (incErr) {
           const { data: h } = await supabase
             .from('user_simulados_historico')
             .select('acertos')
@@ -239,7 +240,7 @@ export default function SimuladosResolver() {
               .update({ acertos: (h.acertos || 0) + 1 })
               .eq('id', historicoId);
           }
-        });
+        }
       }
     } catch (err) {
       console.warn('Erro ao salvar resposta de simulado:', err);

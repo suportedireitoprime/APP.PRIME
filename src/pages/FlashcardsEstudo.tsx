@@ -114,7 +114,7 @@ const FlashcardsEstudo = () => {
             tema: tema,
             status: status,
             ultima_resposta_em: new Date().toISOString(),
-          });
+          }, { onConflict: 'user_id,card_id' });
         }
       });
 

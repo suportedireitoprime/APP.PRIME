@@ -11,24 +11,6 @@ import { prefetchNearby } from "@/lib/nearbyPrefetch";
 import { SkipToContent } from "@/components/a11y/SkipToContent";
 const AnalyticsDebugPanel = lazy(() => import("@/components/AnalyticsDebugPanel"));
 import { Capacitor } from '@capacitor/core';
-import { App as CapacitorApp } from '@capacitor/app';
-
-// Componente global para gerenciar o botão físico "Voltar" no Android Nativo
-function NativeBackButtonHandler() {
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      const listener = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
-        if (!canGoBack) {
-          CapacitorApp.exitApp();
-        } else {
-          window.history.back();
-        }
-      });
-      return () => { listener.then(h => h.remove()); };
-    }
-  }, []);
-  return null;
-}
 
 
 
@@ -221,7 +203,6 @@ const App = () => (
                   <OfflineStatusBadge />
                   <OfflineWatcher />
                   <AppWarmupInitializer />
-                  <NativeBackButtonHandler />
                   <GlobalDelayedPrompts />
                   
                   <Suspense fallback={null}>

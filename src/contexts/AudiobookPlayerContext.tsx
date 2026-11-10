@@ -77,6 +77,7 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
   const [modalAberto, setModalAberto] = useState(false);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const lastTrackedSecRef = useRef<number>(-1);
 
   const capituloAtual = useMemo(() => {
     if (!livroAtual || !livroAtual.capitulos || livroAtual.capitulos.length === 0) return null;
@@ -380,11 +381,15 @@ export const AudiobookPlayerProvider: React.FC<{ children: React.ReactNode }> = 
             const t = audioRef.current.currentTime;
             setTempo(t);
             if (!isPlayingTitulo) {
-              if (Math.floor(t) % 4 === 0) {
-                salvarProgresso(t);
+              const currentSec = Math.floor(t);
+              if (currentSec !== lastTrackedSecRef.current) {
+                lastTrackedSecRef.current = currentSec;
+                if (currentSec % 4 === 0) {
+                  salvarProgresso(t);
+                }
+                // Registra métrica de audição no Supabase (1 segundo real a cada segundo)
+                audiobooksTracking.registrarTempoOuvidoSupabase(1);
               }
-              // Registra métrica de audição no Supabase (tempo ativo)
-              audiobooksTracking.registrarTempoOuvidoSupabase(0.5);
             }
           }
         }}

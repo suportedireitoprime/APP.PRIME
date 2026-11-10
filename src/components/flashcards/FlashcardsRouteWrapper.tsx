@@ -32,7 +32,7 @@ export const FlashcardsRouteWrapper: React.FC<FlashcardsRouteWrapperProps> = ({ 
               tema: tema,
               status: status,
               ultima_resposta_em: new Date().toISOString(),
-            });
+            }, { onConflict: 'user_id,card_id' });
           }
         } catch (e) {
           console.warn('[FlashcardsRouteWrapper] Falha ao persistir progresso nativo no Supabase:', e);

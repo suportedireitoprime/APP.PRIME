@@ -139,6 +139,7 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
   const introAudioRef = useRef<HTMLAudioElement>(null);
   const aulaSobrepostaIniciadaRef = useRef(false);
   const pularRef = useRef<(dir: 1 | -1) => void>(() => {});
+  const lastProgressoSaveRef = useRef<number>(0);
   const gateMes = useGatedFeature('audioaula_mes', 'audioaula', { scope: null });
 
   // Carregamento e cache aquecido das aulas (Offline-First / Stale-While-Revalidate a 0ms)
@@ -341,11 +342,14 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
             el.currentTime = tempoInicialRef.current;
           }
           notifyMediaPlay('audioaula');
-          await el.play().catch((playErr: unknown) => {
+          try {
+            await el.play();
+            setTocando(true);
+          } catch (playErr) {
             console.warn('[AudioaulasPlayer] play() da aula pausado ou bloqueado:', playErr);
-          });
+            setTocando(false);
+          }
         }
-        setTocando(true);
       } catch (err) {
         console.error('[AudioaulasPlayer] Erro ao carregar áudio:', err);
         setTocando(false);
@@ -370,12 +374,19 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
       if (atualId === a.id) {
         if (el?.paused && (!introEl || introEl.paused)) {
           notifyMediaPlay('audioaula');
-          if (tocandoIntro && introEl && introEl.currentTime < (introEl.duration || 0)) {
-            await introEl.play().catch(() => {});
-          } else if (el) {
-            await el.play().catch(() => {});
+          let started = false;
+          try {
+            if (tocandoIntro && introEl && introEl.currentTime < (introEl.duration || 0)) {
+              await introEl.play();
+              started = true;
+            } else if (el) {
+              await el.play();
+              started = true;
+            }
+          } catch (playErr) {
+            console.warn('[AudioaulasPlayer] play() falhou ou bloqueado:', playErr);
           }
-          setTocando(true);
+          setTocando(started);
         } else {
           el?.pause();
           introEl?.pause();
@@ -447,14 +458,16 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           introEl.volume = 1.0;
           introEl.playbackRate = 1.0;
           notifyMediaPlay('audioaula');
-          introEl.play().catch((err: unknown) => {
+          try {
+            await introEl.play();
+            setTocando(true);
+          } catch (err: unknown) {
             console.warn('[AudioaulasPlayer] Intro bloqueada ou cancelada, tocando aula diretamente:', err);
             void tocarConteudoAula(a, tempoInicial);
-          });
+          }
         } else {
           void tocarConteudoAula(a, tempoInicial);
         }
-        setTocando(true);
       } catch (err) {
         console.warn('[AudioaulasPlayer] Falha na intro, tocando aula diretamente:', err);
         void tocarConteudoAula(a, tempoInicial);
@@ -692,17 +705,21 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           const d = e.currentTarget.duration || 0;
 
           if (atual && t > 1) {
-            salvarProgressoAudioaula({
-              id: atual.id,
-              area: atual.area,
-              tema: atual.tema,
-              titulo: atual.titulo,
-              sequencia: atual.sequencia,
-              url_audio: atual.url_audio,
-              tempo: t,
-              duracao: d,
-              timestamp: Date.now(),
-            });
+            const now = Date.now();
+            if (now - lastProgressoSaveRef.current >= 4000) {
+              lastProgressoSaveRef.current = now;
+              salvarProgressoAudioaula({
+                id: atual.id,
+                area: atual.area,
+                tema: atual.tema,
+                titulo: atual.titulo,
+                sequencia: atual.sequencia,
+                url_audio: atual.url_audio,
+                tempo: t,
+                duracao: d,
+                timestamp: now,
+              });
+            }
           }
         }}
         onLoadedMetadata={(e) => {
@@ -719,10 +736,28 @@ export const AudioaulasPlayerProvider: React.FC<{ children: React.ReactNode }> =
           }
         }}
         onPlay={() => setTocando(true)}
-        onPause={() => {
+        onPause={(e) => {
           const introEl = introAudioRef.current;
           if (!introEl || introEl.paused) {
             setTocando(false);
+          }
+          if (atual) {
+            const t = e.currentTarget.currentTime;
+            const d = e.currentTarget.duration || 0;
+            if (t > 1) {
+              lastProgressoSaveRef.current = Date.now();
+              salvarProgressoAudioaula({
+                id: atual.id,
+                area: atual.area,
+                tema: atual.tema,
+                titulo: atual.titulo,
+                sequencia: atual.sequencia,
+                url_audio: atual.url_audio,
+                tempo: t,
+                duracao: d,
+                timestamp: Date.now(),
+              });
+            }
           }
         }}
         onError={(e) => {

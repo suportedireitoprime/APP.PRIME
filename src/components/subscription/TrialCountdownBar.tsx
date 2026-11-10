@@ -59,14 +59,19 @@ export const TrialCountdownBar = memo(function TrialCountdownBar() {
   }, [remainingMs]);
 
   // Verifica se a rota atual possui barra inferior (BottomNav) — Hook SEMPRE no topo para evitar erro #310
-  const [hasBottomNav, setHasBottomNav] = useState(() => location.pathname === '/' || location.pathname === '/biblioteca');
+  const isBottomNavRoute = (p: string) => {
+    const prefixes = ['/', '/biblioteca', '/radar', '/flashcards', '/ferramentas/dicionario', '/videoaulas', '/questoes', '/resumos-juridicos', '/lei-seca'];
+    return prefixes.some(r => p === r || (r !== '/' && p.startsWith(r)));
+  };
+
+  const [hasBottomNav, setHasBottomNav] = useState(() => isBottomNavRoute(location.pathname));
 
   useEffect(() => {
     if (isPaidSubscriber || isHiddenRoute) return;
     const checkNav = () => {
-      const navEl = document.querySelector('nav.fixed.bottom-0, [data-bottom-nav]');
+      const navEl = document.querySelector('nav.fixed.bottom-0, [data-bottom-nav], footer.fixed.bottom-0');
       const isVisible = !!navEl && window.getComputedStyle(navEl).display !== 'none' && !navEl.classList.contains('opacity-0');
-      setHasBottomNav(location.pathname === '/' || location.pathname === '/biblioteca' || isVisible);
+      setHasBottomNav(isBottomNavRoute(location.pathname) || isVisible);
     };
     checkNav();
     const t = setTimeout(checkNav, 150);
