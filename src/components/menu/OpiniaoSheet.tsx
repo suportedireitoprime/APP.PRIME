@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription } from '@/components/ui/drawer';
 import {
   Camera, Send, Sparkles, MessageCircleWarning, Bug, HelpCircle, Loader2,
-  CheckCircle2, X, MessageSquareHeart,
+  CheckCircle2, X, Lightbulb,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,10 +11,10 @@ import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 
 const TAGS = [
-  { id: 'funcionalidade', label: 'Funcionalidade', icon: Sparkles,           color: 'text-primary'     },
-  { id: 'critica',        label: 'Crítica',        icon: MessageCircleWarning, color: 'text-orange-400' },
-  { id: 'bug',            label: 'Bug',            icon: Bug,                color: 'text-red-400'     },
-  { id: 'duvida',         label: 'Dúvida',         icon: HelpCircle,         color: 'text-sky-400'     },
+  { id: 'funcionalidade', label: 'Nova Função',   icon: Sparkles,             color: 'text-primary'     },
+  { id: 'melhoria',        label: 'Melhoria',      icon: Lightbulb,            color: 'text-amber-400'   },
+  { id: 'bug',            label: 'Reportar Bug',  icon: Bug,                  color: 'text-red-400'     },
+  { id: 'duvida',         label: 'Outro',         icon: HelpCircle,           color: 'text-sky-400'     },
 ];
 
 interface Props {
@@ -23,8 +23,8 @@ interface Props {
 }
 
 /**
- * Bottom sheet (até 90% da altura) para enviar opinião — evita navegar pra
- * outra rota e mantém o usuário no menu. Reusa o mesmo backend do /opiniao.
+ * Bottom sheet (até 90% da altura) para enviar sugestão — evita navegar pra
+ * outra rota e mantém o usuário no menu.
  */
 export default function OpiniaoSheet({ open, onClose }: Props) {
   const { user } = useAuth();
@@ -113,15 +113,15 @@ export default function OpiniaoSheet({ open, onClose }: Props) {
       <DrawerContent className="max-h-[90dvh] bg-background">
         <DrawerHeader className="pt-2 pb-3 px-5 text-left border-b border-border">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center shrink-0">
-              <MessageSquareHeart className="w-5 h-5 text-primary" />
+            <div className="w-10 h-10 rounded-full bg-amber-400/15 border border-amber-400/30 flex items-center justify-center shrink-0">
+              <Lightbulb className="w-5 h-5 text-amber-400" />
             </div>
             <div className="flex-1 min-w-0">
               <DrawerTitle className="font-display text-lg font-bold text-foreground">
-                Sua opinião
+                Sua sugestão
               </DrawerTitle>
               <DrawerDescription className="font-body text-xs text-muted-foreground mt-0.5">
-                Conte o que achou, sugira, critique ou reporte um problema
+                Envie sua sugestão, nova ideia ou melhoria para o app
               </DrawerDescription>
             </div>
             <button
@@ -175,7 +175,7 @@ export default function OpiniaoSheet({ open, onClose }: Props) {
                 <textarea
                   value={comentario}
                   onChange={(e) => setComentario(e.target.value)}
-                  placeholder="Escreva aqui o que quer nos dizer..."
+                  placeholder="Escreva aqui a sua sugestão..."
                   maxLength={2000}
                   rows={6}
                   className="w-full resize-none rounded-2xl bg-secondary/60 border border-border px-4 py-3 pr-12 text-foreground placeholder:text-muted-foreground/60 font-body text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
@@ -228,7 +228,7 @@ export default function OpiniaoSheet({ open, onClose }: Props) {
                 className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-primary text-primary-foreground font-body font-semibold disabled:opacity-40 active:scale-[0.98] transition-transform"
               >
                 {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                {sending ? 'Enviando...' : 'Enviar opinião'}
+                {sending ? 'Enviando...' : 'Enviar sugestão'}
               </button>
             </div>
           </>

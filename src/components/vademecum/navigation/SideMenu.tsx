@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Info, LogOut, ChevronRight,
-  LifeBuoy, Lock, Gem, MessageSquareHeart,
+  LifeBuoy, Lock, Gem, Lightbulb,
   Pencil, Crown, Timer, Bird, Star,
 } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
@@ -112,7 +112,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
       return;
     }
 
-    if (id === 'opiniao') {
+    if (id === 'sugestao' || id === 'opiniao') {
       setOpiniaoOpen(true);
       return;
     }
@@ -225,7 +225,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
           />
         </GroupCard>
 
-        {/* Card com as funções solicitadas: Minha assinatura, Opinião, Avaliar aplicativo, Suporte, Sobre o app */}
+        {/* Card com as funções principais: Minha assinatura, Sugestão, Avaliar aplicativo, Suporte, Sobre o app */}
         <GroupCard>
           <MenuRow
             icon={Gem}
@@ -233,9 +233,10 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
             onClick={() => handleItemClick('planos')}
           />
           <MenuRow
-            icon={MessageSquareHeart}
-            label="Opinião"
-            onClick={() => handleItemClick('opiniao')}
+            icon={Lightbulb}
+            iconColor="text-amber-400"
+            label="Sugestão"
+            onClick={() => handleItemClick('sugestao')}
           />
           <MenuRow
             icon={Star}
@@ -298,8 +299,7 @@ const SideMenu = ({ open, onClose, onNavigate }: SideMenuProps) => {
         open={avaliarOpen}
         onClose={() => setAvaliarOpen(false)}
         onFeedback={() => {
-          navigate('/suporte');
-          onClose();
+          setOpiniaoOpen(true);
         }}
       />
     </>,
