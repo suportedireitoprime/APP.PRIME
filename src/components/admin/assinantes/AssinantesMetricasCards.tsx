@@ -32,20 +32,30 @@ export const AssinantesMetricasCards: React.FC<Props> = ({
     <div className="w-full space-y-3">
       {/* Barra superior de métricas */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs">
-        <span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase flex items-center gap-1.5">
-          <span>Métricas Financeiras & Contagem</span>
-          <span className="text-foreground">({metricas.totalAssinantes} assinantes no total)</span>
+        <span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase flex items-center gap-1.5 flex-wrap">
+          <span>Métricas Financeiras & Base Ativa</span>
+          <span className="text-foreground">
+            ({metricas.totalAtivos ?? metricas.totalAssinantes} ativos de {metricas.totalAssinantes} cadastrados)
+          </span>
         </span>
-        <div className="flex items-center gap-3 text-muted-foreground text-[11px]">
+        <div className="flex items-center gap-3 text-muted-foreground text-[11px] flex-wrap">
           <span className="flex items-center gap-1 text-emerald-400">
             <ShieldCheck className="w-3.5 h-3.5" />
             <strong>{metricas.totalCasadosAsaas}</strong> casados no Asaas
           </span>
           <span className="hidden md:inline text-muted-foreground/40">•</span>
-          <span className="hidden md:flex items-center gap-1">
+          <span className="flex items-center gap-1">
             <Receipt className="w-3.5 h-3.5 text-primary" />
             <strong>{metricas.totalFaturasPagas}</strong> faturas pagas
           </span>
+          {typeof metricas.totalCancelados === 'number' && metricas.totalCancelados > 0 && (
+            <>
+              <span className="hidden md:inline text-muted-foreground/40">•</span>
+              <span className="text-rose-400/90">
+                {metricas.totalCancelados} cancelados
+              </span>
+            </>
+          )}
         </div>
       </div>
 

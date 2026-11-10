@@ -95,4 +95,56 @@ describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
     expect(Number(taxa.toFixed(2))).toBe(3.49);
     expect(brl(taxa)).toBe('R$ 3,49');
   });
+
+  it('deve desconsiderar registros anônimos sem email e sem customer id', () => {
+    const isValido = (item: { email?: string | null; asaasCustomerId?: string | null; userId?: string | null }) => {
+      const emailNorm = item.email ? item.email.toLowerCase().trim() : '';
+      const emailOk = emailNorm && emailNorm !== 'sem e-mail' && emailNorm.includes('@');
+      return Boolean(emailOk || item.asaasCustomerId || item.userId);
+    };
+
+    // Item de telemetria sem identificação
+    expect(isValido({ email: null, asaasCustomerId: null, userId: null })).toBe(false);
+    expect(isValido({ email: 'Sem e-mail', asaasCustomerId: null, userId: null })).toBe(false);
+
+    // Item real identificado
+    expect(isValido({ email: 'usuario@gmail.com', asaasCustomerId: null, userId: '123' })).toBe(true);
+    expect(isValido({ email: null, asaasCustomerId: 'cus_001', userId: null })).toBe(true);
+  });
+
+  it('deve calcular métricas considerando estritamente assinantes ativos (emerald) no MRR e ARR', () => {
+    const mockSubscribers = [
+      { id: '1', modalidade: 'mensal', valor: 19.9, statusBadgeColor: 'emerald' },
+      { id: '2', modalidade: 'mensal', valor: 19.9, statusBadgeColor: 'sky' }, // Pendente NÃO soma MRR
+      { id: '3', modalidade: 'mensal', valor: 19.9, statusBadgeColor: 'rose' }, // Cancelado NÃO soma MRR
+      { id: '4', modalidade: 'anual', valor: 89.9, statusBadgeColor: 'emerald' },
+      { id: '5', modalidade: 'vitalicio', valor: 149.9, statusBadgeColor: 'emerald' },
+    ];
+
+    let totalAtivos = 0;
+    let totalPendentes = 0;
+    let totalCancelados = 0;
+    let mensaisMRR = 0;
+    let anuaisARR = 0;
+    let vitaliciosReceita = 0;
+
+    mockSubscribers.forEach((s) => {
+      if (s.statusBadgeColor === 'emerald') totalAtivos++;
+      else if (s.statusBadgeColor === 'sky') totalPendentes++;
+      else if (s.statusBadgeColor === 'rose') totalCancelados++;
+
+      if (s.statusBadgeColor !== 'emerald') return;
+
+      if (s.modalidade === 'mensal') mensaisMRR += s.valor;
+      if (s.modalidade === 'anual') anuaisARR += s.valor;
+      if (s.modalidade === 'vitalicio') vitaliciosReceita += s.valor;
+    });
+
+    expect(totalAtivos).toBe(3);
+    expect(totalPendentes).toBe(1);
+    expect(totalCancelados).toBe(1);
+    expect(mensaisMRR).toBe(19.9); // Apenas 1 ativo, os outros 2 ignorados
+    expect(anuaisARR).toBe(89.9);
+    expect(vitaliciosReceita).toBe(149.9);
+  });
 });

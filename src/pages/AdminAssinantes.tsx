@@ -162,13 +162,12 @@ export default function AdminAssinantes() {
   // Carregamento principal e conciliação unificada (Supabase + Asaas)
   const carregarAssinantes = useCallback(async () => {
     try {
-      // 1. Carregar tabelas do Supabase em paralelo
+      // 1. Carregar tabelas do Supabase em paralelo (SEM app_events de telemetria)
       const [
         asaasRes,
         legacyRes,
         playRes,
         appleRes,
-        eventsRes,
         profilesRes,
       ] = await Promise.all([
         supabase
@@ -187,12 +186,6 @@ export default function AdminAssinantes() {
           .from('apple_subscriptions')
           .select('*')
           .order('created_at', { ascending: false }),
-        supabase
-          .from('app_events')
-          .select('*')
-          .eq('event_name', 'purchase')
-          .order('created_at', { ascending: false })
-          .limit(300),
         supabase
           .from('profiles')
           .select('id, name, email, avatar_url, created_at, phone'),
@@ -299,7 +292,6 @@ export default function AdminAssinantes() {
       });
 
       const listaUnificada: SubscriberItem[] = [];
-      const seenKeys = new Set<string>();
       const seenAsaasSubIds = new Set<string>();
       const seenAsaasPaymentIds = new Set<string>();
 
@@ -345,15 +337,137 @@ export default function AdminAssinantes() {
         return result;
       };
 
+      // Localizador unificado de identidade para evitar duplicações de assinantes
+      const findExistingIndex = (item: {
+        userId?: string | null;
+        email?: string | null;
+        asaasCustomerId?: string | null;
+        asaasSubscriptionId?: string | null;
+      }): number => {
+        const emailNorm = item.email ? item.email.toLowerCase().trim() : null;
+        const isEmailValido = emailNorm && emailNorm !== 'sem e-mail' && emailNorm.includes('@');
+
+        return listaUnificada.findIndex((s) => {
+          if (item.userId && s.userId && s.userId === item.userId) return true;
+          if (isEmailValido && s.email && s.email.toLowerCase().trim() === emailNorm) return true;
+          if (
+            item.asaasSubscriptionId &&
+            s.asaasSubscriptionId &&
+            s.asaasSubscriptionId === item.asaasSubscriptionId
+          )
+            return true;
+          if (
+            item.asaasCustomerId &&
+            s.asaasCustomerId &&
+            s.asaasCustomerId === item.asaasCustomerId
+          )
+            return true;
+          return false;
+        });
+      };
+
+      // Inserção ou fusão inteligente de assinante (Single Source of Truth)
+      const mergeSubscriber = (newItem: SubscriberItem) => {
+        // Descartar registros sem e-mail e sem customer Asaas (falsos positivos anônimos)
+        const emailNorm = newItem.email ? newItem.email.toLowerCase().trim() : '';
+        const isEmailValido = emailNorm && emailNorm !== 'sem e-mail' && emailNorm.includes('@');
+        if (!isEmailValido && !newItem.asaasCustomerId && !newItem.userId) {
+          return; // Descarte de registros órfãos ou telemetria
+        }
+
+        const existingIdx = findExistingIndex({
+          userId: newItem.userId,
+          email: isEmailValido ? emailNorm : null,
+          asaasCustomerId: newItem.asaasCustomerId,
+          asaasSubscriptionId: newItem.asaasSubscriptionId,
+        });
+
+        if (existingIdx === -1) {
+          listaUnificada.push(newItem);
+          return;
+        }
+
+        const existing = listaUnificada[existingIdx];
+
+        // 1. Prioridade de Modalidade: Vitalício > Anual > Mensal
+        if (newItem.modalidade === 'vitalicio' || existing.modalidade === 'vitalicio') {
+          existing.modalidade = 'vitalicio';
+          existing.isAnualAntigoTransitado =
+            existing.isAnualAntigoTransitado || newItem.isAnualAntigoTransitado;
+        } else if (newItem.modalidade === 'anual') {
+          existing.modalidade = 'anual';
+        }
+
+        // 2. Mesclar Pagamentos do Asaas
+        const mergedPaymentsMap = new Map<string, AsaasPaymentCharge>();
+        (existing.livePayments || []).forEach((p) => mergedPaymentsMap.set(p.id, p));
+        (newItem.livePayments || []).forEach((p) => mergedPaymentsMap.set(p.id, p));
+        const mergedPayments = Array.from(mergedPaymentsMap.values());
+        existing.livePayments = mergedPayments.length > 0 ? mergedPayments : undefined;
+        existing.quantidadePagamentos = Math.max(
+          existing.quantidadePagamentos,
+          newItem.quantidadePagamentos,
+          mergedPayments.length
+        );
+
+        // Recalcular total acumulado confirmado
+        const totalConfirmado = mergedPayments
+          .filter((p) =>
+            ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes((p.status || '').toUpperCase())
+          )
+          .reduce((sum, p) => sum + (p.value || 0), 0);
+        if (totalConfirmado > 0) {
+          existing.totalPagoAcumulado = totalConfirmado;
+        }
+
+        // 3. Status: Se o novo item for Ativo ('emerald'), promover status
+        if (newItem.statusBadgeColor === 'emerald' && existing.statusBadgeColor !== 'emerald') {
+          existing.status = newItem.status;
+          existing.statusLabel = newItem.statusLabel;
+          existing.statusBadgeColor = newItem.statusBadgeColor;
+        }
+
+        // 4. Completar Dados Cadastrais se o item atual tiver dados mais ricos
+        if (
+          (!existing.name || existing.name === 'Assinante Asaas' || existing.name.includes('@')) &&
+          newItem.name &&
+          newItem.name !== 'Assinante Asaas'
+        ) {
+          existing.name = newItem.name;
+        }
+        if ((!existing.email || existing.email === 'Sem e-mail') && isEmailValido) {
+          existing.email = newItem.email;
+        }
+        if (!existing.phone && newItem.phone) existing.phone = newItem.phone;
+        if (!existing.cpfCnpj && newItem.cpfCnpj) existing.cpfCnpj = newItem.cpfCnpj;
+        if (!existing.avatarUrl && newItem.avatarUrl) existing.avatarUrl = newItem.avatarUrl;
+        if (!existing.userId && newItem.userId) existing.userId = newItem.userId;
+        if (!existing.asaasCustomerId && newItem.asaasCustomerId)
+          existing.asaasCustomerId = newItem.asaasCustomerId;
+        if (!existing.asaasSubscriptionId && newItem.asaasSubscriptionId)
+          existing.asaasSubscriptionId = newItem.asaasSubscriptionId;
+
+        // 5. Casamento: priorizar casamento total
+        if (
+          newItem.statusCasamento === 'casado_total' ||
+          (existing.statusCasamento === 'local_somente' && newItem.statusCasamento !== 'local_somente')
+        ) {
+          existing.statusCasamento = newItem.statusCasamento;
+          existing.statusCasamentoLabel = newItem.statusCasamentoLabel;
+        }
+
+        // 6. Atualizar valor líquido e taxa
+        if (newItem.valorLiquido !== null && existing.valorLiquido === null) {
+          existing.valorLiquido = newItem.valorLiquido;
+          existing.taxaAsaas = newItem.taxaAsaas;
+        }
+      };
+
       // A. Processar asaas_subscriptions (Supabase)
       (asaasRes.data || []).forEach((sub: any) => {
         const uid = sub.user_id;
         const prof = profileById.get(uid);
         const email = (prof?.email || '').toLowerCase().trim();
-        const key = sub.asaas_subscription_id || sub.id || uid;
-
-        if (seenKeys.has(key)) return;
-        seenKeys.add(key);
 
         // Conciliação ("case") com Asaas
         const liveSub =
@@ -429,7 +543,7 @@ export default function AdminAssinantes() {
 
         const dataAssinatura = sub.started_at || sub.created_at || liveSub?.dateCreated || latestPayment?.dateCreated;
 
-        listaUnificada.push({
+        mergeSubscriber({
           id: `asaas-${sub.id}`,
           userId: uid,
           name: liveCust?.name || prof?.name || email.split('@')[0] || 'Assinante Asaas',
@@ -468,9 +582,8 @@ export default function AdminAssinantes() {
       // B. Processar legacy_subscribers (Supabase)
       (legacyRes.data || []).forEach((leg: any) => {
         const email = (leg.email || '').toLowerCase().trim();
-        const key = leg.asaas_subscription_id || leg.id || email;
-        if (seenKeys.has(key)) return;
-        seenKeys.add(key);
+        // Descartar registros órfãos sem identificação
+        if (!email && !leg.claimed_user_id) return;
 
         const prof = leg.claimed_user_id
           ? profileById.get(leg.claimed_user_id)
@@ -542,7 +655,7 @@ export default function AdminAssinantes() {
         const statusNorm = normalizarStatus(liveSub?.status || leg.status);
         const forma = normalizarFormaPagamento(latestPayment?.billingType || liveSub?.billingType, leg.tipo, 'legacy');
 
-        listaUnificada.push({
+        mergeSubscriber({
           id: `leg-${leg.id}`,
           userId: leg.claimed_user_id || prof?.id || null,
           name: liveCust?.name || leg.nome || prof?.name || email.split('@')[0] || 'Assinante Migrado',
@@ -575,82 +688,14 @@ export default function AdminAssinantes() {
         });
       });
 
-      // C. Processar app_events (checkout no app)
-      (eventsRes.data || []).forEach((ev: any) => {
-        const email = (ev.email || '').toLowerCase().trim();
-        const uid = ev.user_id;
-        const meta = ev.metadata || {};
-        const key = meta.subscription_id || meta.asaas_payment_id || `ev-${ev.id || uid || email}`;
-
-        if (seenKeys.has(key)) return;
-        seenKeys.add(key);
-
-        const prof = uid ? profileById.get(uid) : profileByEmail.get(email);
-        const livePayments = gatherPayments(meta.subscription_id, meta.asaas_customer_id, email);
-        const latestPayment = livePayments[0];
-
-        const planoLower = (meta.plano || '').toLowerCase();
-        const isVitExplicit =
-          planoLower.includes('vitalicio') || planoLower.includes('vitalício') || planoLower.includes('vital');
-        const isAnualLegado =
-          !isVitExplicit && isAnualAntigo(meta.plano, ev.created_at, null);
-
-        let modalidade: SubscriberPlanType;
-        if (isVitExplicit || isAnualLegado) {
-          modalidade = 'vitalicio';
-        } else if (planoLower.includes('anual')) {
-          modalidade = 'anual';
-        } else {
-          modalidade = 'mensal';
-        }
-
-        const valor = typeof meta.value === 'number' && meta.value > 0
-          ? meta.value
-          : (latestPayment?.value ?? (modalidade === 'vitalicio' ? PRECO_VITALICIO : modalidade === 'anual' ? PRECO_ANUAL : PRECO_MENSAL));
-
-        const forma = normalizarFormaPagamento(meta.forma_pagamento || meta.billingType, meta.plano, 'checkout');
-        const statusNorm = normalizarStatus('ACTIVE');
-
-        listaUnificada.push({
-          id: `ev-${ev.id || key}`,
-          userId: uid || prof?.id || null,
-          name: prof?.name || email.split('@')[0] || 'Assinante Checkout',
-          email: email || 'Sem e-mail',
-          avatarUrl: prof?.avatar_url || null,
-          phone: prof?.phone || null,
-          modalidade,
-          planoOriginal: meta.plano || 'checkout',
-          isAnualAntigoTransitado: isAnualLegado,
-          valor,
-          valorLiquido: latestPayment?.netValue ?? null,
-          taxaAsaas: latestPayment ? Math.max(0, valor - (latestPayment.netValue ?? valor)) : null,
-          totalPagoAcumulado: valor,
-          quantidadePagamentos: Math.max(1, livePayments.length),
-          formaPagamento: forma,
-          statusCasamento: livePayments.length > 0 ? 'casado_total' : 'local_somente',
-          statusCasamentoLabel: livePayments.length > 0 ? '✓ Casado Checkout' : 'Checkout Local',
-          dataAssinatura: ev.created_at,
-          dataAssinaturaFormatada: formatarDataHora(ev.created_at),
-          dataExpiracao: null,
-          proximaCobrancaOuExpiracao: formatarExpiracao(modalidade, null),
-          status: 'ACTIVE',
-          statusLabel: statusNorm.label,
-          statusBadgeColor: statusNorm.badgeColor,
-          asaasCustomerId: meta.asaas_customer_id || null,
-          asaasSubscriptionId: meta.subscription_id || null,
-          origem: 'checkout',
-          livePayments: livePayments.length > 0 ? livePayments : undefined,
-        });
-      });
-
-      // D. Processar Play Store & App Store
+      // C. Processar Play Store & App Store
       (playRes.data || []).forEach((play: any) => {
         const uid = play.user_id;
         const prof = profileById.get(uid);
         const email = (prof?.email || '').toLowerCase().trim();
+        if (!uid && !email) return;
+
         const key = `play-${play.id || uid}`;
-        if (seenKeys.has(key)) return;
-        seenKeys.add(key);
 
         const prod = (play.product_id || '').toLowerCase();
         const isVit = prod.includes('vitalicio') || prod.includes('lifetime');
@@ -659,7 +704,7 @@ export default function AdminAssinantes() {
         const modalidade: SubscriberPlanType = (isVit || isAnualLegado) ? 'vitalicio' : isAnual ? 'anual' : 'mensal';
         const dataAssinatura = play.start_time || play.created_at;
 
-        listaUnificada.push({
+        mergeSubscriber({
           id: key,
           userId: uid,
           name: prof?.name || email.split('@')[0] || 'Google Play Store',
@@ -687,9 +732,9 @@ export default function AdminAssinantes() {
         const uid = app.user_id;
         const prof = profileById.get(uid);
         const email = (prof?.email || '').toLowerCase().trim();
+        if (!uid && !email) return;
+
         const key = `apple-${app.id || uid}`;
-        if (seenKeys.has(key)) return;
-        seenKeys.add(key);
 
         const prod = (app.product_id || '').toLowerCase();
         const isVit = prod.includes('vitalicio') || prod.includes('lifetime');
@@ -698,7 +743,7 @@ export default function AdminAssinantes() {
         const modalidade: SubscriberPlanType = (isVit || isAnualLegado) ? 'vitalicio' : isAnual ? 'anual' : 'mensal';
         const dataAssinatura = app.start_time || app.created_at;
 
-        listaUnificada.push({
+        mergeSubscriber({
           id: key,
           userId: uid,
           name: prof?.name || email.split('@')[0] || 'Apple App Store',
@@ -722,8 +767,7 @@ export default function AdminAssinantes() {
         });
       });
 
-      // E. CONCILIAÇÃO COMPLETA: Incluir assinaturas e cobranças do Asaas que não foram adicionadas
-      // 1. Assinaturas do Asaas não vistas
+      // D. CONCILIAÇÃO COMPLETA: Assinaturas em tempo real no Asaas
       asaasLiveSubs.forEach((s) => {
         if (!s.id || seenAsaasSubIds.has(s.id)) return;
         seenAsaasSubIds.add(s.id);
@@ -759,7 +803,7 @@ export default function AdminAssinantes() {
         const forma = normalizarFormaPagamento(s.billingType || latestPayment?.billingType, s.description, 'asaas');
         const statusNorm = normalizarStatus(s.status);
 
-        listaUnificada.push({
+        mergeSubscriber({
           id: `asaas-live-${s.id}`,
           userId: prof?.id || null,
           name: cust?.name || prof?.name || email.split('@')[0] || 'Assinante Asaas',
@@ -794,16 +838,46 @@ export default function AdminAssinantes() {
         });
       });
 
-      // 2. Pagamentos / Cobranças avulsas no Asaas (ex: Vitalício pago via PIX/Cartão avulso)
+      // E. Cobranças avulsas no Asaas (apenas pagamentos confirmados/recebidos, sem falsos positivos)
       asaasLivePayments.forEach((p) => {
         if (!p.id || seenAsaasPaymentIds.has(p.id)) return;
-        // Ignora cobranças zeradas
+        // Aceita apenas cobranças pagas com valor positivo
         if (!p.value || p.value <= 0) return;
+        const statusUpper = (p.status || '').toUpperCase();
+        const isConfirmado = ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes(statusUpper);
+        if (!isConfirmado) return;
+
         seenAsaasPaymentIds.add(p.id);
 
         const cust = p.customer ? asaasCustomerById.get(p.customer) : null;
         const email = (cust?.email || '').toLowerCase().trim();
         const prof = email ? profileByEmail.get(email) : null;
+
+        // Se este pagamento já puder ser anexado a um assinante existente, anexa sem criar card duplicado
+        const existingIdx = findExistingIndex({
+          userId: prof?.id,
+          email: email || null,
+          asaasCustomerId: p.customer || null,
+          asaasSubscriptionId: p.subscription || null,
+        });
+
+        if (existingIdx !== -1) {
+          const existing = listaUnificada[existingIdx];
+          const payments = existing.livePayments || [];
+          if (!payments.some((x) => x.id === p.id)) {
+            payments.push(p);
+            existing.livePayments = payments;
+            existing.quantidadePagamentos = payments.length;
+            const totalConfirmado = payments
+              .filter((x) => ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes((x.status || '').toUpperCase()))
+              .reduce((sum, x) => sum + (x.value || 0), 0);
+            existing.totalPagoAcumulado = totalConfirmado;
+          }
+          return;
+        }
+
+        // Criar novo assinante apenas se for um pagador identificado no Asaas
+        if (!cust && !email) return;
 
         const desc = (p.description || '').toLowerCase();
         const isVitExplicit = desc.includes('vitalicio') || desc.includes('vitalício') || p.value >= 140;
@@ -826,7 +900,7 @@ export default function AdminAssinantes() {
         const statusNorm = normalizarStatus(p.status);
         const dataAssinatura = p.paymentDate || p.clientPaymentDate || p.dateCreated;
 
-        listaUnificada.push({
+        mergeSubscriber({
           id: `asaas-pay-${p.id}`,
           userId: prof?.id || null,
           name: cust?.name || prof?.name || email.split('@')[0] || 'Pagador Asaas',
@@ -882,8 +956,12 @@ export default function AdminAssinantes() {
     toast.success('Assinantes e pagamentos atualizados com sucesso!');
   };
 
-  // Cálculo de Métricas Financeiras
+  // Cálculo de Métricas Financeiras Rigorosas (Base Ativa Real vs Cadastrados)
   const metricas: AssinantesMetricas = useMemo(() => {
+    let totalAtivos = 0;
+    let totalPendentes = 0;
+    let totalInadimplentes = 0;
+    let totalCancelados = 0;
     let mensaisCount = 0;
     let mensaisMRR = 0;
     let anuaisCount = 0;
@@ -895,24 +973,45 @@ export default function AdminAssinantes() {
     let totalFaturasPagas = 0;
     let totalCasadosAsaas = 0;
 
-    subscribers.forEach((s) => {
-      const isAtiva = s.statusBadgeColor === 'emerald' || s.statusBadgeColor === 'sky' || s.statusBadgeColor === 'amber';
+    const countedPaymentIds = new Set<string>();
 
-      if (s.statusCasamento === 'casado_total' || s.statusCasamento === 'casado_cliente' || s.statusCasamento === 'casado_email') {
+    subscribers.forEach((s) => {
+      const isAtiva = s.statusBadgeColor === 'emerald';
+      const isPendente = s.statusBadgeColor === 'sky';
+      const isInadimplente = s.statusBadgeColor === 'amber';
+      const isCancelada = s.statusBadgeColor === 'rose';
+
+      if (isAtiva) totalAtivos++;
+      else if (isPendente) totalPendentes++;
+      else if (isInadimplente) totalInadimplentes++;
+      else if (isCancelada) totalCancelados++;
+
+      if (
+        s.statusCasamento === 'casado_total' ||
+        s.statusCasamento === 'casado_cliente' ||
+        s.statusCasamento === 'casado_email'
+      ) {
         totalCasadosAsaas++;
       }
 
+      // Somar faturas reais confirmadas (deduplicando por ID da fatura)
       if (s.livePayments && s.livePayments.length > 0) {
         s.livePayments.forEach((p) => {
-          const isPago = ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes((p.status || '').toUpperCase());
+          if (!p.id || countedPaymentIds.has(p.id)) return;
+          const isPago = ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes(
+            (p.status || '').toUpperCase()
+          );
           if (isPago) {
+            countedPaymentIds.add(p.id);
             totalFaturasPagas++;
-            totalLiquidoRecebido += (p.netValue ?? p.value ?? 0);
-            totalTaxasAsaas += Math.max(0, (p.value || 0) - (p.netValue ?? p.value ?? 0));
+            const net = p.netValue ?? p.value ?? 0;
+            totalLiquidoRecebido += net;
+            totalTaxasAsaas += Math.max(0, (p.value || 0) - net);
           }
         });
       }
 
+      // IMPORTANTE: Apenas assinantes ATIVOS contam para MRR / ARR / Receita de Base Ativa!
       if (!isAtiva) return;
 
       if (s.modalidade === 'mensal') {
@@ -931,6 +1030,10 @@ export default function AdminAssinantes() {
 
     return {
       totalAssinantes: subscribers.length,
+      totalAtivos,
+      totalPendentes,
+      totalInadimplentes,
+      totalCancelados,
       mensaisCount,
       mensaisMRR,
       anuaisCount,
@@ -1286,6 +1389,74 @@ export default function AdminAssinantes() {
                 <span className="hidden md:inline">CSV</span>
               </Button>
             </div>
+          </div>
+
+          {/* Chips de Filtro Rápido de Status da Aba Atual */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+            <button
+              type="button"
+              onClick={() => setStatusFilter('todos')}
+              className={cn(
+                'px-3 py-1.5 rounded-lg font-medium transition-all shrink-0 select-none',
+                statusFilter === 'todos'
+                  ? 'bg-foreground text-background font-bold shadow-sm'
+                  : 'bg-secondary/40 text-muted-foreground hover:bg-secondary/70 hover:text-foreground'
+              )}
+            >
+              Todos ({subscribers.filter((s) => s.modalidade === activeTab).length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('ativos')}
+              className={cn(
+                'px-3 py-1.5 rounded-lg font-medium transition-all shrink-0 flex items-center gap-1.5 select-none',
+                statusFilter === 'ativos'
+                  ? 'bg-emerald-500 text-white font-bold shadow-sm shadow-emerald-500/20'
+                  : 'bg-secondary/40 text-emerald-400 hover:bg-secondary/70'
+              )}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              Ativos ({subscribers.filter((s) => s.modalidade === activeTab && s.statusBadgeColor === 'emerald').length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('pendentes')}
+              className={cn(
+                'px-3 py-1.5 rounded-lg font-medium transition-all shrink-0 flex items-center gap-1.5 select-none',
+                statusFilter === 'pendentes'
+                  ? 'bg-sky-500 text-white font-bold shadow-sm shadow-sky-500/20'
+                  : 'bg-secondary/40 text-sky-400 hover:bg-secondary/70'
+              )}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+              Pendentes ({subscribers.filter((s) => s.modalidade === activeTab && s.statusBadgeColor === 'sky').length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('atrasados')}
+              className={cn(
+                'px-3 py-1.5 rounded-lg font-medium transition-all shrink-0 flex items-center gap-1.5 select-none',
+                statusFilter === 'atrasados'
+                  ? 'bg-amber-500 text-black font-bold shadow-sm shadow-amber-500/20'
+                  : 'bg-secondary/40 text-amber-400 hover:bg-secondary/70'
+              )}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              Atrasados ({subscribers.filter((s) => s.modalidade === activeTab && s.statusBadgeColor === 'amber').length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setStatusFilter('cancelados')}
+              className={cn(
+                'px-3 py-1.5 rounded-lg font-medium transition-all shrink-0 flex items-center gap-1.5 select-none',
+                statusFilter === 'cancelados'
+                  ? 'bg-rose-500 text-white font-bold shadow-sm shadow-rose-500/20'
+                  : 'bg-secondary/40 text-rose-400 hover:bg-secondary/70'
+              )}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+              Cancelados ({subscribers.filter((s) => s.modalidade === activeTab && s.statusBadgeColor === 'rose').length})
+            </button>
           </div>
 
           {/* Título da Seção Atual e Quantidade */}

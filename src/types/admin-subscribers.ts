@@ -97,6 +97,10 @@ export interface SubscriberItem {
 
 export interface AssinantesMetricas {
   totalAssinantes: number;
+  totalAtivos: number; // quantidade de assinantes com pagamento ativo confirmado
+  totalPendentes: number; // quantidade com cobrança pendente (aguardando pagamento)
+  totalInadimplentes: number; // quantidade com cobrança vencida/atrasada
+  totalCancelados: number; // quantidade cancelada ou inativa
   mensaisCount: number;
   mensaisMRR: number; // R$
   anuaisCount: number;
