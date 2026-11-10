@@ -141,7 +141,7 @@ serve(async (req) => {
           await supabase.functions.invoke('send-push', {
             body: {
               title: '🔒 Teste de 3 dias encerrado',
-              body: 'Sua degustação gratuita acabou. Desbloqueie todo o acervo e IA sem limites a partir de R$ 19,90/mês ou R$ 149,90 vitalício!',
+              body: 'Sua degustação gratuita acabou. Desbloqueie todo o acervo e IA sem limites a partir de R$ 29,90/mês ou R$ 149,90 vitalício!',
               url: '/assinatura',
               audience: { user_ids: [u.id] },
               mirror_canal: false,

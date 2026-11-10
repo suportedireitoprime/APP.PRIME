@@ -1,5 +1,5 @@
 // Fonte única dos preços de assinatura.
-export const PRECO_MENSAL = 19.9;
+export const PRECO_MENSAL = 29.9;
 export const PRECO_ANUAL = 89.9;
 export const PRECO_VITALICIO = 149.9;
 export const MAX_PARCELAS_ANUAL = 6;

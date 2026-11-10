@@ -2,10 +2,10 @@ import { describe, it, expect } from 'vitest';
 import { precoBase, parcelamento, PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO } from './precos';
 
 describe('preços de assinatura', () => {
-  it('mensal custa 19,90 no cartão e no Pix', () => {
-    expect(precoBase('mensal')).toBe(19.9);
-    expect(precoBase('mensal_pix')).toBe(19.9);
-    expect(PRECO_MENSAL).toBe(19.9);
+  it('mensal custa 29,90 no cartão e no Pix', () => {
+    expect(precoBase('mensal')).toBe(29.9);
+    expect(precoBase('mensal_pix')).toBe(29.9);
+    expect(PRECO_MENSAL).toBe(29.9);
   });
 
   it('anual custa 89,90 no cartão e no Pix', () => {

@@ -39,8 +39,8 @@ function formatarDataHora(iso?: string | null): string {
 describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
   it('deve classificar plano mensal com preço correto', () => {
     const plano = 'mensal';
-    expect(PRECO_MENSAL).toBe(19.9);
-    expect(brl(PRECO_MENSAL)).toBe('R$ 19,90');
+    expect(PRECO_MENSAL).toBe(29.9);
+    expect(brl(PRECO_MENSAL)).toBe('R$ 29,90');
     expect(isAnualAntigo(plano, '2026-11-10T12:00:00Z', null)).toBe(false);
   });
 
@@ -114,9 +114,9 @@ describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
 
   it('deve calcular métricas considerando estritamente assinantes ativos (emerald) no MRR e ARR', () => {
     const mockSubscribers = [
-      { id: '1', modalidade: 'mensal', valor: 19.9, statusBadgeColor: 'emerald' },
-      { id: '2', modalidade: 'mensal', valor: 19.9, statusBadgeColor: 'sky' }, // Pendente NÃO soma MRR
-      { id: '3', modalidade: 'mensal', valor: 19.9, statusBadgeColor: 'rose' }, // Cancelado NÃO soma MRR
+      { id: '1', modalidade: 'mensal', valor: 29.9, statusBadgeColor: 'emerald' },
+      { id: '2', modalidade: 'mensal', valor: 29.9, statusBadgeColor: 'sky' }, // Pendente NÃO soma MRR
+      { id: '3', modalidade: 'mensal', valor: 29.9, statusBadgeColor: 'rose' }, // Cancelado NÃO soma MRR
       { id: '4', modalidade: 'anual', valor: 89.9, statusBadgeColor: 'emerald' },
       { id: '5', modalidade: 'vitalicio', valor: 149.9, statusBadgeColor: 'emerald' },
     ];
@@ -143,8 +143,34 @@ describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
     expect(totalAtivos).toBe(3);
     expect(totalPendentes).toBe(1);
     expect(totalCancelados).toBe(1);
-    expect(mensaisMRR).toBe(19.9); // Apenas 1 ativo, os outros 2 ignorados
+    expect(mensaisMRR).toBe(29.9); // Apenas 1 ativo, os outros 2 ignorados
     expect(anuaisARR).toBe(89.9);
     expect(vitaliciosReceita).toBe(149.9);
+  });
+
+  it('deve garantir que checkout com PIX PENDENTE não concede isPremium nem coroa de assinante', () => {
+    const isStatusAssinaturaAtiva = (st?: string | null) => {
+      const s = (st || '').toUpperCase().trim();
+      return ['ACTIVE', 'ACTIVE_GRACE', 'CONFIRMED', 'RECEIVED', 'PAGA'].includes(s);
+    };
+
+    // Cenário Walter: gerou PIX, status PENDING, is_premium false no perfil
+    const walterProfile = { is_premium: false };
+    const walterSub = { planTag: { plano: 'Mensal', status: 'PENDING' } };
+
+    const isSubAtiva = isStatusAssinaturaAtiva(walterSub.planTag.status);
+    const isUserPrem = Boolean(walterProfile.is_premium || isSubAtiva);
+
+    expect(isSubAtiva).toBe(false);
+    expect(isUserPrem).toBe(false); // NÃO deve ter coroa nem ser tratado como assinante ativo
+
+    // Cenário Anderson Cezar: CC aprovado, status ACTIVE
+    const andersonProfile = { is_premium: false };
+    const andersonSub = { planTag: { plano: 'Mensal', status: 'ACTIVE' } };
+    const isAndersonSubAtiva = isStatusAssinaturaAtiva(andersonSub.planTag.status);
+    const isAndersonUserPrem = Boolean(andersonProfile.is_premium || isAndersonSubAtiva);
+
+    expect(isAndersonSubAtiva).toBe(true);
+    expect(isAndersonUserPrem).toBe(true);
   });
 });

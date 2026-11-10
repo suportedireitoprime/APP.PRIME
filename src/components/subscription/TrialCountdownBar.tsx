@@ -4,6 +4,7 @@ import { Crown, Sparkles, Lock, ArrowRight, Flame } from 'lucide-react';
 import { useSubscription, calcTrial } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
 import { haptic } from '@/lib/nativeHaptics';
+import { brl, PRECO_MENSAL } from '@/lib/precos';
 
 export const TrialCountdownBar = memo(function TrialCountdownBar() {
   const { user } = useAuth();
@@ -171,7 +172,7 @@ export const TrialCountdownBar = memo(function TrialCountdownBar() {
                       ? 'Vitalício R$ 149,90 ou Anual R$ 89,90 com 62% OFF'
                       : inTrial
                         ? 'Acesso total liberado · Garanta até 62% OFF'
-                        : 'Assine a partir de R$ 19,90/mês para continuar'}
+                        : `Assine a partir de ${brl(PRECO_MENSAL)}/mês para continuar`}
                   </p>
                 </div>
               </div>
