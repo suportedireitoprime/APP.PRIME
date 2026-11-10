@@ -60,6 +60,7 @@ import { AdminHojeCards } from "@/components/admin/AdminHojeCards";
 
 // Prefetch map
 const PREFETCH: Record<string, () => Promise<unknown>> = {
+  "/admin-assinantes": () => import("./AdminAssinantes"),
   "/admin-aulas-interativas": () => import("./AdminAulasInterativas"),
   "/admin-push": () => import("./AdminPush"),
   "/admin-horus": () => import("./AdminHorus"),
@@ -139,6 +140,22 @@ type Category = {
 };
 
 const CATEGORIES: Category[] = [
+  {
+    id: "assinantes",
+    title: "Gestão de Assinantes",
+    desc: "Assinantes Mensais, Anuais e Vitalícios com histórico de pagamentos Asaas",
+    icon: Crown,
+    route: "/admin-assinantes",
+    items: [
+      {
+        id: "admin-assinantes",
+        label: "Gestão de Assinantes",
+        icon: Crown,
+        desc: "Mensais, Anuais, Vitalícios, histórico Asaas e pagamentos detalhados",
+        route: "/admin-assinantes",
+      },
+    ],
+  },
   {
     id: "aulas-interativas-cat",
     title: "Aulas Interativas",

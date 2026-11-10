@@ -24,6 +24,19 @@ describe('isAnualAntigo (Regra de corte para vitalício em 10/11/2026)', () => {
     expect(res).toBe(false);
   });
 
+  it('deve retornar false para compra realizada hoje mesmo com expiração inferior a 365 dias (ex: 2027-11-09)', () => {
+    // Edge case: iniciado hoje em 10/11/2026 com expiração antes de 2027-11-10
+    const res = isAnualAntigo('anual', '2026-11-10T08:00:00.000Z', '2027-11-09T08:00:00.000Z');
+    expect(res).toBe(false);
+  });
+
+  it('deve respeitar created_at quando started_at for nulo', () => {
+    // Antigo via created_at
+    expect(isAnualAntigo('anual', null, null, '2026-08-01T00:00:00.000Z')).toBe(true);
+    // Novo via created_at
+    expect(isAnualAntigo('anual', null, '2027-11-09T00:00:00.000Z', '2026-11-10T09:00:00.000Z')).toBe(false);
+  });
+
   it('deve retornar false para planos mensais, independentemente da data', () => {
     expect(isAnualAntigo('mensal', '2026-10-15T00:00:00Z', '2026-11-15T00:00:00Z')).toBe(false);
     expect(isAnualAntigo('prime_premium_mensal', '2026-11-10T00:00:00Z', '2026-12-10T00:00:00Z')).toBe(false);
