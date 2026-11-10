@@ -173,4 +173,113 @@ describe('Admin Assinantes - Regras de Classificação e Finanças', () => {
     expect(isAndersonSubAtiva).toBe(true);
     expect(isAndersonUserPrem).toBe(true);
   });
+
+  it('deve classificar Walter como ASSINOU (1º mês) e NÃO como Renovou mesmo com perfil anterior', () => {
+    const startIso = '2026-11-10T00:00:00.000Z';
+    const endIso = '2026-11-10T23:59:59.999Z';
+
+    const inPeriod = (dateStr?: string | null) => {
+      if (!dateStr) return false;
+      const t = new Date(dateStr).getTime();
+      return !isNaN(t) && t >= new Date(startIso).getTime() && t <= new Date(endIso).getTime();
+    };
+
+    // Walter: perfil criado dias antes, mas assinatura criada HOJE às 19:25
+    const walterSub = {
+      user_id: 'walter-uid',
+      created_at: '2026-11-10T19:25:00.000Z',
+      started_at: '2026-11-10T19:25:00.000Z',
+      plano: 'mensal',
+      status: 'ACTIVE'
+    };
+
+    const createdInPeriod = inPeriod(walterSub.created_at);
+    const startedInPeriod = inPeriod(walterSub.started_at);
+    const createdTime = new Date(walterSub.created_at).getTime();
+    const startedTime = new Date(walterSub.started_at).getTime();
+    const isCriadaAntes = createdTime < new Date(startIso).getTime();
+    const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
+
+    const isAssinou = createdInPeriod || (!isCriadaAntes && startedInPeriod);
+    const isRenovou = walterSub.plano === 'mensal' && startedInPeriod && isCriadaAntes && isSegundoMesOuMais;
+
+    expect(isAssinou).toBe(true);
+    expect(isRenovou).toBe(false);
+  });
+
+  it('deve classificar renovação real (2º mês em diante) em RENOVOU', () => {
+    const startIso = '2026-11-10T00:00:00.000Z';
+    const endIso = '2026-11-10T23:59:59.999Z';
+
+    const inPeriod = (dateStr?: string | null) => {
+      if (!dateStr) return false;
+      const t = new Date(dateStr).getTime();
+      return !isNaN(t) && t >= new Date(startIso).getTime() && t <= new Date(endIso).getTime();
+    };
+
+    // Usuário antigo: assinatura criada há 31 dias (em outubro), novo ciclo cobrança HOJE
+    const renewSub = {
+      user_id: 'maria-uid',
+      created_at: '2026-10-10T12:00:00.000Z',
+      started_at: '2026-11-10T12:00:00.000Z',
+      plano: 'mensal',
+      status: 'ACTIVE'
+    };
+
+    const createdInPeriod = inPeriod(renewSub.created_at);
+    const startedInPeriod = inPeriod(renewSub.started_at);
+    const createdTime = new Date(renewSub.created_at).getTime();
+    const startedTime = new Date(renewSub.started_at).getTime();
+    const isCriadaAntes = createdTime < new Date(startIso).getTime();
+    const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
+
+    const isAssinou = createdInPeriod || (!isCriadaAntes && startedInPeriod);
+    const isRenovou = renewSub.plano === 'mensal' && startedInPeriod && isCriadaAntes && isSegundoMesOuMais;
+
+    expect(isAssinou).toBe(false);
+    expect(isRenovou).toBe(true);
+  });
+
+  it('deve identificar exatamente qual PIX foi pago quando o usuário gera 3 PIX', () => {
+    const logs = [
+      { event_name: 'checkout_pix_gerado', created_at: '2026-11-10T14:10:00Z', payment_id: 'pay_3' },
+      { event_name: 'checkout_pix_gerado', created_at: '2026-11-10T14:05:00Z', payment_id: 'pay_2' },
+      { event_name: 'checkout_pix_gerado', created_at: '2026-11-10T14:00:00Z', payment_id: 'pay_1' },
+      { event_name: 'checkout_pix_pago', created_at: '2026-11-10T14:11:00Z', payment_id: 'pay_3' },
+    ];
+
+    const paidPixEvent = logs.find(l => l.event_name === 'checkout_pix_pago');
+    const matchedPixIdx = logs.findIndex(l => l.event_name === 'checkout_pix_gerado' && l.payment_id === paidPixEvent?.payment_id);
+
+    const statuses = logs.map((l, idx) => {
+      if (l.event_name === 'checkout_pix_gerado') {
+        return idx === matchedPixIdx ? 'pago' : 'nao_pago';
+      }
+      return null;
+    });
+
+    expect(statuses[0]).toBe('pago'); // pay_3 (14:10) foi o pago
+    expect(statuses[1]).toBe('nao_pago'); // pay_2 (14:05) não foi pago
+    expect(statuses[2]).toBe('nao_pago'); // pay_1 (14:00) não foi pago
+  });
+
+  it('deve marcar PIX gerados como NÃO PAGO quando o usuário pagar com Cartão de Crédito', () => {
+    const logs = [
+      { event_name: 'checkout_cc_aprovado', created_at: '2026-11-10T19:25:00Z' },
+      { event_name: 'checkout_cc_enviado', created_at: '2026-11-10T19:25:00Z' },
+      { event_name: 'checkout_pix_gerado', created_at: '2026-11-10T19:19:00Z' },
+      { event_name: 'checkout_pix_gerado', created_at: '2026-11-10T13:33:00Z' },
+    ];
+
+    const hasCcAprovado = logs.some(l => l.event_name === 'checkout_cc_aprovado');
+    const statuses = logs.map(l => {
+      if (l.event_name === 'checkout_pix_gerado') {
+        return hasCcAprovado ? 'nao_pago' : 'pendente';
+      }
+      return null;
+    });
+
+    expect(statuses[2]).toBe('nao_pago'); // PIX 19:19 não foi pago (abandonado pelo cartão)
+    expect(statuses[3]).toBe('nao_pago'); // PIX 13:33 não foi pago (abandonado pelo cartão)
+  });
 });

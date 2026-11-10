@@ -297,7 +297,7 @@ Deno.serve(async (req) => {
         }).eq('id', finalUserId);
 
         // Registra evento de compra no app_events para histórico e métricas
-        await admin.from('app_events').insert({
+        const purchaseEvents: any[] = [{
           user_id: finalUserId,
           email: payment?.customerEmail ?? null,
           event_name: 'purchase',
@@ -309,7 +309,25 @@ Deno.serve(async (req) => {
             payment_id: payment.id,
             billingType: payment.billingType
           }
-        });
+        }];
+
+        if (payment.billingType === 'PIX') {
+          purchaseEvents.push({
+            user_id: finalUserId,
+            email: payment?.customerEmail ?? null,
+            event_name: 'checkout_pix_pago',
+            metadata: {
+              plano: effectivePlan,
+              value: payment.value || 0,
+              currency: 'BRL',
+              source: 'asaas',
+              payment_id: payment.id,
+              billingType: 'PIX'
+            }
+          });
+        }
+
+        await admin.from('app_events').insert(purchaseEvents);
       } else if (cortarAgora) {
         await admin.from('profiles').update({
           is_premium: false,

@@ -1,224 +1,150 @@
 import React, { memo } from 'react';
-import { Layers, Play, Crown } from 'lucide-react';
+import { Layers, ArrowRight, Crown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
   const isLeft = i % 2 === 0;
   const tituloLimpo = (item.titulo || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
+  const primaryColor = palette?.primary || '#2563eb';
 
   return (
-    <div className="w-full flex flex-col">
-      {/* Linha do Card em Zigue-Zague com Card e Título no Lado Oposto Conectado por Linha Fina */}
+    <div className="w-full flex flex-col items-center">
+      {/* ── Nó da Trilha: Deck com Título Abaixo (Alinhado em Zigue-Zague) ── */}
       <div
         className={cn(
-          "relative z-10 flex w-full items-center justify-between gap-2 xs:gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
-          isLeft ? "flex-row" : "flex-row-reverse"
+          "w-full max-w-[520px] flex",
+          isLeft ? "justify-start pl-2 sm:pl-6" : "justify-end pr-2 sm:pr-6"
         )}
       >
-        {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK QUADRADO ── */}
         <div
           onClick={item.onClick}
           onPointerEnter={item.onPrefetch}
           onTouchStart={item.onPrefetch}
-          className="relative shrink-0 w-[120px] h-[120px] xs:w-[135px] xs:h-[135px] sm:w-[160px] sm:h-[160px] md:w-[180px] md:h-[180px] aspect-square cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
+          className="flex flex-col items-center text-center w-[160px] xs:w-[175px] sm:w-[200px] cursor-pointer select-none group focus-visible:outline-none"
         >
-          {/* ── CARTA 1 (Traseira/Fundo - Menor e mais escura) ── */}
-          <div
-            className={cn(
-              "absolute inset-0 rounded-2xl border border-white/10 opacity-30 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden aspect-square",
-              isLeft
-                ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
-                : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
-            )}
-            style={{
-              background: 'linear-gradient(145deg, #18191c 0%, #101114 100%)',
-              boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65)`,
-            }}
-          >
-            <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
-              <div
-                className="w-8 h-8 rounded-full border border-white/15 flex items-center justify-center opacity-30"
-                style={{ borderColor: palette.primary }}
-              >
-                <Layers className="w-3.5 h-3.5 text-white/60" />
+          {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK AZUL ELEGANTE ── */}
+          <div className="relative w-[130px] h-[130px] xs:w-[145px] xs:h-[145px] sm:w-[165px] sm:h-[165px] aspect-square transition-transform duration-300 group-hover:-translate-y-2 group-active:scale-[0.96]">
+            {/* CARTA 1 (Traseira - Azul profundo com leve rotação) */}
+            <div
+              className={cn(
+                "absolute inset-0 rounded-2xl border border-blue-400/20 opacity-40 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden aspect-square",
+                isLeft
+                  ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-4 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5"
+                  : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-4 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5"
+              )}
+              style={{
+                background: 'linear-gradient(145deg, #1e3a8a 0%, #0f172a 100%)',
+                boxShadow: '0 8px 20px -4px rgba(37,99,235,0.3)',
+              }}
+            >
+              <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center">
+                <Layers className="w-4 h-4 text-blue-300/40" />
               </div>
             </div>
-          </div>
 
-          {/* ── CARTA 2 (Meio - Tamanho intermediário) ── */}
-          <div
-            className={cn(
-              "absolute inset-0 rounded-2xl border border-white/15 opacity-60 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden aspect-square",
-              isLeft
-                ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
-                : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
-            )}
-            style={{
-              background: 'linear-gradient(145deg, #202226 0%, #141518 100%)',
-              boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65)`,
-            }}
-          >
-            <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
-              <div
-                className="w-8 h-8 rounded-full border border-white/15 flex items-center justify-center opacity-30"
-                style={{ borderColor: palette.primary }}
-              >
-                <Layers className="w-3.5 h-3.5 text-white/60" />
+            {/* CARTA 2 (Meio - Azul intermediário) */}
+            <div
+              className={cn(
+                "absolute inset-0 rounded-2xl border border-blue-400/30 opacity-70 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden aspect-square",
+                isLeft
+                  ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-2.5"
+                  : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-2.5"
+              )}
+              style={{
+                background: 'linear-gradient(145deg, #1d4ed8 0%, #0f172a 100%)',
+                boxShadow: '0 10px 24px -5px rgba(37,99,235,0.4)',
+              }}
+            >
+              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center">
+                <Layers className="w-4 h-4 text-blue-200/50" />
               </div>
             </div>
-          </div>
 
-          {/* ── CARTA 3 (Principal Frontal - Centro Estável e Quadrado) ── */}
-          <div
-            className={cn(
-              "relative w-full h-full p-2.5 sm:p-3 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-zinc-700/80 hover:border-amber-400/60 transition-all duration-300 origin-bottom aspect-square",
-              isLeft
-                ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-                : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-            )}
-            style={{
-              background: 'linear-gradient(145deg, #24262b 0%, #131417 100%)',
-              boxShadow: palette.shadow || '0 12px 30px rgba(0,0,0,0.7)',
-            }}
-          >
-            {/* Brilho reflexivo sutil no hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
+            {/* CARTA 3 (Principal Frontal - Azul Vibrante com Borda Iluminada) */}
+            <div
+              className="relative w-full h-full p-3 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-blue-400/50 group-hover:border-blue-300 transition-all duration-300 origin-bottom aspect-square shadow-xl group-hover:shadow-[0_16px_36px_rgba(37,99,235,0.45)]"
+              style={{
+                background: 'linear-gradient(145deg, #1e40af 0%, #1e3a8a 45%, #0f172a 100%)',
+              }}
+            >
+              {/* Brilho reflexivo no hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
 
-            {/* Topo da Carta: Deck e Ícone Layers */}
-            <div className="flex items-center justify-between z-[2] w-full px-0.5">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                {item.badgeLabel}
-              </span>
-              <Layers className="w-3.5 h-3.5 text-zinc-500" />
-            </div>
+              {/* Topo da Carta: Deck e Ícone Layers */}
+              <div className="flex items-center justify-between z-[2] w-full px-0.5">
+                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-blue-200 drop-shadow-sm">
+                  {item.badgeLabel}
+                </span>
+                <Layers className="w-3.5 h-3.5 text-blue-200/70" />
+              </div>
 
-            {/* Centro da Carta: Botão de Play ou Coroa de Bloqueio */}
-            <div className="my-auto py-1 z-[2] w-full flex items-center justify-center">
-              <div className="relative flex items-center justify-center">
-                <div
-                  className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
-                  style={{ backgroundColor: `${palette.primary}50` }}
-                />
+              {/* Centro da Carta: Seta Normal (ArrowRight) ou Coroa de Bloqueio */}
+              <div className="my-auto py-1 z-[2] w-full flex items-center justify-center">
+                <div className="relative flex items-center justify-center">
+                  <div
+                    className="absolute inset-0 rounded-full blur-md opacity-40 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none bg-blue-500"
+                  />
 
-                <div
-                  className={cn(
-                    "relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full backdrop-blur-md border flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110",
-                    item.isLocked
-                      ? "bg-black/75 border-amber-400/50 text-amber-400 group-hover:border-amber-300 group-hover:shadow-[0_0_20px_rgba(245,158,11,0.5)]"
-                      : "bg-black/60 border-white/20 text-white/95 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_20px_rgba(245,158,11,0.5)]"
-                  )}
-                >
-                  {item.isLocked ? (
-                    <Crown className="w-4 h-4 xs:w-5 xs:h-5 fill-amber-400/20 text-amber-400" />
-                  ) : (
-                    <Play className="w-4 h-4 xs:w-4.5 xs:h-4.5 fill-current translate-x-0.5 transition-colors" />
-                  )}
+                  <div
+                    className={cn(
+                      "relative w-11 h-11 xs:w-12 xs:h-12 sm:w-13 sm:h-13 rounded-full backdrop-blur-md border flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110",
+                      item.isLocked
+                        ? "bg-black/75 border-amber-400/60 text-amber-400 group-hover:border-amber-300 group-hover:shadow-[0_0_20px_rgba(245,158,11,0.5)]"
+                        : "bg-blue-600/90 border-blue-300/50 text-white group-hover:bg-blue-500 group-hover:border-white group-hover:shadow-[0_0_20px_rgba(37,99,235,0.6)]"
+                    )}
+                  >
+                    {item.isLocked ? (
+                      <Crown className="w-5 h-5 fill-amber-400/20 text-amber-400" />
+                    ) : (
+                      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:translate-x-0.5 transition-transform duration-200" strokeWidth={2.6} />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Rodapé da Carta: Progresso e Estatísticas */}
+              <div className="z-[2] pt-1.5 border-t border-white/15 w-full px-0.5">
+                <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-semibold text-blue-100 mb-1">
+                  <span className="truncate">
+                    {item.displayConcluidas > 0
+                      ? `${item.displayConcluidas}/${item.displayTotal}`
+                      : `${item.displayTotal} cards`}
+                  </span>
+                  <span className="font-bold text-white">{item.displayPct}%</span>
+                </div>
+                <div className="w-full bg-black/50 h-1.5 rounded-full overflow-hidden border border-white/10">
+                  <div
+                    className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-blue-300 to-cyan-300 shadow-[0_0_8px_rgba(56,189,248,0.6)]"
+                    style={{
+                      width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%`,
+                    }}
+                  />
                 </div>
               </div>
             </div>
-
-            {/* Rodapé da Carta: Progresso e Estatísticas */}
-            <div className="z-[2] pt-1.5 border-t border-white/10 w-full px-0.5">
-              <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-normal text-zinc-300 mb-1">
-                <span className="truncate">
-                  {item.displayConcluidas > 0
-                    ? `${item.displayConcluidas}/${item.displayTotal}`
-                    : `${item.displayTotal} cards`}
-                </span>
-                <span className="font-semibold">{item.displayPct}%</span>
-              </div>
-              <div className="w-full bg-black/60 h-1.5 rounded-full overflow-hidden border border-white/10">
-                <div
-                  className="h-full rounded-full transition-all duration-500 shadow-sm"
-                  style={{
-                    width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%`,
-                    backgroundColor: palette.primary || '#36AF85',
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── LINHA FINA CONECTORA E TÍTULO NO LADO OPOSTO ── */}
-        <div
-          onClick={item.onClick}
-          onPointerEnter={item.onPrefetch}
-          onTouchStart={item.onPrefetch}
-          className={cn(
-            "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
-            isLeft
-              ? "flex-row pl-1.5 xs:pl-2 sm:pl-3"
-              : "flex-row-reverse pr-1.5 xs:pr-2 sm:pr-3"
-          )}
-        >
-          {/* Linha Fina Conectora com Degradê */}
-          <div
-            className={cn(
-              "flex items-center shrink-0 w-6 xs:w-8 sm:w-12 md:w-16",
-              isLeft ? "flex-row" : "flex-row-reverse"
-            )}
-          >
-            {/* Ponto de Ancoragem na Lateral do Card */}
-            <div
-              className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
-              style={{
-                backgroundColor: palette.primary,
-                boxShadow: `0 0 8px ${palette.primary}`,
-              }}
-            />
-            {/* Linha Fina */}
-            <div
-              className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
-              style={{
-                background: isLeft
-                  ? `linear-gradient(to right, ${palette.primary}, rgba(255,255,255,0.3), transparent)`
-                  : `linear-gradient(to left, ${palette.primary}, rgba(255,255,255,0.3), transparent)`,
-              }}
-            />
           </div>
 
-          {/* Nome do Card em Letras Finas (Conforme Solicitado) */}
-          <div
-            className={cn(
-              "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
-              isLeft ? "items-start text-left" : "items-end text-right"
-            )}
-          >
-            <div
-              className={cn(
-                "flex items-center gap-1.5 mb-1 opacity-80",
-                isLeft ? "justify-start" : "justify-end"
-              )}
-            >
-              <span
-                className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
-                style={{ color: item.isLocked ? '#fbbf24' : palette.primary }}
-              >
-                {item.badgeLabel}
-              </span>
-              {item.isLocked && (
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 border border-amber-400/40">
-                  <Crown className="w-2.5 h-2.5 text-amber-400" />
-                  PREMIUM
-                </span>
-              )}
-              <span className="w-1 h-1 rounded-full bg-white/25" />
-              <span className="text-[10px] sm:text-[12px] font-light text-zinc-400">
-                {item.displayTotal} {item.displayLabel}
-              </span>
-            </div>
-
-            <h3 className="font-sans font-medium text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-3 sm:line-clamp-4 mt-1">
+          {/* ── NOME DO DECK E QUAL DECK É DO LADO (Conforme Solicitado) ── */}
+          <div className="mt-2.5 sm:mt-3 w-full flex items-center justify-center gap-2 px-1 flex-wrap text-center">
+            <span className="px-2 py-0.5 rounded-lg bg-blue-500/25 border border-blue-400/35 text-[11px] sm:text-xs font-black uppercase tracking-wider text-blue-300 shrink-0">
+              {item.badgeLabel}
+            </span>
+            <h3 className="font-sans font-bold text-[13.5px] xs:text-[14.5px] sm:text-[15.5px] leading-tight text-zinc-100 group-hover:text-blue-300 transition-colors drop-shadow-sm">
               {tituloLimpo}
             </h3>
+            {item.isLocked && (
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 border border-amber-400/40 shrink-0">
+                <Crown className="w-2.5 h-2.5 text-amber-400" />
+                PREMIUM
+              </span>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Conector Serpenteante de Trilha em Zigue-Zague Conectando Suavemente de Deck a Deck */}
+      {/* ── Conector Serpenteante em Zigue-Zague Mais Espaçado (Fluido e Luminoso) ── */}
       {!isLast && (
-        <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
+        <div className="relative w-full max-w-[520px] h-28 sm:h-36 my-2 sm:my-3 pointer-events-none z-[5] overflow-visible">
           <svg
             className="w-full h-full overflow-visible"
             viewBox="0 0 100 100"
@@ -234,9 +160,9 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
               </filter>
             </defs>
 
-            {/* Leito da Trilha (traço suave e discreto) */}
+            {/* Leito da Trilha (traço suave de fundo) */}
             <path
-              d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+              d={isLeft ? "M 28 0 C 28 65, 72 35, 72 100" : "M 72 0 C 72 65, 28 35, 28 100"}
               fill="none"
               stroke="rgba(255, 255, 255, 0.08)"
               strokeWidth="4"
@@ -244,11 +170,11 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
               vectorEffect="non-scaling-stroke"
             />
 
-            {/* Linha da Trilha em Zigue-Zague Pontilhada Luminosa */}
+            {/* Linha da Trilha em Zigue-Zague Pontilhada Luminosa em Azul Oficial */}
             <path
-              d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+              d={isLeft ? "M 28 0 C 28 65, 72 35, 72 100" : "M 72 0 C 72 65, 28 35, 28 100"}
               fill="none"
-              stroke={palette.primary}
+              stroke="#2563eb"
               strokeWidth="2.5"
               strokeDasharray="5 7"
               strokeLinecap="round"
@@ -257,13 +183,12 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
             />
           </svg>
 
-          {/* Passos / Checkpoints Esféricos Perfeitos (Apenas a central branca) */}
+          {/* Passos / Checkpoints Esféricos Perfeitos no Ponto Médio */}
           <div
-            className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
+            className="absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border-2 border-white bg-blue-500 shadow-[0_0_12px_#2563eb]"
             style={{
               left: '50%',
               top: '50%',
-              boxShadow: `0 0 10px ${palette.primary}`,
             }}
           />
         </div>
@@ -271,3 +196,5 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
     </div>
   );
 });
+
+export default FlashcardDeckItem;

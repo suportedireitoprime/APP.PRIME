@@ -31,7 +31,7 @@ const PRATICAR_ITEMS: PraticarItem[] = [
     title: 'QUESTÕES',
     subtitle: 'Fixação e treino',
     icon: FileQuestion,
-    color: '#059669', // emerald
+    color: '#e11d48', // vermelho oficial do painel de Questoes
     image: '/assets/praticar-questoes.webp',
     path: '/questoes',
   },

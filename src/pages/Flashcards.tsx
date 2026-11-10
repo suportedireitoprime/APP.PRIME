@@ -81,7 +81,7 @@ const Flashcards = () => {
           {/* ── Card Principal com Botão "Filtro Rápido" ───────────────── */}
           <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
             <div className="flex items-center gap-2">
-              <span className="h-5 w-1 rounded-full bg-[#36AF85]" />
+              <span className="h-5 w-1 rounded-full bg-[#2563eb]" />
               <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Praticar Flashcards</h2>
             </div>
             <p className="ml-3 mt-1 text-xs text-muted-foreground truncate">
@@ -92,7 +92,7 @@ const Flashcards = () => {
               whileHover={{ scale: 1.015 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => { haptic.selection(); setFiltroAberto(true); }}
-              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#2C9570] hover:bg-[#237A5C] text-white text-base sm:text-lg font-black shadow-md transition-colors focus-visible:outline-none border border-[#2C9570]/30"
+              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-base sm:text-lg font-black shadow-md shadow-blue-950/40 transition-colors focus-visible:outline-none border border-[#2563eb]/30"
             >
               <Filter className="h-6 w-6 text-white" strokeWidth={2} />
               <span className="tracking-wide text-white">Filtro Rápido</span>
@@ -105,7 +105,7 @@ const Flashcards = () => {
           {/* ── 4 Cards de Ações Rápidas (Decks, Revisão, Histórico, Desempenho) ── */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <span className="h-4 w-1 rounded-full bg-[#36AF85]" />
+              <span className="h-4 w-1 rounded-full bg-[#2563eb]" />
               <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                 Atalhos
               </p>
@@ -152,7 +152,7 @@ const Flashcards = () => {
           {/* ── Matérias de Flashcards (Grade de Disciplinas) ───────────────────── */}
           <section className="pt-2 space-y-3">
             <div className="flex items-center gap-2">
-              <span className="h-4 w-1 rounded-full bg-[#36AF85]" />
+              <span className="h-4 w-1 rounded-full bg-[#2563eb]" />
               <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                 Matérias ({areas.length})
               </p>
@@ -295,11 +295,11 @@ const Flashcards = () => {
                   className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-zinc-800/90 hover:bg-zinc-750 border border-zinc-700 text-left transition-all group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#36AF85]/15 border border-[#36AF85]/30 flex items-center justify-center text-[#36AF85] group-hover:scale-105 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-[#2563eb]/15 border border-[#2563eb]/30 flex items-center justify-center text-[#2563eb] group-hover:scale-105 transition-transform">
                       <Filter className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-white group-hover:text-[#36AF85] transition-colors" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      <p className="text-sm font-bold text-white group-hover:text-[#2563eb] transition-colors" style={{ fontFamily: "'Inter', sans-serif" }}>
                         Filtrar Assuntos
                       </p>
                       <p className="text-[11px] text-zinc-400">
@@ -317,7 +317,7 @@ const Flashcards = () => {
                     setAreaSelecionadaModal(null);
                     navigate(`/flashcards/area/${slug}`);
                   }}
-                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#2C9570] hover:bg-[#237A5C] border border-[#2C9570]/40 text-left text-white shadow-lg transition-all group"
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#2563eb] hover:bg-[#1d4ed8] border border-[#2563eb]/40 text-left text-white shadow-lg shadow-blue-950/30 transition-all group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
@@ -327,7 +327,7 @@ const Flashcards = () => {
                       <p className="text-sm font-bold text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
                         Ir para as Trilhas
                       </p>
-                      <p className="text-[11px] text-emerald-100/80">
+                      <p className="text-[11px] text-blue-100/80">
                         Trilha progressiva deck a deck
                       </p>
                     </div>

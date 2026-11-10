@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
   AprenderAreaData,
@@ -17,12 +16,13 @@ import {
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
-import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Search } from 'lucide-react';
+import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Search } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
+import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
 import { CANONICAL_AREA_TOPICS } from '@/data/canonicalAreaTopics';
 import { haptic } from '@/lib/nativeHaptics';
 import { useSubscription } from '@/hooks/useSubscription';
@@ -49,8 +49,8 @@ const FlashcardsArea = () => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Lazy Render / Windowing State (Item 11)
-  const [visibleCount, setVisibleCount] = useState(8);
+  // Renderiza todos os decks com folga
+  const [visibleCount, setVisibleCount] = useState(60);
   const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -210,14 +210,17 @@ const FlashcardsArea = () => {
 
   // Busca temas e cards de flashcards desta área no Supabase com fallback resiliente
   const { data: temasFlashcards, isLoading: loadingFlashcards } = useQuery({
-    queryKey: ['area_flashcards_temas', officialFlashcardArea, effectiveAreaName, slug],
+    queryKey: ['area_flashcards_temas', flashcardAreaRow?.area, officialFlashcardArea, effectiveAreaName, slug],
     queryFn: async () => {
       const candidates = Array.from(
         new Set(
           [
+            flashcardAreaRow?.area,
             officialFlashcardArea,
             effectiveAreaName,
             area?.nome,
+            slug ? slug.replace(/-/g, ' ') : null,
+            slug ? slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : null,
             officialFlashcardArea?.startsWith('Direito ')
               ? officialFlashcardArea.replace('Direito ', '')
               : `Direito ${officialFlashcardArea}`,
@@ -252,7 +255,7 @@ const FlashcardsArea = () => {
 
       return [];
     },
-    enabled: !!(officialFlashcardArea || effectiveAreaName || slug),
+    enabled: !!(flashcardAreaRow?.area || officialFlashcardArea || effectiveAreaName || slug),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -487,6 +490,13 @@ const FlashcardsArea = () => {
     />
   );
 
+  const todasAsAreas = useMemo(() => {
+    if (flashcardsAreasResumo && flashcardsAreasResumo.length > 0) {
+      return flashcardsAreasResumo;
+    }
+    return FALLBACK_FLASHCARDS_AREAS;
+  }, [flashcardsAreasResumo]);
+
   return (
     <DesktopPageLayout
       wide
@@ -495,20 +505,43 @@ const FlashcardsArea = () => {
       subtitle="Trilha de Flashcards"
       mobileHeader={mobileHeader}
     >
-      {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]">
-        <ShapeGrid
-          speed={0.5}
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.04)"
-          hoverFillColor="rgba(255, 255, 255, 0.08)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
-      </div>
+      {/* Fundo limpo sem ShapeGrid ou imagens vazadas */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0F12]" />
 
-      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-20 pt-4 min-w-0 overflow-x-hidden box-border">
+      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-24 pt-4 min-w-0 overflow-x-hidden box-border">
+        {/* ── Seletor Rápido de Matérias (Todas as Disciplinas de Flashcards) ── */}
+        <div className="w-full mb-4">
+          <div className="flex items-center justify-between mb-2 px-0.5">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+              Todas as Matérias ({todasAsAreas.length})
+            </span>
+            <span className="text-[10px] text-zinc-500">Toque para trocar de matéria</span>
+          </div>
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-3.5 px-3.5 sm:-mx-6 sm:px-6">
+            {todasAsAreas.map((a) => {
+              const isSelected = a.slug === slug || a.area.toLowerCase() === (officialFlashcardArea || '').toLowerCase();
+              return (
+                <button
+                  key={a.slug || a.area}
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    navigate(`/flashcards/area/${a.slug}`);
+                  }}
+                  className={cn(
+                    "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer",
+                    isSelected
+                      ? "bg-blue-600 text-white border-blue-400 shadow-md shadow-blue-950/60 scale-[1.03]"
+                      : "bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700 active:scale-95"
+                  )}
+                >
+                  {a.area}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {loading && !data && !effectiveAreaName ? (
           <div className="space-y-4 px-4 py-5 sm:px-6">
             <div className="h-44 rounded-2xl bg-muted animate-pulse" />
@@ -521,35 +554,32 @@ const FlashcardsArea = () => {
         ) : (
           <>
             {/* Top Bar Selecione o Módulo / Decks de Flashcards */}
-            <div className="flex items-center justify-between mb-4 w-full min-w-0">
+            <div className="flex items-center justify-between mb-3 w-full min-w-0">
               <div className="flex items-center gap-2 min-w-0">
-                <Layers className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
-                <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
+                <Layers className="w-5 h-5 shrink-0 text-blue-400" />
+                <h2 className="text-xs sm:text-sm font-bold font-sans uppercase tracking-widest text-white truncate">
                   {`Decks de Flashcards (${itemsToRender.length})`}
                 </h2>
               </div>
             </div>
             {/* Barra de progresso geral da área */}
             {isFlash && totalFlashcardsArea > 0 && (
-              <div className="w-full mt-2 mb-1">
+              <div className="w-full mt-1 mb-2">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
                     {totalCompreendidos} / {totalFlashcardsArea} dominados
                   </span>
                   <span 
-                    className="text-[11px] sm:text-xs font-bold tabular-nums"
-                    style={{ color: palette.primary }}
+                    className="text-[11px] sm:text-xs font-bold tabular-nums text-blue-400"
                   >
                     {progressoPctFlash}%
                   </span>
                 </div>
                 <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
                   <div
-                    className="h-full rounded-full transition-all duration-700 ease-out"
+                    className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-500 to-cyan-400 shadow-[0_0_8px_rgba(59,130,246,0.5)]"
                     style={{
                       width: `${Math.max(progressoPctFlash, 1)}%`,
-                      background: `linear-gradient(90deg, ${palette.primary}, ${palette.accent || palette.primary})`,
-                      boxShadow: `0 0 8px ${palette.primary}66`,
                     }}
                   />
                 </div>
@@ -563,29 +593,10 @@ const FlashcardsArea = () => {
                 ))}
               </div>
             ) : (
-              /* Trilha em Zigue-Zague Fluida com Caminho Serpenteante e Cards em Tamanho de Capa */
-              <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">
-                {/* ── Imagem Majestosa da Deusa Têmis Vazada e Impactante no Fundo Central da Trilha ── */}
-                <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
-                  <img
-                    src="/images/gamificacao/deusa_temis_vazada.webp"
-                    alt=""
-                    aria-hidden="true"
-                    loading="eager"
-                    fetchpriority="high"
-                    decoding="async"
-                    className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-25 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.28)] pointer-events-none"
-                    style={{
-                      maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                      WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                    }}
-                  />
-                </div>
-
-                <div className="w-full min-w-0 relative z-[2] flex flex-col">
+              /* Trilha em Zigue-Zague Mais Espaçada e Fluida com Decks Azuis e Nomes Abaixo */
+              <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
+                <div className="w-full min-w-0 relative z-[2] flex flex-col items-center">
                   {itemsToRender.slice(0, visibleCount).map((item, i) => {
-                    const isLeft = i % 2 === 0;
-
                     return (
                       <FlashcardDeckItem
                         key={item.key}
@@ -593,7 +604,6 @@ const FlashcardsArea = () => {
                         i={i}
                         palette={palette}
                         isLast={i === itemsToRender.length - 1}
-                        coverUrl={coverUrl}
                       />
                     );
                   })}

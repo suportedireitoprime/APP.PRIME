@@ -56,13 +56,13 @@ export const FlashcardsCargoHero = ({
         </div>
       )}
 
-      {/* ── Painel Principal de Flashcards (Verde Esmeralda Oficial #059669) ───────────────── */}
+      {/* ── Painel Principal de Flashcards (Azul Oficial #2563eb) ───────────────── */}
       <section
         className="relative isolate overflow-hidden"
         aria-label="Painel Principal de Flashcards"
       >
-        {/* Fundo Esmeralda Oficial */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#059669] via-[#047857] to-[#064e3b] -z-10" />
+        {/* Fundo Azul Oficial */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#2563eb] via-[#1d4ed8] to-[#1e3a8a] -z-10" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.28),transparent_60%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.35),transparent_65%)]" />
 
@@ -84,7 +84,7 @@ export const FlashcardsCargoHero = ({
             loading="eager"
             decoding="async"
           />
-          <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-[#059669] to-transparent pointer-events-none" />
+          <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-[#2563eb] to-transparent pointer-events-none" />
         </div>
 
         {/* Conteúdo do Hero */}
@@ -110,15 +110,15 @@ export const FlashcardsCargoHero = ({
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="font-display text-sm font-black leading-none text-white">{pct}%</span>
-                  <span className="mt-0.5 text-[7px] font-bold uppercase tracking-wider text-emerald-200">Retenção</span>
+                  <span className="mt-0.5 text-[7px] font-bold uppercase tracking-wider text-blue-200">Retenção</span>
                 </div>
               </div>
             </div>
 
             {/* Textos */}
             <div className="flex-1 min-w-0 pr-12 sm:pr-0">
-              <div className="inline-flex items-center gap-1.5 rounded-full bg-black/30 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-emerald-200 backdrop-blur-sm border border-white/10">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-black/30 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-blue-200 backdrop-blur-sm border border-white/10">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
                 HORA DE REVISAR 🧠
                 {streak > 0 && (
                   <span className="inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.2 rounded bg-orange-500/30 text-orange-300 font-black text-[9px]">
@@ -128,7 +128,7 @@ export const FlashcardsCargoHero = ({
                 )}
               </div>
               <h2 className="font-display text-xl sm:text-2xl font-black italic text-white tracking-wide mt-1 drop-shadow-sm leading-tight">
-                FLASHCARDS <span className="font-light not-italic text-emerald-200">INTELIGENTES</span>
+                FLASHCARDS <span className="font-light not-italic text-blue-200">INTELIGENTES</span>
               </h2>
               <p className="text-xs text-white/90 line-clamp-1 mt-0.5">
                 Repetição espaçada com IA focada no seu edital.
@@ -170,7 +170,7 @@ export const FlashcardsCargoHero = ({
               <span>REVISADOS</span>
               <ChevronRight className="h-3 w-3 opacity-60 group-hover:translate-x-0.5 transition" />
             </div>
-            <div className="font-display text-base sm:text-lg font-black text-emerald-300 mt-0.5">
+            <div className="font-display text-base sm:text-lg font-black text-blue-300 mt-0.5">
               {total.toLocaleString('pt-BR')}
             </div>
           </button>
