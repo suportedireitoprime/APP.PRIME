@@ -177,7 +177,7 @@ BEGIN
   )
   SELECT count(*) INTO n FROM cortados;
 
-  -- Para assinaturas Asaas, apenas corta MENSAIS ou ANUAIS pós-10/11/2026 vencidos
+  -- Para assinaturas Asaas, apenas corta MENSAIS (34d) ou ANUAIS pós-10/11/2026 vencidos (370d)
   UPDATE public.asaas_subscriptions s
      SET status='CANCELED', expires_at=now(), updated_at=now()
     FROM public.legacy_subscribers l
@@ -186,7 +186,65 @@ BEGIN
      AND s.status='ACTIVE'
      AND s.plano <> 'vitalicio'
      AND NOT (s.plano ILIKE '%anual%' AND coalesce(s.started_at, s.created_at, now()) < '2026-11-10 00:00:00+00')
-     AND s.started_at < now() - interval '34 days';
+     AND s.started_at < now() - CASE
+           WHEN s.plano ILIKE '%anual%' THEN interval '370 days'
+           WHEN s.plano = 'semestral' THEN interval '190 days'
+           ELSE interval '34 days'
+         END;
 
   RETURN n;
 END $function$;
+
+-- 9. Atualizar claim_legacy_subscription para converter anuais antigos em vitalício ao vincular
+CREATE OR REPLACE FUNCTION public.claim_legacy_subscription(_user_id uuid, _email text)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path TO 'public'
+AS $function$
+DECLARE
+  rec public.legacy_subscribers;
+  is_anual boolean;
+  is_antigo boolean;
+  final_tipo text;
+  final_expires timestamptz;
+BEGIN
+  IF _email IS NULL OR _user_id IS NULL THEN RETURN false; END IF;
+  SELECT * INTO rec FROM public.legacy_subscribers
+   WHERE lower(email) = lower(_email) AND status = 'active'
+     AND (tipo = 'vitalicio' OR tipo ILIKE '%anual%' OR expires_at IS NULL OR expires_at > now())
+   LIMIT 1;
+  IF rec.id IS NULL THEN RETURN false; END IF;
+
+  is_anual := (rec.tipo ILIKE '%anual%' OR rec.tipo = 'anual_promocional');
+  is_antigo := (coalesce(rec.created_at, now()) < '2026-11-10 00:00:00+00');
+
+  IF rec.tipo = 'vitalicio' OR (is_anual AND is_antigo) THEN
+    final_tipo := 'vitalicio';
+    final_expires := NULL;
+  ELSE
+    final_tipo := rec.tipo;
+    final_expires := rec.expires_at;
+  END IF;
+
+  INSERT INTO public.asaas_subscriptions
+    (user_id, plano, status, asaas_customer_id, asaas_subscription_id, expires_at, origem)
+  VALUES (_user_id, final_tipo, 'ACTIVE', rec.asaas_customer_id, rec.asaas_subscription_id,
+    final_expires, 'legado')
+  ON CONFLICT (user_id) DO UPDATE
+    SET plano = excluded.plano, status = 'ACTIVE',
+        asaas_customer_id = coalesce(excluded.asaas_customer_id, public.asaas_subscriptions.asaas_customer_id),
+        asaas_subscription_id = coalesce(excluded.asaas_subscription_id, public.asaas_subscriptions.asaas_subscription_id),
+        expires_at = excluded.expires_at, updated_at = now();
+
+  UPDATE public.legacy_subscribers
+     SET claimed_user_id = _user_id,
+         claimed_at = now(),
+         tipo = final_tipo,
+         expires_at = final_expires
+   WHERE id = rec.id;
+
+  UPDATE public.profiles SET is_premium = true, updated_at = now() WHERE id = _user_id;
+
+  RETURN true;
+END; $function$;

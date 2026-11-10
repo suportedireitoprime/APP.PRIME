@@ -229,6 +229,17 @@ Deno.serve(async (req) => {
       effectivePlan = 'vitalicio';
     }
 
+    const finalUserId = targetUserId || legacy.claimed_user_id;
+    let currSub: any = null;
+    if (finalUserId) {
+      const { data } = await admin.from('asaas_subscriptions').select('status, plano, started_at, created_at').eq('user_id', finalUserId).maybeSingle();
+      currSub = data;
+      // Se o usuário já é vitalício no banco, preserva o vitalício contra cancelamentos acidentais de gateway
+      if (currSub?.plano === 'vitalicio' && !pago) {
+        effectivePlan = 'vitalicio';
+      }
+    }
+
     // Renovação respeitando o ciclo do plano (mensal/semestral/anual/vitalicio) + margem
     const diasCiclo = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional') ? 370
       : effectivePlan === 'semestral' ? 190
@@ -255,16 +266,13 @@ Deno.serve(async (req) => {
       }).eq('id', legacy.id);
     }
 
-    const finalUserId = targetUserId || legacy.claimed_user_id;
-
     if (finalUserId) {
       let currentStatus = 'PENDING';
-      const { data: currSub } = await admin.from('asaas_subscriptions').select('status').eq('user_id', finalUserId).maybeSingle();
       if (currSub?.status) {
         currentStatus = currSub.status;
       }
       
-      const nextStatus = pago ? 'ACTIVE' : (cortarAgora ? 'CANCELED' : currentStatus);
+      const nextStatus = pago ? 'ACTIVE' : (vitalicio ? 'ACTIVE' : (cortarAgora ? 'CANCELED' : currentStatus));
 
       const subUpsertPayload: any = {
         user_id: finalUserId,

@@ -12,6 +12,7 @@ import { Capacitor } from '@capacitor/core';
 import CancelarAssinaturaSheet from './CancelarAssinaturaSheet';
 import AssinaturaDireitosGuia from './AssinaturaDireitosGuia';
 import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO, brl } from '@/lib/precos';
+import { isAnualAntigo } from '@/hooks/useSubscription';
 
 interface Props {
   plano: string | null;
@@ -96,7 +97,7 @@ export default function MinhaAssinaturaView({
         const [subRes, cancelRes] = await Promise.all([
           supabase
             .from('asaas_subscriptions' as any)
-            .select('id, plano, status, asaas_subscription_id, expires_at, started_at, origem')
+            .select('id, plano, status, asaas_subscription_id, expires_at, started_at, created_at, origem')
             .eq('user_id', user.id)
             .order('created_at', { ascending: false })
             .limit(1)
@@ -113,21 +114,19 @@ export default function MinhaAssinaturaView({
         const sub = subRes.data as any;
         if (sub) {
           let exp = sub.expires_at;
-          // Se o plano é anual e a data está no passado ou ano <= 2026, a renovação correta é em 2027
-          if (exp && isAnual) {
-            const d = new Date(exp);
-            if (!isNaN(d.getTime()) && (d.getFullYear() < 2027 || d <= new Date())) {
-              while (d <= new Date() || d.getFullYear() < 2027) {
-                d.setFullYear(d.getFullYear() + 1);
-              }
-              exp = d.toISOString();
-              void supabase
-                .from('asaas_subscriptions' as any)
-                .update({ expires_at: exp })
-                .eq('id', sub.id);
-            }
-          }
-          if (exp) {
+          // Regra oficial: Se o plano é anual e anterior a 10/11/2026, é vitalício (sem expiração)
+          if (isAnualAntigo(sub.plano, sub.started_at, sub.expires_at, sub.created_at)) {
+            exp = null;
+            setCurrentExpiresAt(null);
+            void supabase
+              .from('asaas_subscriptions' as any)
+              .update({ plano: 'vitalicio', status: 'ACTIVE', expires_at: null, updated_at: new Date().toISOString() })
+              .eq('id', sub.id);
+            void supabase
+              .from('profiles')
+              .update({ is_premium: true, updated_at: new Date().toISOString() })
+              .eq('id', user.id);
+          } else if (exp) {
             setCurrentExpiresAt(exp);
           }
           const pLower = (sub.plano || '').toLowerCase();
