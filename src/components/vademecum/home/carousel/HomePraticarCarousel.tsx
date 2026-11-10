@@ -196,7 +196,7 @@ const HomePraticarCarousel = () => {
               key={`${item.id}-${i}`}
               type="button"
               onClick={() => handleCardClick(item, i)}
-              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-400 ease-out ${
+              className={`snap-center shrink-0 min-w-[144px] max-w-[154px] sm:min-w-[154px] sm:max-w-[164px] h-[118px] sm:h-[124px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-400 ease-out ${
                 isActive
                   ? 'scale-[1.02] opacity-100 z-10 shadow-xl'
                   : 'scale-[0.94] opacity-75 z-0 shadow-sm'
@@ -253,11 +253,17 @@ const HomePraticarCarousel = () => {
                 </div>
 
                 <div className="flex justify-between items-end mt-auto">
-                  <div className="flex flex-col">
-                    <span className="font-display text-white text-[20px] sm:text-[22px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
+                  <div className="flex flex-col w-full pr-1">
+                    <span
+                      className="font-card text-white text-[13px] sm:text-[14px] font-black tracking-wider uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] leading-none whitespace-nowrap"
+                      style={{ fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" }}
+                    >
                       {item.title}
                     </span>
-                    <span className="text-white/80 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                    <span
+                      className="font-card text-white/90 text-[8.5px] sm:text-[9px] font-bold uppercase tracking-wider mt-1 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] leading-none whitespace-nowrap"
+                      style={{ fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" }}
+                    >
                       {item.subtitle}
                     </span>
                   </div>
