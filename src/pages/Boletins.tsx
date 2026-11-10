@@ -9,7 +9,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import BoletimPlayer, { type BoletimScene } from '@/components/boletim/BoletimPlayer';
 import { LoadingState } from '@/components/ui/states';
 import useBodyScrollLock from '@/hooks/useBodyScrollLock';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import { haptic } from '@/lib/nativeHaptics';
 
 import radarLeisLocal from '@/assets/radares/radar-leis.webp';
@@ -262,18 +261,6 @@ export default function Boletins() {
       subtitle="Fique atualizado com os últimos conteúdos jurídicos e legislativos"
       mobileHeader={mobileHeader}
     >
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <ShapeGrid 
-          speed={0.5} 
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.05)"
-          hoverFillColor="rgba(255, 255, 255, 0.1)"
-          shape="square"
-          hoverTrailAmount={5}
-        />
-      </div>
-
       <div className="flex flex-col h-full w-full max-w-2xl mx-auto pt-2 pb-24 lg:pb-8 relative z-10">
         {loading ? (
           <div className="px-6 py-8 space-y-4">

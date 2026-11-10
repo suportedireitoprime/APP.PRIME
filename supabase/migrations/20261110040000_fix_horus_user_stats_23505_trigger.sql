@@ -115,3 +115,4 @@ CREATE TRIGGER trg_prevent_horus_whatsapp_users_duplicate
   BEFORE INSERT ON public.horus_whatsapp_users
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_horus_whatsapp_users_upsert();
+
