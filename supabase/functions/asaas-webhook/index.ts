@@ -213,6 +213,22 @@ Deno.serve(async (req) => {
       effectivePlan = 'vitalicio';
     }
 
+    // Regra oficial: Qualquer assinatura anual adquirida antes de 10/11/2026 é tratada como vitalícia.
+    // Assinaturas anuais só têm contagem de ciclo (370 dias) a partir de 10/11/2026 em diante.
+    // Assinaturas mensais continuam mensais normalmente.
+    const CUTOFF_ANUAL_MS = new Date('2026-11-10T00:00:00.000Z').getTime();
+    const isAnual = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional');
+    const legacyCreatedAtMs = legacy?.created_at ? new Date(legacy.created_at).getTime() : 0;
+    const paymentCreatedMs = payment?.dateCreated ? new Date(payment.dateCreated).getTime() : 0;
+
+    if (isAnual && (
+      (legacyCreatedAtMs > 0 && legacyCreatedAtMs < CUTOFF_ANUAL_MS) ||
+      (paymentCreatedMs > 0 && paymentCreatedMs < CUTOFF_ANUAL_MS) ||
+      (legacy?.id !== 'new_user' && legacyCreatedAtMs < CUTOFF_ANUAL_MS)
+    )) {
+      effectivePlan = 'vitalicio';
+    }
+
     // Renovação respeitando o ciclo do plano (mensal/semestral/anual/vitalicio) + margem
     const diasCiclo = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional') ? 370
       : effectivePlan === 'semestral' ? 190

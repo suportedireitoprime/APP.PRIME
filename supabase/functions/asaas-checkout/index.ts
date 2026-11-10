@@ -269,13 +269,14 @@ Deno.serve(async (req) => {
 
       const { data: existingSub } = await admin
         .from('asaas_subscriptions')
-        .select('status')
+        .select('status, plano')
         .eq('user_id', user.id)
         .maybeSingle();
 
       const isAlreadyActive = existingSub && ['ACTIVE', 'ACTIVE_GRACE', 'active'].includes(existingSub.status);
+      const isAlreadyVitalicio = existingSub?.plano === 'vitalicio';
 
-      if (!isAlreadyActive) {
+      if (!isAlreadyActive && !isAlreadyVitalicio) {
         const planoFinal = (plan === 'mensal' || plan === 'mensal_pix') 
           ? 'mensal' 
           : (plan === 'vitalicio' || plan === 'vitalicio_pix' ? 'vitalicio' : 'anual');
