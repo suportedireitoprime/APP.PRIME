@@ -30,6 +30,7 @@ import {
   Hash,
   Receipt,
   Layers,
+  Percent,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -43,6 +44,36 @@ interface Props {
   onClose: () => void;
 }
 
+function parseDateSafe(raw?: string | null): Date | null {
+  if (!raw) return null;
+  const str = String(raw).trim();
+  const dateOnlyMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (dateOnlyMatch) {
+    const [, y, m, d] = dateOnlyMatch;
+    return new Date(Number(y), Number(m) - 1, Number(d), 12, 0, 0);
+  }
+  const cleaned = str.replace(' ', 'T');
+  const d = new Date(cleaned);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatarDataHoraDetalhada(iso?: string | null): string {
+  const d = parseDateSafe(iso);
+  if (!d) return '—';
+  const hasTime = String(iso || '').includes(':') || String(iso || '').includes('T');
+  const dateStr = d.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+  if (!hasTime) return dateStr;
+  const timeStr = d.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return `${dateStr} às ${timeStr}`;
+}
+
 export const AssinanteDetalheSheet: React.FC<Props> = ({
   subscriber,
   open,
@@ -52,11 +83,24 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
   const [loadingPayments, setLoadingPayments] = useState<boolean>(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedField(label);
-    toast.success(`${label} copiado!`);
-    setTimeout(() => setCopiedField(null), 2000);
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopiedField(label);
+      toast.success(`${label} copiado!`);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      toast.error(`Não foi possível copiar ${label}`);
+    }
   };
 
   const fetchAsaasPayments = useCallback(async () => {
@@ -64,7 +108,6 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
     setLoadingPayments(true);
 
     try {
-      // 1. Tentar buscar cobranças pela assinatura no Asaas
       let endpoint = 'payments';
       let params: Record<string, string> = { limit: '50' };
 
@@ -81,9 +124,7 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
         },
       });
 
-      if (error) {
-        console.warn('Erro ao consultar pagamentos Asaas via proxy:', error);
-      } else if (data?.data && Array.isArray(data.data)) {
+      if (!error && data?.data && Array.isArray(data.data) && data.data.length > 0) {
         setPayments(data.data);
         return;
       }
@@ -96,21 +137,19 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
             params: { customer: subscriber.asaasCustomerId, limit: '50' },
           },
         });
-        if (cusData?.data && Array.isArray(cusData.data)) {
+        if (cusData?.data && Array.isArray(cusData.data) && cusData.data.length > 0) {
           setPayments(cusData.data);
           return;
         }
       }
 
-      // Fallback: usar dados cacheados do próprio item
+      // Fallback: manter dados já disponíveis no assinante
       if (subscriber.livePayments && subscriber.livePayments.length > 0) {
         setPayments(subscriber.livePayments);
-      } else {
-        setPayments([]);
       }
     } catch (err: any) {
       console.warn('Exceção ao buscar pagamentos Asaas:', err);
-      if (subscriber.livePayments) {
+      if (subscriber.livePayments && subscriber.livePayments.length > 0) {
         setPayments(subscriber.livePayments);
       }
     } finally {
@@ -120,7 +159,10 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
 
   useEffect(() => {
     if (open && subscriber) {
-      fetchAsaasPayments();
+      // Inicia imediatamente com os pagamentos já casados em memória
+      setPayments(subscriber.livePayments || []);
+      // Atualiza em background
+      void fetchAsaasPayments();
     } else {
       setPayments([]);
     }
@@ -130,6 +172,17 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
 
   const isVitalicio = subscriber.modalidade === 'vitalicio';
   const isAnual = subscriber.modalidade === 'anual';
+
+  // Cálculos financeiros do assinante específico
+  const totalPago = payments
+    .filter((p) => ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes((p.status || '').toUpperCase()))
+    .reduce((acc, p) => acc + (p.value || 0), 0) || subscriber.totalPagoAcumulado || subscriber.valor;
+
+  const totalLiquido = payments
+    .filter((p) => ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes((p.status || '').toUpperCase()))
+    .reduce((acc, p) => acc + (p.netValue ?? p.value ?? 0), 0) || subscriber.valorLiquido || subscriber.valor;
+
+  const totalTaxas = Math.max(0, totalPago - totalLiquido);
 
   return (
     <Sheet open={open} onOpenChange={(val) => !val && onClose()}>
@@ -162,19 +215,28 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
               </div>
             </div>
 
-            <Badge
-              variant="outline"
-              className={cn(
-                'shrink-0 text-xs px-2.5 py-1 font-semibold uppercase',
-                subscriber.statusBadgeColor === 'emerald' && 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
-                subscriber.statusBadgeColor === 'amber' && 'bg-amber-500/10 text-amber-400 border-amber-500/30',
-                subscriber.statusBadgeColor === 'rose' && 'bg-rose-500/10 text-rose-400 border-rose-500/30',
-                subscriber.statusBadgeColor === 'sky' && 'bg-sky-500/10 text-sky-400 border-sky-500/30',
-                subscriber.statusBadgeColor === 'slate' && 'bg-slate-500/10 text-slate-400 border-slate-500/30'
-              )}
-            >
-              {subscriber.statusLabel}
-            </Badge>
+            <div className="flex flex-col items-end gap-1.5 shrink-0">
+              <Badge
+                variant="outline"
+                className={cn(
+                  'text-xs px-2.5 py-1 font-semibold uppercase',
+                  subscriber.statusBadgeColor === 'emerald' && 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+                  subscriber.statusBadgeColor === 'amber' && 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+                  subscriber.statusBadgeColor === 'rose' && 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+                  subscriber.statusBadgeColor === 'sky' && 'bg-sky-500/10 text-sky-400 border-sky-500/30',
+                  subscriber.statusBadgeColor === 'slate' && 'bg-slate-500/10 text-slate-400 border-slate-500/30'
+                )}
+              >
+                {subscriber.statusLabel}
+              </Badge>
+
+              <Badge
+                variant="outline"
+                className="text-[10px] px-2 py-0.5 font-medium border-border/60 bg-secondary/50 text-muted-foreground"
+              >
+                {subscriber.statusCasamentoLabel}
+              </Badge>
+            </div>
           </div>
         </SheetHeader>
 
@@ -195,7 +257,7 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
             </div>
           )}
 
-          {/* Cards Principais do Contrato */}
+          {/* Cards Principais do Contrato e Preços */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <Card className="p-3 bg-secondary/30 border-border/60">
               <span className="text-[10px] uppercase font-bold text-muted-foreground block">
@@ -226,7 +288,7 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
 
             <Card className="p-3 bg-secondary/30 border-border/60">
               <span className="text-[10px] uppercase font-bold text-muted-foreground block">
-                Valor Cobrado
+                Valor Cobrado (Bruto)
               </span>
               <div className="flex items-center gap-1 mt-1 font-bold text-base text-foreground">
                 {brl(subscriber.valor)}
@@ -269,6 +331,27 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
             </Card>
           </div>
 
+          {/* Resumo Financeiro Asaas (Bruto, Líquido, Taxa) */}
+          <div className="p-4 rounded-xl border border-border/60 bg-secondary/20 space-y-2">
+            <span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase block">
+              Dossiê Financeiro Asaas
+            </span>
+            <div className="grid grid-cols-3 gap-2 text-xs pt-1">
+              <div className="p-2.5 rounded-lg bg-background/50 border border-border/40">
+                <span className="text-[10px] text-muted-foreground block">Total Pago:</span>
+                <strong className="text-foreground text-sm font-bold">{brl(totalPago)}</strong>
+              </div>
+              <div className="p-2.5 rounded-lg bg-background/50 border border-border/40">
+                <span className="text-[10px] text-muted-foreground block">Líquido Asaas:</span>
+                <strong className="text-emerald-400 text-sm font-bold">{brl(totalLiquido)}</strong>
+              </div>
+              <div className="p-2.5 rounded-lg bg-background/50 border border-border/40">
+                <span className="text-[10px] text-muted-foreground block">Taxas Asaas:</span>
+                <strong className="text-amber-400 text-sm font-bold">{brl(totalTaxas)}</strong>
+              </div>
+            </div>
+          </div>
+
           {/* Seção de Datas */}
           <div className="p-4 rounded-xl border border-border/60 bg-secondary/20 space-y-3">
             <span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase block">
@@ -297,11 +380,11 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Identificadores Asaas */}
+          {/* Dados do Cliente e Identificadores Asaas */}
           <div className="p-4 rounded-xl border border-border/60 bg-secondary/20 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
-                Identificadores no Asaas & Sistema
+                Identificadores & Cadastro
               </span>
               <a
                 href="https://www.asaas.com/"
@@ -314,6 +397,44 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
             </div>
 
             <div className="space-y-2 text-xs">
+              {subscriber.cpfCnpj && (
+                <div className="flex items-center justify-between p-2 rounded-lg bg-background/60 border border-border/40">
+                  <div className="truncate mr-2">
+                    <span className="text-muted-foreground block text-[10px]">CPF / CNPJ:</span>
+                    <span className="font-mono font-semibold text-foreground truncate block">
+                      {subscriber.cpfCnpj}
+                    </span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => copyToClipboard(subscriber.cpfCnpj!, 'CPF/CNPJ')}
+                    className="h-8 px-2 shrink-0"
+                  >
+                    {copiedField === 'CPF/CNPJ' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </Button>
+                </div>
+              )}
+
+              {subscriber.phone && (
+                <div className="flex items-center justify-between p-2 rounded-lg bg-background/60 border border-border/40">
+                  <div className="truncate mr-2">
+                    <span className="text-muted-foreground block text-[10px]">Telefone / WhatsApp:</span>
+                    <span className="font-mono font-semibold text-foreground truncate block">
+                      {subscriber.phone}
+                    </span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => copyToClipboard(subscriber.phone!, 'Telefone')}
+                    className="h-8 px-2 shrink-0"
+                  >
+                    {copiedField === 'Telefone' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </Button>
+                </div>
+              )}
+
               {subscriber.asaasSubscriptionId && (
                 <div className="flex items-center justify-between p-2 rounded-lg bg-background/60 border border-border/40">
                   <div className="truncate mr-2">
@@ -378,10 +499,10 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
             <div className="flex items-center justify-between">
               <div>
                 <span className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase block">
-                  Cobranças & Pagamentos no Asaas
+                  Cobranças & Pagamentos no Asaas ({payments.length})
                 </span>
                 <span className="text-xs text-muted-foreground/80">
-                  Detalhamento de faturas, valores líquidos e comprovantes
+                  Faturas, valores líquidos, taxas e comprovantes
                 </span>
               </div>
               <Button
@@ -396,7 +517,7 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
               </Button>
             </div>
 
-            {loadingPayments ? (
+            {loadingPayments && payments.length === 0 ? (
               <div className="p-8 text-center space-y-2">
                 <RefreshCw className="w-6 h-6 animate-spin mx-auto text-primary" />
                 <p className="text-xs text-muted-foreground">Consultando pagamentos em tempo real no Asaas...</p>
@@ -406,7 +527,7 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
                 <Receipt className="w-6 h-6 mx-auto opacity-50 mb-2" />
                 <p className="font-semibold text-foreground">Nenhuma cobrança avulsa retornada no Asaas</p>
                 <p>
-                  As informações de contratação constam registradas no banco de dados e nos eventos de assinatura.
+                  As informações de contratação constam registradas no banco de dados do aplicativo.
                 </p>
               </div>
             ) : (
@@ -415,6 +536,7 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
                   const isPaid = ['CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH'].includes((p.status || '').toUpperCase());
                   const isOverdue = p.status === 'OVERDUE';
                   const isPending = p.status === 'PENDING';
+                  const taxa = (p.value || 0) - (p.netValue ?? p.value ?? 0);
 
                   return (
                     <Card
@@ -448,15 +570,16 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
                           <span className="text-[10px] text-muted-foreground block">Valor Bruto:</span>
                           <strong className="text-foreground">{brl(p.value)}</strong>
                         </div>
-                        {p.netValue !== undefined && (
-                          <div>
-                            <span className="text-[10px] text-muted-foreground block">Valor Líquido:</span>
-                            <span className="text-emerald-400 font-semibold">{brl(p.netValue)}</span>
-                          </div>
-                        )}
+                        <div>
+                          <span className="text-[10px] text-muted-foreground block">Líquido Asaas:</span>
+                          <span className="text-emerald-400 font-semibold">{brl(p.netValue ?? p.value)}</span>
+                        </div>
                         <div>
                           <span className="text-[10px] text-muted-foreground block">Método:</span>
-                          <span className="text-foreground font-medium uppercase">{p.billingType || '—'}</span>
+                          <span className="text-foreground font-medium uppercase">
+                            {p.billingType || '—'}
+                            {p.creditCard?.creditCardBrand ? ` (${p.creditCard.creditCardBrand})` : ''}
+                          </span>
                         </div>
                         <div>
                           <span className="text-[10px] text-muted-foreground block">Vencimento:</span>
@@ -466,17 +589,30 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
                         </div>
                       </div>
 
-                      {(p.paymentDate || p.clientPaymentDate) && (
-                        <div className="text-[11px] text-muted-foreground mt-2 flex items-center gap-1.5">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                          <span>
-                            Pago em: {new Date(p.paymentDate || p.clientPaymentDate!).toLocaleDateString('pt-BR')}
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground mt-2">
+                        {(p.paymentDate || p.clientPaymentDate) ? (
+                          <div className="flex items-center gap-1.5 text-emerald-400">
+                            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                            <span>
+                              Pago em: {new Date(p.paymentDate || p.clientPaymentDate!).toLocaleDateString('pt-BR')}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 shrink-0" />
+                            <span>Criado em: {formatarDataHoraDetalhada(p.dateCreated)}</span>
+                          </div>
+                        )}
+
+                        {taxa > 0 && (
+                          <span className="text-[10px] text-muted-foreground/70">
+                            Taxa Asaas: {brl(taxa)}
                           </span>
-                        </div>
-                      )}
+                        )}
+                      </div>
 
                       {/* Ações do Pagamento */}
-                      <div className="flex items-center gap-2 mt-3 pt-2">
+                      <div className="flex items-center gap-3 mt-3 pt-2 border-t border-border/30">
                         {p.invoiceUrl && (
                           <a
                             href={p.invoiceUrl}
@@ -492,7 +628,7 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
                             href={p.transactionReceiptUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-xs text-emerald-400 hover:underline flex items-center gap-1 ml-3"
+                            className="text-xs text-emerald-400 hover:underline flex items-center gap-1"
                           >
                             <Receipt className="w-3 h-3" /> Comprovante
                           </a>
@@ -502,7 +638,7 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
                             href={p.bankSlipUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-xs text-amber-400 hover:underline flex items-center gap-1 ml-3"
+                            className="text-xs text-amber-400 hover:underline flex items-center gap-1"
                           >
                             <FileText className="w-3 h-3" /> Boleto
                           </a>
@@ -519,7 +655,7 @@ export const AssinanteDetalheSheet: React.FC<Props> = ({
         {/* Rodapé do Sheet */}
         <div className="p-4 border-t border-border bg-secondary/20 flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
-            Direito Prime · Auditoria Asaas
+            Direito Prime · Auditoria Asaas & Conciliação
           </span>
           <Button variant="secondary" size="sm" onClick={onClose} className="min-h-[40px] px-4">
             Fechar

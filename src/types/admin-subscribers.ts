@@ -2,10 +2,28 @@ export type SubscriberPlanType = 'mensal' | 'anual' | 'vitalicio';
 
 export type PaymentMethodType = 'PIX' | 'CREDIT_CARD' | 'BOLETO' | 'OUTRO';
 
+export type StatusCasamentoType =
+  | 'casado_total' // Casado por ID de assinatura ou pagamento
+  | 'casado_cliente' // Casado por ID do cliente Asaas
+  | 'casado_email' // Casado por e-mail entre Asaas e Supabase
+  | 'direto_asaas' // Presente no Asaas mas não vinculado ao app
+  | 'local_somente'; // Presente apenas no Supabase / Lojas
+
+export interface AsaasCustomerItem {
+  id: string; // cus_xxx
+  name: string;
+  email: string;
+  phone?: string | null;
+  mobilePhone?: string | null;
+  cpfCnpj?: string | null;
+  dateCreated?: string;
+}
+
 export interface AsaasPaymentCharge {
   id: string; // pay_xxx
   customer?: string;
   subscription?: string;
+  installment?: string;
   dateCreated: string;
   dueDate: string;
   paymentDate?: string | null;
@@ -42,9 +60,18 @@ export interface SubscriberItem {
   isAnualAntigoTransitado?: boolean; // Transição oficial para Vitalício (anteriores a 10/11/2026)
 
   // Financial details
-  valor: number; // R$ valor contratado / pago
+  valor: number; // R$ valor contratado / pago bruto
+  valorLiquido?: number | null; // R$ valor líquido após taxa Asaas
+  taxaAsaas?: number | null; // R$ taxa Asaas (valor - valorLiquido)
+  totalPagoAcumulado?: number; // Soma de todas as cobranças recebidas
+  quantidadePagamentos?: number; // Total de cobranças geradas
   formaPagamento: PaymentMethodType;
   billingTypeRaw?: string;
+
+  // Casamento / Conciliação Asaas
+  statusCasamento: StatusCasamentoType;
+  statusCasamentoLabel: string;
+  asaasPaymentId?: string | null;
 
   // Dates
   dataAssinatura: string; // ISO
@@ -77,4 +104,8 @@ export interface AssinantesMetricas {
   vitaliciosCount: number;
   vitaliciosReceita: number; // R$
   receitaTotalGeral: number; // R$
+  totalLiquidoRecebido: number; // R$ total líquido recebido após taxas
+  totalTaxasAsaas: number; // R$ total de taxas retidas pelo Asaas
+  totalFaturasPagas: number; // quantidade de faturas confirmadas/recebidas
+  totalCasadosAsaas: number; // quantidade de registros com casamento no Asaas
 }
