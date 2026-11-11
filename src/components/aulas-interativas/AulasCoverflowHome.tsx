@@ -207,6 +207,8 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   const discTheme = getDisciplinaVisualTheme(disc.id);
                   const discAulas = aulasCatalogo.filter(a => a.disciplinaId === disc.id);
                   const capaUrl = discTheme.fundoAssetUrl;
+                  const corTema = discTheme.primary || disc.corDestaque || '#f59e0b';
+                  const corTemaHighlight = discTheme.highlight || '#fef08a';
 
                   return (
                     <div
@@ -214,23 +216,20 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                       onClick={() => onCardClick(disc, idx)}
                       className="snap-center shrink-0 w-[134px] xs:w-[152px] sm:w-[188px] md:w-[225px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
                     >
-                      {/* Card em Proporção 3:4 com Sombra Neutra Realista (Sem Sombra Colorida) */}
+                      {/* Card em Proporção 3:4 com Contorno na Cor do Tema e Botão Acessar Dentro */}
                       <div
                         className={cn(
-                          "relative aspect-[3/4] max-h-[36vh] xs:max-h-[40vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border transform-gpu transition-all duration-300 ease-out flex flex-col justify-end p-2 xs:p-2.5 sm:p-3 text-center will-change-transform",
+                          "relative aspect-[3/4] max-h-[38vh] xs:max-h-[42vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out flex flex-col justify-end p-2.5 xs:p-3 sm:p-3.5 text-center will-change-transform",
                           isActive
-                            ? "border-2 shadow-2xl ring-1 ring-white/20 scale-[1.03] opacity-100"
-                            : "border-white/15 shadow-xl hover:border-white/30 scale-[0.88] opacity-55"
+                            ? "shadow-2xl scale-[1.03] opacity-100"
+                            : "shadow-xl scale-[0.88] opacity-55 hover:opacity-75"
                         )}
-                        style={
-                          isActive ? {
-                            borderColor: 'rgba(255, 255, 255, 0.45)',
-                            boxShadow: '0 24px 48px -6px rgba(0, 0, 0, 0.95), 0 12px 24px rgba(0, 0, 0, 0.85), inset 0 1.5px 0.5px rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(251, 191, 36, 0.15)',
-                          } : {
-                            borderColor: 'rgba(255, 255, 255, 0.15)',
-                            boxShadow: '0 12px 24px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.12)',
-                          }
-                        }
+                        style={{
+                          borderColor: isActive ? corTema : `${corTema}40`,
+                          boxShadow: isActive
+                            ? `0 24px 48px -6px rgba(0, 0, 0, 0.95), 0 0 22px ${corTema}45, inset 0 1.5px 0.5px rgba(255, 255, 255, 0.4)`
+                            : `0 12px 24px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.12)`,
+                        }}
                       >
                         {/* Imagem da Capa */}
                         <img
@@ -248,34 +247,61 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                         />
 
                         {/* Gradiente na Base */}
-                        <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-black/95 via-black/45 to-transparent pointer-events-none rounded-b-2xl z-10" />
+                        <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/50 to-transparent pointer-events-none rounded-b-2xl z-10" />
 
-                        {/* Título e Badge Pill de Aulas */}
+                        {/* Título e Botão Acessar Dentro da Capa */}
                         <div className="relative z-20 w-full flex flex-col items-center">
                           <h3 
                             className={cn(
                               "font-serif font-black text-white leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,1)] text-center break-words text-balance px-0.5 transition-all",
                               isActive 
-                                ? "text-[11.5px] xs:text-[13px] sm:text-base" 
+                                ? "text-xs xs:text-sm sm:text-base" 
                                 : "text-[10px] xs:text-[11px] sm:text-xs text-zinc-200"
                             )}
                           >
                             {disc.nome}
                           </h3>
 
-                          <div 
-                            className={cn(
-                              "mt-1 xs:mt-1.5 inline-flex items-center justify-center font-mono font-black tracking-wider uppercase shadow-lg border rounded-full transition-all",
-                              isActive
-                                ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9.5px] xs:text-[10.5px] sm:text-xs text-amber-300 border-amber-400/40 bg-black/85"
-                                : "px-2 py-0.5 text-[8px] xs:text-[9px] sm:text-[10px] text-zinc-300 border-white/20 bg-black/80 opacity-90"
-                            )}
-                            style={{
-                              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.7)'
-                            }}
-                          >
-                            <span>{discAulas.length} AULAS</span>
+                          {/* ── BOTÃO ACESSAR DENTRO DA CAPA (EM VEZ DE FORA) ── */}
+                          <div className={cn(
+                            "w-full flex items-center justify-center transition-all duration-300 overflow-hidden",
+                            isActive ? "max-h-12 mt-2 xs:mt-2.5 opacity-100" : "max-h-0 mt-0 opacity-0 pointer-events-none"
+                          )}>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                try { haptic.impact(); } catch {}
+                                onSelectCurrent();
+                              }}
+                              className="w-full max-w-[125px] xs:max-w-[140px] sm:max-w-[160px] h-7 xs:h-7.5 sm:h-8.5 rounded-full flex items-center justify-center gap-1.5 font-serif font-black text-[10.5px] xs:text-xs sm:text-sm text-zinc-950 shadow-[0_4px_16px_rgba(0,0,0,0.85)] active:scale-95 hover:brightness-110 transition-all cursor-pointer border border-white/50"
+                              style={{
+                                background: `linear-gradient(135deg, ${corTemaHighlight} 0%, ${corTema} 100%)`,
+                              }}
+                              aria-label={`Acessar ${disc.nome}`}
+                            >
+                              <span className="tracking-wide">Acessar</span>
+                              <span className="font-sans text-xs xs:text-sm font-bold">→</span>
+                            </button>
                           </div>
+                        </div>
+                      </div>
+
+                      {/* ── QUANTIDADE DE AULAS FORA DA CAPA ── */}
+                      <div className="mt-2 xs:mt-2.5 flex items-center justify-center select-none">
+                        <div 
+                          className={cn(
+                            "inline-flex items-center justify-center font-mono font-black tracking-wider uppercase rounded-full transition-all duration-300 shadow-md",
+                            isActive
+                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9.5px] xs:text-[10.5px] sm:text-xs bg-black/85 border shadow-[0_2px_10px_rgba(0,0,0,0.85)]"
+                              : "px-2 py-0.5 text-[8px] xs:text-[9px] sm:text-[9.5px] text-zinc-400 bg-black/75 border border-white/10 opacity-70"
+                          )}
+                          style={isActive ? {
+                            color: corTemaHighlight,
+                            borderColor: `${corTema}60`,
+                          } : undefined}
+                        >
+                          <span>{discAulas.length} AULAS</span>
                         </div>
                       </div>
                     </div>
@@ -296,7 +322,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           )}
 
           {/* ── 4 PONTOS INDICADORES DO CARROSSEL ── */}
-          <div className="flex items-center justify-center gap-1.5 my-1 xs:my-1.5 z-20 shrink-0">
+          <div className="flex items-center justify-center gap-1.5 mt-2 mb-1 xs:mt-2.5 xs:mb-1.5 z-20 shrink-0">
             {[0, 1, 2, 3].map((dotIdx) => {
               const isDotActive = dotIdx === (safeIdx % 4);
               return (
@@ -320,23 +346,9 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
               );
             })}
           </div>
-
-          {/* ── BOTÃO PRINCIPAL DE AÇÃO: SELECIONAR ÁREA → (DOURADO / ÂMBAR CLÁSSICO) ── */}
-          <div className="w-full max-w-[270px] xs:max-w-[300px] mx-auto px-2 mb-0.5 xs:mb-1 z-20 shrink-0">
-            <button
-              type="button"
-              onClick={onSelectCurrent}
-              className="w-full h-10.5 xs:h-11 sm:h-12 rounded-full flex items-center justify-center gap-2 font-serif font-black text-xs xs:text-sm sm:text-base text-[#3d1a03] shadow-[0_8px_25px_rgba(245,158,11,0.45),inset_0_1px_2px_rgba(255,255,255,0.6)] active:scale-95 hover:brightness-105 transition-all cursor-pointer border border-amber-300/40"
-              style={{
-                background: 'linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #d97706 100%)',
-              }}
-            >
-              <span className="tracking-wide">Selecionar Área</span>
-              <span className="font-sans text-sm xs:text-base">→</span>
-            </button>
-          </div>
         </div>
       </div>
     </>
   );
 };
+
