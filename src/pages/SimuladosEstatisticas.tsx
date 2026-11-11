@@ -81,7 +81,7 @@ export default function SimuladosEstatisticas() {
   });
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden pb-16">
+    <div className="min-h-screen bg-background relative overflow-hidden pb-[calc(5rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))]">
       <div className="fixed inset-0 pointer-events-none z-0 opacity-80">
         <ShapeGrid speed={0.4} squareSize={44} direction="diagonal" borderColor="rgba(255, 255, 255, 0.04)" hoverFillColor="rgba(255, 255, 255, 0.08)" shape="square" />
       </div>

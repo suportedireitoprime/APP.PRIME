@@ -101,7 +101,7 @@ export default function AudioOfflinePage({ titulo, subtitulo, icon: Icon, catego
 
   return (
     <DesktopPageLayout activeId="ferramentas" title={titulo} subtitle={subtitulo} mobileHeader={mobileHeader}>
-      <div className="w-full max-w-full overflow-x-hidden px-4 sm:px-6 py-4 lg:px-0 lg:py-0 space-y-4">
+      <div className="w-full max-w-full overflow-x-hidden px-4 sm:px-6 pt-4 pb-[calc(3rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] lg:px-0 lg:py-0 space-y-4">
 
         <section className="rounded-2xl border border-border bg-card p-4 space-y-3">
           <div className="flex items-center gap-3">
