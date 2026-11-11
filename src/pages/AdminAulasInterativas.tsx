@@ -7,7 +7,7 @@ import {
   Sparkles, Play, BookOpen, Layers, 
   ArrowLeft, Check, Lock, HelpCircle, 
   AlertCircle, Unlock, ChevronRight, ChevronLeft,
-  Search, X, Star, List, LayoutGrid, Headphones, Home
+  Search, X, Star, List, LayoutGrid, Headphones, Home, BarChart3
 } from 'lucide-react';
 import { AulasMenuAlternancia, AbaAulas } from '@/components/aulas-interativas/AulasMenuAlternancia';
 import { AulasHeroPanel } from '@/components/aulas-interativas/AulasHeroPanel';
@@ -29,6 +29,7 @@ import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { haptic } from '@/lib/nativeHaptics';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import themisMarbleCutout from '@/assets/themis-marble-cutout.webp';
+import tribunalVermelhoTrilha from '@/assets/tribunal_vermelho_trilha.webp';
 import capaAdminOrigens from '@/assets/aulas-interativas/direito-administrativo/capa-aula-01-origens.webp';
 import { 
   MATERIAS_CATALOGO_COMPLETO, 
@@ -951,79 +952,80 @@ export default function AdminAulasInterativas() {
 
         return (
           <>
-          {/* ── Fundo Clássico Oficial (Idêntico 100% ao Mockup: Estátua de Mármore da Deusa na Direita com Louros) ── */}
+          {/* ── Fundo Clássico Oficial (Palácio de Justiça / Tribunal Neoclássico com Louros) ── */}
           <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0a0503]">
             <img
-              src="/images/gamificacao/deusa_louros_trilha.webp"
-              alt=""
+              src={tribunalVermelhoTrilha}
+              alt="Tribunal de Justiça"
               loading="eager"
               decoding="async"
               fetchPriority="high"
               className="w-full h-full object-cover object-top select-none pointer-events-none filter brightness-95 contrast-105"
             />
             {/* Vinheta suave de profundidade */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0704] via-transparent to-black/30 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0704]/90 via-black/25 to-black/55 pointer-events-none" />
           </div>
-
-          {/* Ramos de Louro nos Cantos Inferiores da Tela (Idêntico ao Mockup) */}
-          <div className="fixed bottom-0 left-0 z-10 pointer-events-none">
-            <BottomCornerLaurel />
-          </div>
-          <div className="fixed bottom-0 right-0 z-10 pointer-events-none">
-            <BottomCornerLaurel flip />
-          </div>
-
-          {/* Botão de Voltar Flutuante no Canto Superior Esquerdo */}
-          <button
-            type="button"
-            onClick={handleVoltar}
-            className="fixed top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-4 z-40 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/45 hover:bg-black/75 border border-[#f59e0b]/35 flex items-center justify-center text-[#fef08a] active:scale-95 transition backdrop-blur-md shadow-lg"
-            aria-label="Voltar"
-          >
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.4} />
-          </button>
-
-          {/* Botão de Destravar Teste no Canto Superior Direito */}
-          <button
-            type="button"
-            onClick={() => {
-              setModoLivreTeste(!modoLivreTeste);
-              setToastAviso(!modoLivreTeste ? 'Modo Livre Ativado: Todas as fases liberadas.' : 'Modo Padrão Ativado: Travas progressivas ativadas.');
-            }}
-            className={cn(
-              "fixed top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] right-4 z-40 text-[10px] font-bold px-2.5 py-1.5 rounded-full border transition flex items-center gap-1.5 shadow-lg backdrop-blur-md",
-              modoLivreTeste 
-                ? "bg-amber-500/20 text-amber-300 border-amber-500/40" 
-                : "bg-black/45 text-amber-200/70 border-amber-500/25 hover:text-white"
-            )}
-          >
-            {modoLivreTeste ? <Unlock className="w-3.5 h-3.5 text-amber-300" /> : <Lock className="w-3.5 h-3.5" />}
-            <span className="hidden xs:inline">{modoLivreTeste ? 'Livre' : 'Teste'}</span>
-          </button>
 
           {/* ── CONTAINER PRINCIPAL EM TELA CHEIA (SEM SCROLL VERTICAL, CABE 100% NA TELA) ── */}
-          <div className="relative z-20 w-full h-dvh max-h-dvh overflow-hidden flex flex-col justify-between pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-4">
-            {/* ── TOPO ESQUERDA: BALANÇA DOURADA COM LOUROS, TÍTULO E SUBTÍTULO (ALINHADO À ESQUERDA) ── */}
-            <div className="w-full max-w-sm mr-auto pl-1 sm:pl-3 pt-6 xs:pt-8 sm:pt-9 flex flex-col items-start text-left z-20">
-              <BalancaLourosDourada />
-              
-              <h1 className="font-serif font-black text-2xl xs:text-3xl sm:text-[34px] leading-tight text-[#fef3c7] tracking-wide mt-1 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
-                Aulas em Trilha
-              </h1>
-              
-              <p className="font-serif text-xs xs:text-[13px] text-[#d4b996] font-medium mt-1 leading-snug max-w-[230px] xs:max-w-[260px] drop-shadow-sm">
-                Escolha a área do direito para começar sua jornada.
-              </p>
+          <div className="relative z-20 w-full h-dvh max-h-dvh overflow-hidden flex flex-col justify-between pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-3.5 sm:px-6">
+            {/* ── CABEÇALHO RESPONSIVO PADRÃO FLASHCARDS (CENTRALIZADO, SEM ÍCONE DE CIMA) ── */}
+            <div className="w-full max-w-lg sm:max-w-xl lg:max-w-3xl mx-auto flex flex-col items-center z-20">
+              {/* Top Bar com Botão Voltar Circular Helênico Premium + Botão de Progresso */}
+              <div className="w-full flex items-center justify-between mb-2">
+                <button
+                  type="button"
+                  onClick={handleVoltar}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/60 border border-[#78350f]/60 text-[#fef3c7] hover:border-[#f59e0b] hover:bg-black/80 active:scale-95 transition-all cursor-pointer shadow-lg"
+                  aria-label="Voltar"
+                >
+                  <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-[#fef3c7] stroke-[2.4]" />
+                </button>
 
-              {/* ── Menu de Alternância Compacto e Nobre (Trilhas, Progresso, Favoritos, Estatísticas) ── */}
-              <div className="w-full max-w-[320px] xs:max-w-[350px] mt-2.5 xs:mt-3">
-                <AulasMenuAlternancia
-                  abaAtiva={abaAtiva}
-                  onSelecionarAba={setAbaAtiva}
-                  corDestaque="#f59e0b"
-                  totalFavoritos={favoritosIds.size}
-                  porcentagemGeral={porcentagemGeral}
-                />
+                {/* Botão de Progresso no Canto Superior Direito (Substitui o cadeado) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { haptic.selection(); } catch {}
+                    setAbaAtiva(abaAtiva === 'progresso' ? 'trilhas' : 'progresso');
+                  }}
+                  className={cn(
+                    "relative w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border transition-all active:scale-95 shadow-lg cursor-pointer",
+                    abaAtiva === 'progresso'
+                      ? "bg-amber-500/30 border-amber-400 text-amber-200 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
+                      : "bg-black/60 border-[#78350f]/60 text-[#fef3c7] hover:border-[#f59e0b] hover:bg-black/80"
+                  )}
+                  title="Progresso Geral das Aulas"
+                  aria-label="Ver Progresso das Aulas"
+                >
+                  <BarChart3 className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-amber-400 stroke-[2.2]" />
+                  {porcentagemGeral > 0 && (
+                    <span className="absolute -bottom-1 -right-1 text-[9px] font-mono font-black px-1.5 py-0.2 rounded-full bg-amber-500 text-zinc-950 border border-amber-300 shadow">
+                      {porcentagemGeral}%
+                    </span>
+                  )}
+                </button>
+              </div>
+
+              {/* Título Imperial Centralizado com Badge (Idêntico ao Flashcards) */}
+              <div className="text-center mb-1 xs:mb-2 px-2">
+                <h1 className="inline-flex items-center justify-center gap-2 xs:gap-2.5 flex-wrap">
+                  <span 
+                    className="px-2 py-0.5 xs:px-2.5 xs:py-1 rounded-xl text-[11px] xs:text-xs sm:text-sm font-mono font-black text-[#fde047] border shadow-inner tracking-wider"
+                    style={{
+                      background: 'rgba(0, 0, 0, 0.65)',
+                      borderColor: 'rgba(217, 119, 6, 0.55)',
+                      boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5)',
+                    }}
+                  >
+                    {AULAS_CATALOGO.length > 0 ? AULAS_CATALOGO.length.toLocaleString('pt-BR') : '3.003'}
+                  </span>
+                  <span className="text-xl xs:text-2xl sm:text-3xl font-serif font-black tracking-wide text-[#fef3c7] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+                    Aulas em Trilha
+                  </span>
+                </h1>
+                <p className="text-[11px] xs:text-xs sm:text-sm font-serif italic text-[#fef3c7]/75 mt-1">
+                  Escolha a área do direito para começar sua jornada.
+                </p>
               </div>
             </div>
 
@@ -1104,8 +1106,13 @@ export default function AdminAulasInterativas() {
               const prevMaterias = MATERIAS_CATALOGO.filter(m => m.disciplinaId === prevDisc.id);
               const nextMaterias = MATERIAS_CATALOGO.filter(m => m.disciplinaId === nextDisc.id);
 
-              const { Icon: PrevIcon } = areaIconFor(prevDisc.nome);
-              const { Icon: NextIcon } = areaIconFor(nextDisc.nome);
+              const currAulas = AULAS_CATALOGO.filter(a => a.disciplinaId === currDisc.id);
+              const prevAulas = AULAS_CATALOGO.filter(a => a.disciplinaId === prevDisc.id);
+              const nextAulas = AULAS_CATALOGO.filter(a => a.disciplinaId === nextDisc.id);
+
+              const capaPrevUrl = assetUrl(prevDisc.capaHeroUrl);
+              const capaCurrUrl = assetUrl(currDisc.capaHeroUrl);
+              const capaNextUrl = assetUrl(nextDisc.capaHeroUrl);
 
               const handlePrev = () => {
                 try { haptic.selection(); } catch {}
@@ -1124,9 +1131,6 @@ export default function AdminAulasInterativas() {
                 resetScrollToTop();
               };
 
-              // Imagem clássica da disciplina (capa-direito-civil.webp, etc)
-              const capaCenterUrl = `/images/disciplinas/capa-${currDisc.id === 'civil' ? 'direito-civil' : currDisc.id === 'penal' ? 'direito-penal' : currDisc.id === 'constitucional' ? 'direito-constitucional' : currDisc.id}.webp`;
-
               return (
                 <div 
                   className="w-full flex-1 flex flex-col items-center justify-center select-none"
@@ -1139,39 +1143,59 @@ export default function AdminAulasInterativas() {
                     setTouchStartX(null);
                   }}
                 >
-                  {/* ── CARROSSEL 3D: CARD ESQUERDA + CARD CENTRAL DOURADO + CARD DIREITA ── */}
-                  <div className="relative w-full max-w-md mx-auto flex items-center justify-center my-auto py-1 xs:py-2 overflow-visible select-none">
-                    {/* CARD ESQUERDA (ANTERIOR: ex: Direito Penal) */}
+                  {/* ── CARROSSEL 3D: SETA ESQUERDA + CARD ESQ (COM CAPA) + CARD CENTRAL DOURADO + CARD DIR (COM CAPA) + SETA DIREITA ── */}
+                  <div className="relative w-full max-w-lg mx-auto flex items-center justify-center gap-1 sm:gap-2.5 my-auto py-1 xs:py-2 overflow-visible select-none">
+                    {/* Botão Seta Esquerda */}
+                    <button
+                      type="button"
+                      onClick={handlePrev}
+                      className="w-9 h-9 xs:w-10 xs:h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/75 hover:bg-black/95 border border-[#f59e0b]/40 text-[#fef08a] active:scale-90 transition-all cursor-pointer shadow-2xl z-30 shrink-0"
+                      aria-label="Área anterior"
+                    >
+                      <ChevronLeft className="w-5 h-5 xs:w-6 xs:h-6 stroke-[2.4]" />
+                    </button>
+
+                    {/* CARD ESQUERDA (ANTERIOR: Com Capa e Quantidade de Aulas) */}
                     <div
                       onClick={handlePrev}
-                      className="relative shrink-0 w-[95px] xs:w-[110px] sm:w-[130px] h-[155px] xs:h-[175px] sm:h-[205px] rounded-2xl border p-2 xs:p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-75 hover:opacity-95 transition-all duration-300 scale-95 -mr-4 xs:-mr-5 z-10 select-none shadow-xl"
+                      className="relative shrink-0 w-[92px] xs:w-[108px] sm:w-[128px] h-[165px] xs:h-[185px] sm:h-[215px] rounded-2xl border p-2 xs:p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-75 hover:opacity-95 transition-all duration-300 scale-95 -mr-3 xs:-mr-4 z-10 select-none shadow-xl overflow-hidden group"
                       style={{
                         background: 'linear-gradient(180deg, rgba(32, 20, 13, 0.95) 0%, rgba(14, 8, 5, 0.98) 100%)',
                         borderColor: 'rgba(217, 119, 6, 0.35)',
                         boxShadow: '0 10px 24px rgba(0,0,0,0.85)',
                       }}
                     >
-                      <div className="w-full flex-1 flex flex-col items-center justify-center pt-2">
-                        <div className="w-8 h-8 xs:w-10 xs:h-10 rounded-xl flex items-center justify-center text-[#f59e0b] mb-1.5">
-                          <PrevIcon className="w-5 h-5 xs:w-6 xs:h-6 stroke-[1.8]" />
-                        </div>
-                        <h4 className="font-serif font-bold text-[11px] xs:text-xs text-[#fef3c7] leading-tight line-clamp-2">
+                      {/* Ilustração da Capa Lateral */}
+                      <div className="w-full flex-1 relative rounded-lg overflow-hidden mb-1 flex items-center justify-center">
+                        <img
+                          src={capaPrevUrl}
+                          alt={prevDisc.nome}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover object-center select-none pointer-events-none filter brightness-90 group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1b100a] via-transparent to-transparent pointer-events-none" />
+                      </div>
+
+                      {/* Título e Quantidade de Aulas */}
+                      <div className="z-10 w-full px-0.5 pb-0.5">
+                        <h4 className="font-serif font-bold text-[10.5px] xs:text-xs text-[#fef3c7] leading-tight line-clamp-1">
                           {formatarTituloArea(prevDisc.nome)}
                         </h4>
+                        <p className="text-[9.5px] xs:text-[10.5px] font-serif text-[#d4b996] font-medium mt-0.5">
+                          {prevAulas.length} aulas
+                        </p>
                       </div>
-                      <p className="text-[9.5px] xs:text-[10.5px] font-serif text-[#d4b996] font-medium pb-0.5">
-                        {prevMaterias.length} temas
-                      </p>
                     </div>
 
-                    {/* CARD CENTRAL (ATIVO: ex: Direito Civil com Templo Clássico e Borda Dourada Brilhante) */}
+                    {/* CARD CENTRAL (ATIVO: Borda Dourada Brilhante, Capa e Aulas) */}
                     <motion.div
                       key={currDisc.id}
                       initial={{ scale: 0.96, opacity: 0.85 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: 'spring', damping: 25, stiffness: 320 }}
                       onClick={handleSelectCurrent}
-                      className="relative shrink-0 w-[155px] xs:w-[175px] sm:w-[205px] h-[215px] xs:h-[240px] sm:h-[275px] rounded-2xl border-2 p-2.5 xs:p-3 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-300 z-30 select-none group shadow-2xl"
+                      className="relative shrink-0 w-[150px] xs:w-[172px] sm:w-[200px] h-[225px] xs:h-[250px] sm:h-[285px] rounded-2xl border-2 p-2.5 xs:p-3 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-300 z-30 select-none group shadow-2xl overflow-hidden"
                       style={{
                         borderColor: '#f59e0b',
                         background: 'linear-gradient(180deg, rgba(42, 26, 17, 0.97) 0%, rgba(20, 12, 7, 0.99) 100%)',
@@ -1181,55 +1205,72 @@ export default function AdminAulasInterativas() {
                       {/* Borda Interna Dourada */}
                       <div className="absolute inset-1.5 rounded-xl border border-[#fef08a]/35 pointer-events-none z-10" />
 
-                      {/* Ilustração Clássica do Templo / Fachada Clássica */}
+                      {/* Ilustração da Capa Central */}
                       <div className="w-full flex-1 relative rounded-lg overflow-hidden m-0.5 mb-1.5 flex items-center justify-center">
                         <img
-                          src={capaCenterUrl}
+                          src={capaCurrUrl}
                           alt={currDisc.nome}
                           loading="eager"
                           decoding="async"
                           fetchPriority="high"
                           className="w-full h-full object-cover object-center select-none pointer-events-none filter brightness-95 group-hover:scale-105 transition-transform duration-500"
-                          onError={(e) => {
-                            e.currentTarget.src = assetUrl(currDisc.capaHeroUrl);
-                          }}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#1b100a] via-transparent to-transparent pointer-events-none" />
                       </div>
 
-                      {/* Título e Quantidade de Temas */}
+                      {/* Título e Quantidade de Aulas */}
                       <div className="z-10 w-full px-1 pb-1">
-                        <h3 className="font-serif font-black text-[13px] xs:text-[14px] sm:text-base text-[#fef3c7] leading-tight line-clamp-2 drop-shadow-sm">
+                        <h3 className="font-serif font-black text-[13px] xs:text-[14px] sm:text-base text-[#fef3c7] leading-tight line-clamp-1 drop-shadow-sm">
                           {formatarTituloArea(currDisc.nome)}
                         </h3>
                         <p className="text-[10.5px] xs:text-[11.5px] font-serif text-[#d4b996] font-semibold mt-0.5">
-                          {currMaterias.length} temas
+                          {currAulas.length} aulas
                         </p>
                       </div>
                     </motion.div>
 
-                    {/* CARD DIREITA (PRÓXIMO: ex: Direito Constitucional) */}
+                    {/* CARD DIREITA (PRÓXIMO: Com Capa e Quantidade de Aulas) */}
                     <div
                       onClick={handleNext}
-                      className="relative shrink-0 w-[95px] xs:w-[110px] sm:w-[130px] h-[155px] xs:h-[175px] sm:h-[205px] rounded-2xl border p-2 xs:p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-75 hover:opacity-95 transition-all duration-300 scale-95 -ml-4 xs:-ml-5 z-10 select-none shadow-xl"
+                      className="relative shrink-0 w-[92px] xs:w-[108px] sm:w-[128px] h-[165px] xs:h-[185px] sm:h-[215px] rounded-2xl border p-2 xs:p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-75 hover:opacity-95 transition-all duration-300 scale-95 -ml-3 xs:-ml-4 z-10 select-none shadow-xl overflow-hidden group"
                       style={{
                         background: 'linear-gradient(180deg, rgba(32, 20, 13, 0.95) 0%, rgba(14, 8, 5, 0.98) 100%)',
                         borderColor: 'rgba(217, 119, 6, 0.35)',
                         boxShadow: '0 10px 24px rgba(0,0,0,0.85)',
                       }}
                     >
-                      <div className="w-full flex-1 flex flex-col items-center justify-center pt-2">
-                        <div className="w-8 h-8 xs:w-10 xs:h-10 rounded-xl flex items-center justify-center text-[#f59e0b] mb-1.5">
-                          <NextIcon className="w-5 h-5 xs:w-6 xs:h-6 stroke-[1.8]" />
-                        </div>
-                        <h4 className="font-serif font-bold text-[11px] xs:text-xs text-[#fef3c7] leading-tight line-clamp-2">
+                      {/* Ilustração da Capa Lateral */}
+                      <div className="w-full flex-1 relative rounded-lg overflow-hidden mb-1 flex items-center justify-center">
+                        <img
+                          src={capaNextUrl}
+                          alt={nextDisc.nome}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full h-full object-cover object-center select-none pointer-events-none filter brightness-90 group-hover:scale-105 transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1b100a] via-transparent to-transparent pointer-events-none" />
+                      </div>
+
+                      {/* Título e Quantidade de Aulas */}
+                      <div className="z-10 w-full px-0.5 pb-0.5">
+                        <h4 className="font-serif font-bold text-[10.5px] xs:text-xs text-[#fef3c7] leading-tight line-clamp-1">
                           {formatarTituloArea(nextDisc.nome)}
                         </h4>
+                        <p className="text-[9.5px] xs:text-[10.5px] font-serif text-[#d4b996] font-medium mt-0.5">
+                          {nextAulas.length} aulas
+                        </p>
                       </div>
-                      <p className="text-[9.5px] xs:text-[10.5px] font-serif text-[#d4b996] font-medium pb-0.5">
-                        {nextMaterias.length} temas
-                      </p>
                     </div>
+
+                    {/* Botão Seta Direita */}
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="w-9 h-9 xs:w-10 xs:h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/75 hover:bg-black/95 border border-[#f59e0b]/40 text-[#fef08a] active:scale-90 transition-all cursor-pointer shadow-2xl z-30 shrink-0"
+                      aria-label="Próxima área"
+                    >
+                      <ChevronRight className="w-5 h-5 xs:w-6 xs:h-6 stroke-[2.4]" />
+                    </button>
                   </div>
 
                   {/* ── 4 PONTOS INDICADORES DO CARROSSEL (2º PONTO ALONGADO NO MOCKUP) ── */}
