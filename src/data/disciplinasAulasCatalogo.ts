@@ -277,3 +277,4 @@ export const DISCIPLINAS_CATALOGO: DisciplinaItem[] = [
     textAccentClass: 'text-[#2dd4bf]'
   }
 ];
+

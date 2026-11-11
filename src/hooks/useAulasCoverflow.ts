@@ -307,3 +307,4 @@ export function useAulasCoverflow({
     updateCoverFlowTransforms,
   };
 }
+
