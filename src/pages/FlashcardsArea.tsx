@@ -30,7 +30,27 @@ import PremiumGate from '@/components/PremiumGate';
 import { cn } from '@/lib/utils';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { motion, AnimatePresence } from 'framer-motion';
-import splashHeroSkyColumns from '@/assets/splash-hero-sky-columns.webp';
+import greciaAcropoleTrilha from '@/assets/grecia-acropole-trilha.webp';
+import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.jpg';
+
+const LaurelBranch = ({ flip = false }: { flip?: boolean }) => (
+  <svg 
+    viewBox="0 0 100 100" 
+    className={cn("w-14 h-14 sm:w-18 sm:h-18 text-[#d97706]/75 pointer-events-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]", flip && "scale-x-[-1]")}
+    fill="currentColor"
+  >
+    <path d="M15,90 Q40,75 50,20 Q48,55 25,85 Z" opacity="0.9" fill="none" stroke="currentColor" strokeWidth="2.5" />
+    <path d="M50,18 C55,15 62,20 58,26 C54,32 48,24 50,18 Z" />
+    <path d="M48,32 C56,30 63,36 57,43 C51,50 46,40 48,32 Z" />
+    <path d="M42,48 C51,47 57,54 50,61 C43,68 40,56 42,48 Z" />
+    <path d="M34,65 C43,65 48,72 40,78 C33,84 31,73 34,65 Z" />
+    <path d="M25,80 C32,80 37,86 30,91 C23,96 23,87 25,80 Z" />
+    <path d="M46,24 C38,20 33,26 38,32 C43,38 48,29 46,24 Z" />
+    <path d="M42,40 C33,37 29,44 35,50 C41,56 44,46 42,40 Z" />
+    <path d="M36,58 C26,56 23,63 30,69 C37,75 39,64 36,58 Z" />
+    <path d="M28,74 C19,73 17,80 24,85 C31,90 31,80 28,74 Z" />
+  </svg>
+);
 
 interface SubMateriaCivilConfig {
   id: string;
@@ -558,24 +578,24 @@ const FlashcardsArea = () => {
   const headerProgressBar = (
     <div className="w-full flex flex-col justify-center text-left py-0.5 pr-1">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#bfdbfe] truncate flex items-center gap-1.5">
+        <span className="text-[11px] sm:text-xs font-serif font-black uppercase tracking-wider text-[#fef3c7] truncate flex items-center gap-1.5">
           <span 
             className="w-1.5 h-1.5 rounded-full shrink-0" 
-            style={{ backgroundColor: '#38bdf8', boxShadow: '0 0 6px #38bdf8' }}
+            style={{ backgroundColor: '#fde047', boxShadow: '0 0 6px #fde047' }}
           />
           <span className="truncate">{officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito Civil'}</span>
         </span>
-        <span className="text-[10px] sm:text-[10.5px] font-mono font-bold text-[#38bdf8] tabular-nums shrink-0 ml-2">
+        <span className="text-[10px] sm:text-[10.5px] font-mono font-bold text-[#fde047] tabular-nums shrink-0 ml-2">
           {totalCompreendidos} / {totalFlashcardsArea} ({progressoPctFlash}%)
         </span>
       </div>
-      <div className="w-full h-2 rounded-full bg-black/70 border border-white/10 overflow-hidden">
+      <div className="w-full h-1.5 rounded-full bg-black/60 border border-[#78350f]/40 overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700 ease-out"
           style={{
             width: `${Math.max(progressoPctFlash, totalFlashcardsArea > 0 ? 3 : 0)}%`,
-            background: 'linear-gradient(90deg, #1d4ed8 0%, #2563eb 50%, #38bdf8 100%)',
-            boxShadow: '0 0 10px rgba(56, 189, 248, 0.65)',
+            background: 'linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fde047 100%)',
+            boxShadow: '0 0 10px rgba(245, 158, 11, 0.65)',
           }}
         />
       </div>
@@ -731,40 +751,23 @@ const FlashcardsArea = () => {
       subtitle="Trilha de Flashcards"
       mobileHeader={mobileHeader}
     >
-      {/* Fundo Base idêntico ao Vade Mecum */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]" />
-
-      {/* Fundo Grécia Clássica 3D: Pilares do Templo e Céu Nobre emergindo em 3D */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0D0D0D]">
+      {/* Fundo da Acrópole e Montanha Grega Suavemente Ofuscado (Pouquinho Só) */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#1c120c]">
         <img
-          src={splashHeroSkyColumns}
-          alt="Pilares e Templo Grego Clássico"
+          src={greciaAcropoleTrilha}
+          alt="Acrópole Grega na Montanha"
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          className="w-full h-full object-cover object-top opacity-75 scale-100 select-none pointer-events-none filter brightness-105 contrast-110"
+          className="w-full h-full object-cover object-top opacity-92 select-none pointer-events-none filter blur-[1.8px] brightness-[0.95] contrast-[1.06]"
         />
-        {/* Gradientes cinematográficos suaves: preservam a visibilidade monumental dos pilares e do céu */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-[#0D0D0D]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_35%,#0D0D0D_95%)]" />
+        {/* Vinheta leve nas extremidades preservando a imagem equilibrada e nítida */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/60 pointer-events-none" />
       </div>
 
-      {/* Fundo com Grid de Quadrados (ShapeGrid) sutil sobreposto */}
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-20">
-        <ShapeGrid 
-          speed={0.3} 
-          squareSize={40}
-          direction='diagonal'
-          borderColor='rgba(255, 255, 255, 0.08)'
-          hoverFillColor='rgba(37, 99, 235, 0.15)'
-          shape='square'
-          hoverTrailAmount={5}
-        />
-      </div>
-
-      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-24 pt-2 min-w-0 overflow-x-hidden box-border">
-        {/* ── Menu de Alternância (Limpo, sem títulos, sem cortes nas laterais) ── */}
-        <div className="sticky top-0 z-30 -mx-3.5 sm:-mx-6 py-2 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-[#2563eb]/30 mb-4 shadow-lg shadow-black/60">
+      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-32 sm:pb-36 pt-2 min-w-0 overflow-x-hidden box-border">
+        {/* ── Menu de Alternância (100% Limpo e Fiel à Referência da Grécia) ── */}
+        <div className="sticky top-0 z-30 -mx-3.5 sm:-mx-6 py-2 bg-[#1c120c]/85 backdrop-blur-md border-b border-[#78350f]/40 mb-3 shadow-lg shadow-black/70">
           <div
             ref={pillContainerRef}
             className="flex items-center gap-2.5 overflow-x-auto px-4 sm:px-6 py-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -779,23 +782,23 @@ const FlashcardsArea = () => {
                     type="button"
                     onClick={() => selectSubMateria(sub.id)}
                     style={isActive ? {
-                      backgroundColor: '#2563eb',
-                      borderColor: '#93c5fd',
-                      color: '#ffffff',
-                      boxShadow: '0 0 20px rgba(37, 99, 235, 0.8)',
+                      backgroundColor: '#fef3c7',
+                      borderColor: '#d97706',
+                      color: '#451a03',
+                      boxShadow: '0 0 18px rgba(245, 158, 11, 0.65)',
                     } : {
-                      backgroundColor: 'rgba(30, 58, 138, 0.45)',
-                      borderColor: 'rgba(59, 130, 246, 0.35)',
-                      color: '#93c5fd',
+                      backgroundColor: 'rgba(35, 20, 10, 0.75)',
+                      borderColor: 'rgba(180, 83, 9, 0.45)',
+                      color: '#fef3c7',
                     }}
                     className={cn(
-                      "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
+                      "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-serif font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
                       isActive
                         ? "scale-[1.04] font-black"
-                        : "hover:bg-[#1e40af]/60 hover:text-white hover:border-[#60a5fa]/60"
+                        : "hover:bg-[#451a03]/80 hover:text-white hover:border-[#f59e0b]/60"
                     )}
                   >
-                    <Landmark className={cn("w-3 h-3 shrink-0", isActive ? "text-white" : "text-[#60a5fa]")} />
+                    <Landmark className={cn("w-3 h-3 shrink-0", isActive ? "text-[#451a03]" : "text-[#f59e0b]")} />
                     <span>{sub.nome}</span>
                   </button>
                 );
@@ -812,23 +815,23 @@ const FlashcardsArea = () => {
                       navigate(`/flashcards/area/${a.slug}`);
                     }}
                     style={isSelected ? {
-                      backgroundColor: '#2563eb',
-                      borderColor: '#93c5fd',
-                      color: '#ffffff',
-                      boxShadow: '0 0 20px rgba(37, 99, 235, 0.8)',
+                      backgroundColor: '#fef3c7',
+                      borderColor: '#d97706',
+                      color: '#451a03',
+                      boxShadow: '0 0 18px rgba(245, 158, 11, 0.65)',
                     } : {
-                      backgroundColor: 'rgba(30, 58, 138, 0.45)',
-                      borderColor: 'rgba(59, 130, 246, 0.35)',
-                      color: '#93c5fd',
+                      backgroundColor: 'rgba(35, 20, 10, 0.75)',
+                      borderColor: 'rgba(180, 83, 9, 0.45)',
+                      color: '#fef3c7',
                     }}
                     className={cn(
-                      "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
+                      "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-serif font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
                       isSelected
                         ? "scale-[1.04] font-black"
-                        : "hover:bg-[#1e40af]/60 hover:text-white hover:border-[#60a5fa]/60"
+                        : "hover:bg-[#451a03]/80 hover:text-white hover:border-[#f59e0b]/60"
                     )}
                   >
-                    <Landmark className={cn("w-3 h-3 shrink-0", isSelected ? "text-white" : "text-[#60a5fa]")} />
+                    <Landmark className={cn("w-3 h-3 shrink-0", isSelected ? "text-[#451a03]" : "text-[#f59e0b]")} />
                     <span>{a.area}</span>
                   </button>
                 );
@@ -848,32 +851,32 @@ const FlashcardsArea = () => {
           </div>
         ) : (
           <>
-            {/* ── BARRA DE PROGRESSO DA MATÉRIA (Abaixo do Menu de Alternância) ── */}
+            {/* ── BARRA DE PROGRESSO DA MATÉRIA (Estilo Helênico Dourado) ── */}
             {isFlash && isCivilArea && activeSection && (
               <div 
                 style={{
-                  background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.35) 100%)',
-                  borderColor: 'rgba(59, 130, 246, 0.4)',
-                  boxShadow: '0 8px 24px -4px rgba(37, 99, 235, 0.25)',
+                  background: 'linear-gradient(135deg, rgba(35, 22, 13, 0.92) 0%, rgba(55, 34, 18, 0.92) 100%)',
+                  borderColor: 'rgba(217, 119, 6, 0.45)',
+                  boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.6)',
                 }}
-                className="w-full mb-5 p-3.5 rounded-2xl border backdrop-blur-md"
+                className="w-full mb-4 p-3 sm:p-3.5 rounded-2xl border backdrop-blur-md"
               >
                 <div className="flex items-center justify-between mb-1.5 px-0.5">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#93c5fd] flex items-center gap-1.5">
-                    <Scale className="w-3.5 h-3.5 text-[#38bdf8]" />
-                    Progresso da Matéria • {activeSection.nome}
+                  <span className="text-[11px] font-serif font-bold uppercase tracking-wider text-[#fef3c7] flex items-center gap-1.5">
+                    <Scale className="w-3.5 h-3.5 text-[#fde047]" />
+                    Progresso da Matéria
                   </span>
-                  <span className="text-[11px] font-mono font-bold text-[#38bdf8] tabular-nums">
-                    {activeSectionCompreendidos} / {activeSectionTotalCards} dominados ({activeSectionPct}%)
+                  <span className="text-[11px] font-mono font-bold text-[#fde047] tabular-nums">
+                    {activeSectionCompreendidos} / {activeSectionTotalCards} ({activeSectionPct}%)
                   </span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-black/70 border border-white/10 overflow-hidden">
+                <div className="w-full h-1.5 rounded-full bg-black/60 border border-[#78350f]/30 overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-700 ease-out"
                     style={{
                       width: `${Math.max(activeSectionPct, activeSectionTotalCards > 0 ? 3 : 0)}%`,
-                      background: 'linear-gradient(90deg, #1d4ed8 0%, #2563eb 50%, #38bdf8 100%)',
-                      boxShadow: '0 0 12px rgba(56, 189, 248, 0.65)',
+                      background: 'linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fde047 100%)',
+                      boxShadow: '0 0 10px rgba(245, 158, 11, 0.7)',
                     }}
                   />
                 </div>
@@ -899,39 +902,52 @@ const FlashcardsArea = () => {
                       transition={{ duration: 0.22, ease: "easeOut" }}
                       className="w-full min-w-0 relative z-[2] flex flex-col items-center"
                     >
-                      {/* Marcador / Pórtico Clássico da Matéria Atual */}
-                      <div className="w-full mb-8 pt-1 flex flex-col items-center justify-center">
-                        <div className="w-full max-w-[560px] flex items-center gap-3 px-3">
+                      {/* ── CUME DA TRILHA: O TEMPLO DA ACRÓPOLE (Destino da Maestria) ── */}
+                      <div className="w-full flex flex-col items-center justify-center pt-2 pb-4">
+                        <div className="relative flex flex-col items-center">
+                          {/* Halo solar suave atrás do Parthenon */}
                           <div 
-                            className="h-[2px] flex-1"
-                            style={{ background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.8), #38bdf8)' }}
-                          />
-                          <div 
+                            className="absolute -top-4 w-40 h-28 rounded-full pointer-events-none"
                             style={{
-                              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.85) 100%)',
-                              borderColor: 'rgba(56, 189, 248, 0.6)',
-                              boxShadow: '0 0 24px rgba(37, 99, 235, 0.5)',
+                              background: 'radial-gradient(ellipse at center, rgba(251, 191, 36, 0.35) 0%, rgba(217, 119, 6, 0.1) 60%, transparent 100%)',
+                              filter: 'blur(16px)',
                             }}
-                            className="flex items-center gap-2.5 px-4 py-2 rounded-2xl border backdrop-blur-md"
+                          />
+
+                          {/* Ícone Monumental do Parthenon / Acrópole */}
+                          <div 
+                            className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border flex items-center justify-center shadow-2xl mb-2"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(41, 28, 18, 0.95) 0%, rgba(20, 14, 10, 0.95) 100%)',
+                              borderColor: 'rgba(217, 119, 6, 0.6)',
+                              boxShadow: '0 0 24px rgba(245, 158, 11, 0.4), inset 0 2px 4px rgba(254, 240, 138, 0.2)',
+                            }}
                           >
-                            <Landmark className="w-4 h-4 text-[#38bdf8] shrink-0 drop-shadow-[0_0_6px_rgba(56,189,248,0.8)]" />
-                            <span className="text-xs sm:text-sm font-sans font-black uppercase tracking-wider text-white">
+                            <Landmark className="w-9 h-9 sm:w-11 sm:h-11 text-[#fde047] drop-shadow-[0_2px_8px_rgba(234,179,8,0.7)]" />
+                          </div>
+
+                          {/* Placa em Mármore Helênico */}
+                          <div 
+                            className="px-4 py-1.5 rounded-full border flex items-center gap-2 backdrop-blur-md"
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(28, 20, 13, 0.9) 0%, rgba(41, 28, 18, 0.9) 100%)',
+                              borderColor: 'rgba(245, 158, 11, 0.5)',
+                              boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
+                            }}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#fde047] shadow-[0_0_6px_#fde047]" />
+                            <span className="text-[11px] sm:text-xs font-serif font-black tracking-widest uppercase text-[#fef3c7]">
                               {activeSection.nome}
                             </span>
-                            <span 
-                              style={{
-                                backgroundColor: 'rgba(37, 99, 235, 0.4)',
-                                borderColor: 'rgba(96, 165, 250, 0.5)',
-                                color: '#bfdbfe',
-                              }}
-                              className="text-[10.5px] font-mono font-bold px-2 py-0.5 rounded-full border"
-                            >
-                              {activeSection.items.length} {activeSection.items.length === 1 ? 'deck' : 'decks'}
-                            </span>
                           </div>
+
+                          {/* Início da Estrada Dourada saindo do templo */}
                           <div 
-                            className="h-[2px] flex-1"
-                            style={{ background: 'linear-gradient(90deg, #38bdf8, rgba(59, 130, 246, 0.8), transparent)' }}
+                            className="w-1.5 h-6 my-1.5 rounded-full"
+                            style={{
+                              background: 'linear-gradient(180deg, #fde047 0%, #f59e0b 100%)',
+                              boxShadow: '0 0 10px rgba(245, 158, 11, 0.8)',
+                            }}
                           />
                         </div>
                       </div>
@@ -939,16 +955,36 @@ const FlashcardsArea = () => {
                       {/* Decks da Trilha desta Matéria */}
                       {activeSection.items.map((item, itemIdx) => {
                         const isLastInSection = itemIdx === activeSection.items.length - 1;
+                        // Deck ativo é o primeiro deck (ou o primeiro com progresso em andamento)
+                        const isActive = itemIdx === 0;
                         return (
                           <FlashcardDeckItem
                             key={item.key}
                             item={item}
-                            i={item.globalIndex}
+                            i={itemIdx}
                             palette={palette}
                             isLast={isLastInSection}
+                            isActive={isActive}
                           />
                         );
                       })}
+
+                      {/* Louros da Vitória Clássicos no Rodapé da Matéria */}
+                      <div className="w-full flex items-center justify-between px-6 pt-6 pb-2 text-[#d97706]/40">
+                        <svg className="w-9 h-9 -rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
+                          <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
+                          <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
+                        </svg>
+                        <span className="text-[10px] font-serif font-semibold tracking-widest uppercase text-[#d97706]/65">
+                          Trilha da Sabedoria • {activeSection.nome}
+                        </span>
+                        <svg className="w-9 h-9 rotate-12 scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
+                          <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
+                          <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
+                        </svg>
+                      </div>
 
                       {/* Pórtico Triunfal Clássico para Avançar para a Próxima Matéria */}
                       {nextSection && (
@@ -957,34 +993,34 @@ const FlashcardsArea = () => {
                             selectSubMateria(nextSection.id);
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                           }}
-                          className="w-full my-12 pt-3 flex flex-col items-center justify-center cursor-pointer group select-none"
+                          className="w-full my-8 pt-2 flex flex-col items-center justify-center cursor-pointer group select-none"
                         >
                           <div className="w-full max-w-[560px] flex items-center gap-3 px-3">
                             <div 
                               className="h-[2px] flex-1"
-                              style={{ background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.8), #38bdf8)' }}
+                              style={{ background: 'linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.8), #fde047)' }}
                             />
                             <div 
                               style={{
-                                background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.9) 100%)',
-                                borderColor: 'rgba(56, 189, 248, 0.65)',
-                                boxShadow: '0 0 28px rgba(34, 211, 238, 0.45)',
+                                background: 'linear-gradient(135deg, rgba(41, 28, 18, 0.95) 0%, rgba(20, 14, 10, 0.95) 100%)',
+                                borderColor: 'rgba(245, 158, 11, 0.65)',
+                                boxShadow: '0 0 28px rgba(245, 158, 11, 0.35)',
                               }}
-                              className="flex items-center gap-2.5 px-5 py-3 rounded-2xl border backdrop-blur-md group-hover:scale-105 group-hover:border-[#38bdf8] transition-all duration-300"
+                              className="flex items-center gap-2.5 px-5 py-3 rounded-2xl border backdrop-blur-md group-hover:scale-105 group-hover:border-[#fde047] transition-all duration-300"
                             >
-                              <Landmark className="w-4 h-4 text-[#38bdf8] shrink-0 animate-pulse drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
-                              <span className="text-xs sm:text-sm font-sans font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-                                Próxima Matéria: <span className="text-[#38bdf8] underline decoration-[#38bdf8]/60 underline-offset-4">{nextSection.nome}</span>
+                              <Landmark className="w-4 h-4 text-[#fde047] shrink-0 animate-pulse drop-shadow-[0_0_8px_rgba(253,224,71,0.8)]" />
+                              <span className="text-xs sm:text-sm font-serif font-black uppercase tracking-wider text-[#fef3c7] flex items-center gap-1.5">
+                                Próxima Matéria: <span className="text-[#fde047] underline decoration-[#fde047]/60 underline-offset-4">{nextSection.nome}</span>
                               </span>
-                              <ArrowRight className="w-4 h-4 text-[#38bdf8] group-hover:translate-x-1.5 transition-transform" />
+                              <ArrowRight className="w-4 h-4 text-[#fde047] group-hover:translate-x-1.5 transition-transform" />
                             </div>
                             <div 
                               className="h-[2px] flex-1"
-                              style={{ background: 'linear-gradient(90deg, #38bdf8, rgba(59, 130, 246, 0.8), transparent)' }}
+                              style={{ background: 'linear-gradient(90deg, #fde047, rgba(217, 119, 6, 0.8), transparent)' }}
                             />
                           </div>
-                          <span className="text-[10.5px] font-medium text-[#93c5fd] mt-2 flex items-center gap-1">
-                            <ScrollText className="w-3 h-3 text-[#38bdf8]" />
+                          <span className="text-[10.5px] font-medium text-[#f59e0b] mt-2 flex items-center gap-1">
+                            <ScrollText className="w-3 h-3 text-[#fde047]" />
                             Toque para avançar para a próxima matéria
                           </span>
                         </div>
@@ -996,6 +1032,27 @@ const FlashcardsArea = () => {
             )}
           </>
         )}
+      </div>
+
+      {/* ── Rodapé Helênico: Templo com Louros 100% sem margens laterais e altura compacta ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-20 pointer-events-none flex flex-col justify-end items-center select-none overflow-hidden h-20 sm:h-26">
+        {/* Gradiente de opacidade para a trilha surgir suavemente por trás */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#120b07] via-[#120b07]/60 to-transparent pointer-events-none" />
+        
+        {/* Fachada do Templo com Louros: Edge-to-Edge sem margens laterais */}
+        <div className="relative w-full h-15 sm:h-20 flex items-end">
+          <img
+            src={greciaTrilhaRodape}
+            alt="Templo Clássico e Louros Helênicos"
+            loading="eager"
+            decoding="async"
+            className="w-full h-full object-cover object-bottom opacity-95 drop-shadow-[0_-4px_16px_rgba(0,0,0,0.9)]"
+            style={{
+              maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%)',
+              WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%)',
+            }}
+          />
+        </div>
       </div>
 
       <PremiumGate
