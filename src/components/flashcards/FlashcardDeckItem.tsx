@@ -20,7 +20,7 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
           onClick={item.onClick}
           onPointerEnter={item.onPrefetch}
           onTouchStart={item.onPrefetch}
-          className="flex flex-col items-center text-center w-[160px] xs:w-[175px] sm:w-[200px] cursor-pointer select-none group focus-visible:outline-none"
+          className="flex flex-col items-center text-center w-[180px] xs:w-[200px] sm:w-[220px] cursor-pointer select-none group focus-visible:outline-none"
         >
           {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK AZUL ELEGANTE ── */}
           <div className="relative w-[130px] h-[130px] xs:w-[145px] xs:h-[145px] sm:w-[165px] sm:h-[165px] aspect-square transition-transform duration-300 group-hover:-translate-y-2 group-active:scale-[0.96]">
@@ -125,18 +125,15 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
           </div>
 
           {/* ── NOME DO DECK E QUAL DECK É DO LADO (Conforme Solicitado) ── */}
-          <div className="mt-2.5 sm:mt-3 w-full flex items-center justify-center gap-2 px-1 flex-wrap text-center">
-            <span className="px-2 py-0.5 rounded-lg bg-blue-500/25 border border-blue-400/35 text-[11px] sm:text-xs font-black uppercase tracking-wider text-blue-300 shrink-0">
+          <div className="mt-2.5 sm:mt-3 w-full flex items-center justify-center gap-1.5 px-0.5 text-center flex-wrap">
+            <span className="px-1.5 py-0.5 rounded-md bg-blue-500/25 border border-blue-400/35 text-[10.5px] sm:text-[11.5px] font-black uppercase tracking-wider text-blue-300 shrink-0">
               {item.badgeLabel}
             </span>
-            <h3 className="font-sans font-bold text-[13.5px] xs:text-[14.5px] sm:text-[15.5px] leading-tight text-zinc-100 group-hover:text-blue-300 transition-colors drop-shadow-sm">
+            <span className="font-sans font-bold text-[13px] xs:text-[14px] sm:text-[15px] leading-tight text-zinc-100 group-hover:text-blue-300 transition-colors">
               {tituloLimpo}
-            </h3>
+            </span>
             {item.isLocked && (
-              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 border border-amber-400/40 shrink-0">
-                <Crown className="w-2.5 h-2.5 text-amber-400" />
-                PREMIUM
-              </span>
+              <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400/20 shrink-0" />
             )}
           </div>
         </div>

@@ -28,6 +28,31 @@ import { haptic } from '@/lib/nativeHaptics';
 import { useSubscription } from '@/hooks/useSubscription';
 import PremiumGate from '@/components/PremiumGate';
 import { cn } from '@/lib/utils';
+import ShapeGrid from '@/components/ui/ShapeGrid';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface SubMateriaCivilConfig {
+  id: string;
+  nome: string;
+  numeros: number[];
+}
+
+const SUB_MATERIAS_CIVIL: SubMateriaCivilConfig[] = [
+  { id: 'sec-parte-geral', nome: 'Parte Geral & LINDB', numeros: [1, 2, 3, 4, 5, 6, 32, 33] },
+  { id: 'sec-obrigacoes', nome: 'Obrigações', numeros: [7, 8, 9, 10] },
+  { id: 'sec-contratos', nome: 'Contratos', numeros: [11, 12, 13, 30, 31, 40, 41] },
+  { id: 'sec-responsabilidade-civil', nome: 'Responsabilidade Civil', numeros: [14] },
+  { id: 'sec-direitos-reais', nome: 'Direitos Reais', numeros: [15, 16, 17, 18, 19, 20, 22] },
+  { id: 'sec-familia', nome: 'Direito de Família', numeros: [21, 23, 24, 25, 34, 37, 38, 39, 42, 43, 44] },
+  { id: 'sec-sucessoes', nome: 'Direito das Sucessões', numeros: [26, 27, 35, 36] },
+  { id: 'sec-consumidor-especial', nome: 'Consumidor & Especial', numeros: [28, 29] },
+];
+
+function getNumeroTema(temaStr: string): number {
+  if (!temaStr) return 0;
+  const m = String(temaStr).match(/^(\d+)[\.\-\s_:]+/);
+  return m ? parseInt(m[1], 10) : 0;
+}
 
 const FlashcardsArea = () => {
   useTrackArea("flashcards_area_aberta");
@@ -287,6 +312,8 @@ const FlashcardsArea = () => {
         const cleanTitle = (t.tema || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
         return {
           key: `deck-${t.tema}-${idx}`,
+          rawTema: t.tema,
+          temaNum: getNumeroTema(t.tema),
           titulo: cleanTitle || t.tema,
           ordemStr: String(idx + 1).padStart(2, '0'),
           badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
@@ -319,6 +346,8 @@ const FlashcardsArea = () => {
           const cleanTitle = (tema || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
           return {
             key: `canon-deck-${tema}-${idx}`,
+            rawTema: tema,
+            temaNum: getNumeroTema(tema),
             titulo: cleanTitle || tema,
             ordemStr: String(idx + 1).padStart(2, '0'),
             badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
@@ -497,6 +526,122 @@ const FlashcardsArea = () => {
     return FALLBACK_FLASHCARDS_AREAS;
   }, [flashcardsAreasResumo]);
 
+  const pillContainerRef = useRef<HTMLDivElement>(null);
+  const [activeSectionId, setActiveSectionId] = useState<string>('sec-parte-geral');
+
+  const isCivilArea = useMemo(() => {
+    return slug === 'direito-civil' || (officialFlashcardArea && officialFlashcardArea.toLowerCase().includes('civil'));
+  }, [slug, officialFlashcardArea]);
+
+  // Se for Direito Civil, agrupa os temas nas 8 sub-matérias clássicas
+  const sections = useMemo(() => {
+    if (!isCivilArea) {
+      return [{
+        id: 'sec-trilha-geral',
+        nome: officialFlashcardArea || area?.nome || effectiveAreaName || 'Trilha',
+        items: itemsToRender.map((it, idx) => ({ ...it, globalIndex: idx })),
+      }];
+    }
+
+    let globalCounter = 0;
+    const result = SUB_MATERIAS_CIVIL.map((sub) => {
+      const matched = itemsToRender.filter((it) => {
+        const num = it.temaNum || getNumeroTema(it.rawTema || it.titulo);
+        return sub.numeros.includes(num);
+      }).sort((a, b) => {
+        const numA = a.temaNum || getNumeroTema(a.rawTema || a.titulo);
+        const numB = b.temaNum || getNumeroTema(b.rawTema || b.titulo);
+        return numA - numB;
+      });
+
+      const itemsWithGlobal = matched.map((it) => {
+        const curr = globalCounter++;
+        const numStr = String(curr + 1).padStart(2, '0');
+        const isLocked = !isPremium && curr >= 2;
+        return {
+          ...it,
+          globalIndex: curr,
+          badgeLabel: `Deck ${numStr}`,
+          ordemStr: numStr,
+          isLocked,
+        };
+      });
+
+      return {
+        id: sub.id,
+        nome: sub.nome,
+        items: itemsWithGlobal,
+      };
+    }).filter((sub) => sub.items.length > 0);
+
+    // Se sobrou algum tema não classificado nos números padrão, anexa à última sub-matéria
+    const classifiedKeys = new Set(result.flatMap((s) => s.items.map((it) => it.key)));
+    const unclassified = itemsToRender.filter((it) => !classifiedKeys.has(it.key));
+    if (unclassified.length > 0 && result.length > 0) {
+      const lastSec = result[result.length - 1];
+      unclassified.forEach((it) => {
+        const curr = globalCounter++;
+        const numStr = String(curr + 1).padStart(2, '0');
+        lastSec.items.push({
+          ...it,
+          globalIndex: curr,
+          badgeLabel: `Deck ${numStr}`,
+          ordemStr: numStr,
+          isLocked: !isPremium && curr >= 2,
+        });
+      });
+    }
+
+    return result;
+  }, [isCivilArea, itemsToRender, isPremium, officialFlashcardArea, area?.nome, effectiveAreaName]);
+
+  const activeSection = useMemo(() => {
+    return sections.find((s) => s.id === activeSectionId) || sections[0] || null;
+  }, [sections, activeSectionId]);
+
+  const activeSectionIndex = useMemo(() => {
+    return sections.findIndex((s) => s.id === (activeSection?.id || ''));
+  }, [sections, activeSection]);
+
+  const nextSection = useMemo(() => {
+    if (activeSectionIndex >= 0 && activeSectionIndex < sections.length - 1) {
+      return sections[activeSectionIndex + 1];
+    }
+    return null;
+  }, [sections, activeSectionIndex]);
+
+  const activeSectionTotalCards = useMemo(() => {
+    if (!activeSection) return 0;
+    return activeSection.items.reduce((acc, item) => acc + (item.displayTotal || 0), 0);
+  }, [activeSection]);
+
+  const activeSectionCompreendidos = useMemo(() => {
+    if (!activeSection) return 0;
+    return activeSection.items.reduce((acc, item) => acc + (item.displayConcluidas || 0), 0);
+  }, [activeSection]);
+
+  const activeSectionPct = activeSectionTotalCards > 0
+    ? Math.round((activeSectionCompreendidos / activeSectionTotalCards) * 100)
+    : 0;
+
+  const totalDecksCount = useMemo(() => {
+    return sections.reduce((acc, s) => acc + s.items.length, 0);
+  }, [sections]);
+
+  const selectSubMateria = useCallback((sectionId: string) => {
+    setActiveSectionId(sectionId);
+    try { haptic.selection(); } catch {}
+  }, []);
+
+  // Mantém a pílula ativa sempre visível no carrossel horizontal
+  useEffect(() => {
+    if (!activeSectionId || !pillContainerRef.current) return;
+    const btn = pillContainerRef.current.querySelector(`[data-section-id="${activeSectionId}"]`) as HTMLElement;
+    if (btn) {
+      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, [activeSectionId]);
+
   return (
     <DesktopPageLayout
       wide
@@ -505,40 +650,81 @@ const FlashcardsArea = () => {
       subtitle="Trilha de Flashcards"
       mobileHeader={mobileHeader}
     >
-      {/* Fundo limpo sem ShapeGrid ou imagens vazadas */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0F12]" />
+      {/* Fundo Base idêntico ao Vade Mecum */}
+      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]" />
 
-      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-24 pt-4 min-w-0 overflow-x-hidden box-border">
-        {/* ── Seletor Rápido de Matérias (Todas as Disciplinas de Flashcards) ── */}
-        <div className="w-full mb-4">
-          <div className="flex items-center justify-between mb-2 px-0.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-              Todas as Matérias ({todasAsAreas.length})
+      {/* Fundo com Grid de Quadrados (ShapeGrid) idêntico ao Vade Mecum */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20">
+        <ShapeGrid 
+          speed={0.3} 
+          squareSize={40}
+          direction='diagonal'
+          borderColor='rgba(255, 255, 255, 0.08)'
+          hoverFillColor='rgba(37, 99, 235, 0.15)'
+          shape='square'
+          hoverTrailAmount={5}
+        />
+      </div>
+
+      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-24 pt-2 min-w-0 overflow-x-hidden box-border">
+        {/* ── Menu de Alternância (100% Azul e Fixo no Topo sem Sobreposição) ── */}
+        <div className="sticky top-0 z-30 -mx-3.5 px-3.5 sm:-mx-6 sm:px-6 py-2.5 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-blue-500/25 mb-4 shadow-lg shadow-black/60">
+          <div className="flex items-center justify-between mb-1.5 px-0.5">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-blue-400" />
+              {isCivilArea ? `Matérias de Direito Civil (${sections.length})` : `Todas as Matérias (${todasAsAreas.length})`}
             </span>
-            <span className="text-[10px] text-zinc-500">Toque para trocar de matéria</span>
+            <span className="text-[10px] text-blue-300/80 font-medium">
+              Toque para alternar a matéria
+            </span>
           </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-3.5 px-3.5 sm:-mx-6 sm:px-6">
-            {todasAsAreas.map((a) => {
-              const isSelected = a.slug === slug || a.area.toLowerCase() === (officialFlashcardArea || '').toLowerCase();
-              return (
-                <button
-                  key={a.slug || a.area}
-                  type="button"
-                  onClick={() => {
-                    try { haptic.selection(); } catch {}
-                    navigate(`/flashcards/area/${a.slug}`);
-                  }}
-                  className={cn(
-                    "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer",
-                    isSelected
-                      ? "bg-blue-600 text-white border-blue-400 shadow-md shadow-blue-950/60 scale-[1.03]"
-                      : "bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700 active:scale-95"
-                  )}
-                >
-                  {a.area}
-                </button>
-              );
-            })}
+          <div
+            ref={pillContainerRef}
+            className="flex items-center gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {isCivilArea ? (
+              sections.map((sub) => {
+                const isActive = activeSectionId === sub.id;
+                return (
+                  <button
+                    key={sub.id}
+                    data-section-id={sub.id}
+                    type="button"
+                    onClick={() => selectSubMateria(sub.id)}
+                    className={cn(
+                      "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer select-none",
+                      isActive
+                        ? "bg-blue-600 text-white border-blue-300 shadow-[0_0_18px_rgba(37,99,235,0.7)] scale-[1.04] font-black"
+                        : "bg-blue-950/40 text-blue-200 border-blue-800/50 hover:bg-blue-900/60 hover:text-white hover:border-blue-400/60"
+                    )}
+                  >
+                    {sub.nome}
+                  </button>
+                );
+              })
+            ) : (
+              todasAsAreas.map((a) => {
+                const isSelected = a.slug === slug || a.area.toLowerCase() === (officialFlashcardArea || '').toLowerCase();
+                return (
+                  <button
+                    key={a.slug || a.area}
+                    type="button"
+                    onClick={() => {
+                      try { haptic.selection(); } catch {}
+                      navigate(`/flashcards/area/${a.slug}`);
+                    }}
+                    className={cn(
+                      "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer select-none",
+                      isSelected
+                        ? "bg-blue-600 text-white border-blue-300 shadow-[0_0_18px_rgba(37,99,235,0.7)] scale-[1.04] font-black"
+                        : "bg-blue-950/40 text-blue-200 border-blue-800/50 hover:bg-blue-900/60 hover:text-white hover:border-blue-400/60"
+                    )}
+                  >
+                    {a.area}
+                  </button>
+                );
+              })
+            )}
           </div>
         </div>
 
@@ -553,65 +739,133 @@ const FlashcardsArea = () => {
           </div>
         ) : (
           <>
-            {/* Top Bar Selecione o Módulo / Decks de Flashcards */}
-            <div className="flex items-center justify-between mb-3 w-full min-w-0">
-              <div className="flex items-center gap-2 min-w-0">
-                <Layers className="w-5 h-5 shrink-0 text-blue-400" />
-                <h2 className="text-xs sm:text-sm font-bold font-sans uppercase tracking-widest text-white truncate">
-                  {`Decks de Flashcards (${itemsToRender.length})`}
-                </h2>
-              </div>
-            </div>
-            {/* Barra de progresso geral da área */}
+            {/* ── DUAS BARRAS DE PROGRESSO: GERAL E DA MATÉRIA (Conforme Solicitado) ── */}
             {isFlash && totalFlashcardsArea > 0 && (
-              <div className="w-full mt-1 mb-2">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                    {totalCompreendidos} / {totalFlashcardsArea} dominados
-                  </span>
-                  <span 
-                    className="text-[11px] sm:text-xs font-bold tabular-nums text-blue-400"
-                  >
-                    {progressoPctFlash}%
-                  </span>
+              <div className="w-full space-y-3 mb-5 p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/25 shadow-lg shadow-black/40">
+                {/* BARRA 1: Progresso Geral (Direito Civil) */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5 px-0.5">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-blue-200 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee]" />
+                      Progresso Geral • {officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito Civil'}
+                    </span>
+                    <span className="text-[11px] font-mono font-bold text-cyan-300 tabular-nums">
+                      {totalCompreendidos} / {totalFlashcardsArea} dominados ({progressoPctFlash}%)
+                    </span>
+                  </div>
+                  <div className="w-full h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-600 via-blue-400 to-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                      style={{
+                        width: `${Math.max(progressoPctFlash, totalFlashcardsArea > 0 ? 3 : 0)}%`,
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-500 to-cyan-400 shadow-[0_0_8px_rgba(59,130,246,0.5)]"
-                    style={{
-                      width: `${Math.max(progressoPctFlash, 1)}%`,
-                    }}
-                  />
-                </div>
+
+                {/* BARRA 2: Progresso da Matéria Atual */}
+                {isCivilArea && activeSection && (
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5 px-0.5">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_6px_#3b82f6]" />
+                        Progresso da Matéria • {activeSection.nome}
+                      </span>
+                      <span className="text-[11px] font-mono font-bold text-blue-300 tabular-nums">
+                        {activeSectionCompreendidos} / {activeSectionTotalCards} dominados ({activeSectionPct}%)
+                      </span>
+                    </div>
+                    <div className="w-full h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-700 via-blue-500 to-indigo-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                        style={{
+                          width: `${Math.max(activeSectionPct, activeSectionTotalCards > 0 ? 3 : 0)}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
-            {isFlash && loadingFlashcards && itemsToRender.length === 0 ? (
+            {isFlash && loadingFlashcards && totalDecksCount === 0 ? (
               <div className="space-y-4 py-6">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="h-36 rounded-2xl bg-muted/40 animate-pulse border border-white/5" />
                 ))}
               </div>
             ) : (
-              /* Trilha em Zigue-Zague Mais Espaçada e Fluida com Decks Azuis e Nomes Abaixo */
-              <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
-                <div className="w-full min-w-0 relative z-[2] flex flex-col items-center">
-                  {itemsToRender.slice(0, visibleCount).map((item, i) => {
-                    return (
-                      <FlashcardDeckItem
-                        key={item.key}
-                        item={item}
-                        i={i}
-                        palette={palette}
-                        isLast={i === itemsToRender.length - 1}
-                      />
-                    );
-                  })}
-                  {/* Sentinela do Lazy Render */}
-                  {visibleCount < itemsToRender.length && (
-                    <div ref={observerTarget} className="w-full h-20" />
+              /* Trilha em Zigue-Zague com Transição Animada por Matéria (Framer Motion) */
+              <div className="relative py-2 sm:py-4 w-full min-w-0 max-w-full overflow-hidden">
+                <AnimatePresence mode="wait">
+                  {activeSection && (
+                    <motion.div
+                      key={activeSection.id}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -16 }}
+                      transition={{ duration: 0.22, ease: "easeOut" }}
+                      className="w-full min-w-0 relative z-[2] flex flex-col items-center"
+                    >
+                      {/* Marcador / Título da Matéria Atual */}
+                      <div className="w-full mb-8 pt-1 flex flex-col items-center justify-center">
+                        <div className="w-full max-w-[560px] flex items-center gap-3 px-3">
+                          <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent via-blue-500/60 to-blue-400" />
+                          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-blue-950/85 border border-blue-500/50 shadow-[0_0_24px_rgba(37,99,235,0.4)] backdrop-blur-md">
+                            <span className="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_10px_#38bdf8] animate-pulse" />
+                            <span className="text-xs sm:text-sm font-sans font-black uppercase tracking-wider text-white">
+                              {activeSection.nome}
+                            </span>
+                            <span className="text-[10.5px] font-mono font-bold text-blue-200 bg-blue-600/35 px-2 py-0.5 rounded-full border border-blue-400/40">
+                              {activeSection.items.length} {activeSection.items.length === 1 ? 'deck' : 'decks'}
+                            </span>
+                          </div>
+                          <div className="h-[2px] flex-1 bg-gradient-to-r from-blue-400 via-blue-500/60 to-transparent" />
+                        </div>
+                      </div>
+
+                      {/* Decks da Trilha desta Matéria */}
+                      {activeSection.items.map((item, itemIdx) => {
+                        const isLastInSection = itemIdx === activeSection.items.length - 1;
+                        return (
+                          <FlashcardDeckItem
+                            key={item.key}
+                            item={item}
+                            i={item.globalIndex}
+                            palette={palette}
+                            isLast={isLastInSection}
+                          />
+                        );
+                      })}
+
+                      {/* Linha Divisória para Avançar para a Próxima Matéria */}
+                      {nextSection && (
+                        <div
+                          onClick={() => {
+                            selectSubMateria(nextSection.id);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="w-full my-12 pt-3 flex flex-col items-center justify-center cursor-pointer group select-none"
+                        >
+                          <div className="w-full max-w-[560px] flex items-center gap-3 px-3">
+                            <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent via-blue-500/60 to-blue-400" />
+                            <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-blue-950/90 border border-blue-500/50 shadow-[0_0_24px_rgba(37,99,235,0.4)] backdrop-blur-md group-hover:scale-105 group-hover:border-blue-400 group-hover:bg-blue-900/90 transition-all duration-300">
+                              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_#22d3ee] animate-pulse" />
+                              <span className="text-xs sm:text-sm font-sans font-black uppercase tracking-wider text-white flex items-center gap-1.5">
+                                Próxima Matéria: <span className="text-cyan-300">{nextSection.nome}</span>
+                              </span>
+                              <ArrowRight className="w-4 h-4 text-cyan-300 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                            <div className="h-[2px] flex-1 bg-gradient-to-r from-blue-400 via-blue-500/60 to-transparent" />
+                          </div>
+                          <span className="text-[10.5px] font-medium text-blue-300/80 mt-2">
+                            Toque para avançar para a próxima matéria
+                          </span>
+                        </div>
+                      )}
+                    </motion.div>
                   )}
-                </div>
+                </AnimatePresence>
               </div>
             )}
           </>
