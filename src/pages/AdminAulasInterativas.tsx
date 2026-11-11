@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { cn } from '@/lib/utils';
 import { 
   Sparkles, Play, BookOpen, Layers, 
-  ArrowLeft, Check, Lock, HelpCircle, 
+  ArrowLeft, ArrowRight, Check, Lock, HelpCircle, 
   AlertCircle, Unlock, ChevronRight, ChevronLeft,
   Search, X, Star, List, LayoutGrid, Headphones, Home, BarChart3
 } from 'lucide-react';
@@ -24,6 +24,8 @@ import { CONTEUDO_AULAS } from '@/data/aulasInterativasConteudo';
 import { ModalRevisarFlashcards } from '@/components/aulas-interativas/ModalRevisarFlashcards';
 import { ModalPraticarQuestoes } from '@/components/aulas-interativas/ModalPraticarQuestoes';
 import { PlayerAulaNativo } from '@/components/aulas-interativas/PlayerAulaNativo';
+import { FlashcardDeckItem } from '@/components/flashcards/FlashcardDeckItem';
+import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
 import { assetUrl } from '@/lib/assetUrl';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
@@ -362,6 +364,18 @@ function setStoredBoolean(key: string, id: string, val: boolean) {
 }
 
 
+function formatarTituloMateriaCurto(titulo: string): string {
+  if (!titulo) return '';
+  return titulo
+    .replace(/^\d+[\.\-\s_:]+/, '')
+    .replace(/\s+(do|de|no|da|em)\s+Direito\s+([a-zA-ZÀ-ÿ]+)/gi, '')
+    .replace(/\s+(do|de|no|da|em)\s+Direito\b/gi, '')
+    .replace(/\s+(do|de|no|da|em)\s+Administrativo\b/gi, '')
+    .replace(/^Direito\s+[a-zA-ZÀ-ÿ]+\s*[-–:]\s*/i, '')
+    .replace(/\s+Direito\s+Administrativo\b/gi, '')
+    .trim();
+}
+
 function formatDescricaoExata(desc?: string, titulo?: string): string {
   let text = (desc || '').trim();
 
@@ -524,8 +538,48 @@ export default function AdminAulasInterativas() {
   const [abaAtiva, setAbaAtiva] = useState<AbaAulas>('trilhas');
   const [favoritosIds, setFavoritosIds] = useState<Set<string>>(new Set());
   const [acertosMap, setAcertosMap] = useState<Record<string, { acertos: number; total: number }>>({});
-  const [activeDiscIndex, setActiveDiscIndex] = useState(1); // Inicializa em Direito Civil (índice 1) para espelhar 100% o Mockup Oficial
+  const [activeDiscIndex, setActiveDiscIndex] = useState(1);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+
+  // Carrossel no padrão Audiobooks para seleção de disciplinas
+  const carouselScrollerRef = useRef<HTMLDivElement | null>(null);
+  const [activeCarouselIndex, setActiveCarouselIndex] = useState(1);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const isDraggingRef = useRef(false);
+
+  const scrollCarouselToIndex = useCallback(
+    (idx: number, behavior: ScrollBehavior = "smooth") => {
+      const el = carouselScrollerRef.current;
+      if (!el) return;
+      const child = el.children[idx] as HTMLElement | undefined;
+      if (!child) return;
+      const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
+      el.scrollTo({ left: target, behavior });
+      setActiveCarouselIndex(idx);
+    },
+    []
+  );
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    isDraggingRef.current = false;
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!pointerStartRef.current) return;
+    const dx = Math.abs(e.clientX - pointerStartRef.current.x);
+    const dy = Math.abs(e.clientY - pointerStartRef.current.y);
+    if (dx > 8 || dy > 8) {
+      isDraggingRef.current = true;
+    }
+  };
+
+  const handlePointerUp = () => {
+    pointerStartRef.current = null;
+    setTimeout(() => {
+      isDraggingRef.current = false;
+    }, 60);
+  };
 
   // Sincronização inicial com o Supabase (Single Source of Truth)
   useEffect(() => {
@@ -863,6 +917,83 @@ export default function AdminAulasInterativas() {
 
   const termoBuscaNorm = buscaTermo.toLowerCase().trim();
 
+  const disciplinasFiltradas = useMemo(() => {
+    return DISCIPLINAS_CATALOGO.filter(disc => {
+      if (!termoBuscaNorm) return true;
+      const matchNome = disc.nome.toLowerCase().includes(termoBuscaNorm);
+      const matchMateria = MATERIAS_CATALOGO.some(m => m.disciplinaId === disc.id && ((m as any).nome || m.titulo || "").toLowerCase().includes(termoBuscaNorm));
+      const matchAula = AULAS_CATALOGO.some(a => a.disciplinaId === disc.id && a.titulo.toLowerCase().includes(termoBuscaNorm));
+      return matchNome || matchMateria || matchAula;
+    });
+  }, [termoBuscaNorm]);
+
+  const loopedDisciplinas = useMemo(() => {
+    if (disciplinasFiltradas.length <= 1) return disciplinasFiltradas;
+    return [
+      ...disciplinasFiltradas,
+      ...disciplinasFiltradas,
+      ...disciplinasFiltradas,
+    ];
+  }, [disciplinasFiltradas]);
+
+  const handleCarouselScroll = useCallback(() => {
+    const el = carouselScrollerRef.current;
+    if (!el) return;
+
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let best = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < el.children.length; i++) {
+      const child = el.children[i] as HTMLElement;
+      const mid = child.offsetLeft + child.clientWidth / 2;
+      const dist = Math.abs(mid - center);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    }
+
+    const N = disciplinasFiltradas.length;
+    if (N > 1) {
+      if (best <= 1) {
+        const jumpTo = best + N;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({
+            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
+            behavior: "auto",
+          });
+          setActiveCarouselIndex(jumpTo);
+          return;
+        }
+      } else if (best >= loopedDisciplinas.length - 2) {
+        const jumpTo = best - N;
+        const child = el.children[jumpTo] as HTMLElement;
+        if (child) {
+          el.scrollTo({
+            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
+            behavior: "auto",
+          });
+          setActiveCarouselIndex(jumpTo);
+          return;
+        }
+      }
+    }
+
+    setActiveCarouselIndex(best);
+  }, [disciplinasFiltradas.length, loopedDisciplinas.length]);
+
+  useEffect(() => {
+    if (disciplinasFiltradas.length > 0) {
+      const initialIndex = disciplinasFiltradas.length > 1 ? disciplinasFiltradas.length : 0;
+      setActiveCarouselIndex(initialIndex);
+      const timer = setTimeout(() => {
+        scrollCarouselToIndex(initialIndex, "instant" as ScrollBehavior);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [disciplinasFiltradas.length, scrollCarouselToIndex]);
+
   // ─────────────────────────────────────────────────────────────────────────────
   // NÍVEL 4: TELA CHEIA DA AULA INTERATIVA (PLAYER NATIVO EM REACT SEM IFRAMES)
   // ─────────────────────────────────────────────────────────────────────────────
@@ -943,18 +1074,9 @@ export default function AdminAulasInterativas() {
           NÍVEL 1: HOME GERAL DE AULAS INTERATIVAS (ESCOLHA DA DISCIPLINA)
          ══════════════════════════════════════════════════════════════════════════ */}
       {!disciplinaSelecionadaId && (() => {
-        const termoBuscaNorm = buscaTermo.toLowerCase().trim();
-        const disciplinasFiltradas = DISCIPLINAS_CATALOGO.filter(disc => {
-          if (!termoBuscaNorm) return true;
-          const matchNome = disc.nome.toLowerCase().includes(termoBuscaNorm);
-          const matchMateria = MATERIAS_CATALOGO.some(m => m.disciplinaId === disc.id && ((m as any).nome || m.titulo || "").toLowerCase().includes(termoBuscaNorm));
-          const matchAula = AULAS_CATALOGO.some(a => a.disciplinaId === disc.id && a.titulo.toLowerCase().includes(termoBuscaNorm));
-          return matchNome || matchMateria || matchAula;
-        });
-
         const totalDisciplinas = disciplinasFiltradas.length;
         const safeIdx = totalDisciplinas > 0 
-          ? Math.min(Math.max(0, activeDiscIndex), totalDisciplinas - 1)
+          ? ((activeCarouselIndex % totalDisciplinas) + totalDisciplinas) % totalDisciplinas
           : 0;
 
         const currDisc = totalDisciplinas > 0 ? disciplinasFiltradas[safeIdx] : DISCIPLINAS_CATALOGO[0];
@@ -1057,14 +1179,14 @@ export default function AdminAulasInterativas() {
                 </p>
               </div>
 
-              {/* ── BARRA DE PESQUISA RÁPIDA DAS ÁREAS (RESPONSIVA, VIDRO FUMÊ COM DESTAQUE DA CAPA) ── */}
-              <div className="w-full max-w-[320px] xs:max-w-[360px] sm:max-w-md mx-auto px-2 mt-1 xs:mt-1.5 mb-1 z-20">
+              {/* ── BARRA DE PESQUISA RÁPIDA DAS ÁREAS (RESPONSIVA, ALTURA CONFORTÁVEL PADRÃO 48-56px) ── */}
+              <div className="w-full max-w-[340px] xs:max-w-[420px] sm:max-w-lg md:max-w-xl mx-auto px-2 mt-2 mb-2 z-20">
                 <div className="relative w-full">
                   <div 
-                    className="absolute left-3 xs:left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 transition-colors"
+                    className="absolute left-3.5 xs:left-4 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 transition-colors"
                     style={{ color: currTheme.accent || '#fca5a5' }}
                   >
-                    <Search className="w-3.5 h-3.5 xs:w-4 xs:h-4 stroke-[2.2]" />
+                    <Search className="w-4.5 h-4.5 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 stroke-[2.2]" />
                   </div>
                   <input
                     type="text"
@@ -1074,11 +1196,11 @@ export default function AdminAulasInterativas() {
                       setActiveDiscIndex(0);
                     }}
                     placeholder="Buscar área ou matéria (ex: Penal)..."
-                    className="w-full h-9 xs:h-10 sm:h-11 pl-9 xs:pl-10 pr-9 xs:pr-10 rounded-full text-xs xs:text-sm text-white placeholder:text-zinc-400/75 focus:outline-none transition-all shadow-inner"
+                    className="w-full h-12 xs:h-13 sm:h-14 pl-11 xs:pl-12 sm:pl-13 pr-11 xs:pr-12 sm:pr-13 rounded-full text-xs xs:text-sm sm:text-base text-white placeholder:text-zinc-400/80 focus:outline-none transition-all shadow-inner"
                     style={{
-                      background: 'rgba(15, 6, 10, 0.78)',
+                      background: 'rgba(15, 6, 10, 0.82)',
                       backdropFilter: 'blur(16px)',
-                      border: `1px solid ${buscaTermo ? (currTheme.primary || '#ef4444') : 'rgba(255,255,255,0.18)'}`,
+                      border: `1px solid ${buscaTermo ? (currTheme.primary || '#ef4444') : 'rgba(255,255,255,0.2)'}`,
                       boxShadow: buscaTermo 
                         ? `0 0 16px ${currTheme.glowSoft || 'rgba(239,68,68,0.45)'}, inset 0 2px 4px rgba(0,0,0,0.7)` 
                         : 'inset 0 2px 4px rgba(0,0,0,0.6)',
@@ -1091,10 +1213,10 @@ export default function AdminAulasInterativas() {
                         setBuscaTermo('');
                         setActiveDiscIndex(0);
                       }}
-                      className="absolute right-2.5 xs:right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-white cursor-pointer z-10 transition-colors"
+                      className="absolute right-3.5 xs:right-4 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-white cursor-pointer z-10 transition-colors"
                       aria-label="Limpar busca"
                     >
-                      <X className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
+                      <X className="w-4.5 h-4.5" />
                     </button>
                   )}
                 </div>
@@ -1156,7 +1278,7 @@ export default function AdminAulasInterativas() {
               </div>
             )}
 
-            {/* ── ABA TRILHAS: OS 3 CARDS EM DESTAQUE 3D COVERFLOW (3:4, COR DINÂMICA, FUMAÇA NAS SETAS) ── */}
+            {/* ── ABA TRILHAS: CARROSSEL NO PADRÃO AUDIOBOOKS COM ZOOM NA CAPA CENTRAL ── */}
             {abaAtiva === 'trilhas' && (() => {
               if (totalDisciplinas === 0) {
                 return (
@@ -1166,31 +1288,14 @@ export default function AdminAulasInterativas() {
                 );
               }
 
-              const prevIdx = (safeIdx - 1 + totalDisciplinas) % totalDisciplinas;
-              const nextIdx = (safeIdx + 1) % totalDisciplinas;
-
-              const prevDisc = disciplinasFiltradas[prevIdx];
-              const nextDisc = disciplinasFiltradas[nextIdx];
-
-              const prevTheme = getDisciplinaVisualTheme(prevDisc.id);
-              const nextTheme = getDisciplinaVisualTheme(nextDisc.id);
-
-              const currAulas = AULAS_CATALOGO.filter(a => a.disciplinaId === currDisc.id);
-              const prevAulas = AULAS_CATALOGO.filter(a => a.disciplinaId === prevDisc.id);
-              const nextAulas = AULAS_CATALOGO.filter(a => a.disciplinaId === nextDisc.id);
-
-              const capaCurrUrl = currTheme.fundoAssetUrl;
-              const capaPrevUrl = prevTheme.fundoAssetUrl;
-              const capaNextUrl = nextTheme.fundoAssetUrl;
-
               const handlePrev = () => {
                 try { haptic.selection(); } catch {}
-                setActiveDiscIndex(prevIdx);
+                scrollCarouselToIndex(activeCarouselIndex - 1);
               };
 
               const handleNext = () => {
                 try { haptic.selection(); } catch {}
-                setActiveDiscIndex(nextIdx);
+                scrollCarouselToIndex(activeCarouselIndex + 1);
               };
 
               const handleSelectCurrent = () => {
@@ -1200,28 +1305,28 @@ export default function AdminAulasInterativas() {
                 resetScrollToTop();
               };
 
+              const handleCardClick = (disc: DisciplinaItem, idx: number) => {
+                if (isDraggingRef.current) return;
+                try { haptic.selection(); } catch {}
+                if (idx !== activeCarouselIndex) {
+                  scrollCarouselToIndex(idx);
+                } else {
+                  handleSelectCurrent();
+                }
+              };
+
               return (
-                <div 
-                  className="w-full flex-1 min-h-0 flex flex-col items-center justify-center select-none"
-                  onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
-                  onTouchEnd={(e) => {
-                    if (touchStartX === null) return;
-                    const deltaX = e.changedTouches[0].clientX - touchStartX;
-                    if (deltaX > 40) handlePrev();
-                    else if (deltaX < -40) handleNext();
-                    setTouchStartX(null);
-                  }}
-                >
-                  {/* ── CARROSSEL 3D COVERFLOW: SETA ESQ + CARD ESQ (3:4) + CARD CENTRAL (3:4, UMA BORDA, COR DINÂMICA) + CARD DIR (3:4) + SETA DIR ── */}
-                  <div className="relative w-full max-w-xl mx-auto flex items-center justify-center px-1 xs:px-2 sm:px-4 my-auto py-1 xs:py-2 select-none">
+                <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center select-none">
+                  {/* ── CARROSSEL AUDIOBOOKS COVERFLOW COM ZOOM NA CAPA CENTRAL ── */}
+                  <div className="relative w-full max-w-xl mx-auto flex items-center justify-center px-1 my-auto py-1 select-none overflow-hidden">
                     
-                    {/* Botão Seta Esquerda com Margem Dedicada */}
+                    {/* Botão Seta Esquerda (Flutuante com Margem e Sombra) */}
                     <button
                       type="button"
                       onClick={handlePrev}
-                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/75 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border mr-2 xs:mr-3 sm:mr-4"
+                      className="absolute left-1 xs:left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border"
                       style={{
-                        borderColor: `${currTheme.primary || '#ef4444'}66`,
+                        borderColor: `${currTheme.primary || '#ef4444'}88`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
                       }}
                       aria-label="Área anterior"
@@ -1229,121 +1334,122 @@ export default function AdminAulasInterativas() {
                       <ChevronLeft className="w-5 h-5 xs:w-6 xs:h-6 stroke-[2.4]" />
                     </button>
 
-                    {/* CARD ESQUERDA (ANTERIOR: Proporção 3:4, Capa Clara, Sobreposta e Destacada) */}
+                    {/* Scroller Horizontal de Capas Snap-x Snap-Mandatory */}
                     <div
-                      onClick={handlePrev}
-                      className="relative shrink-0 w-[100px] xs:w-[118px] sm:w-[145px] md:w-[165px] max-h-[36dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-90 hover:opacity-100 transition-all duration-300 scale-90 -mr-6 xs:-mr-7 sm:-mr-9 z-10 select-none shadow-[0_20px_45px_rgba(0,0,0,0.95)] overflow-hidden group bg-zinc-900/80"
-                      style={{
-                        borderColor: 'rgba(255, 255, 255, 0.45)',
-                        boxShadow: '0 20px 45px rgba(0,0,0,0.95), inset 0 1px 1px rgba(255,255,255,0.45)',
-                      }}
+                      ref={carouselScrollerRef}
+                      onScroll={handleCarouselScroll}
+                      onPointerDown={handlePointerDown}
+                      onPointerMove={handlePointerMove}
+                      onPointerUp={handlePointerUp}
+                      className="w-full flex items-center gap-3.5 xs:gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation px-[calc(50vw-85px)] xs:px-[calc(50vw-100px)] sm:px-[calc(50vw-125px)] md:px-[calc(50vw-145px)]"
                     >
-                      {/* Capa Clara e Iluminada Preenchendo Todo o Card */}
-                      <img
-                        src={capaPrevUrl}
-                        alt={prevDisc.nome}
-                        loading="eager"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none filter brightness-115 contrast-105 saturate-110 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
-                      />
-                      {/* Gradiente Apenas na Base para Proteger Texto mantendo o resto 100% Claro */}
-                      <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none rounded-b-2xl" />
+                      {loopedDisciplinas.map((disc, idx) => {
+                        const isActive = idx === activeCarouselIndex;
+                        const discTheme = getDisciplinaVisualTheme(disc.id);
+                        const discAulas = AULAS_CATALOGO.filter(a => a.disciplinaId === disc.id);
+                        const capaUrl = discTheme.fundoAssetUrl;
 
-                      {/* Título sem abreviações e Quantidade de Aulas */}
-                      <div className="relative z-10 w-full flex flex-col items-center">
-                        <h4 className="font-serif font-bold text-[11px] xs:text-xs sm:text-[13px] text-white leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
-                          {prevDisc.nome}
-                        </h4>
-                        <p className="text-[9.5px] xs:text-[10px] font-mono font-bold text-zinc-200 drop-shadow mt-0.5">
-                          {prevAulas.length} aulas
-                        </p>
-                      </div>
+                        return (
+                          <div
+                            key={`${disc.id}-${idx}`}
+                            onClick={() => handleCardClick(disc, idx)}
+                            className={cn(
+                              "snap-center shrink-0 w-[170px] xs:w-[200px] sm:w-[250px] md:w-[290px] flex flex-col items-center cursor-pointer transition-all duration-400 ease-out",
+                              isActive
+                                ? "z-20 opacity-100 scale-105 sm:scale-110"
+                                : "z-10 opacity-60 hover:opacity-85 scale-[0.84] sm:scale-90"
+                            )}
+                          >
+                            {/* Card em Proporção 3:4 com Zoom na Capa Central */}
+                            <div
+                              className={cn(
+                                "relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border transform-gpu transition-all duration-400 ease-out flex flex-col justify-end p-3 xs:p-3.5 sm:p-4 text-center",
+                                isActive
+                                  ? "border-2 shadow-2xl ring-2 ring-white/20"
+                                  : "border-white/20 shadow-lg hover:border-white/40"
+                              )}
+                              style={
+                                isActive ? {
+                                  borderColor: discTheme.primary || '#ef4444',
+                                  boxShadow: `0 0 36px ${discTheme.glow || 'rgba(239, 68, 68, 0.85)'}, 0 25px 50px -5px rgba(0,0,0,0.95), inset 0 1.5px 0.5px rgba(255,255,255,0.75)`,
+                                } : {
+                                  borderColor: 'rgba(255, 255, 255, 0.25)',
+                                  boxShadow: '0 15px 35px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.2)',
+                                }
+                              }
+                            >
+                              {/* Efeito de Pulso Suave no Card Central Ativo (Padrão Audiobooks) */}
+                              {isActive && (
+                                <div 
+                                  className="absolute -inset-1 rounded-2xl blur-md pointer-events-none animate-pulse"
+                                  style={{
+                                    background: `linear-gradient(to right, ${discTheme.primary}40, ${discTheme.accent}30, ${discTheme.primary}40)`
+                                  }}
+                                />
+                              )}
+
+                              {/* Imagem da Capa: Com Zoom Extra de 110% quando no Centro */}
+                              <img
+                                src={capaUrl}
+                                alt={disc.nome}
+                                loading={idx < 6 ? "eager" : "lazy"}
+                                decoding="async"
+                                fetchPriority={isActive ? "high" : "auto"}
+                                className={cn(
+                                  "absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none transition-transform duration-500 ease-out rounded-2xl",
+                                  isActive 
+                                    ? "scale-110 filter brightness-125 contrast-110 saturate-115" 
+                                    : "scale-100 filter brightness-110 contrast-105 saturate-105"
+                                )}
+                              />
+
+                              {/* Gradiente Apenas na Base para Proteger o Texto */}
+                              <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-black/95 via-black/45 to-transparent pointer-events-none rounded-b-2xl z-10" />
+
+                              {/* Título sem abreviações e Badge Pill de Aulas */}
+                              <div className="relative z-20 w-full flex flex-col items-center">
+                                <h3 
+                                  className={cn(
+                                    "font-serif font-black text-white leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,1)] text-center break-words text-balance px-1 transition-all",
+                                    isActive 
+                                      ? "text-xs xs:text-sm sm:text-base md:text-lg" 
+                                      : "text-[11px] xs:text-xs sm:text-sm text-zinc-200"
+                                  )}
+                                >
+                                  {disc.nome}
+                                </h3>
+
+                                {/* Badge Pill com Contagem de Aulas */}
+                                <div 
+                                  className={cn(
+                                    "mt-1.5 xs:mt-2 inline-flex items-center justify-center font-mono font-black tracking-wider uppercase shadow-lg border rounded-full transition-all",
+                                    isActive
+                                      ? "px-3.5 py-0.5 xs:px-4 xs:py-1 text-[11px] xs:text-xs sm:text-sm"
+                                      : "px-2.5 py-0.5 text-[9.5px] xs:text-[10px] sm:text-[11px] opacity-90"
+                                  )}
+                                  style={{
+                                    backgroundColor: 'rgba(10, 5, 8, 0.85)',
+                                    borderColor: isActive ? discTheme.primary : 'rgba(255,255,255,0.25)',
+                                    color: isActive ? discTheme.accent : '#f4f4f5',
+                                    boxShadow: isActive ? `0 2px 14px ${discTheme.glowSoft}` : undefined
+                                  }}
+                                >
+                                  <span>{discAulas.length} AULAS</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
 
-                    {/* CARD CENTRAL (ATIVO: Proporção 3:4, Capa Clara e Radiante, Forte Sobreposição 3D) */}
-                    <motion.div
-                      key={currDisc.id}
-                      initial={{ scale: 0.92, opacity: 0.7, y: 8 }}
-                      animate={{ scale: 1, opacity: 1, y: 0 }}
-                      exit={{ scale: 0.92, opacity: 0.7, y: -8 }}
-                      transition={{ type: 'spring', damping: 24, stiffness: 320, mass: 0.8 }}
-                      onClick={handleSelectCurrent}
-                      className="relative shrink-0 w-[160px] xs:w-[185px] sm:w-[220px] md:w-[250px] max-h-[46dvh] aspect-[3/4] rounded-2xl border-2 p-3 xs:p-4 flex flex-col justify-end text-center cursor-pointer transition-all duration-300 z-30 select-none group overflow-hidden bg-zinc-900/90"
-                      style={{
-                        borderColor: currTheme.primary || '#ef4444',
-                        boxShadow: `0 0 42px ${currTheme.glow || 'rgba(239, 68, 68, 0.85)'}, 0 25px 50px -5px rgba(0,0,0,0.95), inset 0 1.5px 0.5px rgba(255,255,255,0.75)`,
-                      }}
-                    >
-                      {/* Capa Clara, Nítida e Saturada Preenchendo Todo o Card */}
-                      <img
-                        src={capaCurrUrl}
-                        alt={currDisc.nome}
-                        loading="eager"
-                        decoding="async"
-                        fetchPriority="high"
-                        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none filter brightness-125 contrast-110 saturate-115 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
-                      />
-                      {/* Gradiente Apenas na Base para Proteger Texto mantendo Arte Clara */}
-                      <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none rounded-b-2xl z-10" />
-
-                      {/* Título Completo (Sem abreviações) e Badge Pill Oficial de Aulas */}
-                      <div className="relative z-20 w-full flex flex-col items-center">
-                        <h3 className="font-serif font-black text-xs xs:text-sm sm:text-base text-white leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
-                          {currDisc.nome}
-                        </h3>
-                        {/* Badge Pill estilizada: "454 AULAS" */}
-                        <div 
-                          className="mt-1.5 xs:mt-2 inline-flex items-center justify-center px-3.5 py-0.5 xs:px-4 xs:py-1 rounded-full font-mono font-black text-[11px] xs:text-xs sm:text-sm tracking-wider uppercase shadow-lg border"
-                          style={{
-                            backgroundColor: 'rgba(10, 5, 8, 0.85)',
-                            borderColor: currTheme.primary || '#ef4444',
-                            color: currTheme.accent || '#fca5a5',
-                            boxShadow: `0 2px 12px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
-                          }}
-                        >
-                          <span>{currAulas.length} AULAS</span>
-                        </div>
-                      </div>
-                    </motion.div>
-
-                    {/* CARD DIREITA (PRÓXIMO: Proporção 3:4, Capa Clara, Sobreposta e Destacada) */}
-                    <div
-                      onClick={handleNext}
-                      className="relative shrink-0 w-[100px] xs:w-[118px] sm:w-[145px] md:w-[165px] max-h-[36dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-90 hover:opacity-100 transition-all duration-300 scale-90 -ml-6 xs:-ml-7 sm:-ml-9 z-10 select-none shadow-[0_20px_45px_rgba(0,0,0,0.95)] overflow-hidden group bg-zinc-900/80"
-                      style={{
-                        borderColor: 'rgba(255, 255, 255, 0.45)',
-                        boxShadow: '0 20px 45px rgba(0,0,0,0.95), inset 0 1px 1px rgba(255,255,255,0.45)',
-                      }}
-                    >
-                      {/* Capa Clara e Iluminada Preenchendo Todo o Card */}
-                      <img
-                        src={capaNextUrl}
-                        alt={nextDisc.nome}
-                        loading="eager"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none filter brightness-115 contrast-105 saturate-110 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
-                      />
-                      {/* Gradiente Apenas na Base para Proteger Texto mantendo o resto 100% Claro */}
-                      <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none rounded-b-2xl" />
-
-                      {/* Título sem abreviações e Quantidade de Aulas */}
-                      <div className="relative z-10 w-full flex flex-col items-center">
-                        <h4 className="font-serif font-bold text-[11px] xs:text-xs sm:text-[13px] text-white leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
-                          {nextDisc.nome}
-                        </h4>
-                        <p className="text-[9.5px] xs:text-[10px] font-mono font-bold text-zinc-200 drop-shadow mt-0.5">
-                          {nextAulas.length} aulas
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Botão Seta Direita com Margem Dedicada */}
+                    {/* Botão Seta Direita (Flutuante com Margem e Sombra) */}
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/75 hover:bg-black text-white hover:scale-105 active:scale-90 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border ml-2 xs:ml-3 sm:ml-4"
+                      className="absolute right-1 xs:right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border"
                       style={{
-                        borderColor: `${currTheme.primary || '#ef4444'}66`,
+                        borderColor: `${currTheme.primary || '#ef4444'}88`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
                       }}
                       aria-label="Próxima área"
@@ -1362,7 +1468,9 @@ export default function AdminAulasInterativas() {
                           type="button"
                           onClick={() => {
                             try { haptic.selection(); } catch {}
-                            setActiveDiscIndex(dotIdx);
+                            const currentBlock = Math.floor(activeCarouselIndex / (disciplinasFiltradas.length || 1));
+                            const targetIdx = currentBlock * (disciplinasFiltradas.length || 1) + dotIdx;
+                            scrollCarouselToIndex(targetIdx);
                           }}
                           className={cn(
                             "transition-all duration-300 rounded-full cursor-pointer",
@@ -1421,11 +1529,34 @@ export default function AdminAulasInterativas() {
           return matchNome || matchAula;
         });
 
+        const theme = getDisciplinaVisualTheme(disciplinaAtual.id);
+        const AreaIconComponent = areaIconFor(disciplinaAtual.id).Icon;
+        const fundoAreaOficial = theme.isCustomFundo 
+          ? theme.fundoAssetUrl 
+          : (assetUrl(disciplinaAtual.capaHeroUrl) || greciaFilosofosFundo);
+
         return (
           <>
-            {/* Top Bar Fixa de Navegação da Disciplina (Título agora abaixo do cabeçalho) */}
+            {/* Fundo Oficial Fixo da Área com Nitidez Máxima e Escurecimento Suave */}
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0a0705]">
+              <img
+                src={fundoAreaOficial}
+                alt={disciplinaAtual.nome}
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+                className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[0.5px] brightness-[0.98] contrast-[1.02] transition-opacity duration-500"
+              />
+              {/* Escurecimento suave */}
+              <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+            </div>
+
+            {/* Pétalas e Flores de Lótus Douradas Caindo Suavemente pela Montanha (120fps GPU) */}
+            <FallingLotusPetals />
+
+            {/* Top Bar Fixa de Navegação da Disciplina */}
             <div 
-              className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3 transition-all shadow-xl"
+              className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/90 border-b border-white/10 px-3.5 sm:px-6 py-2.5 transition-all shadow-xl"
               style={{
                 paddingTop: 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
               }}
@@ -1434,414 +1565,267 @@ export default function AdminAulasInterativas() {
                 <button
                   type="button"
                   onClick={handleVoltar}
-                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
-                  aria-label="Voltar para disciplinas"
+                  className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0 cursor-pointer"
+                  aria-label="Voltar para áreas"
                 >
-                  <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.4} />
+                  <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7" strokeWidth={2.4} />
                 </button>
+
+                {/* Título Centralizado com Barra de Progresso */}
+                <div className="flex-1 min-w-0 max-w-md mx-auto flex flex-col items-center justify-center text-center px-2">
+                  <div className="flex items-center gap-1.5 max-w-full truncate">
+                    <span 
+                      className="w-1.5 h-1.5 rounded-full shrink-0" 
+                      style={{ backgroundColor: theme.accent, boxShadow: `0 0 6px ${theme.accent}` }}
+                    />
+                    <span 
+                      className="text-xs sm:text-sm font-serif font-black uppercase tracking-wider truncate text-white"
+                      style={{ color: theme.highlight }}
+                    >
+                      {disciplinaAtual.nome}
+                    </span>
+                  </div>
+                  <div className="w-full max-w-[200px] sm:max-w-[240px] flex items-center gap-2 mt-1">
+                    <div 
+                      className="flex-1 h-1.5 rounded-full bg-black/60 overflow-hidden"
+                      style={{ border: `1px solid ${theme.borderSubtle}` }}
+                    >
+                      <div
+                        className="h-full rounded-full transition-all duration-700 ease-out"
+                        style={{
+                          width: `${Math.max(pctDisc, totalAulasDisc > 0 ? 4 : 0)}%`,
+                          background: theme.progressGradient,
+                          boxShadow: theme.progressShadow,
+                        }}
+                      />
+                    </div>
+                    <span 
+                      className="text-[10px] sm:text-[10.5px] font-mono font-bold tabular-nums shrink-0"
+                      style={{ color: theme.accent }}
+                    >
+                      {pctDisc}%
+                    </span>
+                  </div>
+                </div>
 
                 {/* Botão de Atalho para o Início do Aplicativo (Home) */}
                 <button
                   type="button"
                   onClick={() => navigate('/')}
-                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
+                  className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0 cursor-pointer"
                   aria-label="Voltar para o Início do aplicativo"
                   title="Início do aplicativo"
                 >
-                  <Home className="w-5 h-5 sm:w-5.5 sm:h-5.5" strokeWidth={2.2} />
+                  <Home className="w-5.5 h-5.5 sm:w-6 sm:h-6" strokeWidth={2.2} />
                 </button>
               </div>
             </div>
 
-            {/* Painel Hero da Área / Disciplina (SEM MARGENS LATERAIS OU EM CIMA - Full-Bleed) */}
-            <AulasHeroPanel
-              semMargens
-              subtitulo="TRILHA DE APRENDIZADO DA ÁREA"
-              titulo={disciplinaAtual.nome}
-              descricao={disciplinaAtual.descricao}
-              porcentagem={pctDisc}
-              corDestaque={disciplinaAtual.corDestaque}
-              corFundo={disciplinaAtual.corFundoCard}
-              capaUrl={assetUrl(disciplinaAtual.capaHeroUrl)}
-              metricas={[
-                { label: 'Matérias', valor: materiasDaDisc.length },
-                { label: 'Aulas', valor: totalAulasDisc },
-                { label: 'Concluídas', valor: `${ciclosDiscCompletos}/${totalAulasDisc}` }
-              ]}
-            />
-
-            <div className="max-w-4xl mx-auto px-4 pt-3 sm:pt-4 pb-8 space-y-5">
-              {/* Breadcrumb em Setas: Trilhas > Disciplina */}
-              <nav 
-                aria-label="Caminho de navegação"
-                className="flex items-center flex-wrap gap-1.5 text-xs font-medium select-none"
-              >
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDisciplinaSelecionadaId(null);
-                    resetScrollToTop();
-                  }}
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/10 text-zinc-400 hover:text-white border border-white/10 transition-all text-[11px] sm:text-xs font-semibold active:scale-95"
-                >
-                  Trilhas
-                </button>
-
-                <ChevronRight className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
-
-                <div 
-                  className="px-2.5 py-1 rounded-lg bg-white/[0.08] border border-white/15 text-[11px] sm:text-xs font-bold flex items-center gap-1.5"
-                  style={{ color: disciplinaAtual.corDestaque }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: disciplinaAtual.corDestaque }} />
-                  <span>{disciplinaAtual.nome}</span>
-                </div>
-              </nav>
-
-              {/* Menu de Alternância Temático da Disciplina */}
-              <AulasMenuAlternancia
-                abaAtiva={abaAtiva}
-                onSelecionarAba={setAbaAtiva}
-                corDestaque={disciplinaAtual.corDestaque}
-                totalFavoritos={aulasDaDisc.filter(a => favoritosIds.has(a.id)).length}
-                porcentagemGeral={pctDisc}
-              />
-
-              {abaAtiva === 'progresso' && (
-                <AulasTabProgresso
-                  disciplinaAtual={disciplinaAtual}
-                  materias={materiasDaDisc}
-                  aulas={aulasDaDisc}
-                  calcularProgressoCiclo={calcularProgressoCiclo}
-                  onIniciarAula={iniciarAula}
-                  onSelecionarMateria={(matId) => {
-                    setMateriaSelecionadaId(matId);
-                    setAbaAtiva('trilhas');
-                    resetScrollToTop();
-                  }}
-                  corDestaque={disciplinaAtual.corDestaque}
-                />
-              )}
-
-              {abaAtiva === 'favoritos' && (
-                <AulasTabFavoritos
-                  aulasFavoritas={aulasDaDisc.filter(a => favoritosIds.has(a.id))}
-                  onIniciarAula={iniciarAula}
-                  onAlternarFavorito={handleAlternarFavorito}
-                  corDestaque={disciplinaAtual.corDestaque}
-                  onVoltarParaTrilhas={() => setAbaAtiva('trilhas')}
-                />
-              )}
-
-              {abaAtiva === 'estatisticas' && (
-                <AulasTabEstatisticas
-                  disciplinaAtual={disciplinaAtual}
-                  materias={materiasDaDisc}
-                  aulas={aulasDaDisc}
-                  calcularProgressoCiclo={calcularProgressoCiclo}
-                  acertosMap={acertosMap}
-                  corDestaque={disciplinaAtual.corDestaque}
-                  onSelecionarMateria={(matId) => {
-                    setMateriaSelecionadaId(matId);
-                    setAbaAtiva('trilhas');
-                    resetScrollToTop();
-                  }}
-                />
-              )}
-
-              {abaAtiva === 'trilhas' && (
-                <>
-              {/* Barra de Pesquisa Nível 2 */}
-              <div className="relative w-full">
-                <div 
-                  className="relative flex items-center w-full bg-white/[0.04] hover:bg-white/[0.06] border border-white/10 focus-within:bg-white/[0.07] rounded-xl px-3.5 py-2.5 sm:py-3 transition-all shadow-lg backdrop-blur-md"
-                  style={{ borderColor: buscaTermo ? disciplinaAtual.corDestaque : undefined }}
-                >
-                  <Search 
-                    className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-zinc-400 shrink-0 mr-2.5 transition-colors" 
-                    style={{ color: buscaTermo ? disciplinaAtual.corDestaque : undefined }}
-                  />
+            {/* Conteúdo da Trilha Serpenteante (Idêntico ao Flashcards) */}
+            <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-[calc(8.5rem+env(safe-area-inset-bottom,0px))] pt-2 min-w-0 overflow-x-hidden box-border">
+              {/* Barra de Pesquisa Rápida das Matérias da Área (Responsiva e Altura Confortável) */}
+              <div className="w-full max-w-[360px] xs:max-w-[460px] sm:max-w-xl mx-auto px-2 my-2.5 z-20">
+                <div className="relative w-full">
+                  <div 
+                    className="absolute left-3.5 xs:left-4 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 transition-colors"
+                    style={{ color: theme.accent }}
+                  >
+                    <Search className="w-4.5 h-4.5 sm:w-5 sm:h-5 stroke-[2.2]" />
+                  </div>
                   <input
                     type="text"
                     value={buscaTermo}
                     onChange={(e) => setBuscaTermo(e.target.value)}
-                    placeholder={`Pesquisar matéria em ${disciplinaAtual.nome}...`}
-                    className="bg-transparent text-xs sm:text-sm text-white placeholder-zinc-500 outline-none w-full font-medium"
+                    placeholder={`Buscar matéria em ${disciplinaAtual.nome}...`}
+                    className="w-full h-12 xs:h-12.5 sm:h-13.5 pl-11 xs:pl-12 pr-11 xs:pr-12 rounded-full text-xs xs:text-sm sm:text-base text-white placeholder:text-zinc-400/75 focus:outline-none transition-all shadow-inner"
+                    style={{
+                      background: 'rgba(15, 6, 10, 0.85)',
+                      backdropFilter: 'blur(16px)',
+                      border: `1px solid ${buscaTermo ? theme.accent : theme.borderSubtle}`,
+                      boxShadow: buscaTermo 
+                        ? `0 0 16px ${theme.glowSoft}, inset 0 2px 4px rgba(0,0,0,0.7)` 
+                        : 'inset 0 2px 4px rgba(0,0,0,0.6)',
+                    }}
                   />
                   {buscaTermo && (
                     <button
                       type="button"
                       onClick={() => setBuscaTermo('')}
-                      className="p-1 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition shrink-0"
-                      aria-label="Limpar pesquisa"
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-white cursor-pointer z-10 transition-colors"
+                      aria-label="Limpar busca"
                     >
-                      <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <X className="w-4 h-4" />
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* Header da Seção: Selecione o Módulo */}
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" style={{ color: disciplinaAtual.corDestaque }} />
-                  <span>SELECIONE O MÓDULO ({materiasFiltradas.length})</span>
-                </h3>
-              </div>
+              {/* Trilha Serpenteante Oficial de Matérias */}
+              <div className="relative py-2 sm:py-4 w-full min-w-0 max-w-full overflow-hidden">
+                <div className="w-full min-w-0 relative z-[2] flex flex-col items-center">
+                  {/* ── CUME DA TRILHA: O TEMPLO DA ACRÓPOLE ── */}
+                  <div className="w-full flex flex-col items-center justify-center pt-2 pb-4">
+                    <div className="relative flex flex-col items-center">
+                      {/* Halo solar suave atrás do Parthenon */}
+                      <div 
+                        className="absolute -top-4 w-40 h-28 rounded-full pointer-events-none"
+                        style={{
+                          background: `radial-gradient(ellipse at center, ${theme.glow} 0%, ${theme.glowSoft} 60%, transparent 100%)`,
+                          filter: 'blur(16px)',
+                        }}
+                      />
 
-              {/* Trilha Serpenteante em Linha do Tempo das Matérias */}
-              <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
-                <div className="w-full min-w-0 relative z-[2] flex flex-col">
-                  {materiasFiltradas.map((mat, i) => {
-                    const isLeft = i % 2 === 0;
+                      {/* Ícone Monumental Oficial da Disciplina */}
+                      <div 
+                        className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border flex items-center justify-center shadow-2xl mb-2"
+                        style={{
+                          background: theme.bgCard,
+                          borderColor: theme.border,
+                          boxShadow: `0 0 24px ${theme.glowSoft}, inset 0 2px 4px rgba(255, 255, 255, 0.15)`,
+                        }}
+                      >
+                        <AreaIconComponent 
+                          className="w-9 h-9 sm:w-11 sm:h-11 drop-shadow-md" 
+                          style={{ color: theme.accent, filter: `drop-shadow(0 2px 8px ${theme.glow})` }}
+                        />
+                      </div>
+
+                      {/* Placa com o Nome da Disciplina */}
+                      <div 
+                        className="px-4 py-1.5 rounded-full border flex items-center gap-2 backdrop-blur-md"
+                        style={{
+                          background: theme.bgCard,
+                          borderColor: theme.border,
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.1)',
+                        }}
+                      >
+                        <span 
+                          className="w-1.5 h-1.5 rounded-full" 
+                          style={{ backgroundColor: theme.accent, boxShadow: `0 0 6px ${theme.accent}` }}
+                        />
+                        <span 
+                          className="text-[11px] sm:text-xs font-serif font-black tracking-widest uppercase"
+                          style={{ color: theme.highlight }}
+                        >
+                          {disciplinaAtual.nome}
+                        </span>
+                      </div>
+
+                      {/* Descrição Elegante com Setas: Matérias → Aulas → Progresso */}
+                      <div 
+                        className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-serif font-semibold mt-2 px-3 py-1 rounded-full border backdrop-blur-md"
+                        style={{
+                          background: theme.bgCard,
+                          borderColor: theme.borderSubtle,
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.08)',
+                          color: theme.highlight,
+                        }}
+                      >
+                        <span>{materiasDaDisc.length} matérias</span>
+                        <span className="font-bold" style={{ color: theme.accent }}>→</span>
+                        <span>{totalAulasDisc} aulas</span>
+                        <span className="font-bold" style={{ color: theme.accent }}>→</span>
+                        <span className="font-mono font-bold" style={{ color: theme.accent }}>{pctDisc}% concluído</span>
+                      </div>
+
+                      {/* Início da Estrada saindo do templo */}
+                      <div 
+                        className="w-1.5 h-6 my-2 rounded-full"
+                        style={{
+                          background: theme.roadGradient,
+                          boxShadow: theme.roadShadow,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Nós Serpenteantes: Cada Nó é uma Matéria Oficial com FlashcardDeckItem */}
+                  {materiasFiltradas.map((mat, matIdx) => {
+                    const isLast = matIdx === materiasFiltradas.length - 1;
                     const aulasDaMat = AULAS_CATALOGO.filter(a => a.materiaId === mat.id);
                     const totalAulasMat = aulasDaMat.length;
                     const somaPctMat = aulasDaMat.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
                     const pctMat = totalAulasMat > 0 ? Math.round(somaPctMat / totalAulasMat) : 0;
+                    const concluidasMat = aulasDaMat.filter(a => calcularProgressoCiclo(a).cicloCompleto).length;
+                    const isActive = matIdx === 0;
+                    const isLocked = false;
+                    const tituloCurto = formatarTituloMateriaCurto(mat.titulo);
+
+                    const itemData = {
+                      key: mat.id,
+                      titulo: tituloCurto,
+                      badgeLabel: `Matéria ${String(matIdx + 1).padStart(2, '0')}`,
+                      ordemStr: String(matIdx + 1).padStart(2, '0'),
+                      displayTotal: totalAulasMat,
+                      temasCount: totalAulasMat,
+                      displayConcluidas: concluidasMat,
+                      displayPct: pctMat,
+                      subtituloCustom: `${totalAulasMat} ${totalAulasMat === 1 ? 'aula' : 'aulas'}${pctMat > 0 ? ` • ${pctMat}% concluído` : ''}`,
+                      isLocked,
+                      onClick: () => {
+                        try { haptic.selection(); } catch {}
+                        setMateriaSelecionadaId(mat.id);
+                        setAulaSheetDetalhe(null);
+                        setBuscaTermoAulas('');
+                        resetScrollToTop();
+                      },
+                    };
 
                     return (
-                      <div key={mat.id} className="w-full flex flex-col">
-                        <div
-                          className={cn(
-                            "relative z-10 flex w-full items-center justify-between gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
-                            isLeft ? "flex-row" : "flex-row-reverse"
-                          )}
-                        >
-                          {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA MATÉRIA */}
-                          <div
-                            onClick={() => {
-                              setMateriaSelecionadaId(mat.id);
-                              setAulaSheetDetalhe(null);
-                              setBuscaTermoAulas('');
-                            }}
-                            className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.95] hover:-translate-y-1.5 transition-transform duration-300 ease-out"
-                          >
-                            {/* Carta 1 (Fundo) */}
-                            <div
-                              className={cn("absolute inset-0 rounded-2xl border border-white/10 opacity-40 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
-                                isLeft
-                                  ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
-                                  : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
-                              )}
-                              style={{
-                                background: disciplinaAtual.corFundoCard,
-                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                              }}
-                            >
-                              <div className="absolute inset-0 bg-black/50 pointer-events-none z-[1]" />
-                              <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
-                                <Layers className="w-5 h-5 text-white/30" />
-                              </div>
-                            </div>
-
-                            {/* Carta 2 (Meio) */}
-                            <div
-                              className={cn("absolute inset-0 rounded-2xl border border-white/15 opacity-75 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
-                                isLeft
-                                  ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
-                                  : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
-                              )}
-                              style={{
-                                background: disciplinaAtual.corFundoCard,
-                                boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                              }}
-                            >
-                              <div className="absolute inset-0 bg-black/25 pointer-events-none z-[1]" />
-                              <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
-                                <Layers className="w-5 h-5 text-white/40" />
-                              </div>
-                            </div>
-
-                            {/* Carta 3 (Frontal Principal com Capa) */}
-                            <div
-                              className={cn("relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 spring-card transition-all origin-bottom hover-shimmer-effect",
-                                isLeft
-                                  ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-                                  : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-                              )}
-                              style={{
-                                background: disciplinaAtual.corFundoCard,
-                                borderColor: `${disciplinaAtual.corDestaque}50`
-                              }}
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
-                              <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
-
-                              <img
-                                src={assetUrl(mat.capaUrl) || assetUrl(disciplinaAtual.capaHeroUrl)}
-                                alt={mat.titulo}
-                                loading={i < 10 ? "eager" : "lazy"}
-                                fetchPriority={i < 6 ? "high" : "auto"}
-                                decoding="async"
-                                onError={(e) => {
-                                  e.currentTarget.src = assetUrl(disciplinaAtual.capaHeroUrl);
-                                }}
-                                className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
-
-                              {/* Topo da Carta: Porcentagem Elegante no Canto Superior Esquerdo */}
-                              <div className="relative z-10 flex items-center justify-between w-full">
-                                <div className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 shadow-md flex items-center gap-1">
-                                  <span className="text-[10px] sm:text-[11px] font-black tracking-tight" style={{ color: disciplinaAtual.corDestaque }}>
-                                    {pctMat}%
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Centro da Capa Limpo (Sem Botão de Play) */}
-                              <div className="my-auto py-2 z-[1] w-full" />
-
-                              {/* Rodapé da Carta com Progresso */}
-                              <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
-                                <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-normal text-white/95 mb-1 sm:mb-1.5">
-                                  <span className="truncate">{totalAulasMat} {totalAulasMat === 1 ? 'aula' : 'aulas'}</span>
-                                  <span className="font-semibold font-sans">{pctMat}%</span>
-                                </div>
-                                <div className="w-full bg-black/50 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
-                                  <div
-                                    className="h-full rounded-full transition-all duration-500 shadow-sm"
-                                    style={{
-                                      width: `${Math.max(pctMat, totalAulasMat > 0 ? 8 : 0)}%`,
-                                      backgroundColor: disciplinaAtual.corDestaque,
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* LINHA FINA CONECTORA E TÍTULO NO LADO OPOSTO */}
-                          <div
-                            onClick={() => {
-                              setMateriaSelecionadaId(mat.id);
-                              setAulaSheetDetalhe(null);
-                              setBuscaTermoAulas('');
-                            }}
-                            className={cn(
-                              "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
-                              isLeft ? "flex-row pl-2 sm:pl-4" : "flex-row-reverse pr-2 sm:pr-4"
-                            )}
-                          >
-                            <div
-                              className={cn(
-                                "flex items-center shrink-0 w-6 xs:w-8 sm:w-12 md:w-16",
-                                isLeft ? "flex-row" : "flex-row-reverse"
-                              )}
-                            >
-                              <div
-                                className="w-2 h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
-                                style={{
-                                  backgroundColor: disciplinaAtual.corDestaque,
-                                  boxShadow: `0 0 10px ${disciplinaAtual.corDestaque}`,
-                                }}
-                              />
-                              <div
-                                className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
-                                style={{
-                                  background: isLeft
-                                    ? `linear-gradient(to right, ${disciplinaAtual.corDestaque}, rgba(255,255,255,0.3), transparent)`
-                                    : `linear-gradient(to left, ${disciplinaAtual.corDestaque}, rgba(255,255,255,0.3), transparent)`,
-                                }}
-                              />
-                            </div>
-
-                            <div
-                              className={cn(
-                                "flex-1 min-w-0 flex flex-col justify-center px-2 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
-                                "items-start text-left"
-                              )}
-                            >
-                              <div className={cn("flex items-center gap-1.5 mb-1 opacity-80", "justify-start")}>
-                                <span className="text-[11px] sm:text-[13px] font-bold uppercase tracking-wider" style={{ color: disciplinaAtual.corDestaque }}>
-                                  MATÉRIA {i + 1}
-                                </span>
-                              </div>
-
-                              <h3 className="font-serif font-bold text-[17px] xs:text-[19px] sm:text-[22px] md:text-[24px] leading-tight text-white group-hover:text-amber-200 transition-colors drop-shadow-md break-words">
-                                {mat.titulo}
-                              </h3>
-
-                              {mat.descricao && (
-                                <p className="text-xs text-zinc-300/80 mt-1.5 line-clamp-2 max-w-md leading-relaxed hidden xs:block">
-                                  {mat.descricao}
-                                </p>
-                              )}
-
-                              <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">
-                                <span>Explorar Matéria ({totalAulasMat} {totalAulasMat === 1 ? 'aula' : 'aulas'})</span>
-                                <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" style={{ color: disciplinaAtual.corDestaque }} />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* SVG S-Curve Connector */}
-                        {i < materiasFiltradas.length - 1 && (
-                          <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-36 sm:h-44 md:h-52 -my-14 sm:-my-18 md:-my-22 pointer-events-none z-0 overflow-visible">
-                            <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
-                              <defs>
-                                <filter id={`trail-glow-mat-${i}`} x="-20%" y="-20%" width="140%" height="140%">
-                                  <feGaussianBlur stdDeviation="3" result="blur" />
-                                  <feMerge>
-                                    <feMergeNode in="blur" />
-                                    <feMergeNode in="SourceGraphic" />
-                                  </feMerge>
-                                </filter>
-                              </defs>
-                              <path
-                                d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
-                                fill="none"
-                                stroke="rgba(255, 255, 255, 0.08)"
-                                strokeWidth="4"
-                                strokeLinecap="round"
-                                vectorEffect="non-scaling-stroke"
-                              />
-                              <path
-                                d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
-                                fill="none"
-                                className="animate-trail-flow"
-                                stroke={pctMat >= 100 ? '#fbbf24' : disciplinaAtual.corDestaque} strokeWidth={pctMat >= 100 ? '3' : '2.5'}
-                                strokeDasharray="6 8"
-                                strokeLinecap="round"
-                                vectorEffect="non-scaling-stroke"
-                                filter={`url(#trail-glow-mat-${i})`}
-                              />
-                            </svg>
-                            <div
-                              className="absolute w-2.5 h-2.5 rounded-full pointer-events-none border border-white/80 bg-white shadow-lg animate-dot-pulse"
-                              style={{
-                                left: '50%',
-                                top: '50%',
-                                boxShadow: `0 0 14px ${disciplinaAtual.corDestaque}, 0 0 4px #ffffff`,
-                              }}
-                            />
-                          </div>
-                        )}
+                      <div
+                        key={mat.id}
+                        id={`materia-section-${mat.id}`}
+                        className="w-full flex flex-col items-center"
+                      >
+                        <FlashcardDeckItem
+                          item={itemData}
+                          i={matIdx}
+                          isLast={isLast}
+                          isActive={isActive}
+                          theme={theme}
+                        />
                       </div>
                     );
                   })}
 
                   {materiasFiltradas.length === 0 && (
                     <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
-                      <Search className="w-9 h-9 text-zinc-600 stroke-[1.5]" />
-                      <p className="text-zinc-400 text-sm">
+                      <Search className="w-9 h-9 text-zinc-500 stroke-[1.5]" />
+                      <p className="text-zinc-300 text-sm">
                         Nenhuma matéria encontrada para "<span className="text-white font-semibold">{buscaTermo}</span>"
                       </p>
                       <button
                         type="button"
                         onClick={() => setBuscaTermo('')}
-                        className="text-xs font-medium underline"
-                        style={{ color: disciplinaAtual.corDestaque }}
+                        className="text-xs font-semibold underline cursor-pointer"
+                        style={{ color: theme.accent }}
                       >
                         Limpar pesquisa
                       </button>
                     </div>
                   )}
+
+                  {/* Louros da Vitória Clássicos no Rodapé da Trilha */}
+                  <div className="w-full flex items-center justify-between px-6 pt-8 pb-4" style={{ color: theme.borderSubtle }}>
+                    <svg className="w-9 h-9 -rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
+                      <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
+                      <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
+                    </svg>
+                    <span 
+                      className="text-[10px] font-serif font-semibold tracking-widest uppercase text-center"
+                      style={{ color: theme.accent, opacity: 0.85 }}
+                    >
+                      Trilha do Saber • {disciplinaAtual.nome}
+                    </span>
+                    <svg className="w-9 h-9 rotate-12 scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
+                      <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
+                      <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-                </>
-              )}
             </div>
           </>
         );
