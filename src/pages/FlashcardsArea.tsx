@@ -732,36 +732,56 @@ const FlashcardsArea = () => {
     return materiasComTemas[0]?.capaInicial || greciaFilosofosFundo;
   });
 
+  const fundoAtivoUrlRef = useRef(fundoAtivoUrl);
+  fundoAtivoUrlRef.current = fundoAtivoUrl;
+
+  const materiaAtivaIdRef = useRef(materiaAtivaId);
+  materiaAtivaIdRef.current = materiaAtivaId;
+
   useEffect(() => {
     if (materiasComTemas.length > 0 && (!fundoAtivoUrl || fundoAtivoUrl === greciaFilosofosFundo)) {
       setFundoAtivoUrl(materiasComTemas[0].capaInicial);
     }
   }, [materiasComTemas]);
 
-  // 6. IntersectionObserver: conforme o usuário rola, detecta o tema visível e sobrepõe a imagem de fundo de forma animada
+  // 6. IntersectionObserver estável: detecta o tema visível e sobrepõe o fundo sem re-renderizar nem recriar o observer
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        const visibleEntry = entries.find((e) => e.isIntersecting);
-        if (visibleEntry) {
-          const target = visibleEntry.target as HTMLElement;
+        // Pega a entrada visível com maior intersecção
+        const visibleEntries = entries.filter((e) => e.isIntersecting);
+        if (visibleEntries.length > 0) {
+          // Ordena pelo centro vertical do elemento em relação ao centro da janela
+          const viewportCenter = window.innerHeight / 2;
+          visibleEntries.sort((a, b) => {
+            const rectA = a.target.getBoundingClientRect();
+            const rectB = b.target.getBoundingClientRect();
+            const distA = Math.abs(rectA.top + rectA.height / 2 - viewportCenter);
+            const distB = Math.abs(rectB.top + rectB.height / 2 - viewportCenter);
+            return distA - distB;
+          });
+
+          const primaryEntry = visibleEntries[0];
+          const target = primaryEntry.target as HTMLElement;
           const bgUrl = target.getAttribute('data-bg-url');
           const matId = target.getAttribute('data-materia-id');
 
-          if (bgUrl && bgUrl !== fundoAtivoUrl) {
+          if (bgUrl && bgUrl !== fundoAtivoUrlRef.current) {
+            fundoAtivoUrlRef.current = bgUrl;
             setFundoAtivoUrl(bgUrl);
           }
-          if (matId && matId !== materiaAtivaId) {
+          if (matId && matId !== materiaAtivaIdRef.current) {
+            materiaAtivaIdRef.current = matId;
             setMateriaAtivaId(matId);
           }
         }
       },
       {
         root: null,
-        rootMargin: '-20% 0px -40% 0px',
-        threshold: 0.15,
+        rootMargin: '-10% 0px -30% 0px',
+        threshold: 0.1,
       }
     );
 
@@ -769,7 +789,7 @@ const FlashcardsArea = () => {
     elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
-  }, [materiasComTemas, fundoAtivoUrl, materiaAtivaId]);
+  }, [materiasComTemas]);
 
   const selectMateria = useCallback((matId: string) => {
     setMateriaAtivaId(matId);
@@ -777,17 +797,19 @@ const FlashcardsArea = () => {
 
     const el = document.getElementById(`materia-section-${matId}`);
     if (el) {
-      const topOffset = el.getBoundingClientRect().top + window.scrollY - 80;
+      const topOffset = el.getBoundingClientRect().top + window.scrollY - 75;
       window.scrollTo({ top: topOffset, behavior: 'smooth' });
     }
   }, []);
 
-  // Mantém a pílula da matéria ativa sempre visível no carrossel horizontal
+  // Centraliza a pílula da matéria ativa no carrossel horizontal SEM afetar o scroll da página (window)
   useEffect(() => {
     if (!materiaAtivaId || !pillContainerRef.current) return;
-    const btn = pillContainerRef.current.querySelector(`[data-materia-id="${materiaAtivaId}"]`) as HTMLElement;
+    const container = pillContainerRef.current;
+    const btn = container.querySelector(`[data-materia-id="${materiaAtivaId}"]`) as HTMLElement;
     if (btn) {
-      btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      const scrollPos = btn.offsetLeft - (container.clientWidth / 2) + (btn.clientWidth / 2);
+      container.scrollTo({ left: Math.max(0, scrollPos), behavior: 'smooth' });
     }
   }, [materiaAtivaId]);
 
