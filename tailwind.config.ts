@@ -76,6 +76,49 @@ const GREEN = {
   950: "#052e16",
 };
 
+// Escala azul vibrante oficial para flashcards, seleções ativas e badges
+const BLUE = {
+  50:  "#eff6ff",
+  100: "#dbeafe",
+  200: "#bfdbfe",
+  300: "#93c5fd",
+  400: "#60a5fa",
+  500: "#3b82f6",
+  600: "#2563eb",
+  700: "#1d4ed8",
+  800: "#1e40af",
+  900: "#1e3a8a",
+  950: "#0f172a",
+};
+
+const CYAN = {
+  50:  "#ecfeff",
+  100: "#cffafe",
+  200: "#a5f3fc",
+  300: "#67e8f9",
+  400: "#22d3ee",
+  500: "#06b6d4",
+  600: "#0891b2",
+  700: "#0e7490",
+  800: "#155e75",
+  900: "#164e63",
+  950: "#083344",
+};
+
+const SKY = {
+  50:  "#f0f9ff",
+  100: "#e0f2fe",
+  200: "#bae6fd",
+  300: "#7dd3fc",
+  400: "#38bdf8",
+  500: "#0ea5e9",
+  600: "#0284c7",
+  700: "#0369a1",
+  800: "#075985",
+  900: "#0c4a6e",
+  950: "#082f49",
+};
+
 const MONO_COLOR_ALIASES = {
   // Alterações legislativas / Redação dada -> Amarelo / Âmbar legítimo
   amber: AMBER,
@@ -87,13 +130,14 @@ const MONO_COLOR_ALIASES = {
   pink: RED_PRIME,
   fuchsia: RED_PRIME,
   lime: RED_PRIME,
+  // Azuis e Cianos autênticos vibrantes
+  sky: SKY,
+  blue: BLUE,
+  indigo: BLUE,
+  cyan: CYAN,
   // Frios/neutros -> cinza
-  sky: GRAY,
-  blue: GRAY,
-  indigo: GRAY,
   violet: GRAY,
   purple: GRAY,
-  cyan: GRAY,
   teal: GRAY,
   stone: GRAY,
   slate: GRAY,

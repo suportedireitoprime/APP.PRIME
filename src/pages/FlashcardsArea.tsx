@@ -36,23 +36,73 @@ interface SubMateriaCivilConfig {
   id: string;
   nome: string;
   numeros: number[];
+  keywords: string[];
 }
 
 const SUB_MATERIAS_CIVIL: SubMateriaCivilConfig[] = [
-  { id: 'sec-parte-geral', nome: 'Parte Geral & LINDB', numeros: [1, 2, 3, 4, 5, 6, 32, 33] },
-  { id: 'sec-obrigacoes', nome: 'Obrigações', numeros: [7, 8, 9, 10] },
-  { id: 'sec-contratos', nome: 'Contratos', numeros: [11, 12, 13, 30, 31, 40, 41] },
-  { id: 'sec-responsabilidade-civil', nome: 'Responsabilidade Civil', numeros: [14] },
-  { id: 'sec-direitos-reais', nome: 'Direitos Reais', numeros: [15, 16, 17, 18, 19, 20, 22] },
-  { id: 'sec-familia', nome: 'Direito de Família', numeros: [21, 23, 24, 25, 34, 37, 38, 39, 42, 43, 44] },
-  { id: 'sec-sucessoes', nome: 'Direito das Sucessões', numeros: [26, 27, 35, 36] },
-  { id: 'sec-consumidor-especial', nome: 'Consumidor & Especial', numeros: [28, 29] },
+  { 
+    id: 'sec-parte-geral', 
+    nome: 'Parte Geral & LINDB', 
+    numeros: [1, 2, 3, 4, 5, 6, 32, 33],
+    keywords: ['parte geral', 'lindb', 'pessoa', 'pessoas', 'bens', 'fato', 'negócio jurídico', 'prescrição', 'decadência']
+  },
+  { 
+    id: 'sec-obrigacoes', 
+    nome: 'Obrigações', 
+    numeros: [7, 8, 9, 10],
+    keywords: ['obrigação', 'obrigações', 'inadimplemento', 'pagamento', 'devedor', 'credor']
+  },
+  { 
+    id: 'sec-contratos', 
+    nome: 'Contratos', 
+    numeros: [11, 12, 13, 30, 31, 40, 41],
+    keywords: ['contrato', 'contratos', 'compra e venda', 'locação', 'doação', 'mútuo', 'fiança']
+  },
+  { 
+    id: 'sec-responsabilidade-civil', 
+    nome: 'Responsabilidade Civil', 
+    numeros: [14],
+    keywords: ['responsabilidade civil', 'dano moral', 'dano material', 'culpa', 'nexo', 'indenização']
+  },
+  { 
+    id: 'sec-direitos-reais', 
+    nome: 'Direitos Reais', 
+    numeros: [15, 16, 17, 18, 19, 20, 22],
+    keywords: ['reais', 'propriedade', 'posse', 'usucapião', 'imóveis', 'registro de imóveis', 'hipoteca', 'penhor']
+  },
+  { 
+    id: 'sec-familia', 
+    nome: 'Direito de Família', 
+    numeros: [21, 23, 24, 25, 34, 37, 38, 39, 42, 43, 44],
+    keywords: ['família', 'casamento', 'união estável', 'alimentos', 'filiação', 'guarda', 'divórcio', 'parentesco']
+  },
+  { 
+    id: 'sec-sucessoes', 
+    nome: 'Direito das Sucessões', 
+    numeros: [26, 27, 35, 36],
+    keywords: ['sucessão', 'sucessões', 'herança', 'testamento', 'inventário', 'herdeiro']
+  },
+  { 
+    id: 'sec-consumidor-especial', 
+    nome: 'Consumidor & Especial', 
+    numeros: [28, 29],
+    keywords: ['consumidor', 'cdc', 'especial', 'notarial', 'registral']
+  },
 ];
 
 function getNumeroTema(temaStr: string): number {
   if (!temaStr) return 0;
   const m = String(temaStr).match(/^(\d+)[\.\-\s_:]+/);
   return m ? parseInt(m[1], 10) : 0;
+}
+
+function itemMatchesSubMateria(sub: SubMateriaCivilConfig, it: any): boolean {
+  const num = it.temaNum || getNumeroTema(it.rawTema || it.titulo);
+  if (num > 0 && sub.numeros.includes(num)) return true;
+  
+  const text = (String(it.rawTema || '') + ' ' + String(it.titulo || '')).toLowerCase();
+  if (sub.keywords.some((k) => text.includes(k))) return true;
+  return false;
 }
 
 const FlashcardsArea = () => {
@@ -508,19 +558,24 @@ const FlashcardsArea = () => {
   const headerProgressBar = (
     <div className="w-full flex flex-col justify-center text-left py-0.5 pr-1">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-blue-200 truncate flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee] shrink-0" />
+        <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-[#bfdbfe] truncate flex items-center gap-1.5">
+          <span 
+            className="w-1.5 h-1.5 rounded-full shrink-0" 
+            style={{ backgroundColor: '#38bdf8', boxShadow: '0 0 6px #38bdf8' }}
+          />
           <span className="truncate">{officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito Civil'}</span>
         </span>
-        <span className="text-[10px] sm:text-[10.5px] font-mono font-bold text-cyan-300 tabular-nums shrink-0 ml-2">
+        <span className="text-[10px] sm:text-[10.5px] font-mono font-bold text-[#38bdf8] tabular-nums shrink-0 ml-2">
           {totalCompreendidos} / {totalFlashcardsArea} ({progressoPctFlash}%)
         </span>
       </div>
-      <div className="w-full h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden">
+      <div className="w-full h-2 rounded-full bg-black/70 border border-white/10 overflow-hidden">
         <div
-          className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-600 via-blue-400 to-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.5)]"
+          className="h-full rounded-full transition-all duration-700 ease-out"
           style={{
             width: `${Math.max(progressoPctFlash, totalFlashcardsArea > 0 ? 3 : 0)}%`,
+            background: 'linear-gradient(90deg, #1d4ed8 0%, #2563eb 50%, #38bdf8 100%)',
+            boxShadow: '0 0 10px rgba(56, 189, 248, 0.65)',
           }}
         />
       </div>
@@ -560,10 +615,17 @@ const FlashcardsArea = () => {
     }
 
     let globalCounter = 0;
+    const classifiedKeys = new Set<string>();
+
     const result = SUB_MATERIAS_CIVIL.map((sub) => {
       const matched = itemsToRender.filter((it) => {
-        const num = it.temaNum || getNumeroTema(it.rawTema || it.titulo);
-        return sub.numeros.includes(num);
+        if (classifiedKeys.has(it.key)) return false;
+        const matches = itemMatchesSubMateria(sub, it);
+        if (matches) {
+          classifiedKeys.add(it.key);
+          return true;
+        }
+        return false;
       }).sort((a, b) => {
         const numA = a.temaNum || getNumeroTema(a.rawTema || a.titulo);
         const numB = b.temaNum || getNumeroTema(b.rawTema || b.titulo);
@@ -588,27 +650,30 @@ const FlashcardsArea = () => {
         nome: sub.nome,
         items: itemsWithGlobal,
       };
-    }).filter((sub) => sub.items.length > 0);
+    });
 
-    // Se sobrou algum tema não classificado nos números padrão, anexa à última sub-matéria
-    const classifiedKeys = new Set(result.flatMap((s) => s.items.map((it) => it.key)));
+    // Se sobrou algum tema não classificado nos números ou keywords, anexa à primeira sub-matéria (Parte Geral)
     const unclassified = itemsToRender.filter((it) => !classifiedKeys.has(it.key));
-    if (unclassified.length > 0 && result.length > 0) {
-      const lastSec = result[result.length - 1];
-      unclassified.forEach((it) => {
-        const curr = globalCounter++;
-        const numStr = String(curr + 1).padStart(2, '0');
-        lastSec.items.push({
-          ...it,
-          globalIndex: curr,
-          badgeLabel: `Deck ${numStr}`,
-          ordemStr: numStr,
-          isLocked: !isPremium && curr >= 2,
+    if (unclassified.length > 0) {
+      const targetSec = result.find((s) => s.id === 'sec-parte-geral') || result[0];
+      if (targetSec) {
+        unclassified.forEach((it) => {
+          const curr = globalCounter++;
+          const numStr = String(curr + 1).padStart(2, '0');
+          targetSec.items.push({
+            ...it,
+            globalIndex: curr,
+            badgeLabel: `Deck ${numStr}`,
+            ordemStr: numStr,
+            isLocked: !isPremium && curr >= 2,
+          });
         });
-      });
+      }
     }
 
-    return result;
+    // Retorna apenas sub-matérias com itens (ou todas se nenhuma tiver itens ainda)
+    const withItems = result.filter((sub) => sub.items.length > 0);
+    return withItems.length > 0 ? withItems : result;
   }, [isCivilArea, itemsToRender, isPremium, officialFlashcardArea, area?.nome, effectiveAreaName]);
 
   const activeSection = useMemo(() => {
@@ -669,17 +734,19 @@ const FlashcardsArea = () => {
       {/* Fundo Base idêntico ao Vade Mecum */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]" />
 
-      {/* Fundo Grécia Clássica 3D: Pilares e Templo emergindo de baixo */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none">
+      {/* Fundo Grécia Clássica 3D: Pilares do Templo e Céu Nobre emergindo em 3D */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0D0D0D]">
         <img
           src={splashHeroSkyColumns}
-          alt=""
-          aria-hidden="true"
-          className="w-full h-full object-cover object-bottom opacity-40 filter brightness-90 contrast-125"
+          alt="Pilares e Templo Grego Clássico"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-top opacity-75 scale-100 select-none pointer-events-none filter brightness-105 contrast-110"
         />
-        {/* Gradientes cinematográficos para fusão nobre com o fundo escuro e legibilidade total */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-[#0D0D0D]/75 to-[#0D0D0D]/95" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0D0D0D]/90 via-transparent to-[#0D0D0D]/80" />
+        {/* Gradientes cinematográficos suaves: preservam a visibilidade monumental dos pilares e do céu */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-[#0D0D0D]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_35%,#0D0D0D_95%)]" />
       </div>
 
       {/* Fundo com Grid de Quadrados (ShapeGrid) sutil sobreposto */}
@@ -696,20 +763,11 @@ const FlashcardsArea = () => {
       </div>
 
       <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-24 pt-2 min-w-0 overflow-x-hidden box-border">
-        {/* ── Menu de Alternância (100% Azul e Fixo no Topo sem Sobreposição) ── */}
-        <div className="sticky top-0 z-30 -mx-3.5 px-3.5 sm:-mx-6 sm:px-6 py-2.5 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-blue-500/25 mb-4 shadow-lg shadow-black/60">
-          <div className="flex items-center justify-between mb-1.5 px-0.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
-              <Landmark className="w-3.5 h-3.5 text-blue-400" />
-              {isCivilArea ? `Matérias de Direito Civil (${sections.length})` : `Todas as Matérias (${todasAsAreas.length})`}
-            </span>
-            <span className="text-[10px] text-blue-300/80 font-medium">
-              Toque para alternar a matéria
-            </span>
-          </div>
+        {/* ── Menu de Alternância (Limpo, sem títulos, sem cortes nas laterais) ── */}
+        <div className="sticky top-0 z-30 -mx-3.5 sm:-mx-6 py-2 bg-[#0D0D0D]/95 backdrop-blur-md border-b border-[#2563eb]/30 mb-4 shadow-lg shadow-black/60">
           <div
             ref={pillContainerRef}
-            className="flex items-center gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex items-center gap-2.5 overflow-x-auto px-4 sm:px-6 py-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {isCivilArea ? (
               sections.map((sub) => {
@@ -720,14 +778,24 @@ const FlashcardsArea = () => {
                     data-section-id={sub.id}
                     type="button"
                     onClick={() => selectSubMateria(sub.id)}
+                    style={isActive ? {
+                      backgroundColor: '#2563eb',
+                      borderColor: '#93c5fd',
+                      color: '#ffffff',
+                      boxShadow: '0 0 20px rgba(37, 99, 235, 0.8)',
+                    } : {
+                      backgroundColor: 'rgba(30, 58, 138, 0.45)',
+                      borderColor: 'rgba(59, 130, 246, 0.35)',
+                      color: '#93c5fd',
+                    }}
                     className={cn(
                       "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
                       isActive
-                        ? "bg-blue-600 text-white border-blue-300 shadow-[0_0_18px_rgba(37,99,235,0.7)] scale-[1.04] font-black"
-                        : "bg-blue-950/40 text-blue-200 border-blue-800/50 hover:bg-blue-900/60 hover:text-white hover:border-blue-400/60"
+                        ? "scale-[1.04] font-black"
+                        : "hover:bg-[#1e40af]/60 hover:text-white hover:border-[#60a5fa]/60"
                     )}
                   >
-                    <Landmark className={cn("w-3 h-3 shrink-0", isActive ? "text-white" : "text-blue-400/80")} />
+                    <Landmark className={cn("w-3 h-3 shrink-0", isActive ? "text-white" : "text-[#60a5fa]")} />
                     <span>{sub.nome}</span>
                   </button>
                 );
@@ -743,14 +811,24 @@ const FlashcardsArea = () => {
                       try { haptic.selection(); } catch {}
                       navigate(`/flashcards/area/${a.slug}`);
                     }}
+                    style={isSelected ? {
+                      backgroundColor: '#2563eb',
+                      borderColor: '#93c5fd',
+                      color: '#ffffff',
+                      boxShadow: '0 0 20px rgba(37, 99, 235, 0.8)',
+                    } : {
+                      backgroundColor: 'rgba(30, 58, 138, 0.45)',
+                      borderColor: 'rgba(59, 130, 246, 0.35)',
+                      color: '#93c5fd',
+                    }}
                     className={cn(
                       "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
                       isSelected
-                        ? "bg-blue-600 text-white border-blue-300 shadow-[0_0_18px_rgba(37,99,235,0.7)] scale-[1.04] font-black"
-                        : "bg-blue-950/40 text-blue-200 border-blue-800/50 hover:bg-blue-900/60 hover:text-white hover:border-blue-400/60"
+                        ? "scale-[1.04] font-black"
+                        : "hover:bg-[#1e40af]/60 hover:text-white hover:border-[#60a5fa]/60"
                     )}
                   >
-                    <Landmark className={cn("w-3 h-3 shrink-0", isSelected ? "text-white" : "text-blue-400/80")} />
+                    <Landmark className={cn("w-3 h-3 shrink-0", isSelected ? "text-white" : "text-[#60a5fa]")} />
                     <span>{a.area}</span>
                   </button>
                 );
@@ -772,21 +850,30 @@ const FlashcardsArea = () => {
           <>
             {/* ── BARRA DE PROGRESSO DA MATÉRIA (Abaixo do Menu de Alternância) ── */}
             {isFlash && isCivilArea && activeSection && (
-              <div className="w-full mb-5 p-3.5 rounded-2xl bg-gradient-to-r from-blue-950/60 via-slate-900/80 to-blue-950/60 border border-blue-500/30 shadow-lg shadow-black/50 backdrop-blur-md">
+              <div 
+                style={{
+                  background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 58, 138, 0.35) 100%)',
+                  borderColor: 'rgba(59, 130, 246, 0.4)',
+                  boxShadow: '0 8px 24px -4px rgba(37, 99, 235, 0.25)',
+                }}
+                className="w-full mb-5 p-3.5 rounded-2xl border backdrop-blur-md"
+              >
                 <div className="flex items-center justify-between mb-1.5 px-0.5">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
-                    <Scale className="w-3.5 h-3.5 text-blue-400" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#93c5fd] flex items-center gap-1.5">
+                    <Scale className="w-3.5 h-3.5 text-[#38bdf8]" />
                     Progresso da Matéria • {activeSection.nome}
                   </span>
-                  <span className="text-[11px] font-mono font-bold text-blue-300 tabular-nums">
+                  <span className="text-[11px] font-mono font-bold text-[#38bdf8] tabular-nums">
                     {activeSectionCompreendidos} / {activeSectionTotalCards} dominados ({activeSectionPct}%)
                   </span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden">
+                <div className="w-full h-2 rounded-full bg-black/70 border border-white/10 overflow-hidden">
                   <div
-                    className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-700 via-blue-500 to-cyan-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                    className="h-full rounded-full transition-all duration-700 ease-out"
                     style={{
                       width: `${Math.max(activeSectionPct, activeSectionTotalCards > 0 ? 3 : 0)}%`,
+                      background: 'linear-gradient(90deg, #1d4ed8 0%, #2563eb 50%, #38bdf8 100%)',
+                      boxShadow: '0 0 12px rgba(56, 189, 248, 0.65)',
                     }}
                   />
                 </div>
@@ -815,17 +902,37 @@ const FlashcardsArea = () => {
                       {/* Marcador / Pórtico Clássico da Matéria Atual */}
                       <div className="w-full mb-8 pt-1 flex flex-col items-center justify-center">
                         <div className="w-full max-w-[560px] flex items-center gap-3 px-3">
-                          <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent via-blue-500/60 to-blue-400" />
-                          <div className="flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-blue-950/90 via-slate-900/95 to-blue-950/90 border border-blue-400/50 shadow-[0_0_24px_rgba(37,99,235,0.45)] backdrop-blur-md">
-                            <Landmark className="w-4 h-4 text-cyan-300 shrink-0 drop-shadow-[0_0_6px_rgba(34,211,238,0.8)]" />
+                          <div 
+                            className="h-[2px] flex-1"
+                            style={{ background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.8), #38bdf8)' }}
+                          />
+                          <div 
+                            style={{
+                              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.85) 100%)',
+                              borderColor: 'rgba(56, 189, 248, 0.6)',
+                              boxShadow: '0 0 24px rgba(37, 99, 235, 0.5)',
+                            }}
+                            className="flex items-center gap-2.5 px-4 py-2 rounded-2xl border backdrop-blur-md"
+                          >
+                            <Landmark className="w-4 h-4 text-[#38bdf8] shrink-0 drop-shadow-[0_0_6px_rgba(56,189,248,0.8)]" />
                             <span className="text-xs sm:text-sm font-sans font-black uppercase tracking-wider text-white">
                               {activeSection.nome}
                             </span>
-                            <span className="text-[10.5px] font-mono font-bold text-blue-200 bg-blue-600/35 px-2 py-0.5 rounded-full border border-blue-400/40">
+                            <span 
+                              style={{
+                                backgroundColor: 'rgba(37, 99, 235, 0.4)',
+                                borderColor: 'rgba(96, 165, 250, 0.5)',
+                                color: '#bfdbfe',
+                              }}
+                              className="text-[10.5px] font-mono font-bold px-2 py-0.5 rounded-full border"
+                            >
                               {activeSection.items.length} {activeSection.items.length === 1 ? 'deck' : 'decks'}
                             </span>
                           </div>
-                          <div className="h-[2px] flex-1 bg-gradient-to-r from-blue-400 via-blue-500/60 to-transparent" />
+                          <div 
+                            className="h-[2px] flex-1"
+                            style={{ background: 'linear-gradient(90deg, #38bdf8, rgba(59, 130, 246, 0.8), transparent)' }}
+                          />
                         </div>
                       </div>
 
@@ -853,18 +960,31 @@ const FlashcardsArea = () => {
                           className="w-full my-12 pt-3 flex flex-col items-center justify-center cursor-pointer group select-none"
                         >
                           <div className="w-full max-w-[560px] flex items-center gap-3 px-3">
-                            <div className="h-[2px] flex-1 bg-gradient-to-r from-transparent via-blue-500/60 to-blue-400" />
-                            <div className="flex items-center gap-2.5 px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-950/95 via-slate-900 to-blue-950/95 border border-cyan-400/50 shadow-[0_0_28px_rgba(34,211,238,0.35)] backdrop-blur-md group-hover:scale-105 group-hover:border-cyan-300 group-hover:shadow-[0_0_36px_rgba(34,211,238,0.55)] transition-all duration-300">
-                              <Landmark className="w-4 h-4 text-cyan-300 shrink-0 animate-pulse drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                            <div 
+                              className="h-[2px] flex-1"
+                              style={{ background: 'linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.8), #38bdf8)' }}
+                            />
+                            <div 
+                              style={{
+                                background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.9) 100%)',
+                                borderColor: 'rgba(56, 189, 248, 0.65)',
+                                boxShadow: '0 0 28px rgba(34, 211, 238, 0.45)',
+                              }}
+                              className="flex items-center gap-2.5 px-5 py-3 rounded-2xl border backdrop-blur-md group-hover:scale-105 group-hover:border-[#38bdf8] transition-all duration-300"
+                            >
+                              <Landmark className="w-4 h-4 text-[#38bdf8] shrink-0 animate-pulse drop-shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
                               <span className="text-xs sm:text-sm font-sans font-black uppercase tracking-wider text-white flex items-center gap-1.5">
-                                Próxima Matéria: <span className="text-cyan-300 underline decoration-cyan-400/60 underline-offset-4">{nextSection.nome}</span>
+                                Próxima Matéria: <span className="text-[#38bdf8] underline decoration-[#38bdf8]/60 underline-offset-4">{nextSection.nome}</span>
                               </span>
-                              <ArrowRight className="w-4 h-4 text-cyan-300 group-hover:translate-x-1.5 transition-transform" />
+                              <ArrowRight className="w-4 h-4 text-[#38bdf8] group-hover:translate-x-1.5 transition-transform" />
                             </div>
-                            <div className="h-[2px] flex-1 bg-gradient-to-r from-blue-400 via-blue-500/60 to-transparent" />
+                            <div 
+                              className="h-[2px] flex-1"
+                              style={{ background: 'linear-gradient(90deg, #38bdf8, rgba(59, 130, 246, 0.8), transparent)' }}
+                            />
                           </div>
-                          <span className="text-[10.5px] font-medium text-cyan-200/80 mt-2 flex items-center gap-1">
-                            <ScrollText className="w-3 h-3 text-cyan-400/80" />
+                          <span className="text-[10.5px] font-medium text-[#93c5fd] mt-2 flex items-center gap-1">
+                            <ScrollText className="w-3 h-3 text-[#38bdf8]" />
                             Toque para avançar para a próxima matéria
                           </span>
                         </div>

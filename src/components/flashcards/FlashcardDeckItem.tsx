@@ -127,11 +127,19 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
 
           {/* ── NOME DO DECK E QUAL DECK É DO LADO (Estilo Clássico Grego) ── */}
           <div className="mt-2.5 sm:mt-3 w-full flex items-center justify-center gap-1.5 px-0.5 text-center flex-wrap">
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-950/80 border border-cyan-400/40 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-cyan-300 shrink-0 shadow-sm">
-              <Landmark className="w-2.5 h-2.5 text-cyan-400" />
+            <span 
+              style={{
+                backgroundColor: 'rgba(30, 58, 138, 0.75)',
+                borderColor: 'rgba(56, 189, 248, 0.5)',
+                color: '#38bdf8',
+                boxShadow: '0 0 10px rgba(37, 99, 235, 0.35)',
+              }}
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[10px] sm:text-[11px] font-black uppercase tracking-wider shrink-0"
+            >
+              <Landmark className="w-2.5 h-2.5 text-[#38bdf8]" />
               {item.badgeLabel}
             </span>
-            <span className="font-sans font-bold text-[13px] xs:text-[14px] sm:text-[15px] leading-tight text-white group-hover:text-cyan-300 transition-colors drop-shadow-sm">
+            <span className="font-sans font-bold text-[13px] xs:text-[14px] sm:text-[15px] leading-tight text-white group-hover:text-[#38bdf8] transition-colors drop-shadow-sm">
               {tituloLimpo}
             </span>
             {item.isLocked && (
