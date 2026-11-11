@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy } from 'lucide-react';
+import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
 import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
@@ -30,11 +30,55 @@ const Flashcards = () => {
   const [filtroDisciplinaPrevia, setFiltroDisciplinaPrevia] = useState<string | undefined>();
   const [filtroPassoPrevio, setFiltroPassoPrevio] = useState<'disciplinas' | 'assuntos' | 'tipos' | 'status' | 'quantidade' | undefined>();
   const [areaSelecionadaModal, setAreaSelecionadaModal] = useState<FlashcardsAreaRow | null>(null);
+  const [busca, setBusca] = useState('');
+  const [abaAtiva, setAbaAtiva] = useState<'materias' | 'recentes' | 'favoritos'>('materias');
+  const [favoritos, setFavoritos] = useState<string[]>(() => {
+    try {
+      const raw = localStorage.getItem('flashcards_favoritos_areas');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Atualiza favoritos automaticamente ao focar na janela / voltar da matéria
+  useEffect(() => {
+    const syncFavs = () => {
+      try {
+        const raw = localStorage.getItem('flashcards_favoritos_areas');
+        setFavoritos(raw ? JSON.parse(raw) : []);
+      } catch {}
+    };
+    window.addEventListener('focus', syncFavs);
+    window.addEventListener('storage', syncFavs);
+    return () => {
+      window.removeEventListener('focus', syncFavs);
+      window.removeEventListener('storage', syncFavs);
+    };
+  }, []);
+
   const loading = loadingDash;
 
   const areas = useMemo(() => {
-    return areasRaw && areasRaw.length > 0 ? areasRaw : FALLBACK_FLASHCARDS_AREAS;
+    const list = areasRaw && areasRaw.length > 0 ? areasRaw : FALLBACK_FLASHCARDS_AREAS;
+    return [...list].sort((a, b) => a.area.localeCompare(b.area, 'pt-BR'));
   }, [areasRaw]);
+
+  const areasFiltradas = useMemo(() => {
+    let list = areas;
+    if (abaAtiva === 'favoritos') {
+      list = list.filter((a) => favoritos.includes(a.slug || a.area));
+    } else if (abaAtiva === 'recentes') {
+      const comProgresso = list.filter((a) => a.compreendidos > 0);
+      list = comProgresso.length > 0 ? comProgresso : list.slice(0, 5);
+    }
+
+    if (!busca.trim()) return list;
+    const q = busca.toLowerCase();
+    return list.filter(
+      (a) => a.area.toLowerCase().includes(q) || (a.slug && a.slug.toLowerCase().includes(q))
+    );
+  }, [areas, abaAtiva, favoritos, busca]);
 
   // SEO & Título dinâmico
   useEffect(() => {
@@ -149,82 +193,202 @@ const Flashcards = () => {
 
 
 
-          {/* ── Matérias de Flashcards (Grade de Disciplinas) ───────────────────── */}
-          <section className="pt-2 space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="h-4 w-1 rounded-full bg-[#2563eb]" />
-              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                Matérias ({areas.length})
-              </p>
+          {/* ── Matérias de Flashcards em Lista com Cores Temáticas e Barra de Pesquisa ── */}
+          <section className="pt-2 space-y-3.5">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <span className="h-4 w-1 rounded-full bg-[#2563eb]" />
+                <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
+                  Matérias ({areasFiltradas.length}{areasFiltradas.length !== areas.length ? ` de ${areas.length}` : ''})
+                </p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3.5">
-              {areas.map((area) => {
-                const iconInfo = areaIconFor(area.slug || area.area);
-                const AreaIcon = iconInfo?.Icon || BookOpen;
+            {/* Barra de Pesquisa Rápida */}
+            <div className="relative w-full">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 text-zinc-400">
+                <Search className="w-4 h-4 stroke-[2.2]" />
+              </div>
+              <input
+                type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar matéria de flashcards (ex: Penal)"
+                className="w-full h-12 pl-10 pr-10 rounded-2xl bg-zinc-900/90 border border-zinc-800 text-sm text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/50 transition-all backdrop-blur-md"
+              />
+              {busca && (
+                <button
+                  type="button"
+                  onClick={() => setBusca('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-white cursor-pointer z-10"
+                  aria-label="Limpar busca"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
 
+            {/* Menu de Alternância (Matérias, Recentes, Favoritos) */}
+            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-900/90 border border-zinc-800/80 backdrop-blur-md">
+              {[
+                { id: 'materias', label: 'Matérias', count: areas.length },
+                { id: 'recentes', label: 'Recentes', count: areas.filter((a) => a.compreendidos > 0).length },
+                { id: 'favoritos', label: 'Favoritos', count: favoritos.length },
+              ].map((tab) => {
+                const isActive = abaAtiva === tab.id;
                 return (
-                  <motion.button
-                    key={area.slug || area.area}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
+                  <button
+                    key={tab.id}
+                    type="button"
                     onClick={() => {
                       haptic.selection();
-                      setAreaSelecionadaModal(area);
+                      setAbaAtiva(tab.id as any);
                     }}
-                    className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-zinc-900/80 border border-zinc-800/80 hover:border-zinc-700 hover:bg-zinc-850/80 backdrop-blur-md transition-all text-left overflow-hidden shadow-sm hover:shadow-md min-h-[142px] focus-visible:outline-none"
+                    className={cn(
+                      "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer",
+                      isActive
+                        ? "bg-[#2563eb] text-white shadow-md shadow-blue-950/40"
+                        : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                    )}
                   >
-                    <div className="flex items-start justify-between gap-2 z-10 w-full">
-                      <div className="relative shrink-0 flex items-center justify-center p-0.5">
-                        <AreaIcon
-                          className="w-6 h-6 sm:w-7 sm:h-7 text-zinc-300 group-hover:text-white transition-all duration-200 group-hover:scale-110"
-                          strokeWidth={1.8}
-                        />
-                      </div>
-                      <span
-                        className="text-[10px] sm:text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-zinc-800/90 text-zinc-400 border border-zinc-700/50 shrink-0"
-                        style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
-                      >
-                        {area.total_cards > 0 ? `${area.total_cards.toLocaleString('pt-BR')} cards` : 'Em breve'}
+                    <span>{tab.label}</span>
+                    {tab.count > 0 && (
+                      <span className={cn(
+                        "text-[10px] px-1.5 py-0.5 rounded-full font-mono",
+                        isActive ? "bg-white/20 text-white" : "bg-zinc-800 text-zinc-400"
+                      )}>
+                        {tab.count}
                       </span>
-                    </div>
-
-                    <div className="z-10 mt-3 w-full">
-                      <p
-                        className="text-sm sm:text-base font-bold text-foreground leading-snug line-clamp-2 group-hover:text-white transition-colors"
-                        style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}
-                      >
-                        {area.area}
-                      </p>
-                      {area.compreendidos > 0 ? (
-                        <div className="mt-2.5 flex items-center gap-2">
-                          <div className="flex-1 bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                            <div
-                              className="bg-zinc-300 h-full rounded-full transition-all duration-500"
-                              style={{ width: `${Math.min(100, Math.round((area.compreendidos / (area.total_cards || 1)) * 100))}%` }}
-                            />
-                          </div>
-                          <span
-                            className="text-[10px] sm:text-[11px] text-zinc-400 font-medium shrink-0"
-                            style={{ fontFamily: "'Inter', sans-serif" }}
-                          >
-                            {area.compreendidos} dominados
-                          </span>
-                        </div>
-                      ) : (
-                        <p
-                          className="text-[11px] sm:text-xs text-zinc-500 mt-2 group-hover:text-zinc-300 transition-colors flex items-center gap-1 font-medium"
-                          style={{ fontFamily: "'Inter', sans-serif" }}
-                        >
-                          <span>Começar revisão</span>
-                          <ChevronRight className="w-3.5 h-3.5 text-zinc-500 group-hover:text-zinc-300 transition-transform group-hover:translate-x-0.5" />
-                        </p>
-                      )}
-                    </div>
-                  </motion.button>
+                    )}
+                  </button>
                 );
               })}
             </div>
+
+            {/* Lista com Fundo Único Compartilhado e Divisão por Linha Fina Elegante */}
+            {areasFiltradas.length === 0 ? (
+              <div className="p-8 text-center rounded-2xl bg-zinc-900/60 border border-zinc-800/80 text-muted-foreground text-xs">
+                {abaAtiva === 'favoritos'
+                  ? 'Nenhuma matéria favoritada ainda. Toque na estrela para favoritar!'
+                  : `Nenhuma matéria encontrada para "${busca}".`}
+              </div>
+            ) : (
+              <div className="rounded-3xl bg-zinc-900/80 border border-zinc-800/80 backdrop-blur-md overflow-hidden divide-y divide-zinc-800/60 shadow-lg">
+                {areasFiltradas.map((area) => {
+                  const iconInfo = areaIconFor(area.slug || area.area);
+                  const AreaIcon = iconInfo?.Icon || BookOpen;
+                  const iconColor = iconInfo?.color || '#3b82f6';
+                  const pctArea = area.total_cards > 0 ? Math.round((area.compreendidos / area.total_cards) * 100) : 0;
+                  const radius = 14;
+                  const circumference = 2 * Math.PI * radius;
+                  const strokeOffset = circumference - (circumference * Math.min(100, Math.max(0, pctArea))) / 100;
+                  const isFav = favoritos.includes(area.slug || area.area);
+
+                  return (
+                    <button
+                      key={area.slug || area.area}
+                      type="button"
+                      onClick={() => {
+                        haptic.selection();
+                        setAreaSelecionadaModal(area);
+                      }}
+                      className="group relative w-full flex items-center justify-between py-4 sm:py-5 px-4 sm:px-5 min-h-[68px] sm:min-h-[76px] hover:bg-zinc-800/40 transition-colors text-left focus-visible:outline-none cursor-pointer"
+                    >
+                      {/* Lado Esquerdo: Ícone Maior com Cor Temática Oficial */}
+                      <div className="flex items-center gap-4 min-w-0 flex-1 pr-3">
+                        <div className="relative shrink-0 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
+                          <AreaIcon
+                            className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 group-hover:scale-110"
+                            style={{ color: iconColor }}
+                            strokeWidth={1.8}
+                          />
+                        </div>
+
+                        {/* Detalhes da Matéria */}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm sm:text-base font-bold text-foreground leading-snug group-hover:text-white transition-colors truncate">
+                            {area.area}
+                          </p>
+
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[11px] sm:text-xs font-semibold text-zinc-400 shrink-0">
+                              {area.total_cards > 0 ? `${area.total_cards.toLocaleString('pt-BR')} cards` : 'Em breve'}
+                            </span>
+                            {isFav && (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-400 shrink-0">
+                                • <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 drop-shadow-[0_0_6px_rgba(244,63,94,0.6)]" />
+                              </span>
+                            )}
+                            {area.compreendidos > 0 && (
+                              <span className="text-[11px] sm:text-xs font-medium text-emerald-400 shrink-0">
+                                • {area.compreendidos} dominados
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Lado Direito: Barra de Progresso Circular e Chevron */}
+                      <div className="shrink-0 flex items-center gap-2.5 pl-2">
+                        {/* Barra de Progresso Circular na Direita */}
+                        <div className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shrink-0">
+                          <svg className="w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 36 36">
+                            {/* Trilho de fundo circular */}
+                            <circle
+                              cx="18"
+                              cy="18"
+                              r={radius}
+                              fill="none"
+                              stroke="rgba(255, 255, 255, 0.08)"
+                              strokeWidth="3"
+                            />
+                            {/* Progresso preenchido na cor da matéria */}
+                            {area.compreendidos > 0 && (
+                              <circle
+                                cx="18"
+                                cy="18"
+                                r={radius}
+                                fill="none"
+                                stroke={iconColor}
+                                strokeWidth="3.2"
+                                strokeDasharray={circumference}
+                                strokeDashoffset={strokeOffset}
+                                strokeLinecap="round"
+                                style={{
+                                  filter: `drop-shadow(0 0 4px ${iconColor}80)`,
+                                  transition: 'stroke-dashoffset 0.5s ease',
+                                }}
+                              />
+                            )}
+                          </svg>
+
+                          {/* Valor da porcentagem no centro do círculo (ou traço neutro se 0%) */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            {area.compreendidos > 0 ? (
+                              <span 
+                                className="text-[10px] sm:text-[11px] font-mono font-black"
+                                style={{ color: pctArea === 100 ? '#10b981' : iconColor }}
+                              >
+                                {pctArea}%
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-mono font-bold text-zinc-600">
+                                0%
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Chevron de navegação */}
+                        <div className="w-6 h-6 flex items-center justify-center text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all">
+                          <ChevronRight className="w-4 h-4 stroke-[2]" />
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </section>
 
 

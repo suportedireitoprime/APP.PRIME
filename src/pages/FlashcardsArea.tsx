@@ -16,7 +16,8 @@ import {
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
-import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Search, Landmark, Scale, ScrollText } from 'lucide-react';
+import { toast } from 'sonner';
+import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Search, Landmark, Scale, ScrollText, Heart } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
@@ -603,11 +604,59 @@ const FlashcardsArea = () => {
     </div>
   );
 
+  const targetAreaKey = slug || area?.slug || officialFlashcardArea || '';
+  const [isFavoritedArea, setIsFavoritedArea] = useState(() => {
+    try {
+      const raw = localStorage.getItem('flashcards_favoritos_areas');
+      const list: string[] = raw ? JSON.parse(raw) : [];
+      return list.includes(targetAreaKey) || list.includes(officialFlashcardArea || '');
+    } catch {
+      return false;
+    }
+  });
+
+  const handleToggleFavoritoArea = () => {
+    try { haptic.selection(); } catch {}
+    setIsFavoritedArea((prev) => {
+      const next = !prev;
+      try {
+        const raw = localStorage.getItem('flashcards_favoritos_areas');
+        let list: string[] = raw ? JSON.parse(raw) : [];
+        const key = targetAreaKey;
+        if (next) {
+          if (!list.includes(key)) list.push(key);
+          toast.success("Matéria adicionada aos Favoritos!");
+        } else {
+          list = list.filter((k) => k !== key && k !== officialFlashcardArea && k !== area?.slug);
+          toast.info("Matéria removida dos Favoritos.");
+        }
+        localStorage.setItem('flashcards_favoritos_areas', JSON.stringify(list));
+      } catch {}
+      return next;
+    });
+  };
+
   const mobileHeader = (
     <PageHeader 
       title={headerProgressBar}
       onBack={goBack} 
       variant="dark"
+      rightAction={
+        <button
+          type="button"
+          onClick={handleToggleFavoritoArea}
+          className="w-9 h-9 rounded-full flex items-center justify-center bg-black/50 border border-[#78350f]/60 text-[#fef3c7] hover:text-rose-400 active:scale-110 transition-all cursor-pointer shadow-md"
+          title={isFavoritedArea ? "Remover dos favoritos" : "Favoritar matéria"}
+          aria-label={isFavoritedArea ? "Remover dos favoritos" : "Favoritar matéria"}
+        >
+          <Heart 
+            className={cn(
+              "w-4.5 h-4.5 transition-transform", 
+              isFavoritedArea ? "text-rose-500 fill-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.7)]" : "text-[#fef3c7]/75"
+            )} 
+          />
+        </button>
+      }
     />
   );
 

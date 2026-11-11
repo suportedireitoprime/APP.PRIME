@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 
-interface PetalConfig {
+interface SymbolConfig {
   id: number;
   left: number;
   duration: number;
@@ -12,132 +12,167 @@ interface PetalConfig {
   rotEnd: number;
   size: number;
   opacity: number;
-  isFullFlower: boolean;
+  type: 'balanca' | 'martelo' | 'livro' | 'pergaminho' | 'pilar';
 }
 
-const LotusFlowerSvg = () => (
-  <svg viewBox="0 0 64 64" fill="none" className="w-full h-full overflow-visible" xmlns="http://www.w3.org/2000/svg">
-    {/* Pétala Central */}
-    <path
-      d="M32 8 C32 8 23 24 23 38 C23 46 27 51 32 53 C37 51 41 46 41 38 C41 24 32 8 32 8 Z"
-      fill="url(#lotusGradCenter)"
-    />
-    {/* Pétalas Intermediárias */}
-    <path
-      d="M32 18 C23 21 13 30 15 42 C16 48 23 52 30 52 C25 45 24 34 32 18 Z"
-      fill="url(#lotusGradMid)"
-      opacity="0.9"
-    />
-    <path
-      d="M32 18 C41 21 51 30 49 42 C48 48 41 52 34 52 C39 45 40 34 32 18 Z"
-      fill="url(#lotusGradMid)"
-      opacity="0.9"
-    />
-    {/* Pétalas Externas Abertas */}
-    <path
-      d="M29 30 C16 33 6 41 10 49 C13 53 23 52 27 49 C20 45 20 37 29 30 Z"
-      fill="url(#lotusGradOuter)"
-      opacity="0.8"
-    />
-    <path
-      d="M35 30 C48 33 58 41 54 49 C51 53 41 52 37 49 C44 45 44 37 35 30 Z"
-      fill="url(#lotusGradOuter)"
-      opacity="0.8"
-    />
-    {/* Miolo Dourado com Luz Sagrada */}
-    <ellipse cx="32" cy="51" rx="5" ry="2.2" fill="#fef08a" />
-    <circle cx="32" cy="50" r="1.5" fill="#ffffff" />
-    
-    <defs>
-      <linearGradient id="lotusGradCenter" x1="32" y1="8" x2="32" y2="53" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#ffffff" />
-        <stop offset="0.25" stopColor="#fef08a" />
-        <stop offset="0.65" stopColor="#f59e0b" />
-        <stop offset="1" stopColor="#92400e" />
-      </linearGradient>
-      <linearGradient id="lotusGradMid" x1="18" y1="18" x2="32" y2="52" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#fef3c7" />
-        <stop offset="0.6" stopColor="#d97706" />
-        <stop offset="1" stopColor="#78350f" />
-      </linearGradient>
-      <linearGradient id="lotusGradOuter" x1="10" y1="30" x2="32" y2="50" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#fed7aa" />
-        <stop offset="0.6" stopColor="#b45309" />
-        <stop offset="1" stopColor="#451a03" />
-      </linearGradient>
-    </defs>
+// ── 1. BALANÇA DA JUSTIÇA HELÊNICA (SVG DOURADO) ──
+const SvgBalanca = () => (
+  <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    {/* Haste Central */}
+    <path d="M24 6 V38" stroke="url(#legalGold)" strokeWidth="2.4" strokeLinecap="round" />
+    <circle cx="24" cy="5" r="2.5" fill="url(#legalGoldLight)" />
+    {/* Base Firme */}
+    <path d="M16 41 H32" stroke="url(#legalGold)" strokeWidth="2.5" strokeLinecap="round" />
+    <path d="M19 38 H29" stroke="url(#legalGold)" strokeWidth="2" strokeLinecap="round" />
+    {/* Travessão Superior */}
+    <path d="M10 13 H38" stroke="url(#legalGoldLight)" strokeWidth="2.4" strokeLinecap="round" />
+    {/* Cordas do Prato Esquerdo */}
+    <path d="M10 13 L6 25 M10 13 L14 25" stroke="url(#legalGold)" strokeWidth="1.2" strokeLinecap="round" opacity="0.85" />
+    {/* Prato Esquerdo */}
+    <path d="M5 25 C5 29 15 29 15 25 Z" fill="url(#legalGoldLight)" stroke="url(#legalGold)" strokeWidth="1.2" />
+    {/* Cordas do Prato Direito */}
+    <path d="M38 13 L34 25 M38 13 L42 25" stroke="url(#legalGold)" strokeWidth="1.2" strokeLinecap="round" opacity="0.85" />
+    {/* Prato Direito */}
+    <path d="M33 25 C33 29 43 29 43 25 Z" fill="url(#legalGoldLight)" stroke="url(#legalGold)" strokeWidth="1.2" />
   </svg>
 );
 
-const LotusPetalSvg = () => (
-  <svg viewBox="0 0 32 32" fill="none" className="w-full h-full overflow-visible" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M16 3 C25 9 27 21 19 28 C12 26 7 18 16 3 Z"
-      fill="url(#singlePetalGrad)"
+// ── 2. MARTELO DA JUSTIÇA (MALHETE CLÁSSICO) ──
+const SvgMartelo = () => (
+  <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    {/* Cabo de Madeira Nobre e Ouro */}
+    <path d="M16 32 L34 14" stroke="url(#legalGold)" strokeWidth="3.2" strokeLinecap="round" />
+    <circle cx="15" cy="33" r="2.2" fill="url(#legalGoldLight)" />
+    {/* Cabeça do Martelo / Malhete */}
+    <g transform="rotate(45 32 12)">
+      <rect x="25" y="8" width="14" height="8" rx="2" fill="url(#legalGoldLight)" stroke="url(#legalGold)" strokeWidth="1.5" />
+      <rect x="23" y="7" width="3" height="10" rx="1" fill="url(#legalGold)" />
+      <rect x="38" y="7" width="3" height="10" rx="1" fill="url(#legalGold)" />
+    </g>
+  </svg>
+);
+
+// ── 3. LIVRO DA LEI (VADE MECUM ABERTO) ──
+const SvgLivro = () => (
+  <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    {/* Páginas do Livro Aberto */}
+    <path 
+      d="M24 14 C20 10 11 11 7 13 V36 C11 34 20 33 24 37 C28 33 37 34 41 36 V13 C37 11 28 10 24 14 Z" 
+      fill="url(#legalGoldLight)" 
+      stroke="url(#legalGold)" 
+      strokeWidth="2" 
     />
-    <path
-      d="M16 6 C17.5 13 16.5 21 17 25"
-      stroke="#fef08a"
-      strokeWidth="0.8"
-      strokeLinecap="round"
-      opacity="0.75"
-    />
-    <defs>
-      <linearGradient id="singlePetalGrad" x1="16" y1="3" x2="16" y2="28" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#fffbeb" />
-        <stop offset="0.3" stopColor="#fde68a" />
-        <stop offset="0.7" stopColor="#f59e0b" />
-        <stop offset="1" stopColor="#92400e" />
-      </linearGradient>
-    </defs>
+    <path d="M24 14 V37" stroke="url(#legalGoldDark)" strokeWidth="2" strokeLinecap="round" />
+    {/* Linhas de Escrita Dourada */}
+    <line x1="11" y1="18" x2="20" y2="17" stroke="url(#legalGoldDark)" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+    <line x1="11" y1="23" x2="20" y2="22" stroke="url(#legalGoldDark)" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+    <line x1="11" y1="28" x2="19" y2="27" stroke="url(#legalGoldDark)" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+    <line x1="28" y1="17" x2="37" y2="18" stroke="url(#legalGoldDark)" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+    <line x1="28" y1="22" x2="37" y2="23" stroke="url(#legalGoldDark)" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+    <line x1="29" y1="27" x2="37" y2="28" stroke="url(#legalGoldDark)" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+  </svg>
+);
+
+// ── 4. PERGAMINHO HELÊNICO (ROLOS DE LEIS) ──
+const SvgPergaminho = () => (
+  <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    {/* Rolo Superior */}
+    <ellipse cx="14" cy="11" rx="5" ry="3.5" fill="url(#legalGoldLight)" stroke="url(#legalGold)" strokeWidth="1.2" />
+    <path d="M14 8 H36 C39 8 41 9.5 41 11 C41 12.5 39 14 36 14 H14" stroke="url(#legalGold)" strokeWidth="1.5" fill="url(#legalGoldLight)" />
+    {/* Corpo do Pergaminho */}
+    <path d="M11 11 V34 C11 37 13 39 16 39 H38 V14" stroke="url(#legalGold)" strokeWidth="1.8" fill="url(#legalGoldLight)" />
+    {/* Rolo Inferior */}
+    <ellipse cx="38" cy="37" rx="5" ry="3.5" fill="url(#legalGoldLight)" stroke="url(#legalGold)" strokeWidth="1.2" />
+    {/* Linhas Jurídicas */}
+    <line x1="16" y1="19" x2="32" y2="19" stroke="url(#legalGoldDark)" strokeWidth="1.3" strokeLinecap="round" opacity="0.7" />
+    <line x1="16" y1="24" x2="30" y2="24" stroke="url(#legalGoldDark)" strokeWidth="1.3" strokeLinecap="round" opacity="0.7" />
+    <line x1="16" y1="29" x2="27" y2="29" stroke="url(#legalGoldDark)" strokeWidth="1.3" strokeLinecap="round" opacity="0.7" />
+  </svg>
+);
+
+// ── 5. PILAR / COLUNA HELÊNICA DÓRICA ──
+const SvgPilar = () => (
+  <svg viewBox="0 0 48 48" fill="none" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+    {/* Capitel / Topo */}
+    <rect x="10" y="8" width="28" height="4" rx="1.5" fill="url(#legalGoldLight)" stroke="url(#legalGold)" strokeWidth="1.5" />
+    <path d="M14 12 H34 L32 15 H16 Z" fill="url(#legalGold)" />
+    {/* Fuste / Colunas Caneladas */}
+    <line x1="17" y1="15" x2="17" y2="34" stroke="url(#legalGoldLight)" strokeWidth="2" strokeLinecap="round" />
+    <line x1="21.5" y1="15" x2="21.5" y2="34" stroke="url(#legalGoldLight)" strokeWidth="2" strokeLinecap="round" />
+    <line x1="26.5" y1="15" x2="26.5" y2="34" stroke="url(#legalGoldLight)" strokeWidth="2" strokeLinecap="round" />
+    <line x1="31" y1="15" x2="31" y2="34" stroke="url(#legalGoldLight)" strokeWidth="2" strokeLinecap="round" />
+    {/* Base Dórica */}
+    <path d="M16 34 H32 L34 37 H14 Z" fill="url(#legalGold)" />
+    <rect x="10" y="37" width="28" height="4" rx="1.5" fill="url(#legalGoldLight)" stroke="url(#legalGold)" strokeWidth="1.5" />
   </svg>
 );
 
 export const FallingLotusPetals = memo(() => {
-  // Configuração estática de 16 partículas com distribuição orgânica
-  const petals: PetalConfig[] = useMemo(() => [
-    { id: 1, left: 6, duration: 13, delay: -2, swayDuration: 4.2, driftX: 35, swayX: 25, swayRot: 28, rotEnd: 320, size: 28, opacity: 0.75, isFullFlower: true },
-    { id: 2, left: 14, duration: 10, delay: -7, swayDuration: 3.5, driftX: -25, swayX: -18, swayRot: -22, rotEnd: 240, size: 18, opacity: 0.65, isFullFlower: false },
-    { id: 3, left: 22, duration: 15, delay: -4, swayDuration: 4.8, driftX: 40, swayX: 30, swayRot: 35, rotEnd: 410, size: 32, opacity: 0.82, isFullFlower: true },
-    { id: 4, left: 29, duration: 11, delay: -9, swayDuration: 3.8, driftX: -30, swayX: -22, swayRot: -28, rotEnd: 190, size: 16, opacity: 0.55, isFullFlower: false },
-    { id: 5, left: 37, duration: 14, delay: -1, swayDuration: 4.5, driftX: 28, swayX: 20, swayRot: 24, rotEnd: 350, size: 26, opacity: 0.72, isFullFlower: true },
-    { id: 6, left: 45, duration: 12, delay: -6, swayDuration: 3.9, driftX: -35, swayX: -25, swayRot: -30, rotEnd: 270, size: 19, opacity: 0.6, isFullFlower: false },
-    { id: 7, left: 53, duration: 16, delay: -11, swayDuration: 5.2, driftX: 45, swayX: 32, swayRot: 38, rotEnd: 460, size: 30, opacity: 0.8, isFullFlower: true },
-    { id: 8, left: 61, duration: 10.5, delay: -3.5, swayDuration: 3.6, driftX: -28, swayX: -20, swayRot: -25, rotEnd: 210, size: 17, opacity: 0.58, isFullFlower: false },
-    { id: 9, left: 68, duration: 13.5, delay: -8, swayDuration: 4.4, driftX: 32, swayX: 22, swayRot: 26, rotEnd: 330, size: 27, opacity: 0.74, isFullFlower: true },
-    { id: 10, left: 76, duration: 11.5, delay: -5, swayDuration: 3.7, driftX: -32, swayX: -24, swayRot: -28, rotEnd: 250, size: 18, opacity: 0.62, isFullFlower: false },
-    { id: 11, left: 84, duration: 15.5, delay: -10, swayDuration: 5.0, driftX: 38, swayX: 28, swayRot: 32, rotEnd: 420, size: 31, opacity: 0.78, isFullFlower: true },
-    { id: 12, left: 92, duration: 12, delay: -2.5, swayDuration: 4.0, driftX: -26, swayX: -19, swayRot: -20, rotEnd: 220, size: 16, opacity: 0.55, isFullFlower: false },
-    { id: 13, left: 18, duration: 14.5, delay: -12, swayDuration: 4.6, driftX: 30, swayX: 24, swayRot: 27, rotEnd: 360, size: 24, opacity: 0.7, isFullFlower: false },
-    { id: 14, left: 49, duration: 13, delay: -7.5, swayDuration: 4.1, driftX: -22, swayX: -17, swayRot: -22, rotEnd: 280, size: 29, opacity: 0.82, isFullFlower: true },
-    { id: 15, left: 81, duration: 12.5, delay: -4.2, swayDuration: 3.8, driftX: 25, swayX: 18, swayRot: 25, rotEnd: 310, size: 20, opacity: 0.64, isFullFlower: false },
+  // Símbolos jurídicos distribuídos com rotação suave e velocidade natural
+  const symbols: SymbolConfig[] = useMemo(() => [
+    { id: 1, left: 10, duration: 15, delay: -2, swayDuration: 4.5, driftX: 30, swayX: 20, swayRot: 22, rotEnd: 240, size: 30, opacity: 0.85, type: 'balanca' },
+    { id: 2, left: 26, duration: 13, delay: -7, swayDuration: 3.8, driftX: -26, swayX: -18, swayRot: -20, rotEnd: 190, size: 28, opacity: 0.8, type: 'martelo' },
+    { id: 3, left: 44, duration: 17, delay: -3.5, swayDuration: 5.2, driftX: 36, swayX: 24, swayRot: 25, rotEnd: 310, size: 32, opacity: 0.88, type: 'livro' },
+    { id: 4, left: 64, duration: 14, delay: -10, swayDuration: 4.2, driftX: -30, swayX: -20, swayRot: -22, rotEnd: 220, size: 29, opacity: 0.82, type: 'pergaminho' },
+    { id: 5, left: 80, duration: 16.5, delay: -5, swayDuration: 4.8, driftX: 32, swayX: 22, swayRot: 20, rotEnd: 260, size: 31, opacity: 0.86, type: 'pilar' },
+    { id: 6, left: 92, duration: 12.5, delay: -12, swayDuration: 3.9, driftX: -22, swayX: -16, swayRot: -18, rotEnd: 180, size: 27, opacity: 0.75, type: 'balanca' },
+    { id: 7, left: 35, duration: 18, delay: -8.5, swayDuration: 5.0, driftX: 28, swayX: 19, swayRot: 22, rotEnd: 290, size: 29, opacity: 0.82, type: 'livro' },
   ], []);
+
+  const renderIcon = (type: SymbolConfig['type']) => {
+    switch (type) {
+      case 'balanca': return <SvgBalanca />;
+      case 'martelo': return <SvgMartelo />;
+      case 'livro': return <SvgLivro />;
+      case 'pergaminho': return <SvgPergaminho />;
+      case 'pilar': return <SvgPilar />;
+    }
+  };
 
   return (
     <>
+      <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
+        <defs>
+          <linearGradient id="legalGoldLight" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fffbeb" />
+            <stop offset="40%" stopColor="#fef08a" />
+            <stop offset="100%" stopColor="#f59e0b" />
+          </linearGradient>
+          <linearGradient id="legalGold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fde047" />
+            <stop offset="60%" stopColor="#d97706" />
+            <stop offset="100%" stopColor="#92400e" />
+          </linearGradient>
+          <linearGradient id="legalGoldDark" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#b45309" />
+            <stop offset="100%" stopColor="#451a03" />
+          </linearGradient>
+        </defs>
+      </svg>
+
       <style>{`
-        @keyframes lotusFall {
+        @keyframes legalSymbolFall {
           0% {
             transform: translate3d(0, -8vh, 0) rotate(0deg);
             opacity: 0;
           }
-          8% {
-            opacity: var(--p-opacity, 0.75);
+          10% {
+            opacity: var(--s-opacity, 0.85);
           }
           90% {
-            opacity: var(--p-opacity, 0.75);
+            opacity: var(--s-opacity, 0.85);
           }
           100% {
-            transform: translate3d(var(--p-drift, 30px), 108vh, 0) rotate(var(--p-rot, 360deg));
+            transform: translate3d(var(--s-drift, 30px), 110vh, 0) rotate(var(--s-rot, 260deg));
             opacity: 0;
           }
         }
-        @keyframes lotusSway {
+        @keyframes legalSymbolSway {
           0% {
             transform: translate3d(0, 0, 0) rotate(0deg);
           }
           50% {
-            transform: translate3d(var(--p-sway-x, 20px), 0, 0) rotate(var(--p-sway-rot, 20deg));
+            transform: translate3d(var(--s-sway-x, 20px), 0, 0) rotate(var(--s-sway-rot, 20deg));
           }
           100% {
             transform: translate3d(0, 0, 0) rotate(0deg);
@@ -147,33 +182,33 @@ export const FallingLotusPetals = memo(() => {
 
       <div 
         aria-hidden="true" 
-        className="fixed inset-0 pointer-events-none z-[12] overflow-hidden select-none"
+        className="fixed inset-0 pointer-events-none z-[1] overflow-hidden select-none"
       >
-        {petals.map((p) => (
+        {symbols.map((s) => (
           <div
-            key={p.id}
+            key={s.id}
             className="absolute top-0 will-change-transform"
             style={{
-              left: `${p.left}%`,
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              animation: `lotusFall ${p.duration}s linear infinite`,
-              animationDelay: `${p.delay}s`,
-              ['--p-opacity' as any]: p.opacity,
-              ['--p-drift' as any]: `${p.driftX}px`,
-              ['--p-rot' as any]: `${p.rotEnd}deg`,
+              left: `${s.left}%`,
+              width: `${s.size}px`,
+              height: `${s.size}px`,
+              animation: `legalSymbolFall ${s.duration}s linear infinite`,
+              animationDelay: `${s.delay}s`,
+              ['--s-opacity' as any]: s.opacity,
+              ['--s-drift' as any]: `${s.driftX}px`,
+              ['--s-rot' as any]: `${s.rotEnd}deg`,
             }}
           >
             <div
-              className="w-full h-full will-change-transform drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
+              className="w-full h-full will-change-transform drop-shadow-[0_2px_8px_rgba(0,0,0,0.65)]"
               style={{
-                animation: `lotusSway ${p.swayDuration}s ease-in-out infinite`,
-                animationDelay: `${p.delay * 0.4}s`,
-                ['--p-sway-x' as any]: `${p.swayX}px`,
-                ['--p-sway-rot' as any]: `${p.swayRot}deg`,
+                animation: `legalSymbolSway ${s.swayDuration}s ease-in-out infinite`,
+                animationDelay: `${s.delay * 0.35}s`,
+                ['--s-sway-x' as any]: `${s.swayX}px`,
+                ['--s-sway-rot' as any]: `${s.swayRot}deg`,
               }}
             >
-              {p.isFullFlower ? <LotusFlowerSvg /> : <LotusPetalSvg />}
+              {renderIcon(s.type)}
             </div>
           </div>
         ))}
