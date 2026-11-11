@@ -51,6 +51,16 @@ function getDisciplinaIdFromSlug(s?: string): string {
   return clean.replace(/^direito-/, '');
 }
 
+export function formatarTituloMateriaCurto(titulo: string): string {
+  if (!titulo) return '';
+  return titulo
+    .replace(/\s+(do|de|no|da|em)\s+Direito\s+([a-zA-ZÀ-ÿ]+)/gi, '')
+    .replace(/\s+(do|de|no|da|em)\s+Direito\b/gi, '')
+    .replace(/^Direito\s+[a-zA-ZÀ-ÿ]+\s*[-–:]\s*/i, '')
+    .replace(/^\d+[\.\-\s_:]+/, '')
+    .trim();
+}
+
 const LaurelBranch = ({ flip = false }: { flip?: boolean }) => (
   <svg 
     viewBox="0 0 100 100" 
@@ -895,7 +905,7 @@ const FlashcardsArea = () => {
                   )}
                 >
                   <Landmark className={cn("w-3 h-3 shrink-0", isActive ? "text-[#451a03]" : "text-[#f59e0b]")} />
-                  <span>{mat.titulo}</span>
+                  <span>{formatarTituloMateriaCurto(mat.titulo)}</span>
                 </button>
               );
             })}
@@ -998,7 +1008,7 @@ const FlashcardsArea = () => {
                             >
                               <span className="w-1.5 h-1.5 rounded-full bg-[#fde047] shadow-[0_0_6px_#fde047]" />
                               <span className="text-[11px] sm:text-xs font-serif font-black tracking-widest uppercase text-[#fef3c7]">
-                                {formatarNomeArea(mat.titulo)}
+                                {formatarTituloMateriaCurto(mat.titulo)}
                               </span>
                             </div>
 
