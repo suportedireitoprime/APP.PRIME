@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { FlashcardDeckItem } from '@/components/flashcards/FlashcardDeckItem';
+import { ModalTemasMateriaFullscreen } from '@/components/flashcards/ModalTemasMateriaFullscreen';
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -801,16 +802,46 @@ const FlashcardsArea = () => {
     return () => observer.disconnect();
   }, [materiasComTemas]);
 
+  // Modal Fullscreen dos Temas da Matéria Selecionada
+  const [materiaModal, setMateriaModal] = useState<typeof materiasComTemas[0] | null>(null);
+  const [isModalTemasOpen, setIsModalTemasOpen] = useState(false);
+
+  const openMateriaTemas = useCallback((mat: typeof materiasComTemas[0]) => {
+    try { haptic.selection(); } catch {}
+    setMateriaModal(mat);
+    setIsModalTemasOpen(true);
+  }, []);
+
+  const handleSelectTemaNoModal = useCallback(
+    (tema: any) => {
+      if (tema.isLocked) {
+        try { haptic.impact('medium'); } catch {}
+        setPremiumGateOpen(true);
+        return;
+      }
+      try { haptic.light(); } catch {}
+      setIsModalTemasOpen(false);
+      navigate(
+        `/flashcards/estudar?area=${encodeURIComponent(
+          officialFlashcardArea || area?.nome || effectiveAreaName
+        )}&temas=${encodeURIComponent(tema.titulo)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`,
+        {
+          state: { from: `/flashcards/area/${slug}`, capaUrl: tema.capaUrl, temaTitulo: tema.titulo },
+        }
+      );
+    },
+    [navigate, officialFlashcardArea, area?.nome, effectiveAreaName, palette.primary, slug]
+  );
+
   const selectMateria = useCallback((matId: string) => {
     setMateriaAtivaId(matId);
     try { haptic.selection(); } catch {}
 
-    const el = document.getElementById(`materia-section-${matId}`);
-    if (el) {
-      const topOffset = el.getBoundingClientRect().top + window.scrollY - 75;
-      window.scrollTo({ top: topOffset, behavior: 'smooth' });
+    const foundMat = materiasComTemas.find((m) => m.id === matId);
+    if (foundMat) {
+      openMateriaTemas(foundMat);
     }
-  }, []);
+  }, [materiasComTemas, openMateriaTemas]);
 
   // Centraliza a pílula da matéria ativa no carrossel horizontal SEM afetar o scroll da página (window)
   useEffect(() => {
@@ -962,138 +993,114 @@ const FlashcardsArea = () => {
                 ))}
               </div>
             ) : (
-              /* Trilha Contínua Serpenteante que Emenda Todas as Matérias sem Interrupção */
+              /* Trilha Serpenteante Oficial de Matérias */
               <div className="relative py-2 sm:py-4 w-full min-w-0 max-w-full overflow-hidden">
                 <div className="w-full min-w-0 relative z-[2] flex flex-col items-center">
+                  {/* ── CUME DA TRILHA: O TEMPLO DA ACRÓPOLE ── */}
+                  <div className="w-full flex flex-col items-center justify-center pt-2 pb-4">
+                    <div className="relative flex flex-col items-center">
+                      {/* Halo solar suave atrás do Parthenon */}
+                      <div 
+                        className="absolute -top-4 w-40 h-28 rounded-full pointer-events-none"
+                        style={{
+                          background: 'radial-gradient(ellipse at center, rgba(251, 191, 36, 0.35) 0%, rgba(217, 119, 6, 0.1) 60%, transparent 100%)',
+                          filter: 'blur(16px)',
+                        }}
+                      />
+
+                      {/* Ícone Monumental do Parthenon / Acrópole */}
+                      <div 
+                        className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border flex items-center justify-center shadow-2xl mb-2"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(41, 28, 18, 0.95) 0%, rgba(20, 14, 10, 0.95) 100%)',
+                          borderColor: 'rgba(217, 119, 6, 0.6)',
+                          boxShadow: '0 0 24px rgba(245, 158, 11, 0.4), inset 0 2px 4px rgba(254, 240, 138, 0.2)',
+                        }}
+                      >
+                        <Landmark className="w-9 h-9 sm:w-11 sm:h-11 text-[#fde047] drop-shadow-[0_2px_8px_rgba(234,179,8,0.7)]" />
+                      </div>
+
+                      {/* Placa em Mármore Helênico com o Nome da Disciplina */}
+                      <div 
+                        className="px-4 py-1.5 rounded-full border flex items-center gap-2 backdrop-blur-md"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(28, 20, 13, 0.9) 0%, rgba(41, 28, 18, 0.9) 100%)',
+                          borderColor: 'rgba(245, 158, 11, 0.5)',
+                          boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
+                        }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#fde047] shadow-[0_0_6px_#fde047]" />
+                        <span className="text-[11px] sm:text-xs font-serif font-black tracking-widest uppercase text-[#fef3c7]">
+                          {formatarNomeArea(officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito')}
+                        </span>
+                      </div>
+
+                      {/* Início da Estrada Dourada saindo do templo */}
+                      <div 
+                        className="w-1.5 h-6 my-1.5 rounded-full"
+                        style={{
+                          background: 'linear-gradient(180deg, #fde047 0%, #f59e0b 100%)',
+                          boxShadow: '0 0 10px rgba(245, 158, 11, 0.8)',
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Nós Serpenteantes: Cada Nó é uma Matéria Oficial */}
                   {materiasComTemas.map((mat, matIdx) => {
-                    const isLastMateria = matIdx === materiasComTemas.length - 1;
+                    const isLast = matIdx === materiasComTemas.length - 1;
+                    const isActive = mat.id === materiaAtivaId;
+                    const isLocked = !isPremium && matIdx >= 2;
+                    const tituloCurto = formatarTituloMateriaCurto(mat.titulo);
+
+                    const itemData = {
+                      key: mat.id,
+                      titulo: tituloCurto,
+                      badgeLabel: `Matéria ${String(matIdx + 1).padStart(2, '0')}`,
+                      ordemStr: String(matIdx + 1).padStart(2, '0'),
+                      displayTotal: mat.totalCards || (mat.items.length * 36),
+                      displayConcluidas: 0,
+                      displayPct: 0,
+                      isLocked,
+                      onClick: () => openMateriaTemas(mat),
+                    };
+
                     return (
                       <div
                         key={mat.id}
                         id={`materia-section-${mat.id}`}
-                        className="w-full flex flex-col items-center pt-2 sm:pt-4"
+                        data-track-theme="true"
+                        data-bg-url={mat.capaInicial}
+                        data-materia-id={mat.id}
+                        className="w-full flex flex-col items-center"
                       >
-                        {/* ── CUME DA MATÉRIA: O TEMPLO DA ACRÓPOLE ── */}
-                        <div className="w-full flex flex-col items-center justify-center pt-2 pb-4">
-                          <div className="relative flex flex-col items-center">
-                            {/* Halo solar suave atrás do Parthenon */}
-                            <div 
-                              className="absolute -top-4 w-40 h-28 rounded-full pointer-events-none"
-                              style={{
-                                background: 'radial-gradient(ellipse at center, rgba(251, 191, 36, 0.35) 0%, rgba(217, 119, 6, 0.1) 60%, transparent 100%)',
-                                filter: 'blur(16px)',
-                              }}
-                            />
-
-                            {/* Ícone Monumental do Parthenon / Acrópole */}
-                            <div 
-                              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border flex items-center justify-center shadow-2xl mb-2"
-                              style={{
-                                background: 'linear-gradient(135deg, rgba(41, 28, 18, 0.95) 0%, rgba(20, 14, 10, 0.95) 100%)',
-                                borderColor: 'rgba(217, 119, 6, 0.6)',
-                                boxShadow: '0 0 24px rgba(245, 158, 11, 0.4), inset 0 2px 4px rgba(254, 240, 138, 0.2)',
-                              }}
-                            >
-                              <Landmark className="w-9 h-9 sm:w-11 sm:h-11 text-[#fde047] drop-shadow-[0_2px_8px_rgba(234,179,8,0.7)]" />
-                            </div>
-
-                            {/* Placa em Mármore Helênico com o Nome da Matéria */}
-                            <div 
-                              className="px-4 py-1.5 rounded-full border flex items-center gap-2 backdrop-blur-md"
-                              style={{
-                                background: 'linear-gradient(135deg, rgba(28, 20, 13, 0.9) 0%, rgba(41, 28, 18, 0.9) 100%)',
-                                borderColor: 'rgba(245, 158, 11, 0.5)',
-                                boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
-                              }}
-                            >
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#fde047] shadow-[0_0_6px_#fde047]" />
-                              <span className="text-[11px] sm:text-xs font-serif font-black tracking-widest uppercase text-[#fef3c7]">
-                                {formatarTituloMateriaCurto(mat.titulo)}
-                              </span>
-                            </div>
-
-                            {/* Início da Estrada Dourada saindo do templo */}
-                            <div 
-                              className="w-1.5 h-6 my-1.5 rounded-full"
-                              style={{
-                                background: 'linear-gradient(180deg, #fde047 0%, #f59e0b 100%)',
-                                boxShadow: '0 0 10px rgba(245, 158, 11, 0.8)',
-                              }}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Temas da Trilha desta Matéria */}
-                        {mat.items.map((item, itemIdx) => {
-                          const isLastItem = itemIdx === mat.items.length - 1;
-                          return (
-                            <div
-                              key={item.key}
-                              data-track-theme="true"
-                              data-bg-url={item.capaUrl}
-                              data-materia-id={mat.id}
-                              className="w-full flex flex-col items-center"
-                            >
-                              <FlashcardDeckItem
-                                item={item}
-                                i={itemIdx}
-                                palette={palette}
-                                isLast={isLastItem}
-                                isActive={false}
-                              />
-                            </div>
-                          );
-                        })}
-
-                        {/* Emenda Direta para a Próxima Matéria (Sem botões ou interrupção) */}
-                        {!isLastMateria ? (
-                          <div className="w-full flex flex-col items-center my-6">
-                            {/* Louros sutis entre matérias */}
-                            <div className="w-full flex items-center justify-between px-6 py-2 text-[#d97706]/40">
-                              <svg className="w-8 h-8 -rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
-                                <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
-                                <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
-                              </svg>
-                              <span className="text-[10px] font-serif font-semibold tracking-widest uppercase text-[#d97706]/70">
-                                Transição de Matéria
-                              </span>
-                              <svg className="w-8 h-8 rotate-12 scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
-                                <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
-                                <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
-                              </svg>
-                            </div>
-
-                            {/* Estrada Serpenteante Contínua Conectando à Próxima Matéria */}
-                            <div 
-                              className="w-1.5 h-16 my-1 rounded-full animate-pulse"
-                              style={{
-                                background: 'linear-gradient(180deg, #f59e0b 0%, #fde047 50%, #d97706 100%)',
-                                boxShadow: '0 0 14px rgba(245, 158, 11, 0.85)',
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-full flex items-center justify-between px-6 pt-6 pb-2 text-[#d97706]/40">
-                            <svg className="w-9 h-9 -rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                              <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
-                              <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
-                              <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
-                            </svg>
-                            <span className="text-[10px] font-serif font-semibold tracking-widest uppercase text-[#d97706]/65">
-                              Fim da Trilha da Sabedoria • {formatarNomeArea(officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito')}
-                            </span>
-                            <svg className="w-9 h-9 rotate-12 scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                              <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
-                              <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
-                              <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
-                            </svg>
-                          </div>
-                        )}
+                        <FlashcardDeckItem
+                          item={itemData}
+                          i={matIdx}
+                          palette={palette}
+                          isLast={isLast}
+                          isActive={isActive}
+                        />
                       </div>
                     );
                   })}
+
+                  {/* Louros da Vitória Clássicos no Rodapé da Trilha */}
+                  <div className="w-full flex items-center justify-between px-6 pt-8 pb-4 text-[#d97706]/40">
+                    <svg className="w-9 h-9 -rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
+                      <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
+                      <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
+                    </svg>
+                    <span className="text-[10px] font-serif font-semibold tracking-widest uppercase text-[#d97706]/65">
+                      Trilha da Sabedoria • {formatarNomeArea(officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito')}
+                    </span>
+                    <svg className="w-9 h-9 rotate-12 scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
+                      <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
+                      <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             )}
@@ -1127,6 +1134,22 @@ const FlashcardsArea = () => {
         onClose={() => setPremiumGateOpen(false)}
         feature="flashcards"
         usageLabel="Os 2 primeiros decks deste tema são gratuitos. Assine o Prime para estudar todos os decks!"
+      />
+
+      {/* Modal Tela Cheia 100% Fiel ao Design (Capa no Topo + Lista de Temas Encadeada com Louros) */}
+      <ModalTemasMateriaFullscreen
+        isOpen={isModalTemasOpen}
+        onClose={() => setIsModalTemasOpen(false)}
+        materia={materiaModal ? {
+          id: materiaModal.id,
+          titulo: materiaModal.titulo,
+          subtitulo: materiaModal.subtitulo,
+          capaUrl: materiaModal.capaInicial || materiaModal.capaUrl,
+          totalCards: materiaModal.totalCards,
+        } : null}
+        temas={materiaModal ? materiaModal.items : []}
+        onSelectTema={handleSelectTemaNoModal}
+        areaNome={officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito'}
       />
     </DesktopPageLayout>
   );
