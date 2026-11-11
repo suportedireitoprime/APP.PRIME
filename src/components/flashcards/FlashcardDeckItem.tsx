@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { Check, Play, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DisciplinaVisualTheme, getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 
 interface FlashcardDeckItemProps {
   item: {
@@ -22,9 +23,17 @@ interface FlashcardDeckItemProps {
   palette?: { primary: string };
   isLast: boolean;
   isActive?: boolean;
+  theme?: DisciplinaVisualTheme;
 }
 
-export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: FlashcardDeckItemProps) => {
+export const FlashcardDeckItem = memo(({ 
+  item, 
+  i, 
+  isLast, 
+  isActive = false,
+  theme 
+}: FlashcardDeckItemProps) => {
+  const activeTheme = theme || getDisciplinaVisualTheme('administrativo');
   const isCompleted = item.displayPct === 100 || (item.displayTotal > 0 && item.displayConcluidas >= item.displayTotal);
   const tituloLimpo = (item.titulo || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
   
@@ -42,13 +51,13 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
   // Barra de progresso circular externa contornando a moeda (raio 26, circunferência ~163.36)
   const radius = 26;
   const circumference = 2 * Math.PI * radius;
-  // Progresso efetivo: se completado 100%, se ativo sem progresso mostra 15% como indicador inicial do contorno
-  const effectivePct = isCompleted ? 100 : Math.max(item.displayPct, isActive ? 15 : 0);
-  const strokeDashoffset = circumference - (circumference * Math.min(100, Math.max(0, effectivePct))) / 100;
+  // Progresso efetivo para o anel circular da medalha
+  const effectivePct = isCompleted ? 100 : Math.min(100, Math.max(0, item.displayPct || 0));
+  const strokeDashoffset = circumference - (circumference * effectivePct) / 100;
 
   return (
     <div className="w-full flex flex-col items-center relative select-none">
-      {/* ── Nó da Trilha: Moeda com Contorno de Progresso + Card em Mármore ── */}
+      {/* ── Nó da Trilha: Moeda com Contorno de Progresso + Card da Disciplina ── */}
       <div className={cn("w-full max-w-[560px] flex z-10 my-1.5 sm:my-2", alignmentClass)}>
         <div
           onClick={item.onClick}
@@ -61,7 +70,7 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
               : "hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98]"
           )}
         >
-          {/* ── 1. MOEDA / MEDALHÃO HELÊNICO COM BARRA DE PROGRESSO EM CONTORNO ── */}
+          {/* ── 1. MOEDA / MEDALHÃO COM BARRA DE PROGRESSO EM CONTORNO ── */}
           <div className="relative shrink-0 flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16">
             {/* SVG da Barra de Progresso Circular que Contorna a Moeda */}
             <svg 
@@ -74,7 +83,7 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
                 cy="32"
                 r={radius}
                 fill="none"
-                stroke="#1c120c"
+                stroke="#120608"
                 strokeWidth="5"
               />
               {/* Guia visível do trilho circular */}
@@ -83,18 +92,18 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
                 cy="32"
                 r={radius}
                 fill="none"
-                stroke={isCompleted ? "rgba(16, 185, 129, 0.35)" : "rgba(245, 158, 11, 0.35)"}
+                stroke={isCompleted ? "rgba(16, 185, 129, 0.35)" : activeTheme.glowSoft}
                 strokeWidth="3.5"
               />
 
-              {/* Barra de Progresso em Contorno: Verde Esmeralda se completado (100%), Dourada se em andamento ou ativo */}
+              {/* Barra de Progresso em Contorno: Verde Esmeralda se completado (100%), Cor da Disciplina se em andamento ou ativo */}
               {(isCompleted || item.displayPct > 0 || isActive) && (
                 <circle
                   cx="32"
                   cy="32"
                   r={radius}
                   fill="none"
-                  stroke={isCompleted ? "#10b981" : "#fbbf24"}
+                  stroke={isCompleted ? "#10b981" : activeTheme.accent}
                   strokeWidth="4.5"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
@@ -102,7 +111,7 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
                   style={{
                     filter: isCompleted 
                       ? 'drop-shadow(0 0 6px #10b981)' 
-                      : 'drop-shadow(0 0 5px #f59e0b)',
+                      : `drop-shadow(0 0 6px ${activeTheme.primary})`,
                     transition: 'stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.4s ease',
                   }}
                 />
@@ -121,55 +130,64 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
                   boxShadow: '0 2px 8px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.7)',
                   border: '1.5px solid #34d399',
                 } : isActive ? {
-                  background: 'radial-gradient(circle at 32% 30%, #ffffff 0%, #fef08a 35%, #f59e0b 80%, #b45309 100%)',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.85), inset 0 -2px 4px rgba(180,83,9,0.5)',
-                  border: '1.5px solid #fef08a',
+                  background: activeTheme.medalActive,
+                  boxShadow: `0 2px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.85), 0 0 12px ${activeTheme.glowSoft}`,
+                  border: `1.5px solid ${activeTheme.medalBorder}`,
                 } : item.isLocked ? {
-                  background: 'radial-gradient(circle at 35% 30%, #78350f 0%, #451a03 65%, #1c1917 100%)',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.2)',
-                  border: '1px solid rgba(120, 53, 15, 0.4)',
+                  background: 'radial-gradient(circle at 35% 30%, rgba(45, 18, 25, 0.95) 0%, rgba(20, 8, 12, 0.95) 65%, #0c0406 100%)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.15)',
+                  border: `1px solid ${activeTheme.borderSubtle}`,
                 } : {
-                  background: 'radial-gradient(circle at 32% 30%, #fef3c7 0%, #d97706 60%, #78350f 100%)',
-                  boxShadow: '0 2px 6px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.5)',
-                  border: '1px solid rgba(245, 158, 11, 0.4)',
+                  background: activeTheme.bgCard,
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.25)',
+                  border: `1px solid ${activeTheme.borderSubtle}`,
                 }
               }
             >
               {isCompleted ? (
                 <Check className="w-5 h-5 text-white stroke-[3.5] drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />
               ) : isActive ? (
-                <Play className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#451a03] fill-[#451a03] ml-0.5 drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]" />
+                <span 
+                  className="text-[10px] sm:text-[11px] font-mono font-black tracking-tighter drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] select-none"
+                  style={{ color: activeTheme.textActive }}
+                >
+                  {item.displayPct || 0}%
+                </span>
               ) : item.isLocked ? (
-                <Lock className="w-3.5 h-3.5 text-[#fbbf24] drop-shadow-sm" />
+                <Lock className="w-3.5 h-3.5 drop-shadow-sm" style={{ color: activeTheme.accent }} />
               ) : (
-                <span className="text-[11px] sm:text-xs font-serif font-black text-[#451a03] drop-shadow-[0_1px_1px_rgba(255,255,255,0.4)]">
+                <span 
+                  className="text-[11px] sm:text-xs font-serif font-black drop-shadow-[0_1px_1px_rgba(255,255,255,0.3)]"
+                  style={{ color: activeTheme.highlight }}
+                >
                   {item.ordemStr}
                 </span>
               )}
             </div>
           </div>
 
-          {/* ── 2. CARD HORIZONTAL EM PERGAMINHO / MÁRMORE DA GRÉCIA (Sem Capa na Lista) ── */}
+          {/* ── 2. CARD HORIZONTAL COM AS CORES DA DISCIPLINA ── */}
           <div
             className={cn(
               "flex-1 min-w-0 px-4 sm:px-4.5 py-3 sm:py-3.5 min-h-[64px] sm:min-h-[72px] rounded-2xl border transition-all duration-300 flex flex-col justify-center",
-              isCompleted
-                ? "border-[#10b981]/50 shadow-[0_4px_16px_-4px_rgba(16,185,129,0.3)]"
-                : isActive
-                ? "border-[#d97706]/70 shadow-[0_8px_24px_-4px_rgba(245,158,11,0.4),0_0_16px_rgba(253,224,71,0.25)]"
-                : item.isLocked
-                ? "border-[#78350f]/35 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.6)] opacity-85"
-                : "border-[#d97706]/40 shadow-[0_4px_16px_-4px_rgba(217,119,6,0.25)]"
+              isCompleted && "border-[#10b981]/50 shadow-[0_4px_16px_-4px_rgba(16,185,129,0.3)]",
+              item.isLocked && "opacity-85 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.6)]"
             )}
             style={
               isCompleted ? {
                 background: 'linear-gradient(135deg, rgba(20, 35, 25, 0.94) 0%, rgba(10, 24, 16, 0.94) 100%)',
+                borderColor: 'rgba(16, 185, 129, 0.5)',
               } : isActive ? {
-                background: 'linear-gradient(135deg, #fef3c7 0%, #fffbeb 50%, #fde68a 100%)',
+                background: activeTheme.bgActive,
+                borderColor: activeTheme.border,
+                boxShadow: `0 8px 24px -4px ${activeTheme.glowSoft}, 0 0 16px ${activeTheme.glow}`,
               } : item.isLocked ? {
-                background: 'linear-gradient(135deg, rgba(20, 14, 10, 0.88) 0%, rgba(30, 21, 15, 0.88) 100%)',
+                background: activeTheme.bgCard,
+                borderColor: activeTheme.borderSubtle,
               } : {
-                background: 'linear-gradient(135deg, rgba(32, 22, 14, 0.92) 0%, rgba(48, 33, 20, 0.92) 100%)',
+                background: activeTheme.bgCard,
+                borderColor: activeTheme.border,
+                boxShadow: `0 4px 16px -4px ${activeTheme.glowSoft}`,
               }
             }
           >
@@ -180,12 +198,18 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
                   "font-serif font-black text-[13.5px] xs:text-[14.5px] sm:text-[15.5px] leading-snug break-words line-clamp-2",
                   isCompleted
                     ? "text-[#a7f3d0]"
-                    : isActive
-                    ? "text-[#451a03] drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]"
                     : item.isLocked
                     ? "text-[#e7e5e4]"
-                    : "text-[#fef3c7] group-hover:text-[#fde047] transition-colors"
+                    : ""
                 )}
+                style={
+                  isActive ? {
+                    color: activeTheme.textActive,
+                    filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.7))'
+                  } : !isCompleted && !item.isLocked ? {
+                    color: activeTheme.highlight
+                  } : undefined
+                }
               >
                 {tituloLimpo}
               </span>
@@ -194,23 +218,25 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
             {/* Subtítulo: Quantidade de Temas e Cards com Seta Elegante */}
             <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-sans font-semibold">
               <span
-                className={cn(
-                  "flex items-center gap-1",
-                  isCompleted
-                    ? "text-[#34d399]"
-                    : isActive
-                    ? "text-[#78350f]"
-                    : item.isLocked
-                    ? "text-[#78716c]"
-                    : "text-[#fef3c7]/75"
-                )}
+                className="flex items-center gap-1"
+                style={
+                  isCompleted ? { color: '#34d399' } :
+                  isActive ? { color: activeTheme.textActive, opacity: 0.85 } :
+                  item.isLocked ? { color: '#a8a29e' } :
+                  { color: activeTheme.highlight, opacity: 0.8 }
+                }
               >
                 {item.subtituloCustom ? (
                   item.subtituloCustom
                 ) : item.temasCount !== undefined ? (
                   <>
                     <span>{item.temasCount} temas</span>
-                    <span className={cn("font-bold text-[11px]", isActive ? "text-[#b45309]" : "text-[#f59e0b]")}>→</span>
+                    <span 
+                      className="font-bold text-[11px]"
+                      style={{ color: isActive ? activeTheme.primary : activeTheme.accent }}
+                    >
+                      →
+                    </span>
                     <span>{item.displayTotal} cards</span>
                   </>
                 ) : (
@@ -219,16 +245,12 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
               </span>
               {item.displayPct > 0 && (
                 <>
-                  <span className={cn(isCompleted ? "text-[#059669]" : isActive ? "text-[#b45309]" : "text-[#78350f]")}>•</span>
+                  <span style={{ color: isActive ? activeTheme.primary : activeTheme.accent }}>•</span>
                   <span
-                    className={cn(
-                      "font-mono font-bold",
-                      isCompleted
-                        ? "text-[#34d399]"
-                        : isActive
-                        ? "text-[#451a03]"
-                        : "text-[#fbbf24]"
-                    )}
+                    className="font-mono font-bold"
+                    style={{
+                      color: isCompleted ? '#34d399' : isActive ? activeTheme.textActive : activeTheme.accent
+                    }}
                   >
                     {item.displayPct}% {isCompleted ? 'concluído' : 'dominado'}
                   </span>
@@ -239,7 +261,7 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
         </div>
       </div>
 
-      {/* ── 3. CAMINHO DOURADO DE MONTANHA (Golden Serpentine Trail) ── */}
+      {/* ── 3. CAMINHO SERPENTEANTE COM A PALETA DA DISCIPLINA ── */}
       {!isLast && (
         <div className="relative w-full max-w-[560px] h-16 sm:h-20 my-0.5 pointer-events-none z-0 overflow-visible">
           <svg
@@ -248,12 +270,12 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
             preserveAspectRatio="none"
           >
             <defs>
-              <linearGradient id={`gold-trail-${i}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#fde047" />
-                <stop offset="50%" stopColor="#f59e0b" />
-                <stop offset="100%" stopColor="#d97706" />
+              <linearGradient id={`trail-gradient-${i}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor={activeTheme.highlight} />
+                <stop offset="50%" stopColor={activeTheme.accent} />
+                <stop offset="100%" stopColor={activeTheme.primary} />
               </linearGradient>
-              <filter id={`gold-glow-${i}`} x="-20%" y="-20%" width="140%" height="140%">
+              <filter id={`trail-glow-${i}`} x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="3.5" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
@@ -262,7 +284,7 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
               </filter>
             </defs>
 
-            {/* Base de pedra rústica da estrada de montanha */}
+            {/* Base escura rústica da estrada de montanha */}
             <path
               d={
                 isNextShiftRight
@@ -270,13 +292,13 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
                   : "M 68 0 C 68 60, 32 40, 32 100"
               }
               fill="none"
-              stroke="#291b10"
+              stroke="#130709"
               strokeWidth="9"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
             />
 
-            {/* Borda dourada em pedra esculpida */}
+            {/* Borda esculpida com a tonalidade sutil da disciplina */}
             <path
               d={
                 isNextShiftRight
@@ -284,13 +306,13 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
                   : "M 68 0 C 68 60, 32 40, 32 100"
               }
               fill="none"
-              stroke="#78350f"
+              stroke={activeTheme.borderSubtle}
               strokeWidth="5"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
             />
 
-            {/* Estrada Dourada Luminosa */}
+            {/* Estrada Luminosa na Cor da Disciplina */}
             <path
               d={
                 isNextShiftRight
@@ -298,11 +320,11 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
                   : "M 68 0 C 68 60, 32 40, 32 100"
               }
               fill="none"
-              stroke={`url(#gold-trail-${i})`}
-              strokeWidth="2.5"
+              stroke={`url(#trail-gradient-${i})`}
+              strokeWidth="2.8"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
-              filter={`url(#gold-glow-${i})`}
+              filter={`url(#trail-glow-${i})`}
             />
           </svg>
         </div>
