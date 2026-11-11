@@ -36,11 +36,19 @@ export const formatarNomeArea = (nome: string) => {
   return limpo.charAt(0).toUpperCase() + limpo.slice(1);
 };
 
+// Cores do progresso circular por faixa de rendimento
+const getProgressColor = (pct: number) => {
+  if (pct <= 0) return { stroke: '#52525b', text: '#a1a1aa', glow: 'none' };
+  if (pct <= 40) return { stroke: '#ef4444', text: '#f87171', glow: 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.7))' };
+  if (pct <= 69) return { stroke: '#eab308', text: '#fde047', glow: 'drop-shadow(0 0 6px rgba(234, 179, 8, 0.7))' };
+  return { stroke: '#10b981', text: '#34d399', glow: 'drop-shadow(0 0 6px rgba(16, 185, 129, 0.7))' };
+};
+
 const ATALHOS_FLASHCARDS = [
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/flashcards/historico' },
   { id: 'decks', label: 'Decks', desc: 'Seus baralhos', icon: Layers, route: '/flashcards/decks' },
   { id: 'revisar', label: 'Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/flashcards/revisar' },
-  { id: 'desempenho', label: 'Desempenho', desc: 'Estatísticas', icon: BarChart3, route: '/flashcards/progresso' },
+  { id: 'progresso', label: 'Progresso', desc: 'Estatísticas', icon: BarChart3, route: '/flashcards/progresso' },
 ];
 
 const Flashcards = () => {
@@ -84,6 +92,10 @@ const Flashcards = () => {
     const list = areasRaw && areasRaw.length > 0 ? areasRaw : FALLBACK_FLASHCARDS_AREAS;
     return [...list].sort((a, b) => a.area.localeCompare(b.area, 'pt-BR'));
   }, [areasRaw]);
+
+  const totalCardsGeral = useMemo(() => {
+    return areas.reduce((acc, a) => acc + (a.total_cards || 0), 0);
+  }, [areas]);
 
   const areasFiltradas = useMemo(() => {
     let list = areas;
@@ -144,12 +156,24 @@ const Flashcards = () => {
           </button>
         </div>
 
-        {/* ── Título Imperial da Página ───────────────── */}
+        {/* ── Título Imperial da Página: [ Quantidade Total em Fundo Preto ] Flashcards ── */}
         <div className="text-center mb-5 px-2">
-          <h1 className="text-2xl sm:text-3xl font-serif font-black tracking-wide text-[#fef3c7] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
-            Praticar Flashcards
+          <h1 className="inline-flex items-center justify-center gap-2.5 flex-wrap">
+            <span 
+              className="px-2.5 py-1 rounded-xl text-xs sm:text-sm font-mono font-black text-[#fde047] border shadow-inner tracking-wider"
+              style={{
+                background: 'rgba(0, 0, 0, 0.65)',
+                borderColor: 'rgba(217, 119, 6, 0.55)',
+                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8), 0 2px 8px rgba(0,0,0,0.5)',
+              }}
+            >
+              {totalCardsGeral > 0 ? totalCardsGeral.toLocaleString('pt-BR') : '78.077'}
+            </span>
+            <span className="text-2xl sm:text-3xl font-serif font-black tracking-wide text-[#fef3c7] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+              Flashcards
+            </span>
           </h1>
-          <p className="text-xs sm:text-sm font-serif italic text-[#fef3c7]/75 mt-1">
+          <p className="text-xs sm:text-sm font-serif italic text-[#fef3c7]/75 mt-1.5">
             Escolha filtros por matéria, assunto e tipo para praticar
           </p>
         </div>
@@ -386,57 +410,56 @@ const Flashcards = () => {
                                 • <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 drop-shadow-[0_0_6px_rgba(244,63,94,0.7)]" />
                               </span>
                             )}
-                            {area.compreendidos > 0 && (
-                              <span className="text-[11px] sm:text-xs font-serif font-semibold text-emerald-400 shrink-0">
-                                • {area.compreendidos} dominados
-                              </span>
-                            )}
                           </div>
                         </div>
                       </div>
 
-                      {/* Lado Direito: Barra de Progresso Circular na Direita e Chevron */}
+                      {/* Lado Direito: Barra de Progresso Circular (Zero=Neutro, 1-40=Vermelho, 41-69=Amarelo, 70-100=Verde) e Chevron */}
                       <div className="shrink-0 flex items-center gap-2.5 pl-2">
-                        {/* Círculo de Progresso Dourado */}
-                        <div className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shrink-0">
-                          <svg className="w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 36 36">
-                            {/* Trilho circular escuro */}
-                            <circle
-                              cx="18"
-                              cy="18"
-                              r={radius}
-                              fill="none"
-                              stroke="rgba(45, 30, 20, 0.85)"
-                              strokeWidth="3.2"
-                            />
-                            {/* Anel de progresso dourado luminoso */}
-                            <circle
-                              cx="18"
-                              cy="18"
-                              r={radius}
-                              fill="none"
-                              stroke={pctArea === 100 ? '#10b981' : '#f59e0b'}
-                              strokeWidth="3.2"
-                              strokeDasharray={circumference}
-                              strokeDashoffset={strokeOffset}
-                              strokeLinecap="round"
-                              style={{
-                                filter: pctArea > 0 ? 'drop-shadow(0 0 4px rgba(245, 158, 11, 0.7))' : 'none',
-                                transition: 'stroke-dashoffset 0.5s ease',
-                              }}
-                            />
-                          </svg>
+                        {(() => {
+                          const progColor = getProgressColor(pctArea);
+                          return (
+                            <div className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shrink-0">
+                              <svg className="w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 36 36">
+                                {/* Trilho circular escuro */}
+                                <circle
+                                  cx="18"
+                                  cy="18"
+                                  r={radius}
+                                  fill="none"
+                                  stroke="rgba(45, 30, 20, 0.85)"
+                                  strokeWidth="3.2"
+                                />
+                                {/* Anel de progresso com cor estrita por faixa */}
+                                <circle
+                                  cx="18"
+                                  cy="18"
+                                  r={radius}
+                                  fill="none"
+                                  stroke={progColor.stroke}
+                                  strokeWidth="3.2"
+                                  strokeDasharray={circumference}
+                                  strokeDashoffset={strokeOffset}
+                                  strokeLinecap="round"
+                                  style={{
+                                    filter: progColor.glow,
+                                    transition: 'stroke-dashoffset 0.5s ease, stroke 0.3s ease',
+                                  }}
+                                />
+                              </svg>
 
-                          {/* Valor da porcentagem no centro do círculo */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span 
-                              className="text-[10px] sm:text-[10.5px] font-mono font-bold"
-                              style={{ color: pctArea === 100 ? '#10b981' : pctArea > 0 ? '#fde047' : 'rgba(254, 243, 199, 0.45)' }}
-                            >
-                              {pctArea}%
-                            </span>
-                          </div>
-                        </div>
+                              {/* Valor da porcentagem no centro do círculo */}
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span 
+                                  className="text-[10px] sm:text-[10.5px] font-mono font-bold"
+                                  style={{ color: progColor.text }}
+                                >
+                                  {pctArea}%
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()}
 
                         {/* Chevron de navegação */}
                         <div className="w-5 h-5 flex items-center justify-center text-[#fef3c7]/40 group-hover:text-[#fde047] group-hover:translate-x-0.5 transition-all">
