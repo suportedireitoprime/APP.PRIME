@@ -980,22 +980,22 @@ export default function AdminAulasInterativas() {
           <div className="relative z-20 w-full h-dvh max-h-dvh overflow-hidden flex flex-col justify-between pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(0.85rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-3 xs:px-4 sm:px-6">
             {/* ── CABEÇALHO RESPONSIVO PADRÃO FLASHCARDS (CENTRALIZADO, COM COR DINÂMICA DA CAPA) ── */}
             <div className="w-full max-w-lg sm:max-w-xl lg:max-w-3xl mx-auto flex flex-col items-center z-20 shrink-0">
-              {/* Top Bar com Botão Voltar Circular Helênico Premium + Botão de Progresso */}
+              {/* Top Bar com Botão Voltar Circular Padrão Premium (w-12 h-12 / 52px) + Botão de Progresso */}
               <div className="w-full flex items-center justify-between mb-1.5 xs:mb-2">
                 <button
                   type="button"
                   onClick={handleVoltar}
-                  className="w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/60 border border-white/20 text-white hover:bg-black/80 active:scale-95 transition-all cursor-pointer shadow-lg"
+                  className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-black/60 border border-white/20 text-white hover:bg-black/80 active:scale-95 transition-all cursor-pointer shadow-lg shrink-0"
                   style={{
                     borderColor: `${currTheme.primary || '#ef4444'}66`,
                     boxShadow: `0 0 14px ${currTheme.glowSoft || 'rgba(0,0,0,0.5)'}`
                   }}
                   aria-label="Voltar"
                 >
-                  <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white stroke-[2.4]" />
+                  <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white stroke-[2.4]" />
                 </button>
 
-                {/* Botão de Progresso no Canto Superior Direito (Dinamizado com a cor da capa) */}
+                {/* Botão de Progresso Padrão Premium (w-12 h-12 / 52px) no Canto Superior Direito */}
                 <button
                   type="button"
                   onClick={() => {
@@ -1003,7 +1003,7 @@ export default function AdminAulasInterativas() {
                     setAbaAtiva(abaAtiva === 'progresso' ? 'trilhas' : 'progresso');
                   }}
                   className={cn(
-                    "relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border transition-all active:scale-95 shadow-lg cursor-pointer",
+                    "relative w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center border transition-all active:scale-95 shadow-lg cursor-pointer shrink-0",
                     abaAtiva === 'progresso'
                       ? "bg-black/90 text-white"
                       : "bg-black/60 text-white/90 hover:bg-black/80"
@@ -1018,12 +1018,12 @@ export default function AdminAulasInterativas() {
                   aria-label="Ver Progresso das Aulas"
                 >
                   <BarChart3 
-                    className="w-5 h-5 sm:w-5.5 sm:h-5.5 stroke-[2.2]" 
+                    className="w-6 h-6 sm:w-6.5 sm:h-6.5 stroke-[2.4]" 
                     style={{ color: currTheme.accent || '#fca5a5' }}
                   />
                   {porcentagemGeral > 0 && (
                     <span 
-                      className="absolute -bottom-1 -right-1 text-[9px] font-mono font-black px-1.5 py-0.2 rounded-full text-white border shadow"
+                      className="absolute -bottom-1 -right-1 text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full text-white border shadow"
                       style={{
                         backgroundColor: currTheme.primary || '#ef4444',
                         borderColor: currTheme.accent || '#fca5a5'
@@ -1213,13 +1213,13 @@ export default function AdminAulasInterativas() {
                   }}
                 >
                   {/* ── CARROSSEL 3D COVERFLOW: SETA ESQ + CARD ESQ (3:4) + CARD CENTRAL (3:4, UMA BORDA, COR DINÂMICA) + CARD DIR (3:4) + SETA DIR ── */}
-                  <div className="relative w-full max-w-xl mx-auto flex items-center justify-center my-auto py-1 xs:py-2 select-none">
+                  <div className="relative w-full max-w-xl mx-auto flex items-center justify-center px-1 xs:px-2 sm:px-4 my-auto py-1 xs:py-2 select-none">
                     
-                    {/* Botão Seta Esquerda */}
+                    {/* Botão Seta Esquerda com Margem Dedicada */}
                     <button
                       type="button"
                       onClick={handlePrev}
-                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/75 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border"
+                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/75 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border mr-2 xs:mr-3 sm:mr-4"
                       style={{
                         borderColor: `${currTheme.primary || '#ef4444'}66`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
@@ -1232,7 +1232,7 @@ export default function AdminAulasInterativas() {
                     {/* CARD ESQUERDA (ANTERIOR: Proporção 3:4, Capa Completa, Título Sem Abreviar) */}
                     <div
                       onClick={handlePrev}
-                      className="relative shrink-0 w-[115px] xs:w-[135px] sm:w-[165px] md:w-[185px] max-h-[38dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-70 hover:opacity-90 transition-all duration-300 scale-90 -mr-4 xs:-mr-6 sm:-mr-8 z-10 select-none shadow-2xl overflow-hidden group"
+                      className="relative shrink-0 w-[100px] xs:w-[118px] sm:w-[145px] md:w-[165px] max-h-[36dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-70 hover:opacity-90 transition-all duration-300 scale-90 -mr-6 xs:-mr-7 sm:-mr-9 z-10 select-none shadow-2xl overflow-hidden group"
                       style={{
                         borderColor: 'rgba(255, 255, 255, 0.18)',
                         boxShadow: '0 15px 35px rgba(0,0,0,0.95)',
@@ -1251,10 +1251,10 @@ export default function AdminAulasInterativas() {
 
                       {/* Título sem abreviações e Quantidade de Aulas */}
                       <div className="relative z-10 w-full flex flex-col items-center">
-                        <h4 className="font-serif font-bold text-xs xs:text-[13px] sm:text-sm text-white/95 leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
+                        <h4 className="font-serif font-bold text-[11px] xs:text-xs sm:text-[13px] text-white/95 leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
                           {prevDisc.nome}
                         </h4>
-                        <p className="text-[10px] xs:text-[11px] font-mono font-bold text-zinc-300 drop-shadow mt-1">
+                        <p className="text-[9.5px] xs:text-[10px] font-mono font-bold text-zinc-300 drop-shadow mt-0.5">
                           {prevAulas.length} aulas
                         </p>
                       </div>
@@ -1268,7 +1268,7 @@ export default function AdminAulasInterativas() {
                       exit={{ scale: 0.92, opacity: 0.7, y: -8 }}
                       transition={{ type: 'spring', damping: 24, stiffness: 320, mass: 0.8 }}
                       onClick={handleSelectCurrent}
-                      className="relative shrink-0 w-[185px] xs:w-[210px] sm:w-[245px] md:w-[270px] max-h-[48dvh] aspect-[3/4] rounded-2xl border-2 p-3 xs:p-4 flex flex-col justify-end text-center cursor-pointer transition-all duration-300 z-30 select-none group shadow-2xl overflow-hidden"
+                      className="relative shrink-0 w-[160px] xs:w-[185px] sm:w-[220px] md:w-[250px] max-h-[46dvh] aspect-[3/4] rounded-2xl border-2 p-3 xs:p-4 flex flex-col justify-end text-center cursor-pointer transition-all duration-300 z-30 select-none group shadow-2xl overflow-hidden"
                       style={{
                         borderColor: currTheme.primary || '#ef4444',
                         boxShadow: `0 0 35px ${currTheme.glow || 'rgba(239, 68, 68, 0.7)'}, 0 20px 45px rgba(0,0,0,0.95), inset 0 1px 2px rgba(255,255,255,0.4)`,
@@ -1288,12 +1288,12 @@ export default function AdminAulasInterativas() {
 
                       {/* Título Completo (Sem abreviações) e Badge Pill Oficial de Aulas */}
                       <div className="relative z-20 w-full flex flex-col items-center">
-                        <h3 className="font-serif font-black text-sm xs:text-base sm:text-lg text-white leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
+                        <h3 className="font-serif font-black text-xs xs:text-sm sm:text-base text-white leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
                           {currDisc.nome}
                         </h3>
                         {/* Badge Pill estilizada: "454 AULAS" */}
                         <div 
-                          className="mt-2 inline-flex items-center justify-center px-4 py-1 rounded-full font-mono font-black text-xs xs:text-sm tracking-wider uppercase shadow-lg border"
+                          className="mt-1.5 xs:mt-2 inline-flex items-center justify-center px-3.5 py-0.5 xs:px-4 xs:py-1 rounded-full font-mono font-black text-[11px] xs:text-xs sm:text-sm tracking-wider uppercase shadow-lg border"
                           style={{
                             backgroundColor: 'rgba(10, 5, 8, 0.85)',
                             borderColor: currTheme.primary || '#ef4444',
@@ -1309,7 +1309,7 @@ export default function AdminAulasInterativas() {
                     {/* CARD DIREITA (PRÓXIMO: Proporção 3:4, Capa Completa, Título Sem Abreviar) */}
                     <div
                       onClick={handleNext}
-                      className="relative shrink-0 w-[115px] xs:w-[135px] sm:w-[165px] md:w-[185px] max-h-[38dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-70 hover:opacity-90 transition-all duration-300 scale-90 -ml-4 xs:-ml-6 sm:-ml-8 z-10 select-none shadow-2xl overflow-hidden group"
+                      className="relative shrink-0 w-[100px] xs:w-[118px] sm:w-[145px] md:w-[165px] max-h-[36dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-70 hover:opacity-90 transition-all duration-300 scale-90 -ml-6 xs:-ml-7 sm:-ml-9 z-10 select-none shadow-2xl overflow-hidden group"
                       style={{
                         borderColor: 'rgba(255, 255, 255, 0.18)',
                         boxShadow: '0 15px 35px rgba(0,0,0,0.95)',
@@ -1328,20 +1328,20 @@ export default function AdminAulasInterativas() {
 
                       {/* Título sem abreviações e Quantidade de Aulas */}
                       <div className="relative z-10 w-full flex flex-col items-center">
-                        <h4 className="font-serif font-bold text-xs xs:text-[13px] sm:text-sm text-white/95 leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
+                        <h4 className="font-serif font-bold text-[11px] xs:text-xs sm:text-[13px] text-white/95 leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
                           {nextDisc.nome}
                         </h4>
-                        <p className="text-[10px] xs:text-[11px] font-mono font-bold text-zinc-300 drop-shadow mt-1">
+                        <p className="text-[9.5px] xs:text-[10px] font-mono font-bold text-zinc-300 drop-shadow mt-0.5">
                           {nextAulas.length} aulas
                         </p>
                       </div>
                     </div>
 
-                    {/* Botão Seta Direita */}
+                    {/* Botão Seta Direita com Margem Dedicada */}
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/75 hover:bg-black text-white hover:scale-105 active:scale-90 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border"
+                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/75 hover:bg-black text-white hover:scale-105 active:scale-90 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border ml-2 xs:ml-3 sm:ml-4"
                       style={{
                         borderColor: `${currTheme.primary || '#ef4444'}66`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
