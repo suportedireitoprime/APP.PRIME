@@ -504,16 +504,31 @@ const FlashcardsArea = () => {
   const coverUrl = coverInfo?.cover || "/images/gamificacao/deusa_temis_vazada.webp";
 
 
-  const titleDisplay = (
-    <span className="font-sans font-extrabold uppercase tracking-widest text-[15px] sm:text-[16px] text-white">
-      {officialFlashcardArea || area?.nome || effectiveAreaName}
-    </span>
+  const headerProgressBar = (
+    <div className="w-full flex flex-col justify-center text-left py-0.5 pr-1">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-wider text-blue-200 truncate flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee] shrink-0" />
+          <span className="truncate">{officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito Civil'}</span>
+        </span>
+        <span className="text-[10px] sm:text-[10.5px] font-mono font-bold text-cyan-300 tabular-nums shrink-0 ml-2">
+          {totalCompreendidos} / {totalFlashcardsArea} ({progressoPctFlash}%)
+        </span>
+      </div>
+      <div className="w-full h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-600 via-blue-400 to-cyan-300 shadow-[0_0_8px_rgba(34,211,238,0.5)]"
+          style={{
+            width: `${Math.max(progressoPctFlash, totalFlashcardsArea > 0 ? 3 : 0)}%`,
+          }}
+        />
+      </div>
+    </div>
   );
 
   const mobileHeader = (
     <PageHeader 
-      title={titleDisplay} 
-      subtitle="Trilha de Flashcards" 
+      title={headerProgressBar}
       onBack={goBack} 
       variant="dark"
     />
@@ -739,52 +754,26 @@ const FlashcardsArea = () => {
           </div>
         ) : (
           <>
-            {/* ── DUAS BARRAS DE PROGRESSO: GERAL E DA MATÉRIA (Conforme Solicitado) ── */}
-            {isFlash && totalFlashcardsArea > 0 && (
-              <div className="w-full space-y-3 mb-5 p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/25 shadow-lg shadow-black/40">
-                {/* BARRA 1: Progresso Geral (Direito Civil) */}
-                <div>
-                  <div className="flex items-center justify-between mb-1.5 px-0.5">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-blue-200 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee]" />
-                      Progresso Geral • {officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito Civil'}
-                    </span>
-                    <span className="text-[11px] font-mono font-bold text-cyan-300 tabular-nums">
-                      {totalCompreendidos} / {totalFlashcardsArea} dominados ({progressoPctFlash}%)
-                    </span>
-                  </div>
-                  <div className="w-full h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-600 via-blue-400 to-cyan-300 shadow-[0_0_10px_rgba(34,211,238,0.5)]"
-                      style={{
-                        width: `${Math.max(progressoPctFlash, totalFlashcardsArea > 0 ? 3 : 0)}%`,
-                      }}
-                    />
-                  </div>
+            {/* ── BARRA DE PROGRESSO DA MATÉRIA (Abaixo do Menu de Alternância) ── */}
+            {isFlash && isCivilArea && activeSection && (
+              <div className="w-full mb-5 p-3 sm:p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/25 shadow-lg shadow-black/40">
+                <div className="flex items-center justify-between mb-1.5 px-0.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_6px_#3b82f6]" />
+                    Progresso da Matéria • {activeSection.nome}
+                  </span>
+                  <span className="text-[11px] font-mono font-bold text-blue-300 tabular-nums">
+                    {activeSectionCompreendidos} / {activeSectionTotalCards} dominados ({activeSectionPct}%)
+                  </span>
                 </div>
-
-                {/* BARRA 2: Progresso da Matéria Atual */}
-                {isCivilArea && activeSection && (
-                  <div>
-                    <div className="flex items-center justify-between mb-1.5 px-0.5">
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-blue-300 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_6px_#3b82f6]" />
-                        Progresso da Matéria • {activeSection.nome}
-                      </span>
-                      <span className="text-[11px] font-mono font-bold text-blue-300 tabular-nums">
-                        {activeSectionCompreendidos} / {activeSectionTotalCards} dominados ({activeSectionPct}%)
-                      </span>
-                    </div>
-                    <div className="w-full h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-700 via-blue-500 to-indigo-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
-                        style={{
-                          width: `${Math.max(activeSectionPct, activeSectionTotalCards > 0 ? 3 : 0)}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
+                <div className="w-full h-2 rounded-full bg-black/60 border border-white/10 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-blue-700 via-blue-500 to-indigo-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                    style={{
+                      width: `${Math.max(activeSectionPct, activeSectionTotalCards > 0 ? 3 : 0)}%`,
+                    }}
+                  />
+                </div>
               </div>
             )}
 
