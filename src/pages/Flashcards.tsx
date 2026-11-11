@@ -2,29 +2,51 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
-import { Calendar, ChevronRight, Flame, Search, Sparkles, Users, X, Layers, Target, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Scale, Gavel, Quote, Lightbulb, Clock, History, Dices, Route, Trophy, Heart } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Search, X, Layers, BarChart3, FolderPlus, RotateCcw, Filter, BookOpen, Landmark, History, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '@/lib/nativeHaptics';
-import FlashcardsCargoHero from '@/components/flashcards/FlashcardsCargoHero';
-import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow, FlashcardsDash } from '@/lib/flashcardsQueries';
+import { useFlashcardsDashboard, useFlashcardsResumoAreas, FlashcardsAreaRow } from '@/lib/flashcardsQueries';
 import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
 import { areaIconFor } from '@/lib/areasDireitoIcons';
 import { cn } from '@/lib/utils';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
-import ShapeGrid from '@/components/ui/ShapeGrid';
+import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
+import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
+
+// Louro de vitória clássico em miniatura
+const MiniLaurel = ({ flip = false }: { flip?: boolean }) => (
+  <svg 
+    viewBox="0 0 40 30" 
+    className={cn("w-5 h-4 text-[#f59e0b]/80 shrink-0", flip && "scale-x-[-1]")} 
+    fill="currentColor"
+  >
+    <path d="M5,25 Q18,20 22,5 Q20,15 10,24 Z" opacity="0.9" fill="none" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M22,5 C25,4 28,6 26,9 C24,12 21,8 22,5 Z" />
+    <path d="M20,11 C24,10 27,13 24,16 C21,19 19,15 20,11 Z" />
+    <path d="M17,17 C21,17 24,20 21,23 C18,26 16,21 17,17 Z" />
+    <path d="M19,8 C15,6 13,9 15,12 C17,15 20,10 19,8 Z" />
+    <path d="M16,14 C12,13 10,16 13,19 C16,22 17,17 16,14 Z" />
+  </svg>
+);
+
+// Formatação limpa do nome da matéria (remove prefixo "Direito" para exibição direta)
+export const formatarNomeArea = (nome: string) => {
+  if (!nome) return '';
+  const limpo = nome.replace(/^Direito\s+(do\s+|da\s+|de\s+)?/i, '').trim();
+  return limpo.charAt(0).toUpperCase() + limpo.slice(1);
+};
 
 const ATALHOS_FLASHCARDS = [
   { id: 'historico', label: 'Histórico', desc: 'Sessões salvas', icon: History, route: '/flashcards/historico' },
-  { id: 'decks', label: 'Decks', desc: 'Seus baralhos', icon: FolderPlus, route: '/flashcards/decks' },
+  { id: 'decks', label: 'Decks', desc: 'Seus baralhos', icon: Layers, route: '/flashcards/decks' },
   { id: 'revisar', label: 'Revisão', desc: 'Volte no que errou', icon: RotateCcw, route: '/flashcards/revisar' },
   { id: 'desempenho', label: 'Desempenho', desc: 'Estatísticas', icon: BarChart3, route: '/flashcards/progresso' },
 ];
 
 const Flashcards = () => {
   const navigate = useNavigate();
-  const { data: dash, isLoading: loadingDash } = useFlashcardsDashboard();
-  const { data: areasRaw, isLoading: loadingAreas } = useFlashcardsResumoAreas();
+  const { data: dash } = useFlashcardsDashboard();
+  const { data: areasRaw } = useFlashcardsResumoAreas();
 
   const [filtroAberto, setFiltroAberto] = useState(false);
   const [filtroDisciplinaPrevia, setFiltroDisciplinaPrevia] = useState<string | undefined>();
@@ -32,6 +54,7 @@ const Flashcards = () => {
   const [areaSelecionadaModal, setAreaSelecionadaModal] = useState<FlashcardsAreaRow | null>(null);
   const [busca, setBusca] = useState('');
   const [abaAtiva, setAbaAtiva] = useState<'materias' | 'recentes' | 'favoritos'>('materias');
+  
   const [favoritos, setFavoritos] = useState<string[]>(() => {
     try {
       const raw = localStorage.getItem('flashcards_favoritos_areas');
@@ -57,8 +80,6 @@ const Flashcards = () => {
     };
   }, []);
 
-  const loading = loadingDash;
-
   const areas = useMemo(() => {
     const list = areasRaw && areasRaw.length > 0 ? areasRaw : FALLBACK_FLASHCARDS_AREAS;
     return [...list].sort((a, b) => a.area.localeCompare(b.area, 'pt-BR'));
@@ -76,137 +97,162 @@ const Flashcards = () => {
     if (!busca.trim()) return list;
     const q = busca.toLowerCase();
     return list.filter(
-      (a) => a.area.toLowerCase().includes(q) || (a.slug && a.slug.toLowerCase().includes(q))
+      (a) => 
+        a.area.toLowerCase().includes(q) || 
+        formatarNomeArea(a.area).toLowerCase().includes(q) || 
+        (a.slug && a.slug.toLowerCase().includes(q))
     );
   }, [areas, abaAtiva, favoritos, busca]);
 
   // SEO & Título dinâmico
   useEffect(() => {
-    document.title = 'Flashcards | Vade Mecum PRIME';
+    document.title = 'Praticar Flashcards | Vade Mecum PRIME';
   }, []);
 
-  const pct = dash && dash.total_cards ? Math.round((dash.compreendidos / dash.total_cards) * 100) : 0;
-  const paraHoje = Number(dash?.a_revisar ?? 0) || Number(dash?.hoje ?? 0);
-  const criticos = (dash?.temas_criticos ?? []).slice(0, 4);
-
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(2.5rem+var(--sai-bottom,0px))]">
-      <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
-        <ShapeGrid 
-          speed={0.5} 
-          squareSize={40}
-          direction='diagonal'
-          borderColor='rgba(255, 255, 255, 0.05)'
-          hoverFillColor='rgba(255, 255, 255, 0.1)'
-          shape='square'
-          hoverTrailAmount={5}
+    <div className="min-h-dvh relative overflow-x-hidden bg-[#0e0805] text-[#fef3c7] pb-[calc(3.5rem+var(--sai-bottom,0px))] select-none">
+      {/* ── Fundo da Grécia Antiga com Filósofos Suavemente Ofuscado (Pouquinho Só) ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#1c120c]">
+        <img
+          src={greciaFilosofosFundo}
+          alt="Grécia Antiga, Filósofos e Templo Clássico"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-top opacity-92 select-none pointer-events-none filter blur-[1.8px] brightness-[0.95] contrast-[1.06]"
         />
+        {/* Vinheta leve nas extremidades preservando a imagem equilibrada e nítida */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/60 pointer-events-none" />
       </div>
-      
-      <div className="relative z-10 mx-auto w-full max-w-3xl lg:max-w-7xl 2xl:max-w-[1600px] px-0 lg:px-8 pb-12">
-        <div className="space-y-6">
-          {/* ── Banner de Desempenho (Hero Esmeralda Oficial) ───────────────── */}
-          <div className="w-full">
-            <FlashcardsCargoHero 
-              pct={pct} 
-              total={dash?.estudados || 0} 
-              hoje={dash?.hoje || 0} 
-              meta={100} 
-              disponiveis={dash?.total_cards || 78077} 
-              streak={dash?.streak || 0}
-              onBack={() => navigate('/')}
-              onOpenHoje={() => navigate('/flashcards/revisar')}
-              onOpenRevisados={() => navigate('/flashcards/historico')}
-              onOpenTotal={() => setFiltroAberto(true)}
-            />
-          </div>
-        
-          <div className="px-3.5 sm:px-6 lg:px-0 space-y-6">
-          {/* ── Card Principal com Botão "Filtro Rápido" ───────────────── */}
-          <div className="bg-card/60 border border-border/80 p-5 rounded-3xl backdrop-blur-md shadow-xl">
-            <div className="flex items-center gap-2">
-              <span className="h-5 w-1 rounded-full bg-[#2563eb]" />
-              <h2 className="text-lg font-extrabold leading-tight text-foreground sm:text-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] uppercase">Praticar Flashcards</h2>
+
+      {/* Símbolos Jurídicos Sagrados caindo suavemente ao fundo */}
+      <FallingLotusPetals />
+
+      <div className="relative z-10 mx-auto w-full max-w-lg sm:max-w-xl lg:max-w-3xl px-3.5 sm:px-6 pt-3 pb-12 box-border">
+        {/* ── Top Bar com Botão Voltar Circular Helênico ───────────────── */}
+        <div className="flex items-center justify-between mb-2 pt-1">
+          <button
+            type="button"
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              navigate('/');
+            }}
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/60 border border-[#78350f]/60 text-[#fef3c7] hover:border-[#f59e0b] hover:bg-black/80 transition-all cursor-pointer shadow-lg"
+            aria-label="Voltar"
+          >
+            <ArrowLeft className="w-5 h-5 text-[#fef3c7] stroke-[2.4]" />
+          </button>
+        </div>
+
+        {/* ── Título Imperial da Página ───────────────── */}
+        <div className="text-center mb-5 px-2">
+          <h1 className="text-2xl sm:text-3xl font-serif font-black tracking-wide text-[#fef3c7] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+            Praticar Flashcards
+          </h1>
+          <p className="text-xs sm:text-sm font-serif italic text-[#fef3c7]/75 mt-1">
+            Escolha filtros por matéria, assunto e tipo para praticar
+          </p>
+        </div>
+
+        <div className="space-y-5">
+          {/* ── Card "Filtro Rápido" (Pergaminho em Mármore Helênico com Louros) ── */}
+          <motion.button
+            whileHover={{ scale: 1.015 }}
+            whileTap={{ scale: 0.985 }}
+            onClick={() => {
+              try { haptic.selection(); } catch {}
+              setFiltroAberto(true);
+            }}
+            className="w-full relative flex items-center justify-between p-4 sm:p-5 rounded-2xl sm:rounded-3xl cursor-pointer text-left overflow-hidden shadow-2xl transition-all border border-[#d97706]/70 group"
+            style={{
+              background: 'linear-gradient(135deg, #fef3c7 0%, #fef08a 35%, #fde68a 70%, #fef3c7 100%)',
+              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.7), 0 0 20px rgba(245, 158, 11, 0.3), inset 0 2px 4px rgba(255,255,255,0.9)',
+            }}
+          >
+            {/* Louros Esculpidos no Canto Esquerdo */}
+            <div className="absolute left-1.5 inset-y-0 flex items-center pointer-events-none opacity-40 group-hover:opacity-70 transition-opacity">
+              <MiniLaurel />
             </div>
-            <p className="ml-3 mt-1 text-xs text-muted-foreground truncate">
-              Escolha filtros por matéria, assunto e tipo para praticar.
-            </p>
 
-            <motion.button
-              whileHover={{ scale: 1.015 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => { haptic.selection(); setFiltroAberto(true); }}
-              className="btn-attention-shine group mt-4 flex h-14 sm:h-16 min-h-[56px] w-full items-center justify-center gap-3 rounded-2xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-base sm:text-lg font-black shadow-md shadow-blue-950/40 transition-colors focus-visible:outline-none border border-[#2563eb]/30"
-            >
-              <Filter className="h-6 w-6 text-white" strokeWidth={2} />
-              <span className="tracking-wide text-white">Filtro Rápido</span>
-              <ChevronRight className="h-6 w-6 text-white transition-transform group-hover:translate-x-1" strokeWidth={2.5} />
-            </motion.button>
-          </div>
+            {/* Conteúdo Central */}
+            <div className="flex items-center gap-3.5 sm:gap-4 pl-4 sm:pl-5 min-w-0 flex-1">
+              {/* Ícone de Filtro Estilizado em Bronze */}
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#78350f]/15 border border-[#78350f]/30 flex items-center justify-center shrink-0">
+                <Filter className="w-5 h-5 sm:w-6 sm:h-6 text-[#78350f] stroke-[2.2]" />
+              </div>
 
-
-
-          {/* ── 4 Cards de Ações Rápidas (Decks, Revisão, Histórico, Desempenho) ── */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="h-4 w-1 rounded-full bg-[#2563eb]" />
-              <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                Atalhos
-              </p>
-            </div>
-            <motion.div 
-              className="grid grid-cols-4 gap-1.5 sm:gap-2.5"
-              initial="hidden"
-              animate="show"
-              variants={{
-                hidden: { opacity: 0 },
-                show: { opacity: 1, transition: { staggerChildren: 0.04 } }
-              }}
-            >
-              {ATALHOS_FLASHCARDS.map((a) => {
-              const Icon = a.icon;
-              return (
-                <motion.button
-                  key={a.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 10 },
-                    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-                  }}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => { haptic.selection(); navigate(a.route); }}
-                  className="group flex flex-col items-center justify-center p-2 sm:p-3.5 rounded-2xl bg-card border border-border/80 shadow-sm hover:border-zinc-400/50 transition-colors gap-1.5 text-center focus-visible:outline-none"
-                >
-                  <div className="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
-                    <Icon className="w-5 h-5 sm:w-7 sm:h-7 text-zinc-400 transition-all duration-300 group-hover:text-zinc-200 group-hover:scale-110" strokeWidth={2} />
-                    <Icon className="absolute inset-auto w-5 h-5 sm:w-7 sm:h-7 text-white opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 icon-shine-mask" strokeWidth={2} />
-                  </div>
-                  <div>
-                    <p className="text-[11px] sm:text-xs font-extrabold text-foreground leading-tight truncate">{a.label}</p>
-                    <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-0.5 hidden sm:block truncate">{a.desc}</p>
-                  </div>
-                </motion.button>
-              );
-            })}
-            </motion.div>
-          </div>
-
-
-
-          {/* ── Matérias de Flashcards em Lista com Cores Temáticas e Barra de Pesquisa ── */}
-          <section className="pt-2 space-y-3.5">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-2">
-                <span className="h-4 w-1 rounded-full bg-[#2563eb]" />
-                <p className="text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-                  Matérias ({areasFiltradas.length}{areasFiltradas.length !== areas.length ? ` de ${areas.length}` : ''})
+              <div className="min-w-0 flex-1">
+                <h2 className="text-base sm:text-lg font-serif font-black text-[#451a03] leading-tight flex items-center gap-2">
+                  <span>Filtro Rápido</span>
+                </h2>
+                <p className="text-xs sm:text-[13px] text-[#78350f]/85 font-serif italic mt-0.5">
+                  Encontre o que deseja revisar...
                 </p>
               </div>
             </div>
 
+            {/* Chevron e Louros do Canto Direito */}
+            <div className="flex items-center gap-1.5 pr-1 shrink-0">
+              <ChevronRight className="w-5 h-5 text-[#78350f] stroke-[2.5] group-hover:translate-x-1 transition-transform" />
+              <div className="opacity-40 group-hover:opacity-70 transition-opacity pointer-events-none">
+                <MiniLaurel flip />
+              </div>
+            </div>
+          </motion.button>
+
+          {/* ── Seção "Atalhos" (4 Blocos Esculpidos em Bronze com Louros) ── */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-center gap-2">
+              <MiniLaurel />
+              <p className="text-xs sm:text-sm font-serif font-bold tracking-widest text-[#fde047] uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                Atalhos
+              </p>
+              <MiniLaurel flip />
+            </div>
+
+            <div className="grid grid-cols-4 gap-2 sm:gap-3">
+              {ATALHOS_FLASHCARDS.map((a) => {
+                const IconComponent = a.icon;
+                return (
+                  <motion.button
+                    key={a.id}
+                    whileHover={{ scale: 1.04, y: -2 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => {
+                      try { haptic.selection(); } catch {}
+                      navigate(a.route);
+                    }}
+                    className="flex flex-col items-center justify-center p-2 sm:p-3 rounded-2xl border transition-all text-center group cursor-pointer shadow-lg min-w-0"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(38, 25, 16, 0.92) 0%, rgba(20, 13, 8, 0.95) 100%)',
+                      borderColor: 'rgba(217, 119, 6, 0.45)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.6), inset 0 1px 2px rgba(254, 240, 138, 0.15)',
+                    }}
+                  >
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center mb-1 text-[#fde047] group-hover:scale-110 transition-transform">
+                      <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 stroke-[2]" />
+                    </div>
+                    <span className="text-[10px] sm:text-xs font-serif font-bold text-[#fef3c7] leading-tight text-center w-full whitespace-nowrap overflow-hidden text-ellipsis">
+                      {a.label}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── Seção "Matérias" (Título, Busca, Menu de Alternância e Lista Unificada) ── */}
+          <section className="space-y-3 pt-1">
+            <div className="flex items-center gap-2">
+              <MiniLaurel />
+              <p className="text-xs sm:text-sm font-serif font-bold tracking-widest text-[#fde047] uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+                Matérias ({areas.length})
+              </p>
+            </div>
+
             {/* Barra de Pesquisa Rápida */}
             <div className="relative w-full">
-              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 text-zinc-400">
+              <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 text-[#f59e0b]">
                 <Search className="w-4 h-4 stroke-[2.2]" />
               </div>
               <input
@@ -214,7 +260,12 @@ const Flashcards = () => {
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Buscar matéria de flashcards (ex: Penal)"
-                className="w-full h-12 pl-10 pr-10 rounded-2xl bg-zinc-900/90 border border-zinc-800 text-sm text-foreground placeholder:text-zinc-500 focus:outline-none focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]/50 transition-all backdrop-blur-md"
+                className="w-full h-11 sm:h-12 pl-10 pr-10 rounded-2xl text-sm text-[#fef3c7] placeholder:text-[#fef3c7]/45 focus:outline-none focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b]/50 transition-all shadow-inner"
+                style={{
+                  background: 'rgba(26, 17, 11, 0.88)',
+                  border: '1px solid rgba(217, 119, 6, 0.45)',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.6)',
+                }}
               />
               {busca && (
                 <button
@@ -228,38 +279,46 @@ const Flashcards = () => {
               )}
             </div>
 
-            {/* Menu de Alternância (Matérias, Recentes, Favoritos) */}
-            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-900/90 border border-zinc-800/80 backdrop-blur-md">
+            {/* Menu de Alternância (Matérias, Recentes, Favoritos) - Sem números, 100% responsivo e elegante */}
+            <div 
+              className="grid grid-cols-3 gap-1.5 p-1 rounded-2xl border backdrop-blur-md w-full"
+              style={{
+                background: 'rgba(24, 16, 10, 0.88)',
+                borderColor: 'rgba(180, 83, 9, 0.45)',
+              }}
+            >
               {[
-                { id: 'materias', label: 'Matérias', count: areas.length },
-                { id: 'recentes', label: 'Recentes', count: areas.filter((a) => a.compreendidos > 0).length },
-                { id: 'favoritos', label: 'Favoritos', count: favoritos.length },
+                { id: 'materias', label: 'Matérias', icon: Landmark },
+                { id: 'recentes', label: 'Recentes', icon: RotateCcw },
+                { id: 'favoritos', label: 'Favoritos', icon: Heart },
               ].map((tab) => {
                 const isActive = abaAtiva === tab.id;
+                const TabIcon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     type="button"
                     onClick={() => {
-                      haptic.selection();
+                      try { haptic.selection(); } catch {}
                       setAbaAtiva(tab.id as any);
                     }}
+                    style={isActive ? {
+                      background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                      borderColor: '#d97706',
+                      color: '#451a03',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.4), 0 0 12px rgba(245, 158, 11, 0.3)',
+                    } : {
+                      color: '#fef3c7',
+                    }}
                     className={cn(
-                      "flex-1 py-2 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer",
+                      "w-full py-2.5 px-2 rounded-xl text-xs sm:text-sm font-serif font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer border min-w-0",
                       isActive
-                        ? "bg-[#2563eb] text-white shadow-md shadow-blue-950/40"
-                        : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                        ? "border-[#d97706] font-black"
+                        : "border-transparent text-[#fef3c7]/80 hover:bg-[#352014]/60 hover:text-white"
                     )}
                   >
-                    <span>{tab.label}</span>
-                    {tab.count > 0 && (
-                      <span className={cn(
-                        "text-[10px] px-1.5 py-0.5 rounded-full font-mono",
-                        isActive ? "bg-white/20 text-white" : "bg-zinc-800 text-zinc-400"
-                      )}>
-                        {tab.count}
-                      </span>
-                    )}
+                    <TabIcon className={cn("w-3.5 h-3.5 shrink-0", isActive ? "text-[#451a03]" : "text-[#f59e0b]")} />
+                    <span className="truncate">{tab.label}</span>
                   </button>
                 );
               })}
@@ -267,17 +326,24 @@ const Flashcards = () => {
 
             {/* Lista com Fundo Único Compartilhado e Divisão por Linha Fina Elegante */}
             {areasFiltradas.length === 0 ? (
-              <div className="p-8 text-center rounded-2xl bg-zinc-900/60 border border-zinc-800/80 text-muted-foreground text-xs">
+              <div className="p-8 text-center rounded-2xl bg-[#1c120c]/80 border border-[#78350f]/40 text-[#fef3c7]/60 text-xs font-serif">
                 {abaAtiva === 'favoritos'
-                  ? 'Nenhuma matéria favoritada ainda. Toque na estrela para favoritar!'
+                  ? 'Nenhuma matéria favoritada ainda. Abra a matéria e toque no coração para favoritar!'
                   : `Nenhuma matéria encontrada para "${busca}".`}
               </div>
             ) : (
-              <div className="rounded-3xl bg-zinc-900/80 border border-zinc-800/80 backdrop-blur-md overflow-hidden divide-y divide-zinc-800/60 shadow-lg">
+              <div 
+                className="rounded-3xl border backdrop-blur-md overflow-hidden divide-y divide-[#78350f]/35 shadow-2xl"
+                style={{
+                  background: 'linear-gradient(180deg, rgba(28, 18, 12, 0.92) 0%, rgba(18, 11, 7, 0.96) 100%)',
+                  borderColor: 'rgba(180, 83, 9, 0.45)',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.8)',
+                }}
+              >
                 {areasFiltradas.map((area) => {
                   const iconInfo = areaIconFor(area.slug || area.area);
                   const AreaIcon = iconInfo?.Icon || BookOpen;
-                  const iconColor = iconInfo?.color || '#3b82f6';
+                  const iconColor = iconInfo?.color || '#f59e0b';
                   const pctArea = area.total_cards > 0 ? Math.round((area.compreendidos / area.total_cards) * 100) : 0;
                   const radius = 14;
                   const circumference = 2 * Math.PI * radius;
@@ -289,38 +355,39 @@ const Flashcards = () => {
                       key={area.slug || area.area}
                       type="button"
                       onClick={() => {
-                        haptic.selection();
+                        try { haptic.selection(); } catch {}
                         setAreaSelecionadaModal(area);
                       }}
-                      className="group relative w-full flex items-center justify-between py-4 sm:py-5 px-4 sm:px-5 min-h-[68px] sm:min-h-[76px] hover:bg-zinc-800/40 transition-colors text-left focus-visible:outline-none cursor-pointer"
+                      className="group relative w-full flex items-center justify-between py-4 sm:py-5 px-3.5 sm:px-5 hover:bg-[#382315]/40 transition-colors text-left focus-visible:outline-none cursor-pointer"
                     >
-                      {/* Lado Esquerdo: Ícone Maior com Cor Temática Oficial */}
-                      <div className="flex items-center gap-4 min-w-0 flex-1 pr-3">
-                        <div className="relative shrink-0 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center">
+                      {/* Lado Esquerdo: Ícone da Matéria (Sem fundo de cor atrás) e Textos */}
+                      <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-3">
+                        {/* Ícone da Matéria grande e direto com a cor temática */}
+                        <div className="relative shrink-0 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
                           <AreaIcon
-                            className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200 group-hover:scale-110"
+                            className="w-7 h-7 sm:w-8 sm:h-8 transition-transform duration-200"
                             style={{ color: iconColor }}
                             strokeWidth={1.8}
                           />
                         </div>
 
-                        {/* Detalhes da Matéria */}
+                        {/* Detalhes da Matéria - Tipografia Clássica sem Abreviações (sem prefixo "Direito") */}
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm sm:text-base font-bold text-foreground leading-snug group-hover:text-white transition-colors truncate">
-                            {area.area}
+                          <p className="text-sm sm:text-base font-serif font-black text-[#fef3c7] leading-snug group-hover:text-[#fde047] transition-colors break-words line-clamp-2">
+                            {formatarNomeArea(area.area)}
                           </p>
 
                           <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[11px] sm:text-xs font-semibold text-zinc-400 shrink-0">
+                            <span className="text-[11px] sm:text-xs font-serif text-[#fef3c7]/75 shrink-0">
                               {area.total_cards > 0 ? `${area.total_cards.toLocaleString('pt-BR')} cards` : 'Em breve'}
                             </span>
                             {isFav && (
                               <span className="inline-flex items-center gap-1 text-[11px] font-medium text-rose-400 shrink-0">
-                                • <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 drop-shadow-[0_0_6px_rgba(244,63,94,0.6)]" />
+                                • <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500 drop-shadow-[0_0_6px_rgba(244,63,94,0.7)]" />
                               </span>
                             )}
                             {area.compreendidos > 0 && (
-                              <span className="text-[11px] sm:text-xs font-medium text-emerald-400 shrink-0">
+                              <span className="text-[11px] sm:text-xs font-serif font-semibold text-emerald-400 shrink-0">
                                 • {area.compreendidos} dominados
                               </span>
                             )}
@@ -328,60 +395,52 @@ const Flashcards = () => {
                         </div>
                       </div>
 
-                      {/* Lado Direito: Barra de Progresso Circular e Chevron */}
+                      {/* Lado Direito: Barra de Progresso Circular na Direita e Chevron */}
                       <div className="shrink-0 flex items-center gap-2.5 pl-2">
-                        {/* Barra de Progresso Circular na Direita */}
+                        {/* Círculo de Progresso Dourado */}
                         <div className="relative w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center shrink-0">
                           <svg className="w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 36 36">
-                            {/* Trilho de fundo circular */}
+                            {/* Trilho circular escuro */}
                             <circle
                               cx="18"
                               cy="18"
                               r={radius}
                               fill="none"
-                              stroke="rgba(255, 255, 255, 0.08)"
-                              strokeWidth="3"
+                              stroke="rgba(45, 30, 20, 0.85)"
+                              strokeWidth="3.2"
                             />
-                            {/* Progresso preenchido na cor da matéria */}
-                            {area.compreendidos > 0 && (
-                              <circle
-                                cx="18"
-                                cy="18"
-                                r={radius}
-                                fill="none"
-                                stroke={iconColor}
-                                strokeWidth="3.2"
-                                strokeDasharray={circumference}
-                                strokeDashoffset={strokeOffset}
-                                strokeLinecap="round"
-                                style={{
-                                  filter: `drop-shadow(0 0 4px ${iconColor}80)`,
-                                  transition: 'stroke-dashoffset 0.5s ease',
-                                }}
-                              />
-                            )}
+                            {/* Anel de progresso dourado luminoso */}
+                            <circle
+                              cx="18"
+                              cy="18"
+                              r={radius}
+                              fill="none"
+                              stroke={pctArea === 100 ? '#10b981' : '#f59e0b'}
+                              strokeWidth="3.2"
+                              strokeDasharray={circumference}
+                              strokeDashoffset={strokeOffset}
+                              strokeLinecap="round"
+                              style={{
+                                filter: pctArea > 0 ? 'drop-shadow(0 0 4px rgba(245, 158, 11, 0.7))' : 'none',
+                                transition: 'stroke-dashoffset 0.5s ease',
+                              }}
+                            />
                           </svg>
 
-                          {/* Valor da porcentagem no centro do círculo (ou traço neutro se 0%) */}
+                          {/* Valor da porcentagem no centro do círculo */}
                           <div className="absolute inset-0 flex items-center justify-center">
-                            {area.compreendidos > 0 ? (
-                              <span 
-                                className="text-[10px] sm:text-[11px] font-mono font-black"
-                                style={{ color: pctArea === 100 ? '#10b981' : iconColor }}
-                              >
-                                {pctArea}%
-                              </span>
-                            ) : (
-                              <span className="text-[10px] font-mono font-bold text-zinc-600">
-                                0%
-                              </span>
-                            )}
+                            <span 
+                              className="text-[10px] sm:text-[10.5px] font-mono font-bold"
+                              style={{ color: pctArea === 100 ? '#10b981' : pctArea > 0 ? '#fde047' : 'rgba(254, 243, 199, 0.45)' }}
+                            >
+                              {pctArea}%
+                            </span>
                           </div>
                         </div>
 
                         {/* Chevron de navegação */}
-                        <div className="w-6 h-6 flex items-center justify-center text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all">
-                          <ChevronRight className="w-4 h-4 stroke-[2]" />
+                        <div className="w-5 h-5 flex items-center justify-center text-[#fef3c7]/40 group-hover:text-[#fde047] group-hover:translate-x-0.5 transition-all">
+                          <ChevronRight className="w-4 h-4 stroke-[2.2]" />
                         </div>
                       </div>
                     </button>
@@ -390,62 +449,63 @@ const Flashcards = () => {
               </div>
             )}
           </section>
-
-
-
-
         </div>
       </div>
-    </div>
 
       {/* ── Modal Flutuante: Opções da Matéria (Filtrar vs Trilhas) ── */}
       <AnimatePresence>
         {areaSelecionadaModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setAreaSelecionadaModal(null)}
-              className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             />
 
-            {/* Card Flutuante */}
             <motion.div
               initial={{ opacity: 0, scale: 0.94, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 16 }}
               transition={{ type: 'spring', damping: 25, stiffness: 320 }}
-              className="relative w-full max-w-sm rounded-3xl bg-zinc-900 border border-zinc-800 p-6 shadow-2xl z-10 overflow-hidden"
+              className="relative w-full max-w-sm rounded-3xl p-6 shadow-2xl z-10 overflow-hidden border"
+              style={{
+                background: 'linear-gradient(135deg, rgba(32, 22, 14, 0.98) 0%, rgba(18, 12, 8, 0.98) 100%)',
+                borderColor: 'rgba(217, 119, 6, 0.6)',
+                boxShadow: '0 20px 40px rgba(0,0,0,0.9), 0 0 20px rgba(245, 158, 11, 0.3)',
+              }}
             >
-              {/* Fechar */}
               <button
                 type="button"
                 onClick={() => setAreaSelecionadaModal(null)}
-                className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white rounded-full bg-zinc-800/60 transition-colors"
+                className="absolute top-4 right-4 p-2 text-[#fef3c7]/60 hover:text-white rounded-full bg-black/40 transition-colors cursor-pointer"
                 aria-label="Fechar"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Informações da Matéria */}
               <div className="flex flex-col items-center text-center">
-                <div className="w-14 h-14 rounded-2xl bg-zinc-800 border border-zinc-700/80 flex items-center justify-center shadow-inner mb-3">
+                <div 
+                  className="w-14 h-14 rounded-2xl border flex items-center justify-center shadow-inner mb-3"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(45, 30, 20, 0.95) 0%, rgba(20, 13, 8, 0.95) 100%)',
+                    borderColor: 'rgba(245, 158, 11, 0.5)',
+                  }}
+                >
                   {(() => {
                     const AreaIcon = areaIconFor(areaSelecionadaModal.slug || areaSelecionadaModal.area)?.Icon || BookOpen;
-                    return <AreaIcon className="w-7 h-7 text-zinc-200" strokeWidth={1.8} />;
+                    return <AreaIcon className="w-7 h-7 text-[#fde047]" strokeWidth={1.8} />;
                   })()}
                 </div>
-                <h3 className="text-lg font-bold text-white leading-snug px-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                <h3 className="text-lg font-serif font-black text-[#fef3c7] leading-snug px-2">
                   {areaSelecionadaModal.area}
                 </h3>
-                <p className="text-xs text-zinc-400 mt-1">
+                <p className="text-xs text-[#fef3c7]/70 font-serif italic mt-1">
                   {areaSelecionadaModal.total_cards > 0 ? `${areaSelecionadaModal.total_cards.toLocaleString('pt-BR')} flashcards disponíveis` : 'Matéria'}
                 </p>
               </div>
 
-              {/* Opções de Ação */}
               <div className="mt-6 space-y-2.5">
                 <button
                   type="button"
@@ -456,22 +516,22 @@ const Flashcards = () => {
                     setFiltroPassoPrevio('assuntos');
                     setFiltroAberto(true);
                   }}
-                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-zinc-800/90 hover:bg-zinc-750 border border-zinc-700 text-left transition-all group"
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#2a1b12] hover:bg-[#382417] border border-[#78350f]/60 text-left transition-all group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#2563eb]/15 border border-[#2563eb]/30 flex items-center justify-center text-[#2563eb] group-hover:scale-105 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center text-[#fde047] group-hover:scale-105 transition-transform">
                       <Filter className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-white group-hover:text-[#2563eb] transition-colors" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      <p className="text-sm font-serif font-bold text-[#fef3c7] group-hover:text-[#fde047] transition-colors">
                         Filtrar Assuntos
                       </p>
-                      <p className="text-[11px] text-zinc-400">
+                      <p className="text-[11px] text-[#fef3c7]/65">
                         Escolha temas, tipos e quantidade
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white transition-transform group-hover:translate-x-0.5" />
+                  <ChevronRight className="w-4 h-4 text-[#fef3c7]/50 group-hover:text-white transition-transform group-hover:translate-x-0.5" />
                 </button>
 
                 <button
@@ -481,22 +541,26 @@ const Flashcards = () => {
                     setAreaSelecionadaModal(null);
                     navigate(`/flashcards/area/${slug}`);
                   }}
-                  className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-[#2563eb] hover:bg-[#1d4ed8] border border-[#2563eb]/40 text-left text-white shadow-lg shadow-blue-950/30 transition-all group"
+                  className="w-full flex items-center justify-between p-3.5 rounded-2xl border text-left transition-all group cursor-pointer"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(45, 30, 20, 0.95) 0%, rgba(28, 18, 12, 0.95) 100%)',
+                    borderColor: 'rgba(217, 119, 6, 0.6)',
+                  }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
-                      <Route className="w-5 h-5" />
+                    <div className="w-10 h-10 rounded-xl bg-[#f59e0b]/20 border border-[#f59e0b]/40 flex items-center justify-center text-[#fde047] group-hover:scale-105 transition-transform">
+                      <Landmark className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-white" style={{ fontFamily: "'Inter', sans-serif" }}>
-                        Ir para as Trilhas
+                      <p className="text-sm font-serif font-bold text-[#fef3c7] group-hover:text-[#fde047] transition-colors">
+                        Trilhas de Estudo
                       </p>
-                      <p className="text-[11px] text-blue-100/80">
-                        Trilha progressiva deck a deck
+                      <p className="text-[11px] text-[#fef3c7]/65">
+                        Avançar pelos decks temáticos na montanha
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-white transition-transform group-hover:translate-x-0.5" />
+                  <ChevronRight className="w-4 h-4 text-[#fef3c7]/50 group-hover:text-white transition-transform group-hover:translate-x-0.5" />
                 </button>
               </div>
             </motion.div>
@@ -504,28 +568,22 @@ const Flashcards = () => {
         )}
       </AnimatePresence>
 
+      {/* ── Filtro Rápido (Sheet Oficial de Seleção) ── */}
       <FlashcardsFiltroSheet
         aberto={filtroAberto}
+        onFechar={() => setFiltroAberto(false)}
+        onAplicar={(filtro: FlashcardsFiltro) => {
+          setFiltroAberto(false);
+          const params = new URLSearchParams();
+          if (filtro.disciplinas && filtro.disciplinas.length > 0) params.set('disciplinas', filtro.disciplinas.join(','));
+          if (filtro.assuntos && filtro.assuntos.length > 0) params.set('assuntos', filtro.assuntos.join(','));
+          if (filtro.tipos && filtro.tipos.length > 0) params.set('tipos', filtro.tipos.join(','));
+          if (filtro.status && filtro.status.length > 0) params.set('status', filtro.status.join(','));
+          if (filtro.quantidade && filtro.quantidade > 0) params.set('quantidade', filtro.quantidade.toString());
+          navigate(`/flashcards/estudo?${params.toString()}`);
+        }}
         disciplinaInicial={filtroDisciplinaPrevia}
         passoInicial={filtroPassoPrevio}
-        onFechar={() => {
-          setFiltroAberto(false);
-          setFiltroDisciplinaPrevia(undefined);
-          setFiltroPassoPrevio(undefined);
-        }}
-        onAplicar={(f) => {
-          setFiltroAberto(false);
-          setFiltroDisciplinaPrevia(undefined);
-          setFiltroPassoPrevio(undefined);
-          const p = new URLSearchParams();
-          if (f.disciplinas && f.disciplinas.length) p.set('areas', f.disciplinas.join('|'));
-          if (f.assuntos && f.assuntos.length) p.set('temas', f.assuntos.join('|'));
-          if (f.tipos && f.tipos.length) p.set('tipos', f.tipos.join('|'));
-          if (f.status && f.status.length) p.set('modo', f.status[0]);
-          if (f.quantidade) p.set('limite', String(f.quantidade));
-          
-          navigate(`/flashcards/estudar?${p.toString()}`);
-        }}
       />
     </div>
   );
