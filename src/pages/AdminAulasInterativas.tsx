@@ -258,11 +258,11 @@ const DISCIPLINAS_CATALOGO: DisciplinaItem[] = [
     subtitulo: 'ÁREA DO CONHECIMENTO',
     descricao: 'Jusnaturalismo, positivismo jurídico, pós-positivismo, teorias da justiça, hermenêutica e argumentação jurídica.',
     capaHeroUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/teoria-e-filosofia-do-direito.webp',
-    corDestaque: '#94a3b8',
-    corGradientRing: ['#cbd5e1', '#64748b'],
-    corFundoCard: 'linear-gradient(180deg, #21252b 0%, #121417 100%)',
-    corBorda: 'rgba(148,163,184,0.35)',
-    textAccentClass: 'text-[#94a3b8]'
+    corDestaque: '#d4b996',
+    corGradientRing: ['#f5e6d3', '#a68a68'],
+    corFundoCard: 'linear-gradient(180deg, #2d241c 0%, #17120e 100%)',
+    corBorda: 'rgba(212,185,150,0.35)',
+    textAccentClass: 'text-[#d4b996]'
   },
   {
     id: 'desportivo',

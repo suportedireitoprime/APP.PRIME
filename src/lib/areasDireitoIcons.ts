@@ -49,7 +49,9 @@ export const AREA_ICON_MAP: Record<string, AreaIcon> = {
   portugues: { Icon: BookText, color: '#fdba74' },
   'pratica-profissional': { Icon: ClipboardList, color: '#cbd5e1' },
   'revisao-oab': { Icon: Award, color: '#fda4af' },
-  'teoria-e-filosofia-do-direito': { Icon: Lightbulb, color: '#c7d2fe' },
+  'teoria-e-filosofia-do-direito': { Icon: Lightbulb, color: '#d4b996' },
+  filosofia: { Icon: Lightbulb, color: '#d4b996' },
+  'filosofia-do-direito': { Icon: Lightbulb, color: '#d4b996' },
   etica: { Icon: Award, color: '#fda4af' },
   'etica-profissional': { Icon: Award, color: '#fda4af' },
 };

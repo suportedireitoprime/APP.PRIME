@@ -39,7 +39,7 @@ const RULES: Array<{ test: RegExp; visual: Visual }> = [
   { test: /portugu/i,                          visual: { icon: BookText,      color: '#fb923c' } },
   { test: /prática|pratica profissional/i,     visual: { icon: ClipboardList, color: '#a8a29e' } },
   { test: /oab|revis[ãa]o/i,                   visual: { icon: Award,         color: '#f87171' } },
-  { test: /teoria|filosofia/i,                 visual: { icon: Lightbulb,     color: '#a5b4fc' } },
+  { test: /teoria|filosofia/i,                 visual: { icon: Lightbulb,     color: '#d4b996' } },
   { test: /civil/i,                            visual: { icon: Home,          color: '#a81f40' } },
 ];
 
