@@ -25,6 +25,10 @@ import { ModalRevisarFlashcards } from '@/components/aulas-interativas/ModalRevi
 import { ModalPraticarQuestoes } from '@/components/aulas-interativas/ModalPraticarQuestoes';
 import { PlayerAulaNativo } from '@/components/aulas-interativas/PlayerAulaNativo';
 import { assetUrl } from '@/lib/assetUrl';
+import { areaIconFor } from '@/lib/areasDireitoIcons';
+import { haptic } from '@/lib/nativeHaptics';
+import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
+import themisMarbleCutout from '@/assets/themis-marble-cutout.webp';
 import capaAdminOrigens from '@/assets/aulas-interativas/direito-administrativo/capa-aula-01-origens.webp';
 import { 
   MATERIAS_CATALOGO_COMPLETO, 
@@ -436,6 +440,75 @@ function formatDescricaoExata(desc?: string, titulo?: string): string {
   return text;
 }
 
+// Balança da Justiça com Coroa de Louros Dourada (Padrão Oficial Clássico do Mockup)
+const BalancaLourosDourada = () => (
+  <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center select-none pointer-events-none">
+    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_4px_14px_rgba(245,158,11,0.55)]" fill="none">
+      <defs>
+        <linearGradient id="goldGradAulas" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#fef08a" />
+          <stop offset="50%" stopColor="#f59e0b" />
+          <stop offset="100%" stopColor="#b45309" />
+        </linearGradient>
+      </defs>
+      {/* Louros Circulares */}
+      <path d="M 50 15 C 32 15 18 30 18 50 C 18 68 30 82 46 85" stroke="url(#goldGradAulas)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M 50 15 C 68 15 82 30 82 50 C 82 68 70 82 54 85" stroke="url(#goldGradAulas)" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Folhas de Louro Esquerda */}
+      <path d="M 22 34 Q 15 32 18 26 Q 25 30 22 34 Z" fill="url(#goldGradAulas)" />
+      <path d="M 18 45 Q 11 44 14 38 Q 21 42 18 45 Z" fill="url(#goldGradAulas)" />
+      <path d="M 18 57 Q 11 58 14 64 Q 21 60 18 57 Z" fill="url(#goldGradAulas)" />
+      <path d="M 24 68 Q 18 71 22 76 Q 28 72 24 68 Z" fill="url(#goldGradAulas)" />
+      <path d="M 34 78 Q 30 84 36 87 Q 39 80 34 78 Z" fill="url(#goldGradAulas)" />
+      {/* Folhas de Louro Direita */}
+      <path d="M 78 34 Q 85 32 82 26 Q 75 30 78 34 Z" fill="url(#goldGradAulas)" />
+      <path d="M 82 45 Q 89 44 86 38 Q 79 42 82 45 Z" fill="url(#goldGradAulas)" />
+      <path d="M 82 57 Q 89 58 86 64 Q 79 60 82 57 Z" fill="url(#goldGradAulas)" />
+      <path d="M 76 68 Q 82 71 78 76 Q 72 72 76 68 Z" fill="url(#goldGradAulas)" />
+      <path d="M 66 78 Q 70 84 64 87 Q 61 80 66 78 Z" fill="url(#goldGradAulas)" />
+      {/* Balança Central */}
+      <line x1="50" y1="28" x2="50" y2="70" stroke="url(#goldGradAulas)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M 42 70 L 58 70" stroke="url(#goldGradAulas)" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="50" cy="27" r="2.5" fill="url(#goldGradAulas)" />
+      <line x1="32" y1="36" x2="68" y2="36" stroke="url(#goldGradAulas)" strokeWidth="2.5" strokeLinecap="round" />
+      <line x1="34" y1="36" x2="27" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.2" />
+      <line x1="34" y1="36" x2="41" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.2" />
+      <path d="M 25 52 Q 34 58 43 52 Z" fill="url(#goldGradAulas)" />
+      <line x1="66" y1="36" x2="59" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.2" />
+      <line x1="66" y1="36" x2="73" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.2" />
+      <path d="M 57 52 Q 66 58 75 52 Z" fill="url(#goldGradAulas)" />
+    </svg>
+  </div>
+);
+
+// Ramo de Louro Dourado nos Cantos Inferiores
+const BottomCornerLaurel = ({ flip = false }: { flip?: boolean }) => (
+  <svg 
+    viewBox="0 0 100 100" 
+    className={cn("w-20 h-20 sm:w-28 sm:h-28 text-[#f59e0b]/35 pointer-events-none select-none", flip && "scale-x-[-1]")} 
+    fill="currentColor"
+  >
+    <path d="M 10 90 Q 30 70 50 40 Q 65 15 80 5 Q 65 30 45 60 Q 25 80 10 90 Z" opacity="0.6" />
+    <path d="M 30 65 Q 20 55 25 45 Q 38 52 30 65 Z" />
+    <path d="M 42 50 Q 32 40 38 30 Q 50 38 42 50 Z" />
+    <path d="M 55 35 Q 46 25 52 16 Q 63 24 55 35 Z" />
+    <path d="M 68 20 Q 60 10 68 2 Q 77 10 68 20 Z" />
+  </svg>
+);
+
+// Formatação limpa do título da área para visual clássico
+const formatarTituloArea = (nome: string) => {
+  if (!nome) return '';
+  return nome
+    .toLowerCase()
+    .split(' ')
+    .map((w, idx) => {
+      if (idx > 0 && ['de', 'do', 'da', 'dos', 'das', 'e', 'em'].includes(w)) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    })
+    .join(' ');
+};
+
 export default function AdminAulasInterativas() {
   const navigate = useNavigate();
 
@@ -449,6 +522,8 @@ export default function AdminAulasInterativas() {
   const [abaAtiva, setAbaAtiva] = useState<AbaAulas>('trilhas');
   const [favoritosIds, setFavoritosIds] = useState<Set<string>>(new Set());
   const [acertosMap, setAcertosMap] = useState<Record<string, { acertos: number; total: number }>>({});
+  const [activeDiscIndex, setActiveDiscIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   // Sincronização inicial com o Supabase (Single Source of Truth)
   useEffect(() => {
@@ -876,33 +951,50 @@ export default function AdminAulasInterativas() {
 
         return (
           <>
-          {/* Top Bar Fixa de Navegação (Padrão Oficial Aprender - Screenshot 2) */}
+          {/* ── Fundo Clássico da Grécia com Estátua de Mármore da Deusa Têmis (Idêntico ao Mockup) ── */}
+          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120a06]">
+            <img
+              src={greciaFilosofosFundo}
+              alt=""
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              className="w-full h-full object-cover object-top opacity-75 select-none pointer-events-none filter brightness-[0.85] contrast-[1.08]"
+            />
+            {/* Estátua de Mármore da Deusa Têmis no Canto Superior Direito */}
+            <img
+              src={themisMarbleCutout}
+              alt=""
+              className="absolute -top-4 -right-4 sm:-top-8 sm:-right-8 w-[240px] xs:w-[280px] sm:w-[350px] md:w-[420px] max-h-[82vh] object-contain object-top pointer-events-none opacity-45 sm:opacity-55 mix-blend-screen filter drop-shadow-[0_0_40px_rgba(245,158,11,0.25)] select-none z-0"
+            />
+            {/* Vinheta Atmosférica de Profundidade */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0805] via-transparent to-black/60 pointer-events-none" />
+          </div>
+
+          {/* Ramos de Louro nos Cantos Inferiores da Tela */}
+          <div className="fixed bottom-0 left-0 z-0 pointer-events-none">
+            <BottomCornerLaurel />
+          </div>
+          <div className="fixed bottom-0 right-0 z-0 pointer-events-none">
+            <BottomCornerLaurel flip />
+          </div>
+
+          {/* Top Bar Fixa de Navegação Minimalista */}
           <div 
-            className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/95 border-b border-white/10 px-4 sm:px-6 py-3 transition-all shadow-xl"
+            className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/75 border-b border-white/10 px-4 sm:px-6 py-2.5 transition-all shadow-xl"
             style={{
-              paddingTop: 'calc(0.75rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
+              paddingTop: 'calc(0.5rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
             }}
           >
             <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <button
-                  type="button"
-                  onClick={handleVoltar}
-                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/5 hover:bg-white/10 border border-white/15 flex items-center justify-center text-white active:scale-95 transition shadow-lg shrink-0"
-                  aria-label="Voltar"
-                >
-                  <ArrowLeft className="w-5 h-5 sm:w-5.5 sm:h-5.5" strokeWidth={2.4} />
-                </button>
-
-                <div className="min-w-0">
-                  <h1 className="text-base sm:text-lg font-black text-white font-sans tracking-wider uppercase truncate">
-                    APRENDER
-                  </h1>
-                  <p className="text-[10px] sm:text-[11px] text-zinc-400 font-medium truncate">
-                    Aulas Dinâmicas em Trilhas
-                  </p>
-                </div>
-              </div>
+              <button
+                type="button"
+                onClick={handleVoltar}
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/50 hover:bg-black/70 border border-amber-500/35 flex items-center justify-center text-amber-200 active:scale-95 transition shadow-lg shrink-0"
+                aria-label="Voltar"
+              >
+                <ArrowLeft className="w-5 h-5 sm:w-5.5 sm:h-5.5" strokeWidth={2.4} />
+              </button>
 
               {/* Botão de Destravar para Teste */}
               <button
@@ -915,7 +1007,7 @@ export default function AdminAulasInterativas() {
                   "text-[10px] sm:text-[11px] font-bold px-3 py-1.5 rounded-full border transition flex items-center gap-1.5 shadow-sm shrink-0",
                   modoLivreTeste 
                     ? "bg-amber-500/20 text-amber-300 border-amber-500/40" 
-                    : "bg-white/5 text-zinc-400 border-white/10 hover:text-white"
+                    : "bg-black/40 text-amber-200/70 border-amber-500/20 hover:text-white"
                 )}
               >
                 {modoLivreTeste ? <Unlock className="w-3.5 h-3.5 text-amber-300" /> : <Lock className="w-3.5 h-3.5" />}
@@ -924,368 +1016,92 @@ export default function AdminAulasInterativas() {
             </div>
           </div>
 
-          {/* Painel Hero sem margens laterais ou em cima (Full-bleed colado na barra) */}
-          <AulasHeroPanel
-            semMargens
-            subtitulo="SUA TRILHA DE APRENDIZADO"
-            titulo="AULAS"
-            tituloDestaque="EM TRILHAS"
-            descricao="Slides interativos narrados, flashcards de retenção e questões por matéria."
-            porcentagem={porcentagemGeral}
-            corDestaque="#fbbf24"
-            metricas={[
-              { label: 'Disciplinas', valor: DISCIPLINAS_CATALOGO.length },
-              { label: 'Aulas', valor: totalAulasGeral },
-              { label: 'Concluídas', valor: `${ciclosGeralCompletos}/${totalAulasGeral}` }
-            ]}
-          />
+          <div className="relative z-10 w-full max-w-4xl mx-auto px-4 pt-2 sm:pt-4 pb-12 flex flex-col items-center">
+            {/* ── CUME DO TOPO: BALANÇA DOURADA COM COROA DE LOUROS ── */}
+            <BalancaLourosDourada />
 
-          <div className="max-w-4xl mx-auto px-4 pt-3 sm:pt-4 pb-8 space-y-5">
-            {/* Menu de Alternância (Trilhas, Progresso, Favoritos, Estatísticas) */}
-            <AulasMenuAlternancia
-              abaAtiva={abaAtiva}
-              onSelecionarAba={setAbaAtiva}
-              corDestaque="#fbbf24"
-              totalFavoritos={favoritosIds.size}
-              porcentagemGeral={porcentagemGeral}
-            />
+            {/* Título e Subtítulo Oficial */}
+            <h1 className="font-serif font-black text-2xl xs:text-3xl sm:text-4xl text-[#fef3c7] tracking-wide mt-1 text-center drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+              Aulas em Trilha
+            </h1>
+            <p className="font-serif text-xs sm:text-sm text-[#d4b996] font-medium mt-1 text-center max-w-xs sm:max-w-sm drop-shadow-sm">
+              Escolha a área do direito para começar sua jornada.
+            </p>
 
-            {abaAtiva === 'progresso' && (
-              <AulasTabProgresso
-                materias={MATERIAS_CATALOGO}
-                aulas={AULAS_CATALOGO}
-                calcularProgressoCiclo={calcularProgressoCiclo}
-                onIniciarAula={iniciarAula}
-                onSelecionarMateria={(matId) => {
-                  const mat = MATERIAS_CATALOGO.find(m => m.id === matId);
-                  if (mat) {
-                    setDisciplinaSelecionadaId(mat.disciplinaId);
-                    setMateriaSelecionadaId(mat.id);
-                    setAbaAtiva('trilhas');
-                    resetScrollToTop();
-                  }
-                }}
-                corDestaque="#fbbf24"
+            {/* ── Menu de Alternância (Trilhas, Progresso, Favoritos, Estatísticas) ── */}
+            <div className="w-full max-w-lg mx-auto my-3.5 sm:my-4">
+              <AulasMenuAlternancia
+                abaAtiva={abaAtiva}
+                onSelecionarAba={setAbaAtiva}
+                corDestaque="#f59e0b"
+                totalFavoritos={favoritosIds.size}
+                porcentagemGeral={porcentagemGeral}
               />
+            </div>
+
+            {/* Visualização de Abas Secundárias */}
+            {abaAtiva === 'progresso' && (
+              <div className="w-full max-w-3xl">
+                <AulasTabProgresso
+                  materias={MATERIAS_CATALOGO}
+                  aulas={AULAS_CATALOGO}
+                  calcularProgressoCiclo={calcularProgressoCiclo}
+                  onIniciarAula={iniciarAula}
+                  onSelecionarMateria={(matId) => {
+                    const mat = MATERIAS_CATALOGO.find(m => m.id === matId);
+                    if (mat) {
+                      setDisciplinaSelecionadaId(mat.disciplinaId);
+                      setMateriaSelecionadaId(mat.id);
+                      setAbaAtiva('trilhas');
+                      resetScrollToTop();
+                    }
+                  }}
+                  corDestaque="#fbbf24"
+                />
+              </div>
             )}
 
             {abaAtiva === 'favoritos' && (
-              <AulasTabFavoritos
-                aulasFavoritas={AULAS_CATALOGO.filter(a => favoritosIds.has(a.id))}
-                onIniciarAula={iniciarAula}
-                onAlternarFavorito={handleAlternarFavorito}
-                corDestaque="#fbbf24"
-                onVoltarParaTrilhas={() => setAbaAtiva('trilhas')}
-              />
+              <div className="w-full max-w-3xl">
+                <AulasTabFavoritos
+                  aulasFavoritas={AULAS_CATALOGO.filter(a => favoritosIds.has(a.id))}
+                  onIniciarAula={iniciarAula}
+                  onAlternarFavorito={handleAlternarFavorito}
+                  corDestaque="#fbbf24"
+                  onVoltarParaTrilhas={() => setAbaAtiva('trilhas')}
+                />
+              </div>
             )}
 
             {abaAtiva === 'estatisticas' && (
-              <AulasTabEstatisticas
-                materias={MATERIAS_CATALOGO}
-                aulas={AULAS_CATALOGO}
-                calcularProgressoCiclo={calcularProgressoCiclo}
-                acertosMap={acertosMap}
-                corDestaque="#fbbf24"
-                onSelecionarMateria={(matId) => {
-                  const mat = MATERIAS_CATALOGO.find(m => m.id === matId);
-                  if (mat) {
-                    setDisciplinaSelecionadaId(mat.disciplinaId);
-                    setMateriaSelecionadaId(mat.id);
-                    setAbaAtiva('trilhas');
-                    resetScrollToTop();
-                  }
-                }}
-              />
+              <div className="w-full max-w-3xl">
+                <AulasTabEstatisticas
+                  materias={MATERIAS_CATALOGO}
+                  aulas={AULAS_CATALOGO}
+                  calcularProgressoCiclo={calcularProgressoCiclo}
+                  acertosMap={acertosMap}
+                  corDestaque="#fbbf24"
+                  onSelecionarMateria={(matId) => {
+                    const mat = MATERIAS_CATALOGO.find(m => m.id === matId);
+                    if (mat) {
+                      setDisciplinaSelecionadaId(mat.disciplinaId);
+                      setMateriaSelecionadaId(mat.id);
+                      setAbaAtiva('trilhas');
+                      resetScrollToTop();
+                    }
+                  }}
+                />
+              </div>
             )}
 
-            {abaAtiva === 'trilhas' && (
-              <>
-            {/* Barra de Pesquisa Nível 1 */}
-            <div className="relative w-full">
-              <div className="relative flex items-center w-full bg-white/[0.04] hover:bg-white/[0.06] border border-white/10 focus-within:border-amber-400/60 focus-within:bg-white/[0.07] rounded-xl px-3.5 py-2.5 sm:py-3 transition-all shadow-lg backdrop-blur-md">
-                <Search className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-zinc-400 shrink-0 mr-2.5" />
-                <input
-                  type="text"
-                  value={buscaTermo}
-                  onChange={(e) => setBuscaTermo(e.target.value)}
-                  placeholder="Pesquisar disciplinas, matérias ou aulas..."
-                  className="bg-transparent text-xs sm:text-sm text-white placeholder-zinc-500 outline-none w-full font-medium"
-                />
-                {buscaTermo && (
-                  <button
-                    type="button"
-                    onClick={() => setBuscaTermo('')}
-                    className="p-1 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition shrink-0"
-                    aria-label="Limpar pesquisa"
-                  >
-                    <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Cabeçalho da Seção de Disciplinas */}
-            <div className="flex items-center justify-between pt-1">
-              <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-300 flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-amber-400" />
-                <span>DISCIPLINAS ({disciplinasFiltradas.length})</span>
-              </h3>
-            </div>
-
-            {/* Trilha Serpenteante em Linha do Tempo das Disciplinas */}
-            <div className="relative py-4 sm:py-8 w-full min-w-0 max-w-full overflow-hidden">
-              <div className="w-full min-w-0 relative z-[2] flex flex-col">
-                {disciplinasFiltradas.map((disc, i) => {
-                  const isLeft = i % 2 === 0;
-                  const aulasDaDisc = AULAS_CATALOGO.filter(a => a.disciplinaId === disc.id);
-                  const totalAulasDisc = aulasDaDisc.length;
-                  const somaPct = aulasDaDisc.reduce((acc, a) => acc + calcularProgressoCiclo(a).porcentagemTotal, 0);
-                  const pctDisc = totalAulasDisc > 0 ? Math.round(somaPct / totalAulasDisc) : 0;
-                  const materiasDaDisc = MATERIAS_CATALOGO.filter(m => m.disciplinaId === disc.id);
-
-                  return (
-                    <div key={disc.id} className="w-full flex flex-col">
-                      <div
-                        className={cn(
-                          "relative z-10 flex w-full items-center justify-between gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
-                          isLeft ? "flex-row" : "flex-row-reverse"
-                        )}
-                      >
-                        {/* CONJUNTO DE CARTAS EM LEQUE COM CAPA DA DISCIPLINA */}
-                        <div
-                          onClick={() => {
-                            setDisciplinaSelecionadaId(disc.id);
-                            setMateriaSelecionadaId(null);
-                            resetScrollToTop();
-                          }}
-                          className="relative shrink-0 w-[152px] xs:w-[168px] sm:w-[200px] md:w-[225px] h-[200px] xs:h-[218px] sm:h-[245px] md:h-[270px] cursor-pointer select-none transition-transform duration-300 active:scale-[0.95] hover:-translate-y-1.5 transition-transform duration-300 ease-out"
-                        >
-                          {/* Carta 1 (Fundo) */}
-                          <div
-                            className={cn("absolute inset-0 rounded-2xl border border-white/10 opacity-40 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
-                              isLeft
-                                ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
-                                : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
-                            )}
-                            style={{
-                              background: disc.corFundoCard,
-                              boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                            }}
-                          >
-                            <div className="absolute inset-0 bg-black/50 pointer-events-none z-[1]" />
-                            <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
-                              <Layers className="w-5 h-5 text-white/30" />
-                            </div>
-                          </div>
-
-                          {/* Carta 2 (Meio) */}
-                          <div
-                            className={cn("absolute inset-0 rounded-2xl border border-white/15 opacity-75 spring-card transition-all origin-bottom z-0 shadow-lg overflow-hidden",
-                              isLeft
-                                ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
-                                : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
-                            )}
-                            style={{
-                              background: disc.corFundoCard,
-                              boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(255,255,255,0.1)`,
-                            }}
-                          >
-                            <div className="absolute inset-0 bg-black/25 pointer-events-none z-[1]" />
-                            <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
-                              <Layers className="w-5 h-5 text-white/40" />
-                            </div>
-                          </div>
-
-                          {/* Carta 3 (Frontal Principal com Capa) */}
-                          <div
-                            className={cn("relative w-full h-full p-2.5 sm:p-3.5 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-white/30 spring-card transition-all origin-bottom hover-shimmer-effect",
-                              isLeft
-                                ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-                                : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-                            )}
-                            style={{
-                              background: disc.corFundoCard,
-                              borderColor: `${disc.corDestaque}50`
-                            }}
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
-                            <div className="absolute inset-1 rounded-[14px] border border-white/15 pointer-events-none z-10" />
-
-                            <img
-                              src={assetUrl(disc.capaHeroUrl)}
-                              alt={disc.nome}
-                              loading="eager"
-                              fetchPriority="high"
-                              decoding="async"
-                              onError={(e) => {
-                                e.currentTarget.src = assetUrl('direito-penal.webp');
-                              }}
-                              className="pointer-events-none absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0 select-none"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f12]/95 via-black/25 to-[#0d0f12]/60 pointer-events-none z-0" />
-
-                            {/* Topo da Carta: Porcentagem Elegante no Canto Superior Esquerdo */}
-                            <div className="relative z-10 flex items-center justify-between w-full">
-                              <div className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/75 backdrop-blur-md border border-white/20 shadow-md flex items-center gap-1">
-                                <span className="text-[10px] sm:text-[11px] font-black tracking-tight" style={{ color: disc.corDestaque }}>
-                                  {pctDisc}%
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Centro da Capa Limpo (Sem Botão de Play) */}
-                            <div className="my-auto py-2 z-[1] w-full" />
-
-                            {/* Rodapé da Carta: Progresso e Estatísticas */}
-                            <div className="z-[1] pt-1.5 sm:pt-2 border-t border-white/20 w-full px-0.5">
-                              <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-normal text-white/95 mb-1 sm:mb-1.5">
-                                <span className="truncate">
-                                  {totalAulasDisc} aulas
-                                </span>
-                                <span className="font-semibold font-sans ml-1" style={{ color: disc.corDestaque }}>
-                                  {pctDisc}%
-                                </span>
-                              </div>
-                              <div className="w-full bg-black/50 h-1.5 sm:h-2 rounded-full overflow-hidden border border-white/20">
-                                <div
-                                  className="h-full rounded-full transition-all duration-500"
-                                  style={{
-                                    width: `${Math.max(pctDisc, totalAulasDisc > 0 ? 8 : 0)}%`,
-                                    backgroundColor: disc.corDestaque,
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* LINHA CONECTORA E TÍTULO NO LADO OPOSTO */}
-                        <div
-                          onClick={() => {
-                            setDisciplinaSelecionadaId(disc.id);
-                            setMateriaSelecionadaId(null);
-                            resetScrollToTop();
-                          }}
-                          className={cn(
-                            "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
-                            isLeft ? "flex-row pl-1.5 xs:pl-2 sm:pl-3" : "flex-row-reverse pr-1.5 xs:pr-2 sm:pr-3"
-                          )}
-                        >
-                          {/* Linha Fina Conectora com Degradê */}
-                          <div
-                            className={cn(
-                              "flex items-center shrink-0 w-6 xs:w-8 sm:w-12 md:w-16",
-                              isLeft ? "flex-row" : "flex-row-reverse"
-                            )}
-                          >
-                            <div
-                              className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
-                              style={{
-                                backgroundColor: disc.corDestaque,
-                                boxShadow: `0 0 8px ${disc.corDestaque}`,
-                              }}
-                            />
-                            <div
-                              className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
-                              style={{
-                                background: isLeft
-                                  ? `linear-gradient(to right, ${disc.corDestaque}, rgba(255,255,255,0.3), transparent)`
-                                  : `linear-gradient(to left, ${disc.corDestaque}, rgba(255,255,255,0.3), transparent)`,
-                              }}
-                            />
-                          </div>
-
-                          {/* Nome e Detalhes da Disciplina */}
-                          <div
-                            className={cn(
-                              "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
-                              "items-start text-left"
-                            )}
-                          >
-                            <div
-                              className={cn(
-                                "flex items-center mb-1",
-                                "justify-start"
-                              )}
-                            >
-                              <span
-                                className="text-[12px] sm:text-[14px] font-black uppercase tracking-wider"
-                                style={{ color: disc.corDestaque }}
-                              >
-                                {materiasDaDisc.length} {materiasDaDisc.length === 1 ? 'MATÉRIA' : 'MATÉRIAS'}
-                              </span>
-                            </div>
-
-                            <h3 className="font-sans font-bold text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md">
-                              {disc.nome}
-                            </h3>
-
-                            {disc.descricao && (
-                              <p className="text-xs text-zinc-300/80 mt-1.5 line-clamp-2 max-w-md leading-relaxed hidden xs:block">
-                                {disc.descricao}
-                              </p>
-                            )}
-
-                            <div className="mt-3 flex items-center gap-1.5 text-xs font-bold text-zinc-400 group-hover:text-white transition-colors">
-                              <span>Explorar Matérias</span>
-                              <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" style={{ color: disc.corDestaque }} />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* SVG S-Curve Connector */}
-                      {i < disciplinasFiltradas.length - 1 && (
-                        <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-36 sm:h-44 md:h-52 -my-14 sm:-my-18 md:-my-22 pointer-events-none z-0 overflow-visible">
-                          <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
-                            <defs>
-                              <filter id={`trail-glow-disc-${i}`} x="-20%" y="-20%" width="140%" height="140%">
-                                <feGaussianBlur stdDeviation="3" result="blur" />
-                                <feMerge>
-                                  <feMergeNode in="blur" />
-                                  <feMergeNode in="SourceGraphic" />
-                                </feMerge>
-                              </filter>
-                            </defs>
-                            <path
-                              d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
-                              fill="none"
-                              stroke="rgba(255, 255, 255, 0.08)"
-                              strokeWidth="4"
-                              strokeLinecap="round"
-                              vectorEffect="non-scaling-stroke"
-                            />
-                            <path
-                              d={isLeft ? "M 22 0 C 22 60, 78 40, 78 100" : "M 78 0 C 78 60, 22 40, 22 100"}
-                              fill="none"
-                              className="animate-trail-flow"
-                              stroke={disc.corDestaque}
-                              strokeWidth="2.5"
-                              strokeDasharray="6 8"
-                              strokeLinecap="round"
-                              vectorEffect="non-scaling-stroke"
-                              filter={`url(#trail-glow-disc-${i})`}
-                            />
-                          </svg>
-                          <div
-                            className="absolute w-2.5 h-2.5 rounded-full pointer-events-none border border-white/80 bg-white shadow-lg animate-dot-pulse"
-                            style={{
-                              left: '50%',
-                              top: '50%',
-                              boxShadow: `0 0 14px ${disc.corDestaque}, 0 0 4px #ffffff`,
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-
-                {disciplinasFiltradas.length === 0 && (
+            {/* ── ABA TRILHAS: CARROSSEL 3D COVERFLOW DAS ÁREAS (100% IDÊNTICO AO MOCKUP) ── */}
+            {abaAtiva === 'trilhas' && (() => {
+              if (disciplinasFiltradas.length === 0) {
+                return (
                   <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
                     <Search className="w-9 h-9 text-zinc-600 stroke-[1.5]" />
                     <p className="text-zinc-400 text-sm">
-                      Nenhum resultado encontrado para "<span className="text-white font-semibold">{buscaTermo}</span>"
+                      Nenhuma disciplina encontrada para "<span className="text-white font-semibold">{buscaTermo}</span>"
                     </p>
                     <button
                       type="button"
@@ -1295,11 +1111,243 @@ export default function AdminAulasInterativas() {
                       Limpar pesquisa
                     </button>
                   </div>
-                )}
-              </div>
-            </div>
-              </>
-            )}
+                );
+              }
+
+              const safeIdx = Math.min(Math.max(0, activeDiscIndex), disciplinasFiltradas.length - 1);
+              const prevIdx = (safeIdx - 1 + disciplinasFiltradas.length) % disciplinasFiltradas.length;
+              const nextIdx = (safeIdx + 1) % disciplinasFiltradas.length;
+
+              const currDisc = disciplinasFiltradas[safeIdx];
+              const prevDisc = disciplinasFiltradas[prevIdx];
+              const nextDisc = disciplinasFiltradas[nextIdx];
+
+              const currMaterias = MATERIAS_CATALOGO.filter(m => m.disciplinaId === currDisc.id);
+              const prevMaterias = MATERIAS_CATALOGO.filter(m => m.disciplinaId === prevDisc.id);
+              const nextMaterias = MATERIAS_CATALOGO.filter(m => m.disciplinaId === nextDisc.id);
+
+              const { Icon: PrevIcon } = areaIconFor(prevDisc.nome);
+              const { Icon: NextIcon } = areaIconFor(nextDisc.nome);
+
+              // Indicador com janela de 4 a 5 pontos
+              const totalDots = Math.min(4, disciplinasFiltradas.length);
+              const activeDotPosition = disciplinasFiltradas.length > 1
+                ? Math.round((safeIdx / (disciplinasFiltradas.length - 1)) * (totalDots - 1))
+                : 0;
+
+              const handlePrev = () => {
+                try { haptic.selection(); } catch {}
+                setActiveDiscIndex(prevIdx);
+              };
+
+              const handleNext = () => {
+                try { haptic.selection(); } catch {}
+                setActiveDiscIndex(nextIdx);
+              };
+
+              const handleSelectCurrent = () => {
+                try { haptic.impact('medium'); } catch {}
+                setDisciplinaSelecionadaId(currDisc.id);
+                setMateriaSelecionadaId(null);
+                resetScrollToTop();
+              };
+
+              return (
+                <div 
+                  className="w-full flex flex-col items-center select-none"
+                  onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
+                  onTouchEnd={(e) => {
+                    if (touchStartX === null) return;
+                    const deltaX = e.changedTouches[0].clientX - touchStartX;
+                    if (deltaX > 40) handlePrev();
+                    else if (deltaX < -40) handleNext();
+                    setTouchStartX(null);
+                  }}
+                >
+                  {/* Barra de Pesquisa Rápida Opcional */}
+                  <div className="relative w-full max-w-xs mb-3">
+                    <div className="relative flex items-center w-full bg-[#1b120c]/80 border border-[#f59e0b]/30 focus-within:border-[#f59e0b] rounded-full px-3 py-1.5 transition-all shadow-inner">
+                      <Search className="w-3.5 h-3.5 text-[#f59e0b] shrink-0 mr-2" />
+                      <input
+                        type="text"
+                        value={buscaTermo}
+                        onChange={(e) => {
+                          setBuscaTermo(e.target.value);
+                          setActiveDiscIndex(0);
+                        }}
+                        placeholder="Filtrar áreas..."
+                        className="bg-transparent text-xs text-[#fef3c7] placeholder-[#fef3c7]/40 outline-none w-full font-medium"
+                      />
+                      {buscaTermo && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setBuscaTermo('');
+                            setActiveDiscIndex(0);
+                          }}
+                          className="p-1 rounded-full text-zinc-400 hover:text-white transition shrink-0"
+                          aria-label="Limpar pesquisa"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* ── CONTAINER COVERFLOW COM OS 3 CARDS EM DESTAQUE ── */}
+                  <div className="relative w-full max-w-md mx-auto flex items-center justify-center py-2 sm:py-4 overflow-visible">
+                    {/* Botão Seta Esquerda (Desktop/Toque) */}
+                    <button
+                      type="button"
+                      onClick={handlePrev}
+                      className="absolute left-0 sm:left-1 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/90 border border-[#f59e0b]/40 text-[#f59e0b] flex items-center justify-center active:scale-95 transition shadow-lg"
+                      aria-label="Área anterior"
+                    >
+                      <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
+                    </button>
+
+                    {/* CARD ESQUERDA (ANTERIOR) */}
+                    <div
+                      onClick={handlePrev}
+                      className="relative shrink-0 w-[110px] xs:w-[125px] sm:w-[150px] h-[190px] xs:h-[210px] sm:h-[240px] rounded-2xl border p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-60 hover:opacity-85 transition-all duration-300 scale-90 -mr-6 sm:-mr-8 z-10 select-none shadow-xl"
+                      style={{
+                        background: 'linear-gradient(180deg, rgba(28, 18, 11, 0.92) 0%, rgba(12, 7, 4, 0.95) 100%)',
+                        borderColor: 'rgba(217, 119, 6, 0.35)',
+                        boxShadow: '0 10px 24px rgba(0,0,0,0.85)',
+                      }}
+                    >
+                      <div className="w-full flex-1 flex flex-col items-center justify-center pt-2">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-[#f59e0b]/80 mb-2">
+                          <PrevIcon className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8]" />
+                        </div>
+                        <h4 className="font-serif font-bold text-[11.5px] xs:text-xs sm:text-[13px] text-[#fef3c7] leading-tight line-clamp-2">
+                          {formatarTituloArea(prevDisc.nome)}
+                        </h4>
+                      </div>
+                      <p className="text-[10px] sm:text-[11px] font-serif text-[#d4b996]/80 font-medium pb-1">
+                        {prevMaterias.length} temas
+                      </p>
+                    </div>
+
+                    {/* CARD CENTRAL (ATIVO EM DESTAQUE COM BORDA DOURADA BRILHANTE) */}
+                    <motion.div
+                      key={currDisc.id}
+                      initial={{ scale: 0.95, opacity: 0.8 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: 'spring', damping: 25, stiffness: 320 }}
+                      onClick={handleSelectCurrent}
+                      className="relative shrink-0 w-[185px] xs:w-[205px] sm:w-[235px] h-[260px] xs:h-[285px] sm:h-[320px] rounded-2xl border-2 p-3 sm:p-3.5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-300 z-20 select-none group shadow-2xl"
+                      style={{
+                        borderColor: '#d97706',
+                        background: 'linear-gradient(180deg, rgba(38, 25, 16, 0.96) 0%, rgba(18, 11, 7, 0.98) 100%)',
+                        boxShadow: '0 0 30px rgba(245, 158, 11, 0.5), 0 16px 36px rgba(0,0,0,0.95), inset 0 1px 2px rgba(255,255,255,0.35)',
+                      }}
+                    >
+                      {/* Borda Interna Dourada Clássica */}
+                      <div className="absolute inset-1.5 rounded-xl border border-[#f59e0b]/35 pointer-events-none z-10" />
+
+                      {/* Capa Clássica / Ilustração da Disciplina (Ex: Templo Clássico) */}
+                      <div className="w-full flex-1 relative rounded-lg overflow-hidden mb-2 flex items-center justify-center">
+                        <img
+                          src={assetUrl(currDisc.capaHeroUrl)}
+                          alt={currDisc.nome}
+                          loading="eager"
+                          decoding="async"
+                          fetchPriority="high"
+                          className="w-full h-full object-cover object-top select-none pointer-events-none filter brightness-95 group-hover:scale-105 transition-transform duration-500"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#160d08] via-transparent to-transparent pointer-events-none" />
+                      </div>
+
+                      {/* Título da Área em Fonte Serifada Nobre */}
+                      <div className="z-10 w-full px-1">
+                        <h3 className="font-serif font-black text-sm xs:text-[15px] sm:text-base text-[#fef3c7] leading-tight line-clamp-2 drop-shadow-sm">
+                          {formatarTituloArea(currDisc.nome)}
+                        </h3>
+                        <p className="text-[11px] sm:text-xs font-serif text-[#d4b996] font-semibold mt-1">
+                          {currMaterias.length} temas
+                        </p>
+                      </div>
+                    </motion.div>
+
+                    {/* CARD DIREITA (PRÓXIMO) */}
+                    <div
+                      onClick={handleNext}
+                      className="relative shrink-0 w-[110px] xs:w-[125px] sm:w-[150px] h-[190px] xs:h-[210px] sm:h-[240px] rounded-2xl border p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-60 hover:opacity-85 transition-all duration-300 scale-90 -ml-6 sm:-ml-8 z-10 select-none shadow-xl"
+                      style={{
+                        background: 'linear-gradient(180deg, rgba(28, 18, 11, 0.92) 0%, rgba(12, 7, 4, 0.95) 100%)',
+                        borderColor: 'rgba(217, 119, 6, 0.35)',
+                        boxShadow: '0 10px 24px rgba(0,0,0,0.85)',
+                      }}
+                    >
+                      <div className="w-full flex-1 flex flex-col items-center justify-center pt-2">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-[#f59e0b]/80 mb-2">
+                          <NextIcon className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8]" />
+                        </div>
+                        <h4 className="font-serif font-bold text-[11.5px] xs:text-xs sm:text-[13px] text-[#fef3c7] leading-tight line-clamp-2">
+                          {formatarTituloArea(nextDisc.nome)}
+                        </h4>
+                      </div>
+                      <p className="text-[10px] sm:text-[11px] font-serif text-[#d4b996]/80 font-medium pb-1">
+                        {nextMaterias.length} temas
+                      </p>
+                    </div>
+
+                    {/* Botão Seta Direita (Desktop/Toque) */}
+                    <button
+                      type="button"
+                      onClick={handleNext}
+                      className="absolute right-0 sm:right-1 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/90 border border-[#f59e0b]/40 text-[#f59e0b] flex items-center justify-center active:scale-95 transition shadow-lg"
+                      aria-label="Próxima área"
+                    >
+                      <ChevronRight className="w-5 h-5 stroke-[2.5]" />
+                    </button>
+                  </div>
+
+                  {/* ── PONTOS INDICADORES DO CARROSSEL ── */}
+                  <div className="flex items-center justify-center gap-1.5 my-3 sm:my-3.5">
+                    {Array.from({ length: totalDots }).map((_, dotIdx) => {
+                      const isDotActive = dotIdx === activeDotPosition;
+                      return (
+                        <button
+                          key={dotIdx}
+                          type="button"
+                          onClick={() => {
+                            try { haptic.selection(); } catch {}
+                            setActiveDiscIndex(Math.round((dotIdx / (totalDots - 1)) * (disciplinasFiltradas.length - 1)));
+                          }}
+                          className={cn(
+                            "transition-all duration-300 rounded-full",
+                            isDotActive 
+                              ? "w-6 h-2 bg-[#f59e0b] shadow-[0_0_10px_#f59e0b]" 
+                              : "w-2 h-2 bg-white/25 hover:bg-white/45"
+                          )}
+                          aria-label={`Ir para área ${dotIdx + 1}`}
+                        />
+                      );
+                    })}
+                  </div>
+
+                  {/* ── BOTÃO PRINCIPAL DE AÇÃO: SELECIONAR ÁREA → (IDÊNTICO AO MOCKUP) ── */}
+                  <div className="w-full max-w-xs sm:max-w-sm px-4 mt-1 z-20">
+                    <button
+                      type="button"
+                      onClick={handleSelectCurrent}
+                      className="w-full h-12 sm:h-13 rounded-full flex items-center justify-center gap-2 font-serif font-black text-sm sm:text-base text-[#3d1a03] shadow-[0_8px_24px_rgba(245,158,11,0.45),inset_0_1px_2px_rgba(255,255,255,0.6)] active:scale-95 hover:brightness-105 transition-all cursor-pointer"
+                      style={{
+                        background: 'linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #d97706 100%)',
+                      }}
+                    >
+                      <span>Selecionar Área</span>
+                      <span className="font-sans text-base">→</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </>
         );

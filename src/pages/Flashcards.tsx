@@ -12,7 +12,6 @@ import { cn } from '@/lib/utils';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
-import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 
 // Louro de vitória clássico em miniatura
 const MiniLaurel = ({ flip = false }: { flip?: boolean }) => (
@@ -123,7 +122,7 @@ const Flashcards = () => {
   }, []);
 
   return (
-    <div className="min-h-dvh relative overflow-x-hidden bg-[#0e0805] text-[#fef3c7] pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] select-none">
+    <div className="min-h-dvh relative overflow-x-hidden bg-[#0e0805] text-[#fef3c7] pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))] select-none">
       {/* ── Fundo da Grécia Antiga com Filósofos Suavemente Ofuscado (Pouquinho Só) ── */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#1c120c]">
         <img
@@ -609,9 +608,6 @@ const Flashcards = () => {
         disciplinaInicial={filtroDisciplinaPrevia}
         passoInicial={filtroPassoPrevio}
       />
-
-      {/* ── Barra de Navegação Inferior dos Flashcards ── */}
-      <FlashcardsBottomNav />
     </div>
   );
 };
