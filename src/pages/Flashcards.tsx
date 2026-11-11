@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import FlashcardsFiltroSheet, { FlashcardsFiltro } from '@/components/flashcards/FlashcardsFiltroSheet';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
+import FlashcardsBottomNav from '@/components/flashcards/FlashcardsBottomNav';
 
 // Louro de vitória clássico em miniatura
 const MiniLaurel = ({ flip = false }: { flip?: boolean }) => (
@@ -141,18 +142,18 @@ const Flashcards = () => {
       <FallingLotusPetals />
 
       <div className="relative z-10 mx-auto w-full max-w-lg sm:max-w-xl lg:max-w-3xl px-3.5 sm:px-6 pt-3 pb-12 box-border">
-        {/* ── Top Bar com Botão Voltar Circular Helênico ───────────────── */}
-        <div className="flex items-center justify-between mb-2 pt-1">
+        {/* ── Top Bar com Botão Voltar Circular Helênico Premium ───────────────── */}
+        <div className="flex items-center justify-between mb-2 pt-[calc(0.75rem+env(safe-area-inset-top,0px))]">
           <button
             type="button"
             onClick={() => {
               try { haptic.selection(); } catch {}
               navigate('/');
             }}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/60 border border-[#78350f]/60 text-[#fef3c7] hover:border-[#f59e0b] hover:bg-black/80 transition-all cursor-pointer shadow-lg"
+            className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-black/60 border border-[#78350f]/60 text-[#fef3c7] hover:border-[#f59e0b] hover:bg-black/80 active:scale-95 transition-all cursor-pointer shadow-lg"
             aria-label="Voltar"
           >
-            <ArrowLeft className="w-5 h-5 text-[#fef3c7] stroke-[2.4]" />
+            <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-[#fef3c7] stroke-[2.4]" />
           </button>
         </div>
 
@@ -608,6 +609,9 @@ const Flashcards = () => {
         disciplinaInicial={filtroDisciplinaPrevia}
         passoInicial={filtroPassoPrevio}
       />
+
+      {/* ── Barra de Navegação Inferior dos Flashcards ── */}
+      <FlashcardsBottomNav />
     </div>
   );
 };

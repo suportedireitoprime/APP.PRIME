@@ -616,6 +616,20 @@ const FlashcardsArea = () => {
     }
   });
 
+  const [centerToast, setCenterToast] = useState<{ message: string; favorited: boolean } | null>(null);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showCenterToast = useCallback((favorited: boolean) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setCenterToast({
+      message: favorited ? 'Matéria adicionada aos Favoritos!' : 'Matéria removida dos Favoritos.',
+      favorited,
+    });
+    toastTimeoutRef.current = setTimeout(() => {
+      setCenterToast(null);
+    }, 1200);
+  }, []);
+
   const handleToggleFavoritoArea = () => {
     try { haptic.selection(); } catch {}
     setIsFavoritedArea((prev) => {
@@ -626,13 +640,12 @@ const FlashcardsArea = () => {
         const key = targetAreaKey;
         if (next) {
           if (!list.includes(key)) list.push(key);
-          toast.success("Matéria adicionada aos Favoritos!");
         } else {
           list = list.filter((k) => k !== key && k !== officialFlashcardArea && k !== area?.slug);
-          toast.info("Matéria removida dos Favoritos.");
         }
         localStorage.setItem('flashcards_favoritos_areas', JSON.stringify(list));
       } catch {}
+      showCenterToast(next);
       return next;
     });
   };
@@ -812,16 +825,18 @@ const FlashcardsArea = () => {
       }
       try { haptic.light(); } catch {}
       setIsModalTemasOpen(false);
+      const canonicalArea = officialFlashcardArea || area?.nome || effectiveAreaName;
+      const matTitulo = materiaModal?.titulo ? materiaModal.titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : tema.titulo;
       navigate(
         `/flashcards/estudar?area=${encodeURIComponent(
-          officialFlashcardArea || area?.nome || effectiveAreaName
-        )}&temas=${encodeURIComponent(tema.titulo)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`,
+          canonicalArea
+        )}&temas=${encodeURIComponent(matTitulo)}&subtema=${encodeURIComponent(tema.titulo)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`,
         {
           state: { from: `/flashcards/area/${slug}`, capaUrl: tema.capaUrl, temaTitulo: tema.titulo },
         }
       );
     },
-    [navigate, officialFlashcardArea, area?.nome, effectiveAreaName, palette.primary, slug]
+    [navigate, officialFlashcardArea, area?.nome, effectiveAreaName, palette.primary, slug, materiaModal]
   );
 
   const selectMateria = useCallback((matId: string) => {
@@ -871,7 +886,7 @@ const FlashcardsArea = () => {
       subtitle="Trilha de Flashcards"
       mobileHeader={mobileHeader}
     >
-      {/* Fundo Oficial Fixo da Área (Sem troca contínua no scroll) */}
+      {/* Fundo Oficial Fixo da Área com Nitidez Máxima (Ofuscamento Mínimo) e Escurecimento Suave */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0a0705]">
         <img
           src={fundoAreaOficial}
@@ -879,14 +894,10 @@ const FlashcardsArea = () => {
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          className={cn(
-            "w-full h-full object-cover object-top select-none pointer-events-none transition-opacity duration-500",
-            theme.isCustomFundo 
-              ? "opacity-95 brightness-[0.98] contrast-[1.05]" 
-              : "opacity-85 filter blur-[1.2px] brightness-[0.88] contrast-[1.08]"
-          )}
+          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[0.5px] brightness-[0.98] contrast-[1.02] transition-opacity duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
+        {/* Escurecimento suave mínimo */}
+        <div className="absolute inset-0 bg-black/10 pointer-events-none" />
       </div>
 
       {/* Pétalas e Flores de Lótus Douradas Caindo Suavemente pela Montanha (120fps GPU) */}
@@ -947,7 +958,7 @@ const FlashcardsArea = () => {
                         style={{
                           background: theme.bgCard,
                           borderColor: theme.border,
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.6)',
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.1)',
                         }}
                       >
                         <span 
@@ -968,7 +979,7 @@ const FlashcardsArea = () => {
                         style={{
                           background: theme.bgCard,
                           borderColor: theme.borderSubtle,
-                          boxShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.08)',
                           color: theme.highlight,
                         }}
                       >
@@ -1153,6 +1164,43 @@ const FlashcardsArea = () => {
           }
         }}
       />
+      {/* Aviso rápido animado no meio da tela */}
+      <AnimatePresence>
+        {centerToast && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none px-4 select-none">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.75, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.85, y: -15 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 380, duration: 0.22 }}
+              className="px-6 py-4 rounded-2xl bg-black/90 backdrop-blur-xl border shadow-[0_16px_50px_rgba(0,0,0,0.85)] flex items-center gap-3.5"
+              style={{
+                borderColor: centerToast.favorited ? 'rgba(244, 63, 94, 0.6)' : theme.borderSubtle,
+                boxShadow: centerToast.favorited 
+                  ? '0 16px 50px rgba(0,0,0,0.85), 0 0 24px rgba(244, 63, 94, 0.3)'
+                  : '0 16px 50px rgba(0,0,0,0.85)',
+              }}
+            >
+              <div 
+                className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                style={{
+                  background: centerToast.favorited ? 'rgba(244, 63, 94, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                <Heart 
+                  className={cn(
+                    "w-5 h-5 transition-transform",
+                    centerToast.favorited ? "text-rose-500 fill-rose-500 scale-110" : "text-zinc-400"
+                  )} 
+                />
+              </div>
+              <span className="text-sm font-serif font-black tracking-wide text-[#fef3c7]">
+                {centerToast.message}
+              </span>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </DesktopPageLayout>
   );
 };

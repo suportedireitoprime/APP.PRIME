@@ -82,7 +82,15 @@ export function useFlashcardsEngine() {
       }
       
       if (subtemaParam) {
-        finalCards = finalCards.filter(c => c.subtema && c.subtema.trim().toLowerCase() === subtemaParam.trim().toLowerCase());
+        const subClean = subtemaParam.trim().toLowerCase();
+        const filteredBySub = finalCards.filter(c => {
+          if (!c.subtema) return false;
+          const s = c.subtema.trim().toLowerCase();
+          return s === subClean || s.includes(subClean) || subClean.includes(s);
+        });
+        if (filteredBySub.length > 0) {
+          finalCards = filteredBySub;
+        }
       }
 
       if (ordemParam === 'sequencial') {

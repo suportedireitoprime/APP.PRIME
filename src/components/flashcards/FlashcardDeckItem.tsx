@@ -64,14 +64,14 @@ export const FlashcardDeckItem = memo(({
           onMouseEnter={item.onPrefetch}
           onTouchStart={item.onPrefetch}
           className={cn(
-            "flex items-center gap-2.5 sm:gap-3.5 p-1.5 sm:p-2 rounded-2xl cursor-pointer transition-all duration-300 group max-w-[92vw] sm:max-w-[440px]",
+            "flex items-center gap-2.5 sm:gap-3.5 p-1.5 sm:p-2 rounded-2xl cursor-pointer transition-all duration-300 group max-w-[92vw] sm:max-w-[440px] drop-shadow-[0_12px_24px_rgba(0,0,0,0.92)]",
             isActive
               ? "scale-[1.03] sm:scale-105"
               : "hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98]"
           )}
         >
           {/* ── 1. MOEDA / MEDALHÃO COM BARRA DE PROGRESSO EM CONTORNO ── */}
-          <div className="relative shrink-0 flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16">
+          <div className="relative shrink-0 flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 drop-shadow-[0_8px_16px_rgba(0,0,0,0.95)]">
             {/* SVG da Barra de Progresso Circular que Contorna a Moeda */}
             <svg 
               className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none z-20 overflow-visible"
@@ -166,36 +166,38 @@ export const FlashcardDeckItem = memo(({
             </div>
           </div>
 
-          {/* ── 2. CARD HORIZONTAL COM AS CORES DA DISCIPLINA ── */}
+          {/* ── 2. CARD HORIZONTAL COM AS CORES DA DISCIPLINA (ALTURA UNIFORME E SOMBRA ELEVADA) ── */}
           <div
             className={cn(
-              "flex-1 min-w-0 px-4 sm:px-4.5 py-3 sm:py-3.5 min-h-[64px] sm:min-h-[72px] rounded-2xl border transition-all duration-300 flex flex-col justify-center",
-              isCompleted && "border-[#10b981]/50 shadow-[0_4px_16px_-4px_rgba(16,185,129,0.3)]",
-              item.isLocked && "opacity-85 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.6)]"
+              "flex-1 min-w-0 px-4 sm:px-4.5 py-2.5 sm:py-3 h-[76px] sm:h-[82px] min-h-[76px] sm:min-h-[82px] max-h-[76px] sm:max-h-[82px] rounded-2xl border transition-all duration-300 flex flex-col justify-center",
+              isCompleted && "border-[#10b981]/60",
+              item.isLocked && "opacity-90"
             )}
             style={
               isCompleted ? {
-                background: 'linear-gradient(135deg, rgba(20, 35, 25, 0.94) 0%, rgba(10, 24, 16, 0.94) 100%)',
-                borderColor: 'rgba(16, 185, 129, 0.5)',
+                background: 'linear-gradient(135deg, rgba(20, 35, 25, 0.96) 0%, rgba(10, 24, 16, 0.96) 100%)',
+                borderColor: 'rgba(16, 185, 129, 0.55)',
+                boxShadow: '0 14px 34px -4px rgba(0, 0, 0, 0.95), 0 6px 16px rgba(0, 0, 0, 0.85), 0 0 16px rgba(16, 185, 129, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
               } : isActive ? {
                 background: activeTheme.bgActive,
                 borderColor: activeTheme.border,
-                boxShadow: `0 8px 24px -4px ${activeTheme.glowSoft}, 0 0 16px ${activeTheme.glow}`,
+                boxShadow: `0 16px 38px -4px rgba(0, 0, 0, 0.95), 0 8px 20px rgba(0, 0, 0, 0.9), 0 0 24px ${activeTheme.glowSoft}, inset 0 1px 2px rgba(255, 255, 255, 0.95)`,
               } : item.isLocked ? {
                 background: activeTheme.bgCard,
                 borderColor: activeTheme.borderSubtle,
+                boxShadow: '0 14px 34px -4px rgba(0, 0, 0, 0.95), 0 6px 16px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.08)',
               } : {
                 background: activeTheme.bgCard,
                 borderColor: activeTheme.border,
-                boxShadow: `0 4px 16px -4px ${activeTheme.glowSoft}`,
+                boxShadow: `0 14px 34px -4px rgba(0, 0, 0, 0.95), 0 6px 16px rgba(0, 0, 0, 0.85), 0 0 16px ${activeTheme.glowSoft}, inset 0 1px 1px rgba(255, 255, 255, 0.1)`,
               }
             }
           >
             {/* Título do Tema */}
-            <div className="flex items-center gap-1.5 mb-1">
+            <div className="flex items-center gap-1.5">
               <span
                 className={cn(
-                  "font-serif font-black text-[13.5px] xs:text-[14.5px] sm:text-[15.5px] leading-snug break-words line-clamp-2",
+                  "font-serif font-black text-[13px] xs:text-[14px] sm:text-[15px] leading-tight break-words line-clamp-2",
                   isCompleted
                     ? "text-[#a7f3d0]"
                     : item.isLocked
@@ -216,7 +218,7 @@ export const FlashcardDeckItem = memo(({
             </div>
 
             {/* Subtítulo: Quantidade de Temas e Cards com Seta Elegante */}
-            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-sans font-semibold">
+            <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-sans font-semibold mt-1">
               <span
                 className="flex items-center gap-1"
                 style={

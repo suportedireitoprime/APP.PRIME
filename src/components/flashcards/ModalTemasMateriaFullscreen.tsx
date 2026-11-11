@@ -223,19 +223,20 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
                       }
                     }}
                     className={cn(
-                      "relative z-10 w-full flex items-center gap-3 cursor-pointer transition-all duration-200 select-none min-h-[58px] sm:min-h-[64px]",
+                      "relative z-10 w-full flex items-center gap-3 cursor-pointer transition-all duration-200 select-none h-[64px] sm:h-[68px] min-h-[64px] sm:min-h-[68px] max-h-[64px] sm:max-h-[68px]",
                       isFirst && !isLocked
                         ? "my-1 p-2.5 sm:p-3 rounded-2xl border"
-                        : "py-2.5 px-2 border-b hover:bg-black/20"
+                        : "py-2 px-2.5 border-b hover:bg-black/25"
                     )}
                     style={
                       isFirst && !isLocked ? {
                         background: activeTheme.bgCard,
                         borderColor: activeTheme.border,
-                        boxShadow: `0 6px 20px -4px ${activeTheme.glowSoft}`,
+                        boxShadow: `0 10px 28px -4px rgba(0,0,0,0.9), 0 0 16px ${activeTheme.glowSoft}`,
                         backdropFilter: 'blur(8px)',
                       } : {
                         borderColor: activeTheme.borderSubtle,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
                       }
                     }
                   >

@@ -99,6 +99,20 @@ export const useFlashcardsResumoAreas = () => {
   });
 };
 
+function toCanonicalAreaName(rawArea?: string | null): string {
+  if (!rawArea) return '';
+  const s = rawArea.trim().toLowerCase();
+  const match = FALLBACK_FLASHCARDS_AREAS.find(a => 
+    a.area.toLowerCase() === s || 
+    a.slug === s || 
+    a.slug === s.replace(/^direito-/, '') || 
+    `direito-${a.slug}` === s ||
+    a.area.toLowerCase().replace(/^direito\s+/, '') === s.replace(/^direito\s+/, '')
+  );
+  if (match) return match.area;
+  return rawArea.trim();
+}
+
 export const useFlashcardsSessao = (params: {
   areas: string[] | null;
   temas: string[] | null;
@@ -153,41 +167,75 @@ export const useFlashcardsSessao = (params: {
 
       const effectiveLimit = params.limit && params.limit > 0 ? params.limit : 10000;
       const onlineFn = async () => {
+        // 1. Normaliza áreas com case sensitivity resiliente
+        const normalizedAreas = params.areas && params.areas.length > 0
+          ? Array.from(new Set(params.areas.flatMap(a => {
+              const canonical = toCanonicalAreaName(a);
+              return [canonical, a, a.trim()];
+            }).filter(Boolean)))
+          : null;
+
+        // 2. Resolve temas oficiais do banco
         let effectiveTemas = params.temas;
-        if (params.temas && params.temas.length > 0 && params.areas && params.areas.length > 0) {
+        if (params.temas && params.temas.length > 0 && normalizedAreas && normalizedAreas.length > 0) {
           try {
-            const areaPromises = params.areas.map(area =>
-              supabase.rpc('flashcards_temas', { _area: area }).then(({ data }) => data || [])
-            );
-            const areaResults = await Promise.all(areaPromises);
-            const allDbTemas = areaResults.flat() as Array<{ tema: string }>;
+            const canonicalArea = toCanonicalAreaName(params.areas?.[0]);
+            const { data: dbTemas } = await supabase.rpc('flashcards_temas', { _area: canonicalArea });
+            const allDbTemas = (dbTemas || []) as Array<{ tema: string }>;
             
             if (allDbTemas.length > 0) {
-              const expanded = new Set<string>(params.temas);
+              const matchedTemas = new Set<string>();
               for (const tParam of params.temas) {
                 const cleanParam = tParam.replace(/^\d+[\.\-\s_:]+/, '').trim().toLowerCase();
                 for (const dbT of allDbTemas) {
-                  const cleanDb = (dbT.tema || '').replace(/^\d+[\.\-\s_:]+/, '').trim().toLowerCase();
-                  if (cleanDb === cleanParam || dbT.tema.toLowerCase() === tParam.toLowerCase()) {
-                    expanded.add(dbT.tema);
+                  const dbTema = dbT.tema || '';
+                  const cleanDb = dbTema.replace(/^\d+[\.\-\s_:]+/, '').trim().toLowerCase();
+                  if (
+                    cleanDb === cleanParam || 
+                    dbTema.toLowerCase() === tParam.toLowerCase() ||
+                    cleanDb.includes(cleanParam) ||
+                    cleanParam.includes(cleanDb)
+                  ) {
+                    matchedTemas.add(dbTema);
                   }
                 }
               }
-              effectiveTemas = Array.from(expanded);
+              if (matchedTemas.size > 0) {
+                effectiveTemas = Array.from(matchedTemas);
+              } else {
+                // Parâmetro não bate com tema do banco (ex: é um subtema/aula específica)
+                effectiveTemas = null;
+              }
             }
           } catch (e) {
             console.warn('Erro ao resolver temas expandidos:', e);
           }
         }
 
-        const { data, error } = await supabase.rpc('flashcards_sessao', {
-          _areas: params.areas,
+        let { data, error } = await supabase.rpc('flashcards_sessao', {
+          _areas: normalizedAreas,
           _temas: effectiveTemas,
           _modo: params.modo,
           _deck_id: params.deckId,
           _limit: effectiveLimit,
           _tipos: params.tipos && params.tipos.length > 0 ? params.tipos : null,
         });
+
+        // Fallback seguro: se com o filtro de temas retornou 0 cards, tenta sem filtro de temas
+        if ((!data || data.length === 0) && effectiveTemas && effectiveTemas.length > 0) {
+          const retry = await supabase.rpc('flashcards_sessao', {
+            _areas: normalizedAreas,
+            _temas: null,
+            _modo: params.modo,
+            _deck_id: params.deckId,
+            _limit: effectiveLimit,
+            _tipos: params.tipos && params.tipos.length > 0 ? params.tipos : null,
+          });
+          if (!retry.error && retry.data && retry.data.length > 0) {
+            data = retry.data;
+          }
+        }
+
         if (error) throw error;
         const list = (data || []).map((c: any) => ({
           ...c,
