@@ -11,6 +11,7 @@ interface FlashcardDeckItemProps {
     displayTotal: number;
     displayConcluidas: number;
     displayPct: number;
+    capaUrl?: string;
     isLocked?: boolean;
     onClick: () => void;
     onPrefetch?: () => void;
@@ -149,7 +150,7 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
           {/* ── 2. CARD HORIZONTAL EM PERGAMINHO / MÁRMORE DA GRÉCIA ── */}
           <div
             className={cn(
-              "flex-1 min-w-0 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl border transition-all duration-300",
+              "flex-1 min-w-0 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl border transition-all duration-300 flex items-center gap-3",
               isCompleted
                 ? "border-[#10b981]/50 shadow-[0_4px_16px_-4px_rgba(16,185,129,0.3)]"
                 : isActive
@@ -170,57 +171,73 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
               }
             }
           >
-            {/* Título do Tema */}
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <span
-                className={cn(
-                  "font-serif font-black text-[13px] xs:text-[14px] sm:text-[15px] leading-snug truncate",
-                  isCompleted
-                    ? "text-[#a7f3d0]"
-                    : isActive
-                    ? "text-[#451a03] drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]"
-                    : item.isLocked
-                    ? "text-[#d6d3d1]"
-                    : "text-[#fef3c7] group-hover:text-[#fde047] transition-colors"
+            <div className="flex-1 min-w-0">
+              {/* Título do Tema */}
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span
+                  className={cn(
+                    "font-serif font-black text-[13px] xs:text-[14px] sm:text-[15px] leading-snug truncate",
+                    isCompleted
+                      ? "text-[#a7f3d0]"
+                      : isActive
+                      ? "text-[#451a03] drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]"
+                      : item.isLocked
+                      ? "text-[#d6d3d1]"
+                      : "text-[#fef3c7] group-hover:text-[#fde047] transition-colors"
+                  )}
+                >
+                  {tituloLimpo}
+                </span>
+              </div>
+
+              {/* Subtítulo: Somente Quantidade de Cards e Porcentagem (Tempo removido) */}
+              <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-sans font-semibold">
+                <span
+                  className={cn(
+                    isCompleted
+                      ? "text-[#34d399]"
+                      : isActive
+                      ? "text-[#78350f]"
+                      : item.isLocked
+                      ? "text-[#78716c]"
+                      : "text-[#fef3c7]/75"
+                  )}
+                >
+                  {item.displayTotal} cards
+                </span>
+                {item.displayPct > 0 && (
+                  <>
+                    <span className={cn(isCompleted ? "text-[#059669]" : isActive ? "text-[#b45309]" : "text-[#78350f]")}>•</span>
+                    <span
+                      className={cn(
+                        "font-mono font-bold",
+                        isCompleted
+                          ? "text-[#34d399]"
+                          : isActive
+                          ? "text-[#451a03]"
+                          : "text-[#fbbf24]"
+                      )}
+                    >
+                      {item.displayPct}% {isCompleted ? 'concluído' : 'dominado'}
+                    </span>
+                  </>
                 )}
-              >
-                {tituloLimpo}
-              </span>
+              </div>
             </div>
 
-            {/* Subtítulo: Somente Quantidade de Cards e Porcentagem (Tempo removido) */}
-            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-sans font-semibold">
-              <span
-                className={cn(
-                  isCompleted
-                    ? "text-[#34d399]"
-                    : isActive
-                    ? "text-[#78350f]"
-                    : item.isLocked
-                    ? "text-[#78716c]"
-                    : "text-[#fef3c7]/75"
-                )}
-              >
-                {item.displayTotal} cards
-              </span>
-              {item.displayPct > 0 && (
-                <>
-                  <span className={cn(isCompleted ? "text-[#059669]" : isActive ? "text-[#b45309]" : "text-[#78350f]")}>•</span>
-                  <span
-                    className={cn(
-                      "font-mono font-bold",
-                      isCompleted
-                        ? "text-[#34d399]"
-                        : isActive
-                        ? "text-[#451a03]"
-                        : "text-[#fbbf24]"
-                    )}
-                  >
-                    {item.displayPct}% {isCompleted ? 'concluído' : 'dominado'}
-                  </span>
-                </>
-              )}
-            </div>
+            {/* Capa do Tema (Aulas Interativas) */}
+            {item.capaUrl && (
+              <div className="relative w-12 h-12 sm:w-13 sm:h-13 rounded-xl overflow-hidden shrink-0 border border-[#d97706]/40 shadow-md">
+                <img
+                  src={item.capaUrl}
+                  alt={tituloLimpo}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+              </div>
+            )}
           </div>
         </div>
       </div>
