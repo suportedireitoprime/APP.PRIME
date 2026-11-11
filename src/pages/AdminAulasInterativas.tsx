@@ -34,6 +34,7 @@ import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import themisMarbleCutout from '@/assets/themis-marble-cutout.webp';
 import tribunalVermelhoTrilha from '@/assets/tribunal_vermelho_trilha.webp';
 import capaAdminOrigens from '@/assets/aulas-interativas/direito-administrativo/capa-aula-01-origens.webp';
+import pageTurnSound from '@/assets/page-turn.mp3';
 import { 
   MATERIAS_CATALOGO_COMPLETO, 
   AULAS_CATALOGO_COMPLETO,
@@ -544,8 +545,41 @@ export default function AdminAulasInterativas() {
   // Carrossel no padrão Audiobooks para seleção de disciplinas
   const carouselScrollerRef = useRef<HTMLDivElement | null>(null);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(1);
-  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
   const isDraggingRef = useRef(false);
+  const lastSoundIndexRef = useRef<number>(-1);
+  const pageTurnAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  const playPageTurnSound = useCallback(() => {
+    try {
+      if (!pageTurnAudioRef.current) {
+        pageTurnAudioRef.current = new Audio(pageTurnSound);
+      }
+      pageTurnAudioRef.current.currentTime = 0;
+      pageTurnAudioRef.current.volume = 0.4;
+      pageTurnAudioRef.current.playbackRate = 1.15;
+      const p = pageTurnAudioRef.current.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {});
+      }
+    } catch {}
+  }, []);
+
+  // Rastreador de toque e velocidade 1:1 ultra-fluida com inércia do dedo
+  const dragTrackerRef = useRef<{
+    startX: number;
+    startY: number;
+    startScrollLeft: number;
+    points: { x: number; time: number }[];
+    isPointerDown: boolean;
+    isHorizontalDrag: boolean | null;
+  }>({
+    startX: 0,
+    startY: 0,
+    startScrollLeft: 0,
+    points: [],
+    isPointerDown: false,
+    isHorizontalDrag: null,
+  });
 
   const scrollCarouselToIndex = useCallback(
     (idx: number, behavior: ScrollBehavior = "smooth") => {
@@ -555,30 +589,120 @@ export default function AdminAulasInterativas() {
       if (!child) return;
       const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
       el.scrollTo({ left: target, behavior });
+      if (idx !== activeCarouselIndex) {
+        playPageTurnSound();
+      }
       setActiveCarouselIndex(idx);
     },
-    []
+    [activeCarouselIndex, playPageTurnSound]
   );
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    const el = carouselScrollerRef.current;
+    if (!el) return;
+
+    // Desativa temporariamente o scrollSnap e behavior para seguir o dedo instantaneamente
+    el.style.scrollBehavior = 'auto';
+    el.style.scrollSnapType = 'none';
+
+    dragTrackerRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startScrollLeft: el.scrollLeft,
+      points: [{ x: e.clientX, time: performance.now() }],
+      isPointerDown: true,
+      isHorizontalDrag: null,
+    };
     isDraggingRef.current = false;
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!pointerStartRef.current) return;
-    const dx = Math.abs(e.clientX - pointerStartRef.current.x);
-    const dy = Math.abs(e.clientY - pointerStartRef.current.y);
-    if (dx > 8 || dy > 8) {
+    const tracker = dragTrackerRef.current;
+    if (!tracker.isPointerDown) return;
+    const el = carouselScrollerRef.current;
+    if (!el) return;
+
+    const dx = e.clientX - tracker.startX;
+    const dy = e.clientY - tracker.startY;
+
+    if (tracker.isHorizontalDrag === null) {
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+        tracker.isHorizontalDrag = Math.abs(dx) >= Math.abs(dy);
+      }
+    }
+
+    if (!tracker.isHorizontalDrag) return;
+
+    if (Math.abs(dx) > 6) {
       isDraggingRef.current = true;
+    }
+
+    // Acompanha o dedo na velocidade exata 1:1
+    el.scrollLeft = tracker.startScrollLeft - dx;
+
+    // Registra histórico de velocidade nos últimos 120ms
+    const now = performance.now();
+    tracker.points.push({ x: e.clientX, time: now });
+    if (tracker.points.length > 7) {
+      tracker.points.shift();
     }
   };
 
-  const handlePointerUp = () => {
-    pointerStartRef.current = null;
+  const handlePointerUp = (e: React.PointerEvent) => {
+    const tracker = dragTrackerRef.current;
+    if (!tracker.isPointerDown) return;
+    tracker.isPointerDown = false;
+    const el = carouselScrollerRef.current;
+    if (!el) return;
+
+    // Restaura o snap suave do CSS
+    el.style.scrollBehavior = 'smooth';
+    el.style.scrollSnapType = 'x mandatory';
+
+    const now = performance.now();
+    const recent = tracker.points.filter(p => now - p.time < 130);
+    let vx = 0; // velocidade horizontal em px/ms
+    if (recent.length >= 2) {
+      const first = recent[0];
+      const last = recent[recent.length - 1];
+      const dt = (last.time - first.time) || 1;
+      vx = (last.x - first.x) / dt;
+    }
+
+    const totalDx = e.clientX - tracker.startX;
+
+    if (isDraggingRef.current) {
+      const center = el.scrollLeft + el.clientWidth / 2;
+      let closestIdx = 0;
+      let minDistance = Infinity;
+      for (let i = 0; i < el.children.length; i++) {
+        const child = el.children[i] as HTMLElement;
+        const mid = child.offsetLeft + child.clientWidth / 2;
+        const dist = Math.abs(mid - center);
+        if (dist < minDistance) {
+          minDistance = dist;
+          closestIdx = i;
+        }
+      }
+
+      let targetIdx = closestIdx;
+      // Impulso dinâmico pela velocidade de arrasto do dedo
+      if (vx < -0.35 || totalDx < -45) {
+        // Arrasto rápido ou flick para esquerda -> próxima área
+        const step = Math.abs(vx) > 1.2 ? 2 : 1;
+        targetIdx = Math.min(el.children.length - 1, activeCarouselIndex + step);
+      } else if (vx > 0.35 || totalDx > 45) {
+        // Arrasto rápido ou flick para direita -> área anterior
+        const step = Math.abs(vx) > 1.2 ? 2 : 1;
+        targetIdx = Math.max(0, activeCarouselIndex - step);
+      }
+
+      scrollCarouselToIndex(targetIdx, "smooth");
+    }
+
     setTimeout(() => {
       isDraggingRef.current = false;
-    }, 60);
+    }, 80);
   };
 
   // Sincronização inicial com o Supabase (Single Source of Truth)
@@ -953,6 +1077,11 @@ export default function AdminAulasInterativas() {
       }
     }
 
+    if (best !== activeCarouselIndex && best !== lastSoundIndexRef.current) {
+      lastSoundIndexRef.current = best;
+      playPageTurnSound();
+    }
+
     const N = disciplinasFiltradas.length;
     if (N > 1) {
       if (best <= 1) {
@@ -1084,7 +1213,7 @@ export default function AdminAulasInterativas() {
 
         return (
           <>
-          {/* ── Fundo Clássico Oficial (Palácio de Justiça / Tribunal Neoclássico com Louros) ── */}
+          {/* ── Fundo Clássico Oficial (Palácio de Justiça / Tribunal Neoclássico com Louros - Desfocado e Escuro) ── */}
           <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0a0503]">
             <img
               src={tribunalVermelhoTrilha}
@@ -1092,16 +1221,17 @@ export default function AdminAulasInterativas() {
               loading="eager"
               decoding="async"
               fetchPriority="high"
-              className="w-full h-full object-cover object-top select-none pointer-events-none filter brightness-95 contrast-105"
+              className="w-full h-full object-cover object-top select-none pointer-events-none filter brightness-[0.60] contrast-110 blur-[8px] scale-105"
             />
-            {/* Vinheta suave de profundidade com atmosfera vermelha imperial */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0406]/95 via-black/25 to-black/60 pointer-events-none" />
+            {/* Camada de desfoque escuro e vinheta atmosférica de alta profundidade */}
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0406]/98 via-black/65 to-black/75 pointer-events-none" />
           </div>
 
-          {/* ── CONTAINER PRINCIPAL EM TELA CHEIA (SEM SCROLL VERTICAL, 100% RESPONSIVO) ── */}
-          <div className="relative z-20 w-full h-dvh max-h-dvh overflow-hidden flex flex-col justify-between pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(0.85rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-3 xs:px-4 sm:px-6">
+          {/* ── CONTAINER PRINCIPAL EM TELA CHEIA (SEM SCROLL VERTICAL, 100% RESPONSIVO, SEM MARGENS LATERAIS) ── */}
+          <div className="relative z-20 w-full h-dvh max-h-dvh overflow-hidden flex flex-col justify-between pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(0.85rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-0">
             {/* ── CABEÇALHO RESPONSIVO PADRÃO FLASHCARDS (CENTRALIZADO, COM COR DINÂMICA DA CAPA) ── */}
-            <div className="w-full max-w-lg sm:max-w-xl lg:max-w-3xl mx-auto flex flex-col items-center z-20 shrink-0">
+            <div className="w-full max-w-lg sm:max-w-xl lg:max-w-3xl mx-auto flex flex-col items-center z-20 shrink-0 px-3 xs:px-4 sm:px-6">
               {/* Top Bar com Botão Voltar Circular Padrão Premium (w-12 h-12 / 52px) + Botão de Progresso */}
               <div className="w-full flex items-center justify-between mb-1.5 xs:mb-2">
                 <button
@@ -1290,11 +1420,13 @@ export default function AdminAulasInterativas() {
 
               const handlePrev = () => {
                 try { haptic.selection(); } catch {}
+                playPageTurnSound();
                 scrollCarouselToIndex(activeCarouselIndex - 1);
               };
 
               const handleNext = () => {
                 try { haptic.selection(); } catch {}
+                playPageTurnSound();
                 scrollCarouselToIndex(activeCarouselIndex + 1);
               };
 
@@ -1309,6 +1441,7 @@ export default function AdminAulasInterativas() {
                 if (isDraggingRef.current) return;
                 try { haptic.selection(); } catch {}
                 if (idx !== activeCarouselIndex) {
+                  playPageTurnSound();
                   scrollCarouselToIndex(idx);
                 } else {
                   handleSelectCurrent();
@@ -1316,15 +1449,15 @@ export default function AdminAulasInterativas() {
               };
 
               return (
-                <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center select-none">
-                  {/* ── CARROSSEL AUDIOBOOKS COVERFLOW COM ZOOM NA CAPA CENTRAL ── */}
-                  <div className="relative w-full max-w-xl mx-auto flex items-center justify-center px-1 my-auto py-1 select-none overflow-hidden">
+                <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center select-none px-0">
+                  {/* ── CARROSSEL AUDIOBOOKS COVERFLOW COM ZOOM NA CAPA CENTRAL (SEM MARGENS LATERAIS) ── */}
+                  <div className="relative w-full mx-auto flex items-center justify-center px-0 my-auto py-1 select-none overflow-hidden">
                     
                     {/* Botão Seta Esquerda (Flutuante com Margem e Sombra) */}
                     <button
                       type="button"
                       onClick={handlePrev}
-                      className="absolute left-1 xs:left-2 sm:left-4 top-1/2 -translate-y-1/2 w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border"
+                      className="absolute left-1.5 xs:left-2.5 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border border-white/20"
                       style={{
                         borderColor: `${currTheme.primary || '#ef4444'}88`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
@@ -1341,6 +1474,7 @@ export default function AdminAulasInterativas() {
                       onPointerDown={handlePointerDown}
                       onPointerMove={handlePointerMove}
                       onPointerUp={handlePointerUp}
+                      onPointerCancel={handlePointerUp}
                       className="w-full flex items-center gap-3.5 xs:gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation px-[calc(50vw-85px)] xs:px-[calc(50vw-100px)] sm:px-[calc(50vw-125px)] md:px-[calc(50vw-145px)]"
                     >
                       {loopedDisciplinas.map((disc, idx) => {
@@ -1447,7 +1581,7 @@ export default function AdminAulasInterativas() {
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="absolute right-1 xs:right-2 sm:right-4 top-1/2 -translate-y-1/2 w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border"
+                      className="absolute right-1.5 xs:right-2.5 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border border-white/20"
                       style={{
                         borderColor: `${currTheme.primary || '#ef4444'}88`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
