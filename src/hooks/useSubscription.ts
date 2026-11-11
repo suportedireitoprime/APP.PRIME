@@ -71,6 +71,47 @@ const ACTIVE_STATUSES = [
   'SUBSCRIPTION_STATE_IN_GRACE_PERIOD',
 ] as const;
 
+// Data de corte oficial: qualquer assinatura anual adquirida antes de 10/11/2026 é tratada como vitalícia
+export const CUTOFF_ANUAL_ISO = '2026-11-10T00:00:00.000Z';
+export const CUTOFF_ANUAL_MS = new Date(CUTOFF_ANUAL_ISO).getTime();
+
+export function isAnualAntigo(
+  planoOrProduct?: string | null,
+  startedAt?: string | null,
+  expiresAt?: string | null,
+  createdAt?: string | null
+): boolean {
+  if (!planoOrProduct) return false;
+  const p = planoOrProduct.toLowerCase();
+  const isAnual = p.includes('anual') || p.includes('yearly') || p.includes('year');
+  if (!isAnual) return false;
+
+  // Se já é explicitamente vitalício
+  if (p.includes('vitalicio') || p.includes('vitalício')) return false;
+
+  // Se é mensal ou semestral, nunca é anual antigo
+  if (p.includes('mensal') || p.includes('month') || p.includes('semestral')) return false;
+
+  // 1. Data de início ou criação da assinatura
+  const startRaw = startedAt || createdAt;
+  const startTime = startRaw ? new Date(startRaw).getTime() : 0;
+  if (startTime > 0) {
+    // Adquirido antes do corte -> Antigo (vira vitalício)
+    // Adquirido a partir do corte -> Novo (NÃO é antigo, vigência de 1 ano normal)
+    return startTime < CUTOFF_ANUAL_MS;
+  }
+
+  // 2. Fallback: avaliado somente se started_at e created_at não estão disponíveis
+  const expTime = expiresAt ? new Date(expiresAt).getTime() : 0;
+  if (expTime > 0) {
+    // Se a expiração estiver registrada antes de 1 ano a contar de 10/11/2026 (ou seja, expiraria antes de 10/11/2027)
+    return expTime < new Date('2027-11-10T00:00:00.000Z').getTime();
+  }
+
+  // 3. Sem nenhuma data registrada, registros pré-existentes são tratados como legados
+  return true;
+}
+
 interface Options {
   /** Se true, faz polling curto (6× a cada 1s) até detectar Premium. Usar logo após uma compra. */
   pollOnMount?: boolean;
@@ -228,9 +269,9 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         const _t0 = performance.now();
         const [cancelRes, playRes, appleRes, legadoRes, profileRes, legacyFallbackRes] = await Promise.all([
           supabase.from('assinatura_cancelamentos' as any).select('canceled_at').eq('user_id', user.id).maybeSingle(),
-          supabase.from('play_subscriptions').select('product_id, status, expires_at').eq('user_id', user.id).in('status', ACTIVE_STATUSES).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('apple_subscriptions').select('product_id, status, expires_at, start_time').eq('user_id', user.id).in('status', ['active', 'in_grace']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).limit(1).maybeSingle(),
+          supabase.from('play_subscriptions').select('product_id, status, expires_at, created_at').eq('user_id', user.id).in('status', ACTIVE_STATUSES).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('apple_subscriptions').select('product_id, status, expires_at, start_time, created_at').eq('user_id', user.id).in('status', ['active', 'in_grace']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).order('expires_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('asaas_subscriptions' as any).select('plano, status, expires_at, started_at, created_at').eq('user_id', user.id).in('status', ['ACTIVE', 'ACTIVE_GRACE']).or(`expires_at.is.null,expires_at.gt.${graceIso}`).limit(1).maybeSingle(),
           supabase.from('profiles').select('is_premium').eq('id', user.id).maybeSingle(),
           supabase.from('legacy_subscribers' as any).select('tipo, expires_at, created_at').or(`claimed_user_id.eq.${user.id},email.ilike.${user.email || ''}`).limit(1).maybeSingle(),
         ]);
@@ -253,20 +294,28 @@ export function useSubscription(options: Options = {}): SubscriptionState {
 
         // 3. Avaliar as respostas em ordem de prioridade (Lojas primeiro: Play Store, Apple, Asaas - Item 28)
         if (playRes.data) {
+          const isAntigo = isAnualAntigo(playRes.data.product_id, null, playRes.data.expires_at, (playRes.data as any).created_at);
           persist({
             isPremium: true, loading: false,
-            plano: playRes.data.product_id, expiresAt: playRes.data.expires_at, startedAt: null, source: 'play',
-            status: playRes.data.status as string, isAdminOverride: false, isTrial: false,
+            plano: isAntigo ? 'vitalicio' : playRes.data.product_id,
+            expiresAt: isAntigo ? null : playRes.data.expires_at,
+            startedAt: null, source: 'play',
+            status: isAntigo ? 'ACTIVE' : (playRes.data.status as string),
+            isAdminOverride: false, isTrial: false,
             isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
           });
           return true;
         }
 
         if (appleRes.data) {
+          const isAntigo = isAnualAntigo(appleRes.data.product_id, appleRes.data.start_time, appleRes.data.expires_at, (appleRes.data as any).created_at);
           persist({
             isPremium: true, loading: false,
-            plano: appleRes.data.product_id, expiresAt: appleRes.data.expires_at, startedAt: appleRes.data.start_time, source: 'apple',
-            status: appleRes.data.status as string, isAdminOverride: false, isTrial: false,
+            plano: isAntigo ? 'vitalicio' : appleRes.data.product_id,
+            expiresAt: isAntigo ? null : appleRes.data.expires_at,
+            startedAt: appleRes.data.start_time, source: 'apple',
+            status: isAntigo ? 'ACTIVE' : (appleRes.data.status as string),
+            isAdminOverride: false, isTrial: false,
             isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
           });
           return true;
@@ -274,10 +323,14 @@ export function useSubscription(options: Options = {}): SubscriptionState {
 
         if (legadoRes.data) {
           const l = legadoRes.data as any;
+          const isAntigo = isAnualAntigo(l.plano, l.started_at, l.expires_at, l.created_at);
           persist({
             isPremium: true, loading: false,
-            plano: l.plano, expiresAt: l.expires_at, startedAt: l.started_at, source: 'asaas',
-            status: l.status, isAdminOverride: false, isTrial: false,
+            plano: isAntigo ? 'vitalicio' : l.plano,
+            expiresAt: isAntigo ? null : l.expires_at,
+            startedAt: l.started_at, source: 'asaas',
+            status: isAntigo ? 'ACTIVE' : l.status,
+            isAdminOverride: false, isTrial: false,
             isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
           });
           return true;
@@ -288,9 +341,12 @@ export function useSubscription(options: Options = {}): SubscriptionState {
         if (profileRes.data?.is_premium) {
           const legacyRow = legacyFallbackRes.data as any;
           const planoFallback = legacyRow?.tipo || 'anual';
+          const isAntigo = isAnualAntigo(planoFallback, legacyRow?.created_at, legacyRow?.expires_at, legacyRow?.created_at);
           persist({
             isPremium: true, loading: false,
-            plano: planoFallback, expiresAt: legacyRow?.expires_at ?? null, startedAt: legacyRow?.created_at ?? null, source: 'asaas',
+            plano: isAntigo ? 'vitalicio' : planoFallback,
+            expiresAt: isAntigo ? null : (legacyRow?.expires_at ?? null),
+            startedAt: legacyRow?.created_at ?? null, source: 'asaas',
             status: 'ACTIVE', isAdminOverride: false, isTrial: false,
             isTrialExpired: false, trialExpiresAt: null, trialRemainingMs: 0,
           });

@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { UserDossieSheet } from './UserDossieSheet';
 import { rotaParaFuncao, formatarDuracao } from '@/lib/rotaFuncoes';
 import { PRECO_MENSAL, PRECO_ANUAL, PRECO_VITALICIO } from '@/lib/precos';
+import { isAnualAntigo } from '@/hooks/useSubscription';
 
 type CardId = 'online5m' | 'online' | 'cadastros' | 'paywall' | 'viu_planos' | 'trial' | 'renovou';
 type PeriodoId = 'hoje' | 'ontem' | '7d' | '30d';
@@ -32,7 +33,16 @@ interface Row {
   googleId?: string | null;
   created_at?: string | null;
   faixaEtaria?: string | null;
-  logsCheckout?: { event_name: string; created_at: string; erro?: string; plano?: string }[];
+  logsCheckout?: {
+    event_name: string;
+    created_at: string;
+    erro?: string;
+    plano?: string;
+    payment_id?: string;
+    billingType?: string;
+    valor?: number;
+    pixStatus?: 'pago' | 'nao_pago' | 'pendente';
+  }[];
 }
 
 function formatTempoCadastro(createdAt?: string | null, fallbackSubtitle?: string | null): string {
@@ -514,7 +524,7 @@ export function AdminHojeCards() {
             supabase
               .from('app_events')
               .select('user_id, email')
-              .in('event_name', ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'])
+              .in('event_name', ['trial_click', 'checkout_pix_gerado', 'checkout_pix_pago', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'])
               .gte('created_at', startIso)
               .lt('created_at', endIso),
           ]);
@@ -608,20 +618,11 @@ export function AdminHojeCards() {
           if (s.user_id) priorAsaasUids.add(s.user_id);
         });
 
-        const isAntigo = (uid?: string | null, email?: string | null, createdAt?: string | null) => {
+        const hasPriorSubscription = (uid?: string | null, email?: string | null) => {
           const em = (email || '').toLowerCase().trim();
           if (uid && oldLegUids.has(uid)) return true;
           if (em && oldLegEmails.has(em)) return true;
           if (uid && priorAsaasUids.has(uid)) return true;
-          if (uid && profileCreatedMap.has(uid)) {
-            const pTime = new Date(profileCreatedMap.get(uid) || '').getTime();
-            if (!isNaN(pTime) && pTime < new Date(startIso).getTime()) return true;
-          }
-          if (createdAt) {
-            const createdTime = new Date(createdAt).getTime();
-            const startTime = new Date(startIso).getTime();
-            if (!isNaN(createdTime) && createdTime < startTime) return true;
-          }
           return false;
         };
 
@@ -635,8 +636,6 @@ export function AdminHojeCards() {
           const userEmail = asaasEmailMap.get(s.user_id);
           if (isAdminUser(s.user_id, userEmail)) return;
 
-          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
-
           const plano = (s.plano || 'mensal').toLowerCase();
           const isPromo = plano.includes('promocional') || plano.includes('promo');
           const isAnual = plano.includes('anual');
@@ -647,17 +646,22 @@ export function AdminHojeCards() {
 
           const createdInPeriod = inPeriod(s.created_at);
           const startedInPeriod = inPeriod(s.started_at);
+          const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
+          const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
+          const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
+          const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
-          // 1. Novo assinante de HOJE: a assinatura foi CRIADA hoje por um usuário NOVO (não antigo)!
-          if (createdInPeriod && !userIsAntigo) {
+          // 1. Novo assinante de HOJE (1º mês):
+          // A assinatura foi criada hoje OU o ciclo atual iniciou hoje e é o primeiro mês (< 20 dias da criação)
+          if (createdInPeriod || (!isCriadaAntes && startedInPeriod)) {
             subUsers.set(uid, { plano: planName, valor });
             renewUsers.delete(uid);
           }
-          // 2. Renovação de HOJE: somente MENSAL, assinatura antiga, cujo ciclo renovou hoje
-          else if (isMensal && startedInPeriod && userIsAntigo) {
+          // 2. Renovação de HOJE (2º mês em diante):
+          // Somente MENSAL, de assinatura que já existia antes de hoje cujo ciclo renovou hoje
+          else if (isMensal && startedInPeriod && isCriadaAntes && isSegundoMesOuMais) {
             renewUsers.set(uid, { plano: planName, valor });
           }
-          // 3. Assinantes antigos (Vitalício antigo, Anual antigo ou Mensal sem renovação hoje) NÃO entram nas métricas de hoje!
         });
 
         (playRes.data || []).forEach((s: any) => {
@@ -667,7 +671,6 @@ export function AdminHojeCards() {
           const userEmail = asaasEmailMap.get(s.user_id);
           if (isAdminUser(s.user_id, userEmail)) return;
 
-          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
           const isAnual = s.product_id?.includes('anual');
           const isVit = s.product_id?.includes('vitalicio') || s.product_id?.includes('vital');
           const isMensal = !isVit && !isAnual;
@@ -675,10 +678,13 @@ export function AdminHojeCards() {
           const valor = isAnual ? PRECO_ANUAL : isVit ? PRECO_VITALICIO : PRECO_MENSAL;
 
           const createdInPeriod = inPeriod(s.created_at);
-          if (createdInPeriod && !userIsAntigo) {
+          const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
+          const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
+
+          if (createdInPeriod) {
             subUsers.set(uid, { plano, valor });
             renewUsers.delete(uid);
-          } else if (isMensal && inPeriod(s.created_at) && userIsAntigo) {
+          } else if (isMensal && createdInPeriod && isCriadaAntes) {
             renewUsers.set(uid, { plano, valor });
           }
         });
@@ -690,7 +696,6 @@ export function AdminHojeCards() {
           const userEmail = asaasEmailMap.get(s.user_id);
           if (isAdminUser(s.user_id, userEmail)) return;
 
-          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
           const isAnual = s.product_id?.includes('anual');
           const isVit = s.product_id?.includes('vitalicio') || s.product_id?.includes('vital');
           const isMensal = !isVit && !isAnual;
@@ -698,10 +703,14 @@ export function AdminHojeCards() {
           const valor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
 
           const createdInPeriod = inPeriod(s.created_at);
-          if (createdInPeriod && !userIsAntigo) {
+          const startedInPeriod = inPeriod(s.start_time);
+          const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
+          const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
+
+          if (createdInPeriod || (!isCriadaAntes && startedInPeriod)) {
             subUsers.set(uid, { plano, valor });
             renewUsers.delete(uid);
-          } else if (isMensal && inPeriod(s.start_time) && userIsAntigo) {
+          } else if (isMensal && startedInPeriod && isCriadaAntes) {
             renewUsers.set(uid, { plano, valor });
           }
         });
@@ -712,7 +721,6 @@ export function AdminHojeCards() {
           const uid = s.claimed_user_id || s.id;
           if (isAdminUser(s.claimed_user_id, s.email)) return;
 
-          const userIsAntigo = isAntigo(s.claimed_user_id, s.email, s.created_at);
           const plano = (s.tipo || 'mensal').toLowerCase();
           const isVit = plano === 'vitalicio' || plano.includes('vital');
           const isAnual = plano.includes('anual');
@@ -720,11 +728,11 @@ export function AdminHojeCards() {
           const valor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
 
           const createdInPeriod = inPeriod(s.created_at);
-          if (createdInPeriod && !userIsAntigo) {
+          const isCriadaAntes = s.created_at && new Date(s.created_at).getTime() < new Date(startIso).getTime();
+
+          if (createdInPeriod && !isCriadaAntes) {
             subUsers.set(uid, { plano, valor });
             renewUsers.delete(uid);
-          } else if (isMensal && createdInPeriod && userIsAntigo) {
-            renewUsers.set(uid, { plano, valor });
           }
         });
 
@@ -734,7 +742,6 @@ export function AdminHojeCards() {
           const uid = e.user_id || em;
           if (!uid) return;
           if (!inPeriod(e.created_at)) return;
-          const userIsAntigo = isAntigo(e.user_id, em, profileCreatedMap.get(e.user_id));
 
           const meta = e.metadata || {};
           const plano = (meta.plano || 'anual').toLowerCase();
@@ -747,14 +754,16 @@ export function AdminHojeCards() {
             : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
           const planName = (isAnual && isPromo) ? 'anual_promocional' : plano;
 
-          if (isMensal && userIsAntigo) {
+          const hadPriorSub = hasPriorSubscription(e.user_id, em);
+
+          if (isMensal && hadPriorSub) {
             if (!renewUsers.has(uid) && !subUsers.has(uid)) {
               renewUsers.set(uid, { plano: planName, valor });
             } else if (renewUsers.has(uid) && typeof meta.value === 'number' && meta.value > 0) {
               renewUsers.set(uid, { plano: planName, valor });
             }
-          } else if (!userIsAntigo) {
-            // Nova compra de hoje (somente se usuário não for antigo)
+          } else {
+            // Nova compra de hoje (1º mês do usuário)
             renewUsers.delete(uid);
             if (!subUsers.has(uid)) {
               subUsers.set(uid, { plano: planName, valor });
@@ -1062,20 +1071,11 @@ export function AdminHojeCards() {
           if (s.user_id) priorAsaasUids.add(s.user_id);
         });
 
-        const isAntigo = (uid?: string | null, email?: string | null, createdAt?: string | null) => {
+        const hasPriorSubscription = (uid?: string | null, email?: string | null) => {
           const em = (email || '').toLowerCase().trim();
           if (uid && oldLegUids.has(uid)) return true;
           if (em && oldLegEmails.has(em)) return true;
           if (uid && priorAsaasUids.has(uid)) return true;
-          if (uid && profMap.has(uid)) {
-            const pTime = new Date(profMap.get(uid)?.created_at || '').getTime();
-            if (!isNaN(pTime) && pTime < new Date(startIso).getTime()) return true;
-          }
-          if (createdAt) {
-            const createdTime = new Date(createdAt).getTime();
-            const startTime = new Date(startIso).getTime();
-            if (!isNaN(createdTime) && createdTime < startTime) return true;
-          }
           return false;
         };
 
@@ -1100,14 +1100,17 @@ export function AdminHojeCards() {
 
           const createdInPeriod = inPeriod(s.created_at);
           const startedInPeriod = inPeriod(s.started_at);
-          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
+          const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
+          const startedTime = s.started_at ? new Date(s.started_at).getTime() : createdTime;
+          const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
+          const isSegundoMesOuMais = (startedTime - createdTime) >= 20 * 24 * 3600 * 1000;
 
           if (isRenovou) {
-            // "Renovou": estritamente MENSAL de assinatura antiga cujo ciclo renovou hoje
-            if (!isMensal || !startedInPeriod || !userIsAntigo) return;
+            // "Renovou": estritamente MENSAL de assinatura antiga (2º mês em diante) cujo ciclo renovou hoje
+            if (!isMensal || !startedInPeriod || !isCriadaAntes || !isSegundoMesOuMais) return;
           } else {
-            // "Assinou": estritamente assinaturas CRIADAS no período de hoje por usuário novo
-            if (!createdInPeriod || userIsAntigo) return;
+            // "Assinou": assinaturas do 1º mês (criadas no período de hoje ou novo assinante)
+            if (!(createdInPeriod || (!isCriadaAntes && startedInPeriod))) return;
           }
 
           allLists.push({
@@ -1148,13 +1151,13 @@ export function AdminHojeCards() {
           if (isRenovou && !isMensal) return;
 
           const profInfo = profMap.get(e.user_id);
-          const userIsAntigo = isAntigo(e.user_id, em || profInfo?.email, profInfo?.created_at);
+          const hadPriorSub = hasPriorSubscription(e.user_id, em || profInfo?.email);
           const createdInPeriod = inPeriod(e.created_at);
 
           if (isRenovou) {
-            if (!userIsAntigo) return;
+            if (!hadPriorSub) return;
           } else {
-            if (!createdInPeriod || userIsAntigo) return;
+            if (!createdInPeriod || hadPriorSub) return;
           }
 
           allLists.push({
@@ -1186,13 +1189,14 @@ export function AdminHojeCards() {
 
           if (isRenovou && !isMensal) return;
 
-          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
           const createdInPeriod = inPeriod(s.created_at);
+          const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
+          const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
 
           if (isRenovou) {
-            if (!userIsAntigo) return;
+            if (!isCriadaAntes) return;
           } else {
-            if (!createdInPeriod || userIsAntigo) return;
+            if (!createdInPeriod) return;
           }
 
           const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
@@ -1227,13 +1231,15 @@ export function AdminHojeCards() {
 
           if (isRenovou && !isMensal) return;
 
-          const userIsAntigo = isAntigo(s.user_id, userEmail, s.created_at);
           const createdInPeriod = inPeriod(s.created_at);
+          const startedInPeriod = inPeriod(s.start_time);
+          const createdTime = s.created_at ? new Date(s.created_at).getTime() : 0;
+          const isCriadaAntes = createdTime > 0 && createdTime < new Date(startIso).getTime();
 
           if (isRenovou) {
-            if (!userIsAntigo) return;
+            if (!startedInPeriod || !isCriadaAntes) return;
           } else {
-            if (!createdInPeriod || userIsAntigo) return;
+            if (!(createdInPeriod || (!isCriadaAntes && startedInPeriod))) return;
           }
 
           const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
@@ -1266,13 +1272,13 @@ export function AdminHojeCards() {
 
           if (isRenovou && !isMensal) return;
 
-          const userIsAntigo = isAntigo(e.claimed_user_id, e.email, e.created_at);
           const createdInPeriod = inPeriod(e.created_at);
+          const isCriadaAntes = e.created_at && new Date(e.created_at).getTime() < new Date(startIso).getTime();
 
           if (isRenovou) {
-            if (!userIsAntigo) return;
+            return;
           } else {
-            if (!createdInPeriod || userIsAntigo) return;
+            if (!createdInPeriod || isCriadaAntes) return;
           }
 
           const planName = isVit ? 'Vitalício' : isAnual ? 'Anual' : 'Mensal';
@@ -1382,7 +1388,7 @@ export function AdminHojeCards() {
         }
       } else if (id === 'paywall' || id === 'viu_planos') {
         const eventNames = id === 'viu_planos' 
-          ? ['trial_click', 'checkout_pix_gerado', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] 
+          ? ['trial_click', 'checkout_pix_gerado', 'checkout_pix_pago', 'purchase', 'checkout_cc_enviado', 'checkout_cc_recusado', 'checkout_cc_aprovado'] 
           : ['trial_click', 'assinatura_aberta', 'paywall_view'];
 
         const { data: vpEvents } = await supabase
@@ -1442,7 +1448,10 @@ export function AdminHojeCards() {
                 event_name: e.event_name,
                 created_at: e.created_at,
                 erro: e.metadata?.erro,
-                plano: e.metadata?.plano
+                plano: e.metadata?.plano,
+                payment_id: e.metadata?.payment_id,
+                billingType: e.metadata?.billingType,
+                valor: e.metadata?.value || e.metadata?.valor
               });
             }
           });
@@ -1451,6 +1460,54 @@ export function AdminHojeCards() {
             const prof = (e.user_id ? profMap.get(e.user_id) : null) || (e.uemail ? profMap.get(e.uemail.toLowerCase().trim()) : null) || {};
             const finalEmail = e.email || prof.email || (e.uemail !== 'Visitante' ? e.uemail : null);
             const isGoogle = prof.avatar_url?.includes('googleusercontent.com');
+
+            // Ordena logs decrescente
+            e.logs.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+            // Identifica qual método ou PIX foi concluído
+            const hasCcAprovado = e.logs.some((l: any) => l.event_name === 'checkout_cc_aprovado');
+            const paidPixEvent = e.logs.find((l: any) => l.event_name === 'checkout_pix_pago' || (l.event_name === 'purchase' && (l.billingType === 'PIX' || l.plano?.includes('pix'))));
+            const isUserPaid = Boolean(prof.is_premium || hasCcAprovado || paidPixEvent);
+
+            let matchedPixIdx = -1;
+            if (paidPixEvent) {
+              if (paidPixEvent.payment_id) {
+                matchedPixIdx = e.logs.findIndex((l: any) => l.event_name === 'checkout_pix_gerado' && l.payment_id === paidPixEvent.payment_id);
+              }
+              if (matchedPixIdx === -1) {
+                const paidTime = new Date(paidPixEvent.created_at).getTime();
+                let bestDelta = Infinity;
+                e.logs.forEach((l: any, idx: number) => {
+                  if (l.event_name === 'checkout_pix_gerado') {
+                    const lTime = new Date(l.created_at).getTime();
+                    const delta = Math.abs(paidTime - lTime);
+                    if (delta < bestDelta) {
+                      bestDelta = delta;
+                      matchedPixIdx = idx;
+                    }
+                  }
+                });
+              }
+            } else if (!hasCcAprovado && prof.is_premium) {
+              // Usuário é assinante ativo e gerou PIX: o PIX mais recente foi o pago
+              matchedPixIdx = e.logs.findIndex((l: any) => l.event_name === 'checkout_pix_gerado');
+            }
+
+            e.logs.forEach((l: any, idx: number) => {
+              if (l.event_name === 'checkout_pix_gerado') {
+                if (idx === matchedPixIdx) {
+                  l.pixStatus = 'pago';
+                } else if (hasCcAprovado || matchedPixIdx !== -1 || isUserPaid) {
+                  l.pixStatus = 'nao_pago';
+                } else {
+                  l.pixStatus = 'pendente';
+                }
+              }
+            });
+
+            // Oculta evento interno 'purchase' da lista visual se já houver checkout_pix_pago ou checkout_cc_aprovado
+            const visibleLogs = e.logs.filter((l: any) => l.event_name !== 'purchase');
+
             return {
               key: e.user_id || e.id,
               user_id: e.user_id || prof.id || null,
@@ -1463,7 +1520,7 @@ export function AdminHojeCards() {
               avatar_url: prof.avatar_url || null,
               is_premium: prof.is_premium || false,
               created_at: e.created_at,
-              logsCheckout: e.logs
+              logsCheckout: visibleLogs
             };
           });
         }
@@ -1554,7 +1611,8 @@ export function AdminHojeCards() {
           { data: userAsaasSubs },
           { data: userPlaySubs },
           { data: userAppleSubs },
-          { data: userPurchaseEvs }
+          { data: userPurchaseEvs },
+          { data: userLegacySubs }
         ] = await Promise.all([
           supabase.rpc('admin_user_auth_providers' as any, { _ids: ids }),
           supabase.from('user_activity_log').select('user_id, created_at').in('user_id', ids).gte('created_at', minD.toISOString()).lt('created_at', maxD.toISOString()).order('created_at', { ascending: true }),
@@ -1563,10 +1621,11 @@ export function AdminHojeCards() {
             : Promise.resolve({ data: [] }),
           supabase.from('user_sessions').select('user_id, initial_route, started_at').in('user_id', ids).gte('started_at', minD.toISOString()).lt('started_at', maxD.toISOString()),
           supabase.from('profiles').select('id, created_at, faixa_etaria, is_premium, avatar_url, display_name, email').in('id', ids),
-          supabase.from('asaas_subscriptions').select('user_id, plano, status, expires_at, started_at').in('user_id', ids),
-          supabase.from('play_subscriptions').select('user_id, product_id, status, expires_at').in('user_id', ids),
-          supabase.from('apple_subscriptions').select('user_id, product_id, status, expires_at').in('user_id', ids),
-          supabase.from('app_events').select('user_id, metadata, event_name').in('user_id', ids).in('event_name', ['purchase', 'checkout_cc_aprovado', 'subscription_started']).order('created_at', { ascending: false })
+          supabase.from('asaas_subscriptions').select('user_id, plano, status, expires_at, started_at, created_at').in('user_id', ids),
+          supabase.from('play_subscriptions').select('user_id, product_id, status, expires_at, created_at').in('user_id', ids),
+          supabase.from('apple_subscriptions').select('user_id, product_id, status, expires_at, start_time, created_at').in('user_id', ids),
+          supabase.from('app_events').select('user_id, metadata, event_name, created_at').in('user_id', ids).in('event_name', ['purchase', 'checkout_cc_aprovado', 'subscription_started']).order('created_at', { ascending: false }),
+          supabase.from('legacy_subscribers').select('claimed_user_id, email, tipo, status, expires_at, created_at').in('claimed_user_id', ids)
         ]);
 
         const provMap = new Map<string, { provider: string; avatar_url?: string }>(
@@ -1586,34 +1645,66 @@ export function AdminHojeCards() {
           const planoLower = (s.plano || '').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
-          const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
-          const planValor = isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL;
-          const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
+          const isExplicitVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
+
+          // Regra oficial unificada: Qualquer assinatura anual adquirida antes de 10/11/2026 é tratada como vitalícia
+          const isAnualAnt = isAnualAntigo(s.plano, s.started_at, s.expires_at, s.created_at);
+          const isVit = isExplicitVit || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
+          const planValor = isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL;
+          const planName = (effectiveAnual && isPromo) ? 'Anual Promocional' : effectiveAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
+          const finalStatus = isAnualAnt ? 'ACTIVE' : (isAtivo ? 'ACTIVE' : s.status);
+          const finalExpiresAt = isVit ? null : s.expires_at;
+
           subInfoMap.set(s.user_id, {
             planValue: planValor,
-            planTag: { plano: planName, status: isAtivo ? 'ACTIVE' : s.status, expires_at: s.expires_at }
+            planTag: { plano: planName, status: finalStatus, expires_at: finalExpiresAt }
           });
         });
 
         (userPlaySubs || []).forEach((s: any) => {
           if (!s.user_id || subInfoMap.has(s.user_id)) return;
-          const isAnualOrVit = s.product_id?.includes('anual') || s.product_id?.includes('vitalicio');
-          const planValor = isAnualOrVit ? PRECO_ANUAL : PRECO_MENSAL;
-          const planName = isAnualOrVit ? 'Anual/Vitalício' : 'Mensal';
+          const isAnual = s.product_id?.includes('anual');
+          const isExplicitVit = s.product_id?.includes('vitalicio');
+          const isAnualAnt = isAnualAntigo(s.product_id, null, s.expires_at, s.created_at);
+          const isVit = isExplicitVit || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
+          const planValor = isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL;
+          const planName = isVit ? 'Vitalício' : effectiveAnual ? 'Anual' : 'Mensal';
           subInfoMap.set(s.user_id, {
             planValue: planValor,
-            planTag: { plano: planName, status: s.status, expires_at: s.expires_at }
+            planTag: { plano: planName, status: isAnualAnt ? 'ACTIVE' : s.status, expires_at: isVit ? null : s.expires_at }
           });
         });
 
         (userAppleSubs || []).forEach((s: any) => {
           if (!s.user_id || subInfoMap.has(s.user_id)) return;
           const isAnual = s.product_id?.includes('anual');
-          const planValor = isAnual ? PRECO_ANUAL : PRECO_MENSAL;
-          const planName = isAnual ? 'Anual' : 'Mensal';
+          const isExplicitVit = s.product_id?.includes('vitalicio');
+          const isAnualAnt = isAnualAntigo(s.product_id, s.start_time, s.expires_at, s.created_at);
+          const isVit = isExplicitVit || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
+          const planValor = isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL;
+          const planName = isVit ? 'Vitalício' : effectiveAnual ? 'Anual' : 'Mensal';
           subInfoMap.set(s.user_id, {
             planValue: planValor,
-            planTag: { plano: planName, status: s.status, expires_at: s.expires_at }
+            planTag: { plano: planName, status: isAnualAnt ? 'ACTIVE' : s.status, expires_at: isVit ? null : s.expires_at }
+          });
+        });
+
+        (userLegacySubs || []).forEach((l: any) => {
+          if (!l.claimed_user_id || subInfoMap.has(l.claimed_user_id)) return;
+          const tipoLower = (l.tipo || '').toLowerCase();
+          const isAnual = tipoLower.includes('anual');
+          const isExplicitVit = tipoLower === 'vitalicio' || tipoLower.includes('vital');
+          const isAnualAnt = isAnualAntigo(l.tipo, null, l.expires_at, l.created_at);
+          const isVit = isExplicitVit || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
+          const planValor = isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL;
+          const planName = isVit ? 'Vitalício' : effectiveAnual ? 'Anual' : 'Mensal';
+          subInfoMap.set(l.claimed_user_id, {
+            planValue: planValor,
+            planTag: { plano: planName, status: (isVit || l.status === 'active') ? 'ACTIVE' : l.status, expires_at: isVit ? null : l.expires_at }
           });
         });
 
@@ -1623,14 +1714,16 @@ export function AdminHojeCards() {
           const planoLower = (meta.plano || 'anual').toLowerCase();
           const isPromo = planoLower.includes('promocional') || planoLower.includes('promo');
           const isAnual = planoLower.includes('anual');
-          const isVit = !isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'));
+          const isAnualAnt = isAnualAntigo(planoLower, e.created_at, meta.expires_at);
+          const isVit = (!isPromo && (planoLower === 'vitalicio' || planoLower.includes('vitalício'))) || isAnualAnt;
+          const effectiveAnual = isAnual && !isAnualAnt;
           const planValor = typeof meta.value === 'number' && meta.value > 0
             ? meta.value
-            : (isVit ? PRECO_VITALICIO : isAnual ? PRECO_ANUAL : PRECO_MENSAL);
-          const planName = (isAnual && isPromo) ? 'Anual Promocional' : isAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
+            : (isVit ? PRECO_VITALICIO : effectiveAnual ? PRECO_ANUAL : PRECO_MENSAL);
+          const planName = (effectiveAnual && isPromo) ? 'Anual Promocional' : effectiveAnual ? 'Anual' : isVit ? 'Vitalício' : 'Mensal';
           subInfoMap.set(e.user_id, {
             planValue: planValor,
-            planTag: { plano: planName, status: 'ACTIVE', expires_at: null }
+            planTag: { plano: planName, status: 'ACTIVE', expires_at: isVit ? null : meta.expires_at }
           });
         });
         
@@ -1702,12 +1795,19 @@ export function AdminHojeCards() {
             const rProv = rProvInfo?.provider || (finalAvatar?.includes('googleusercontent.com') ? 'google' : r.provider);
             const calcAcessos = acessosMap.get(rUid) || (rEm ? acessosMap.get(rEm) : undefined);
             const subData = subInfoMap.get(rUid);
-            const isUserPrem = Boolean(r.isPremium || profData?.is_premium || subData);
+            const isSubAtiva = subData
+              ? ['ACTIVE', 'ACTIVE_GRACE', 'CONFIRMED', 'RECEIVED', 'PAGA'].includes(
+                  String(subData.planTag?.status || '').toUpperCase().trim()
+                )
+              : false;
+            // A coroa 👑 e o status de assinante ativo só são concedidos se a assinatura estiver ATIVA ou se profiles.is_premium for true.
+            // PIX ou checkout PENDENTE, CANCELADO ou ATRASADO jamais concedem isPremium.
+            const isUserPrem = Boolean(profData?.is_premium || isSubAtiva);
             let finalPlanTag = r.planTag || subData?.planTag;
             let finalPlanValue = r.planValue || subData?.planValue;
             if (isUserPrem && !finalPlanTag) {
-              finalPlanTag = { plano: 'Anual', status: 'ACTIVE', expires_at: null };
-              finalPlanValue = finalPlanValue || PRECO_ANUAL;
+              finalPlanTag = { plano: 'Vitalício', status: 'ACTIVE', expires_at: null };
+              finalPlanValue = finalPlanValue || PRECO_VITALICIO;
             }
 
             return { 
@@ -2107,18 +2207,60 @@ export function AdminHojeCards() {
                           </div>
                         )}
                         {r.logsCheckout && r.logsCheckout.length > 0 && (
-                          <div className="mt-2 space-y-1">
-                             {r.logsCheckout.map((log, idx) => (
-                               <div key={idx} className="flex items-center gap-1.5 text-[10px]">
-                                 <span className="text-muted-foreground/60">{hora(log.created_at)}</span>
-                                 {log.event_name === 'checkout_pix_gerado' && <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 rounded uppercase font-bold text-[9px]">PIX GERADO</span>}
-                                 {log.event_name === 'checkout_cc_enviado' && <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1 rounded uppercase font-bold text-[9px]">CC ENVIADO</span>}
-                                 {log.event_name === 'checkout_cc_recusado' && <span className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1 rounded uppercase font-bold text-[9px]">CC RECUSADO</span>}
-                                 {log.event_name === 'checkout_cc_aprovado' && <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 rounded uppercase font-bold text-[9px]">CC APROVADO</span>}
-                                 {log.plano && <span className="text-muted-foreground ml-1">({log.plano.replace('_', ' ')})</span>}
-                                 {log.erro && <span className="text-rose-400 ml-1 truncate max-w-[120px]" title={log.erro}>- {log.erro}</span>}
-                               </div>
-                             ))}
+                          <div className="mt-2 space-y-1.5">
+                             {r.logsCheckout.map((log, idx) => {
+                               const isPixGerado = log.event_name === 'checkout_pix_gerado';
+                               const isPixPago = log.event_name === 'checkout_pix_pago' || (isPixGerado && log.pixStatus === 'pago');
+                               const isPixNaoPago = isPixGerado && log.pixStatus === 'nao_pago';
+                               const isPixPendente = isPixGerado && (log.pixStatus === 'pendente' || !log.pixStatus);
+
+                               return (
+                                 <div key={idx} className="flex items-center gap-1.5 text-[10px]">
+                                   <span className="text-muted-foreground/60">{hora(log.created_at)}</span>
+
+                                   {isPixPago && (
+                                     <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.5 rounded font-black uppercase text-[9px] shadow-[0_0_8px_rgba(16,185,129,0.25)] flex items-center gap-1">
+                                       <span>PIX PAGO</span>
+                                       <span>✓</span>
+                                     </span>
+                                   )}
+
+                                   {isPixNaoPago && (
+                                     <span className="bg-zinc-800/80 text-zinc-400 border border-zinc-700/60 px-1.5 py-0.5 rounded uppercase font-semibold text-[9px] opacity-75">
+                                       PIX NÃO PAGO
+                                     </span>
+                                   )}
+
+                                   {isPixPendente && !isPixPago && (
+                                     <span className="bg-amber-500/10 text-amber-400 border border-amber-500/25 px-1.5 py-0.5 rounded uppercase font-bold text-[9px]">
+                                       PIX PENDENTE
+                                     </span>
+                                   )}
+
+                                   {log.event_name === 'checkout_cc_enviado' && (
+                                     <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1 rounded uppercase font-bold text-[9px]">
+                                       CC ENVIADO
+                                     </span>
+                                   )}
+
+                                   {log.event_name === 'checkout_cc_recusado' && (
+                                     <span className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1 rounded uppercase font-bold text-[9px]">
+                                       CC RECUSADO
+                                     </span>
+                                   )}
+
+                                   {log.event_name === 'checkout_cc_aprovado' && (
+                                     <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.5 rounded uppercase font-black text-[9px] shadow-[0_0_8px_rgba(16,185,129,0.25)] flex items-center gap-1">
+                                       <span>CC APROVADO</span>
+                                       <span>✓</span>
+                                     </span>
+                                   )}
+
+                                   {log.plano && <span className="text-muted-foreground ml-1">({log.plano.replace('_', ' ')})</span>}
+                                   {log.erro && <span className="text-rose-400 ml-1 truncate max-w-[120px]" title={log.erro}>- {log.erro}</span>}
+                                 </div>
+                               );
+                             })}
                           </div>
                         )}
                       </div>

@@ -487,23 +487,24 @@ const Flashcard3D = memo(function Flashcard3D({
                 transitionTimingFunction: 'cubic-bezier(0.34, 1.25, 0.64, 1)',
               }}
             >
-              {/* Frente da Carta */}
+              {/* Frente da Carta — Formato Pergaminho Clássico */}
               <div
-                className="absolute inset-0 rounded-[32px] border p-6 md:p-8 flex flex-col justify-between overflow-hidden text-white [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl"
+                className="absolute inset-0 rounded-[32px] border p-6 md:p-8 flex flex-col justify-between overflow-hidden text-[#fef3c7] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl"
                 style={{
-                  borderColor: `${palette.primary}55`,
-                  boxShadow: `0 24px 60px -24px ${palette.primary}65, inset 0 0 0 1px rgba(255,255,255,0.15)`,
-                  background: palette.cardGradient,
+                  borderColor: 'rgba(212, 185, 150, 0.55)',
+                  boxShadow: '0 24px 60px -20px rgba(0,0,0,0.95), 0 0 20px rgba(212, 185, 150, 0.15), inset 0 0 35px rgba(0,0,0,0.85), inset 0 1px 2px rgba(254, 240, 138, 0.35)',
+                  background: 'linear-gradient(155deg, rgba(38, 28, 19, 0.98) 0%, rgba(24, 18, 12, 0.99) 50%, rgba(14, 10, 7, 1) 100%)',
                 }}
               >
-                {/* Vinheta gradiente interna */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/65 pointer-events-none z-[1]" />
+                {/* Vinheta gradiente interna de envelhecimento do pergaminho */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/75 pointer-events-none z-[1]" />
 
-                {/* Moldura Interna */}
-                <div className="absolute inset-2 sm:inset-2.5 rounded-[24px] border border-white/20 pointer-events-none z-[2]" />
+                {/* Moldura Dupla de Pergaminho */}
+                <div className="absolute inset-2 sm:inset-2.5 rounded-[24px] border border-[#d4b996]/35 pointer-events-none z-[2]" />
+                <div className="absolute inset-3.5 sm:inset-4 rounded-[18px] border border-[#d4b996]/15 pointer-events-none z-[2]" />
 
-                {/* Acabamento Laminado */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.03] to-white/[0.12] pointer-events-none z-[2]" />
+                {/* Acabamento de Textura Quente */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-[#fef3c7]/[0.02] to-[#fef3c7]/[0.08] pointer-events-none z-[2]" />
 
                 {/* Gravura Majestosa da Deusa Têmis Vazada */}
                 <img
@@ -634,18 +635,19 @@ const Flashcard3D = memo(function Flashcard3D({
                 </div>
               </div>
 
-              {/* Verso da Carta — Estilo Obsidian com Tint do Tema e Deusa Têmis */}
+              {/* Verso da Carta — Formato Pergaminho Clássico */}
               <div
-                className="absolute inset-0 rounded-[32px] border p-5 md:p-7 overflow-y-auto scrollbar-hide flex flex-col [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl"
+                className="absolute inset-0 rounded-[32px] border p-5 md:p-7 overflow-y-auto scrollbar-hide flex flex-col text-[#fef3c7] [backface-visibility:hidden] [-webkit-backface-visibility:hidden] shadow-2xl"
                 style={{
                   transform: 'rotateY(180deg)',
-                  borderColor: `${palette.primary}45`,
-                  boxShadow: `0 24px 60px -24px ${palette.primary}50, inset 0 0 0 1px rgba(255,255,255,0.08)`,
-                  background: `linear-gradient(155deg, rgba(26, 25, 30, 0.98) 0%, rgba(13, 13, 16, 0.99) 100%)`,
+                  borderColor: 'rgba(212, 185, 150, 0.45)',
+                  boxShadow: '0 24px 60px -20px rgba(0,0,0,0.95), 0 0 20px rgba(212, 185, 150, 0.12), inset 0 0 35px rgba(0,0,0,0.85), inset 0 1px 2px rgba(254, 240, 138, 0.25)',
+                  background: 'linear-gradient(155deg, rgba(32, 24, 16, 0.98) 0%, rgba(20, 15, 10, 0.99) 50%, rgba(12, 9, 6, 1) 100%)',
                 }}
               >
-                {/* Moldura Interna Chanfrada */}
-                <div className="absolute inset-2 sm:inset-2.5 rounded-[24px] border border-white/10 pointer-events-none z-[2]" />
+                {/* Moldura Dupla de Pergaminho no Verso */}
+                <div className="absolute inset-2 sm:inset-2.5 rounded-[24px] border border-[#d4b996]/30 pointer-events-none z-[2]" />
+                <div className="absolute inset-3.5 sm:inset-4 rounded-[18px] border border-[#d4b996]/15 pointer-events-none z-[2]" />
 
                 {/* Marca d'água / Gravura da Deusa Têmis no Verso */}
                 <img

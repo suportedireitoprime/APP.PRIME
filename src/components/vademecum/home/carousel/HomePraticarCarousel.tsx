@@ -31,7 +31,7 @@ const PRATICAR_ITEMS: PraticarItem[] = [
     title: 'QUESTÕES',
     subtitle: 'Fixação e treino',
     icon: FileQuestion,
-    color: '#059669', // emerald
+    color: '#e11d48', // vermelho oficial do painel de Questoes
     image: '/assets/praticar-questoes.webp',
     path: '/questoes',
   },
@@ -166,11 +166,11 @@ const HomePraticarCarousel = () => {
 
   return (
     <section className="space-y-3">
-      {/* Cabeçalho "PRATICAR" idêntico ao "LEIS EM ALTA" */}
+      {/* Cabeçalho "PRATICAR" */}
       <div className="flex items-center justify-between gap-2 px-1">
         <div className="min-w-0 flex-1">
           <h3 className="font-display text-foreground text-[17px] sm:text-[18px] font-bold flex items-center gap-2 uppercase tracking-widest">
-            <span className="w-1 h-5 rounded-full bg-primary shrink-0" />
+            <span className="w-1 h-5 rounded-full bg-[#E11D48] shrink-0" />
             <span className="truncate">PRATICAR</span>
           </h3>
           <p className="font-body text-muted-foreground text-[12px] sm:text-[12.5px] leading-snug ml-3 truncate">
@@ -196,7 +196,7 @@ const HomePraticarCarousel = () => {
               key={`${item.id}-${i}`}
               type="button"
               onClick={() => handleCardClick(item, i)}
-              className={`snap-center shrink-0 min-w-[138px] max-w-[148px] sm:min-w-[152px] sm:max-w-[162px] h-[116px] sm:h-[122px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-400 ease-out ${
+              className={`snap-center shrink-0 min-w-[144px] max-w-[154px] sm:min-w-[154px] sm:max-w-[164px] h-[118px] sm:h-[124px] text-left cursor-pointer focus-visible:outline-none relative flex flex-col rounded-2xl group transition-all duration-400 ease-out ${
                 isActive
                   ? 'scale-[1.02] opacity-100 z-10 shadow-xl'
                   : 'scale-[0.94] opacity-75 z-0 shadow-sm'
@@ -254,7 +254,7 @@ const HomePraticarCarousel = () => {
 
                 <div className="flex justify-between items-end mt-auto">
                   <div className="flex flex-col">
-                    <span className="font-display text-white text-[20px] sm:text-[22px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
+                    <span className="font-display text-white text-[19px] sm:text-[21px] font-black tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] leading-none">
                       {item.title}
                     </span>
                     <span className="text-white/80 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-1.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">

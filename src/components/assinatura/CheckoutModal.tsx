@@ -276,10 +276,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
     let delay = 5000;
 
     const handleSuccess = () => {
-    if (!isMounted) return;
-    toast.success("Pagamento confirmado via PIX!");
-    triggerSuccessAnimation();
-  };
+      if (!isMounted) return;
+      void logDb('checkout_pix_pago', { payment_id: pixPaymentId, plano: activePlan });
+      toast.success("Pagamento confirmado via PIX!");
+      triggerSuccessAnimation();
+    };
 
     // 1. Escuta Realtime na tabela asaas_subscriptions e profiles
     let channelAsaas: any = null;
@@ -537,7 +538,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
       }
 
       if (isPix && data?.pixQrCode) {
-        void logDb('checkout_pix_gerado', { plano: activePlan });
+        const pixValor = activePlan === 'vitalicio' ? 149.90 : activePlan === 'anual' ? 89.90 : 29.90;
+        void logDb('checkout_pix_gerado', { plano: activePlan, payment_id: data.paymentId || null, valor: pixValor });
         setPixData({ qrCode: data.pixQrCode, payload: data.pixCopyPaste });
         setPixPaymentId(data.paymentId || null);
         setPixExpiryTime(Date.now() + 600 * 1000);
@@ -567,7 +569,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           }
         }
       } else if (data?.invoiceUrl) {
-        void logDb('checkout_pix_gerado', { plano: activePlan, hasUrl: true });
+        const pixValor = activePlan === 'vitalicio' ? 149.90 : activePlan === 'anual' ? 89.90 : 29.90;
+        void logDb('checkout_pix_gerado', { plano: activePlan, hasUrl: true, payment_id: data.paymentId || null, valor: pixValor });
         openExternal(data.invoiceUrl);
         onSuccess();
         onOpenChange(false);
@@ -633,6 +636,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
           .maybeSingle();
 
         if (data?.status === 'ACTIVE' || data?.status === 'ACTIVE_GRACE' || profile?.is_premium) {
+          void logDb('checkout_pix_pago', { payment_id: pixPaymentId, plano: activePlan });
           toast.success('Pagamento confirmado!');
           triggerSuccessAnimation();
           return;
@@ -644,6 +648,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ open, onOpenChange
             body: { action: 'check_status', paymentId: pixPaymentId }
           });
           if (checkData?.confirmed) {
+            void logDb('checkout_pix_pago', { payment_id: pixPaymentId, plano: activePlan });
             toast.success('Pagamento confirmado via PIX!');
             triggerSuccessAnimation();
             return;

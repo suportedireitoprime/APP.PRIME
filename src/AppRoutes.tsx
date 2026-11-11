@@ -114,6 +114,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 
 const QuestoesHistorico = lazy(() => import('@/pages/QuestoesHistorico'));
 const AdminFuncoes = lazy(() => import("./pages/AdminFuncoes.tsx"));
+const AdminAssinantes = lazy(() => import("./pages/AdminAssinantes.tsx"));
 const AdminPush = lazy(() => import("./pages/AdminPush.tsx"));
 const AdminRotas = lazy(() => import("./pages/AdminRotas.tsx"));
 
@@ -907,7 +908,8 @@ function AnimatedRoutes() {
           <Route path="/pilulas/cpp" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="cpp" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/clt" element={<ProtectedRoute><PageTransition instant><PilulasLeiSeca slug="clt" /></PageTransition></ProtectedRoute>} />
           <Route path="/pilulas/:id" element={<ProtectedRoute><PageTransition instant><PilulasPlayer /></PageTransition></ProtectedRoute>} />
-          {/* Lei Seca */}
+          {/* Lei Seca / Lições */}
+          <Route path="/licoes" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex /></PageTransition></ProtectedRoute></ErrorBoundary>} />
           <Route path="/lei-seca" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex /></PageTransition></ProtectedRoute></ErrorBoundary>} />
           <Route path="/lei-seca/favoritos" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex modo="favoritos" /></PageTransition></ProtectedRoute></ErrorBoundary>} />
           <Route path="/lei-seca/recentes" element={<ErrorBoundary><ProtectedRoute><PageTransition instant><LeiSecaIndex modo="recentes" /></PageTransition></ProtectedRoute></ErrorBoundary>} />
@@ -953,6 +955,7 @@ function AnimatedRoutes() {
           <Route path="/bibliotecas/:colecaoId/:areaSlug" element={<ProtectedRoute><PageTransition instant><BibliotecaCategoria /></PageTransition></ProtectedRoute>} />
 
           <Route path="/admin-funcoes" element={<ProtectedRoute><PageTransition><AdminFuncoes /></PageTransition></ProtectedRoute>} />
+          <Route path="/admin-assinantes" element={<ProtectedRoute><PageTransition><AdminAssinantes /></PageTransition></ProtectedRoute>} />
           <Route path="/admin-aulas-interativas" element={<ProtectedRoute><PageTransition><AdminAulasInterativas /></PageTransition></ProtectedRoute>} />
           <Route path="/assinatura" element={<ProtectedRoute><PageTransition instant><Assinatura /></PageTransition></ProtectedRoute>} />
           <Route path="/suporte" element={<ProtectedRoute><PageTransition><Suporte /></PageTransition></ProtectedRoute>} />

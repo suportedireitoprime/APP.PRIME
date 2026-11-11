@@ -213,6 +213,33 @@ Deno.serve(async (req) => {
       effectivePlan = 'vitalicio';
     }
 
+    // Regra oficial: Qualquer assinatura anual adquirida antes de 10/11/2026 é tratada como vitalícia.
+    // Assinaturas anuais só têm contagem de ciclo (370 dias) a partir de 10/11/2026 em diante.
+    // Assinaturas mensais continuam mensais normalmente.
+    const CUTOFF_ANUAL_MS = new Date('2026-11-10T00:00:00.000Z').getTime();
+    const isAnual = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional');
+    const legacyCreatedAtMs = legacy?.created_at ? new Date(legacy.created_at).getTime() : 0;
+    const paymentCreatedMs = payment?.dateCreated ? new Date(payment.dateCreated).getTime() : 0;
+
+    if (isAnual && (
+      (legacyCreatedAtMs > 0 && legacyCreatedAtMs < CUTOFF_ANUAL_MS) ||
+      (paymentCreatedMs > 0 && paymentCreatedMs < CUTOFF_ANUAL_MS) ||
+      (legacy?.id !== 'new_user' && legacyCreatedAtMs < CUTOFF_ANUAL_MS)
+    )) {
+      effectivePlan = 'vitalicio';
+    }
+
+    const finalUserId = targetUserId || legacy.claimed_user_id;
+    let currSub: any = null;
+    if (finalUserId) {
+      const { data } = await admin.from('asaas_subscriptions').select('status, plano, started_at, created_at').eq('user_id', finalUserId).maybeSingle();
+      currSub = data;
+      // Se o usuário já é vitalício no banco, preserva o vitalício contra cancelamentos acidentais de gateway
+      if (currSub?.plano === 'vitalicio' && !pago) {
+        effectivePlan = 'vitalicio';
+      }
+    }
+
     // Renovação respeitando o ciclo do plano (mensal/semestral/anual/vitalicio) + margem
     const diasCiclo = (effectivePlan === 'anual' || effectivePlan === 'anual_promocional') ? 370
       : effectivePlan === 'semestral' ? 190
@@ -239,16 +266,13 @@ Deno.serve(async (req) => {
       }).eq('id', legacy.id);
     }
 
-    const finalUserId = targetUserId || legacy.claimed_user_id;
-
     if (finalUserId) {
       let currentStatus = 'PENDING';
-      const { data: currSub } = await admin.from('asaas_subscriptions').select('status').eq('user_id', finalUserId).maybeSingle();
       if (currSub?.status) {
         currentStatus = currSub.status;
       }
       
-      const nextStatus = pago ? 'ACTIVE' : (cortarAgora ? 'CANCELED' : currentStatus);
+      const nextStatus = pago ? 'ACTIVE' : (vitalicio ? 'ACTIVE' : (cortarAgora ? 'CANCELED' : currentStatus));
 
       const subUpsertPayload: any = {
         user_id: finalUserId,
@@ -273,7 +297,7 @@ Deno.serve(async (req) => {
         }).eq('id', finalUserId);
 
         // Registra evento de compra no app_events para histórico e métricas
-        await admin.from('app_events').insert({
+        const purchaseEvents: any[] = [{
           user_id: finalUserId,
           email: payment?.customerEmail ?? null,
           event_name: 'purchase',
@@ -285,7 +309,25 @@ Deno.serve(async (req) => {
             payment_id: payment.id,
             billingType: payment.billingType
           }
-        });
+        }];
+
+        if (payment.billingType === 'PIX') {
+          purchaseEvents.push({
+            user_id: finalUserId,
+            email: payment?.customerEmail ?? null,
+            event_name: 'checkout_pix_pago',
+            metadata: {
+              plano: effectivePlan,
+              value: payment.value || 0,
+              currency: 'BRL',
+              source: 'asaas',
+              payment_id: payment.id,
+              billingType: 'PIX'
+            }
+          });
+        }
+
+        await admin.from('app_events').insert(purchaseEvents);
       } else if (cortarAgora) {
         await admin.from('profiles').update({
           is_premium: false,

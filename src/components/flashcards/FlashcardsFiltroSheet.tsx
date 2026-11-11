@@ -90,18 +90,18 @@ export function StepRow({
       className={cn(
         'flex w-full items-center gap-4 rounded-2xl border px-4 py-3.5 text-left transition-all',
         active
-          ? 'border-[#36AF85]/60 bg-[#36AF85]/8 shadow-lg shadow-[#36AF85]/10'
+          ? 'border-[#2563eb]/60 bg-[#2563eb]/8 shadow-lg shadow-[#2563eb]/10'
           : done
-            ? 'border-[#36AF85]/30 bg-zinc-900/90 shadow-sm'
+            ? 'border-[#2563eb]/30 bg-zinc-900/90 shadow-sm'
             : 'border-zinc-800/80 bg-zinc-900/70 hover:border-zinc-700 hover:bg-zinc-800/60 active:scale-[0.98]',
       )}
     >
       <span className={cn(
         'grid h-10 w-10 shrink-0 place-items-center rounded-full text-[14px] font-black tabular-nums transition-all',
         done
-          ? 'bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+          ? 'bg-[#2563eb] text-white shadow-md shadow-[#2563eb]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
           : active
-            ? 'bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+            ? 'bg-[#2563eb] text-white shadow-md shadow-[#2563eb]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
             : 'bg-zinc-800 text-zinc-300',
       )}>
         {done ? <Check className="h-5 w-5 drop-shadow-md" strokeWidth={3} /> : step}
@@ -112,7 +112,7 @@ export function StepRow({
             {label}
           </span>
           {active && (
-            <span className="rounded-full bg-[#36AF85]/20 border border-[#36AF85]/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-[#36AF85]">
+            <span className="rounded-full bg-[#2563eb]/20 border border-[#2563eb]/30 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-[#2563eb]">
               Aberto
             </span>
           )}
@@ -129,7 +129,7 @@ export function StepRow({
       ) : (
         <span className="flex shrink-0 items-center gap-2">
           {!!badge && (
-            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-[#36AF85] px-2 text-[12px] font-black text-white shadow-sm shadow-[#36AF85]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
+            <span className="grid h-6 min-w-[24px] place-items-center rounded-full bg-[#2563eb] px-2 text-[12px] font-black text-white shadow-sm shadow-[#2563eb]/30 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]">
               {badge}
             </span>
           )}
@@ -226,7 +226,7 @@ export function SelecaoSheet({
         </div>
         <button
           onClick={() => { haptic.selection?.(); setLocal([]); }}
-          className="px-3 text-[14px] font-bold text-[#36AF85] hover:text-[#2C9570] active:opacity-70 transition-colors"
+          className="px-3 text-[14px] font-bold text-[#2563eb] hover:text-[#1d4ed8] active:opacity-70 transition-colors"
         >
           Limpar
         </button>
@@ -255,7 +255,7 @@ export function SelecaoSheet({
       <div ref={parentRef} className="flex-1 overflow-y-auto px-4">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3 text-zinc-400">
-            <Loader2 className="h-6 w-6 animate-spin text-[#36AF85]" />
+            <Loader2 className="h-6 w-6 animate-spin text-[#2563eb]" />
             <span className="text-[13px] font-medium">Carregando {titulo.toLowerCase()}...</span>
           </div>
         ) : lista.length === 0 ? (
@@ -297,7 +297,7 @@ export function SelecaoSheet({
                       <span className={cn(
                         'grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition-all',
                         isAllSelected
-                          ? 'border-[#36AF85] bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+                          ? 'border-[#2563eb] bg-[#2563eb] text-white shadow-md shadow-[#2563eb]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
                           : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
                       )}>
                         {isAllSelected && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
@@ -332,7 +332,7 @@ export function SelecaoSheet({
                     <span className={cn(
                       'grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition-all',
                       ativo
-                        ? 'border-[#36AF85] bg-[#36AF85] text-white shadow-md shadow-[#36AF85]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
+                        ? 'border-[#2563eb] bg-[#2563eb] text-white shadow-md shadow-[#2563eb]/25 [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]'
                         : 'border-zinc-700 bg-zinc-900/50 group-hover:border-zinc-500',
                     )}>
                       {ativo && <Check className="h-3.5 w-3.5 drop-shadow-md" strokeWidth={3} />}
@@ -352,7 +352,7 @@ export function SelecaoSheet({
             onConfirmar(local);
             onFechar();
           }}
-          className="h-14 w-full rounded-2xl bg-[#36AF85] hover:bg-[#2C9570] text-white font-black text-[16px] shadow-lg shadow-black/40 active:scale-[0.98] transition-all"
+          className="h-14 w-full rounded-2xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-black text-[16px] shadow-lg shadow-black/40 active:scale-[0.98] transition-all"
         >
           Confirmar seleção
         </button>
@@ -529,13 +529,13 @@ const FlashcardsFiltroSheet = ({
               </button>
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2 text-[20px] font-extrabold text-zinc-100 tracking-tight">
-                  <Filter className="h-5 w-5 text-[#36AF85]" /> Filtro Flashcards
+                  <Filter className="h-5 w-5 text-[#2563eb]" /> Filtro Flashcards
                 </p>
                 <p className="mt-0.5 text-[13px] leading-snug text-zinc-400 truncate">
                   Refine por matéria, assunto, status e mais.
                 </p>
               </div>
-              <button onClick={limpar} className="px-3 text-[14px] font-bold text-[#36AF85] hover:text-[#2C9570] active:opacity-70 transition-colors">
+              <button onClick={limpar} className="px-3 text-[14px] font-bold text-[#2563eb] hover:text-[#1d4ed8] active:opacity-70 transition-colors">
                 Limpar
               </button>
             </div>
@@ -594,13 +594,13 @@ const FlashcardsFiltroSheet = ({
             <div className="flex items-center gap-3 border-t border-zinc-800/80 bg-zinc-900/90 backdrop-blur-md px-5 pb-safe-nav pt-4">
               <button
                 onClick={aplicar}
-                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#36AF85] hover:bg-[#2C9570] text-[16px] font-black text-white shadow-lg shadow-black/40 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
+                className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#2563eb] hover:bg-[#1d4ed8] text-[16px] font-black text-white shadow-lg shadow-black/40 active:scale-[0.98] transition-all [text-shadow:0px_1px_2px_rgba(0,0,0,0.8)]"
               >
                 <Filter className="h-5 w-5 drop-shadow-md" fill="currentColor" />
                 Aplicar filtros
               </button>
               {selecionados > 0 && (
-                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#36AF85]/15 border border-[#36AF85]/30 text-[15px] font-black text-[#36AF85]">
+                <span className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-[#2563eb]/15 border border-[#2563eb]/30 text-[15px] font-black text-[#2563eb]">
                   {selecionados}
                 </span>
               )}

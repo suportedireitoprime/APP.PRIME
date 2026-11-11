@@ -33,7 +33,7 @@ export function PricingCards({ selectedPlan, onSelectPlan }: PricingCardsProps) 
   const mensalMessages = [
     "Acesso flexível mês a mês",
     "Sem fidelidade: cancele quando quiser",
-    "Apenas R$ 19,90 por mês",
+    `Apenas ${brl(PRECO_MENSAL)} por mês`,
     "Acesso completo a todas as ferramentas"
   ];
 
@@ -233,7 +233,7 @@ export function PricingCards({ selectedPlan, onSelectPlan }: PricingCardsProps) 
                 </div>
 
                 <p className="text-[11px] font-bold text-muted-foreground mb-3 relative z-10">
-                  Sem fidelidade • Cancele quando quiser • Apenas R$ 19,90/mês
+                  Sem fidelidade • Cancele quando quiser • Apenas {brl(PRECO_MENSAL)}/mês
                 </p>
 
                 <div className="flex flex-col gap-1.5 mb-3 mt-3 relative z-10 w-full pl-0.5">

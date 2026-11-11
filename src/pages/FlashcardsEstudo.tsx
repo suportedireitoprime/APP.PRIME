@@ -19,6 +19,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { Capacitor } from '@capacitor/core';
 import { NativeFlashcards } from '@/plugins/NativeFlashcardsPlugin';
 import { supabase } from '@/integrations/supabase/client';
+import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 
 function AnimatedNumber({ value }: { value: number }) {
   const numRef = useRef<HTMLSpanElement>(null);
@@ -76,7 +77,8 @@ const FlashcardsEstudo = () => {
 
   const corParam = params.get('cor');
   const areaNome = atual?.area || areaParam || (cards[0]?.area ?? null);
-  const cardAccent = corParam || (areaNome ? areaIconFor(areaNome).color : '#10b981');
+  const theme = getDisciplinaVisualTheme(areaNome);
+  const cardAccent = corParam || (areaNome ? areaIconFor(areaNome).color : theme.accent);
 
   useEffect(() => {
     document.title = 'Sessão de Prática de Flashcards | Vade Mecum PRIME';
@@ -135,7 +137,24 @@ const FlashcardsEstudo = () => {
   }, [emContagem, cards.length]);
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(2.5rem+var(--sai-bottom))]">
+    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))]">
+      {/* Imagem de Fundo Temática da Disciplina com Ofuscamento Mínimo e Escurecimento Suave */}
+      {theme?.fundoAssetUrl && (
+        <div className="fixed inset-0 z-0 pointer-events-none select-none overflow-hidden">
+          <img
+            src={theme.fundoAssetUrl}
+            alt=""
+            aria-hidden="true"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            className="w-full h-full object-cover select-none pointer-events-none filter blur-[0.5px] brightness-[0.96] contrast-[1.05] scale-105 transition-opacity duration-700"
+          />
+          {/* Escurecimento suave */}
+          <div className="absolute inset-0 bg-black/10 pointer-events-none" />
+        </div>
+      )}
+
       <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
         <ShapeGrid 
           speed={0.5} 
@@ -337,28 +356,30 @@ const FlashcardsEstudo = () => {
 
           {atual && (
             <div className="relative w-full min-h-[380px] sm:min-h-[440px] h-[54dvh] max-h-[540px]">
-              {/* Efeito de pilha (cards no fundo) */}
+              {/* Efeito de pilha em estilo pergaminho (cards no fundo) */}
               {cards[idx + 2] && (
                 <div 
-                  className="absolute inset-0 rounded-[32px] border bg-card/60 backdrop-blur-sm pointer-events-none transition-all duration-300"
+                  className="absolute inset-0 rounded-[32px] border pointer-events-none transition-all duration-300"
                   style={{
-                    borderColor: `${cardAccent}33`,
+                    borderColor: 'rgba(212, 185, 150, 0.3)',
                     transform: 'translateY(18px) scale(0.91)',
-                    opacity: 0.35,
+                    opacity: 0.45,
                     zIndex: 1,
-                    background: `linear-gradient(135deg, ${cardAccent}1f 0%, rgba(13,15,18,0.95) 100%)`,
+                    background: 'linear-gradient(160deg, #231b12 0%, #17120c 60%, #0d0a07 100%)',
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.85)',
                   }}
                 />
               )}
               {cards[idx + 1] && (
                 <div 
-                  className="absolute inset-0 rounded-[32px] border bg-card/80 backdrop-blur-sm pointer-events-none transition-all duration-300"
+                  className="absolute inset-0 rounded-[32px] border pointer-events-none transition-all duration-300"
                   style={{
-                    borderColor: `${cardAccent}55`,
+                    borderColor: 'rgba(212, 185, 150, 0.45)',
                     transform: 'translateY(10px) scale(0.955)',
-                    opacity: 0.7,
+                    opacity: 0.75,
                     zIndex: 2,
-                    background: `linear-gradient(135deg, ${cardAccent}29 0%, rgba(13,15,18,0.98) 100%)`,
+                    background: 'linear-gradient(160deg, #2a2016 0%, #1c150e 60%, #110d08 100%)',
+                    boxShadow: '0 14px 40px rgba(0,0,0,0.85), inset 0 0 20px rgba(0,0,0,0.5)',
                   }}
                 />
               )}

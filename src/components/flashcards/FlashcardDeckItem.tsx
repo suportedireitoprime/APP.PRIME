@@ -1,232 +1,284 @@
 import React, { memo } from 'react';
-import { Layers, Play, Crown } from 'lucide-react';
+import { Check, Play, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { DisciplinaVisualTheme, getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 
-export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
-  const isLeft = i % 2 === 0;
+interface FlashcardDeckItemProps {
+  item: {
+    key: string;
+    titulo: string;
+    badgeLabel: string;
+    ordemStr: string;
+    displayTotal: number;
+    displayConcluidas: number;
+    displayPct: number;
+    temasCount?: number;
+    subtituloCustom?: string;
+    capaUrl?: string;
+    isLocked?: boolean;
+    onClick: () => void;
+    onPrefetch?: () => void;
+  };
+  i: number;
+  palette?: { primary: string };
+  isLast: boolean;
+  isActive?: boolean;
+  theme?: DisciplinaVisualTheme;
+}
+
+export const FlashcardDeckItem = memo(({ 
+  item, 
+  i, 
+  isLast, 
+  isActive = false,
+  theme 
+}: FlashcardDeckItemProps) => {
+  const activeTheme = theme || getDisciplinaVisualTheme('administrativo');
+  const isCompleted = item.displayPct === 100 || (item.displayTotal > 0 && item.displayConcluidas >= item.displayTotal);
   const tituloLimpo = (item.titulo || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
+  
+  // Alterna o nó suavemente em curva pela encosta da montanha:
+  const shiftIndex = i % 4;
+  const alignmentClass = 
+    shiftIndex === 0 ? "justify-start pl-2 sm:pl-6" :
+    shiftIndex === 1 ? "justify-end pr-2 sm:pr-8" :
+    shiftIndex === 2 ? "justify-start pl-6 sm:pl-12" :
+    "justify-center";
+
+  // Curva da estrada conectando este nó ao próximo
+  const isNextShiftRight = shiftIndex === 0 || shiftIndex === 2;
+
+  // Barra de progresso circular externa contornando a moeda (raio 26, circunferência ~163.36)
+  const radius = 26;
+  const circumference = 2 * Math.PI * radius;
+  // Progresso efetivo para o anel circular da medalha
+  const effectivePct = isCompleted ? 100 : Math.min(100, Math.max(0, item.displayPct || 0));
+  const strokeDashoffset = circumference - (circumference * effectivePct) / 100;
 
   return (
-    <div className="w-full flex flex-col">
-      {/* Linha do Card em Zigue-Zague com Card e Título no Lado Oposto Conectado por Linha Fina */}
-      <div
-        className={cn(
-          "relative z-10 flex w-full items-center justify-between gap-2 xs:gap-3 sm:gap-6 md:gap-8 px-2 sm:px-6 md:px-10 max-w-3xl lg:max-w-4xl mx-auto group",
-          isLeft ? "flex-row" : "flex-row-reverse"
-        )}
-      >
-        {/* ── CONJUNTO DE 3 CARTAS EM FORMATO DE DECK QUADRADO ── */}
+    <div className="w-full flex flex-col items-center relative select-none">
+      {/* ── Nó da Trilha: Moeda com Contorno de Progresso + Card da Disciplina ── */}
+      <div className={cn("w-full max-w-[560px] flex z-10 my-1.5 sm:my-2", alignmentClass)}>
         <div
           onClick={item.onClick}
-          onPointerEnter={item.onPrefetch}
-          onTouchStart={item.onPrefetch}
-          className="relative shrink-0 w-[120px] h-[120px] xs:w-[135px] xs:h-[135px] sm:w-[160px] sm:h-[160px] md:w-[180px] md:h-[180px] aspect-square cursor-pointer select-none transition-transform duration-300 active:scale-[0.97] hover:-translate-y-1.5"
-        >
-          {/* ── CARTA 1 (Traseira/Fundo - Menor e mais escura) ── */}
-          <div
-            className={cn(
-              "absolute inset-0 rounded-2xl border border-white/10 opacity-30 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden aspect-square",
-              isLeft
-                ? "scale-[0.88] rotate-[6deg] translate-x-3 sm:translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:rotate-[8deg] group-hover:translate-x-5 group-hover:-translate-y-3"
-                : "scale-[0.88] -rotate-[6deg] -translate-x-3 sm:-translate-x-5 -translate-y-2 group-hover:scale-[0.92] group-hover:-rotate-[8deg] group-hover:-translate-x-5 group-hover:-translate-y-3"
-            )}
-            style={{
-              background: 'linear-gradient(145deg, #18191c 0%, #101114 100%)',
-              boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65)`,
-            }}
-          >
-            <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center overflow-hidden z-[2]">
-              <div
-                className="w-8 h-8 rounded-full border border-white/15 flex items-center justify-center opacity-30"
-                style={{ borderColor: palette.primary }}
-              >
-                <Layers className="w-3.5 h-3.5 text-white/60" />
-              </div>
-            </div>
-          </div>
-
-          {/* ── CARTA 2 (Meio - Tamanho intermediário) ── */}
-          <div
-            className={cn(
-              "absolute inset-0 rounded-2xl border border-white/15 opacity-60 transition-all duration-400 origin-bottom z-0 shadow-lg overflow-hidden aspect-square",
-              isLeft
-                ? "scale-[0.94] rotate-[3deg] translate-x-1.5 sm:translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:rotate-[4deg] group-hover:translate-x-3 group-hover:-translate-y-2"
-                : "scale-[0.94] -rotate-[3deg] -translate-x-1.5 sm:-translate-x-2.5 -translate-y-1 group-hover:scale-[0.96] group-hover:-rotate-[4deg] group-hover:-translate-x-3 group-hover:-translate-y-2"
-            )}
-            style={{
-              background: 'linear-gradient(145deg, #202226 0%, #141518 100%)',
-              boxShadow: `0 10px 24px -5px rgba(0,0,0,0.65)`,
-            }}
-          >
-            <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center overflow-hidden z-[2]">
-              <div
-                className="w-8 h-8 rounded-full border border-white/15 flex items-center justify-center opacity-30"
-                style={{ borderColor: palette.primary }}
-              >
-                <Layers className="w-3.5 h-3.5 text-white/60" />
-              </div>
-            </div>
-          </div>
-
-          {/* ── CARTA 3 (Principal Frontal - Centro Estável e Quadrado) ── */}
-          <div
-            className={cn(
-              "relative w-full h-full p-2.5 sm:p-3 rounded-2xl flex flex-col justify-between overflow-hidden box-border z-20 border border-zinc-700/80 hover:border-amber-400/60 transition-all duration-300 origin-bottom aspect-square",
-              isLeft
-                ? "group-hover:-rotate-[1deg] group-hover:-translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-                : "group-hover:rotate-[1deg] group-hover:translate-x-1 group-hover:-translate-y-1 shadow-[0_16px_36px_rgba(0,0,0,0.75)]"
-            )}
-            style={{
-              background: 'linear-gradient(145deg, #24262b 0%, #131417 100%)',
-              boxShadow: palette.shadow || '0 12px 30px rgba(0,0,0,0.7)',
-            }}
-          >
-            {/* Brilho reflexivo sutil no hover */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
-
-            {/* Topo da Carta: Deck e Ícone Layers */}
-            <div className="flex items-center justify-between z-[2] w-full px-0.5">
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                {item.badgeLabel}
-              </span>
-              <Layers className="w-3.5 h-3.5 text-zinc-500" />
-            </div>
-
-            {/* Centro da Carta: Botão de Play ou Coroa de Bloqueio */}
-            <div className="my-auto py-1 z-[2] w-full flex items-center justify-center">
-              <div className="relative flex items-center justify-center">
-                <div
-                  className="absolute inset-0 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-125 pointer-events-none"
-                  style={{ backgroundColor: `${palette.primary}50` }}
-                />
-
-                <div
-                  className={cn(
-                    "relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full backdrop-blur-md border flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110",
-                    item.isLocked
-                      ? "bg-black/75 border-amber-400/50 text-amber-400 group-hover:border-amber-300 group-hover:shadow-[0_0_20px_rgba(245,158,11,0.5)]"
-                      : "bg-black/60 border-white/20 text-white/95 group-hover:border-amber-300 group-hover:bg-amber-500 group-hover:text-black group-hover:shadow-[0_0_20px_rgba(245,158,11,0.5)]"
-                  )}
-                >
-                  {item.isLocked ? (
-                    <Crown className="w-4 h-4 xs:w-5 xs:h-5 fill-amber-400/20 text-amber-400" />
-                  ) : (
-                    <Play className="w-4 h-4 xs:w-4.5 xs:h-4.5 fill-current translate-x-0.5 transition-colors" />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Rodapé da Carta: Progresso e Estatísticas */}
-            <div className="z-[2] pt-1.5 border-t border-white/10 w-full px-0.5">
-              <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-normal text-zinc-300 mb-1">
-                <span className="truncate">
-                  {item.displayConcluidas > 0
-                    ? `${item.displayConcluidas}/${item.displayTotal}`
-                    : `${item.displayTotal} cards`}
-                </span>
-                <span className="font-semibold">{item.displayPct}%</span>
-              </div>
-              <div className="w-full bg-black/60 h-1.5 rounded-full overflow-hidden border border-white/10">
-                <div
-                  className="h-full rounded-full transition-all duration-500 shadow-sm"
-                  style={{
-                    width: `${Math.max(item.displayPct, item.displayTotal > 0 ? 8 : 0)}%`,
-                    backgroundColor: palette.primary || '#36AF85',
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ── LINHA FINA CONECTORA E TÍTULO NO LADO OPOSTO ── */}
-        <div
-          onClick={item.onClick}
-          onPointerEnter={item.onPrefetch}
+          onMouseEnter={item.onPrefetch}
           onTouchStart={item.onPrefetch}
           className={cn(
-            "flex-1 min-w-0 flex items-center cursor-pointer select-none py-2 transition-all",
-            isLeft
-              ? "flex-row pl-1.5 xs:pl-2 sm:pl-3"
-              : "flex-row-reverse pr-1.5 xs:pr-2 sm:pr-3"
+            "flex items-center gap-2.5 sm:gap-3.5 p-1.5 sm:p-2 rounded-2xl cursor-pointer transition-all duration-300 group max-w-[92vw] sm:max-w-[440px] drop-shadow-[0_12px_24px_rgba(0,0,0,0.92)]",
+            isActive
+              ? "scale-[1.03] sm:scale-105"
+              : "hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98]"
           )}
         >
-          {/* Linha Fina Conectora com Degradê */}
-          <div
-            className={cn(
-              "flex items-center shrink-0 w-6 xs:w-8 sm:w-12 md:w-16",
-              isLeft ? "flex-row" : "flex-row-reverse"
-            )}
-          >
-            {/* Ponto de Ancoragem na Lateral do Card */}
-            <div
-              className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full border border-white/70 shrink-0 transition-transform duration-300 group-hover:scale-125"
-              style={{
-                backgroundColor: palette.primary,
-                boxShadow: `0 0 8px ${palette.primary}`,
-              }}
-            />
-            {/* Linha Fina */}
-            <div
-              className="flex-1 h-[1px] transition-all duration-300 group-hover:h-[1.5px]"
-              style={{
-                background: isLeft
-                  ? `linear-gradient(to right, ${palette.primary}, rgba(255,255,255,0.3), transparent)`
-                  : `linear-gradient(to left, ${palette.primary}, rgba(255,255,255,0.3), transparent)`,
-              }}
-            />
-          </div>
+          {/* ── 1. MOEDA / MEDALHÃO COM BARRA DE PROGRESSO EM CONTORNO ── */}
+          <div className="relative shrink-0 flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 drop-shadow-[0_8px_16px_rgba(0,0,0,0.95)]">
+            {/* SVG da Barra de Progresso Circular que Contorna a Moeda */}
+            <svg 
+              className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none z-20 overflow-visible"
+              viewBox="0 0 64 64"
+            >
+              {/* Trilho de base escuro contornando o círculo */}
+              <circle
+                cx="32"
+                cy="32"
+                r={radius}
+                fill="none"
+                stroke="#120608"
+                strokeWidth="5"
+              />
+              {/* Guia visível do trilho circular */}
+              <circle
+                cx="32"
+                cy="32"
+                r={radius}
+                fill="none"
+                stroke={isCompleted ? "rgba(16, 185, 129, 0.35)" : activeTheme.glowSoft}
+                strokeWidth="3.5"
+              />
 
-          {/* Nome do Card em Letras Finas (Conforme Solicitado) */}
-          <div
-            className={cn(
-              "flex-1 min-w-0 flex flex-col justify-center px-1.5 xs:px-2.5 sm:px-4 transition-transform duration-300 group-hover:-translate-y-0.5",
-              isLeft ? "items-start text-left" : "items-end text-right"
-            )}
-          >
+              {/* Barra de Progresso em Contorno: Verde Esmeralda se completado (100%), Cor da Disciplina se em andamento ou ativo */}
+              {(isCompleted || item.displayPct > 0 || isActive) && (
+                <circle
+                  cx="32"
+                  cy="32"
+                  r={radius}
+                  fill="none"
+                  stroke={isCompleted ? "#10b981" : activeTheme.accent}
+                  strokeWidth="4.5"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={strokeDashoffset}
+                  strokeLinecap="round"
+                  style={{
+                    filter: isCompleted 
+                      ? 'drop-shadow(0 0 6px #10b981)' 
+                      : `drop-shadow(0 0 6px ${activeTheme.primary})`,
+                    transition: 'stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.4s ease',
+                  }}
+                />
+              )}
+            </svg>
+
+            {/* Moeda Circular Interna (Centralizada com folga nítida para a barra de progresso circular) */}
             <div
               className={cn(
-                "flex items-center gap-1.5 mb-1 opacity-80",
-                isLeft ? "justify-start" : "justify-end"
+                "relative rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-105 z-10",
+                "w-10 h-10 sm:w-11 sm:h-11"
               )}
+              style={
+                isCompleted ? {
+                  background: 'radial-gradient(circle at 32% 30%, #34d399 0%, #059669 55%, #064e3b 100%)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.7)',
+                  border: '1.5px solid #34d399',
+                } : isActive ? {
+                  background: activeTheme.medalActive,
+                  boxShadow: `0 2px 8px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.85), 0 0 12px ${activeTheme.glowSoft}`,
+                  border: `1.5px solid ${activeTheme.medalBorder}`,
+                } : item.isLocked ? {
+                  background: 'radial-gradient(circle at 35% 30%, rgba(45, 18, 25, 0.95) 0%, rgba(20, 8, 12, 0.95) 65%, #0c0406 100%)',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.15)',
+                  border: `1px solid ${activeTheme.borderSubtle}`,
+                } : {
+                  background: activeTheme.bgCard,
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.25)',
+                  border: `1px solid ${activeTheme.borderSubtle}`,
+                }
+              }
             >
-              <span
-                className="text-[12px] sm:text-[14px] font-bold uppercase tracking-wider"
-                style={{ color: item.isLocked ? '#fbbf24' : palette.primary }}
-              >
-                {item.badgeLabel}
-              </span>
-              {item.isLocked && (
-                <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 border border-amber-400/40">
-                  <Crown className="w-2.5 h-2.5 text-amber-400" />
-                  PREMIUM
+              {isCompleted ? (
+                <Check className="w-5 h-5 text-white stroke-[3.5] drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />
+              ) : isActive ? (
+                <span 
+                  className="text-[10px] sm:text-[11px] font-mono font-black tracking-tighter drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)] select-none"
+                  style={{ color: activeTheme.textActive }}
+                >
+                  {item.displayPct || 0}%
+                </span>
+              ) : item.isLocked ? (
+                <Lock className="w-3.5 h-3.5 drop-shadow-sm" style={{ color: activeTheme.accent }} />
+              ) : (
+                <span 
+                  className="text-[11px] sm:text-xs font-serif font-black drop-shadow-[0_1px_1px_rgba(255,255,255,0.3)]"
+                  style={{ color: activeTheme.highlight }}
+                >
+                  {item.ordemStr}
                 </span>
               )}
-              <span className="w-1 h-1 rounded-full bg-white/25" />
-              <span className="text-[10px] sm:text-[12px] font-light text-zinc-400">
-                {item.displayTotal} {item.displayLabel}
+            </div>
+          </div>
+
+          {/* ── 2. CARD HORIZONTAL COM AS CORES DA DISCIPLINA (ALTURA UNIFORME E SOMBRA ELEVADA) ── */}
+          <div
+            className={cn(
+              "flex-1 min-w-0 px-4 sm:px-4.5 py-2.5 sm:py-3 h-[76px] sm:h-[82px] min-h-[76px] sm:min-h-[82px] max-h-[76px] sm:max-h-[82px] rounded-2xl border transition-all duration-300 flex flex-col justify-center",
+              isCompleted && "border-[#10b981]/60",
+              item.isLocked && "opacity-90"
+            )}
+            style={
+              isCompleted ? {
+                background: 'linear-gradient(135deg, rgba(20, 35, 25, 0.96) 0%, rgba(10, 24, 16, 0.96) 100%)',
+                borderColor: 'rgba(16, 185, 129, 0.55)',
+                boxShadow: '0 14px 34px -4px rgba(0, 0, 0, 0.95), 0 6px 16px rgba(0, 0, 0, 0.85), 0 0 16px rgba(16, 185, 129, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.15)',
+              } : isActive ? {
+                background: activeTheme.bgActive,
+                borderColor: activeTheme.border,
+                boxShadow: `0 16px 38px -4px rgba(0, 0, 0, 0.95), 0 8px 20px rgba(0, 0, 0, 0.9), 0 0 24px ${activeTheme.glowSoft}, inset 0 1px 2px rgba(255, 255, 255, 0.95)`,
+              } : item.isLocked ? {
+                background: activeTheme.bgCard,
+                borderColor: activeTheme.borderSubtle,
+                boxShadow: '0 14px 34px -4px rgba(0, 0, 0, 0.95), 0 6px 16px rgba(0, 0, 0, 0.85), inset 0 1px 1px rgba(255, 255, 255, 0.08)',
+              } : {
+                background: activeTheme.bgCard,
+                borderColor: activeTheme.border,
+                boxShadow: `0 14px 34px -4px rgba(0, 0, 0, 0.95), 0 6px 16px rgba(0, 0, 0, 0.85), 0 0 16px ${activeTheme.glowSoft}, inset 0 1px 1px rgba(255, 255, 255, 0.1)`,
+              }
+            }
+          >
+            {/* Título do Tema */}
+            <div className="flex items-center gap-1.5">
+              <span
+                className={cn(
+                  "font-serif font-black text-[13px] xs:text-[14px] sm:text-[15px] leading-tight break-words line-clamp-2",
+                  isCompleted
+                    ? "text-[#a7f3d0]"
+                    : item.isLocked
+                    ? "text-[#e7e5e4]"
+                    : ""
+                )}
+                style={
+                  isActive ? {
+                    color: activeTheme.textActive,
+                    filter: 'drop-shadow(0 1px 1px rgba(255,255,255,0.7))'
+                  } : !isCompleted && !item.isLocked ? {
+                    color: activeTheme.highlight
+                  } : undefined
+                }
+              >
+                {tituloLimpo}
               </span>
             </div>
 
-            <h3 className="font-sans font-medium text-[16px] xs:text-[18px] sm:text-[20px] md:text-[22px] lg:text-[23px] leading-[1.3] break-words text-zinc-100 group-hover:text-amber-200 transition-colors drop-shadow-md line-clamp-3 sm:line-clamp-4 mt-1">
-              {tituloLimpo}
-            </h3>
+            {/* Subtítulo: Quantidade de Temas e Cards com Seta Elegante */}
+            <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-sans font-semibold mt-1">
+              <span
+                className="flex items-center gap-1"
+                style={
+                  isCompleted ? { color: '#34d399' } :
+                  isActive ? { color: activeTheme.textActive, opacity: 0.85 } :
+                  item.isLocked ? { color: '#a8a29e' } :
+                  { color: activeTheme.highlight, opacity: 0.8 }
+                }
+              >
+                {item.subtituloCustom ? (
+                  item.subtituloCustom
+                ) : item.temasCount !== undefined ? (
+                  <>
+                    <span>{item.temasCount} temas</span>
+                    <span 
+                      className="font-bold text-[11px]"
+                      style={{ color: isActive ? activeTheme.primary : activeTheme.accent }}
+                    >
+                      →
+                    </span>
+                    <span>{item.displayTotal} cards</span>
+                  </>
+                ) : (
+                  `${item.displayTotal} cards`
+                )}
+              </span>
+              {item.displayPct > 0 && (
+                <>
+                  <span style={{ color: isActive ? activeTheme.primary : activeTheme.accent }}>•</span>
+                  <span
+                    className="font-mono font-bold"
+                    style={{
+                      color: isCompleted ? '#34d399' : isActive ? activeTheme.textActive : activeTheme.accent
+                    }}
+                  >
+                    {item.displayPct}% {isCompleted ? 'concluído' : 'dominado'}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Conector Serpenteante de Trilha em Zigue-Zague Conectando Suavemente de Deck a Deck */}
+      {/* ── 3. CAMINHO SERPENTEANTE COM A PALETA DA DISCIPLINA ── */}
       {!isLast && (
-        <div className="relative w-full max-w-3xl lg:max-w-4xl mx-auto h-16 sm:h-20 -my-1.5 sm:-my-2 pointer-events-none z-[5] overflow-visible">
+        <div className="relative w-full max-w-[560px] h-16 sm:h-20 my-0.5 pointer-events-none z-0 overflow-visible">
           <svg
             className="w-full h-full overflow-visible"
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
           >
             <defs>
+              <linearGradient id={`trail-gradient-${i}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor={activeTheme.highlight} />
+                <stop offset="50%" stopColor={activeTheme.accent} />
+                <stop offset="100%" stopColor={activeTheme.primary} />
+              </linearGradient>
               <filter id={`trail-glow-${i}`} x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feGaussianBlur stdDeviation="3.5" result="blur" />
                 <feMerge>
                   <feMergeNode in="blur" />
                   <feMergeNode in="SourceGraphic" />
@@ -234,40 +286,53 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
               </filter>
             </defs>
 
-            {/* Leito da Trilha (traço suave e discreto) */}
+            {/* Base escura rústica da estrada de montanha */}
             <path
-              d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+              d={
+                isNextShiftRight
+                  ? "M 32 0 C 32 60, 68 40, 68 100"
+                  : "M 68 0 C 68 60, 32 40, 32 100"
+              }
               fill="none"
-              stroke="rgba(255, 255, 255, 0.08)"
-              strokeWidth="4"
+              stroke="#130709"
+              strokeWidth="9"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
             />
 
-            {/* Linha da Trilha em Zigue-Zague Pontilhada Luminosa */}
+            {/* Borda esculpida com a tonalidade sutil da disciplina */}
             <path
-              d={isLeft ? "M 30 0 C 30 65, 70 35, 70 100" : "M 70 0 C 70 65, 30 35, 30 100"}
+              d={
+                isNextShiftRight
+                  ? "M 32 0 C 32 60, 68 40, 68 100"
+                  : "M 68 0 C 68 60, 32 40, 32 100"
+              }
               fill="none"
-              stroke={palette.primary}
-              strokeWidth="2.5"
-              strokeDasharray="5 7"
+              stroke={activeTheme.borderSubtle}
+              strokeWidth="5"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+
+            {/* Estrada Luminosa na Cor da Disciplina */}
+            <path
+              d={
+                isNextShiftRight
+                  ? "M 32 0 C 32 60, 68 40, 68 100"
+                  : "M 68 0 C 68 60, 32 40, 32 100"
+              }
+              fill="none"
+              stroke={`url(#trail-gradient-${i})`}
+              strokeWidth="2.8"
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
               filter={`url(#trail-glow-${i})`}
             />
           </svg>
-
-          {/* Passos / Checkpoints Esféricos Perfeitos (Apenas a central branca) */}
-          <div
-            className="absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border border-white/70 bg-white shadow-lg"
-            style={{
-              left: '50%',
-              top: '50%',
-              boxShadow: `0 0 10px ${palette.primary}`,
-            }}
-          />
         </div>
       )}
     </div>
   );
 });
+
+export default FlashcardDeckItem;

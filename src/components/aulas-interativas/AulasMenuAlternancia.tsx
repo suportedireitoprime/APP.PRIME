@@ -10,6 +10,7 @@ interface AulasMenuAlternanciaProps {
   corDestaque?: string;
   totalFavoritos?: number;
   porcentagemGeral?: number;
+  semTrilha?: boolean;
 }
 
 export const AulasMenuAlternancia: React.FC<AulasMenuAlternanciaProps> = ({
@@ -17,19 +18,33 @@ export const AulasMenuAlternancia: React.FC<AulasMenuAlternanciaProps> = ({
   onSelecionarAba,
   corDestaque = '#fbbf24',
   totalFavoritos = 0,
-  porcentagemGeral = 0
+  porcentagemGeral = 0,
+  semTrilha = false
 }) => {
-  const abas: { id: AbaAulas; label: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; badge?: string | number }[] = [
+  const todasAbas: { id: AbaAulas; label: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; badge?: string | number }[] = [
     { id: 'trilhas', label: 'Trilhas', icon: Compass },
     { id: 'progresso', label: 'Progresso', icon: CheckCircle2, badge: porcentagemGeral > 0 ? `${porcentagemGeral}%` : undefined },
     { id: 'favoritos', label: 'Favoritos', icon: Star, badge: totalFavoritos > 0 ? totalFavoritos : undefined },
     { id: 'estatisticas', label: 'Estatísticas', icon: BarChart3 }
   ];
 
+  const abas = semTrilha ? todasAbas.filter(a => a.id !== 'trilhas') : todasAbas;
+
+  const handleClick = (id: AbaAulas) => {
+    if (semTrilha && abaAtiva === id) {
+      onSelecionarAba('trilhas');
+    } else {
+      onSelecionarAba(id);
+    }
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       <nav 
-        className="relative grid grid-cols-4 p-1 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-lg"
+        className={cn(
+          "relative grid p-1 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-md shadow-lg",
+          semTrilha ? "grid-cols-3" : "grid-cols-4"
+        )}
         aria-label="Navegação de abas das aulas"
       >
         {abas.map((aba) => {
@@ -40,9 +55,9 @@ export const AulasMenuAlternancia: React.FC<AulasMenuAlternanciaProps> = ({
             <button
               key={aba.id}
               type="button"
-              onClick={() => onSelecionarAba(aba.id)}
+              onClick={() => handleClick(aba.id)}
               className={cn(
-                "relative min-h-[46px] sm:min-h-[48px] px-1.5 sm:px-3 py-2 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold transition-all duration-300 select-none",
+                "relative min-h-[46px] sm:min-h-[48px] px-1.5 sm:px-3 py-2 rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-bold transition-all duration-300 select-none cursor-pointer",
                 isActive 
                   ? "text-white shadow-md" 
                   : "text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.03]"

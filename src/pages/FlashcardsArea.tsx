@@ -1,12 +1,12 @@
 // @ts-nocheck
 import { FlashcardDeckItem } from '@/components/flashcards/FlashcardDeckItem';
+import { ModalTemasMateriaFullscreen } from '@/components/flashcards/ModalTemasMateriaFullscreen';
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import DesktopPageLayout from '@/components/layout/DesktopPageLayout';
-import ShapeGrid from '@/components/ui/ShapeGrid';
 import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
 import {
   AprenderAreaData,
@@ -17,17 +17,89 @@ import {
   setCachedModuloData,
 } from '@/lib/aprenderAreaLoader';
 import { prefetchAprenderAula } from '@/lib/aprenderAulaPrefetch';
-import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Play, Search } from 'lucide-react';
+import { toast } from 'sonner';
+import { BookOpenText, GraduationCap, ListChecks, Layers, ArrowRight, Search, Landmark, Scale, ScrollText, Heart } from 'lucide-react';
 import { FlashcardsIcon } from '@/components/icons/FlashcardsIcon';
 import { useTrackArea } from "@/hooks/useTrackArea";
 import { areaIconFor, getAreaThemePalette } from '@/lib/areasDireitoIcons';
 import { getAreaCover } from '@/lib/areasDireitoCovers';
 import { useFlashcardsResumoAreas } from '@/lib/flashcardsQueries';
+import { FALLBACK_FLASHCARDS_AREAS } from '@/lib/flashcardsConstants';
 import { CANONICAL_AREA_TOPICS } from '@/data/canonicalAreaTopics';
 import { haptic } from '@/lib/nativeHaptics';
 import { useSubscription } from '@/hooks/useSubscription';
 import PremiumGate from '@/components/PremiumGate';
 import { cn } from '@/lib/utils';
+import ShapeGrid from '@/components/ui/ShapeGrid';
+import { motion, AnimatePresence } from 'framer-motion';
+import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
+import direitoAdministrativoFundo from '@/assets/direito-administrativo-fundo.webp';
+import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.jpg';
+import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
+import { ModalOrdemCronologica } from '@/components/flashcards/ModalOrdemCronologica';
+import { getDisciplinaVisualTheme, DisciplinaVisualTheme } from '@/lib/disciplinasTheme';
+import { formatarNomeArea } from '@/pages/Flashcards';
+import { 
+  MATERIAS_CATALOGO_COMPLETO, 
+  AULAS_CATALOGO_COMPLETO,
+  MateriaItem,
+  AulaItem
+} from '@/data/aulasInterativasCatalogoCompleto';
+
+function getDisciplinaIdFromSlug(s?: string): string {
+  if (!s) return 'administrativo';
+  const clean = s.toLowerCase().trim();
+  if (clean === 'direito-do-trabalho') return 'trabalho';
+  if (clean === 'direito-processual-do-trabalho') return 'processual-trabalho';
+  if (clean === 'filosofia-do-direito' || clean === 'teoria-e-filosofia-do-direito') return 'filosofia';
+  return clean.replace(/^direito-/, '');
+}
+
+export function formatarTituloMateriaCurto(titulo: string): string {
+  if (!titulo) return '';
+  return titulo
+    .replace(/^\d+[\.\-\s_:]+/, '')
+    .replace(/\s+(do|de|no|da|em)\s+Direito\s+([a-zA-ZÀ-ÿ]+)/gi, '')
+    .replace(/\s+(do|de|no|da|em)\s+Direito\b/gi, '')
+    .replace(/\s+(do|de|no|da|em)\s+Administrativo\b/gi, '')
+    .replace(/^Direito\s+[a-zA-ZÀ-ÿ]+\s*[-–:]\s*/i, '')
+    .replace(/\s+Direito\s+Administrativo\b/gi, '')
+    .trim();
+}
+
+const LaurelBranch = ({ flip = false }: { flip?: boolean }) => (
+  <svg 
+    viewBox="0 0 100 100" 
+    className={cn("w-14 h-14 sm:w-18 sm:h-18 text-[#d97706]/75 pointer-events-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]", flip && "scale-x-[-1]")}
+    fill="currentColor"
+  >
+    <path d="M15,90 Q40,75 50,20 Q48,55 25,85 Z" opacity="0.9" fill="none" stroke="currentColor" strokeWidth="2.5" />
+    <path d="M50,18 C55,15 62,20 58,26 C54,32 48,24 50,18 Z" />
+    <path d="M48,32 C56,30 63,36 57,43 C51,50 46,40 48,32 Z" />
+    <path d="M42,48 C51,47 57,54 50,61 C43,68 40,56 42,48 Z" />
+    <path d="M34,65 C43,65 48,72 40,78 C33,84 31,73 34,65 Z" />
+    <path d="M25,80 C32,80 37,86 30,91 C23,96 23,87 25,80 Z" />
+    <path d="M46,24 C38,20 33,26 38,32 C43,38 48,29 46,24 Z" />
+    <path d="M42,40 C33,37 29,44 35,50 C41,56 44,46 42,40 Z" />
+    <path d="M36,58 C26,56 23,63 30,69 C37,75 39,64 36,58 Z" />
+    <path d="M28,74 C19,73 17,80 24,85 C31,90 31,80 28,74 Z" />
+  </svg>
+);
+
+function getNumeroTema(temaStr: string): number {
+  if (!temaStr) return 0;
+  const m = String(temaStr).match(/^(\d+)[\.\-\s_:]+/);
+  return m ? parseInt(m[1], 10) : 0;
+}
+
+function itemMatchesSubMateria(sub: SubMateriaConfig, it: any): boolean {
+  const num = it.temaNum || getNumeroTema(it.rawTema || it.titulo);
+  if (num > 0 && sub.numeros && sub.numeros.includes(num)) return true;
+  
+  const text = (String(it.rawTema || '') + ' ' + String(it.titulo || '')).toLowerCase();
+  if (sub.keywords && sub.keywords.some((k) => text.includes(k.toLowerCase()))) return true;
+  return false;
+}
 
 const FlashcardsArea = () => {
   useTrackArea("flashcards_area_aberta");
@@ -49,8 +121,8 @@ const FlashcardsArea = () => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Lazy Render / Windowing State (Item 11)
-  const [visibleCount, setVisibleCount] = useState(8);
+  // Renderiza todos os decks com folga
+  const [visibleCount, setVisibleCount] = useState(60);
   const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -210,14 +282,17 @@ const FlashcardsArea = () => {
 
   // Busca temas e cards de flashcards desta área no Supabase com fallback resiliente
   const { data: temasFlashcards, isLoading: loadingFlashcards } = useQuery({
-    queryKey: ['area_flashcards_temas', officialFlashcardArea, effectiveAreaName, slug],
+    queryKey: ['area_flashcards_temas', flashcardAreaRow?.area, officialFlashcardArea, effectiveAreaName, slug],
     queryFn: async () => {
       const candidates = Array.from(
         new Set(
           [
+            flashcardAreaRow?.area,
             officialFlashcardArea,
             effectiveAreaName,
             area?.nome,
+            slug ? slug.replace(/-/g, ' ') : null,
+            slug ? slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') : null,
             officialFlashcardArea?.startsWith('Direito ')
               ? officialFlashcardArea.replace('Direito ', '')
               : `Direito ${officialFlashcardArea}`,
@@ -252,7 +327,7 @@ const FlashcardsArea = () => {
 
       return [];
     },
-    enabled: !!(officialFlashcardArea || effectiveAreaName || slug),
+    enabled: !!(flashcardAreaRow?.area || officialFlashcardArea || effectiveAreaName || slug),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -284,6 +359,8 @@ const FlashcardsArea = () => {
         const cleanTitle = (t.tema || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
         return {
           key: `deck-${t.tema}-${idx}`,
+          rawTema: t.tema,
+          temaNum: getNumeroTema(t.tema),
           titulo: cleanTitle || t.tema,
           ordemStr: String(idx + 1).padStart(2, '0'),
           badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
@@ -316,6 +393,8 @@ const FlashcardsArea = () => {
           const cleanTitle = (tema || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
           return {
             key: `canon-deck-${tema}-${idx}`,
+            rawTema: tema,
+            temaNum: getNumeroTema(tema),
             titulo: cleanTitle || tema,
             ordemStr: String(idx + 1).padStart(2, '0'),
             badgeLabel: `Deck ${String(idx + 1).padStart(2, '0')}`,
@@ -467,25 +546,337 @@ const FlashcardsArea = () => {
   }, [itemsToRender, searchTerm]);
 
 
+  // 1. Identifica a disciplina oficial correspondente ao slug da rota (ex: 'administrativo', 'penal', 'civil')
+  const disciplinaId = useMemo(() => getDisciplinaIdFromSlug(slug), [slug]);
+
+  // Tema visual oficial da disciplina (cores idênticas às Aulas Interativas)
+  const theme = useMemo(() => {
+    return getDisciplinaVisualTheme(slug || disciplinaId || area?.slug || area?.nome || officialFlashcardArea || effectiveAreaName);
+  }, [slug, disciplinaId, area?.slug, area?.nome, officialFlashcardArea, effectiveAreaName]);
+
+  // Ícone oficial da área idêntico ao exibido nas listas (ex: Martelo para Penal, Templo para Administrativo)
+  const AreaIconComponent = useMemo(() => {
+    const rawTarget = slug || disciplinaId || area?.slug || area?.nome || officialFlashcardArea || effectiveAreaName;
+    return areaIconFor(rawTarget).Icon;
+  }, [slug, disciplinaId, area?.slug, area?.nome, officialFlashcardArea, effectiveAreaName]);
+
   // Capa oficial ilustrada da matéria
   const coverInfo = area ? (getAreaCover(area.nome) || getAreaCover(area.slug)) : (slug ? getAreaCover(slug) : null);
   const coverUrl = coverInfo?.cover || "/images/gamificacao/deusa_temis_vazada.webp";
 
+  // Imagem de fundo oficial personalizada
+  const fundoAreaOficial = theme.isCustomFundo 
+    ? theme.fundoAssetUrl 
+    : (coverUrl || greciaFilosofosFundo);
 
-  const titleDisplay = (
-    <span className="font-sans font-extrabold uppercase tracking-widest text-[15px] sm:text-[16px] text-white">
-      {officialFlashcardArea || area?.nome || effectiveAreaName}
-    </span>
+  const headerProgressBar = (
+    <div className="w-full flex flex-col justify-center text-left py-0.5 pr-1">
+      <div className="flex items-center justify-between mb-1">
+        <span 
+          className="text-[11px] sm:text-xs font-serif font-black uppercase tracking-wider truncate flex items-center gap-1.5"
+          style={{ color: theme.highlight }}
+        >
+          <span 
+            className="w-1.5 h-1.5 rounded-full shrink-0" 
+            style={{ backgroundColor: theme.accent, boxShadow: `0 0 6px ${theme.accent}` }}
+          />
+          <span className="truncate">{formatarNomeArea(officialFlashcardArea || area?.nome || effectiveAreaName || 'Civil')}</span>
+        </span>
+        <span 
+          className="text-[10px] sm:text-[10.5px] font-mono font-bold tabular-nums shrink-0 ml-2"
+          style={{ color: theme.accent }}
+        >
+          {totalCompreendidos} / {totalFlashcardsArea} ({progressoPctFlash}%)
+        </span>
+      </div>
+      <div 
+        className="w-full h-1.5 rounded-full bg-black/60 overflow-hidden"
+        style={{ border: `1px solid ${theme.borderSubtle}` }}
+      >
+        <div
+          className="h-full rounded-full transition-all duration-700 ease-out"
+          style={{
+            width: `${Math.max(progressoPctFlash, totalFlashcardsArea > 0 ? 3 : 0)}%`,
+            background: theme.progressGradient,
+            boxShadow: theme.progressShadow,
+          }}
+        />
+      </div>
+    </div>
   );
+
+  const targetAreaKey = slug || area?.slug || officialFlashcardArea || '';
+  const [isFavoritedArea, setIsFavoritedArea] = useState(() => {
+    try {
+      const raw = localStorage.getItem('flashcards_favoritos_areas');
+      const list: string[] = raw ? JSON.parse(raw) : [];
+      return list.includes(targetAreaKey) || list.includes(officialFlashcardArea || '');
+    } catch {
+      return false;
+    }
+  });
+
+  const [centerToast, setCenterToast] = useState<{ message: string; favorited: boolean } | null>(null);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const showCenterToast = useCallback((favorited: boolean) => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setCenterToast({
+      message: favorited ? 'Matéria adicionada aos Favoritos!' : 'Matéria removida dos Favoritos.',
+      favorited,
+    });
+    toastTimeoutRef.current = setTimeout(() => {
+      setCenterToast(null);
+    }, 1200);
+  }, []);
+
+  const handleToggleFavoritoArea = () => {
+    try { haptic.selection(); } catch {}
+    setIsFavoritedArea((prev) => {
+      const next = !prev;
+      try {
+        const raw = localStorage.getItem('flashcards_favoritos_areas');
+        let list: string[] = raw ? JSON.parse(raw) : [];
+        const key = targetAreaKey;
+        if (next) {
+          if (!list.includes(key)) list.push(key);
+        } else {
+          list = list.filter((k) => k !== key && k !== officialFlashcardArea && k !== area?.slug);
+        }
+        localStorage.setItem('flashcards_favoritos_areas', JSON.stringify(list));
+      } catch {}
+      showCenterToast(next);
+      return next;
+    });
+  };
 
   const mobileHeader = (
     <PageHeader 
-      title={titleDisplay} 
-      subtitle="Trilha de Flashcards" 
+      title={headerProgressBar}
       onBack={goBack} 
       variant="dark"
+      rightAction={
+        <button
+          type="button"
+          onClick={handleToggleFavoritoArea}
+          className="w-9 h-9 rounded-full flex items-center justify-center bg-black/50 border border-[#78350f]/60 text-[#fef3c7] hover:text-rose-400 active:scale-110 transition-all cursor-pointer shadow-md"
+          title={isFavoritedArea ? "Remover dos favoritos" : "Favoritar matéria"}
+          aria-label={isFavoritedArea ? "Remover dos favoritos" : "Favoritar matéria"}
+        >
+          <Heart 
+            className={cn(
+              "w-4.5 h-4.5 transition-transform", 
+              isFavoritedArea ? "text-rose-500 fill-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.7)]" : "text-[#fef3c7]/75"
+            )} 
+          />
+        </button>
+      }
     />
   );
+
+  const todasAsAreas = useMemo(() => {
+    if (flashcardsAreasResumo && flashcardsAreasResumo.length > 0) {
+      return flashcardsAreasResumo;
+    }
+    return FALLBACK_FLASHCARDS_AREAS;
+  }, [flashcardsAreasResumo]);
+
+  const pillContainerRef = useRef<HTMLDivElement>(null);
+
+  // 2. Obtém a lista oficial de matérias da disciplina diretamente de MATERIAS_CATALOGO_COMPLETO
+  const materiasDaDisciplina = useMemo(() => {
+    const list = MATERIAS_CATALOGO_COMPLETO.filter((m) => m.disciplinaId === disciplinaId);
+    if (list.length > 0) return list;
+    return MATERIAS_CATALOGO_COMPLETO.filter(
+      (m) => m.disciplinaId.includes(disciplinaId) || disciplinaId.includes(m.disciplinaId)
+    );
+  }, [disciplinaId]);
+
+  // 3. Matéria selecionada/visível no menu horizontal superior de alternância
+  const [materiaAtivaId, setMateriaAtivaId] = useState<string>('');
+
+  useEffect(() => {
+    if (materiasDaDisciplina.length > 0) {
+      const exists = materiasDaDisciplina.some((m) => m.id === materiaAtivaId);
+      if (!exists) {
+        setMateriaAtivaId(materiasDaDisciplina[0].id);
+      }
+    }
+  }, [materiasDaDisciplina, materiaAtivaId]);
+
+  // 4. Mapeamento de todas as matérias com seus temas e contagens de flashcards
+  const materiasComTemas = useMemo(() => {
+    return materiasDaDisciplina.map((mat, matIdx) => {
+      const aulas = AULAS_CATALOGO_COMPLETO.filter((a) => a.materiaId === mat.id)
+        .sort((a, b) => a.numeroAula - b.numeroAula);
+
+      const numMat = parseInt(String(mat.numeroMateria).split('.')[0], 10) || (matIdx + 1);
+      const matchBanco =
+        (temasFlashcards || []).find((tf) => {
+          const numTf = parseInt(String(tf.tema).split('.')[0], 10);
+          return numTf > 0 && numTf === numMat;
+        }) ||
+        (temasFlashcards || []).find((tf) => {
+          const tNorm = tf.tema.toLowerCase();
+          const mNorm = mat.titulo.toLowerCase();
+          return tNorm.includes(mNorm) || mNorm.includes(tNorm);
+        });
+
+      const totalCardsMat = matchBanco?.total || 144;
+      const cardsPorTema = Math.max(12, Math.floor(totalCardsMat / Math.max(aulas.length, 1)));
+
+      const items = aulas.map((aula, aIdx) => {
+        const numStr = String(aIdx + 1).padStart(2, '0');
+        const isLocked = !isPremium && matIdx > 0 && aIdx >= 2;
+
+        return {
+          key: aula.id,
+          materiaId: mat.id,
+          titulo: aula.titulo,
+          ordemStr: numStr,
+          badgeLabel: `Tema ${numStr}`,
+          displayTotal: cardsPorTema,
+          displayConcluidas: 0,
+          displayPct: 0,
+          capaUrl: aula.capaUrl,
+          isLocked,
+          onClick: () => {
+            if (isLocked) {
+              haptic.impact('medium');
+              setPremiumGateOpen(true);
+              return;
+            }
+            try { haptic.light(); } catch {}
+            const temaQuery = matchBanco?.tema || aula.titulo;
+            navigate(
+              `/flashcards/estudar?area=${encodeURIComponent(
+                officialFlashcardArea || area?.nome || effectiveAreaName
+              )}&temas=${encodeURIComponent(temaQuery)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`,
+              {
+                state: { from: `/flashcards/area/${slug}`, capaUrl: aula.capaUrl, temaTitulo: aula.titulo },
+              }
+            );
+          },
+        };
+      });
+
+      const compreendidosMat = matchBanco?.compreendidos || 0;
+      const pctMat = totalCardsMat > 0 ? Math.min(100, Math.round((compreendidosMat / totalCardsMat) * 100)) : 0;
+
+      return {
+        ...mat,
+        matIndex: matIdx,
+        items,
+        totalCards: totalCardsMat,
+        compreendidos: compreendidosMat,
+        pct: pctMat,
+        capaInicial: items[0]?.capaUrl || mat.capaUrl || greciaFilosofosFundo,
+      };
+    });
+  }, [
+    materiasDaDisciplina,
+    temasFlashcards,
+    isPremium,
+    officialFlashcardArea,
+    area?.nome,
+    effectiveAreaName,
+    palette,
+    navigate,
+    slug,
+  ]);
+
+  // 5. Imagem de fundo ativa (muda e sobrepõe de forma fluida conforme a pessoa rola a trilha)
+  const [fundoAtivoUrl, setFundoAtivoUrl] = useState<string>(() => {
+    return materiasComTemas[0]?.capaInicial || greciaFilosofosFundo;
+  });
+
+  const fundoAtivoUrlRef = useRef(fundoAtivoUrl);
+  fundoAtivoUrlRef.current = fundoAtivoUrl;
+
+  const materiaAtivaIdRef = useRef(materiaAtivaId);
+  materiaAtivaIdRef.current = materiaAtivaId;
+
+  useEffect(() => {
+    if (materiasComTemas.length > 0 && (!fundoAtivoUrl || fundoAtivoUrl === greciaFilosofosFundo)) {
+      setFundoAtivoUrl(materiasComTemas[0].capaInicial);
+    }
+  }, [materiasComTemas]);
+
+  // Modal Fullscreen dos Temas da Matéria Selecionada
+  const [materiaModal, setMateriaModal] = useState<typeof materiasComTemas[0] | null>(null);
+  const [isModalTemasOpen, setIsModalTemasOpen] = useState(false);
+
+  // Bottom Sheet Pedagógico: Ordem Cronológica de Estudos
+  const [lockedMateriaTarget, setLockedMateriaTarget] = useState<typeof materiasComTemas[0] | null>(null);
+  const [isOrdemCronologicaOpen, setIsOrdemCronologicaOpen] = useState(false);
+
+  const openMateriaTemas = useCallback((mat: typeof materiasComTemas[0]) => {
+    try { haptic.selection(); } catch {}
+    setMateriaModal(mat);
+    setIsModalTemasOpen(true);
+  }, []);
+
+  const handleSelectTemaNoModal = useCallback(
+    (tema: any) => {
+      if (tema.isLocked) {
+        try { haptic.impact('medium'); } catch {}
+        setPremiumGateOpen(true);
+        return;
+      }
+      try { haptic.light(); } catch {}
+      setIsModalTemasOpen(false);
+      const canonicalArea = officialFlashcardArea || area?.nome || effectiveAreaName;
+      const matTitulo = materiaModal?.titulo ? materiaModal.titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : tema.titulo;
+      navigate(
+        `/flashcards/estudar?area=${encodeURIComponent(
+          canonicalArea
+        )}&temas=${encodeURIComponent(matTitulo)}&subtema=${encodeURIComponent(tema.titulo)}&limite=todos&cor=${encodeURIComponent(palette.primary)}`,
+        {
+          state: { from: `/flashcards/area/${slug}`, capaUrl: tema.capaUrl, temaTitulo: tema.titulo },
+        }
+      );
+    },
+    [navigate, officialFlashcardArea, area?.nome, effectiveAreaName, palette.primary, slug, materiaModal]
+  );
+
+  const selectMateria = useCallback((matId: string) => {
+    setMateriaAtivaId(matId);
+    try { haptic.selection(); } catch {}
+
+    const foundMat = materiasComTemas.find((m) => m.id === matId);
+    if (foundMat) {
+      openMateriaTemas(foundMat);
+    }
+  }, [materiasComTemas, openMateriaTemas]);
+
+  // Centraliza a pílula da matéria ativa no carrossel horizontal SEM afetar o scroll da página (window)
+  useEffect(() => {
+    if (!materiaAtivaId || !pillContainerRef.current) return;
+    const container = pillContainerRef.current;
+    const btn = container.querySelector(`[data-materia-id="${materiaAtivaId}"]`) as HTMLElement;
+    if (btn) {
+      const scrollPos = btn.offsetLeft - (container.clientWidth / 2) + (btn.clientWidth / 2);
+      container.scrollTo({ left: Math.max(0, scrollPos), behavior: 'smooth' });
+    }
+  }, [materiaAtivaId]);
+
+  const totalDecksCount = useMemo(() => {
+    return materiasComTemas.reduce((acc, m) => acc + m.items.length, 0);
+  }, [materiasComTemas]);
+
+  const totalMateriasCount = materiasComTemas.length;
+  const totalTemasCount = useMemo(() => {
+    return materiasComTemas.reduce((acc, m) => acc + m.items.length, 0);
+  }, [materiasComTemas]);
+  const totalCardsCountGeral = totalFlashcardsArea > 0 ? totalFlashcardsArea : materiasComTemas.reduce((acc, m) => acc + (m.totalCards || 0), 0);
+
+  const materiaAtiva = useMemo(() => {
+    return materiasComTemas.find((m) => m.id === materiaAtivaId) || materiasComTemas[0];
+  }, [materiasComTemas, materiaAtivaId]);
+
+  const activeSectionTotalCards = materiaAtiva?.totalCards || 144;
+  const activeSectionCompreendidos = 0;
+  const activeSectionPct = 0;
 
   return (
     <DesktopPageLayout
@@ -495,20 +886,24 @@ const FlashcardsArea = () => {
       subtitle="Trilha de Flashcards"
       mobileHeader={mobileHeader}
     >
-      {/* Fundo ShapeGrid (padrão oficial do app / início do aplicativo) */}
-      <div className="fixed inset-0 z-0 pointer-events-none bg-[#0D0D0D]">
-        <ShapeGrid
-          speed={0.5}
-          squareSize={40}
-          direction="diagonal"
-          borderColor="rgba(255, 255, 255, 0.04)"
-          hoverFillColor="rgba(255, 255, 255, 0.08)"
-          shape="square"
-          hoverTrailAmount={5}
+      {/* Fundo Oficial Fixo da Área com Nitidez Máxima (Ofuscamento Mínimo) e Escurecimento Suave */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0a0705]">
+        <img
+          src={fundoAreaOficial}
+          alt={officialFlashcardArea || area?.nome || effectiveAreaName || "Capa da Disciplina"}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[0.5px] brightness-[0.98] contrast-[1.02] transition-opacity duration-500"
         />
+        {/* Escurecimento suave mínimo */}
+        <div className="absolute inset-0 bg-black/10 pointer-events-none" />
       </div>
 
-      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-20 pt-4 min-w-0 overflow-x-hidden box-border">
+      {/* Pétalas e Flores de Lótus Douradas Caindo Suavemente pela Montanha (120fps GPU) */}
+      <FallingLotusPetals />
+
+      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-[calc(8.5rem+env(safe-area-inset-bottom,0px))] pt-2 min-w-0 overflow-x-hidden box-border">
         {loading && !data && !effectiveAreaName ? (
           <div className="space-y-4 px-4 py-5 sm:px-6">
             <div className="h-44 rounded-2xl bg-muted animate-pulse" />
@@ -520,87 +915,166 @@ const FlashcardsArea = () => {
           </div>
         ) : (
           <>
-            {/* Top Bar Selecione o Módulo / Decks de Flashcards */}
-            <div className="flex items-center justify-between mb-4 w-full min-w-0">
-              <div className="flex items-center gap-2 min-w-0">
-                <Layers className="w-5 h-5 shrink-0" style={{ color: palette.primary }} />
-                <h2 className="text-xs sm:text-sm font-normal font-sans uppercase tracking-widest text-white truncate">
-                  {`Decks de Flashcards (${itemsToRender.length})`}
-                </h2>
-              </div>
-            </div>
-            {/* Barra de progresso geral da área */}
-            {isFlash && totalFlashcardsArea > 0 && (
-              <div className="w-full mt-2 mb-1">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                    {totalCompreendidos} / {totalFlashcardsArea} dominados
-                  </span>
-                  <span 
-                    className="text-[11px] sm:text-xs font-bold tabular-nums"
-                    style={{ color: palette.primary }}
-                  >
-                    {progressoPctFlash}%
-                  </span>
-                </div>
-                <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{
-                      width: `${Math.max(progressoPctFlash, 1)}%`,
-                      background: `linear-gradient(90deg, ${palette.primary}, ${palette.accent || palette.primary})`,
-                      boxShadow: `0 0 8px ${palette.primary}66`,
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {isFlash && loadingFlashcards && itemsToRender.length === 0 ? (
+            {isFlash && loadingFlashcards && totalDecksCount === 0 ? (
               <div className="space-y-4 py-6">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className="h-36 rounded-2xl bg-muted/40 animate-pulse border border-white/5" />
                 ))}
               </div>
             ) : (
-              /* Trilha em Zigue-Zague Fluida com Caminho Serpenteante e Cards em Tamanho de Capa */
-              <div className="relative py-6 sm:py-10 w-full min-w-0 max-w-full overflow-hidden">
-                {/* ── Imagem Majestosa da Deusa Têmis Vazada e Impactante no Fundo Central da Trilha ── */}
-                <div className="pointer-events-none fixed inset-0 flex items-center justify-center overflow-hidden z-0 select-none">
-                  <img
-                    src="/images/gamificacao/deusa_temis_vazada.webp"
-                    alt=""
-                    aria-hidden="true"
-                    loading="eager"
-                    fetchpriority="high"
-                    decoding="async"
-                    className="w-[320px] sm:w-[440px] md:w-[500px] max-w-[88vw] h-auto object-contain opacity-25 filter drop-shadow-[0_0_55px_rgba(234,179,8,0.28)] pointer-events-none"
-                    style={{
-                      maskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                      WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
-                    }}
-                  />
-                </div>
+              /* Trilha Serpenteante Oficial de Matérias */
+              <div className="relative py-2 sm:py-4 w-full min-w-0 max-w-full overflow-hidden">
+                <div className="w-full min-w-0 relative z-[2] flex flex-col items-center">
+                  {/* ── CUME DA TRILHA: O TEMPLO DA ACRÓPOLE ── */}
+                  <div className="w-full flex flex-col items-center justify-center pt-2 pb-4">
+                    <div className="relative flex flex-col items-center">
+                      {/* Halo solar suave atrás do Parthenon */}
+                      <div 
+                        className="absolute -top-4 w-40 h-28 rounded-full pointer-events-none"
+                        style={{
+                          background: `radial-gradient(ellipse at center, ${theme.glow} 0%, ${theme.glowSoft} 60%, transparent 100%)`,
+                          filter: 'blur(16px)',
+                        }}
+                      />
 
-                <div className="w-full min-w-0 relative z-[2] flex flex-col">
-                  {itemsToRender.slice(0, visibleCount).map((item, i) => {
-                    const isLeft = i % 2 === 0;
+                      {/* Ícone Monumental Oficial da Disciplina (Idêntico ao das Listas) */}
+                      <div 
+                        className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border flex items-center justify-center shadow-2xl mb-2"
+                        style={{
+                          background: theme.bgCard,
+                          borderColor: theme.border,
+                          boxShadow: `0 0 24px ${theme.glowSoft}, inset 0 2px 4px rgba(255, 255, 255, 0.15)`,
+                        }}
+                      >
+                        <AreaIconComponent 
+                          className="w-9 h-9 sm:w-11 sm:h-11 drop-shadow-md" 
+                          style={{ color: theme.accent, filter: `drop-shadow(0 2px 8px ${theme.glow})` }}
+                        />
+                      </div>
+
+                      {/* Placa com o Nome da Disciplina */}
+                      <div 
+                        className="px-4 py-1.5 rounded-full border flex items-center gap-2 backdrop-blur-md"
+                        style={{
+                          background: theme.bgCard,
+                          borderColor: theme.border,
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.1)',
+                        }}
+                      >
+                        <span 
+                          className="w-1.5 h-1.5 rounded-full" 
+                          style={{ backgroundColor: theme.accent, boxShadow: `0 0 6px ${theme.accent}` }}
+                        />
+                        <span 
+                          className="text-[11px] sm:text-xs font-serif font-black tracking-widest uppercase"
+                          style={{ color: theme.highlight }}
+                        >
+                          {formatarNomeArea(officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito')}
+                        </span>
+                      </div>
+
+                      {/* Descrição Elegante com Setas: Matérias → Temas → Cards */}
+                      <div 
+                        className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-serif font-semibold mt-2 px-3 py-1 rounded-full border backdrop-blur-md"
+                        style={{
+                          background: theme.bgCard,
+                          borderColor: theme.borderSubtle,
+                          boxShadow: '0 8px 24px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.08)',
+                          color: theme.highlight,
+                        }}
+                      >
+                        <span>{totalMateriasCount} matérias</span>
+                        <span className="font-bold" style={{ color: theme.accent }}>→</span>
+                        <span>{totalTemasCount} temas</span>
+                        <span className="font-bold" style={{ color: theme.accent }}>→</span>
+                        <span className="font-mono font-bold" style={{ color: theme.accent }}>{totalCardsCountGeral} cards</span>
+                      </div>
+
+                      {/* Início da Estrada saindo do templo */}
+                      <div 
+                        className="w-1.5 h-6 my-2 rounded-full"
+                        style={{
+                          background: theme.roadGradient,
+                          boxShadow: theme.roadShadow,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Nós Serpenteantes: Cada Nó é uma Matéria Oficial */}
+                  {materiasComTemas.map((mat, matIdx) => {
+                    const isLast = matIdx === materiasComTemas.length - 1;
+                    // Apenas a matéria atual que a pessoa está estudando fica destacada (mais clara), sem mudar com o scroll
+                    const isActive = matIdx === 0;
+                    const isLocked = matIdx > 0;
+                    // Título conciso sem redundâncias ("do Direito Administrativo" etc)
+                    const tituloCurto = formatarTituloMateriaCurto(mat.titulo);
+
+                    const totalCardsMat = mat.totalCards || (mat.items.length * 36);
+                    const concluidasMat = mat.compreendidos || 0;
+                    const pctMat = mat.pct !== undefined ? mat.pct : (totalCardsMat > 0 ? Math.min(100, Math.round((concluidasMat / totalCardsMat) * 100)) : 0);
+
+                    const itemData = {
+                      key: mat.id,
+                      titulo: tituloCurto,
+                      badgeLabel: `Matéria ${String(matIdx + 1).padStart(2, '0')}`,
+                      ordemStr: String(matIdx + 1).padStart(2, '0'),
+                      displayTotal: totalCardsMat,
+                      temasCount: mat.items.length,
+                      displayConcluidas: concluidasMat,
+                      displayPct: pctMat,
+                      isLocked,
+                      onClick: () => {
+                        if (isLocked) {
+                          try { haptic.impact('medium'); } catch {}
+                          setLockedMateriaTarget(mat);
+                          setIsOrdemCronologicaOpen(true);
+                        } else {
+                          openMateriaTemas(mat);
+                        }
+                      },
+                    };
 
                     return (
-                      <FlashcardDeckItem
-                        key={item.key}
-                        item={item}
-                        i={i}
-                        palette={palette}
-                        isLast={i === itemsToRender.length - 1}
-                        coverUrl={coverUrl}
-                      />
+                      <div
+                        key={mat.id}
+                        id={`materia-section-${mat.id}`}
+                        data-track-theme="true"
+                        data-bg-url={mat.capaInicial}
+                        data-materia-id={mat.id}
+                        className="w-full flex flex-col items-center"
+                      >
+                        <FlashcardDeckItem
+                          item={itemData}
+                          i={matIdx}
+                          palette={palette}
+                          isLast={isLast}
+                          isActive={isActive}
+                          theme={theme}
+                        />
+                      </div>
                     );
                   })}
-                  {/* Sentinela do Lazy Render */}
-                  {visibleCount < itemsToRender.length && (
-                    <div ref={observerTarget} className="w-full h-20" />
-                  )}
+
+                  {/* Louros da Vitória Clássicos no Rodapé da Trilha */}
+                  <div className="w-full flex items-center justify-between px-6 pt-8 pb-4" style={{ color: theme.borderSubtle }}>
+                    <svg className="w-9 h-9 -rotate-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
+                      <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
+                      <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
+                    </svg>
+                    <span 
+                      className="text-[10px] font-serif font-semibold tracking-widest uppercase"
+                      style={{ color: theme.accent, opacity: 0.75 }}
+                    >
+                      Trilha da Sabedoria • {formatarNomeArea(officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito')}
+                    </span>
+                    <svg className="w-9 h-9 rotate-12 scale-x-[-1]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 21c-4.97 0-9-4.03-9-9 0-4.97 4.03-9 9-9" />
+                      <path d="M7 6c1 1 2 2 2 4s-1 3-2 4" />
+                      <path d="M4 11c1 1 2 2 2 4s-1 3-2 4" />
+                    </svg>
+                  </div>
                 </div>
               </div>
             )}
@@ -608,12 +1082,125 @@ const FlashcardsArea = () => {
         )}
       </div>
 
+      {/* ── Rodapé Helênico: exibido apenas para disciplinas que usam o templo padrão de fundo ── */}
+      {!theme.isCustomFundo && (
+        <div className="fixed bottom-0 left-0 right-0 z-20 pointer-events-none flex flex-col justify-end items-center select-none overflow-hidden h-20 sm:h-26">
+          {/* Gradiente de opacidade para a trilha surgir suavemente por trás */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#120b07] via-[#120b07]/60 to-transparent pointer-events-none" />
+          
+          {/* Fachada do Templo com Louros: Edge-to-Edge sem margens laterais */}
+          <div className="relative w-full h-15 sm:h-20 flex items-end">
+            <img
+              src={greciaTrilhaRodape}
+              alt="Templo Clássico e Louros Helênicos"
+              loading="eager"
+              decoding="async"
+              className="w-full h-full object-cover object-bottom opacity-95 drop-shadow-[0_-4px_16px_rgba(0,0,0,0.9)]"
+              style={{
+                maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%)',
+                WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%)',
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       <PremiumGate
         open={premiumGateOpen}
         onClose={() => setPremiumGateOpen(false)}
         feature="flashcards"
         usageLabel="Os 2 primeiros decks deste tema são gratuitos. Assine o Prime para estudar todos os decks!"
       />
+
+      {/* Modal Tela Cheia 100% Fiel ao Design (Capa no Topo + Lista de Temas Encadeada com Louros) */}
+      <ModalTemasMateriaFullscreen
+        isOpen={isModalTemasOpen}
+        onClose={() => setIsModalTemasOpen(false)}
+        materia={materiaModal ? {
+          id: materiaModal.id,
+          titulo: materiaModal.titulo,
+          subtitulo: materiaModal.subtitulo,
+          capaUrl: materiaModal.capaInicial || materiaModal.capaUrl,
+          totalCards: materiaModal.totalCards,
+        } : null}
+        todasMaterias={materiasComTemas.map((m) => ({
+          id: m.id,
+          titulo: m.titulo,
+          subtitulo: m.subtitulo,
+          capaUrl: m.capaInicial || m.capaUrl,
+          totalCards: m.totalCards,
+          items: m.items,
+        }))}
+        onSelectMateria={(selected) => {
+          const found = materiasComTemas.find((m) => m.id === selected.id);
+          if (found) {
+            setMateriaModal(found);
+            setMateriaAtivaId(found.id);
+          }
+        }}
+        temas={materiaModal ? materiaModal.items : []}
+        onSelectTema={handleSelectTemaNoModal}
+        areaNome={officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito'}
+        theme={theme}
+      />
+
+      {/* Bottom Sheet Pedagógico: Ordem Cronológica de Estudos */}
+      <ModalOrdemCronologica
+        isOpen={isOrdemCronologicaOpen}
+        onClose={() => setIsOrdemCronologicaOpen(false)}
+        temaBloqueadoTitulo={lockedMateriaTarget?.titulo ? formatarTituloMateriaCurto(lockedMateriaTarget.titulo) : 'Matéria Selecionada'}
+        temaAnteriorTitulo={materiasComTemas[0]?.titulo ? formatarTituloMateriaCurto(materiasComTemas[0].titulo) : 'Origens e Definições'}
+        theme={theme}
+        onConcluirAnterior={() => {
+          setIsOrdemCronologicaOpen(false);
+          if (materiasComTemas[0]) {
+            openMateriaTemas(materiasComTemas[0]);
+          }
+        }}
+        onContinuarAssimMesmo={() => {
+          setIsOrdemCronologicaOpen(false);
+          if (lockedMateriaTarget) {
+            openMateriaTemas(lockedMateriaTarget);
+          }
+        }}
+      />
+      {/* Aviso rápido animado no meio da tela */}
+      <AnimatePresence>
+        {centerToast && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none px-4 select-none">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.75, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.85, y: -15 }}
+              transition={{ type: 'spring', damping: 22, stiffness: 380, duration: 0.22 }}
+              className="px-6 py-4 rounded-2xl bg-black/90 backdrop-blur-xl border shadow-[0_16px_50px_rgba(0,0,0,0.85)] flex items-center gap-3.5"
+              style={{
+                borderColor: centerToast.favorited ? 'rgba(244, 63, 94, 0.6)' : theme.borderSubtle,
+                boxShadow: centerToast.favorited 
+                  ? '0 16px 50px rgba(0,0,0,0.85), 0 0 24px rgba(244, 63, 94, 0.3)'
+                  : '0 16px 50px rgba(0,0,0,0.85)',
+              }}
+            >
+              <div 
+                className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+                style={{
+                  background: centerToast.favorited ? 'rgba(244, 63, 94, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                <Heart 
+                  className={cn(
+                    "w-5 h-5 transition-transform",
+                    centerToast.favorited ? "text-rose-500 fill-rose-500 scale-110" : "text-zinc-400"
+                  )} 
+                />
+              </div>
+              <span className="text-sm font-serif font-black tracking-wide text-[#fef3c7]">
+                {centerToast.message}
+              </span>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </DesktopPageLayout>
   );
 };

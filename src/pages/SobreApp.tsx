@@ -7,13 +7,15 @@ import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import primeLogoAsset from '@/assets/logo-direitoprime-v2.webp.asset.json';
 import primeLogoBundled from '@/assets/bundled/logo-direitoprime-v2.webp';
-import { AppHeader } from '@/components/layout/AppHeader';
+import { PageHeader } from '@/components/vademecum/navigation/PageHeader';
+import { useGoBack } from '@/hooks/useGoBack';
 import { checkForAppUpdate } from '@/lib/appUpdate';
 const primeLogo = pickAsset(primeLogoBundled, srcOf(primeLogoAsset));
 
 const APP_VERSION = '1.0.0';
 
 const SobreApp = () => {
+  const goBack = useGoBack();
   const [checking, setChecking] = useState(false);
 
   const abrirFeedback = () => {
@@ -39,7 +41,7 @@ const SobreApp = () => {
 
   return (
     <div className="min-h-dvh bg-background">
-      <AppHeader title="Sobre o App" />
+      <PageHeader title="Sobre o App" onBack={goBack} />
 
       <div className="p-4 lg:px-8 space-y-6 max-w-lg lg:max-w-4xl mx-auto pb-16">
         {/* Logo + Title */}

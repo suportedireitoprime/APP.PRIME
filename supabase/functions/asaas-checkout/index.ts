@@ -162,7 +162,7 @@ Deno.serve(async (req) => {
 
     // TODOS os pagamentos via PIX ou compras avulsas/parceladas vão para /payments
     if (isPixPlan || isVitalicio || isInstallment) {
-      // Preços oficiais: Vitalício = R$ 149,90, Anual = R$ 89,90, Mensal = R$ 19,90
+      // Preços oficiais: Vitalício = R$ 149,90, Anual = R$ 89,90, Mensal = R$ 29,90
       let baseValue = 89.90;
       let maxInstallments = 1;
       let planDescription = 'Direito Prime Anual';
@@ -172,7 +172,7 @@ Deno.serve(async (req) => {
         maxInstallments = 6;
         planDescription = 'Direito Prime Vitalício';
       } else if (plan === 'mensal' || plan === 'mensal_pix') {
-        baseValue = 19.90;
+        baseValue = 29.90;
         maxInstallments = 1;
         planDescription = 'Direito Prime Mensal';
       } else if (plan === 'anual' || plan === 'anual_pix' || plan === 'anual_regular_pix' || plan === 'promocao') {
@@ -240,7 +240,7 @@ Deno.serve(async (req) => {
       };
 
       if (plan === 'mensal') {
-        subPayload.value = 19.90;
+        subPayload.value = 29.90;
         subPayload.cycle = 'MONTHLY';
         subPayload.description = 'Direito Prime Mensal';
       } else {
@@ -269,13 +269,14 @@ Deno.serve(async (req) => {
 
       const { data: existingSub } = await admin
         .from('asaas_subscriptions')
-        .select('status')
+        .select('status, plano')
         .eq('user_id', user.id)
         .maybeSingle();
 
       const isAlreadyActive = existingSub && ['ACTIVE', 'ACTIVE_GRACE', 'active'].includes(existingSub.status);
+      const isAlreadyVitalicio = existingSub?.plano === 'vitalicio';
 
-      if (!isAlreadyActive) {
+      if (!isAlreadyActive && !isAlreadyVitalicio) {
         const planoFinal = (plan === 'mensal' || plan === 'mensal_pix') 
           ? 'mensal' 
           : (plan === 'vitalicio' || plan === 'vitalicio_pix' ? 'vitalicio' : 'anual');
@@ -332,7 +333,7 @@ Deno.serve(async (req) => {
           event_name: 'purchase',
           metadata: {
             plano: planoFinal,
-            value: sub.value || (isAnualPlan ? (isVitalicio ? 149.90 : 89.90) : 19.90),
+            value: sub.value || (isAnualPlan ? (isVitalicio ? 149.90 : 89.90) : 29.90),
             currency: 'BRL',
             source: 'asaas_checkout_direct',
             payment_id: paymentId || sub.id,
