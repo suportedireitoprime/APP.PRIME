@@ -581,6 +581,29 @@ export default function AdminAulasInterativas() {
     isHorizontalDrag: null,
   });
 
+  // Interpolação suave e contínua do zoom e opacidade das capas (120fps Coverflow)
+  const updateCoverFlowTransforms = useCallback(() => {
+    const el = carouselScrollerRef.current;
+    if (!el) return;
+    const center = el.scrollLeft + el.clientWidth / 2;
+    const children = el.children;
+    const count = children.length;
+    for (let i = 0; i < count; i++) {
+      const child = children[i] as HTMLElement;
+      const childMid = child.offsetLeft + child.clientWidth / 2;
+      const dist = Math.abs(childMid - center) / (child.clientWidth || 1);
+      const norm = Math.min(2, dist);
+      const factor = Math.max(0, 1 - norm * 0.65);
+      const scale = 0.86 + factor * 0.18; // 0.86 nos lados até 1.04 no centro
+      const opacity = 0.50 + factor * 0.50; // 0.50 nos lados até 1.00 no centro
+      const inner = child.firstElementChild as HTMLElement;
+      if (inner) {
+        inner.style.transform = `scale(${scale.toFixed(3)})`;
+        inner.style.opacity = opacity.toFixed(3);
+      }
+    }
+  }, []);
+
   const scrollCarouselToIndex = useCallback(
     (idx: number, behavior: ScrollBehavior = "smooth") => {
       const el = carouselScrollerRef.current;
@@ -593,8 +616,9 @@ export default function AdminAulasInterativas() {
         playPageTurnSound();
       }
       setActiveCarouselIndex(idx);
+      setTimeout(updateCoverFlowTransforms, 20);
     },
-    [activeCarouselIndex, playPageTurnSound]
+    [activeCarouselIndex, playPageTurnSound, updateCoverFlowTransforms]
   );
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -639,6 +663,7 @@ export default function AdminAulasInterativas() {
 
     // Acompanha o dedo na velocidade exata 1:1
     el.scrollLeft = tracker.startScrollLeft - dx;
+    updateCoverFlowTransforms();
 
     // Registra histórico de velocidade nos últimos 120ms
     const now = performance.now();
@@ -1077,6 +1102,8 @@ export default function AdminAulasInterativas() {
       }
     }
 
+    updateCoverFlowTransforms();
+
     if (best !== activeCarouselIndex && best !== lastSoundIndexRef.current) {
       lastSoundIndexRef.current = best;
       playPageTurnSound();
@@ -1118,6 +1145,7 @@ export default function AdminAulasInterativas() {
       setActiveCarouselIndex(initialIndex);
       const timer = setTimeout(() => {
         scrollCarouselToIndex(initialIndex, "instant" as ScrollBehavior);
+        updateCoverFlowTransforms();
       }, 50);
       return () => clearTimeout(timer);
     }
@@ -1228,26 +1256,26 @@ export default function AdminAulasInterativas() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#0e0406]/98 via-black/65 to-black/75 pointer-events-none" />
           </div>
 
-          {/* ── CONTAINER PRINCIPAL EM TELA CHEIA (SEM SCROLL VERTICAL, 100% RESPONSIVO, SEM MARGENS LATERAIS) ── */}
-          <div className="relative z-20 w-full h-dvh max-h-dvh overflow-hidden flex flex-col justify-between pt-[calc(0.6rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(0.85rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-0">
+          {/* ── CONTAINER PRINCIPAL EM TELA CHEIA (SEM SCROLL VERTICAL, 100% RESPONSIVO E ADAPTÁVEL PARA CELULARES) ── */}
+          <div className="fixed inset-0 z-20 w-full h-full max-h-screen overflow-hidden overscroll-none select-none flex flex-col justify-between pt-[calc(0.5rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(0.65rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-0 touch-pan-x">
             {/* ── CABEÇALHO RESPONSIVO PADRÃO FLASHCARDS (CENTRALIZADO, COM COR DINÂMICA DA CAPA) ── */}
             <div className="w-full max-w-lg sm:max-w-xl lg:max-w-3xl mx-auto flex flex-col items-center z-20 shrink-0 px-3 xs:px-4 sm:px-6">
-              {/* Top Bar com Botão Voltar Circular Padrão Premium (w-12 h-12 / 52px) + Botão de Progresso */}
-              <div className="w-full flex items-center justify-between mb-1.5 xs:mb-2">
+              {/* Top Bar com Botão Voltar Circular Padrão Premium + Botão de Progresso */}
+              <div className="w-full flex items-center justify-between mb-1 xs:mb-1.5">
                 <button
                   type="button"
                   onClick={handleVoltar}
-                  className="w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center bg-black/60 border border-white/20 text-white hover:bg-black/80 active:scale-95 transition-all cursor-pointer shadow-lg shrink-0"
+                  className="w-11 h-11 xs:w-12 xs:h-12 sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center bg-black/60 border border-white/20 text-white hover:bg-black/80 active:scale-95 transition-all cursor-pointer shadow-lg shrink-0"
                   style={{
                     borderColor: `${currTheme.primary || '#ef4444'}66`,
                     boxShadow: `0 0 14px ${currTheme.glowSoft || 'rgba(0,0,0,0.5)'}`
                   }}
                   aria-label="Voltar"
                 >
-                  <ArrowLeft className="w-6 h-6 sm:w-7 sm:h-7 text-white stroke-[2.4]" />
+                  <ArrowLeft className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 text-white stroke-[2.4]" />
                 </button>
 
-                {/* Botão de Progresso Padrão Premium (w-12 h-12 / 52px) no Canto Superior Direito */}
+                {/* Botão de Progresso Padrão Premium no Canto Superior Direito */}
                 <button
                   type="button"
                   onClick={() => {
@@ -1255,7 +1283,7 @@ export default function AdminAulasInterativas() {
                     setAbaAtiva(abaAtiva === 'progresso' ? 'trilhas' : 'progresso');
                   }}
                   className={cn(
-                    "relative w-12 h-12 sm:w-[52px] sm:h-[52px] rounded-full flex items-center justify-center border transition-all active:scale-95 shadow-lg cursor-pointer shrink-0",
+                    "relative w-11 h-11 xs:w-12 xs:h-12 sm:w-[50px] sm:h-[50px] rounded-full flex items-center justify-center border transition-all active:scale-95 shadow-lg cursor-pointer shrink-0",
                     abaAtiva === 'progresso'
                       ? "bg-black/90 text-white"
                       : "bg-black/60 text-white/90 hover:bg-black/80"
@@ -1270,7 +1298,7 @@ export default function AdminAulasInterativas() {
                   aria-label="Ver Progresso das Aulas"
                 >
                   <BarChart3 
-                    className="w-6 h-6 sm:w-6.5 sm:h-6.5 stroke-[2.4]" 
+                    className="w-5.5 h-5.5 xs:w-6 xs:h-6 sm:w-6.5 sm:h-6.5 stroke-[2.4]" 
                     style={{ color: currTheme.accent || '#fca5a5' }}
                   />
                   {porcentagemGeral > 0 && (
@@ -1288,10 +1316,10 @@ export default function AdminAulasInterativas() {
               </div>
 
               {/* Título Imperial Centralizado com Badge Dinâmica */}
-              <div className="text-center mb-1 xs:mb-1.5 px-2">
-                <h1 className="inline-flex items-center justify-center gap-2 xs:gap-2.5 flex-wrap">
+              <div className="text-center mb-0.5 xs:mb-1 px-2">
+                <h1 className="inline-flex items-center justify-center gap-1.5 xs:gap-2 flex-wrap">
                   <span 
-                    className="px-2 py-0.5 xs:px-2.5 xs:py-1 rounded-xl text-[11px] xs:text-xs sm:text-sm font-mono font-black text-white border shadow-inner tracking-wider"
+                    className="px-2 py-0.5 rounded-xl text-[10.5px] xs:text-xs sm:text-sm font-mono font-black text-white border shadow-inner tracking-wider"
                     style={{
                       background: 'rgba(25, 10, 15, 0.85)',
                       borderColor: currTheme.primary || '#ef4444',
@@ -1300,23 +1328,23 @@ export default function AdminAulasInterativas() {
                   >
                     {AULAS_CATALOGO.length > 0 ? AULAS_CATALOGO.length.toLocaleString('pt-BR') : '3.003'}
                   </span>
-                  <span className="text-xl xs:text-2xl sm:text-3xl font-serif font-black tracking-wide text-[#fff1f2] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+                  <span className="text-lg xs:text-xl sm:text-2xl font-serif font-black tracking-wide text-[#fff1f2] drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
                     Aulas em Trilha
                   </span>
                 </h1>
-                <p className="text-[11px] xs:text-xs sm:text-sm font-serif italic text-zinc-300/85 mt-0.5">
+                <p className="text-[10px] xs:text-[11px] sm:text-xs font-serif italic text-zinc-300/85 mt-0.5">
                   Escolha a área do direito para começar sua jornada.
                 </p>
               </div>
 
-              {/* ── BARRA DE PESQUISA RÁPIDA DAS ÁREAS (RESPONSIVA, ALTURA CONFORTÁVEL PADRÃO 48-56px) ── */}
-              <div className="w-full max-w-[340px] xs:max-w-[420px] sm:max-w-lg md:max-w-xl mx-auto px-2 mt-2 mb-2 z-20">
+              {/* ── BARRA DE PESQUISA RÁPIDA DAS ÁREAS (RESPONSIVA, COMPACTA E CONFORTÁVEL) ── */}
+              <div className="w-full max-w-[320px] xs:max-w-[380px] sm:max-w-lg md:max-w-xl mx-auto px-2 mt-1 mb-1 xs:mt-1.5 xs:mb-1.5 z-20">
                 <div className="relative w-full">
                   <div 
-                    className="absolute left-3.5 xs:left-4 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 transition-colors"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 transition-colors"
                     style={{ color: currTheme.accent || '#fca5a5' }}
                   >
-                    <Search className="w-4.5 h-4.5 xs:w-5 xs:h-5 sm:w-5.5 sm:h-5.5 stroke-[2.2]" />
+                    <Search className="w-4 h-4 xs:w-4.5 xs:h-4.5 stroke-[2.2]" />
                   </div>
                   <input
                     type="text"
@@ -1326,7 +1354,7 @@ export default function AdminAulasInterativas() {
                       setActiveDiscIndex(0);
                     }}
                     placeholder="Buscar área ou matéria (ex: Penal)..."
-                    className="w-full h-12 xs:h-13 sm:h-14 pl-11 xs:pl-12 sm:pl-13 pr-11 xs:pr-12 sm:pr-13 rounded-full text-xs xs:text-sm sm:text-base text-white placeholder:text-zinc-400/80 focus:outline-none transition-all shadow-inner"
+                    className="w-full h-10 xs:h-11 sm:h-12 pl-10 xs:pl-11 pr-10 xs:pr-11 rounded-full text-xs xs:text-sm text-white placeholder:text-zinc-400/80 focus:outline-none transition-all shadow-inner"
                     style={{
                       background: 'rgba(15, 6, 10, 0.82)',
                       backdropFilter: 'blur(16px)',
@@ -1343,10 +1371,10 @@ export default function AdminAulasInterativas() {
                         setBuscaTermo('');
                         setActiveDiscIndex(0);
                       }}
-                      className="absolute right-3.5 xs:right-4 top-1/2 -translate-y-1/2 p-1.5 text-zinc-400 hover:text-white cursor-pointer z-10 transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-white cursor-pointer z-10 transition-colors"
                       aria-label="Limpar busca"
                     >
-                      <X className="w-4.5 h-4.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   )}
                 </div>
@@ -1449,22 +1477,22 @@ export default function AdminAulasInterativas() {
               };
 
               return (
-                <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center select-none px-0">
+                <div className="w-full flex-1 min-h-0 flex flex-col items-center justify-center select-none px-0 my-auto">
                   {/* ── CARROSSEL AUDIOBOOKS COVERFLOW COM ZOOM NA CAPA CENTRAL (SEM MARGENS LATERAIS) ── */}
-                  <div className="relative w-full mx-auto flex items-center justify-center px-0 my-auto py-1 select-none overflow-hidden">
+                  <div className="relative w-full mx-auto flex items-center justify-center px-0 my-auto py-0.5 select-none overflow-hidden">
                     
                     {/* Botão Seta Esquerda (Flutuante com Margem e Sombra) */}
                     <button
                       type="button"
                       onClick={handlePrev}
-                      className="absolute left-1.5 xs:left-2.5 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border border-white/20"
+                      className="absolute left-1 xs:left-2 sm:left-6 top-1/2 -translate-y-1/2 w-8.5 h-8.5 xs:w-9.5 xs:h-9.5 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border border-white/20"
                       style={{
                         borderColor: `${currTheme.primary || '#ef4444'}88`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
                       }}
                       aria-label="Área anterior"
                     >
-                      <ChevronLeft className="w-5 h-5 xs:w-6 xs:h-6 stroke-[2.4]" />
+                      <ChevronLeft className="w-4.5 h-4.5 xs:w-5 xs:h-5 stroke-[2.4]" />
                     </button>
 
                     {/* Scroller Horizontal de Capas Snap-x Snap-Mandatory */}
@@ -1475,7 +1503,7 @@ export default function AdminAulasInterativas() {
                       onPointerMove={handlePointerMove}
                       onPointerUp={handlePointerUp}
                       onPointerCancel={handlePointerUp}
-                      className="w-full flex items-center gap-3.5 xs:gap-4 sm:gap-6 overflow-x-auto snap-x snap-mandatory py-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-manipulation px-[calc(50vw-85px)] xs:px-[calc(50vw-100px)] sm:px-[calc(50vw-125px)] md:px-[calc(50vw-145px)]"
+                      className="w-full flex items-center gap-2.5 xs:gap-3 sm:gap-4.5 overflow-x-auto snap-x snap-mandatory py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-pan-x px-[calc(50vw-67px)] xs:px-[calc(50vw-76px)] sm:px-[calc(50vw-94px)] md:px-[calc(50vw-112.5px)]"
                     >
                       {loopedDisciplinas.map((disc, idx) => {
                         const isActive = idx === activeCarouselIndex;
@@ -1487,28 +1515,23 @@ export default function AdminAulasInterativas() {
                           <div
                             key={`${disc.id}-${idx}`}
                             onClick={() => handleCardClick(disc, idx)}
-                            className={cn(
-                              "snap-center shrink-0 w-[170px] xs:w-[200px] sm:w-[250px] md:w-[290px] flex flex-col items-center cursor-pointer transition-all duration-400 ease-out",
-                              isActive
-                                ? "z-20 opacity-100 scale-105 sm:scale-110"
-                                : "z-10 opacity-60 hover:opacity-85 scale-[0.84] sm:scale-90"
-                            )}
+                            className="snap-center shrink-0 w-[134px] xs:w-[152px] sm:w-[188px] md:w-[225px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
                           >
-                            {/* Card em Proporção 3:4 com Zoom na Capa Central */}
+                            {/* Card em Proporção 3:4 com Zoom Suave Contínuo */}
                             <div
                               className={cn(
-                                "relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border transform-gpu transition-all duration-400 ease-out flex flex-col justify-end p-3 xs:p-3.5 sm:p-4 text-center",
+                                "relative aspect-[3/4] max-h-[36vh] xs:max-h-[40vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border transform-gpu transition-all duration-300 ease-out flex flex-col justify-end p-2 xs:p-2.5 sm:p-3 text-center will-change-transform",
                                 isActive
-                                  ? "border-2 shadow-2xl ring-2 ring-white/20"
-                                  : "border-white/20 shadow-lg hover:border-white/40"
+                                  ? "border-2 shadow-2xl ring-2 ring-white/20 scale-[1.03] opacity-100"
+                                  : "border-white/20 shadow-lg hover:border-white/40 scale-[0.88] opacity-55"
                               )}
                               style={
                                 isActive ? {
                                   borderColor: discTheme.primary || '#ef4444',
-                                  boxShadow: `0 0 36px ${discTheme.glow || 'rgba(239, 68, 68, 0.85)'}, 0 25px 50px -5px rgba(0,0,0,0.95), inset 0 1.5px 0.5px rgba(255,255,255,0.75)`,
+                                  boxShadow: `0 0 32px ${discTheme.glow || 'rgba(239, 68, 68, 0.85)'}, 0 20px 40px -5px rgba(0,0,0,0.95), inset 0 1.5px 0.5px rgba(255,255,255,0.75)`,
                                 } : {
-                                  borderColor: 'rgba(255, 255, 255, 0.25)',
-                                  boxShadow: '0 15px 35px rgba(0,0,0,0.9), inset 0 1px 1px rgba(255,255,255,0.2)',
+                                  borderColor: 'rgba(255, 255, 255, 0.22)',
+                                  boxShadow: '0 12px 28px rgba(0,0,0,0.85), inset 0 1px 1px rgba(255,255,255,0.18)',
                                 }
                               }
                             >
@@ -1522,7 +1545,7 @@ export default function AdminAulasInterativas() {
                                 />
                               )}
 
-                              {/* Imagem da Capa: Com Zoom Extra de 110% quando no Centro */}
+                              {/* Imagem da Capa: Com Zoom Suave quando no Centro */}
                               <img
                                 src={capaUrl}
                                 alt={disc.nome}
@@ -1530,10 +1553,10 @@ export default function AdminAulasInterativas() {
                                 decoding="async"
                                 fetchPriority={isActive ? "high" : "auto"}
                                 className={cn(
-                                  "absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none transition-transform duration-500 ease-out rounded-2xl",
+                                  "absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none transition-transform duration-400 ease-out rounded-2xl",
                                   isActive 
-                                    ? "scale-110 filter brightness-125 contrast-110 saturate-115" 
-                                    : "scale-100 filter brightness-110 contrast-105 saturate-105"
+                                    ? "scale-105 filter brightness-120 contrast-110 saturate-110" 
+                                    : "scale-100 filter brightness-105 contrast-100 saturate-100"
                                 )}
                               />
 
@@ -1544,10 +1567,10 @@ export default function AdminAulasInterativas() {
                               <div className="relative z-20 w-full flex flex-col items-center">
                                 <h3 
                                   className={cn(
-                                    "font-serif font-black text-white leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,1)] text-center break-words text-balance px-1 transition-all",
+                                    "font-serif font-black text-white leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,1)] text-center break-words text-balance px-0.5 transition-all",
                                     isActive 
-                                      ? "text-xs xs:text-sm sm:text-base md:text-lg" 
-                                      : "text-[11px] xs:text-xs sm:text-sm text-zinc-200"
+                                      ? "text-[11.5px] xs:text-[13px] sm:text-base" 
+                                      : "text-[10px] xs:text-[11px] sm:text-xs text-zinc-200"
                                   )}
                                 >
                                   {disc.nome}
@@ -1556,10 +1579,10 @@ export default function AdminAulasInterativas() {
                                 {/* Badge Pill com Contagem de Aulas */}
                                 <div 
                                   className={cn(
-                                    "mt-1.5 xs:mt-2 inline-flex items-center justify-center font-mono font-black tracking-wider uppercase shadow-lg border rounded-full transition-all",
+                                    "mt-1 xs:mt-1.5 inline-flex items-center justify-center font-mono font-black tracking-wider uppercase shadow-lg border rounded-full transition-all",
                                     isActive
-                                      ? "px-3.5 py-0.5 xs:px-4 xs:py-1 text-[11px] xs:text-xs sm:text-sm"
-                                      : "px-2.5 py-0.5 text-[9.5px] xs:text-[10px] sm:text-[11px] opacity-90"
+                                      ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9.5px] xs:text-[10.5px] sm:text-xs"
+                                      : "px-2 py-0.5 text-[8px] xs:text-[9px] sm:text-[10px] opacity-90"
                                   )}
                                   style={{
                                     backgroundColor: 'rgba(10, 5, 8, 0.85)',
@@ -1581,19 +1604,19 @@ export default function AdminAulasInterativas() {
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="absolute right-1.5 xs:right-2.5 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_24px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border border-white/20"
+                      className="absolute right-1 xs:right-2 sm:right-6 top-1/2 -translate-y-1/2 w-8.5 h-8.5 xs:w-9.5 xs:h-9.5 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.95)] z-30 shrink-0 backdrop-blur-md border border-white/20"
                       style={{
                         borderColor: `${currTheme.primary || '#ef4444'}88`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
                       }}
                       aria-label="Próxima área"
                     >
-                      <ChevronRight className="w-5 h-5 xs:w-6 xs:h-6 stroke-[2.4]" />
+                      <ChevronRight className="w-4.5 h-4.5 xs:w-5 xs:h-5 stroke-[2.4]" />
                     </button>
                   </div>
 
                   {/* ── 4 PONTOS INDICADORES DO CARROSSEL (DINAMIZADOS PELA COR DA CAPA) ── */}
-                  <div className="flex items-center justify-center gap-1.5 my-2 xs:my-2.5 z-20 shrink-0">
+                  <div className="flex items-center justify-center gap-1.5 my-1 xs:my-1.5 z-20 shrink-0">
                     {[0, 1, 2, 3].map((dotIdx) => {
                       const isDotActive = dotIdx === (safeIdx % 4);
                       return (
@@ -1609,8 +1632,8 @@ export default function AdminAulasInterativas() {
                           className={cn(
                             "transition-all duration-300 rounded-full cursor-pointer",
                             isDotActive 
-                              ? "w-6 h-2 shadow-[0_0_10px]" 
-                              : "w-2 h-2 bg-white/20 hover:bg-white/40"
+                              ? "w-5 xs:w-6 h-1.5 xs:h-2 shadow-[0_0_10px]" 
+                              : "w-1.5 xs:w-2 h-1.5 xs:h-2 bg-white/20 hover:bg-white/40"
                           )}
                           style={{
                             backgroundColor: isDotActive ? (currTheme.primary || '#ef4444') : undefined,
@@ -1623,19 +1646,19 @@ export default function AdminAulasInterativas() {
                   </div>
 
                   {/* ── BOTÃO PRINCIPAL DE AÇÃO: SELECIONAR ÁREA → (DINAMIZADO COM GRADIENTE DA CAPA) ── */}
-                  <div className="w-full max-w-[310px] xs:max-w-[340px] mx-auto px-2 mb-1 xs:mb-1.5 z-20 shrink-0">
+                  <div className="w-full max-w-[270px] xs:max-w-[300px] mx-auto px-2 mb-0.5 xs:mb-1 z-20 shrink-0">
                     <button
                       type="button"
                       onClick={handleSelectCurrent}
-                      className="w-full h-12 xs:h-13 rounded-full flex items-center justify-center gap-2 font-serif font-black text-sm xs:text-base text-white shadow-2xl active:scale-95 hover:brightness-110 transition-all cursor-pointer border"
+                      className="w-full h-10.5 xs:h-11 sm:h-12 rounded-full flex items-center justify-center gap-2 font-serif font-black text-xs xs:text-sm sm:text-base text-white shadow-2xl active:scale-95 hover:brightness-110 transition-all cursor-pointer border"
                       style={{
                         background: `linear-gradient(135deg, ${currTheme.accent || '#ef4444'} 0%, ${currTheme.primary || '#dc2626'} 50%, #150508 100%)`,
                         borderColor: `${currTheme.primary || '#ef4444'}90`,
-                        boxShadow: `0 8px 25px ${currTheme.glow || 'rgba(220,38,38,0.5)'}, inset 0 1px 2px rgba(255,255,255,0.4)`
+                        boxShadow: `0 6px 20px ${currTheme.glow || 'rgba(220,38,38,0.5)'}, inset 0 1px 2px rgba(255,255,255,0.4)`
                       }}
                     >
                       <span className="tracking-wide">Selecionar Área</span>
-                      <span className="font-sans text-base">→</span>
+                      <span className="font-sans text-sm xs:text-base">→</span>
                     </button>
                   </div>
                 </div>
