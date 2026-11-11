@@ -33,6 +33,7 @@ import { cn } from '@/lib/utils';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { motion, AnimatePresence } from 'framer-motion';
 import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
+import direitoAdministrativoFundo from '@/assets/direito-administrativo-fundo.webp';
 import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.jpg';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
 import { formatarNomeArea } from '@/pages/Flashcards';
@@ -541,9 +542,25 @@ const FlashcardsArea = () => {
   }, [itemsToRender, searchTerm]);
 
 
+  // 1. Identifica a disciplina oficial correspondente ao slug da rota (ex: 'administrativo', 'penal', 'civil')
+  const disciplinaId = useMemo(() => getDisciplinaIdFromSlug(slug), [slug]);
+
   // Capa oficial ilustrada da matéria
   const coverInfo = area ? (getAreaCover(area.nome) || getAreaCover(area.slug)) : (slug ? getAreaCover(slug) : null);
   const coverUrl = coverInfo?.cover || "/images/gamificacao/deusa_temis_vazada.webp";
+
+  // Imagem de fundo oficial personalizada para Direito Administrativo
+  const isDireitoAdm = 
+    disciplinaId === 'administrativo' || 
+    (typeof slug === 'string' && slug.toLowerCase().includes('administrativo')) || 
+    (typeof area?.slug === 'string' && area.slug.toLowerCase().includes('administrativo')) ||
+    (typeof area?.nome === 'string' && area.nome.toLowerCase().includes('administrativo')) ||
+    (typeof officialFlashcardArea === 'string' && officialFlashcardArea.toLowerCase().includes('administrativo')) ||
+    (typeof effectiveAreaName === 'string' && effectiveAreaName.toLowerCase().includes('administrativo'));
+
+  const fundoAreaOficial = isDireitoAdm 
+    ? direitoAdministrativoFundo 
+    : (coverUrl || greciaFilosofosFundo);
 
 
   const headerProgressBar = (
@@ -637,9 +654,6 @@ const FlashcardsArea = () => {
   }, [flashcardsAreasResumo]);
 
   const pillContainerRef = useRef<HTMLDivElement>(null);
-
-  // 1. Identifica a disciplina oficial correspondente ao slug da rota (ex: 'administrativo', 'penal', 'civil')
-  const disciplinaId = useMemo(() => getDisciplinaIdFromSlug(slug), [slug]);
 
   // 2. Obtém a lista oficial de matérias da disciplina diretamente de MATERIAS_CATALOGO_COMPLETO
   const materiasDaDisciplina = useMemo(() => {
@@ -858,6 +872,12 @@ const FlashcardsArea = () => {
     return materiasComTemas.reduce((acc, m) => acc + m.items.length, 0);
   }, [materiasComTemas]);
 
+  const totalMateriasCount = materiasComTemas.length;
+  const totalTemasCount = useMemo(() => {
+    return materiasComTemas.reduce((acc, m) => acc + m.items.length, 0);
+  }, [materiasComTemas]);
+  const totalCardsCountGeral = totalFlashcardsArea > 0 ? totalFlashcardsArea : materiasComTemas.reduce((acc, m) => acc + (m.totalCards || 0), 0);
+
   const materiaAtiva = useMemo(() => {
     return materiasComTemas.find((m) => m.id === materiaAtivaId) || materiasComTemas[0];
   }, [materiasComTemas, materiaAtivaId]);
@@ -874,75 +894,28 @@ const FlashcardsArea = () => {
       subtitle="Trilha de Flashcards"
       mobileHeader={mobileHeader}
     >
-      {/* Fundo Oficial com a Capa do Tema/Matéria - Sobreposição Fluida com Crossfade */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#1c120c]">
-        <AnimatePresence initial={false}>
-          <motion.div
-            key={fundoAtivoUrl || 'default-bg'}
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.85, ease: "easeInOut" }}
-            className="absolute inset-0"
-          >
-            <img
-              src={fundoAtivoUrl || greciaFilosofosFundo}
-              alt="Capa de Fundo da Matéria"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-              className="w-full h-full object-cover object-top opacity-90 select-none pointer-events-none filter blur-[1.2px] brightness-[0.88] contrast-[1.08]"
-            />
-            {/* Vinheta e Gradiente Escuro para Garantir Alto Contraste e Nitidez dos Textos */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/85 pointer-events-none" />
-            <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-          </motion.div>
-        </AnimatePresence>
+      {/* Fundo Oficial Fixo da Área (Sem troca contínua no scroll) */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0a0705]">
+        <img
+          src={fundoAreaOficial}
+          alt={officialFlashcardArea || area?.nome || effectiveAreaName || "Capa da Disciplina"}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          className={cn(
+            "w-full h-full object-cover object-top select-none pointer-events-none transition-opacity duration-500",
+            isDireitoAdm 
+              ? "opacity-95 brightness-[0.98] contrast-[1.05]" 
+              : "opacity-85 filter blur-[1.2px] brightness-[0.88] contrast-[1.08]"
+          )}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
       </div>
 
       {/* Pétalas e Flores de Lótus Douradas Caindo Suavemente pela Montanha (120fps GPU) */}
       <FallingLotusPetals />
 
       <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-32 sm:pb-36 pt-2 min-w-0 overflow-x-hidden box-border">
-        {/* ── Menu de Alternância (Matérias Oficiais de Aulas Interativas) ── */}
-        <div className="sticky top-0 z-30 -mx-3.5 sm:-mx-6 py-2 bg-[#1c120c]/85 backdrop-blur-md border-b border-[#78350f]/40 mb-3 shadow-lg shadow-black/70">
-          <div
-            ref={pillContainerRef}
-            className="flex items-center gap-2.5 overflow-x-auto px-4 sm:px-6 py-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            {materiasDaDisciplina.map((mat) => {
-              const isActive = mat.id === (materiaAtiva?.id || '');
-              return (
-                <button
-                  key={mat.id}
-                  data-materia-id={mat.id}
-                  type="button"
-                  onClick={() => selectMateria(mat.id)}
-                  style={isActive ? {
-                    backgroundColor: '#fef3c7',
-                    borderColor: '#d97706',
-                    color: '#451a03',
-                    boxShadow: '0 0 18px rgba(245, 158, 11, 0.65)',
-                  } : {
-                    backgroundColor: 'rgba(35, 20, 10, 0.75)',
-                    borderColor: 'rgba(180, 83, 9, 0.45)',
-                    color: '#fef3c7',
-                  }}
-                  className={cn(
-                    "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-serif font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
-                    isActive
-                      ? "scale-[1.04] font-black"
-                      : "hover:bg-[#451a03]/80 hover:text-white hover:border-[#f59e0b]/60"
-                  )}
-                >
-                  <Landmark className={cn("w-3 h-3 shrink-0", isActive ? "text-[#451a03]" : "text-[#f59e0b]")} />
-                  <span>{formatarTituloMateriaCurto(mat.titulo)}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
         {loading && !data && !effectiveAreaName ? (
           <div className="space-y-4 px-4 py-5 sm:px-6">
             <div className="h-44 rounded-2xl bg-muted animate-pulse" />
@@ -954,38 +927,6 @@ const FlashcardsArea = () => {
           </div>
         ) : (
           <>
-            {/* ── BARRA DE PROGRESSO DA MATÉRIA (Estilo Helênico Dourado) ── */}
-            {isFlash && materiaAtiva && (
-              <div 
-                style={{
-                  background: 'linear-gradient(135deg, rgba(35, 22, 13, 0.92) 0%, rgba(55, 34, 18, 0.92) 100%)',
-                  borderColor: 'rgba(217, 119, 6, 0.45)',
-                  boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.6)',
-                }}
-                className="w-full mb-4 p-3 sm:p-3.5 rounded-2xl border backdrop-blur-md"
-              >
-                <div className="flex items-center justify-between mb-1.5 px-0.5">
-                  <span className="text-[11px] font-serif font-bold uppercase tracking-wider text-[#fef3c7] flex items-center gap-1.5">
-                    <Scale className="w-3.5 h-3.5 text-[#fde047]" />
-                    Progresso da Matéria
-                  </span>
-                  <span className="text-[11px] font-mono font-bold text-[#fde047] tabular-nums">
-                    {activeSectionCompreendidos} / {activeSectionTotalCards} ({activeSectionPct}%)
-                  </span>
-                </div>
-                <div className="w-full h-1.5 rounded-full bg-black/60 border border-[#78350f]/30 overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-700 ease-out"
-                    style={{
-                      width: `${Math.max(activeSectionPct, activeSectionTotalCards > 0 ? 3 : 0)}%`,
-                      background: 'linear-gradient(90deg, #d97706 0%, #f59e0b 50%, #fde047 100%)',
-                      boxShadow: '0 0 10px rgba(245, 158, 11, 0.7)',
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-
             {isFlash && loadingFlashcards && totalDecksCount === 0 ? (
               <div className="space-y-4 py-6">
                 {[...Array(5)].map((_, i) => (
@@ -1035,9 +976,25 @@ const FlashcardsArea = () => {
                         </span>
                       </div>
 
+                      {/* Descrição Elegante com Setas: Matérias → Temas → Cards */}
+                      <div 
+                        className="flex items-center gap-1.5 text-[10.5px] sm:text-[11.5px] font-serif font-semibold text-[#fef3c7]/90 mt-2 px-3 py-1 rounded-full border backdrop-blur-md"
+                        style={{
+                          background: 'linear-gradient(90deg, rgba(35, 22, 13, 0.85) 0%, rgba(55, 34, 18, 0.85) 100%)',
+                          borderColor: 'rgba(217, 119, 6, 0.35)',
+                          boxShadow: '0 2px 10px rgba(0,0,0,0.5)',
+                        }}
+                      >
+                        <span>{totalMateriasCount} matérias</span>
+                        <span className="text-[#f59e0b] font-bold">→</span>
+                        <span>{totalTemasCount} temas</span>
+                        <span className="text-[#f59e0b] font-bold">→</span>
+                        <span className="text-[#fde047] font-mono font-bold">{totalCardsCountGeral} cards</span>
+                      </div>
+
                       {/* Início da Estrada Dourada saindo do templo */}
                       <div 
-                        className="w-1.5 h-6 my-1.5 rounded-full"
+                        className="w-1.5 h-6 my-2 rounded-full"
                         style={{
                           background: 'linear-gradient(180deg, #fde047 0%, #f59e0b 100%)',
                           boxShadow: '0 0 10px rgba(245, 158, 11, 0.8)',
@@ -1059,6 +1016,7 @@ const FlashcardsArea = () => {
                       badgeLabel: `Matéria ${String(matIdx + 1).padStart(2, '0')}`,
                       ordemStr: String(matIdx + 1).padStart(2, '0'),
                       displayTotal: mat.totalCards || (mat.items.length * 36),
+                      temasCount: mat.items.length,
                       displayConcluidas: 0,
                       displayPct: 0,
                       isLocked,
@@ -1109,25 +1067,27 @@ const FlashcardsArea = () => {
       </div>
 
       {/* ── Rodapé Helênico: Templo com Louros 100% sem margens laterais e altura compacta ── */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 pointer-events-none flex flex-col justify-end items-center select-none overflow-hidden h-20 sm:h-26">
-        {/* Gradiente de opacidade para a trilha surgir suavemente por trás */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#120b07] via-[#120b07]/60 to-transparent pointer-events-none" />
-        
-        {/* Fachada do Templo com Louros: Edge-to-Edge sem margens laterais */}
-        <div className="relative w-full h-15 sm:h-20 flex items-end">
-          <img
-            src={greciaTrilhaRodape}
-            alt="Templo Clássico e Louros Helênicos"
-            loading="eager"
-            decoding="async"
-            className="w-full h-full object-cover object-bottom opacity-95 drop-shadow-[0_-4px_16px_rgba(0,0,0,0.9)]"
-            style={{
-              maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%)',
-              WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%)',
-            }}
-          />
+      {!isDireitoAdm && (
+        <div className="fixed bottom-0 left-0 right-0 z-20 pointer-events-none flex flex-col justify-end items-center select-none overflow-hidden h-20 sm:h-26">
+          {/* Gradiente de opacidade para a trilha surgir suavemente por trás */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#120b07] via-[#120b07]/60 to-transparent pointer-events-none" />
+          
+          {/* Fachada do Templo com Louros: Edge-to-Edge sem margens laterais */}
+          <div className="relative w-full h-15 sm:h-20 flex items-end">
+            <img
+              src={greciaTrilhaRodape}
+              alt="Templo Clássico e Louros Helênicos"
+              loading="eager"
+              decoding="async"
+              className="w-full h-full object-cover object-bottom opacity-95 drop-shadow-[0_-4px_16px_rgba(0,0,0,0.9)]"
+              style={{
+                maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%)',
+                WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 45%, rgba(0,0,0,0) 100%)',
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <PremiumGate
         open={premiumGateOpen}
@@ -1147,6 +1107,21 @@ const FlashcardsArea = () => {
           capaUrl: materiaModal.capaInicial || materiaModal.capaUrl,
           totalCards: materiaModal.totalCards,
         } : null}
+        todasMaterias={materiasComTemas.map((m) => ({
+          id: m.id,
+          titulo: m.titulo,
+          subtitulo: m.subtitulo,
+          capaUrl: m.capaInicial || m.capaUrl,
+          totalCards: m.totalCards,
+          items: m.items,
+        }))}
+        onSelectMateria={(selected) => {
+          const found = materiasComTemas.find((m) => m.id === selected.id);
+          if (found) {
+            setMateriaModal(found);
+            setMateriaAtivaId(found.id);
+          }
+        }}
         temas={materiaModal ? materiaModal.items : []}
         onSelectTema={handleSelectTemaNoModal}
         areaNome={officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito'}

@@ -11,6 +11,8 @@ interface FlashcardDeckItemProps {
     displayTotal: number;
     displayConcluidas: number;
     displayPct: number;
+    temasCount?: number;
+    subtituloCustom?: string;
     capaUrl?: string;
     isLocked?: boolean;
     onClick: () => void;
@@ -189,10 +191,11 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
               </span>
             </div>
 
-            {/* Subtítulo: Somente Quantidade de Cards e Porcentagem (Tempo removido) */}
+            {/* Subtítulo: Quantidade de Temas e Cards com Seta Elegante */}
             <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-sans font-semibold">
               <span
                 className={cn(
+                  "flex items-center gap-1",
                   isCompleted
                     ? "text-[#34d399]"
                     : isActive
@@ -202,7 +205,17 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
                     : "text-[#fef3c7]/75"
                 )}
               >
-                {item.displayTotal} cards
+                {item.subtituloCustom ? (
+                  item.subtituloCustom
+                ) : item.temasCount !== undefined ? (
+                  <>
+                    <span>{item.temasCount} temas</span>
+                    <span className={cn("font-bold text-[11px]", isActive ? "text-[#b45309]" : "text-[#f59e0b]")}>→</span>
+                    <span>{item.displayTotal} cards</span>
+                  </>
+                ) : (
+                  `${item.displayTotal} cards`
+                )}
               </span>
               {item.displayPct > 0 && (
                 <>

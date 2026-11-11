@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Play, Lock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, Lock, Check, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { haptic } from '@/lib/nativeHaptics';
 
-interface TemaModalItem {
+export interface TemaModalItem {
   id: string;
   key: string;
   numeroAula?: string;
@@ -15,48 +15,79 @@ interface TemaModalItem {
   isLocked?: boolean;
 }
 
+export interface MateriaModalRef {
+  id: string;
+  titulo: string;
+  subtitulo?: string;
+  capaUrl?: string;
+  totalCards?: number;
+  items?: TemaModalItem[];
+}
+
 interface ModalTemasMateriaFullscreenProps {
   isOpen: boolean;
   onClose: () => void;
-  materia: {
-    id: string;
-    titulo: string;
-    subtitulo?: string;
-    capaUrl?: string;
-    totalCards?: number;
-  } | null;
+  materia: MateriaModalRef | null;
+  todasMaterias?: MateriaModalRef[];
+  onSelectMateria?: (mat: MateriaModalRef) => void;
   temas: TemaModalItem[];
   onSelectTema: (tema: TemaModalItem) => void;
   areaNome?: string;
 }
 
-// Ramo de louros clássicos helênicos para os cantos inferiores
-const LaurelCorner = ({ flip = false }: { flip?: boolean }) => (
+// Ramo de louros clássicos helênicos sobre pedras/rochas esculpidas
+const LaurelStoneCorner = ({ flip = false }: { flip?: boolean }) => (
   <svg 
-    viewBox="0 0 100 100" 
+    viewBox="0 0 120 120" 
     className={cn(
-      "w-14 h-14 sm:w-16 sm:h-16 text-[#d97706]/70 pointer-events-none drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]", 
+      "w-16 h-16 sm:w-20 sm:h-20 text-[#d97706] pointer-events-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]", 
       flip && "scale-x-[-1]"
     )}
     fill="currentColor"
   >
-    <path d="M15,90 Q40,75 50,20 Q48,55 25,85 Z" opacity="0.9" fill="none" stroke="currentColor" strokeWidth="2.5" />
-    <path d="M50,18 C55,15 62,20 58,26 C54,32 48,24 50,18 Z" />
-    <path d="M48,32 C56,30 63,36 57,43 C51,50 46,40 48,32 Z" />
-    <path d="M42,48 C51,47 57,54 50,61 C43,68 40,56 42,48 Z" />
-    <path d="M34,65 C43,65 48,72 40,78 C33,84 31,73 34,65 Z" />
-    <path d="M25,80 C32,80 37,86 30,91 C23,96 23,87 25,80 Z" />
-    <path d="M46,24 C38,20 33,26 38,32 C43,38 48,29 46,24 Z" />
-    <path d="M42,40 C33,37 29,44 35,50 C41,56 44,46 42,40 Z" />
-    <path d="M36,58 C26,56 23,63 30,69 C37,75 39,64 36,58 Z" />
-    <path d="M28,74 C19,73 17,80 24,85 C31,90 31,80 28,74 Z" />
+    {/* Pedras/rochas esculpidas de base no canto */}
+    <path 
+      d="M0,120 L45,120 L40,105 L25,98 L10,108 Z" 
+      fill="#451a03" 
+      stroke="#b45309" 
+      strokeWidth="1.5"
+      opacity="0.85"
+    />
+    <path 
+      d="M20,120 L70,120 L60,108 L40,105 Z" 
+      fill="#29180d" 
+      stroke="#78350f" 
+      strokeWidth="1.5"
+      opacity="0.9"
+    />
+    {/* Ramo de louros dourados saindo das rochas */}
+    <path d="M15,105 Q45,85 55,25 Q52,65 25,98 Z" opacity="0.9" fill="none" stroke="#f59e0b" strokeWidth="2.5" />
+    <path d="M55,23 C60,20 67,25 63,31 C59,37 53,29 55,23 Z" fill="#fde047" />
+    <path d="M53,37 C61,35 68,41 62,48 C56,55 51,45 53,37 Z" fill="#f59e0b" />
+    <path d="M47,53 C56,52 62,59 55,66 C48,73 45,61 47,53 Z" fill="#d97706" />
+    <path d="M39,70 C48,70 53,77 45,83 C38,89 36,78 39,70 Z" fill="#b45309" />
+    <path d="M51,29 C43,25 38,31 43,37 C48,43 53,34 51,29 Z" fill="#fde047" />
+    <path d="M47,45 C38,42 34,49 40,55 C46,61 49,51 47,45 Z" fill="#f59e0b" />
+    <path d="M41,63 C31,61 28,68 35,74 C42,80 44,69 41,63 Z" fill="#d97706" />
   </svg>
 );
+
+function formatarTituloCurto(t: string): string {
+  if (!t) return '';
+  return t
+    .replace(/\s+(do|de|no|da|em)\s+Direito\s+([a-zA-ZÀ-ÿ]+)/gi, '')
+    .replace(/\s+(do|de|no|da|em)\s+Direito\b/gi, '')
+    .replace(/^Direito\s+[a-zA-ZÀ-ÿ]+\s*[-–:]\s*/i, '')
+    .replace(/^\d+[\.\-\s_:]+/, '')
+    .trim();
+}
 
 export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenProps> = ({
   isOpen,
   onClose,
   materia,
+  todasMaterias = [],
+  onSelectMateria,
   temas,
   onSelectTema,
   areaNome = 'Direito'
@@ -64,12 +95,17 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
   const [pageIndex, setPageIndex] = useState(0);
   const itemsPerPage = 4;
 
-  // Reseta a página ao abrir ou trocar matéria
   useEffect(() => {
     if (isOpen) {
       setPageIndex(0);
     }
   }, [isOpen, materia?.id]);
+
+  const materiaIndexAtual = useMemo(() => {
+    if (!materia || !todasMaterias || todasMaterias.length === 0) return 0;
+    const idx = todasMaterias.findIndex((m) => m.id === materia.id);
+    return idx >= 0 ? idx : 0;
+  }, [materia, todasMaterias]);
 
   const totalPages = Math.max(1, Math.ceil(temas.length / itemsPerPage));
 
@@ -88,24 +124,26 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.25 }}
-        className="fixed inset-0 z-50 flex flex-col bg-[#110b07] text-white select-none overflow-hidden"
-        style={{
-          background: 'radial-gradient(circle at 50% 15%, #2a180e 0%, #150d08 55%, #0a0604 100%)',
-        }}
+        transition={{ duration: 0.22 }}
+        className="fixed inset-0 z-50 flex flex-col bg-[#0f0905] text-white select-none overflow-hidden"
       >
-        {/* Vinheta escura clássica */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
+        {/* ── FUNDO ESCURO SOFISTICADO (Clean Dark, sem imagem de fundo) ── */}
+        <div 
+          className="absolute inset-0 pointer-events-none overflow-hidden z-0"
+          style={{
+            background: 'radial-gradient(ellipse at 50% 15%, #1c1108 0%, #0c0805 50%, #050302 100%)',
+          }}
+        />
 
         {/* ── HEADER SUPERIOR: Botão Voltar + Título Centralizado ── */}
-        <div className="relative z-10 w-full pt-[calc(0.75rem+env(safe-area-inset-top,0px))] px-4 sm:px-6 pb-2 flex items-center justify-between">
+        <div className="relative z-10 w-full pt-[calc(0.75rem+env(safe-area-inset-top,0px))] px-4 sm:px-6 pb-1.5 flex items-center justify-between">
           <button
             type="button"
             onClick={() => {
               try { haptic.selection(); } catch {}
               onClose();
             }}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/40 border border-[#78350f]/50 text-[#fef3c7] hover:bg-[#451a03] active:scale-95 transition-all cursor-pointer shadow-md"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/50 border border-[#78350f]/60 text-[#fef3c7] hover:bg-[#451a03] active:scale-95 transition-all cursor-pointer shadow-md"
             aria-label="Voltar"
           >
             <ChevronLeft className="w-6 h-6 stroke-[2.4]" />
@@ -121,130 +159,208 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
           </div>
         </div>
 
-        {/* ── CONTEÚDO CENTRAL (Capa + Lista Encadeada) ── */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-between w-full max-w-[440px] mx-auto px-4 py-1 min-h-0">
-          {/* 1. CAPA OFICIAL EM DESTAQUE NO TOPO (16:9 Arredondada) */}
-          <div className="w-full shrink-0 my-1.5 sm:my-2">
+        {/* ── NAVEGAÇÃO ENTRE MATÉRIAS: BOTÕES DENTRO DO CARD RETANGULAR ── */}
+        {todasMaterias.length > 0 && (
+          <div className="relative z-10 w-full max-w-[440px] mx-auto px-4 py-1 shrink-0">
             <div 
-              className="relative w-full aspect-[16/9] max-h-[190px] sm:max-h-[220px] rounded-2xl overflow-hidden border border-[#d97706]/40 shadow-[0_8px_24px_rgba(0,0,0,0.8),0_0_18px_rgba(245,158,11,0.2)] bg-[#1c120c]"
+              className="w-full px-2 py-1.5 rounded-2xl border flex items-center justify-between gap-2 backdrop-blur-md shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, rgba(38, 22, 11, 0.95) 0%, rgba(60, 35, 18, 0.95) 100%)',
+                borderColor: 'rgba(217, 119, 6, 0.55)',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.65), inset 0 1px 0 rgba(254,243,199,0.18)',
+              }}
             >
-              <img
-                src={capaExibicao}
-                alt={materia.titulo}
-                loading="eager"
-                decoding="async"
-                className="w-full h-full object-cover object-center filter brightness-[0.95] contrast-[1.05]"
-              />
-              {/* Leve vinheta interna na imagem */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
+              {/* Botão Anterior (<) Dentro do Card */}
+              <button
+                type="button"
+                disabled={materiaIndexAtual <= 0}
+                onClick={() => {
+                  if (materiaIndexAtual > 0 && onSelectMateria) {
+                    try { haptic.selection(); } catch {}
+                    onSelectMateria(todasMaterias[materiaIndexAtual - 1]);
+                  }
+                }}
+                className={cn(
+                  "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all cursor-pointer border shrink-0",
+                  materiaIndexAtual > 0
+                    ? "bg-black/60 border-[#b45309]/80 text-[#fde047] hover:bg-[#451a03] active:scale-90 hover:border-[#f59e0b] shadow-[0_0_8px_rgba(245,158,11,0.3)]"
+                    : "bg-black/20 border-white/5 text-stone-600 cursor-not-allowed opacity-25"
+                )}
+                title="Matéria anterior"
+                aria-label="Matéria anterior"
+              >
+                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+              </button>
+
+              {/* Conteúdo Central: Título da Matéria + Contador */}
+              <div className="flex-1 min-w-0 flex items-center justify-center gap-2 px-1">
+                <Landmark className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#fbbf24] shrink-0 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
+                <span className="text-xs sm:text-[13px] font-serif font-black tracking-wide text-[#fef3c7] truncate text-center">
+                  {formatarTituloCurto(materia.titulo)}
+                </span>
+                {todasMaterias.length > 1 && (
+                  <span className="text-[10px] sm:text-[11px] font-mono font-bold text-[#f59e0b] shrink-0 bg-black/60 px-2 py-0.5 rounded-full border border-[#b45309]/40 shadow-inner">
+                    {materiaIndexAtual + 1}/{todasMaterias.length}
+                  </span>
+                )}
+              </div>
+
+              {/* Botão Próximo (>) Dentro do Card */}
+              <button
+                type="button"
+                disabled={materiaIndexAtual >= todasMaterias.length - 1}
+                onClick={() => {
+                  if (materiaIndexAtual < todasMaterias.length - 1 && onSelectMateria) {
+                    try { haptic.selection(); } catch {}
+                    onSelectMateria(todasMaterias[materiaIndexAtual + 1]);
+                  }
+                }}
+                className={cn(
+                  "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all cursor-pointer border shrink-0",
+                  materiaIndexAtual < todasMaterias.length - 1
+                    ? "bg-black/60 border-[#b45309]/80 text-[#fde047] hover:bg-[#451a03] active:scale-90 hover:border-[#f59e0b] shadow-[0_0_8px_rgba(245,158,11,0.3)]"
+                    : "bg-black/20 border-white/5 text-stone-600 cursor-not-allowed opacity-25"
+                )}
+                title="Próxima matéria"
+                aria-label="Próxima matéria"
+              >
+                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
+              </button>
             </div>
           </div>
+        )}
 
-          {/* 2. LISTA VERTICAL DE TEMAS COM CONECTOR LINEAR À ESQUERDA */}
-          <div className="w-full flex-1 flex flex-col justify-center space-y-2.5 sm:space-y-3 relative py-1">
-            {/* Linha vertical conectora dos nós */}
+        {/* ── CONTEÚDO CENTRAL: Capa 16:9 + Lista Vertical Separada por Linhas Finas ── */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-between w-full max-w-[440px] mx-auto px-4 py-1 min-h-0">
+          {/* 1. CAPA OFICIAL (SEM MOLDURA/FUNDO, COM DEGRADÊ PRETO NA PARTE DE BAIXO) */}
+          <div className="relative w-full shrink-0 my-1 overflow-hidden rounded-2xl">
+            <img
+              src={capaExibicao}
+              alt={materia.titulo}
+              loading="eager"
+              decoding="async"
+              className="w-full aspect-[16/9] max-h-[180px] sm:max-h-[215px] object-cover object-center filter brightness-[0.98] contrast-[1.05]"
+            />
+            {/* Degradê preto na parte de baixo que se funde suavemente com a tela */}
+            <div 
+              className="absolute inset-x-0 bottom-0 h-28 pointer-events-none"
+              style={{
+                background: 'linear-gradient(to top, #0f0905 0%, rgba(15, 9, 5, 0.9) 35%, rgba(15, 9, 5, 0.4) 65%, transparent 100%)',
+              }}
+            />
+          </div>
+
+          {/* 2. LISTA VERTICAL DE TEMAS COM CONECTOR E LINHAS FINAS DIVISÓRIAS */}
+          <div className="w-full flex-1 flex flex-col justify-center relative py-1">
+            {/* Linha vertical conectora dourada à esquerda */}
             {currentTemas.length > 1 && (
               <div 
-                className="absolute left-[29px] sm:left-[31px] top-6 bottom-6 w-[2px] bg-gradient-to-b from-[#f59e0b] via-[#d97706] to-[#78350f]/50 pointer-events-none z-0" 
+                className="absolute left-[27px] sm:left-[29px] top-6 bottom-6 w-[2px] bg-gradient-to-b from-[#f59e0b] via-[#d97706] to-[#78350f]/50 pointer-events-none z-0" 
               />
             )}
 
-            {currentTemas.map((item, idx) => {
-              const isFirst = idx === 0;
-              const isLocked = !!item.isLocked;
-              const cleanTitle = (item.titulo || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
-              const subtituloText = item.descricao || (item.displayTotal > 0 ? `${item.displayTotal} flashcards` : 'Conceitos fundamentais');
+            <div className="w-full flex flex-col">
+              {currentTemas.map((item, idx) => {
+                const isFirst = idx === 0;
+                const isLocked = !!item.isLocked;
+                const cleanTitle = (item.titulo || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
+                const subtituloText = item.descricao || (item.displayTotal > 0 ? `${item.displayTotal} flashcards` : 'Conceitos fundamentais');
 
-              return (
-                <div
-                  key={item.key || item.id}
-                  onClick={() => {
-                    if (isLocked) {
-                      try { haptic.impact('medium'); } catch {}
-                    } else {
-                      try { haptic.light(); } catch {}
+                return (
+                  <div
+                    key={item.key || item.id}
+                    onClick={() => {
+                      if (isLocked) {
+                        try { haptic.impact('medium'); } catch {}
+                      } else {
+                        try { haptic.light(); } catch {}
+                      }
+                      onSelectTema(item);
+                    }}
+                    className={cn(
+                      "relative z-10 w-full flex items-center gap-3 cursor-pointer transition-all duration-200 select-none",
+                      // O item ativo tem card iluminado destacado; os demais têm linha fina separadora
+                      isFirst && !isLocked
+                        ? "my-1 p-2.5 sm:p-3 rounded-2xl border border-[#d97706]/75 shadow-[0_6px_20px_-4px_rgba(245,158,11,0.35)]"
+                        : "py-2.5 px-1 sm:px-2 border-b border-[#78350f]/35 hover:bg-black/20"
+                    )}
+                    style={
+                      isFirst && !isLocked ? {
+                        background: 'linear-gradient(90deg, rgba(217, 119, 6, 0.28) 0%, rgba(180, 83, 9, 0.15) 60%, rgba(20, 14, 10, 0.8) 100%)',
+                        backdropFilter: 'blur(8px)',
+                      } : undefined
                     }
-                    onSelectTema(item);
-                  }}
-                  className={cn(
-                    "relative z-10 w-full flex items-center gap-3 p-2.5 sm:p-3 rounded-2xl cursor-pointer transition-all duration-200 select-none",
-                    isFirst && !isLocked
-                      ? "border border-[#d97706]/70 shadow-[0_6px_20px_-4px_rgba(245,158,11,0.35)]"
-                      : "border border-white/10 hover:border-[#f59e0b]/40 bg-black/40 hover:bg-black/60"
-                  )}
-                  style={
-                    isFirst && !isLocked ? {
-                      background: 'linear-gradient(90deg, rgba(217, 119, 6, 0.28) 0%, rgba(180, 83, 9, 0.15) 60%, rgba(20, 14, 10, 0.8) 100%)',
-                      backdropFilter: 'blur(8px)',
-                    } : {
-                      background: 'rgba(24, 16, 11, 0.72)',
-                      backdropFilter: 'blur(8px)',
-                    }
-                  }
-                >
-                  {/* Círculo do Nó à Esquerda (Linha vertical cruza aqui) */}
-                  <div className="relative shrink-0 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9">
-                    <div 
-                      className={cn(
-                        "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-transform",
-                        isFirst && !isLocked
-                          ? "bg-[#f59e0b]/25 border border-[#fbbf24] shadow-[0_0_10px_rgba(245,158,11,0.5)]"
-                          : "bg-black/60 border border-white/20"
-                      )}
-                    >
-                      <Play 
-                        className={cn(
-                          "w-3.5 h-3.5 ml-0.5",
-                          isFirst && !isLocked ? "text-[#fde047] fill-[#fde047]" : "text-[#fef3c7]/60 fill-[#fef3c7]/60"
-                        )} 
-                      />
-                    </div>
-                  </div>
-
-                  {/* Textos Centrais (Título e Subtítulo) */}
-                  <div className="flex-1 min-w-0 pr-1">
-                    <h3 
-                      className={cn(
-                        "font-serif font-black text-[13px] sm:text-[14px] leading-snug truncate",
-                        isFirst && !isLocked ? "text-[#fef3c7]" : "text-[#e7e5e4]"
-                      )}
-                    >
-                      {cleanTitle}
-                    </h3>
-                    <p className="text-[11px] sm:text-xs text-[#fef3c7]/65 font-sans truncate mt-0.5">
-                      {subtituloText}
-                    </p>
-                  </div>
-
-                  {/* Ação à Direita (Botão de Play Dourado ou Cadeado) */}
-                  <div className="shrink-0 flex items-center justify-center pl-1">
-                    {isLocked ? (
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-black/40 border border-[#78350f]/50">
-                        <Lock className="w-4 h-4 text-[#f59e0b]/75" />
-                      </div>
-                    ) : (
+                  >
+                    {/* Círculo do Nó à Esquerda (Linha vertical cruza pelo centro) */}
+                    <div className="relative shrink-0 flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9">
                       <div 
                         className={cn(
-                          "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-md transition-transform group-hover:scale-105 active:scale-95",
-                          isFirst
-                            ? "bg-gradient-to-b from-[#fef08a] via-[#f59e0b] to-[#b45309] text-[#451a03] shadow-[0_0_14px_rgba(245,158,11,0.7)]"
-                            : "bg-[#d97706]/30 border border-[#f59e0b]/50 text-[#fde047]"
+                          "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-transform",
+                          isFirst && !isLocked
+                            ? "bg-[#f59e0b]/25 border border-[#fbbf24] shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                            : isLocked
+                            ? "bg-black/70 border border-[#78350f]/60"
+                            : "bg-black/60 border border-white/20"
                         )}
                       >
-                        <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current ml-0.5" />
+                        {isLocked ? (
+                          <Lock className="w-3.5 h-3.5 text-[#f59e0b]/75" />
+                        ) : (
+                          <Play 
+                            className={cn(
+                              "w-3.5 h-3.5 ml-0.5",
+                              isFirst ? "text-[#fde047] fill-[#fde047]" : "text-[#fef3c7]/60 fill-[#fef3c7]/60"
+                            )} 
+                          />
+                        )}
                       </div>
-                    )}
+                    </div>
+
+                    {/* Textos Centrais (Título e Subtítulo) */}
+                    <div className="flex-1 min-w-0 pr-1">
+                      <h3 
+                        className={cn(
+                          "font-serif font-black text-[13px] sm:text-[14px] leading-snug truncate",
+                          isFirst && !isLocked ? "text-[#fef3c7]" : isLocked ? "text-[#a8a29e]" : "text-[#e7e5e4]"
+                        )}
+                      >
+                        {cleanTitle}
+                      </h3>
+                      <p className="text-[11px] sm:text-xs text-[#fef3c7]/65 font-sans truncate mt-0.5">
+                        {subtituloText}
+                      </p>
+                    </div>
+
+                    {/* Ação à Direita (Botão de Play Dourado ou Cadeado) */}
+                    <div className="shrink-0 flex items-center justify-center pl-1">
+                      {isLocked ? (
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-black/40 border border-[#78350f]/40">
+                          <Lock className="w-4 h-4 text-[#f59e0b]/60" />
+                        </div>
+                      ) : (
+                        <div 
+                          className={cn(
+                            "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-md transition-transform group-hover:scale-105 active:scale-95",
+                            isFirst
+                              ? "bg-gradient-to-b from-[#fef08a] via-[#f59e0b] to-[#b45309] text-[#451a03] shadow-[0_0_14px_rgba(245,158,11,0.7)]"
+                              : "bg-[#d97706]/35 border border-[#f59e0b]/50 text-[#fde047]"
+                          )}
+                        >
+                          <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current ml-0.5" />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
-          {/* 3. RODAPÉ: CONTADOR (1 / 4) + BULLETS + LOUROS NOS CANTOS */}
-          <div className="w-full shrink-0 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] flex items-center justify-between relative">
-            {/* Louro no canto inferior esquerdo */}
-            <div className="absolute left-0 bottom-1">
-              <LaurelCorner />
+          {/* 3. RODAPÉ: CONTADOR (1 / 4) + BULLETS + ROCHAS COM LOUROS HELÊNICOS */}
+          <div className="w-full shrink-0 pt-1 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] flex items-center justify-between relative">
+            {/* Pedras e louros no canto inferior esquerdo */}
+            <div className="absolute left-0 bottom-0 pointer-events-none">
+              <LaurelStoneCorner />
             </div>
 
             {/* Paginação Central (Ex: 1 / 4 e bullets) */}
@@ -274,9 +390,9 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
               )}
             </div>
 
-            {/* Louro no canto inferior direito */}
-            <div className="absolute right-0 bottom-1">
-              <LaurelCorner flip />
+            {/* Pedras e louros no canto inferior direito */}
+            <div className="absolute right-0 bottom-0 pointer-events-none">
+              <LaurelStoneCorner flip />
             </div>
           </div>
         </div>
