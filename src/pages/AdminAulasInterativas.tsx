@@ -1229,38 +1229,38 @@ export default function AdminAulasInterativas() {
                       <ChevronLeft className="w-5 h-5 xs:w-6 xs:h-6 stroke-[2.4]" />
                     </button>
 
-                    {/* CARD ESQUERDA (ANTERIOR: Proporção 3:4, Capa Completa, Título Sem Abreviar) */}
+                    {/* CARD ESQUERDA (ANTERIOR: Proporção 3:4, Capa Clara, Sobreposta e Destacada) */}
                     <div
                       onClick={handlePrev}
-                      className="relative shrink-0 w-[100px] xs:w-[118px] sm:w-[145px] md:w-[165px] max-h-[36dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-70 hover:opacity-90 transition-all duration-300 scale-90 -mr-6 xs:-mr-7 sm:-mr-9 z-10 select-none shadow-2xl overflow-hidden group"
+                      className="relative shrink-0 w-[100px] xs:w-[118px] sm:w-[145px] md:w-[165px] max-h-[36dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-90 hover:opacity-100 transition-all duration-300 scale-90 -mr-6 xs:-mr-7 sm:-mr-9 z-10 select-none shadow-[0_20px_45px_rgba(0,0,0,0.95)] overflow-hidden group bg-zinc-900/80"
                       style={{
-                        borderColor: 'rgba(255, 255, 255, 0.18)',
-                        boxShadow: '0 15px 35px rgba(0,0,0,0.95)',
+                        borderColor: 'rgba(255, 255, 255, 0.45)',
+                        boxShadow: '0 20px 45px rgba(0,0,0,0.95), inset 0 1px 1px rgba(255,255,255,0.45)',
                       }}
                     >
-                      {/* Capa Preenchendo Todo o Card em 3:4 */}
+                      {/* Capa Clara e Iluminada Preenchendo Todo o Card */}
                       <img
                         src={capaPrevUrl}
                         alt={prevDisc.nome}
                         loading="eager"
                         decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none filter brightness-90 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
+                        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none filter brightness-115 contrast-105 saturate-110 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
                       />
-                      {/* Gradiente Escuro de Proteção para Legibilidade */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent pointer-events-none rounded-2xl" />
+                      {/* Gradiente Apenas na Base para Proteger Texto mantendo o resto 100% Claro */}
+                      <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none rounded-b-2xl" />
 
                       {/* Título sem abreviações e Quantidade de Aulas */}
                       <div className="relative z-10 w-full flex flex-col items-center">
-                        <h4 className="font-serif font-bold text-[11px] xs:text-xs sm:text-[13px] text-white/95 leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
+                        <h4 className="font-serif font-bold text-[11px] xs:text-xs sm:text-[13px] text-white leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
                           {prevDisc.nome}
                         </h4>
-                        <p className="text-[9.5px] xs:text-[10px] font-mono font-bold text-zinc-300 drop-shadow mt-0.5">
+                        <p className="text-[9.5px] xs:text-[10px] font-mono font-bold text-zinc-200 drop-shadow mt-0.5">
                           {prevAulas.length} aulas
                         </p>
                       </div>
                     </div>
 
-                    {/* CARD CENTRAL (ATIVO: Proporção 3:4, UMA Única Borda, Cor e Brilho Dinâmicos da Capa) */}
+                    {/* CARD CENTRAL (ATIVO: Proporção 3:4, Capa Clara e Radiante, Forte Sobreposição 3D) */}
                     <motion.div
                       key={currDisc.id}
                       initial={{ scale: 0.92, opacity: 0.7, y: 8 }}
@@ -1268,23 +1268,23 @@ export default function AdminAulasInterativas() {
                       exit={{ scale: 0.92, opacity: 0.7, y: -8 }}
                       transition={{ type: 'spring', damping: 24, stiffness: 320, mass: 0.8 }}
                       onClick={handleSelectCurrent}
-                      className="relative shrink-0 w-[160px] xs:w-[185px] sm:w-[220px] md:w-[250px] max-h-[46dvh] aspect-[3/4] rounded-2xl border-2 p-3 xs:p-4 flex flex-col justify-end text-center cursor-pointer transition-all duration-300 z-30 select-none group shadow-2xl overflow-hidden"
+                      className="relative shrink-0 w-[160px] xs:w-[185px] sm:w-[220px] md:w-[250px] max-h-[46dvh] aspect-[3/4] rounded-2xl border-2 p-3 xs:p-4 flex flex-col justify-end text-center cursor-pointer transition-all duration-300 z-30 select-none group overflow-hidden bg-zinc-900/90"
                       style={{
                         borderColor: currTheme.primary || '#ef4444',
-                        boxShadow: `0 0 35px ${currTheme.glow || 'rgba(239, 68, 68, 0.7)'}, 0 20px 45px rgba(0,0,0,0.95), inset 0 1px 2px rgba(255,255,255,0.4)`,
+                        boxShadow: `0 0 42px ${currTheme.glow || 'rgba(239, 68, 68, 0.85)'}, 0 25px 50px -5px rgba(0,0,0,0.95), inset 0 1.5px 0.5px rgba(255,255,255,0.75)`,
                       }}
                     >
-                      {/* Capa Preenchendo Todo o Card em 3:4 */}
+                      {/* Capa Clara, Nítida e Saturada Preenchendo Todo o Card */}
                       <img
                         src={capaCurrUrl}
                         alt={currDisc.nome}
                         loading="eager"
                         decoding="async"
                         fetchPriority="high"
-                        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none filter brightness-95 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
+                        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none filter brightness-125 contrast-110 saturate-115 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
                       />
-                      {/* Gradiente Escuro de Proteção para Legibilidade Máxima */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-transparent pointer-events-none rounded-2xl z-10" />
+                      {/* Gradiente Apenas na Base para Proteger Texto mantendo Arte Clara */}
+                      <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none rounded-b-2xl z-10" />
 
                       {/* Título Completo (Sem abreviações) e Badge Pill Oficial de Aulas */}
                       <div className="relative z-20 w-full flex flex-col items-center">
@@ -1306,32 +1306,32 @@ export default function AdminAulasInterativas() {
                       </div>
                     </motion.div>
 
-                    {/* CARD DIREITA (PRÓXIMO: Proporção 3:4, Capa Completa, Título Sem Abreviar) */}
+                    {/* CARD DIREITA (PRÓXIMO: Proporção 3:4, Capa Clara, Sobreposta e Destacada) */}
                     <div
                       onClick={handleNext}
-                      className="relative shrink-0 w-[100px] xs:w-[118px] sm:w-[145px] md:w-[165px] max-h-[36dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-70 hover:opacity-90 transition-all duration-300 scale-90 -ml-6 xs:-ml-7 sm:-ml-9 z-10 select-none shadow-2xl overflow-hidden group"
+                      className="relative shrink-0 w-[100px] xs:w-[118px] sm:w-[145px] md:w-[165px] max-h-[36dvh] aspect-[3/4] rounded-2xl border p-2 xs:p-2.5 flex flex-col justify-end text-center cursor-pointer opacity-90 hover:opacity-100 transition-all duration-300 scale-90 -ml-6 xs:-ml-7 sm:-ml-9 z-10 select-none shadow-[0_20px_45px_rgba(0,0,0,0.95)] overflow-hidden group bg-zinc-900/80"
                       style={{
-                        borderColor: 'rgba(255, 255, 255, 0.18)',
-                        boxShadow: '0 15px 35px rgba(0,0,0,0.95)',
+                        borderColor: 'rgba(255, 255, 255, 0.45)',
+                        boxShadow: '0 20px 45px rgba(0,0,0,0.95), inset 0 1px 1px rgba(255,255,255,0.45)',
                       }}
                     >
-                      {/* Capa Preenchendo Todo o Card em 3:4 */}
+                      {/* Capa Clara e Iluminada Preenchendo Todo o Card */}
                       <img
                         src={capaNextUrl}
                         alt={nextDisc.nome}
                         loading="eager"
                         decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none filter brightness-90 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
+                        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none filter brightness-115 contrast-105 saturate-110 group-hover:scale-105 transition-transform duration-500 rounded-2xl"
                       />
-                      {/* Gradiente Escuro de Proteção para Legibilidade */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-transparent pointer-events-none rounded-2xl" />
+                      {/* Gradiente Apenas na Base para Proteger Texto mantendo o resto 100% Claro */}
+                      <div className="absolute inset-x-0 bottom-0 h-[52%] bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none rounded-b-2xl" />
 
                       {/* Título sem abreviações e Quantidade de Aulas */}
                       <div className="relative z-10 w-full flex flex-col items-center">
-                        <h4 className="font-serif font-bold text-[11px] xs:text-xs sm:text-[13px] text-white/95 leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
+                        <h4 className="font-serif font-bold text-[11px] xs:text-xs sm:text-[13px] text-white leading-tight drop-shadow-[0_2px_8px_rgba(0,0,0,1)] text-center break-words text-balance px-1">
                           {nextDisc.nome}
                         </h4>
-                        <p className="text-[9.5px] xs:text-[10px] font-mono font-bold text-zinc-300 drop-shadow mt-0.5">
+                        <p className="text-[9.5px] xs:text-[10px] font-mono font-bold text-zinc-200 drop-shadow mt-0.5">
                           {nextAulas.length} aulas
                         </p>
                       </div>
