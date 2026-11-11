@@ -65,16 +65,16 @@ const DISCIPLINAS_CATALOGO: DisciplinaItem[] = [
     textAccentClass: 'text-[#ff8296]'
   },
   {
-    id: 'administrativo',
-    nome: 'DIREITO ADMINISTRATIVO',
+    id: 'civil',
+    nome: 'DIREITO CIVIL',
     subtitulo: 'ÁREA DO CONHECIMENTO',
-    descricao: 'Origens históricas, consolidação do Estado de Direito, poderes administrativos e regime jurídico-administrativo.',
-    capaHeroUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-administrativo.webp',
-    corDestaque: '#d9a00a',
-    corGradientRing: ['#ffe38a', '#d9a00a'],
-    corFundoCard: 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)',
-    corBorda: 'rgba(217,160,10,0.35)',
-    textAccentClass: 'text-[#d9a00a]'
+    descricao: 'Parte geral, pessoas, bens, fatos jurídicos, obrigações, contratos, direitos reais, família e sucessões.',
+    capaHeroUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-civil.webp',
+    corDestaque: '#3b82f6',
+    corGradientRing: ['#60a5fa', '#2563eb'],
+    corFundoCard: 'linear-gradient(180deg, #0e2038 0%, #08111f 100%)',
+    corBorda: 'rgba(59,130,246,0.35)',
+    textAccentClass: 'text-[#3b82f6]'
   },
   {
     id: 'constitucional',
@@ -89,6 +89,18 @@ const DISCIPLINAS_CATALOGO: DisciplinaItem[] = [
     textAccentClass: 'text-[#22c55e]'
   },
   {
+    id: 'administrativo',
+    nome: 'DIREITO ADMINISTRATIVO',
+    subtitulo: 'ÁREA DO CONHECIMENTO',
+    descricao: 'Origens históricas, consolidação do Estado de Direito, poderes administrativos e regime jurídico-administrativo.',
+    capaHeroUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-administrativo.webp',
+    corDestaque: '#d9a00a',
+    corGradientRing: ['#ffe38a', '#d9a00a'],
+    corFundoCard: 'linear-gradient(180deg, #2e2410 0%, #1a1205 100%)',
+    corBorda: 'rgba(217,160,10,0.35)',
+    textAccentClass: 'text-[#d9a00a]'
+  },
+  {
     id: 'trabalho',
     nome: 'DIREITO DO TRABALHO',
     subtitulo: 'ÁREA DO CONHECIMENTO',
@@ -99,18 +111,6 @@ const DISCIPLINAS_CATALOGO: DisciplinaItem[] = [
     corFundoCard: 'linear-gradient(180deg, #25123d 0%, #150924 100%)',
     corBorda: 'rgba(168,85,247,0.35)',
     textAccentClass: 'text-[#a855f7]'
-  },
-  {
-    id: 'civil',
-    nome: 'DIREITO CIVIL',
-    subtitulo: 'ÁREA DO CONHECIMENTO',
-    descricao: 'Parte geral, pessoas, bens, fatos jurídicos, obrigações, contratos, direitos reais, família e sucessões.',
-    capaHeroUrl: 'https://pub-571d075cadcb4d2196a6545456271ce4.r2.dev/audioaulas/capas/direito-civil.webp',
-    corDestaque: '#3b82f6',
-    corGradientRing: ['#60a5fa', '#2563eb'],
-    corFundoCard: 'linear-gradient(180deg, #0f2347 0%, #081326 100%)',
-    corBorda: 'rgba(59,130,246,0.35)',
-    textAccentClass: 'text-[#3b82f6]'
   },
   {
     id: 'processual-civil',
@@ -442,18 +442,18 @@ function formatDescricaoExata(desc?: string, titulo?: string): string {
 
 // Balança da Justiça com Coroa de Louros Dourada (Padrão Oficial Clássico do Mockup)
 const BalancaLourosDourada = () => (
-  <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center select-none pointer-events-none">
-    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_4px_14px_rgba(245,158,11,0.55)]" fill="none">
+  <div className="relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-start select-none pointer-events-none mb-1">
+    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_4px_14px_rgba(245,158,11,0.6)]" fill="none">
       <defs>
         <linearGradient id="goldGradAulas" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#fef08a" />
-          <stop offset="50%" stopColor="#f59e0b" />
+          <stop offset="45%" stopColor="#f59e0b" />
           <stop offset="100%" stopColor="#b45309" />
         </linearGradient>
       </defs>
       {/* Louros Circulares */}
-      <path d="M 50 15 C 32 15 18 30 18 50 C 18 68 30 82 46 85" stroke="url(#goldGradAulas)" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M 50 15 C 68 15 82 30 82 50 C 82 68 70 82 54 85" stroke="url(#goldGradAulas)" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M 50 15 C 32 15 18 30 18 50 C 18 68 30 82 46 85" stroke="url(#goldGradAulas)" strokeWidth="2.8" strokeLinecap="round" />
+      <path d="M 50 15 C 68 15 82 30 82 50 C 82 68 70 82 54 85" stroke="url(#goldGradAulas)" strokeWidth="2.8" strokeLinecap="round" />
       {/* Folhas de Louro Esquerda */}
       <path d="M 22 34 Q 15 32 18 26 Q 25 30 22 34 Z" fill="url(#goldGradAulas)" />
       <path d="M 18 45 Q 11 44 14 38 Q 21 42 18 45 Z" fill="url(#goldGradAulas)" />
@@ -467,16 +467,16 @@ const BalancaLourosDourada = () => (
       <path d="M 76 68 Q 82 71 78 76 Q 72 72 76 68 Z" fill="url(#goldGradAulas)" />
       <path d="M 66 78 Q 70 84 64 87 Q 61 80 66 78 Z" fill="url(#goldGradAulas)" />
       {/* Balança Central */}
-      <line x1="50" y1="28" x2="50" y2="70" stroke="url(#goldGradAulas)" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M 42 70 L 58 70" stroke="url(#goldGradAulas)" strokeWidth="3" strokeLinecap="round" />
-      <circle cx="50" cy="27" r="2.5" fill="url(#goldGradAulas)" />
-      <line x1="32" y1="36" x2="68" y2="36" stroke="url(#goldGradAulas)" strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="34" y1="36" x2="27" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.2" />
-      <line x1="34" y1="36" x2="41" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.2" />
-      <path d="M 25 52 Q 34 58 43 52 Z" fill="url(#goldGradAulas)" />
-      <line x1="66" y1="36" x2="59" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.2" />
-      <line x1="66" y1="36" x2="73" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.2" />
-      <path d="M 57 52 Q 66 58 75 52 Z" fill="url(#goldGradAulas)" />
+      <line x1="50" y1="26" x2="50" y2="72" stroke="url(#goldGradAulas)" strokeWidth="2.8" strokeLinecap="round" />
+      <path d="M 40 72 L 60 72" stroke="url(#goldGradAulas)" strokeWidth="3.2" strokeLinecap="round" />
+      <circle cx="50" cy="25" r="2.8" fill="url(#goldGradAulas)" />
+      <line x1="30" y1="35" x2="70" y2="35" stroke="url(#goldGradAulas)" strokeWidth="2.8" strokeLinecap="round" />
+      <line x1="32" y1="35" x2="25" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.4" />
+      <line x1="32" y1="35" x2="39" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.4" />
+      <path d="M 23 52 Q 32 58 41 52 Z" fill="url(#goldGradAulas)" />
+      <line x1="68" y1="35" x2="61" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.4" />
+      <line x1="68" y1="35" x2="75" y2="52" stroke="url(#goldGradAulas)" strokeWidth="1.4" />
+      <path d="M 59 52 Q 68 58 77 52 Z" fill="url(#goldGradAulas)" />
     </svg>
   </div>
 );
@@ -522,7 +522,7 @@ export default function AdminAulasInterativas() {
   const [abaAtiva, setAbaAtiva] = useState<AbaAulas>('trilhas');
   const [favoritosIds, setFavoritosIds] = useState<Set<string>>(new Set());
   const [acertosMap, setAcertosMap] = useState<Record<string, { acertos: number; total: number }>>({});
-  const [activeDiscIndex, setActiveDiscIndex] = useState(0);
+  const [activeDiscIndex, setActiveDiscIndex] = useState(1); // Inicializa em Direito Civil (índice 1) para espelhar 100% o Mockup Oficial
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   // Sincronização inicial com o Supabase (Single Source of Truth)
@@ -951,97 +951,85 @@ export default function AdminAulasInterativas() {
 
         return (
           <>
-          {/* ── Fundo Clássico da Grécia com Estátua de Mármore da Deusa Têmis (Idêntico ao Mockup) ── */}
-          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#120a06]">
+          {/* ── Fundo Clássico Oficial (Idêntico 100% ao Mockup: Estátua de Mármore da Deusa na Direita com Louros) ── */}
+          <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0a0503]">
             <img
-              src={greciaFilosofosFundo}
+              src="/images/gamificacao/deusa_louros_trilha.webp"
               alt=""
               loading="eager"
               decoding="async"
               fetchPriority="high"
-              className="w-full h-full object-cover object-top opacity-75 select-none pointer-events-none filter brightness-[0.85] contrast-[1.08]"
+              className="w-full h-full object-cover object-top select-none pointer-events-none filter brightness-95 contrast-105"
             />
-            {/* Estátua de Mármore da Deusa Têmis no Canto Superior Direito */}
-            <img
-              src={themisMarbleCutout}
-              alt=""
-              className="absolute -top-4 -right-4 sm:-top-8 sm:-right-8 w-[240px] xs:w-[280px] sm:w-[350px] md:w-[420px] max-h-[82vh] object-contain object-top pointer-events-none opacity-45 sm:opacity-55 mix-blend-screen filter drop-shadow-[0_0_40px_rgba(245,158,11,0.25)] select-none z-0"
-            />
-            {/* Vinheta Atmosférica de Profundidade */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0805] via-transparent to-black/60 pointer-events-none" />
+            {/* Vinheta suave de profundidade */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0e0704] via-transparent to-black/30 pointer-events-none" />
           </div>
 
-          {/* Ramos de Louro nos Cantos Inferiores da Tela */}
-          <div className="fixed bottom-0 left-0 z-0 pointer-events-none">
+          {/* Ramos de Louro nos Cantos Inferiores da Tela (Idêntico ao Mockup) */}
+          <div className="fixed bottom-0 left-0 z-10 pointer-events-none">
             <BottomCornerLaurel />
           </div>
-          <div className="fixed bottom-0 right-0 z-0 pointer-events-none">
+          <div className="fixed bottom-0 right-0 z-10 pointer-events-none">
             <BottomCornerLaurel flip />
           </div>
 
-          {/* Top Bar Fixa de Navegação Minimalista */}
-          <div 
-            className="sticky top-0 z-30 w-full backdrop-blur-xl bg-[#0D0D0D]/75 border-b border-white/10 px-4 sm:px-6 py-2.5 transition-all shadow-xl"
-            style={{
-              paddingTop: 'calc(0.5rem + var(--sai-top, env(safe-area-inset-top, 0px)))'
-            }}
+          {/* Botão de Voltar Flutuante no Canto Superior Esquerdo */}
+          <button
+            type="button"
+            onClick={handleVoltar}
+            className="fixed top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] left-4 z-40 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/45 hover:bg-black/75 border border-[#f59e0b]/35 flex items-center justify-center text-[#fef08a] active:scale-95 transition backdrop-blur-md shadow-lg"
+            aria-label="Voltar"
           >
-            <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={handleVoltar}
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/50 hover:bg-black/70 border border-amber-500/35 flex items-center justify-center text-amber-200 active:scale-95 transition shadow-lg shrink-0"
-                aria-label="Voltar"
-              >
-                <ArrowLeft className="w-5 h-5 sm:w-5.5 sm:h-5.5" strokeWidth={2.4} />
-              </button>
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2.4} />
+          </button>
 
-              {/* Botão de Destravar para Teste */}
-              <button
-                type="button"
-                onClick={() => {
-                  setModoLivreTeste(!modoLivreTeste);
-                  setToastAviso(!modoLivreTeste ? 'Modo Livre Ativado: Todas as fases liberadas.' : 'Modo Padrão Ativado: Travas progressivas ativadas.');
-                }}
-                className={cn(
-                  "text-[10px] sm:text-[11px] font-bold px-3 py-1.5 rounded-full border transition flex items-center gap-1.5 shadow-sm shrink-0",
-                  modoLivreTeste 
-                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40" 
-                    : "bg-black/40 text-amber-200/70 border-amber-500/20 hover:text-white"
-                )}
-              >
-                {modoLivreTeste ? <Unlock className="w-3.5 h-3.5 text-amber-300" /> : <Lock className="w-3.5 h-3.5" />}
-                <span className="hidden xs:inline">{modoLivreTeste ? 'Modo Livre Ativo' : 'Destravar Teste'}</span>
-              </button>
-            </div>
-          </div>
+          {/* Botão de Destravar Teste no Canto Superior Direito */}
+          <button
+            type="button"
+            onClick={() => {
+              setModoLivreTeste(!modoLivreTeste);
+              setToastAviso(!modoLivreTeste ? 'Modo Livre Ativado: Todas as fases liberadas.' : 'Modo Padrão Ativado: Travas progressivas ativadas.');
+            }}
+            className={cn(
+              "fixed top-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] right-4 z-40 text-[10px] font-bold px-2.5 py-1.5 rounded-full border transition flex items-center gap-1.5 shadow-lg backdrop-blur-md",
+              modoLivreTeste 
+                ? "bg-amber-500/20 text-amber-300 border-amber-500/40" 
+                : "bg-black/45 text-amber-200/70 border-amber-500/25 hover:text-white"
+            )}
+          >
+            {modoLivreTeste ? <Unlock className="w-3.5 h-3.5 text-amber-300" /> : <Lock className="w-3.5 h-3.5" />}
+            <span className="hidden xs:inline">{modoLivreTeste ? 'Livre' : 'Teste'}</span>
+          </button>
 
-          <div className="relative z-10 w-full max-w-4xl mx-auto px-4 pt-2 sm:pt-4 pb-12 flex flex-col items-center">
-            {/* ── CUME DO TOPO: BALANÇA DOURADA COM COROA DE LOUROS ── */}
-            <BalancaLourosDourada />
+          {/* ── CONTAINER PRINCIPAL EM TELA CHEIA (SEM SCROLL VERTICAL, CABE 100% NA TELA) ── */}
+          <div className="relative z-20 w-full h-dvh max-h-dvh overflow-hidden flex flex-col justify-between pt-[calc(0.75rem+var(--sai-top,env(safe-area-inset-top,0px)))] pb-[calc(1rem+var(--sai-bottom,env(safe-area-inset-bottom,0px)))] px-4">
+            {/* ── TOPO ESQUERDA: BALANÇA DOURADA COM LOUROS, TÍTULO E SUBTÍTULO (ALINHADO À ESQUERDA) ── */}
+            <div className="w-full max-w-sm mr-auto pl-1 sm:pl-3 pt-6 xs:pt-8 sm:pt-9 flex flex-col items-start text-left z-20">
+              <BalancaLourosDourada />
+              
+              <h1 className="font-serif font-black text-2xl xs:text-3xl sm:text-[34px] leading-tight text-[#fef3c7] tracking-wide mt-1 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+                Aulas em Trilha
+              </h1>
+              
+              <p className="font-serif text-xs xs:text-[13px] text-[#d4b996] font-medium mt-1 leading-snug max-w-[230px] xs:max-w-[260px] drop-shadow-sm">
+                Escolha a área do direito para começar sua jornada.
+              </p>
 
-            {/* Título e Subtítulo Oficial */}
-            <h1 className="font-serif font-black text-2xl xs:text-3xl sm:text-4xl text-[#fef3c7] tracking-wide mt-1 text-center drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
-              Aulas em Trilha
-            </h1>
-            <p className="font-serif text-xs sm:text-sm text-[#d4b996] font-medium mt-1 text-center max-w-xs sm:max-w-sm drop-shadow-sm">
-              Escolha a área do direito para começar sua jornada.
-            </p>
-
-            {/* ── Menu de Alternância (Trilhas, Progresso, Favoritos, Estatísticas) ── */}
-            <div className="w-full max-w-lg mx-auto my-3.5 sm:my-4">
-              <AulasMenuAlternancia
-                abaAtiva={abaAtiva}
-                onSelecionarAba={setAbaAtiva}
-                corDestaque="#f59e0b"
-                totalFavoritos={favoritosIds.size}
-                porcentagemGeral={porcentagemGeral}
-              />
+              {/* ── Menu de Alternância Compacto e Nobre (Trilhas, Progresso, Favoritos, Estatísticas) ── */}
+              <div className="w-full max-w-[320px] xs:max-w-[350px] mt-2.5 xs:mt-3">
+                <AulasMenuAlternancia
+                  abaAtiva={abaAtiva}
+                  onSelecionarAba={setAbaAtiva}
+                  corDestaque="#f59e0b"
+                  totalFavoritos={favoritosIds.size}
+                  porcentagemGeral={porcentagemGeral}
+                />
+              </div>
             </div>
 
-            {/* Visualização de Abas Secundárias */}
+            {/* Visualização de Abas Secundárias (com scroll se necessário) */}
             {abaAtiva === 'progresso' && (
-              <div className="w-full max-w-3xl">
+              <div className="w-full max-w-2xl mx-auto flex-1 overflow-y-auto my-2 px-2">
                 <AulasTabProgresso
                   materias={MATERIAS_CATALOGO}
                   aulas={AULAS_CATALOGO}
@@ -1062,7 +1050,7 @@ export default function AdminAulasInterativas() {
             )}
 
             {abaAtiva === 'favoritos' && (
-              <div className="w-full max-w-3xl">
+              <div className="w-full max-w-2xl mx-auto flex-1 overflow-y-auto my-2 px-2">
                 <AulasTabFavoritos
                   aulasFavoritas={AULAS_CATALOGO.filter(a => favoritosIds.has(a.id))}
                   onIniciarAula={iniciarAula}
@@ -1074,7 +1062,7 @@ export default function AdminAulasInterativas() {
             )}
 
             {abaAtiva === 'estatisticas' && (
-              <div className="w-full max-w-3xl">
+              <div className="w-full max-w-2xl mx-auto flex-1 overflow-y-auto my-2 px-2">
                 <AulasTabEstatisticas
                   materias={MATERIAS_CATALOGO}
                   aulas={AULAS_CATALOGO}
@@ -1094,22 +1082,12 @@ export default function AdminAulasInterativas() {
               </div>
             )}
 
-            {/* ── ABA TRILHAS: CARROSSEL 3D COVERFLOW DAS ÁREAS (100% IDÊNTICO AO MOCKUP) ── */}
+            {/* ── ABA TRILHAS: OS 3 CARDS EM DESTAQUE 3D COVERFLOW (100% IDÊNTICO AO MOCKUP) ── */}
             {abaAtiva === 'trilhas' && (() => {
               if (disciplinasFiltradas.length === 0) {
                 return (
-                  <div className="py-12 text-center flex flex-col items-center justify-center gap-3">
-                    <Search className="w-9 h-9 text-zinc-600 stroke-[1.5]" />
-                    <p className="text-zinc-400 text-sm">
-                      Nenhuma disciplina encontrada para "<span className="text-white font-semibold">{buscaTermo}</span>"
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setBuscaTermo('')}
-                      className="text-xs text-amber-400 hover:text-amber-300 underline font-medium"
-                    >
-                      Limpar pesquisa
-                    </button>
+                  <div className="py-12 text-center flex flex-col items-center justify-center gap-2">
+                    <p className="text-zinc-400 text-sm">Nenhuma disciplina encontrada.</p>
                   </div>
                 );
               }
@@ -1129,12 +1107,6 @@ export default function AdminAulasInterativas() {
               const { Icon: PrevIcon } = areaIconFor(prevDisc.nome);
               const { Icon: NextIcon } = areaIconFor(nextDisc.nome);
 
-              // Indicador com janela de 4 a 5 pontos
-              const totalDots = Math.min(4, disciplinasFiltradas.length);
-              const activeDotPosition = disciplinasFiltradas.length > 1
-                ? Math.round((safeIdx / (disciplinasFiltradas.length - 1)) * (totalDots - 1))
-                : 0;
-
               const handlePrev = () => {
                 try { haptic.selection(); } catch {}
                 setActiveDiscIndex(prevIdx);
@@ -1152,9 +1124,12 @@ export default function AdminAulasInterativas() {
                 resetScrollToTop();
               };
 
+              // Imagem clássica da disciplina (capa-direito-civil.webp, etc)
+              const capaCenterUrl = `/images/disciplinas/capa-${currDisc.id === 'civil' ? 'direito-civil' : currDisc.id === 'penal' ? 'direito-penal' : currDisc.id === 'constitucional' ? 'direito-constitucional' : currDisc.id}.webp`;
+
               return (
                 <div 
-                  className="w-full flex flex-col items-center select-none"
+                  className="w-full flex-1 flex flex-col items-center justify-center select-none"
                   onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
                   onTouchEnd={(e) => {
                     if (touchStartX === null) return;
@@ -1164,166 +1139,116 @@ export default function AdminAulasInterativas() {
                     setTouchStartX(null);
                   }}
                 >
-                  {/* Barra de Pesquisa Rápida Opcional */}
-                  <div className="relative w-full max-w-xs mb-3">
-                    <div className="relative flex items-center w-full bg-[#1b120c]/80 border border-[#f59e0b]/30 focus-within:border-[#f59e0b] rounded-full px-3 py-1.5 transition-all shadow-inner">
-                      <Search className="w-3.5 h-3.5 text-[#f59e0b] shrink-0 mr-2" />
-                      <input
-                        type="text"
-                        value={buscaTermo}
-                        onChange={(e) => {
-                          setBuscaTermo(e.target.value);
-                          setActiveDiscIndex(0);
-                        }}
-                        placeholder="Filtrar áreas..."
-                        className="bg-transparent text-xs text-[#fef3c7] placeholder-[#fef3c7]/40 outline-none w-full font-medium"
-                      />
-                      {buscaTermo && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setBuscaTermo('');
-                            setActiveDiscIndex(0);
-                          }}
-                          className="p-1 rounded-full text-zinc-400 hover:text-white transition shrink-0"
-                          aria-label="Limpar pesquisa"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* ── CONTAINER COVERFLOW COM OS 3 CARDS EM DESTAQUE ── */}
-                  <div className="relative w-full max-w-md mx-auto flex items-center justify-center py-2 sm:py-4 overflow-visible">
-                    {/* Botão Seta Esquerda (Desktop/Toque) */}
-                    <button
-                      type="button"
-                      onClick={handlePrev}
-                      className="absolute left-0 sm:left-1 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/90 border border-[#f59e0b]/40 text-[#f59e0b] flex items-center justify-center active:scale-95 transition shadow-lg"
-                      aria-label="Área anterior"
-                    >
-                      <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
-                    </button>
-
-                    {/* CARD ESQUERDA (ANTERIOR) */}
+                  {/* ── CARROSSEL 3D: CARD ESQUERDA + CARD CENTRAL DOURADO + CARD DIREITA ── */}
+                  <div className="relative w-full max-w-md mx-auto flex items-center justify-center my-auto py-1 xs:py-2 overflow-visible select-none">
+                    {/* CARD ESQUERDA (ANTERIOR: ex: Direito Penal) */}
                     <div
                       onClick={handlePrev}
-                      className="relative shrink-0 w-[110px] xs:w-[125px] sm:w-[150px] h-[190px] xs:h-[210px] sm:h-[240px] rounded-2xl border p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-60 hover:opacity-85 transition-all duration-300 scale-90 -mr-6 sm:-mr-8 z-10 select-none shadow-xl"
+                      className="relative shrink-0 w-[95px] xs:w-[110px] sm:w-[130px] h-[155px] xs:h-[175px] sm:h-[205px] rounded-2xl border p-2 xs:p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-75 hover:opacity-95 transition-all duration-300 scale-95 -mr-4 xs:-mr-5 z-10 select-none shadow-xl"
                       style={{
-                        background: 'linear-gradient(180deg, rgba(28, 18, 11, 0.92) 0%, rgba(12, 7, 4, 0.95) 100%)',
+                        background: 'linear-gradient(180deg, rgba(32, 20, 13, 0.95) 0%, rgba(14, 8, 5, 0.98) 100%)',
                         borderColor: 'rgba(217, 119, 6, 0.35)',
                         boxShadow: '0 10px 24px rgba(0,0,0,0.85)',
                       }}
                     >
                       <div className="w-full flex-1 flex flex-col items-center justify-center pt-2">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-[#f59e0b]/80 mb-2">
-                          <PrevIcon className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8]" />
+                        <div className="w-8 h-8 xs:w-10 xs:h-10 rounded-xl flex items-center justify-center text-[#f59e0b] mb-1.5">
+                          <PrevIcon className="w-5 h-5 xs:w-6 xs:h-6 stroke-[1.8]" />
                         </div>
-                        <h4 className="font-serif font-bold text-[11.5px] xs:text-xs sm:text-[13px] text-[#fef3c7] leading-tight line-clamp-2">
+                        <h4 className="font-serif font-bold text-[11px] xs:text-xs text-[#fef3c7] leading-tight line-clamp-2">
                           {formatarTituloArea(prevDisc.nome)}
                         </h4>
                       </div>
-                      <p className="text-[10px] sm:text-[11px] font-serif text-[#d4b996]/80 font-medium pb-1">
+                      <p className="text-[9.5px] xs:text-[10.5px] font-serif text-[#d4b996] font-medium pb-0.5">
                         {prevMaterias.length} temas
                       </p>
                     </div>
 
-                    {/* CARD CENTRAL (ATIVO EM DESTAQUE COM BORDA DOURADA BRILHANTE) */}
+                    {/* CARD CENTRAL (ATIVO: ex: Direito Civil com Templo Clássico e Borda Dourada Brilhante) */}
                     <motion.div
                       key={currDisc.id}
-                      initial={{ scale: 0.95, opacity: 0.8 }}
+                      initial={{ scale: 0.96, opacity: 0.85 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: 'spring', damping: 25, stiffness: 320 }}
                       onClick={handleSelectCurrent}
-                      className="relative shrink-0 w-[185px] xs:w-[205px] sm:w-[235px] h-[260px] xs:h-[285px] sm:h-[320px] rounded-2xl border-2 p-3 sm:p-3.5 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-300 z-20 select-none group shadow-2xl"
+                      className="relative shrink-0 w-[155px] xs:w-[175px] sm:w-[205px] h-[215px] xs:h-[240px] sm:h-[275px] rounded-2xl border-2 p-2.5 xs:p-3 flex flex-col items-center justify-between text-center cursor-pointer transition-all duration-300 z-30 select-none group shadow-2xl"
                       style={{
-                        borderColor: '#d97706',
-                        background: 'linear-gradient(180deg, rgba(38, 25, 16, 0.96) 0%, rgba(18, 11, 7, 0.98) 100%)',
-                        boxShadow: '0 0 30px rgba(245, 158, 11, 0.5), 0 16px 36px rgba(0,0,0,0.95), inset 0 1px 2px rgba(255,255,255,0.35)',
+                        borderColor: '#f59e0b',
+                        background: 'linear-gradient(180deg, rgba(42, 26, 17, 0.97) 0%, rgba(20, 12, 7, 0.99) 100%)',
+                        boxShadow: '0 0 32px rgba(245, 158, 11, 0.55), 0 16px 36px rgba(0,0,0,0.95), inset 0 1px 2px rgba(255,255,255,0.4)',
                       }}
                     >
-                      {/* Borda Interna Dourada Clássica */}
-                      <div className="absolute inset-1.5 rounded-xl border border-[#f59e0b]/35 pointer-events-none z-10" />
+                      {/* Borda Interna Dourada */}
+                      <div className="absolute inset-1.5 rounded-xl border border-[#fef08a]/35 pointer-events-none z-10" />
 
-                      {/* Capa Clássica / Ilustração da Disciplina (Ex: Templo Clássico) */}
-                      <div className="w-full flex-1 relative rounded-lg overflow-hidden mb-2 flex items-center justify-center">
+                      {/* Ilustração Clássica do Templo / Fachada Clássica */}
+                      <div className="w-full flex-1 relative rounded-lg overflow-hidden m-0.5 mb-1.5 flex items-center justify-center">
                         <img
-                          src={assetUrl(currDisc.capaHeroUrl)}
+                          src={capaCenterUrl}
                           alt={currDisc.nome}
                           loading="eager"
                           decoding="async"
                           fetchPriority="high"
-                          className="w-full h-full object-cover object-top select-none pointer-events-none filter brightness-95 group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover object-center select-none pointer-events-none filter brightness-95 group-hover:scale-105 transition-transform duration-500"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.src = assetUrl(currDisc.capaHeroUrl);
                           }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#160d08] via-transparent to-transparent pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1b100a] via-transparent to-transparent pointer-events-none" />
                       </div>
 
-                      {/* Título da Área em Fonte Serifada Nobre */}
-                      <div className="z-10 w-full px-1">
-                        <h3 className="font-serif font-black text-sm xs:text-[15px] sm:text-base text-[#fef3c7] leading-tight line-clamp-2 drop-shadow-sm">
+                      {/* Título e Quantidade de Temas */}
+                      <div className="z-10 w-full px-1 pb-1">
+                        <h3 className="font-serif font-black text-[13px] xs:text-[14px] sm:text-base text-[#fef3c7] leading-tight line-clamp-2 drop-shadow-sm">
                           {formatarTituloArea(currDisc.nome)}
                         </h3>
-                        <p className="text-[11px] sm:text-xs font-serif text-[#d4b996] font-semibold mt-1">
+                        <p className="text-[10.5px] xs:text-[11.5px] font-serif text-[#d4b996] font-semibold mt-0.5">
                           {currMaterias.length} temas
                         </p>
                       </div>
                     </motion.div>
 
-                    {/* CARD DIREITA (PRÓXIMO) */}
+                    {/* CARD DIREITA (PRÓXIMO: ex: Direito Constitucional) */}
                     <div
                       onClick={handleNext}
-                      className="relative shrink-0 w-[110px] xs:w-[125px] sm:w-[150px] h-[190px] xs:h-[210px] sm:h-[240px] rounded-2xl border p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-60 hover:opacity-85 transition-all duration-300 scale-90 -ml-6 sm:-ml-8 z-10 select-none shadow-xl"
+                      className="relative shrink-0 w-[95px] xs:w-[110px] sm:w-[130px] h-[155px] xs:h-[175px] sm:h-[205px] rounded-2xl border p-2 xs:p-2.5 flex flex-col items-center justify-between text-center cursor-pointer opacity-75 hover:opacity-95 transition-all duration-300 scale-95 -ml-4 xs:-ml-5 z-10 select-none shadow-xl"
                       style={{
-                        background: 'linear-gradient(180deg, rgba(28, 18, 11, 0.92) 0%, rgba(12, 7, 4, 0.95) 100%)',
+                        background: 'linear-gradient(180deg, rgba(32, 20, 13, 0.95) 0%, rgba(14, 8, 5, 0.98) 100%)',
                         borderColor: 'rgba(217, 119, 6, 0.35)',
                         boxShadow: '0 10px 24px rgba(0,0,0,0.85)',
                       }}
                     >
                       <div className="w-full flex-1 flex flex-col items-center justify-center pt-2">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-[#f59e0b]/80 mb-2">
-                          <NextIcon className="w-6 h-6 sm:w-7 sm:h-7 stroke-[1.8]" />
+                        <div className="w-8 h-8 xs:w-10 xs:h-10 rounded-xl flex items-center justify-center text-[#f59e0b] mb-1.5">
+                          <NextIcon className="w-5 h-5 xs:w-6 xs:h-6 stroke-[1.8]" />
                         </div>
-                        <h4 className="font-serif font-bold text-[11.5px] xs:text-xs sm:text-[13px] text-[#fef3c7] leading-tight line-clamp-2">
+                        <h4 className="font-serif font-bold text-[11px] xs:text-xs text-[#fef3c7] leading-tight line-clamp-2">
                           {formatarTituloArea(nextDisc.nome)}
                         </h4>
                       </div>
-                      <p className="text-[10px] sm:text-[11px] font-serif text-[#d4b996]/80 font-medium pb-1">
+                      <p className="text-[9.5px] xs:text-[10.5px] font-serif text-[#d4b996] font-medium pb-0.5">
                         {nextMaterias.length} temas
                       </p>
                     </div>
-
-                    {/* Botão Seta Direita (Desktop/Toque) */}
-                    <button
-                      type="button"
-                      onClick={handleNext}
-                      className="absolute right-0 sm:right-1 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/60 hover:bg-black/90 border border-[#f59e0b]/40 text-[#f59e0b] flex items-center justify-center active:scale-95 transition shadow-lg"
-                      aria-label="Próxima área"
-                    >
-                      <ChevronRight className="w-5 h-5 stroke-[2.5]" />
-                    </button>
                   </div>
 
-                  {/* ── PONTOS INDICADORES DO CARROSSEL ── */}
-                  <div className="flex items-center justify-center gap-1.5 my-3 sm:my-3.5">
-                    {Array.from({ length: totalDots }).map((_, dotIdx) => {
-                      const isDotActive = dotIdx === activeDotPosition;
+                  {/* ── 4 PONTOS INDICADORES DO CARROSSEL (2º PONTO ALONGADO NO MOCKUP) ── */}
+                  <div className="flex items-center justify-center gap-1.5 my-2 xs:my-2.5 z-20">
+                    {[0, 1, 2, 3].map((dotIdx) => {
+                      const isDotActive = dotIdx === (safeIdx % 4);
                       return (
                         <button
                           key={dotIdx}
                           type="button"
                           onClick={() => {
                             try { haptic.selection(); } catch {}
-                            setActiveDiscIndex(Math.round((dotIdx / (totalDots - 1)) * (disciplinasFiltradas.length - 1)));
+                            setActiveDiscIndex(dotIdx);
                           }}
                           className={cn(
                             "transition-all duration-300 rounded-full",
                             isDotActive 
-                              ? "w-6 h-2 bg-[#f59e0b] shadow-[0_0_10px_#f59e0b]" 
-                              : "w-2 h-2 bg-white/25 hover:bg-white/45"
+                              ? "w-6 h-2 bg-[#f59e0b] shadow-[0_0_8px_#f59e0b]" 
+                              : "w-2 h-2 bg-[#f59e0b]/35 hover:bg-[#f59e0b]/60"
                           )}
                           aria-label={`Ir para área ${dotIdx + 1}`}
                         />
@@ -1332,11 +1257,11 @@ export default function AdminAulasInterativas() {
                   </div>
 
                   {/* ── BOTÃO PRINCIPAL DE AÇÃO: SELECIONAR ÁREA → (IDÊNTICO AO MOCKUP) ── */}
-                  <div className="w-full max-w-xs sm:max-w-sm px-4 mt-1 z-20">
+                  <div className="w-full max-w-[310px] xs:max-w-[340px] mx-auto px-2 mb-1 xs:mb-2 z-20">
                     <button
                       type="button"
                       onClick={handleSelectCurrent}
-                      className="w-full h-12 sm:h-13 rounded-full flex items-center justify-center gap-2 font-serif font-black text-sm sm:text-base text-[#3d1a03] shadow-[0_8px_24px_rgba(245,158,11,0.45),inset_0_1px_2px_rgba(255,255,255,0.6)] active:scale-95 hover:brightness-105 transition-all cursor-pointer"
+                      className="w-full h-12 xs:h-13 rounded-full flex items-center justify-center gap-2 font-serif font-black text-sm xs:text-base text-[#3d1a03] shadow-[0_8px_24px_rgba(245,158,11,0.45),inset_0_1px_2px_rgba(255,255,255,0.6)] active:scale-95 hover:brightness-105 transition-all cursor-pointer"
                       style={{
                         background: 'linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #d97706 100%)',
                       }}
