@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Layers, ArrowRight, Crown } from 'lucide-react';
+import { Layers, ArrowRight, Crown, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
@@ -38,7 +38,7 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
               }}
             >
               <div className="absolute inset-1.5 rounded-xl border border-white/5 flex items-center justify-center">
-                <Layers className="w-4 h-4 text-blue-300/40" />
+                <Landmark className="w-4 h-4 text-cyan-300/40" />
               </div>
             </div>
 
@@ -56,7 +56,7 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
               }}
             >
               <div className="absolute inset-1.5 rounded-xl border border-white/10 flex items-center justify-center">
-                <Layers className="w-4 h-4 text-blue-200/50" />
+                <Landmark className="w-4 h-4 text-blue-200/50" />
               </div>
             </div>
 
@@ -70,9 +70,10 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
               {/* Brilho reflexivo no hover */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 pointer-events-none z-20" />
 
-              {/* Topo da Carta: Deck e Ícone Layers */}
+              {/* Topo da Carta: Templo Grego e Deck */}
               <div className="flex items-center justify-between z-[2] w-full px-0.5">
-                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-blue-200 drop-shadow-sm">
+                <span className="flex items-center gap-1 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-cyan-200 drop-shadow-sm font-sans">
+                  <Landmark className="w-3 h-3 text-cyan-300 shrink-0" />
                   {item.badgeLabel}
                 </span>
                 <Layers className="w-3.5 h-3.5 text-blue-200/70" />
@@ -124,12 +125,13 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
             </div>
           </div>
 
-          {/* ── NOME DO DECK E QUAL DECK É DO LADO (Conforme Solicitado) ── */}
+          {/* ── NOME DO DECK E QUAL DECK É DO LADO (Estilo Clássico Grego) ── */}
           <div className="mt-2.5 sm:mt-3 w-full flex items-center justify-center gap-1.5 px-0.5 text-center flex-wrap">
-            <span className="px-1.5 py-0.5 rounded-md bg-blue-500/25 border border-blue-400/35 text-[10.5px] sm:text-[11.5px] font-black uppercase tracking-wider text-blue-300 shrink-0">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-950/80 border border-cyan-400/40 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-cyan-300 shrink-0 shadow-sm">
+              <Landmark className="w-2.5 h-2.5 text-cyan-400" />
               {item.badgeLabel}
             </span>
-            <span className="font-sans font-bold text-[13px] xs:text-[14px] sm:text-[15px] leading-tight text-zinc-100 group-hover:text-blue-300 transition-colors">
+            <span className="font-sans font-bold text-[13px] xs:text-[14px] sm:text-[15px] leading-tight text-white group-hover:text-cyan-300 transition-colors drop-shadow-sm">
               {tituloLimpo}
             </span>
             {item.isLocked && (
@@ -180,14 +182,16 @@ export const FlashcardDeckItem = memo(({ item, i, palette, isLast }: any) => {
             />
           </svg>
 
-          {/* Passos / Checkpoints Esféricos Perfeitos no Ponto Médio */}
+          {/* Medalhão Clássico Grego no Ponto Médio com Anel Iluminado */}
           <div
-            className="absolute w-3 h-3 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border-2 border-white bg-blue-500 shadow-[0_0_12px_#2563eb]"
+            className="absolute w-4 h-4 rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none border-2 border-cyan-300 bg-blue-600 shadow-[0_0_14px_rgba(34,211,238,0.7)] flex items-center justify-center"
             style={{
               left: '50%',
               top: '50%',
             }}
-          />
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_6px_#fff]" />
+          </div>
         </div>
       )}
     </div>
