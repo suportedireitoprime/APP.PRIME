@@ -35,6 +35,7 @@ import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.jpg';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
 import { formatarNomeArea } from '@/pages/Flashcards';
+import { getSubMateriasForArea, type SubMateriaConfig } from '@/config/flashcardsSubMaterias';
 
 const LaurelBranch = ({ flip = false }: { flip?: boolean }) => (
   <svg 
@@ -55,76 +56,18 @@ const LaurelBranch = ({ flip = false }: { flip?: boolean }) => (
   </svg>
 );
 
-interface SubMateriaCivilConfig {
-  id: string;
-  nome: string;
-  numeros: number[];
-  keywords: string[];
-}
-
-const SUB_MATERIAS_CIVIL: SubMateriaCivilConfig[] = [
-  { 
-    id: 'sec-parte-geral', 
-    nome: 'Parte Geral & LINDB', 
-    numeros: [1, 2, 3, 4, 5, 6, 32, 33],
-    keywords: ['parte geral', 'lindb', 'pessoa', 'pessoas', 'bens', 'fato', 'negócio jurídico', 'prescrição', 'decadência']
-  },
-  { 
-    id: 'sec-obrigacoes', 
-    nome: 'Obrigações', 
-    numeros: [7, 8, 9, 10],
-    keywords: ['obrigação', 'obrigações', 'inadimplemento', 'pagamento', 'devedor', 'credor']
-  },
-  { 
-    id: 'sec-contratos', 
-    nome: 'Contratos', 
-    numeros: [11, 12, 13, 30, 31, 40, 41],
-    keywords: ['contrato', 'contratos', 'compra e venda', 'locação', 'doação', 'mútuo', 'fiança']
-  },
-  { 
-    id: 'sec-responsabilidade-civil', 
-    nome: 'Responsabilidade Civil', 
-    numeros: [14],
-    keywords: ['responsabilidade civil', 'dano moral', 'dano material', 'culpa', 'nexo', 'indenização']
-  },
-  { 
-    id: 'sec-direitos-reais', 
-    nome: 'Direitos Reais', 
-    numeros: [15, 16, 17, 18, 19, 20, 22],
-    keywords: ['reais', 'propriedade', 'posse', 'usucapião', 'imóveis', 'registro de imóveis', 'hipoteca', 'penhor']
-  },
-  { 
-    id: 'sec-familia', 
-    nome: 'Direito de Família', 
-    numeros: [21, 23, 24, 25, 34, 37, 38, 39, 42, 43, 44],
-    keywords: ['família', 'casamento', 'união estável', 'alimentos', 'filiação', 'guarda', 'divórcio', 'parentesco']
-  },
-  { 
-    id: 'sec-sucessoes', 
-    nome: 'Direito das Sucessões', 
-    numeros: [26, 27, 35, 36],
-    keywords: ['sucessão', 'sucessões', 'herança', 'testamento', 'inventário', 'herdeiro']
-  },
-  { 
-    id: 'sec-consumidor-especial', 
-    nome: 'Consumidor & Especial', 
-    numeros: [28, 29],
-    keywords: ['consumidor', 'cdc', 'especial', 'notarial', 'registral']
-  },
-];
-
 function getNumeroTema(temaStr: string): number {
   if (!temaStr) return 0;
   const m = String(temaStr).match(/^(\d+)[\.\-\s_:]+/);
   return m ? parseInt(m[1], 10) : 0;
 }
 
-function itemMatchesSubMateria(sub: SubMateriaCivilConfig, it: any): boolean {
+function itemMatchesSubMateria(sub: SubMateriaConfig, it: any): boolean {
   const num = it.temaNum || getNumeroTema(it.rawTema || it.titulo);
-  if (num > 0 && sub.numeros.includes(num)) return true;
+  if (num > 0 && sub.numeros && sub.numeros.includes(num)) return true;
   
   const text = (String(it.rawTema || '') + ' ' + String(it.titulo || '')).toLowerCase();
-  if (sub.keywords.some((k) => text.includes(k))) return true;
+  if (sub.keywords && sub.keywords.some((k) => text.includes(k.toLowerCase()))) return true;
   return false;
 }
 
@@ -669,26 +612,23 @@ const FlashcardsArea = () => {
   }, [flashcardsAreasResumo]);
 
   const pillContainerRef = useRef<HTMLDivElement>(null);
-  const [activeSectionId, setActiveSectionId] = useState<string>('sec-parte-geral');
 
-  const isCivilArea = useMemo(() => {
-    return slug === 'direito-civil' || (officialFlashcardArea && officialFlashcardArea.toLowerCase().includes('civil'));
-  }, [slug, officialFlashcardArea]);
+  // Sub-matérias/matérias configuradas para esta área (Civil, Administrativo, Penal, etc.)
+  const subMateriasConfig = useMemo(() => {
+    return getSubMateriasForArea(
+      slug || officialFlashcardArea || area?.nome || effectiveAreaName || '',
+      officialFlashcardArea || area?.nome || effectiveAreaName || 'Matéria Principal'
+    );
+  }, [slug, officialFlashcardArea, area?.nome, effectiveAreaName]);
 
-  // Se for Direito Civil, agrupa os temas nas 8 sub-matérias clássicas
+  const [activeSectionId, setActiveSectionId] = useState<string>('');
+
+  // Agrupa os temas nas matérias da área
   const sections = useMemo(() => {
-    if (!isCivilArea) {
-      return [{
-        id: 'sec-trilha-geral',
-        nome: officialFlashcardArea || area?.nome || effectiveAreaName || 'Trilha',
-        items: itemsToRender.map((it, idx) => ({ ...it, globalIndex: idx })),
-      }];
-    }
-
     let globalCounter = 0;
     const classifiedKeys = new Set<string>();
 
-    const result = SUB_MATERIAS_CIVIL.map((sub) => {
+    const result = subMateriasConfig.map((sub) => {
       const matched = itemsToRender.filter((it) => {
         if (classifiedKeys.has(it.key)) return false;
         const matches = itemMatchesSubMateria(sub, it);
@@ -723,10 +663,10 @@ const FlashcardsArea = () => {
       };
     });
 
-    // Se sobrou algum tema não classificado nos números ou keywords, anexa à primeira sub-matéria (Parte Geral)
+    // Se sobrou algum tema não classificado nos números ou keywords, anexa à primeira sub-matéria que tiver itens ou à primeira
     const unclassified = itemsToRender.filter((it) => !classifiedKeys.has(it.key));
     if (unclassified.length > 0) {
-      const targetSec = result.find((s) => s.id === 'sec-parte-geral') || result[0];
+      const targetSec = result.find((s) => s.items.length > 0) || result[0];
       if (targetSec) {
         unclassified.forEach((it) => {
           const curr = globalCounter++;
@@ -745,7 +685,17 @@ const FlashcardsArea = () => {
     // Retorna apenas sub-matérias com itens (ou todas se nenhuma tiver itens ainda)
     const withItems = result.filter((sub) => sub.items.length > 0);
     return withItems.length > 0 ? withItems : result;
-  }, [isCivilArea, itemsToRender, isPremium, officialFlashcardArea, area?.nome, effectiveAreaName]);
+  }, [subMateriasConfig, itemsToRender, isPremium]);
+
+  // Mantém activeSectionId sincronizado com uma matéria válida
+  useEffect(() => {
+    if (sections.length > 0) {
+      const exists = sections.some((s) => s.id === activeSectionId);
+      if (!exists) {
+        setActiveSectionId(sections[0].id);
+      }
+    }
+  }, [sections, activeSectionId]);
 
   const activeSection = useMemo(() => {
     return sections.find((s) => s.id === activeSectionId) || sections[0] || null;
@@ -826,77 +776,36 @@ const FlashcardsArea = () => {
             ref={pillContainerRef}
             className="flex items-center gap-2.5 overflow-x-auto px-4 sm:px-6 py-1 [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            {isCivilArea ? (
-              sections.map((sub) => {
-                const isActive = activeSectionId === sub.id;
-                return (
-                  <button
-                    key={sub.id}
-                    data-section-id={sub.id}
-                    type="button"
-                    onClick={() => selectSubMateria(sub.id)}
-                    style={isActive ? {
-                      backgroundColor: '#fef3c7',
-                      borderColor: '#d97706',
-                      color: '#451a03',
-                      boxShadow: '0 0 18px rgba(245, 158, 11, 0.65)',
-                    } : {
-                      backgroundColor: 'rgba(35, 20, 10, 0.75)',
-                      borderColor: 'rgba(180, 83, 9, 0.45)',
-                      color: '#fef3c7',
-                    }}
-                    className={cn(
-                      "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-serif font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
-                      isActive
-                        ? "scale-[1.04] font-black"
-                        : "hover:bg-[#451a03]/80 hover:text-white hover:border-[#f59e0b]/60"
-                    )}
-                  >
-                    <Landmark className={cn("w-3 h-3 shrink-0", isActive ? "text-[#451a03]" : "text-[#f59e0b]")} />
-                    <span>{sub.nome}</span>
-                  </button>
-                );
-              })
-            ) : (
-              todasAsAreas.map((a) => {
-                const isSelected = a.slug === slug || a.area.toLowerCase() === (officialFlashcardArea || '').toLowerCase();
-                const iconInfo = areaIconFor(a.slug || a.area);
-                const AreaIcon = iconInfo?.Icon || Landmark;
-                const iconColor = iconInfo?.color || '#f59e0b';
-                return (
-                  <button
-                    key={a.slug || a.area}
-                    type="button"
-                    onClick={() => {
-                      try { haptic.selection(); } catch {}
-                      navigate(`/flashcards/area/${a.slug}`);
-                    }}
-                    style={isSelected ? {
-                      backgroundColor: '#fef3c7',
-                      borderColor: '#d97706',
-                      color: '#451a03',
-                      boxShadow: '0 0 18px rgba(245, 158, 11, 0.65)',
-                    } : {
-                      backgroundColor: 'rgba(35, 20, 10, 0.75)',
-                      borderColor: 'rgba(180, 83, 9, 0.45)',
-                      color: '#fef3c7',
-                    }}
-                    className={cn(
-                      "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-serif font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
-                      isSelected
-                        ? "scale-[1.04] font-black"
-                        : "hover:bg-[#451a03]/80 hover:text-white hover:border-[#f59e0b]/60"
-                    )}
-                  >
-                    <AreaIcon 
-                      className="w-3.5 h-3.5 shrink-0 transition-colors" 
-                      style={{ color: isSelected ? '#451a03' : iconColor }} 
-                    />
-                    <span>{formatarNomeArea(a.area)}</span>
-                  </button>
-                );
-              })
-            )}
+            {sections.map((sub) => {
+              const isActive = (activeSection?.id || '') === sub.id;
+              return (
+                <button
+                  key={sub.id}
+                  data-section-id={sub.id}
+                  type="button"
+                  onClick={() => selectSubMateria(sub.id)}
+                  style={isActive ? {
+                    backgroundColor: '#fef3c7',
+                    borderColor: '#d97706',
+                    color: '#451a03',
+                    boxShadow: '0 0 18px rgba(245, 158, 11, 0.65)',
+                  } : {
+                    backgroundColor: 'rgba(35, 20, 10, 0.75)',
+                    borderColor: 'rgba(180, 83, 9, 0.45)',
+                    color: '#fef3c7',
+                  }}
+                  className={cn(
+                    "shrink-0 px-3.5 py-1.5 rounded-full text-xs font-serif font-bold transition-all border cursor-pointer select-none flex items-center gap-1.5",
+                    isActive
+                      ? "scale-[1.04] font-black"
+                      : "hover:bg-[#451a03]/80 hover:text-white hover:border-[#f59e0b]/60"
+                  )}
+                >
+                  <Landmark className={cn("w-3 h-3 shrink-0", isActive ? "text-[#451a03]" : "text-[#f59e0b]")} />
+                  <span>{sub.nome}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -912,7 +821,7 @@ const FlashcardsArea = () => {
         ) : (
           <>
             {/* ── BARRA DE PROGRESSO DA MATÉRIA (Estilo Helênico Dourado) ── */}
-            {isFlash && isCivilArea && activeSection && (
+            {isFlash && activeSection && (
               <div 
                 style={{
                   background: 'linear-gradient(135deg, rgba(35, 22, 13, 0.92) 0%, rgba(55, 34, 18, 0.92) 100%)',
