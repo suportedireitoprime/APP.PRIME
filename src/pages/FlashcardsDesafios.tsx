@@ -70,7 +70,7 @@ const FlashcardsDesafios = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] text-foreground relative overflow-x-hidden pb-[calc(3rem+var(--sai-bottom,0px))]">
+    <div className="min-h-screen bg-[#0D0D0D] text-foreground relative overflow-x-hidden pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))]">
       {/* Background ShapeGrid oficial idêntico ao de Pílulas */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <ShapeGrid

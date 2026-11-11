@@ -152,13 +152,13 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
           {/* ── 2. CARD HORIZONTAL EM PERGAMINHO / MÁRMORE DA GRÉCIA (Sem Capa na Lista) ── */}
           <div
             className={cn(
-              "flex-1 min-w-0 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl border transition-all duration-300",
+              "flex-1 min-w-0 px-4 sm:px-4.5 py-3 sm:py-3.5 min-h-[64px] sm:min-h-[72px] rounded-2xl border transition-all duration-300 flex flex-col justify-center",
               isCompleted
                 ? "border-[#10b981]/50 shadow-[0_4px_16px_-4px_rgba(16,185,129,0.3)]"
                 : isActive
                 ? "border-[#d97706]/70 shadow-[0_8px_24px_-4px_rgba(245,158,11,0.4),0_0_16px_rgba(253,224,71,0.25)]"
                 : item.isLocked
-                ? "border-[#78350f]/35 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.6)] opacity-75"
+                ? "border-[#78350f]/35 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.6)] opacity-85"
                 : "border-[#d97706]/40 shadow-[0_4px_16px_-4px_rgba(217,119,6,0.25)]"
             )}
             style={
@@ -167,23 +167,23 @@ export const FlashcardDeckItem = memo(({ item, i, isLast, isActive = false }: Fl
               } : isActive ? {
                 background: 'linear-gradient(135deg, #fef3c7 0%, #fffbeb 50%, #fde68a 100%)',
               } : item.isLocked ? {
-                background: 'linear-gradient(135deg, rgba(20, 14, 10, 0.85) 0%, rgba(30, 21, 15, 0.85) 100%)',
+                background: 'linear-gradient(135deg, rgba(20, 14, 10, 0.88) 0%, rgba(30, 21, 15, 0.88) 100%)',
               } : {
                 background: 'linear-gradient(135deg, rgba(32, 22, 14, 0.92) 0%, rgba(48, 33, 20, 0.92) 100%)',
               }
             }
           >
             {/* Título do Tema */}
-            <div className="flex items-center gap-1.5 mb-0.5">
+            <div className="flex items-center gap-1.5 mb-1">
               <span
                 className={cn(
-                  "font-serif font-black text-[13px] xs:text-[14px] sm:text-[15px] leading-snug truncate",
+                  "font-serif font-black text-[13.5px] xs:text-[14.5px] sm:text-[15.5px] leading-snug break-words line-clamp-2",
                   isCompleted
                     ? "text-[#a7f3d0]"
                     : isActive
                     ? "text-[#451a03] drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]"
                     : item.isLocked
-                    ? "text-[#d6d3d1]"
+                    ? "text-[#e7e5e4]"
                     : "text-[#fef3c7] group-hover:text-[#fde047] transition-colors"
                 )}
               >

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Play, Lock, Check, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { haptic } from '@/lib/nativeHaptics';
+import { ModalOrdemCronologica } from '@/components/flashcards/ModalOrdemCronologica';
 
 export interface TemaModalItem {
   id: string;
@@ -75,10 +76,12 @@ const LaurelStoneCorner = ({ flip = false }: { flip?: boolean }) => (
 function formatarTituloCurto(t: string): string {
   if (!t) return '';
   return t
+    .replace(/^\d+[\.\-\s_:]+/, '')
     .replace(/\s+(do|de|no|da|em)\s+Direito\s+([a-zA-ZÀ-ÿ]+)/gi, '')
     .replace(/\s+(do|de|no|da|em)\s+Direito\b/gi, '')
+    .replace(/\s+(do|de|no|da|em)\s+Administrativo\b/gi, '')
     .replace(/^Direito\s+[a-zA-ZÀ-ÿ]+\s*[-–:]\s*/i, '')
-    .replace(/^\d+[\.\-\s_:]+/, '')
+    .replace(/\s+Direito\s+Administrativo\b/gi, '')
     .trim();
 }
 
@@ -95,17 +98,15 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
   const [pageIndex, setPageIndex] = useState(0);
   const itemsPerPage = 4;
 
+  // Bottom Sheet da Ordem Cronológica para Temas Bloqueados
+  const [lockedTemaTarget, setLockedTemaTarget] = useState<TemaModalItem | null>(null);
+  const [isOrdemTemaModalOpen, setIsOrdemTemaModalOpen] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       setPageIndex(0);
     }
   }, [isOpen, materia?.id]);
-
-  const materiaIndexAtual = useMemo(() => {
-    if (!materia || !todasMaterias || todasMaterias.length === 0) return 0;
-    const idx = todasMaterias.findIndex((m) => m.id === materia.id);
-    return idx >= 0 ? idx : 0;
-  }, [materia, todasMaterias]);
 
   const totalPages = Math.max(1, Math.ceil(temas.length / itemsPerPage));
 
@@ -151,84 +152,13 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
 
           <div className="flex-1 text-center pr-10">
             <h1 className="text-base sm:text-lg font-serif font-black text-[#fef3c7] tracking-wide">
-              Qual tema da aula?
+              Qual tema de flashcards?
             </h1>
             <p className="text-[11px] sm:text-xs text-[#fef3c7]/65 mt-0.5">
-              Escolha o tema para acessar o conteúdo.
+              Escolha o tema para praticar os flashcards.
             </p>
           </div>
         </div>
-
-        {/* ── NAVEGAÇÃO ENTRE MATÉRIAS: BOTÕES DENTRO DO CARD RETANGULAR ── */}
-        {todasMaterias.length > 0 && (
-          <div className="relative z-10 w-full max-w-[440px] mx-auto px-4 py-1 shrink-0">
-            <div 
-              className="w-full px-2 py-1.5 rounded-2xl border flex items-center justify-between gap-2 backdrop-blur-md shadow-lg"
-              style={{
-                background: 'linear-gradient(135deg, rgba(38, 22, 11, 0.95) 0%, rgba(60, 35, 18, 0.95) 100%)',
-                borderColor: 'rgba(217, 119, 6, 0.55)',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.65), inset 0 1px 0 rgba(254,243,199,0.18)',
-              }}
-            >
-              {/* Botão Anterior (<) Dentro do Card */}
-              <button
-                type="button"
-                disabled={materiaIndexAtual <= 0}
-                onClick={() => {
-                  if (materiaIndexAtual > 0 && onSelectMateria) {
-                    try { haptic.selection(); } catch {}
-                    onSelectMateria(todasMaterias[materiaIndexAtual - 1]);
-                  }
-                }}
-                className={cn(
-                  "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all cursor-pointer border shrink-0",
-                  materiaIndexAtual > 0
-                    ? "bg-black/60 border-[#b45309]/80 text-[#fde047] hover:bg-[#451a03] active:scale-90 hover:border-[#f59e0b] shadow-[0_0_8px_rgba(245,158,11,0.3)]"
-                    : "bg-black/20 border-white/5 text-stone-600 cursor-not-allowed opacity-25"
-                )}
-                title="Matéria anterior"
-                aria-label="Matéria anterior"
-              >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
-              </button>
-
-              {/* Conteúdo Central: Título da Matéria + Contador */}
-              <div className="flex-1 min-w-0 flex items-center justify-center gap-2 px-1">
-                <Landmark className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#fbbf24] shrink-0 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
-                <span className="text-xs sm:text-[13px] font-serif font-black tracking-wide text-[#fef3c7] truncate text-center">
-                  {formatarTituloCurto(materia.titulo)}
-                </span>
-                {todasMaterias.length > 1 && (
-                  <span className="text-[10px] sm:text-[11px] font-mono font-bold text-[#f59e0b] shrink-0 bg-black/60 px-2 py-0.5 rounded-full border border-[#b45309]/40 shadow-inner">
-                    {materiaIndexAtual + 1}/{todasMaterias.length}
-                  </span>
-                )}
-              </div>
-
-              {/* Botão Próximo (>) Dentro do Card */}
-              <button
-                type="button"
-                disabled={materiaIndexAtual >= todasMaterias.length - 1}
-                onClick={() => {
-                  if (materiaIndexAtual < todasMaterias.length - 1 && onSelectMateria) {
-                    try { haptic.selection(); } catch {}
-                    onSelectMateria(todasMaterias[materiaIndexAtual + 1]);
-                  }
-                }}
-                className={cn(
-                  "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all cursor-pointer border shrink-0",
-                  materiaIndexAtual < todasMaterias.length - 1
-                    ? "bg-black/60 border-[#b45309]/80 text-[#fde047] hover:bg-[#451a03] active:scale-90 hover:border-[#f59e0b] shadow-[0_0_8px_rgba(245,158,11,0.3)]"
-                    : "bg-black/20 border-white/5 text-stone-600 cursor-not-allowed opacity-25"
-                )}
-                title="Próxima matéria"
-                aria-label="Próxima matéria"
-              >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* ── CONTEÚDO CENTRAL: Capa 16:9 + Lista Vertical Separada por Linhas Finas ── */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-between w-full max-w-[440px] mx-auto px-4 py-1 min-h-0">
@@ -261,9 +191,15 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
 
             <div className="w-full flex flex-col">
               {currentTemas.map((item, idx) => {
-                const isFirst = idx === 0;
-                const isLocked = !!item.isLocked;
-                const cleanTitle = (item.titulo || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
+                const isFirst = pageIndex === 0 && idx === 0;
+                const isLocked = !isFirst;
+                const cleanTitle = (item.titulo || '')
+                  .replace(/^\d+[\.\-\s_:]+/, '')
+                  .replace(/\s+(do|de|no|da|em)\s+Direito\s+([a-zA-ZÀ-ÿ]+)/gi, '')
+                  .replace(/\s+(do|de|no|da|em)\s+Direito\b/gi, '')
+                  .replace(/\s+(do|de|no|da|em)\s+Administrativo\b/gi, '')
+                  .replace(/\s+Direito\s+Administrativo\b/gi, '')
+                  .trim();
                 const subtituloText = item.descricao || (item.displayTotal > 0 ? `${item.displayTotal} flashcards` : 'Conceitos fundamentais');
 
                 return (
@@ -272,17 +208,19 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
                     onClick={() => {
                       if (isLocked) {
                         try { haptic.impact('medium'); } catch {}
+                        setLockedTemaTarget(item);
+                        setIsOrdemTemaModalOpen(true);
                       } else {
                         try { haptic.light(); } catch {}
+                        onSelectTema(item);
                       }
-                      onSelectTema(item);
                     }}
                     className={cn(
-                      "relative z-10 w-full flex items-center gap-3 cursor-pointer transition-all duration-200 select-none",
+                      "relative z-10 w-full flex items-center gap-3 cursor-pointer transition-all duration-200 select-none min-h-[58px] sm:min-h-[64px]",
                       // O item ativo tem card iluminado destacado; os demais têm linha fina separadora
                       isFirst && !isLocked
                         ? "my-1 p-2.5 sm:p-3 rounded-2xl border border-[#d97706]/75 shadow-[0_6px_20px_-4px_rgba(245,158,11,0.35)]"
-                        : "py-2.5 px-1 sm:px-2 border-b border-[#78350f]/35 hover:bg-black/20"
+                        : "py-2.5 px-2 border-b border-[#78350f]/35 hover:bg-black/20"
                     )}
                     style={
                       isFirst && !isLocked ? {
@@ -316,28 +254,24 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
                       </div>
                     </div>
 
-                    {/* Textos Centrais (Título e Subtítulo) */}
-                    <div className="flex-1 min-w-0 pr-1">
+                    {/* Textos Centrais (Título e Subtítulo Sem Abreviação) */}
+                    <div className="flex-1 min-w-0 pr-1 py-0.5">
                       <h3 
                         className={cn(
-                          "font-serif font-black text-[13px] sm:text-[14px] leading-snug truncate",
-                          isFirst && !isLocked ? "text-[#fef3c7]" : isLocked ? "text-[#a8a29e]" : "text-[#e7e5e4]"
+                          "font-serif font-black text-[13.5px] sm:text-[14.5px] leading-snug break-words line-clamp-2",
+                          isFirst && !isLocked ? "text-[#fef3c7]" : isLocked ? "text-[#d6d3d1]" : "text-[#e7e5e4]"
                         )}
                       >
                         {cleanTitle}
                       </h3>
-                      <p className="text-[11px] sm:text-xs text-[#fef3c7]/65 font-sans truncate mt-0.5">
+                      <p className="text-[11px] sm:text-xs text-[#fef3c7]/65 font-sans break-words line-clamp-1 mt-0.5">
                         {subtituloText}
                       </p>
                     </div>
 
-                    {/* Ação à Direita (Botão de Play Dourado ou Cadeado) */}
+                    {/* Ação à Direita (Botão de Play Dourado apenas no item ativo liberado) */}
                     <div className="shrink-0 flex items-center justify-center pl-1">
-                      {isLocked ? (
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-black/40 border border-[#78350f]/40">
-                          <Lock className="w-4 h-4 text-[#f59e0b]/60" />
-                        </div>
-                      ) : (
+                      {!isLocked && (
                         <div 
                           className={cn(
                             "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center shadow-md transition-transform group-hover:scale-105 active:scale-95",
@@ -396,6 +330,26 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
             </div>
           </div>
         </div>
+
+        {/* Bottom Sheet Pedagógico para Temas Bloqueados */}
+        <ModalOrdemCronologica
+          isOpen={isOrdemTemaModalOpen}
+          onClose={() => setIsOrdemTemaModalOpen(false)}
+          temaBloqueadoTitulo={lockedTemaTarget?.titulo ? lockedTemaTarget.titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : 'Tema Selecionado'}
+          temaAnteriorTitulo={temas[0]?.titulo ? temas[0].titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : 'Origens'}
+          onConcluirAnterior={() => {
+            setIsOrdemTemaModalOpen(false);
+            if (temas[0]) {
+              onSelectTema(temas[0]);
+            }
+          }}
+          onContinuarAssimMesmo={() => {
+            setIsOrdemTemaModalOpen(false);
+            if (lockedTemaTarget) {
+              onSelectTema(lockedTemaTarget);
+            }
+          }}
+        />
       </motion.div>
     </AnimatePresence>
   );

@@ -135,7 +135,7 @@ const FlashcardsEstudo = () => {
   }, [emContagem, cards.length]);
 
   return (
-    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(2.5rem+var(--sai-bottom))]">
+    <div className="min-h-dvh overflow-x-hidden bg-background pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))]">
       <div className="fixed inset-0 z-0 opacity-80 mix-blend-screen pointer-events-none">
         <ShapeGrid 
           speed={0.5} 

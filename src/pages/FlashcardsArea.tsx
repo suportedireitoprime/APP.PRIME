@@ -36,6 +36,7 @@ import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import direitoAdministrativoFundo from '@/assets/direito-administrativo-fundo.webp';
 import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.jpg';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
+import { ModalOrdemCronologica } from '@/components/flashcards/ModalOrdemCronologica';
 import { formatarNomeArea } from '@/pages/Flashcards';
 import { 
   MATERIAS_CATALOGO_COMPLETO, 
@@ -56,10 +57,12 @@ function getDisciplinaIdFromSlug(s?: string): string {
 export function formatarTituloMateriaCurto(titulo: string): string {
   if (!titulo) return '';
   return titulo
+    .replace(/^\d+[\.\-\s_:]+/, '')
     .replace(/\s+(do|de|no|da|em)\s+Direito\s+([a-zA-ZÀ-ÿ]+)/gi, '')
     .replace(/\s+(do|de|no|da|em)\s+Direito\b/gi, '')
+    .replace(/\s+(do|de|no|da|em)\s+Administrativo\b/gi, '')
     .replace(/^Direito\s+[a-zA-ZÀ-ÿ]+\s*[-–:]\s*/i, '')
-    .replace(/^\d+[\.\-\s_:]+/, '')
+    .replace(/\s+Direito\s+Administrativo\b/gi, '')
     .trim();
 }
 
@@ -769,56 +772,13 @@ const FlashcardsArea = () => {
     }
   }, [materiasComTemas]);
 
-  // 6. IntersectionObserver estável: detecta o tema visível e sobrepõe o fundo sem re-renderizar nem recriar o observer
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Pega a entrada visível com maior intersecção
-        const visibleEntries = entries.filter((e) => e.isIntersecting);
-        if (visibleEntries.length > 0) {
-          // Ordena pelo centro vertical do elemento em relação ao centro da janela
-          const viewportCenter = window.innerHeight / 2;
-          visibleEntries.sort((a, b) => {
-            const rectA = a.target.getBoundingClientRect();
-            const rectB = b.target.getBoundingClientRect();
-            const distA = Math.abs(rectA.top + rectA.height / 2 - viewportCenter);
-            const distB = Math.abs(rectB.top + rectB.height / 2 - viewportCenter);
-            return distA - distB;
-          });
-
-          const primaryEntry = visibleEntries[0];
-          const target = primaryEntry.target as HTMLElement;
-          const bgUrl = target.getAttribute('data-bg-url');
-          const matId = target.getAttribute('data-materia-id');
-
-          if (bgUrl && bgUrl !== fundoAtivoUrlRef.current) {
-            fundoAtivoUrlRef.current = bgUrl;
-            setFundoAtivoUrl(bgUrl);
-          }
-          if (matId && matId !== materiaAtivaIdRef.current) {
-            materiaAtivaIdRef.current = matId;
-            setMateriaAtivaId(matId);
-          }
-        }
-      },
-      {
-        root: null,
-        rootMargin: '-10% 0px -30% 0px',
-        threshold: 0.1,
-      }
-    );
-
-    const elements = document.querySelectorAll('[data-track-theme="true"]');
-    elements.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [materiasComTemas]);
-
   // Modal Fullscreen dos Temas da Matéria Selecionada
   const [materiaModal, setMateriaModal] = useState<typeof materiasComTemas[0] | null>(null);
   const [isModalTemasOpen, setIsModalTemasOpen] = useState(false);
+
+  // Bottom Sheet Pedagógico: Ordem Cronológica de Estudos
+  const [lockedMateriaTarget, setLockedMateriaTarget] = useState<typeof materiasComTemas[0] | null>(null);
+  const [isOrdemCronologicaOpen, setIsOrdemCronologicaOpen] = useState(false);
 
   const openMateriaTemas = useCallback((mat: typeof materiasComTemas[0]) => {
     try { haptic.selection(); } catch {}
@@ -915,7 +875,7 @@ const FlashcardsArea = () => {
       {/* Pétalas e Flores de Lótus Douradas Caindo Suavemente pela Montanha (120fps GPU) */}
       <FallingLotusPetals />
 
-      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-32 sm:pb-36 pt-2 min-w-0 overflow-x-hidden box-border">
+      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-[calc(8.5rem+env(safe-area-inset-bottom,0px))] pt-2 min-w-0 overflow-x-hidden box-border">
         {loading && !data && !effectiveAreaName ? (
           <div className="space-y-4 px-4 py-5 sm:px-6">
             <div className="h-44 rounded-2xl bg-muted animate-pulse" />
@@ -1006,8 +966,10 @@ const FlashcardsArea = () => {
                   {/* Nós Serpenteantes: Cada Nó é uma Matéria Oficial */}
                   {materiasComTemas.map((mat, matIdx) => {
                     const isLast = matIdx === materiasComTemas.length - 1;
-                    const isActive = mat.id === materiaAtivaId;
-                    const isLocked = !isPremium && matIdx >= 2;
+                    // Apenas a matéria atual que a pessoa está estudando fica destacada (mais clara), sem mudar com o scroll
+                    const isActive = matIdx === 0;
+                    const isLocked = matIdx > 0;
+                    // Título conciso sem redundâncias ("do Direito Administrativo" etc)
                     const tituloCurto = formatarTituloMateriaCurto(mat.titulo);
 
                     const itemData = {
@@ -1020,7 +982,15 @@ const FlashcardsArea = () => {
                       displayConcluidas: 0,
                       displayPct: 0,
                       isLocked,
-                      onClick: () => openMateriaTemas(mat),
+                      onClick: () => {
+                        if (isLocked) {
+                          try { haptic.impact('medium'); } catch {}
+                          setLockedMateriaTarget(mat);
+                          setIsOrdemCronologicaOpen(true);
+                        } else {
+                          openMateriaTemas(mat);
+                        }
+                      },
                     };
 
                     return (
@@ -1125,6 +1095,26 @@ const FlashcardsArea = () => {
         temas={materiaModal ? materiaModal.items : []}
         onSelectTema={handleSelectTemaNoModal}
         areaNome={officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito'}
+      />
+
+      {/* Bottom Sheet Pedagógico: Ordem Cronológica de Estudos */}
+      <ModalOrdemCronologica
+        isOpen={isOrdemCronologicaOpen}
+        onClose={() => setIsOrdemCronologicaOpen(false)}
+        temaBloqueadoTitulo={lockedMateriaTarget?.titulo ? lockedMateriaTarget.titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : 'Matéria Selecionada'}
+        temaAnteriorTitulo={materiasComTemas[0]?.titulo ? materiasComTemas[0].titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : 'Origens e Definições'}
+        onConcluirAnterior={() => {
+          setIsOrdemCronologicaOpen(false);
+          if (materiasComTemas[0]) {
+            openMateriaTemas(materiasComTemas[0]);
+          }
+        }}
+        onContinuarAssimMesmo={() => {
+          setIsOrdemCronologicaOpen(false);
+          if (lockedMateriaTarget) {
+            openMateriaTemas(lockedMateriaTarget);
+          }
+        }}
       />
     </DesktopPageLayout>
   );
