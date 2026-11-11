@@ -1058,13 +1058,13 @@ export default function AdminAulasInterativas() {
               </div>
 
               {/* ── BARRA DE PESQUISA RÁPIDA DAS ÁREAS (RESPONSIVA, VIDRO FUMÊ COM DESTAQUE DA CAPA) ── */}
-              <div className="w-full max-w-sm sm:max-w-md mx-auto px-1 mt-1 xs:mt-1.5 mb-1 z-20">
+              <div className="w-full max-w-[320px] xs:max-w-[360px] sm:max-w-md mx-auto px-2 mt-1 xs:mt-1.5 mb-1 z-20">
                 <div className="relative w-full">
                   <div 
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 transition-colors"
+                    className="absolute left-3 xs:left-3.5 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none z-10 transition-colors"
                     style={{ color: currTheme.accent || '#fca5a5' }}
                   >
-                    <Search className="w-4 h-4 stroke-[2.2]" />
+                    <Search className="w-3.5 h-3.5 xs:w-4 xs:h-4 stroke-[2.2]" />
                   </div>
                   <input
                     type="text"
@@ -1073,11 +1073,11 @@ export default function AdminAulasInterativas() {
                       setBuscaTermo(e.target.value);
                       setActiveDiscIndex(0);
                     }}
-                    placeholder="Buscar matéria de aulas (ex: Penal)"
-                    className="w-full h-10 xs:h-11 pl-10 pr-10 rounded-2xl text-xs xs:text-sm text-white placeholder:text-zinc-400/80 focus:outline-none transition-all shadow-inner"
+                    placeholder="Buscar área ou matéria (ex: Penal)..."
+                    className="w-full h-9 xs:h-10 sm:h-11 pl-9 xs:pl-10 pr-9 xs:pr-10 rounded-full text-xs xs:text-sm text-white placeholder:text-zinc-400/75 focus:outline-none transition-all shadow-inner"
                     style={{
-                      background: 'rgba(18, 8, 12, 0.8)',
-                      backdropFilter: 'blur(14px)',
+                      background: 'rgba(15, 6, 10, 0.78)',
+                      backdropFilter: 'blur(16px)',
                       border: `1px solid ${buscaTermo ? (currTheme.primary || '#ef4444') : 'rgba(255,255,255,0.18)'}`,
                       boxShadow: buscaTermo 
                         ? `0 0 16px ${currTheme.glowSoft || 'rgba(239,68,68,0.45)'}, inset 0 2px 4px rgba(0,0,0,0.7)` 
@@ -1091,10 +1091,10 @@ export default function AdminAulasInterativas() {
                         setBuscaTermo('');
                         setActiveDiscIndex(0);
                       }}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-white cursor-pointer z-10 transition-colors"
+                      className="absolute right-2.5 xs:right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-white cursor-pointer z-10 transition-colors"
                       aria-label="Limpar busca"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3.5 h-3.5 xs:w-4 xs:h-4" />
                     </button>
                   )}
                 </div>
@@ -1212,17 +1212,14 @@ export default function AdminAulasInterativas() {
                     setTouchStartX(null);
                   }}
                 >
-                  {/* ── CARROSSEL 3D COVERFLOW: SETA ESQ COM FUMAÇA + CARD ESQ (3:4) + CARD CENTRAL (3:4, UMA BORDA, COR DINÂMICA) + CARD DIR (3:4) + SETA DIR COM FUMAÇA ── */}
+                  {/* ── CARROSSEL 3D COVERFLOW: SETA ESQ + CARD ESQ (3:4) + CARD CENTRAL (3:4, UMA BORDA, COR DINÂMICA) + CARD DIR (3:4) + SETA DIR ── */}
                   <div className="relative w-full max-w-xl mx-auto flex items-center justify-center my-auto py-1 xs:py-2 select-none">
                     
-                    {/* Fumaça preta / vinheta atmosférica no lado esquerdo */}
-                    <div className="absolute -left-3 xs:-left-5 sm:-left-8 top-1/2 -translate-y-1/2 w-24 xs:w-32 sm:w-44 h-56 xs:h-72 bg-gradient-to-r from-black via-black/85 to-transparent pointer-events-none z-20 blur-md rounded-r-full" />
-
-                    {/* Botão Seta Esquerda (Flutuando sobre a fumaça) */}
+                    {/* Botão Seta Esquerda */}
                     <button
                       type="button"
                       onClick={handlePrev}
-                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border"
+                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/75 hover:bg-black text-white hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border"
                       style={{
                         borderColor: `${currTheme.primary || '#ef4444'}66`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
@@ -1340,14 +1337,11 @@ export default function AdminAulasInterativas() {
                       </div>
                     </div>
 
-                    {/* Fumaça preta / vinheta atmosférica no lado direito */}
-                    <div className="absolute -right-3 xs:-right-5 sm:-right-8 top-1/2 -translate-y-1/2 w-24 xs:w-32 sm:w-44 h-56 xs:h-72 bg-gradient-to-l from-black via-black/85 to-transparent pointer-events-none z-20 blur-md rounded-l-full" />
-
-                    {/* Botão Seta Direita (Flutuando sobre a fumaça) */}
+                    {/* Botão Seta Direita */}
                     <button
                       type="button"
                       onClick={handleNext}
-                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/80 hover:bg-black text-white hover:scale-105 active:scale-90 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border"
+                      className="relative w-10 h-10 xs:w-11 xs:h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-black/75 hover:bg-black text-white hover:scale-105 active:scale-90 transition-all cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.9)] z-30 shrink-0 backdrop-blur-md border"
                       style={{
                         borderColor: `${currTheme.primary || '#ef4444'}66`,
                         boxShadow: `0 0 16px ${currTheme.glowSoft || 'rgba(0,0,0,0.6)'}`
