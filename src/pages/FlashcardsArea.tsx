@@ -31,9 +31,10 @@ import PremiumGate from '@/components/PremiumGate';
 import { cn } from '@/lib/utils';
 import ShapeGrid from '@/components/ui/ShapeGrid';
 import { motion, AnimatePresence } from 'framer-motion';
-import greciaAcropoleTrilha from '@/assets/grecia-acropole-trilha.webp';
+import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.jpg';
 import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
+import { formatarNomeArea } from '@/pages/Flashcards';
 
 const LaurelBranch = ({ flip = false }: { flip?: boolean }) => (
   <svg 
@@ -585,7 +586,7 @@ const FlashcardsArea = () => {
             className="w-1.5 h-1.5 rounded-full shrink-0" 
             style={{ backgroundColor: '#fde047', boxShadow: '0 0 6px #fde047' }}
           />
-          <span className="truncate">{officialFlashcardArea || area?.nome || effectiveAreaName || 'Direito Civil'}</span>
+          <span className="truncate">{formatarNomeArea(officialFlashcardArea || area?.nome || effectiveAreaName || 'Civil')}</span>
         </span>
         <span className="text-[10px] sm:text-[10.5px] font-mono font-bold text-[#fde047] tabular-nums shrink-0 ml-2">
           {totalCompreendidos} / {totalFlashcardsArea} ({progressoPctFlash}%)
@@ -804,7 +805,7 @@ const FlashcardsArea = () => {
       {/* Fundo da Acrópole e Montanha Grega Suavemente Ofuscado (Pouquinho Só) */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#1c120c]">
         <img
-          src={greciaAcropoleTrilha}
+          src={greciaFilosofosFundo}
           alt="Acrópole Grega na Montanha"
           loading="eager"
           decoding="async"
@@ -859,6 +860,9 @@ const FlashcardsArea = () => {
             ) : (
               todasAsAreas.map((a) => {
                 const isSelected = a.slug === slug || a.area.toLowerCase() === (officialFlashcardArea || '').toLowerCase();
+                const iconInfo = areaIconFor(a.slug || a.area);
+                const AreaIcon = iconInfo?.Icon || Landmark;
+                const iconColor = iconInfo?.color || '#f59e0b';
                 return (
                   <button
                     key={a.slug || a.area}
@@ -884,8 +888,11 @@ const FlashcardsArea = () => {
                         : "hover:bg-[#451a03]/80 hover:text-white hover:border-[#f59e0b]/60"
                     )}
                   >
-                    <Landmark className={cn("w-3 h-3 shrink-0", isSelected ? "text-[#451a03]" : "text-[#f59e0b]")} />
-                    <span>{a.area}</span>
+                    <AreaIcon 
+                      className="w-3.5 h-3.5 shrink-0 transition-colors" 
+                      style={{ color: isSelected ? '#451a03' : iconColor }} 
+                    />
+                    <span>{formatarNomeArea(a.area)}</span>
                   </button>
                 );
               })
@@ -990,7 +997,7 @@ const FlashcardsArea = () => {
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-[#fde047] shadow-[0_0_6px_#fde047]" />
                             <span className="text-[11px] sm:text-xs font-serif font-black tracking-widest uppercase text-[#fef3c7]">
-                              {activeSection.nome}
+                              {formatarNomeArea(activeSection.nome)}
                             </span>
                           </div>
 
