@@ -43,6 +43,14 @@ export default defineConfig({
         "react-router-dom": path.resolve(__dirname, "src/lib/router-compat.tsx"),
       },
     },
-    server: { watch: { ignored: ["**/public/**"] } },
+    server: {
+      watch: { ignored: ["**/public/**"] },
+      fs: {
+        allow: [
+          path.resolve(__dirname),
+          "C:/Users/ext_wpereira/Downloads/ESTUDOS JURIDICOSs",
+        ],
+      },
+    },
   },
 });
