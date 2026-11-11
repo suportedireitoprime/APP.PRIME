@@ -1137,8 +1137,9 @@ const FlashcardsArea = () => {
       <ModalOrdemCronologica
         isOpen={isOrdemCronologicaOpen}
         onClose={() => setIsOrdemCronologicaOpen(false)}
-        temaBloqueadoTitulo={lockedMateriaTarget?.titulo ? lockedMateriaTarget.titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : 'Matéria Selecionada'}
-        temaAnteriorTitulo={materiasComTemas[0]?.titulo ? materiasComTemas[0].titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : 'Origens e Definições'}
+        temaBloqueadoTitulo={lockedMateriaTarget?.titulo ? formatarTituloMateriaCurto(lockedMateriaTarget.titulo) : 'Matéria Selecionada'}
+        temaAnteriorTitulo={materiasComTemas[0]?.titulo ? formatarTituloMateriaCurto(materiasComTemas[0].titulo) : 'Origens e Definições'}
+        theme={theme}
         onConcluirAnterior={() => {
           setIsOrdemCronologicaOpen(false);
           if (materiasComTemas[0]) {

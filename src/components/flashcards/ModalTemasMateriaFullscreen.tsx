@@ -365,6 +365,7 @@ export const ModalTemasMateriaFullscreen: React.FC<ModalTemasMateriaFullscreenPr
           onClose={() => setIsOrdemTemaModalOpen(false)}
           temaBloqueadoTitulo={lockedTemaTarget?.titulo ? lockedTemaTarget.titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : 'Tema Selecionado'}
           temaAnteriorTitulo={temas[0]?.titulo ? temas[0].titulo.replace(/^\d+[\.\-\s_:]+/, '').trim() : 'Origens'}
+          theme={activeTheme}
           onConcluirAnterior={() => {
             setIsOrdemTemaModalOpen(false);
             if (temas[0]) {
