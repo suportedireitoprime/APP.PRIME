@@ -32,6 +32,7 @@ import ShapeGrid from '@/components/ui/ShapeGrid';
 import { motion, AnimatePresence } from 'framer-motion';
 import greciaAcropoleTrilha from '@/assets/grecia-acropole-trilha.webp';
 import greciaTrilhaRodape from '@/assets/grecia-trilha-rodape.jpg';
+import { FallingLotusPetals } from '@/components/flashcards/FallingLotusPetals';
 
 const LaurelBranch = ({ flip = false }: { flip?: boolean }) => (
   <svg 
@@ -764,6 +765,9 @@ const FlashcardsArea = () => {
         {/* Vinheta leve nas extremidades preservando a imagem equilibrada e nítida */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/60 pointer-events-none" />
       </div>
+
+      {/* Pétalas e Flores de Lótus Douradas Caindo Suavemente pela Montanha (120fps GPU) */}
+      <FallingLotusPetals />
 
       <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-32 sm:pb-36 pt-2 min-w-0 overflow-x-hidden box-border">
         {/* ── Menu de Alternância (100% Limpo e Fiel à Referência da Grécia) ── */}
