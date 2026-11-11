@@ -1449,6 +1449,15 @@ export default function AdminAulasInterativas() {
                   {/* ── CARROSSEL AUDIOBOOKS COVERFLOW COM ZOOM NA CAPA CENTRAL (SEM MARGENS LATERAIS) ── */}
                   <div className="relative w-full mx-auto flex items-center justify-center px-0 my-auto py-0.5 select-none overflow-hidden">
                     
+                    {/* Spotlight direcional sutil em tom âmbar clássico atrás da capa central (10% de opacidade para profundidade 3D) */}
+                    <div 
+                      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] xs:w-[250px] sm:w-[320px] h-[300px] xs:h-[340px] sm:h-[400px] rounded-full pointer-events-none z-10 transition-opacity duration-500 opacity-70"
+                      style={{
+                        background: 'radial-gradient(ellipse 65% 65% at 50% 50%, rgba(251, 191, 36, 0.10) 0%, rgba(217, 119, 6, 0.03) 50%, transparent 75%)',
+                        filter: 'blur(20px)',
+                      }}
+                    />
+
                     {/* Botão Seta Esquerda (Flutuante com Margem e Sombra) */}
                     <button
                       type="button"
@@ -1491,8 +1500,8 @@ export default function AdminAulasInterativas() {
                               )}
                               style={
                                 isActive ? {
-                                  borderColor: 'rgba(255, 255, 255, 0.4)',
-                                  boxShadow: '0 24px 48px -6px rgba(0, 0, 0, 0.95), 0 12px 24px rgba(0, 0, 0, 0.85), inset 0 1.5px 0.5px rgba(255, 255, 255, 0.35)',
+                                  borderColor: 'rgba(255, 255, 255, 0.45)',
+                                  boxShadow: '0 24px 48px -6px rgba(0, 0, 0, 0.95), 0 12px 24px rgba(0, 0, 0, 0.85), inset 0 1.5px 0.5px rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(251, 191, 36, 0.15)',
                                 } : {
                                   borderColor: 'rgba(255, 255, 255, 0.15)',
                                   boxShadow: '0 12px 24px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.12)',
