@@ -77,14 +77,14 @@ export function useAulasCoverflow({
   }, []);
 
   const scrollCarouselToIndex = useCallback(
-    (idx: number, behavior: ScrollBehavior = "smooth") => {
+    (idx: number, behavior: ScrollBehavior = "smooth", silent: boolean = false) => {
       const el = carouselScrollerRef.current;
       if (!el) return;
       const child = el.children[idx] as HTMLElement | undefined;
       if (!child) return;
       const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
       el.scrollTo({ left: target, behavior });
-      if (idx !== activeCarouselIndex) {
+      if (!silent && idx !== activeCarouselIndex) {
         playPageTurnSound();
       }
       setActiveCarouselIndex(idx);
@@ -264,6 +264,52 @@ export function useAulasCoverflow({
     playPageTurnSound();
     scrollCarouselToIndex(activeCarouselIndex + 1);
   }, [activeCarouselIndex, playPageTurnSound, scrollCarouselToIndex]);
+
+  // Garante que SEMPRE que o usuário entrar na tela, a capa ativa esteja IMEDIATAMENTE centralizada a 0ms
+  useEffect(() => {
+    if (!enabled) return;
+    const el = carouselScrollerRef.current;
+    if (!el) return;
+
+    const centerTarget = () => {
+      const child = el.children[initialIndex] as HTMLElement | undefined;
+      if (!child) return;
+      const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
+      el.scrollTo({ left: target, behavior: "instant" as ScrollBehavior });
+      setActiveCarouselIndex(initialIndex);
+      updateCoverFlowTransforms();
+    };
+
+    // Centralização instantânea no primeiro ciclo
+    centerTarget();
+
+    // Reforço em micro-frames para cobrir montagem do DOM e carregamento de fontes
+    const rafId = requestAnimationFrame(() => {
+      centerTarget();
+      const t1 = setTimeout(centerTarget, 40);
+      const t2 = setTimeout(centerTarget, 120);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+      };
+    });
+
+    // Re-centralizar em caso de redimensionamento de janela ou giro de tela
+    const handleResize = () => {
+      const currentIdx = activeCarouselIndex;
+      const child = el.children[currentIdx] as HTMLElement | undefined;
+      if (!child) return;
+      const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
+      el.scrollTo({ left: target, behavior: "instant" as ScrollBehavior });
+      updateCoverFlowTransforms();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [enabled, initialIndex, updateCoverFlowTransforms]);
 
   // Suporte nativo a atalhos de teclado no Desktop (Setas, Enter, Home, End)
   useEffect(() => {
