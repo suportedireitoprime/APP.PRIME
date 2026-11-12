@@ -129,10 +129,16 @@ export default function AdminAulasInterativas() {
     resetScrollToTop();
   }, [disciplinasFiltradas]);
 
+  // Índice inicial no bloco do meio para rotação contínua e capa centralizada a 0ms
+  const initialCoverflowIndex = useMemo(() => {
+    const N = disciplinasFiltradas.length;
+    return N > 1 ? N : 0;
+  }, [disciplinasFiltradas.length]);
+
   // Hook da Física do Coverflow 3D a 120fps
   const coverflow = useAulasCoverflow({
     totalItems: disciplinasFiltradas.length,
-    initialIndex: 1,
+    initialIndex: initialCoverflowIndex,
     enabled: !disciplinaSelecionadaId && abaAtiva === 'trilhas',
     onSelectCurrent: handleSelectCurrent,
   });

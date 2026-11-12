@@ -204,7 +204,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
-                className="w-full flex items-center gap-2.5 xs:gap-3 sm:gap-4.5 overflow-x-auto snap-x snap-mandatory py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-pan-x px-[calc(50vw-67px)] xs:px-[calc(50vw-76px)] sm:px-[calc(50vw-94px)] md:px-[calc(50vw-112.5px)]"
+                className="w-full flex items-center gap-2.5 xs:gap-3 sm:gap-4.5 overflow-x-auto snap-x snap-mandatory py-1.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none touch-pan-x px-[calc(50vw-65px)] xs:px-[calc(50vw-72.5px)] sm:px-[calc(50vw-87.5px)] md:px-[calc(50vw-105px)]"
               >
                 {loopedDisciplinas.map((disc, idx) => {
                   const isActive = idx === activeCarouselIndex;
@@ -218,16 +218,16 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                     <div
                       key={`${disc.id}-${idx}`}
                       onClick={() => onCardClick(disc, idx)}
-                      className="snap-center shrink-0 w-[134px] xs:w-[152px] sm:w-[188px] md:w-[225px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
+                      className="snap-center shrink-0 w-[130px] xs:w-[145px] sm:w-[175px] md:w-[210px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
                     >
                       {/* ── NOME DA ÁREA EM CIMA FORA DA CAPA (TIPOGRAFIA MODERNA/IMPERIAL) ── */}
-                      <div className="w-full text-center mb-1.5 xs:mb-2 select-none h-7 xs:h-8 flex items-center justify-center px-1">
+                      <div className="w-full text-center mb-1 xs:mb-1.5 select-none h-6 xs:h-7 flex items-center justify-center px-1">
                         <h2 
                           className={cn(
                             "font-sans font-black tracking-[0.14em] uppercase transition-all duration-300 leading-tight text-balance",
                             isActive 
-                              ? "text-[11.5px] xs:text-[13px] sm:text-[15px] drop-shadow-[0_2px_10px_rgba(0,0,0,1)] scale-105" 
-                              : "text-[9px] xs:text-[10px] sm:text-xs text-zinc-400/70 scale-95"
+                              ? "text-[11px] xs:text-[12.5px] sm:text-[14.5px] drop-shadow-[0_2px_10px_rgba(0,0,0,1)] scale-105" 
+                              : "text-[8.5px] xs:text-[9.5px] sm:text-[11.5px] text-zinc-400/70 scale-95"
                           )}
                           style={isActive ? { 
                             color: corTemaHighlight,
@@ -241,7 +241,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                       {/* ── CARD (CAPA LIMPA COM CONTORNO NA COR DO TEMA) ── */}
                       <div
                         className={cn(
-                          "relative aspect-[3/4] max-h-[35vh] xs:max-h-[38vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
+                          "relative aspect-[3/4] max-h-[26vh] xs:max-h-[28vh] sm:max-h-[32vh] md:max-h-[36vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
                           isActive
                             ? "shadow-2xl scale-[1.03] opacity-100 ring-1 ring-white/10"
                             : "shadow-xl scale-[0.88] opacity-55 hover:opacity-75"
@@ -270,13 +270,13 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                       </div>
 
                       {/* ── QUANTIDADE DE AULAS FORA DA CAPA ── */}
-                      <div className="mt-2 xs:mt-2.5 flex items-center justify-center select-none">
+                      <div className="mt-1.5 xs:mt-2 flex items-center justify-center select-none">
                         <div 
                           className={cn(
                             "inline-flex items-center justify-center font-mono font-black tracking-wider uppercase rounded-full transition-all duration-300 shadow-md",
                             isActive
-                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9.5px] xs:text-[10.5px] sm:text-xs bg-black/85 border shadow-[0_2px_10px_rgba(0,0,0,0.85)]"
-                              : "px-2 py-0.5 text-[8px] xs:text-[9px] sm:text-[9.5px] text-zinc-400 bg-black/75 border border-white/10 opacity-70"
+                              ? "px-2.5 py-0.5 xs:px-3 xs:py-0.5 text-[9px] xs:text-[10px] sm:text-xs bg-black/85 border shadow-[0_2px_10px_rgba(0,0,0,0.85)]"
+                              : "px-2 py-0.5 text-[7.5px] xs:text-[8.5px] sm:text-[9px] text-zinc-400 bg-black/75 border border-white/10 opacity-70"
                           )}
                           style={isActive ? {
                             color: corTemaHighlight,
@@ -304,7 +304,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           )}
 
           {/* ── 4 PONTOS INDICADORES DO CARROSSEL ── */}
-          <div className="flex items-center justify-center gap-1.5 mt-2 mb-1 xs:mt-2.5 xs:mb-1.5 z-20 shrink-0">
+          <div className="flex items-center justify-center gap-1.5 mt-1.5 mb-2 xs:mt-2 xs:mb-2.5 z-20 shrink-0">
             {[0, 1, 2, 3].map((dotIdx) => {
               const isDotActive = dotIdx === (safeIdx % 4);
               return (
@@ -329,18 +329,18 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
             })}
           </div>
 
-          {/* ── BOTÃO ACESSAR FORA DA CAPA (ZONA DO POLEGAR) ── */}
-          <div className="w-full max-w-[270px] xs:max-w-[300px] mx-auto px-2 mb-0.5 xs:mb-1 z-20 shrink-0">
+          {/* ── BOTÃO ACESSAR FORA DA CAPA (ELEVADO NA ZONA DO POLEGAR COM TIPOGRAFIA MODERNA) ── */}
+          <div className="w-full max-w-[240px] xs:max-w-[260px] sm:max-w-[290px] mx-auto px-4 mb-3 xs:mb-4 sm:mb-5 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] z-20 shrink-0">
             <button
               type="button"
               onClick={onSelectCurrent}
-              className="w-full h-10.5 xs:h-11 sm:h-12 rounded-full flex items-center justify-center gap-2 font-serif font-black text-xs xs:text-sm sm:text-base text-zinc-950 shadow-[0_8px_25px_rgba(0,0,0,0.8),inset_0_1px_2px_rgba(255,255,255,0.6)] active:scale-95 hover:brightness-105 transition-all cursor-pointer border border-white/40"
+              className="w-full h-11 xs:h-11.5 sm:h-12 rounded-full flex items-center justify-center font-sans font-black text-xs xs:text-[13px] sm:text-sm tracking-[0.22em] uppercase text-zinc-950 shadow-[0_8px_24px_rgba(0,0,0,0.85),inset_0_1.5px_1px_rgba(255,255,255,0.7)] active:scale-95 hover:brightness-105 transition-all cursor-pointer border border-white/50"
               style={{
                 background: `linear-gradient(135deg, ${activeCorHighlight} 0%, ${activeCorTema} 100%)`,
+                boxShadow: `0 8px 24px -4px ${activeCorTema}80, 0 12px 30px rgba(0,0,0,0.9), inset 0 1.5px 1px rgba(255,255,255,0.65)`,
               }}
             >
-              <span className="tracking-wide uppercase">Acessar {activeDisc?.nome || 'Área'}</span>
-              <span className="font-sans text-sm xs:text-base font-bold">→</span>
+              <span>Acessar</span>
             </button>
           </div>
         </div>
