@@ -1006,7 +1006,7 @@ const FlashcardsArea = () => {
                     const isLast = matIdx === materiasComTemas.length - 1;
                     // Apenas a matéria atual que a pessoa está estudando fica destacada (mais clara), sem mudar com o scroll
                     const isActive = matIdx === 0;
-                    const isLocked = matIdx > 0;
+                    const isLocked = false;
                     // Título conciso sem redundâncias ("do Direito Administrativo" etc)
                     const tituloCurto = formatarTituloMateriaCurto(mat.titulo);
 

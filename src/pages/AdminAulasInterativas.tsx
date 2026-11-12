@@ -119,15 +119,13 @@ export default function AdminAulasInterativas() {
     return MATERIAS_CATALOGO.find(m => m.id === materiaSelecionadaId) || null;
   }, [materiaSelecionadaId]);
 
-  const handleSelectCurrent = useCallback(() => {
-    if (disciplinasFiltradas.length === 0) return;
+  // Seleção direta de disciplina: 100% precisa e sem dependência de índices voláteis
+  const handleSelectDisciplina = useCallback((discId: string) => {
     try { haptic.impact('medium'); } catch {}
-    const safeIdx = ((coverflow.activeCarouselIndex % disciplinasFiltradas.length) + disciplinasFiltradas.length) % disciplinasFiltradas.length;
-    const target = disciplinasFiltradas[safeIdx] || disciplinasFiltradas[0];
-    setDisciplinaSelecionadaId(target.id);
+    setDisciplinaSelecionadaId(discId);
     setMateriaSelecionadaId(null);
     resetScrollToTop();
-  }, [disciplinasFiltradas]);
+  }, []);
 
   // Índice inicial no bloco do meio para rotação contínua e capa centralizada a 0ms
   const initialCoverflowIndex = useMemo(() => {
@@ -140,8 +138,26 @@ export default function AdminAulasInterativas() {
     totalItems: disciplinasFiltradas.length,
     initialIndex: initialCoverflowIndex,
     enabled: !disciplinaSelecionadaId && abaAtiva === 'trilhas',
-    onSelectCurrent: handleSelectCurrent,
+    onSelectCurrent: () => {
+      if (disciplinasFiltradas.length === 0) return;
+      const safeIdx = ((coverflow.activeCarouselIndex % disciplinasFiltradas.length) + disciplinasFiltradas.length) % disciplinasFiltradas.length;
+      const target = disciplinasFiltradas[safeIdx] || disciplinasFiltradas[0];
+      if (target) handleSelectDisciplina(target.id);
+    },
   });
+
+  const handleSelectCurrent = useCallback((targetDiscId?: string) => {
+    if (targetDiscId) {
+      handleSelectDisciplina(targetDiscId);
+      return;
+    }
+    if (disciplinasFiltradas.length === 0) return;
+    const safeIdx = ((coverflow.activeCarouselIndex % disciplinasFiltradas.length) + disciplinasFiltradas.length) % disciplinasFiltradas.length;
+    const target = disciplinasFiltradas[safeIdx] || disciplinasFiltradas[0];
+    if (target) {
+      handleSelectDisciplina(target.id);
+    }
+  }, [coverflow.activeCarouselIndex, disciplinasFiltradas, handleSelectDisciplina]);
 
   // Botão voltar com hierarquia de níveis
   const handleVoltar = useCallback(() => {
@@ -197,9 +213,9 @@ export default function AdminAulasInterativas() {
       coverflow.playPageTurnSound();
       coverflow.scrollCarouselToIndex(idx);
     } else {
-      handleSelectCurrent();
+      handleSelectDisciplina(disc.id);
     }
-  }, [coverflow, handleSelectCurrent]);
+  }, [coverflow, handleSelectDisciplina]);
 
   // Pré-aquecimento de capas na seleção de disciplinas
   useEffect(() => {
@@ -291,6 +307,7 @@ export default function AdminAulasInterativas() {
               loopedDisciplinas={loopedDisciplinas}
               activeCarouselIndex={coverflow.activeCarouselIndex}
               onSelectCurrent={handleSelectCurrent}
+              onSelectDisciplina={handleSelectDisciplina}
               onCardClick={handleCardClick}
               handleVoltar={handleVoltar}
               buscaTermo={buscaTermo}
