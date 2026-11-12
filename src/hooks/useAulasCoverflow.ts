@@ -57,13 +57,15 @@ export function useAulasCoverflow({
   const updateCoverFlowTransforms = useCallback(() => {
     const el = carouselScrollerRef.current;
     if (!el) return;
-    const center = el.scrollLeft + el.clientWidth / 2;
+    const scrollerRect = el.getBoundingClientRect();
+    const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
     const children = el.children;
     const count = children.length;
     for (let i = 0; i < count; i++) {
       const child = children[i] as HTMLElement;
-      const childMid = child.offsetLeft + child.clientWidth / 2;
-      const dist = Math.abs(childMid - center) / (child.clientWidth || 1);
+      const childRect = child.getBoundingClientRect();
+      const childCenter = childRect.left + childRect.width / 2;
+      const dist = Math.abs(childCenter - scrollerCenter) / (childRect.width || 1);
       const norm = Math.min(2, dist);
       const factor = Math.max(0, 1 - norm * 0.65);
       const scale = 0.86 + factor * 0.18; // 0.86 nos lados até 1.04 no centro
@@ -82,8 +84,12 @@ export function useAulasCoverflow({
       if (!el) return;
       const child = el.children[idx] as HTMLElement | undefined;
       if (!child) return;
-      const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
-      el.scrollTo({ left: target, behavior });
+      const scrollerRect = el.getBoundingClientRect();
+      const childRect = child.getBoundingClientRect();
+      const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
+      const childCenter = childRect.left + childRect.width / 2;
+      const diff = childCenter - scrollerCenter;
+      el.scrollTo({ left: el.scrollLeft + diff, behavior });
       if (!silent && idx !== activeCarouselIndex) {
         playPageTurnSound();
       }
@@ -199,13 +205,15 @@ export function useAulasCoverflow({
     const el = carouselScrollerRef.current;
     if (!el) return;
 
-    const center = el.scrollLeft + el.clientWidth / 2;
+    const scrollerRect = el.getBoundingClientRect();
+    const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
     let best = 0;
     let bestDist = Infinity;
     for (let i = 0; i < el.children.length; i++) {
       const child = el.children[i] as HTMLElement;
-      const mid = child.offsetLeft + child.clientWidth / 2;
-      const dist = Math.abs(mid - center);
+      const childRect = child.getBoundingClientRect();
+      const childCenter = childRect.left + childRect.width / 2;
+      const dist = Math.abs(childCenter - scrollerCenter);
       if (dist < bestDist) {
         bestDist = dist;
         best = i;
@@ -223,24 +231,24 @@ export function useAulasCoverflow({
     if (N > 1) {
       if (best <= 1) {
         const jumpTo = best + N;
-        const child = el.children[jumpTo] as HTMLElement;
-        if (child) {
-          el.scrollTo({
-            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
-            behavior: "auto",
-          });
+        const targetChild = el.children[jumpTo] as HTMLElement;
+        if (targetChild) {
+          const targetRect = targetChild.getBoundingClientRect();
+          const targetCenter = targetRect.left + targetRect.width / 2;
+          const diff = targetCenter - scrollerCenter;
+          el.scrollLeft += diff;
           setActiveCarouselIndex(jumpTo);
           updateCoverFlowTransforms();
           return;
         }
       } else if (best >= 2 * N + 1) {
         const jumpTo = best - N;
-        const child = el.children[jumpTo] as HTMLElement;
-        if (child) {
-          el.scrollTo({
-            left: child.offsetLeft - (el.clientWidth - child.clientWidth) / 2,
-            behavior: "auto",
-          });
+        const targetChild = el.children[jumpTo] as HTMLElement;
+        if (targetChild) {
+          const targetRect = targetChild.getBoundingClientRect();
+          const targetCenter = targetRect.left + targetRect.width / 2;
+          const diff = targetCenter - scrollerCenter;
+          el.scrollLeft += diff;
           setActiveCarouselIndex(jumpTo);
           updateCoverFlowTransforms();
           return;
@@ -271,42 +279,65 @@ export function useAulasCoverflow({
     const el = carouselScrollerRef.current;
     if (!el) return;
 
+    let cancelled = false;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+
     const centerTarget = () => {
+      if (cancelled) return;
       const child = el.children[initialIndex] as HTMLElement | undefined;
       if (!child) return;
-      const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
-      el.scrollTo({ left: target, behavior: "instant" as ScrollBehavior });
+      const scrollerRect = el.getBoundingClientRect();
+      const childRect = child.getBoundingClientRect();
+      if (scrollerRect.width === 0 || childRect.width === 0) return;
+      const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
+      const childCenter = childRect.left + childRect.width / 2;
+      const diff = childCenter - scrollerCenter;
+
+      if (Math.abs(diff) > 0.5) {
+        el.style.scrollSnapType = 'none';
+        el.scrollLeft += diff;
+        requestAnimationFrame(() => {
+          if (!cancelled && el) {
+            el.style.scrollSnapType = 'x mandatory';
+          }
+        });
+      }
       setActiveCarouselIndex(initialIndex);
       updateCoverFlowTransforms();
     };
 
-    // Centralização instantânea no primeiro ciclo
+    // Tentativa imediata
     centerTarget();
 
-    // Reforço em micro-frames para cobrir montagem do DOM e carregamento de fontes
-    const rafId = requestAnimationFrame(() => {
-      centerTarget();
-      const t1 = setTimeout(centerTarget, 40);
-      const t2 = setTimeout(centerTarget, 120);
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
+    // Reforço progressivo cobrindo layout assíncrono e montagem de imagens
+    const rafId = requestAnimationFrame(centerTarget);
+    [20, 50, 100, 200, 400, 700].forEach(ms => {
+      timers.push(setTimeout(centerTarget, ms));
     });
 
-    // Re-centralizar em caso de redimensionamento de janela ou giro de tela
+    // Re-centralizar em caso de redimensionamento de janela ou rotação
     const handleResize = () => {
+      if (cancelled) return;
       const currentIdx = activeCarouselIndex;
       const child = el.children[currentIdx] as HTMLElement | undefined;
       if (!child) return;
-      const target = child.offsetLeft - (el.clientWidth - child.clientWidth) / 2;
-      el.scrollTo({ left: target, behavior: "instant" as ScrollBehavior });
+      const scrollerRect = el.getBoundingClientRect();
+      const childRect = child.getBoundingClientRect();
+      if (scrollerRect.width === 0 || childRect.width === 0) return;
+      const scrollerCenter = scrollerRect.left + scrollerRect.width / 2;
+      const childCenter = childRect.left + childRect.width / 2;
+      const diff = childCenter - scrollerCenter;
+      if (Math.abs(diff) > 0.5) {
+        el.scrollLeft += diff;
+      }
       updateCoverFlowTransforms();
     };
 
     window.addEventListener('resize', handleResize);
     return () => {
+      cancelled = true;
       cancelAnimationFrame(rafId);
+      timers.forEach(clearTimeout);
       window.removeEventListener('resize', handleResize);
     };
   }, [enabled, initialIndex, updateCoverFlowTransforms]);
