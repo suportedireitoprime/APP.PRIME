@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ChevronRight, Search, X, Clock, Star, Bookmark, BookOpen, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
@@ -377,12 +377,11 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
             </div>
           </div>
 
-          {/* Carrossel Horizontal Fluido com Fundo e Ícone Temático (Padrão Clássicos do Direito) */}
+          {/* Carrossel Horizontal Fluido com Capas 3:4 */}
           <div className="-mx-4 sm:-mx-6 px-4 sm:px-6 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth touch-pan-x overscroll-x-contain pb-2 pt-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden select-none">
-            {areasList.map((item) => {
-              const s = styleForArea(item.name);
-              const Icon = s.icon;
-              const cor = s.color || '#E11D48';
+            {areasList.map((item, idx) => {
+              const coverData = getAreaCover(item.name);
+              const coverUrl = coverData?.cover || bibliotecaCoverImg;
 
               return (
                 <div
@@ -391,45 +390,17 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
                     haptic.selection();
                     onAbrirMateria(item.name);
                   }}
-                  className="snap-start shrink-0 w-[130px] sm:w-[144px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
+                  className="snap-start shrink-0 w-[128px] sm:w-[142px] flex flex-col text-left group cursor-pointer focus-visible:outline-none transform-gpu will-change-transform active:scale-95 transition-transform duration-150"
                 >
-                  <div
-                    className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden flex flex-col justify-between p-3.5 border border-white/15 shadow-md group-hover:border-white/30 group-hover:shadow-xl transition-all duration-300"
-                    style={{
-                      background: `linear-gradient(135deg, ${cor}dd 0%, ${cor}88 45%, #09090b 100%)`,
-                    }}
-                  >
-                    {/* SVGs jurídicos decorativos ao fundo (Marca d'água idêntica ao carrossel de Clássicos) */}
-                    <svg
-                      aria-hidden
-                      viewBox="0 0 200 200"
-                      className="pointer-events-none absolute -right-5 -bottom-6 w-[120px] h-[120px] text-white/10 fill-none stroke-current stroke-[2.5]"
-                    >
-                      <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
-                      <path d="M35 95 Q55 135 75 95 Z" />
-                      <path d="M125 95 Q145 135 165 95 Z" />
-                    </svg>
-                    <svg
-                      aria-hidden
-                      viewBox="0 0 100 100"
-                      className="pointer-events-none absolute top-1 right-2 w-[44px] h-[44px] text-white/10 fill-none stroke-current stroke-[2.5]"
-                    >
-                      <path d="M18 78 L58 38" />
-                      <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
-                      <path d="M10 88 H50" />
-                    </svg>
-
-                    {/* Ícone com container translúcido no topo */}
-                    <div className="relative z-10 w-11 h-11 rounded-xl bg-black/35 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-inner group-hover:scale-105 group-hover:bg-black/50 transition-all">
-                      <Icon className="w-5 h-5 text-white drop-shadow-sm" strokeWidth={2.2} />
-                    </div>
-
-                    {/* Selo Área no rodapé interno */}
-                    <div className="relative z-10">
-                      <span className="inline-flex items-center gap-1 text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider text-white/90 bg-black/40 backdrop-blur-sm border border-white/10">
-                        Área
-                      </span>
-                    </div>
+                  <div className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden bg-zinc-950 border border-white/10 group-hover:border-rose-500/50 transition-all shadow-md group-hover:shadow-rose-950/40">
+                    <img
+                      src={coverUrl}
+                      alt={item.name}
+                      loading={idx < 5 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
                   </div>
 
                   <p className="font-sans font-bold text-xs sm:text-[13px] text-white group-hover:text-rose-300 transition-colors line-clamp-2 mt-2 leading-snug">
