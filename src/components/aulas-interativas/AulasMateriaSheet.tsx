@@ -161,7 +161,7 @@ export const AulasMateriaSheet: React.FC<AulasMateriaSheetProps> = ({
         )}
 
         {/* LISTA VERTICAL DE AULAS */}
-        <div className="flex-1 min-h-0 overflow-y-auto px-4 sm:px-6 pt-3 pb-32 sm:pb-28 space-y-2.5 overscroll-contain">
+        <div className="flex-1 min-h-0 overflow-y-auto px-3 xs:px-4 sm:px-6 pt-3 pb-32 sm:pb-28 space-y-2.5 overscroll-contain">
           {aulasFiltradas.map((aula, idx) => {
             const prog = calcularProgressoCiclo(aula);
             const numeroExibicao = idx + 1;
@@ -171,13 +171,13 @@ export const AulasMateriaSheet: React.FC<AulasMateriaSheetProps> = ({
                 key={aula.id}
                 onClick={() => onSelecionarAula(aula)}
                 className={cn(
-                  "w-full rounded-2xl p-2.5 sm:p-3 border transition-all duration-200 cursor-pointer select-none group",
+                  "w-full rounded-2xl p-3 sm:p-3.5 border transition-all duration-200 cursor-pointer select-none group",
                   "bg-white/[0.03] hover:bg-white/[0.07] border-white/10 hover:border-white/25 active:scale-[0.99]",
-                  "flex items-center gap-3 sm:gap-4 shadow-md"
+                  "flex items-center gap-3 xs:gap-3.5 sm:gap-4 shadow-md"
                 )}
               >
                 {/* Capa ao lado */}
-                <div className="relative shrink-0 w-22 sm:w-26 h-26 sm:h-32 rounded-xl sm:rounded-2xl overflow-hidden border border-white/15 bg-black/70 shadow-md group-hover:border-white/35 transition-all">
+                <div className="relative shrink-0 w-24 sm:w-28 h-28 sm:h-34 rounded-xl sm:rounded-2xl overflow-hidden border border-white/15 bg-black/70 shadow-md group-hover:border-white/35 transition-all">
                   <img
                     src={assetUrl(aula.capaUrl) || assetUrl(disciplinaAtual.capaHeroUrl)}
                     alt={aula.titulo}
@@ -271,3 +271,4 @@ export const AulasMateriaSheet: React.FC<AulasMateriaSheetProps> = ({
     </>
   );
 };
+

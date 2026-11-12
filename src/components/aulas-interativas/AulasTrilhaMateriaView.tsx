@@ -158,7 +158,7 @@ export const AulasTrilhaMateriaView: React.FC<AulasTrilhaMateriaViewProps> = ({
       </div>
 
       {/* Conteúdo da Trilha Serpenteante */}
-      <div className="relative z-10 w-full max-w-[700px] mx-auto px-3.5 sm:px-6 pb-[calc(8.5rem+env(safe-area-inset-bottom,0px))] pt-2 min-w-0 overflow-x-hidden box-border">
+      <div className="relative z-10 w-full max-w-[720px] mx-auto px-2 xs:px-3 sm:px-6 pb-[calc(8.5rem+env(safe-area-inset-bottom,0px))] pt-2 min-w-0 overflow-x-hidden box-border">
         {/* Barra de Pesquisa Rápida das Matérias */}
         <div className="w-full max-w-[360px] xs:max-w-[460px] sm:max-w-xl mx-auto px-2 my-2.5 z-20">
           <div className="relative w-full">
@@ -363,3 +363,4 @@ export const AulasTrilhaMateriaView: React.FC<AulasTrilhaMateriaViewProps> = ({
     </>
   );
 };
+

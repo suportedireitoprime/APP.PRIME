@@ -37,12 +37,12 @@ export const FlashcardDeckItem = memo(({
   const isCompleted = item.displayPct === 100 || (item.displayTotal > 0 && item.displayConcluidas >= item.displayTotal);
   const tituloLimpo = (item.titulo || '').replace(/^\d+[\.\-\s_:]+/, '').trim();
   
-  // Alterna o nó suavemente em curva pela encosta da montanha:
+  // Alterna o nó suavemente em curva pela encosta da montanha de forma equilibrada no mobile:
   const shiftIndex = i % 4;
   const alignmentClass = 
-    shiftIndex === 0 ? "justify-start pl-2 sm:pl-6" :
-    shiftIndex === 1 ? "justify-end pr-2 sm:pr-8" :
-    shiftIndex === 2 ? "justify-start pl-6 sm:pl-12" :
+    shiftIndex === 0 ? "justify-start pl-1 sm:pl-4" :
+    shiftIndex === 1 ? "justify-end pr-1 sm:pr-4" :
+    shiftIndex === 2 ? "justify-start pl-2 sm:pl-6" :
     "justify-center";
 
   // Curva da estrada conectando este nó ao próximo
@@ -58,13 +58,13 @@ export const FlashcardDeckItem = memo(({
   return (
     <div className="w-full flex flex-col items-center relative select-none">
       {/* ── Nó da Trilha: Moeda com Contorno de Progresso + Card da Disciplina ── */}
-      <div className={cn("w-full max-w-[560px] flex z-10 my-1.5 sm:my-2", alignmentClass)}>
+      <div className={cn("w-full max-w-[600px] flex z-10 my-1.5 sm:my-2", alignmentClass)}>
         <div
           onClick={item.onClick}
           onMouseEnter={item.onPrefetch}
           onTouchStart={item.onPrefetch}
           className={cn(
-            "flex items-center gap-2.5 sm:gap-3.5 p-1.5 sm:p-2 rounded-2xl cursor-pointer transition-all duration-300 group max-w-[92vw] sm:max-w-[440px] drop-shadow-[0_12px_24px_rgba(0,0,0,0.92)]",
+            "flex items-center gap-2.5 sm:gap-3.5 p-1.5 sm:p-2 rounded-2xl cursor-pointer transition-all duration-300 group w-[88vw] xs:w-[85vw] sm:w-[460px] max-w-[94vw] sm:max-w-[490px] drop-shadow-[0_12px_24px_rgba(0,0,0,0.92)]",
             isActive
               ? "scale-[1.03] sm:scale-105"
               : "hover:scale-[1.02] hover:-translate-y-0.5 active:scale-[0.98]"
@@ -169,7 +169,7 @@ export const FlashcardDeckItem = memo(({
           {/* ── 2. CARD HORIZONTAL COM AS CORES DA DISCIPLINA (ALTURA UNIFORME E SOMBRA ELEVADA) ── */}
           <div
             className={cn(
-              "flex-1 min-w-0 px-4 sm:px-4.5 py-2.5 sm:py-3 h-[76px] sm:h-[82px] min-h-[76px] sm:min-h-[82px] max-h-[76px] sm:max-h-[82px] rounded-2xl border transition-all duration-300 flex flex-col justify-center",
+              "flex-1 min-w-0 px-4 sm:px-5 py-3 sm:py-3.5 h-[80px] xs:h-[84px] sm:h-[88px] min-h-[80px] xs:min-h-[84px] sm:min-h-[88px] max-h-[80px] xs:max-h-[84px] sm:max-h-[88px] rounded-2xl border transition-all duration-300 flex flex-col justify-center",
               isCompleted && "border-[#10b981]/60",
               item.isLocked && "opacity-90"
             )}
@@ -197,7 +197,7 @@ export const FlashcardDeckItem = memo(({
             <div className="flex items-center gap-1.5">
               <span
                 className={cn(
-                  "font-serif font-black text-[13px] xs:text-[14px] sm:text-[15px] leading-tight break-words line-clamp-2",
+                  "font-serif font-black text-[13.5px] xs:text-[14.5px] sm:text-[16px] leading-tight break-words line-clamp-2",
                   isCompleted
                     ? "text-[#a7f3d0]"
                     : item.isLocked
@@ -218,7 +218,7 @@ export const FlashcardDeckItem = memo(({
             </div>
 
             {/* Subtítulo: Quantidade de Temas e Cards com Seta Elegante */}
-            <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-sans font-semibold mt-1">
+            <div className="flex items-center gap-2 text-[10.5px] sm:text-[11.5px] font-sans font-semibold mt-1">
               <span
                 className="flex items-center gap-1"
                 style={
