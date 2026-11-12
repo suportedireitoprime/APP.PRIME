@@ -7,7 +7,7 @@ import { haptic } from '@/lib/nativeHaptics';
 import { DisciplinaItem } from '@/data/disciplinasAulasCatalogo';
 import { getDisciplinaVisualTheme } from '@/lib/disciplinasTheme';
 import { AulaItem } from '@/data/aulasInterativasCatalogoCompleto';
-import tribunalVermelhoTrilha from '@/assets/tribunal_vermelho_trilha.webp';
+import greciaFilosofosFundo from '@/assets/grecia-filosofos-fundo.webp';
 
 interface AulasCoverflowHomeProps {
   disciplinasFiltradas: DisciplinaItem[];
@@ -60,21 +60,25 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   const safeIdx = totalDisciplinas > 0 
     ? ((activeCarouselIndex % totalDisciplinas) + totalDisciplinas) % totalDisciplinas
     : 0;
+  const activeDisc = disciplinasFiltradas[safeIdx];
+  const activeTheme = activeDisc ? getDisciplinaVisualTheme(activeDisc.id) : null;
+  const activeCorTema = activeTheme?.primary || activeDisc?.corDestaque || '#f59e0b';
+  const activeCorHighlight = activeTheme?.highlight || '#fef08a';
 
   return (
     <>
-      {/* ── Fundo Clássico Oficial (Palácio de Justiça / Tribunal Neoclássico com Louros) ── */}
-      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#0a0503]">
+      {/* ── Fundo Grécia Antiga com Filósofos (Mesmo Fundo Oficial do Flashcards Home) ── */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#1c120c]">
         <img
-          src={tribunalVermelhoTrilha}
-          alt="Tribunal de Justiça"
+          src={greciaFilosofosFundo}
+          alt="Grécia Antiga e Filósofos"
           loading="eager"
           decoding="async"
           fetchPriority="high"
-          className="w-full h-full object-cover object-top select-none pointer-events-none filter brightness-105 contrast-105"
+          className="w-full h-full object-cover object-top select-none pointer-events-none filter blur-[1.5px] brightness-[0.95] contrast-[1.06]"
         />
-        {/* Vinheta atmosférica suave: topo nítido revelando as colunas e céu, centro transparente e base escura suave */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/25 pointer-events-none" />
+        {/* Vinheta atmosférica suave preservando os detalhes dos templos e filósofos */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/70 pointer-events-none" />
       </div>
 
       {/* ── CONTAINER PRINCIPAL EM TELA CHEIA (SEM SCROLL VERTICAL, 100% RESPONSIVO E ADAPTÁVEL PARA CELULARES) ── */}
@@ -216,12 +220,30 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                       onClick={() => onCardClick(disc, idx)}
                       className="snap-center shrink-0 w-[134px] xs:w-[152px] sm:w-[188px] md:w-[225px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
                     >
-                      {/* Card em Proporção 3:4 com Contorno na Cor do Tema e Botão Acessar Dentro */}
+                      {/* ── NOME DA ÁREA EM CIMA FORA DA CAPA (TIPOGRAFIA MODERNA/IMPERIAL) ── */}
+                      <div className="w-full text-center mb-1.5 xs:mb-2 select-none h-7 xs:h-8 flex items-center justify-center px-1">
+                        <h2 
+                          className={cn(
+                            "font-sans font-black tracking-[0.14em] uppercase transition-all duration-300 leading-tight text-balance",
+                            isActive 
+                              ? "text-[11.5px] xs:text-[13px] sm:text-[15px] drop-shadow-[0_2px_10px_rgba(0,0,0,1)] scale-105" 
+                              : "text-[9px] xs:text-[10px] sm:text-xs text-zinc-400/70 scale-95"
+                          )}
+                          style={isActive ? { 
+                            color: corTemaHighlight,
+                            textShadow: `0 0 14px ${corTema}60`
+                          } : undefined}
+                        >
+                          {disc.nome}
+                        </h2>
+                      </div>
+
+                      {/* ── CARD (CAPA LIMPA COM CONTORNO NA COR DO TEMA) ── */}
                       <div
                         className={cn(
-                          "relative aspect-[3/4] max-h-[38vh] xs:max-h-[42vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out flex flex-col justify-end p-2.5 xs:p-3 sm:p-3.5 text-center will-change-transform",
+                          "relative aspect-[3/4] max-h-[35vh] xs:max-h-[38vh] w-full rounded-2xl overflow-hidden bg-zinc-950 border-2 transform-gpu transition-all duration-300 ease-out will-change-transform",
                           isActive
-                            ? "shadow-2xl scale-[1.03] opacity-100"
+                            ? "shadow-2xl scale-[1.03] opacity-100 ring-1 ring-white/10"
                             : "shadow-xl scale-[0.88] opacity-55 hover:opacity-75"
                         )}
                         style={{
@@ -231,7 +253,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                             : `0 12px 24px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.12)`,
                         }}
                       >
-                        {/* Imagem da Capa */}
+                        {/* Imagem da Capa de Alta Resolução do Drive */}
                         <img
                           src={capaUrl}
                           alt={disc.nome}
@@ -239,52 +261,12 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                           decoding="async"
                           fetchPriority={isActive ? "high" : "auto"}
                           className={cn(
-                            "absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none transition-transform duration-400 ease-out rounded-2xl",
+                            "w-full h-full object-cover object-center select-none pointer-events-none transition-transform duration-400 ease-out rounded-2xl",
                             isActive 
-                              ? "scale-105 filter brightness-115 contrast-105 saturate-105" 
-                              : "scale-100 filter brightness-100 contrast-100 saturate-100"
+                              ? "scale-105 filter brightness-110 contrast-105 saturate-105" 
+                              : "scale-100 filter brightness-95 contrast-100 saturate-100"
                           )}
                         />
-
-                        {/* Gradiente na Base */}
-                        <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/95 via-black/50 to-transparent pointer-events-none rounded-b-2xl z-10" />
-
-                        {/* Título e Botão Acessar Dentro da Capa */}
-                        <div className="relative z-20 w-full flex flex-col items-center">
-                          <h3 
-                            className={cn(
-                              "font-serif font-black text-white leading-tight drop-shadow-[0_2px_10px_rgba(0,0,0,1)] text-center break-words text-balance px-0.5 transition-all",
-                              isActive 
-                                ? "text-xs xs:text-sm sm:text-base" 
-                                : "text-[10px] xs:text-[11px] sm:text-xs text-zinc-200"
-                            )}
-                          >
-                            {disc.nome}
-                          </h3>
-
-                          {/* ── BOTÃO ACESSAR DENTRO DA CAPA (EM VEZ DE FORA) ── */}
-                          <div className={cn(
-                            "w-full flex items-center justify-center transition-all duration-300 overflow-hidden",
-                            isActive ? "max-h-12 mt-2 xs:mt-2.5 opacity-100" : "max-h-0 mt-0 opacity-0 pointer-events-none"
-                          )}>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                try { haptic.impact(); } catch {}
-                                onSelectCurrent();
-                              }}
-                              className="w-full max-w-[125px] xs:max-w-[140px] sm:max-w-[160px] h-7 xs:h-7.5 sm:h-8.5 rounded-full flex items-center justify-center gap-1.5 font-serif font-black text-[10.5px] xs:text-xs sm:text-sm text-zinc-950 shadow-[0_4px_16px_rgba(0,0,0,0.85)] active:scale-95 hover:brightness-110 transition-all cursor-pointer border border-white/50"
-                              style={{
-                                background: `linear-gradient(135deg, ${corTemaHighlight} 0%, ${corTema} 100%)`,
-                              }}
-                              aria-label={`Acessar ${disc.nome}`}
-                            >
-                              <span className="tracking-wide">Acessar</span>
-                              <span className="font-sans text-xs xs:text-sm font-bold">→</span>
-                            </button>
-                          </div>
-                        </div>
                       </div>
 
                       {/* ── QUANTIDADE DE AULAS FORA DA CAPA ── */}
@@ -345,6 +327,21 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                 />
               );
             })}
+          </div>
+
+          {/* ── BOTÃO ACESSAR FORA DA CAPA (ZONA DO POLEGAR) ── */}
+          <div className="w-full max-w-[270px] xs:max-w-[300px] mx-auto px-2 mb-0.5 xs:mb-1 z-20 shrink-0">
+            <button
+              type="button"
+              onClick={onSelectCurrent}
+              className="w-full h-10.5 xs:h-11 sm:h-12 rounded-full flex items-center justify-center gap-2 font-serif font-black text-xs xs:text-sm sm:text-base text-zinc-950 shadow-[0_8px_25px_rgba(0,0,0,0.8),inset_0_1px_2px_rgba(255,255,255,0.6)] active:scale-95 hover:brightness-105 transition-all cursor-pointer border border-white/40"
+              style={{
+                background: `linear-gradient(135deg, ${activeCorHighlight} 0%, ${activeCorTema} 100%)`,
+              }}
+            >
+              <span className="tracking-wide uppercase">Acessar {activeDisc?.nome || 'Área'}</span>
+              <span className="font-sans text-sm xs:text-base font-bold">→</span>
+            </button>
           </div>
         </div>
       </div>
