@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { ChevronRight, Search, X, Clock, Star, Bookmark, BookOpen, Layers, ArrowUpRight } from 'lucide-react';
+import { ChevronRight, Search, X, Clock, Star, Bookmark, BookOpen, ArrowUpRight, Library } from 'lucide-react';
 import { toast } from 'sonner';
 import { haptic } from '@/lib/nativeHaptics';
-import { directImg, prefetchImages } from '@/lib/cdnImg';
+import { directImg, cdnImg, prefetchImages } from '@/lib/cdnImg';
 import { assetUrl } from '@/lib/assetUrl';
 import { supabase } from '@/integrations/supabase/client';
 import { withBundleFallback, bundle } from '@/services/offlineBundle';
@@ -27,62 +27,77 @@ import BibliotecaHero from './BibliotecaHero';
 import BibliotecaAtalhosBar from './BibliotecaAtalhosBar';
 import BibliotecaContinuarLeituraBanner from './BibliotecaContinuarLeituraBanner';
 import FerramentasLivrosCarrossel from '@/components/ferramentas/FerramentasLivrosCarrossel';
-import BibliotecaCategoriaCarrossel from './BibliotecaCategoriaCarrossel';
 
 import bibliotecaCoverImg from '@/assets/biblioteca-cover.webp';
-import salvosImg from '@/assets/covers/resumos-philosophers-hero.webp';
 
-// Categorias complementares do acervo exibidas em carrosséis temáticos individuais (sem OAB conforme solicitado)
-const CATEGORY_CAROUSELS = [
+// Categorias com alternância de menu e design em cards idênticos aos Clássicos
+interface CategoriaAcervoConfig {
+  id: string;
+  tabLabel: string;
+  title: string;
+  subtitle: string;
+  badgeLabel: string;
+  gradient: string;
+  accentColor: string;
+  glowColor: string;
+  badgeBg: string;
+}
+
+const CATEGORIAS_ACERVO: CategoriaAcervoConfig[] = [
   {
     id: 'fora-da-toga',
+    tabLabel: 'Fora da Toga',
     title: 'FORA DA TOGA',
     subtitle: 'Filosofia, psicologia, história, literatura e comportamento',
     badgeLabel: 'Fora da Toga',
     gradient: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 55%, #0f172a 100%)', // Indigo / Noite
     accentColor: '#818cf8',
     glowColor: 'rgba(129, 140, 248, 0.4)',
-    seeAllRoute: '/bibliotecas/fora-da-toga',
+    badgeBg: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40',
   },
   {
     id: 'lideranca',
+    tabLabel: 'Liderança',
     title: 'LIDERANÇA & GESTÃO',
     subtitle: 'Estratégia, inteligência emocional e autoridade profissional',
     badgeLabel: 'Liderança',
     gradient: 'linear-gradient(135deg, #14532d 0%, #166534 55%, #052e16 100%)', // Verde Imperial
     accentColor: '#4ade80',
     glowColor: 'rgba(74, 222, 128, 0.4)',
-    seeAllRoute: '/bibliotecas/lideranca',
+    badgeBg: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
   },
   {
     id: 'portugues',
+    tabLabel: 'Português Forense',
     title: 'PORTUGUÊS FORENSE',
     subtitle: 'Redação jurídica de alto nível, gramática e clareza',
     badgeLabel: 'Português',
     gradient: 'linear-gradient(135deg, #78350f 0%, #92400e 55%, #451a03 100%)', // Âmbar Dourado
     accentColor: '#fbbf24',
     glowColor: 'rgba(251, 191, 36, 0.4)',
-    seeAllRoute: '/bibliotecas/portugues',
+    badgeBg: 'bg-amber-500/20 text-amber-300 border-amber-500/40',
   },
   {
     id: 'oratoria',
+    tabLabel: 'Oratória',
     title: 'ORATÓRIA JURÍDICA',
     subtitle: 'Retórica clássica, sustentação oral e persuasão',
     badgeLabel: 'Oratória',
     gradient: 'linear-gradient(135deg, #581c87 0%, #6b21a8 55%, #3b0764 100%)', // Púrpura Nobre
     accentColor: '#c084fc',
     glowColor: 'rgba(192, 132, 252, 0.4)',
-    seeAllRoute: '/bibliotecas/oratoria',
+    badgeBg: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
   },
   {
     id: 'pesquisa',
+    tabLabel: 'Pesquisa Acadêmica',
     title: 'PESQUISA ACADÊMICA',
     subtitle: 'Normas ABNT, teses, dissertações e artigos científicos',
     badgeLabel: 'Pesquisa',
     gradient: 'linear-gradient(135deg, #0e7490 0%, #155e75 55%, #083344 100%)', // Ciano / Oceano
     accentColor: '#22d3ee',
     glowColor: 'rgba(34, 211, 238, 0.4)',
-    seeAllRoute: '/bibliotecas/pesquisa',
+    badgeBg: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40',
   },
 ];
 
@@ -128,11 +143,6 @@ function norm(s: string | null | undefined): string {
     .trim();
 }
 
-const getColecaoNome = (colecaoId: string): string => {
-  const c = findColecao(colecaoId);
-  return c?.label || 'Obra';
-};
-
 interface BibliotecaMobileContentProps {
   counts: Record<string, number>;
   onAbrirLivro: (livro: LivroNormalizado, modoInicial?: 'nativa' | 'pdf' | 'pdf-clara' | 'pdf-escura') => void;
@@ -146,9 +156,22 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
   onAbrirCustomPdf,
   onAbrirMateria,
 }) => {
+  const [activeTab, setActiveTab] = useState<string>('fora-da-toga');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [visibleLimit, setVisibleLimit] = useState<number>(24);
   const [favoriteSnapshots, setFavoriteSnapshots] = useState<LivroSnapshot[]>(() => getFavoritos());
 
   const colecoesVisiveis = useVisibleColecoes();
+
+  // Reset do limite visível ao alternar menu ou pesquisa
+  useEffect(() => {
+    setVisibleLimit(24);
+  }, [activeTab, searchQuery]);
+
+  // Categoria ativa atual
+  const activeCategoria = useMemo(() => {
+    return CATEGORIAS_ACERVO.find((c) => c.id === activeTab) || CATEGORIAS_ACERVO[0];
+  }, [activeTab]);
 
   // Sincronização dos favoritos
   useEffect(() => {
@@ -223,6 +246,23 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     return Object.values(booksByColecao).flat();
   }, [booksByColecao]);
 
+  // Livros da categoria selecionada com suporte à busca
+  const livrosDaCategoria = useMemo(() => {
+    const list = booksByColecao[activeCategoria.id] || [];
+    if (!searchQuery.trim()) return list;
+
+    const q = norm(searchQuery);
+    const tokens = q.split(' ').filter(Boolean);
+    return list.filter((l) => {
+      const target = norm(`${l.titulo} ${l.autor || ''} ${l.sobre || ''}`);
+      return tokens.every((t) => target.includes(t));
+    });
+  }, [booksByColecao, activeCategoria.id, searchQuery]);
+
+  const visibleLivros = useMemo(() => {
+    return livrosDaCategoria.slice(0, visibleLimit);
+  }, [livrosDaCategoria, visibleLimit]);
+
   // Lista dinâmica e atualizada das Áreas do Direito
   const areasList = useMemo(() => {
     const areasLivros = booksByColecao['areas'] || [];
@@ -258,15 +298,15 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
     });
   }, [areasList]);
 
-  // Pré-aquecimento das capas dos livros visíveis
+  // Pré-aquecimento das capas dos livros da categoria ativa
   useEffect(() => {
-    if (!allLivros || allLivros.length === 0) return;
-    const urls = allLivros
-      .slice(0, 20)
+    if (!livrosDaCategoria || livrosDaCategoria.length === 0) return;
+    const urls = livrosDaCategoria
+      .slice(0, 16)
       .map((l) => (l.capa ? directImg(l.capa) : null))
       .filter(Boolean) as string[];
     prefetchImages(urls);
-  }, [allLivros]);
+  }, [livrosDaCategoria]);
 
   const handleToggleFavorite = useCallback((livro: LivroNormalizado) => {
     haptic.selection();
@@ -288,11 +328,13 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
 
       {/* Conteúdo Principal com Estrutura Fluida e Organizada */}
       <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 mt-4 sm:mt-6 space-y-6">
-        {/* Banner Continuar Leitura */}
-        <div className="mb-6"><BibliotecaContinuarLeituraBanner onAbrirLivro={onAbrirLivro} /></div>
+        {/* Banner Continuar Leitura com margem de respiro ajustada */}
+        <div className="mb-6">
+          <BibliotecaContinuarLeituraBanner onAbrirLivro={onAbrirLivro} />
+        </div>
 
         {/* ======================================================== */}
-        {/* SEÇÃO 1: ÁREAS DO DIREITO (Onde no Resumos fica EM ALTA) */}
+        {/* SEÇÃO 1: ÁREAS DO DIREITO (Carrossel Horizontal 3:4)     */}
         {/* ======================================================== */}
         <section className="space-y-3">
           <div className="flex items-center justify-between gap-2 px-1">
@@ -387,30 +429,227 @@ export const BibliotecaMobileContent: React.FC<BibliotecaMobileContentProps> = (
         </section>
 
         {/* ======================================================== */}
-        {/* SEÇÃO 2: CARROSSEL VERMELHO ANTIGO DE CLÁSSICOS          */}
+        {/* SEÇÃO 2: CARROSSEL VERMELHO DE CLÁSSICOS                  */}
         {/* ======================================================== */}
         <section className="pt-1">
           <FerramentasLivrosCarrossel onAbrirLivro={onAbrirLivro} />
         </section>
 
         {/* ======================================================== */}
-        {/* SEÇÃO 3: CARROSSÉIS DE TODAS AS DEMAIS CATEGORIAS         */}
+        {/* SEÇÃO 3: LISTA COM MENU DE ALTERNÂNCIA & CARDS CLÁSSICOS */}
         {/* ======================================================== */}
-        <section className="pt-2 space-y-6 pb-12">
-          {CATEGORY_CAROUSELS.map((cfg) => {
-            const livros = booksByColecao[cfg.id] || [];
-            if (!livros.length) return null;
-            return (
-              <BibliotecaCategoriaCarrossel
-                key={cfg.id}
-                config={cfg}
-                livros={livros}
-                onAbrirLivro={onAbrirLivro}
-              />
-            );
-          })}
+        <section className="pt-2 space-y-4 pb-12">
+          {/* Cabeçalho da Categoria com Indicador e Contador */}
+          <div className="flex items-center justify-between gap-2 px-1">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] uppercase tracking-[0.22em] font-bold" style={{ color: activeCategoria.accentColor }}>
+                OUTRAS CATEGORIAS DO ACERVO
+              </p>
+              <div className="flex items-center gap-2 mt-1">
+                <span 
+                  className="w-1 h-6 rounded-full shrink-0" 
+                  style={{ backgroundColor: activeCategoria.accentColor }} 
+                />
+                <h2 className="font-sans text-xl sm:text-2xl font-extrabold text-white tracking-tight leading-tight">
+                  {activeCategoria.title}
+                </h2>
+              </div>
+              <p className="text-sm text-white/60 mt-1 ml-3 leading-snug">
+                {activeCategoria.subtitle}
+              </p>
+            </div>
+            <span className="text-xs sm:text-sm font-semibold text-zinc-400 font-sans self-end pb-1 shrink-0">
+              {`${livrosDaCategoria.length} ${livrosDaCategoria.length === 1 ? 'obra' : 'obras'}`}
+            </span>
+          </div>
+
+          {/* Campo de Busca Rápida na Categoria */}
+          <div className="relative">
+            <Search className="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={`Buscar em ${activeCategoria.tabLabel}...`}
+              className="w-full pl-11 pr-10 h-14 text-sm sm:text-base rounded-2xl bg-[#141416] border border-white/10 text-white placeholder-white/40 focus:outline-none focus:border-rose-500/60 transition-colors shadow-sm"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white cursor-pointer"
+                aria-label="Limpar pesquisa"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Menu de Alternância de Categorias (Abas em Pills com Cores Exclusivas) */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            {CATEGORIAS_ACERVO.map((cat) => {
+              const isActive = activeTab === cat.id;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => {
+                    haptic.selection();
+                    setActiveTab(cat.id);
+                  }}
+                  style={{
+                    backgroundColor: isActive ? `${cat.accentColor}26` : undefined,
+                    borderColor: isActive ? `${cat.accentColor}80` : undefined,
+                    color: isActive ? cat.accentColor : undefined,
+                  }}
+                  className={`px-4 py-2.5 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer border ${
+                    isActive
+                      ? 'shadow-md font-bold'
+                      : 'bg-[#18181B] text-zinc-300 hover:text-white border-white/10 hover:bg-zinc-800'
+                  }`}
+                >
+                  {cat.tabLabel}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Grid / Lista com os Cards Idênticos ao Design de Clássicos com a Cor da Categoria */}
+          <div className="pt-2">
+            {livrosDaCategoria.length === 0 ? (
+              <div className="py-14 text-center px-4 rounded-2xl bg-[#141416] border border-white/5">
+                <div className="w-12 h-12 rounded-2xl bg-[#18181B] border border-white/10 flex items-center justify-center mx-auto mb-3 text-zinc-400">
+                  <BookOpen className="w-6 h-6" />
+                </div>
+                <p className="text-sm font-medium text-zinc-300">
+                  {searchQuery
+                    ? `Nenhum livro encontrado para "${searchQuery}".`
+                    : `Nenhum livro disponível em ${activeCategoria.tabLabel}.`}
+                </p>
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="mt-3 px-4 py-1.5 rounded-full text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10 transition cursor-pointer"
+                  >
+                    Limpar busca
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {visibleLivros.map((livro, idx) => {
+                  const meta = livro.minutosLeitura
+                    ? `${livro.minutosLeitura} min de leitura`
+                    : livro.paginas
+                    ? `${livro.paginas} páginas`
+                    : (livro.autor || activeCategoria.badgeLabel);
+
+                  return (
+                    <div
+                      key={`${livro.colecaoId}:${livro.id}-${idx}`}
+                      onClick={() => {
+                        haptic.selection();
+                        onAbrirLivro(livro);
+                      }}
+                      className="cursor-pointer active:scale-[0.99] text-left group"
+                    >
+                      <div
+                        style={{
+                          background: activeCategoria.gradient,
+                          borderColor: `${activeCategoria.accentColor}40`,
+                          boxShadow: `0 8px 20px -6px rgba(0,0,0,0.7), 0 0 16px ${activeCategoria.accentColor}18`,
+                        }}
+                        className="relative w-full h-[140px] overflow-hidden rounded-2xl transition-all duration-300 flex transform-gpu will-change-transform border shadow-md group-hover:scale-[1.01]"
+                      >
+                        {/* SVGs jurídicos decorativos ao fundo idênticos a Clássicos */}
+                        <svg
+                          aria-hidden
+                          viewBox="0 0 200 200"
+                          className="pointer-events-none absolute -right-4 -bottom-6 w-[130px] h-[130px] text-white/10"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M100 30 V170 M70 170 H130 M100 55 L55 95 M100 55 L145 95" strokeLinecap="round" />
+                          <path d="M35 95 Q55 135 75 95 Z" />
+                          <path d="M125 95 Q145 135 165 95 Z" />
+                        </svg>
+                        <svg
+                          aria-hidden
+                          viewBox="0 0 100 100"
+                          className="pointer-events-none absolute top-2 right-14 w-[54px] h-[54px] text-white/10"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                        >
+                          <path d="M18 78 L58 38" />
+                          <rect x="52" y="20" width="30" height="14" rx="2" transform="rotate(45 67 27)" />
+                          <path d="M10 88 H50" />
+                        </svg>
+
+                        {/* Capa do livro à esquerda com sombra profunda */}
+                        <div className="relative h-full w-[104px] shrink-0 flex items-center justify-center px-2.5 z-[1]">
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <Library className="w-8 h-8 text-white/30" />
+                          </div>
+                          {livro.capa && (
+                            <img
+                              src={cdnImg(livro.capa, 240)}
+                              alt={livro.titulo}
+                              loading={idx < 6 ? 'eager' : 'lazy'}
+                              fetchPriority={idx < 2 ? 'high' : 'auto'}
+                              decoding="async"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                              className="relative h-[118px] w-auto max-w-full object-contain rounded-md z-[2] group-hover:scale-105 transition-transform duration-300"
+                              style={{
+                                boxShadow:
+                                  '0 14px 26px -8px rgba(0,0,0,0.75), 0 6px 12px -4px rgba(0,0,0,0.55), 0 0 0 1px rgba(0,0,0,0.25)',
+                              }}
+                            />
+                          )}
+                        </div>
+
+                        {/* Detalhes à direita: Selo, Tempo/Autor, Título e Seta */}
+                        <div className="relative flex-1 min-w-0 flex flex-col justify-end px-3.5 pb-3 pt-3 z-[1]">
+                          <span className="self-start flex items-center gap-1 text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider text-white mb-1.5 bg-black/35 backdrop-blur-sm">
+                            <Library className="w-2.5 h-2.5" />
+                            {activeCategoria.badgeLabel}
+                          </span>
+                          <div className="flex items-center gap-1.5 mb-1 text-[11px] text-white/85 font-medium">
+                            <Clock className="w-3 h-3 shrink-0" />
+                            <span className="truncate">{meta}</span>
+                          </div>
+                          <p className="font-display text-white text-[14px] font-semibold leading-snug line-clamp-2 drop-shadow-sm group-hover:text-white/95">
+                            {livro.titulo}
+                          </p>
+                          <div className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-md group-hover:bg-white/30 group-hover:scale-105 transition-all">
+                            <ArrowUpRight className="w-3.5 h-3.5 text-white" strokeWidth={2.2} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Paginação fluida para carregar mais obras */}
+            {livrosDaCategoria.length > visibleLimit && (
+              <div className="pt-6 pb-4 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => setVisibleLimit((prev) => prev + 24)}
+                  className="px-6 py-2.5 rounded-full bg-[#18181B] hover:bg-zinc-800 text-zinc-200 border border-white/10 text-xs sm:text-sm font-semibold active:scale-95 transition-all shadow-md cursor-pointer"
+                >
+                  Carregar mais obras ({livrosDaCategoria.length - visibleLimit} restantes)
+                </button>
+              </div>
+            )}
+          </div>
         </section>
-        </main>
+      </main>
     </div>
   );
 };
