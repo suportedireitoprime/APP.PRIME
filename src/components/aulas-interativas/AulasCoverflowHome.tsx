@@ -40,6 +40,7 @@ interface AulasCoverflowHomeProps {
   loopedDisciplinas: DisciplinaItem[];
   activeCarouselIndex: number;
   onSelectCurrent: () => void;
+  onSelectDisciplina?: (disciplinaId: string) => void;
   onCardClick: (disc: DisciplinaItem, idx: number) => void;
   handleVoltar: () => void;
   buscaTermo: string;
@@ -64,6 +65,7 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
   loopedDisciplinas,
   activeCarouselIndex,
   onSelectCurrent,
+  onSelectDisciplina,
   onCardClick,
   handleVoltar,
   buscaTermo,
@@ -258,7 +260,17 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
                   return (
                     <div
                       key={`${disc.id}-${idx}`}
-                      onClick={() => onCardClick(disc, idx)}
+                      onClick={() => {
+                        if (idx === activeCarouselIndex) {
+                          if (onSelectDisciplina) {
+                            onSelectDisciplina(disc.id);
+                          } else {
+                            onCardClick(disc, idx);
+                          }
+                        } else {
+                          onCardClick(disc, idx);
+                        }
+                      }}
                       className="snap-center shrink-0 w-[130px] xs:w-[145px] sm:w-[175px] md:w-[210px] flex flex-col items-center cursor-pointer transition-all duration-300 ease-out will-change-transform"
                     >
                       {/* ── QUANTIDADE DE AULAS ACIMA DA CAPA ── */}
@@ -371,7 +383,14 @@ export const AulasCoverflowHome: React.FC<AulasCoverflowHomeProps> = ({
           <div className="w-full max-w-[240px] xs:max-w-[260px] sm:max-w-[290px] mx-auto px-4 mb-3 xs:mb-4 sm:mb-5 pb-[var(--sai-bottom,env(safe-area-inset-bottom,0px))] z-20 shrink-0">
             <button
               type="button"
-              onClick={onSelectCurrent}
+              onClick={() => {
+                try { haptic.impact('medium'); } catch {}
+                if (activeDisc && onSelectDisciplina) {
+                  onSelectDisciplina(activeDisc.id);
+                } else {
+                  onSelectCurrent();
+                }
+              }}
               className="w-full h-11 xs:h-11.5 sm:h-12 rounded-full flex items-center justify-center font-sans font-black text-xs xs:text-[13px] sm:text-sm tracking-[0.22em] uppercase text-zinc-950 shadow-[0_8px_24px_rgba(0,0,0,0.85),inset_0_1.5px_1px_rgba(255,255,255,0.7)] active:scale-95 hover:brightness-105 transition-all cursor-pointer border border-white/50"
               style={{
                 background: `linear-gradient(135deg, ${activeCorHighlight} 0%, ${activeCorTema} 100%)`,
